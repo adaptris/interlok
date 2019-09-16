@@ -17,7 +17,6 @@
 package com.adaptris.core.ftp;
 
 import static org.junit.Assert.assertTrue;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +24,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.ResourceBundle;
-
 import org.mockftpserver.core.command.Command;
 import org.mockftpserver.core.command.ReplyCodes;
 import org.mockftpserver.core.session.Session;
@@ -37,7 +35,6 @@ import org.mockftpserver.fake.filesystem.FileEntry;
 import org.mockftpserver.fake.filesystem.FileSystem;
 import org.mockftpserver.fake.filesystem.FileSystemEntry;
 import org.mockftpserver.fake.filesystem.UnixFakeFileSystem;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 
@@ -66,13 +63,24 @@ public class EmbeddedFtpServer {
   public static final String DESTINATION_URL = "ftp://localhost" + DEFAULT_HOME_DIR;
   public static final String SERVER_ADDRESS = "localhost";
 
+  private transient boolean goodMDTM;
+
+  public EmbeddedFtpServer() {
+    goodMDTM = true;
+  }
+
+  public EmbeddedFtpServer(boolean goodMDTM) {
+    this();
+    this.goodMDTM = goodMDTM;
+  }
+
   public FakeFtpServer createAndStart(FileSystem filesystem) {
     return createAndStart(filesystem, new UserAccount(DEFAULT_USERNAME, DEFAULT_PASSWORD, DEFAULT_HOME_DIR));
   }
 
   public FakeFtpServer createAndStart(FileSystem filesystem, UserAccount account) {
     FakeFtpServer server = new FakeFtpServer();
-    server.setCommandHandler("MDTM", new MdtmCommandHandler());
+    server.setCommandHandler("MDTM", new MdtmCommandHandler(goodMDTM));
     server.setServerControlPort(0);
     server.addUserAccount(account);
     server.setFileSystem(filesystem);
@@ -129,7 +137,10 @@ public class EmbeddedFtpServer {
 
   public class MdtmCommandHandler extends AbstractFakeCommandHandler {
 
-    public MdtmCommandHandler() {
+    private boolean good = false;
+
+    public MdtmCommandHandler(boolean good) {
+      this.good = good;
     }
 
     @Override
@@ -144,7 +155,8 @@ public class EmbeddedFtpServer {
       String result = tsFormat.format(entry.getLastModified());
       ArrayList args = new ArrayList();
       args.add(result);
-      sendReply(session, 213, MDTM, args);
+      // If we are "good" then let's return a file status response, otherwise return a "HELP" message which is "bad".
+      sendReply(session, good ? 213 : 214, MDTM, args);
     }
 
     // This is to override with the mdtm resource bundle w/o having to change the resource bundle

@@ -20,9 +20,8 @@ import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Random;
-
+import org.apache.commons.lang3.StringUtils;
 import org.apache.oro.io.GlobFilenameFilter;
-
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FtpCase;
 import com.adaptris.security.password.Password;
@@ -113,4 +112,12 @@ public class TestSftp extends FtpCase {
     return client;
   }
 
+  @Override
+  protected boolean areTestsEnabled() {
+    String sftpTests = config.getProperty("sftp.tests.enabled");
+    if (!StringUtils.isEmpty(sftpTests)) {
+      return Boolean.parseBoolean(sftpTests);
+    }
+    return super.areTestsEnabled();
+  }
 }

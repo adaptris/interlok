@@ -17,7 +17,6 @@ package com.adaptris.core.cache;
 
 import java.io.Serializable;
 import java.util.List;
-
 import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.CoreException;
 
@@ -44,7 +43,7 @@ public interface Cache extends ComponentLifecycle {
    * 
    * @param key key to store the value against
    * @param value value to be stored
-   * @implSpec The default implementation throws an instance of {@link UnsupportedOperationException} and performs no other action.
+   * @implNote The default implementation throws an instance of {@link UnsupportedOperationException} and performs no other action.
    * @throws UnsupportedOperationException if the {@code put(String,Object)} operation is not supported by this cache instance
    * @throws CoreException if there was an exception accessing the cache.
    */
@@ -73,7 +72,7 @@ public interface Cache extends ComponentLifecycle {
   /**
    * Retrieves a List of all the keys in the cache
    * 
-   * @implSpec The default implementation throws an instance of {@link UnsupportedOperationException} and performs no other action.
+   * @implNote The default implementation throws an instance of {@link UnsupportedOperationException} and performs no other action.
    * @throws UnsupportedOperationException if the {@code getKeys} operation is not supported by this cache instance
    * @return a List<String> of all the keys in the cache
    * @throws CoreException if there was an exception accessing the cache.
@@ -85,16 +84,17 @@ public interface Cache extends ComponentLifecycle {
   /**
    * Clears all entries from the cache
    * 
-   * @implSpec The default implementation throws an instance of {@link UnsupportedOperationException} and performs no other action.
+   * @implNote The default implementation throws an instance of {@link UnsupportedOperationException} and performs no other action.
    * @throws UnsupportedOperationException if the {@code clear} operation is not supported by this cache instance
    * @throws CoreException if there was an exception accessing the cache.
    */
   default void clear() throws CoreException {
     throw new UnsupportedOperationException("clear");
   }
+  
   /**
    * @return the number of items in the cache
-   * @implSpec The default implementation throws an instance of {@link UnsupportedOperationException} and performs no other action.
+   * @implNote The default implementation throws an instance of {@link UnsupportedOperationException} and performs no other action.
    * @throws UnsupportedOperationException if the {@code size} operation is not supported by this cache instance
    * @throws CoreException if there was an exception accessing the cache.
    */

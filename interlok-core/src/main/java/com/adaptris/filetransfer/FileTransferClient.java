@@ -16,13 +16,17 @@
 
 package com.adaptris.filetransfer;
 
+import java.io.ByteArrayInputStream;
 import java.io.Closeable;
 import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
+import com.adaptris.annotation.Removal;
 
 /**
  * Common interface for all FTP client flavours.
@@ -46,36 +50,43 @@ public interface FileTransferClient extends Closeable {
   /**
    * Put a local file onto the FTP server.
    *
-   * @param localPath path of the local file
+   * @implNote The default implementation calls {@link #put(String, String, boolean)} with {@code append=false}.
    * @param remoteFile name of remote file in current directory
    * @throws FileTransferException if an FTP specific exception occurs
    * @throws IOException if a comms error occurs
    */
-  void put(String localPath, String remoteFile) throws IOException,
-      FileTransferException;
-
+  default void put(String localPath, String remoteFile) throws IOException, FileTransferException {
+    put(localPath, remoteFile, false);
+  }
+  
   /**
    * Put a stream of data onto the FTP server.
    *
+   * @implNote The default implementation calls {@link #put(String, String, boolean)} with {@code append=false}.
    * @param srcStream input stream of data to put
    * @param remoteFile name of remote file
    * @throws FileTransferException if an FTP specific exception occurs
    * @throws IOException if a comms error occurs
    */
-  void put(InputStream srcStream, String remoteFile) throws IOException,
-      FileTransferException;
+  default void put(InputStream srcStream, String remoteFile) throws IOException, FileTransferException {
+    put(srcStream, remoteFile, false);
+  }
 
   /**
    * Put a local file onto the FTP server.
    *
+   * @implNote The default implementation calls {@link #put(InputStream, String, boolean)} with {@code append=false}.
    * @param localPath path of the local file
    * @param remoteFile name of remote file
    * @param append true if appending, false otherwise
    * @throws FileTransferException if an FTP specific exception occurs
    * @throws IOException if a comms error occurs
    */
-  void put(String localPath, String remoteFile, boolean append)
-      throws IOException, FileTransferException;
+  default void put(String localPath, String remoteFile, boolean append) throws IOException, FileTransferException {
+    try (FileInputStream in = new FileInputStream(localPath)) {
+      put(in, remoteFile, append);
+    }
+  }
 
   /**
    * Put a stream of data onto the FTP server.
@@ -92,36 +103,45 @@ public interface FileTransferClient extends Closeable {
   /**
    * Put data onto the FTP server.
    *
+   * @implNote The default implementation calls {@link #put(InputStream, String, boolean)} with {@code append=false}.
    * @param bytes array of bytes
    * @param remoteFile name of remote file
    * @throws FileTransferException if an FTP specific exception occurs
    * @throws IOException if a comms error occurs
    */
-  void put(byte[] bytes, String remoteFile) throws IOException,
-      FileTransferException;
+  default void put(byte[] bytes, String remoteFile) throws IOException, FileTransferException {
+    put(bytes, remoteFile, false);
+  }
 
   /**
    * Put data onto the FTP server.
    *
+   * @implNote The default implementation calls {@link #put(InputStream, String, boolean)}.
    * @param bytes array of bytes
    * @param remoteFile name of remote file
    * @param append true if appending, false otherwise
    * @throws FileTransferException if an FTP specific exception occurs
    * @throws IOException if a comms error occurs
    */
-  void put(byte[] bytes, String remoteFile, boolean append) throws IOException,
-      FileTransferException;
+  default void put(byte[] bytes, String remoteFile, boolean append) throws IOException, FileTransferException {
+    put(new ByteArrayInputStream(bytes), remoteFile, append);
+  }
 
   /**
    * Get data from the FTP server.
    *
+   * @implNote The default implementation calls {@link #get(OutputStream, String)}.
    * @param localPath local file to put data in
    * @param remoteFile name of remote file
    * @throws FileTransferException if an FTP specific exception occurs
    * @throws IOException if a comms error occurs
    */
-  void get(String localPath, String remoteFile) throws IOException,
-      FileTransferException;
+  default void get(String localPath, String remoteFile) throws IOException,
+      FileTransferException {
+    try (FileOutputStream out = new FileOutputStream(localPath)) {
+      get(out, remoteFile);
+    }
+  }
 
   /**
    * Get data from the FTP server.
@@ -147,21 +167,27 @@ public interface FileTransferClient extends Closeable {
   /**
    * List current directory's contents as an array of strings of filenames.
    *
+   * @implNote The default implementation calls {@link #dir(String, boolean)} with {@code dirname=null, full=false}.
    * @return an array of current directory listing strings
    * @throws FileTransferException if an FTP specific exception occurs
    * @throws IOException if a comms error occurs
    */
-  String[] dir() throws IOException, FileTransferException;
+  default String[] dir() throws IOException, FileTransferException {
+    return dir(null, false);
+  }
 
   /**
    * List a directory's contents as an array of strings of filenames.
-   *
+   * 
+   * @implNote The default implementation calls {@link #dir(String, boolean)} with {@code full=false}.
    * @param dirname name of directory(<b>not</b> a file mask)
    * @return an array of directory listing strings
    * @throws FileTransferException if an FTP specific exception occurs
    * @throws IOException if a comms error occurs
    */
-  String[] dir(String dirname) throws IOException, FileTransferException;
+  default String[] dir(String dirname) throws IOException, FileTransferException {
+    return dir(dirname, false);
+  }
 
   /**
    * List a directory's contents as an array of strings.
@@ -184,6 +210,13 @@ public interface FileTransferClient extends Closeable {
   /**
    * List a directory's contents
    *
+   * <p>
+   * Note that although we use a standard {@link FileFilter} interface here operating on
+   * {@link java.io.File}; it actually uses {@link RemoteFile} instead which overrides information
+   * that can be obtained from the remote server. Other standard {@link java.io.File} operations will
+   * not be supported, and may ultimately cause a runtime exception.
+   * </p>
+   * 
    * @param directory the directory to list.
    * @param filter the filefilter mask to use
    * @return an array of strings containing the listing
@@ -196,6 +229,13 @@ public interface FileTransferClient extends Closeable {
   /**
    * List a directory's contents
    *
+   * <p>
+   * Note that although we use a standard {@link FileFilter} interface here operating on
+   * {@link java.io.File}; it actually uses {@link RemoteFile} instead which overrides information
+   * that can be obtained from the remote server. Other standard {@link java.io.File} operations will
+   * not be supported, and may ultimately cause a runtime exception.
+   * </p>
+   * 
    * @param directory the directory to list.
    * @param filter the filefilter mask to use
    * @return an array of strings containing the listing
@@ -204,6 +244,7 @@ public interface FileTransferClient extends Closeable {
    * @deprecated use {#link dir(String, FileFilter)} instead.
    */
   @Deprecated
+  @Removal(version = "3.10.0", message = "Use dir(String, FileFilter) instead")
   String[] dir(String directory, FilenameFilter filter)
       throws FileTransferException, IOException;
 
@@ -313,6 +354,7 @@ public interface FileTransferClient extends Closeable {
    */
   void setAdditionalDebug(boolean b);
 
+  @Override
   default void close() throws IOException {
     disconnect();
   }

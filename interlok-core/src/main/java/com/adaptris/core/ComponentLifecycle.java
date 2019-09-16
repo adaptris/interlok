@@ -32,42 +32,41 @@ public interface ComponentLifecycle {
    * </p>
    *
    * @throws CoreException wrapping any underlying <code>Exception</code>s
-   * @implSpec The default implementation is no-op
+   * @implNote The default implementation is no-op
    */
   default void init() throws CoreException {}
 
   /**
    * Starts the component.
    * <p>
-   * Once a component is started it should be ready to process messages. In the case of
-   * {@link AdaptrisMessageConsumer}, calling start will begin message delivery.
+   * Once a component is started it should be ready to process messages. In the case of {@link AdaptrisMessageConsumer}, calling start
+   * will begin message delivery.
    * </p>
    *
    * @throws CoreException wrapping any underlying <code>Exception</code>s
-   * @implSpec The default implementation is no-op
+   * @implNote The default implementation is no-op
    */
   default void start() throws CoreException {}
 
   /**
    * Stop the component
    * <p>
-   * A stopped component is not expected to be ready to process messages. In the case of
-   * {@link AdaptrisMessageConsumer}, calling stop will pause message delivery. Throwing a
-   * {@link RuntimeException} may cause unintended consequences
+   * A stopped component is not expected to be ready to process messages. In the case of {@link AdaptrisMessageConsumer}, calling stop
+   * will pause message delivery. Throwing a {@link RuntimeException} may cause unintended consequences
    * </p>
    * 
-   * @implSpec The default implementation is no-op
+   * @implNote The default implementation is no-op
    */
   default void stop() {}
 
   /**
    * Closes the component.
    * <p>
-   * A closed component should release any connections it uses, etc. and clean up completely.
-   * Throwing a {@link RuntimeException} may cause unintended consequences
+   * A closed component should release any connections it uses, etc. and clean up completely. Throwing a {@link RuntimeException} may
+   * cause unintended consequences
    * </p>
    * 
-   * @implSpec The default implementation is no-op
+   * @implNote The default implementation is no-op
    */
   default void close() {}
 }
