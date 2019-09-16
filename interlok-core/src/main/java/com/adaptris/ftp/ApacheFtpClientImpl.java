@@ -104,10 +104,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
         }
         postConnectSettings(ftp);
       } catch (IOException | RuntimeException e) {
-        if (ftp.isConnected()) {
-          ftp.disconnect();
-          ftp = null;
-        }
+        ftp = disconnect(ftp);
         throw e;
       }
     }
@@ -465,14 +462,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
       return;
     }
     if (isAdditionaDebug()) {
-      StringBuilder sb = new StringBuilder();
-      for (int i = 0; i < replyText.length; i++) {
-        sb.append(replyText[i]);
-        if (i + 1 < replyText.length) {
-          sb.append(System.lineSeparator());
-        }
-      }
-      logR.trace(sb.toString());
+      logR.trace(String.join(System.lineSeparator(), replyText));
     }
   }
 
@@ -563,7 +553,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
     String replyText = reply.substring(4);
     Reply replyObj = new Reply(replyCode, replyText);
 
-    if (replyCode.equals(expectedReplyCode)) {
+    if (replyObj.getReplyCode().equals(expectedReplyCode)) {
       return replyObj;
     }
 
@@ -612,5 +602,13 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
     if (!value) {
       throw new IOException(ftpClient().getReplyString());
     }
+  }
+
+  protected static <T extends FTPClient> T disconnect(T ftp) throws IOException {
+    if (ftp.isConnected()) {
+      ftp.disconnect();
+      return null;
+    }
+    return ftp;
   }
 }
