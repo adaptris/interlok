@@ -16,15 +16,10 @@
 
 package com.adaptris.core.jms.jndi;
 
-import javax.jms.JMSException;
-import javax.jms.QueueConnectionFactory;
-import javax.jms.TopicConnectionFactory;
 import javax.jms.XAConnectionFactory;
-
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import com.adaptris.core.BaseCase;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
@@ -59,6 +54,7 @@ public class SimpleFactoryConfigurationTest extends BaseCase {
 
   @Mock private XAConnectionFactory mockXAConnectionFactory;
   
+  @Override
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
   }
@@ -70,7 +66,7 @@ public class SimpleFactoryConfigurationTest extends BaseCase {
   public void testApplyTopicConnectionFactoryConfiguration() throws Exception {
     SimpleFactoryConfiguration extras = createBase();
     DummyConnectionFactory mycf = new DummyConnectionFactory();
-    extras.applyConfiguration((TopicConnectionFactory) mycf);
+    extras.applyConfiguration(mycf);
     doModifiedAssertions(mycf);
   }
   
@@ -92,174 +88,119 @@ public class SimpleFactoryConfigurationTest extends BaseCase {
   public void testApplyQueueConnectionFactoryConfiguration() throws Exception {
     SimpleFactoryConfiguration extras = createBase();
     DummyConnectionFactory mycf = new DummyConnectionFactory();
-    extras.applyConfiguration((QueueConnectionFactory) mycf);
+    extras.applyConfiguration(mycf);
     doModifiedAssertions(mycf);
   }
 
   public void testApplyTopicConnectionFactory_NonInteger() throws Exception {
     SimpleFactoryConfiguration extras = create(new KeyValuePair(SOME_INT_VALUE, "fred"));
     DummyConnectionFactory mycf = new DummyConnectionFactory();
-    try {
-      extras.applyConfiguration((QueueConnectionFactory) mycf);
-      fail();
-    }
-    catch (JMSException expected) {
-      assertEquals(NumberFormatException.class, expected.getCause().getClass());
-    }
+    extras.applyConfiguration(mycf);
     doBaseAssertions(mycf);
   }
 
   public void testApplyQueueConnectionFactory_NonInteger() throws Exception {
     SimpleFactoryConfiguration extras = create(new KeyValuePair(SOME_INT_VALUE, "fred"));
     DummyConnectionFactory mycf = new DummyConnectionFactory();
-    try {
-      extras.applyConfiguration((TopicConnectionFactory) mycf);
-      fail();
-    }
-    catch (JMSException expected) {
-      assertEquals(NumberFormatException.class, expected.getCause().getClass());
-
-    }
+    extras.applyConfiguration(mycf);
     doBaseAssertions(mycf);
   }
 
   public void testApplyTopicConnectionFactory_NonLong() throws Exception {
     SimpleFactoryConfiguration extras = create(new KeyValuePair(SOME_LONG_VALUE, "fred"));
     DummyConnectionFactory mycf = new DummyConnectionFactory();
-    try {
-      extras.applyConfiguration((QueueConnectionFactory) mycf);
-      fail();
-    }
-    catch (JMSException expected) {
-      assertEquals(NumberFormatException.class, expected.getCause().getClass());
-
-    }
+    extras.applyConfiguration(mycf);
     doBaseAssertions(mycf);
   }
 
   public void testApplyQueueConnectionFactory_NonLong() throws Exception {
     SimpleFactoryConfiguration extras = create(new KeyValuePair(SOME_LONG_VALUE, "fred"));
     DummyConnectionFactory mycf = new DummyConnectionFactory();
-    try {
-      extras.applyConfiguration((TopicConnectionFactory) mycf);
-      fail();
-    }
-    catch (JMSException expected) {
-      assertEquals(NumberFormatException.class, expected.getCause().getClass());
-
-    }
+    extras.applyConfiguration(mycf);
     doBaseAssertions(mycf);
   }
 
   public void testApplyTopicConnectionFactory_NonBoolean() throws Exception {
     SimpleFactoryConfiguration extras = create(new KeyValuePair(SOME_BOOLEAN_VALUE, "fred"));
     DummyConnectionFactory mycf = new DummyConnectionFactory();
-    extras.applyConfiguration((TopicConnectionFactory) mycf);
+    extras.applyConfiguration(mycf);
     doBaseAssertions(mycf);
   }
 
   public void testApplyQueueConnectionFactory_NonBoolean() throws Exception {
     SimpleFactoryConfiguration extras = create(new KeyValuePair(SOME_BOOLEAN_VALUE, "fred"));
     DummyConnectionFactory mycf = new DummyConnectionFactory();
-    extras.applyConfiguration((QueueConnectionFactory) mycf);
+    extras.applyConfiguration(mycf);
     doBaseAssertions(mycf);
   }
 
   public void testApplyTopicConnectionFactory_NonFloat() throws Exception {
     SimpleFactoryConfiguration extras = create(new KeyValuePair(SOME_FLOAT_VALUE, "fred"));
     DummyConnectionFactory mycf = new DummyConnectionFactory();
-    try {
-      extras.applyConfiguration((TopicConnectionFactory) mycf);
-      fail();
-    }
-    catch (JMSException expected) {
-      assertEquals(NumberFormatException.class, expected.getCause().getClass());
-
-    }
+    extras.applyConfiguration(mycf);
     doBaseAssertions(mycf);
   }
 
   public void testApplyQueueConnectionFactory_NonFloat() throws Exception {
     SimpleFactoryConfiguration extras = create(new KeyValuePair(SOME_FLOAT_VALUE, "fred"));
     DummyConnectionFactory mycf = new DummyConnectionFactory();
-    try {
-      extras.applyConfiguration((QueueConnectionFactory) mycf);
-      fail();
-    }
-    catch (JMSException expected) {
-      assertEquals(NumberFormatException.class, expected.getCause().getClass());
-
-    }
+    extras.applyConfiguration(mycf);
     doBaseAssertions(mycf);
   }
 
   public void testApplyTopicConnectionFactory_NonDouble() throws Exception {
     SimpleFactoryConfiguration extras = create(new KeyValuePair(SOME_DOUBLE_VALUE, "fred"));
     DummyConnectionFactory mycf = new DummyConnectionFactory();
-    try {
-      extras.applyConfiguration((TopicConnectionFactory) mycf);
-      fail();
-    }
-    catch (JMSException expected) {
-      assertEquals(NumberFormatException.class, expected.getCause().getClass());
-
-    }
+    extras.applyConfiguration(mycf);
     doBaseAssertions(mycf);
   }
 
   public void testApplyQueueConnectionFactory_NonDouble() throws Exception {
     SimpleFactoryConfiguration extras = create(new KeyValuePair(SOME_DOUBLE_VALUE, "fred"));
     DummyConnectionFactory mycf = new DummyConnectionFactory();
-    try {
-      extras.applyConfiguration((QueueConnectionFactory) mycf);
-      fail();
-    }
-    catch (JMSException expected) {
-      assertEquals(NumberFormatException.class, expected.getCause().getClass());
-
-    }
+    extras.applyConfiguration(mycf);
     doBaseAssertions(mycf);
   }
 
   public void testApplyTopicConnectionFactory_NoSetter() throws Exception {
     SimpleFactoryConfiguration extras = create(new KeyValuePair("HelloThere", "fred"));
     DummyConnectionFactory mycf = new DummyConnectionFactory();
-    extras.applyConfiguration((TopicConnectionFactory) mycf);
+    extras.applyConfiguration(mycf);
     doBaseAssertions(mycf);
   }
 
   public void testApplyQueueConnectionFactory_NoSetter() throws Exception {
     SimpleFactoryConfiguration extras = create(new KeyValuePair("HelloThere", "fred"));
     DummyConnectionFactory mycf = new DummyConnectionFactory();
-    extras.applyConfiguration((QueueConnectionFactory) mycf);
+    extras.applyConfiguration(mycf);
     doBaseAssertions(mycf);
   }
 
   public void testApplyTopicConnectionFactory_Object() throws Exception {
     SimpleFactoryConfiguration extras = create(new KeyValuePair(SOME_OBJECT_VALUE, "fred"));
     DummyConnectionFactory mycf = new DummyConnectionFactory();
-    extras.applyConfiguration((TopicConnectionFactory) mycf);
+    extras.applyConfiguration(mycf);
     doBaseAssertions(mycf);
   }
 
   public void testApplyQueueConnectionFactory_Object() throws Exception {
     SimpleFactoryConfiguration extras = create(new KeyValuePair(SOME_OBJECT_VALUE, "fred"));
     DummyConnectionFactory mycf = new DummyConnectionFactory();
-    extras.applyConfiguration((QueueConnectionFactory) mycf);
+    extras.applyConfiguration(mycf);
     doBaseAssertions(mycf);
   }
 
   public void testApplyTopicConnectionFactory_TwoParams() throws Exception {
     SimpleFactoryConfiguration extras = create(new KeyValuePair(TWO_VALUES_TOGETHER, "fred"));
     DummyConnectionFactory mycf = new DummyConnectionFactory();
-    extras.applyConfiguration((TopicConnectionFactory) mycf);
+    extras.applyConfiguration(mycf);
     doBaseAssertions(mycf);
   }
 
   public void testApplyQueueConnectionFactory_TwoParams() throws Exception {
     SimpleFactoryConfiguration extras = create(new KeyValuePair(TWO_VALUES_TOGETHER, "fred"));
     DummyConnectionFactory mycf = new DummyConnectionFactory();
-    extras.applyConfiguration((QueueConnectionFactory) mycf);
+    extras.applyConfiguration(mycf);
     doBaseAssertions(mycf);
   }
 
@@ -324,7 +265,7 @@ public class SimpleFactoryConfigurationTest extends BaseCase {
 
   // Purely for testing getters and setters; I suspect I could use mockito to do this.
   // But I haven't found a connectionFactory impl that *actually has* double/float setters
-  private class DummyConnectionFactory extends ActiveMQConnectionFactory {
+  public class DummyConnectionFactory extends ActiveMQConnectionFactory {
     private int someIntValue = INT_VALUE_0;
     private long someLongValue = LONG_VALUE_0;
     private String someStringValue = DummyConnectionFactory.class.getSimpleName();
