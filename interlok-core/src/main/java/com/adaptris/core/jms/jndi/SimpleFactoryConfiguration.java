@@ -71,8 +71,7 @@ public class SimpleFactoryConfiguration implements ExtraFactoryConfiguration {
   @Override
   public void applyConfiguration(Object cf) throws JMSException {
     if (BooleanUtils
-        .or(new boolean[] {ConnectionFactory.class.isAssignableFrom(cf.getClass()),
-            XAConnectionFactory.class.isAssignableFrom(cf.getClass())})) {
+        .or(new boolean[] {cf instanceof ConnectionFactory, cf instanceof XAConnectionFactory})) {
       getProperties().stream().forEach((kvp) -> SimpleBeanUtil.callSetter(cf, "set" + kvp.getKey(), kvp.getValue()));
     } else {
       throw new JMSException("Object to apply configuration is not a XA/ConnectionFactory.");
