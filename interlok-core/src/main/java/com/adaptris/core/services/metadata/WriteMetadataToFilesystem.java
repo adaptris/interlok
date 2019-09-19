@@ -17,20 +17,17 @@
 package com.adaptris.core.services.metadata;
 
 import static com.adaptris.core.util.MetadataHelper.convertToProperties;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.Collection;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.BooleanUtils;
-
+import org.apache.commons.lang3.ObjectUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -163,7 +160,7 @@ public class WriteMetadataToFilesystem extends ServiceImp {
   }
 
   FileNameCreator filenameCreator() {
-    return getFilenameCreator() != null ? getFilenameCreator() : new FormattedFilenameCreator();
+    return ObjectUtils.defaultIfNull(getFilenameCreator(), new FormattedFilenameCreator());
   }
 
   public OutputStyle getOutputStyle() {
@@ -219,8 +216,9 @@ public class WriteMetadataToFilesystem extends ServiceImp {
   }
 
   private static OutputStyle getStyle(OutputStyle s) {
-    return s != null ? s : OutputStyle.Text;
+    return ObjectUtils.defaultIfNull(s, OutputStyle.Text);
   }
+
 
   private void validateDir(URL url) throws IOException {
     File f = FsHelper.createFileReference(url);
@@ -244,7 +242,7 @@ public class WriteMetadataToFilesystem extends ServiceImp {
   }
 
   MetadataFilter metadataFilter() {
-    return getMetadataFilter() != null ? getMetadataFilter() : new NoOpMetadataFilter();
+    return ObjectUtils.defaultIfNull(getMetadataFilter(), new NoOpMetadataFilter());
   }
 
   @Override
