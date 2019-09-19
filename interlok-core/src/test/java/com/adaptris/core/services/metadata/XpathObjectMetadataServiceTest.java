@@ -19,7 +19,6 @@ package com.adaptris.core.services.metadata;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -133,6 +132,7 @@ public class XpathObjectMetadataServiceTest extends MetadataServiceExample {
 
   public void testAddXpathQuery() {
     XpathObjectMetadataService service = new XpathObjectMetadataService();
+    service.setXmlDocumentFactoryConfig(null);
     ConfiguredXpathQuery query = new ConfiguredXpathQuery("failureCount", "count(/svrl:schematron-output/svrl:failed-assert)");
     service.addXpathQuery(query);
     assertEquals(1, service.getXpathQueries().size());
