@@ -72,26 +72,19 @@ public class RegexpMetadataQuery {
    * @throws CoreException wrapping any underlying Exception
    */
   public synchronized MetadataElement doQuery(String message)
-    throws CoreException {
+      throws Exception {
+    Args.notBlank(getMetadataKey(), "metadata-key");
+    Args.notBlank(getQueryExpression(), "query-expression");
     if (pattern == null) {
-      try {
-        pattern = Pattern.compile(queryExpression);
-      }
-      catch (Exception e) {
-        throw new CoreException(
-          "Failed to create Query [" + e.getMessage() + "]",
-          e);
-      }
+      pattern = Pattern.compile(getQueryExpression());
     }
-
     Matcher matcher = pattern.matcher(message);
 
     MetadataElement elem = new MetadataElement();
-    elem.setKey(metadataKey);
+    elem.setKey(getMetadataKey());
 
     if (matcher.find()) {
-      String value = matcher.group(1);
-      elem.setValue(value);
+      elem.setValue(matcher.group(1));
     }
     else {
       if (!allowNullResults()) {
