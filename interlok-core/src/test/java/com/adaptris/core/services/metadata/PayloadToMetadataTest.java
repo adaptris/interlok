@@ -18,8 +18,11 @@ package com.adaptris.core.services.metadata;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.metadata.PayloadToMetadataService.Encoding;
 import com.adaptris.core.services.metadata.PayloadToMetadataService.MetadataTarget;
+import com.adaptris.core.stubs.DefectiveMessageFactory;
+import com.adaptris.core.stubs.DefectiveMessageFactory.WhenToBreak;
 
 @SuppressWarnings("deprecation")
 public class PayloadToMetadataTest extends MetadataServiceExample {
@@ -42,6 +45,17 @@ public class PayloadToMetadataTest extends MetadataServiceExample {
 
   private AdaptrisMessage createMessage() {
     return AdaptrisMessageFactory.getDefaultInstance().newMessage(DEFAULT_PAYLOAD);
+  }
+
+  public void testService_Error() throws Exception {
+    PayloadToMetadataService service = createService(MetadataTarget.Standard);
+    AdaptrisMessage msg = new DefectiveMessageFactory(WhenToBreak.BOTH).newMessage();
+    try {
+      execute(service, msg);
+      fail();
+    } catch (ServiceException e) {
+
+    }
   }
 
   public void testService_Metadata() throws Exception {

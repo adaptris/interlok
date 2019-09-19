@@ -147,7 +147,7 @@ public class PayloadToMetadataService extends ServiceImp {
     try  {
       StreamUtil.copyAndClose(msg.getInputStream(), getEncoding().wrap(bytesOut));
     } catch (Exception e) {
-      ExceptionHelper.rethrowServiceException(e);
+      throw ExceptionHelper.wrapServiceException(e);
     }
     getMetadataTarget().apply(msg, getKey(), bytesOut);
   }
