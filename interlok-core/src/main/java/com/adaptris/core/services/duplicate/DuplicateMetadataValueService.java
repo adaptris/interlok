@@ -19,14 +19,13 @@ package com.adaptris.core.services.duplicate;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.constraints.NotBlank;
+import org.apache.commons.lang3.ObjectUtils;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 
@@ -34,12 +33,6 @@ import com.adaptris.core.util.ExceptionHelper;
  * <p>
  * Abstract super-class of the two <code>Service</code>s which handle duplicate message checking.
  * </p>
- * <p>
- * In the adapter configuration file this class is aliased as <b>duplicate-metadata-value-service</b> which is the preferred
- * alternative to the fully qualified classname when building your configuration.
- * </p>
- * 
- * 
  */
 public abstract class DuplicateMetadataValueService extends ServiceImp {
 
@@ -49,7 +42,7 @@ public abstract class DuplicateMetadataValueService extends ServiceImp {
   private String storeFileUrl;
 
   // not marshalled
-  protected transient List<Object> previousValuesStore;
+  protected transient List<String> previousValuesStore;
   protected transient File store;
 
   @Override
@@ -57,12 +50,10 @@ public abstract class DuplicateMetadataValueService extends ServiceImp {
     try {
       Args.notNull(getMetadataKey(), "metadataKey");
       Args.notNull(getStoreFileUrl(), "storeFileUrl");
-      createStoreFile();
+      store = FsHelper.toFile(getStoreFileUrl());
+      Args.notNull(store, "storeFile");
       loadPreviouslyReceivedValues();
-
-      if (previousValuesStore == null) {
-        previousValuesStore = new ArrayList<Object>();
-      }
+      previousValuesStore = ObjectUtils.defaultIfNull(previousValuesStore, new ArrayList<String>());
     }
     catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
@@ -73,41 +64,17 @@ public abstract class DuplicateMetadataValueService extends ServiceImp {
   protected void closeService() {}
 
 
-  private void createStoreFile() throws CoreException {
-
-    URL url = null;
-
-    try {
-      url = new URL(getStoreFileUrl());
-    }
-    catch (MalformedURLException e) {
-      throw new CoreException(e);
-    }
-
-    store = new File(url.getFile());
-  }
-
-  protected void loadPreviouslyReceivedValues() throws ServiceException {
-    if (store != null) {
-      try {
-        if (store.exists()) {
-          try (FileInputStream in = new FileInputStream(store); ObjectInputStream o = new ObjectInputStream(in)) {
-            previousValuesStore = (ArrayList<Object>) o.readObject();
-          }
-        }
-      }
-      catch (Exception e) {
-        throw ExceptionHelper.wrapServiceException(e);
+  protected void loadPreviouslyReceivedValues() throws Exception {
+    if (store.exists()) {
+      try (FileInputStream in = new FileInputStream(store); ObjectInputStream o = new ObjectInputStream(in)) {
+        previousValuesStore = (ArrayList<String>) o.readObject();
       }
     }
   }
+
 
   int storeSize() {
     return previousValuesStore.size();
-  }
-
-  void deleteStore() {
-    store.delete();
   }
 
   // properties...

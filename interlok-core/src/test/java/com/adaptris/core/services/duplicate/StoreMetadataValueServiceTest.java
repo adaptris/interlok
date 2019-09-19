@@ -16,114 +16,122 @@
 
 package com.adaptris.core.services.duplicate;
 
+import java.io.File;
+import org.apache.commons.io.FileUtils;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.ServiceException;
+import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.services.SyntaxRoutingServiceExample;
 import com.adaptris.core.util.LifecycleHelper;
 
 public class StoreMetadataValueServiceTest extends SyntaxRoutingServiceExample {
 
-  private StoreMetadataValueService service;
-  private AdaptrisMessage msg;
-  private String metadataKey;
-  private String storeFileUrl;
+  private static final String STORE_URL = "StoreMetadataValueServiceTest.storeFileUrl";
+  private static final String DEFAULT_METADATA_KEY = "key";
 
   public StoreMetadataValueServiceTest(String name) {
     super(name);
-
-    metadataKey = "key";
-
-    storeFileUrl = PROPERTIES
-        .getProperty("StoreMetadataValueServiceTest.storeFileUrl");
-
-    msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
   }
 
   @Override
   protected void setUp() throws Exception {
-    service = new StoreMetadataValueService();
-
-    service.setMetadataKey(metadataKey);
-    service.setStoreFileUrl(storeFileUrl);
-
-    LifecycleHelper.init(service);
-    service.deleteStore();
-    LifecycleHelper.start(service);
+    File f = FsHelper.toFile(PROPERTIES.getProperty(STORE_URL));
+    FileUtils.deleteQuietly(f);
   }
 
-  @Override
-  protected void tearDown() {
-    service.deleteStore();
-    LifecycleHelper.stop(service);
-    LifecycleHelper.close(service);
+  private StoreMetadataValueService createService() {
+    StoreMetadataValueService service = new StoreMetadataValueService();
+    service.setStoreFileUrl(PROPERTIES.getProperty(STORE_URL));
+    service.setMetadataKey(DEFAULT_METADATA_KEY);
+    return service;
+  }
+
+  public void testPreviousValues() throws Exception {
+    StoreMetadataValueService newService = new StoreMetadataValueService();
+    assertEquals(1000, newService.getNumberOfPreviousValuesToStore());
+    newService.setNumberOfPreviousValuesToStore(1);
+    assertEquals(1, newService.getNumberOfPreviousValuesToStore());
+    try {
+      newService.setNumberOfPreviousValuesToStore(0);
+      fail();
+    } catch (IllegalArgumentException e) {
+
+    }
+    assertEquals(1, newService.getNumberOfPreviousValuesToStore());
   }
 
   public void testInit() throws Exception {
     StoreMetadataValueService newService = new StoreMetadataValueService();
-
     try {
-      LifecycleHelper.init(newService);
+      LifecycleHelper.initAndStart(newService);
       fail("no metadata key set");
     }
     catch (Exception e) {
       // expected
     }
-
-    newService.setMetadataKey(metadataKey);
-
-    try {
-      LifecycleHelper.init(newService);
-      fail("no store file URL set");
-    }
-    catch (Exception e) {
-      // expected
-    }
-
-    newService.setStoreFileUrl(storeFileUrl);
-
-    try {
-      LifecycleHelper.init(newService);
-    }
-    catch (Exception e) {
-      fail(e.getMessage());
-    }
+    newService.setMetadataKey(DEFAULT_METADATA_KEY);
+    newService.setStoreFileUrl(PROPERTIES.getProperty(STORE_URL));
+    LifecycleHelper.initAndStart(newService);
   }
 
   public void testService() throws Exception {
-    assertEquals(0, service.storeSize());
+    StoreMetadataValueService service = createService();
+    StoreMetadataValueService service2 = createService();
+    try {
+      LifecycleHelper.initAndStart(service);
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+      assertEquals(0, service.storeSize());
+      msg.addMetadata(DEFAULT_METADATA_KEY, "123");
+      service.doService(msg);
+      assertEquals(1, service.storeSize());
+      // Since it's a list it doesn't care.
+      service.doService(msg);
+      assertEquals(2, service.storeSize());
+      msg.addMetadata(DEFAULT_METADATA_KEY, "456");
+      service.doService(msg);
+      assertEquals(3, service.storeSize());
 
-    msg.addMetadata(metadataKey, "123");
-    service.doService(msg);
-    assertEquals(1, service.storeSize());
+      LifecycleHelper.initAndStart(service2);
+      assertEquals(3, service2.storeSize()); // still 3 values in store
+    } finally {
+      LifecycleHelper.stopAndClose(service);
+      LifecycleHelper.stopAndClose(service2);
+    }
+  }
 
-    service.doService(msg);
-    assertEquals(2, service.storeSize());
+  public void testService_ExceedsHistory() throws Exception {
+    final int maxPrevious = 10;
+    final int maxCount = maxPrevious + 10;
+    StoreMetadataValueService service = createService();
+    service.setNumberOfPreviousValuesToStore(maxPrevious);
+    try {
+      LifecycleHelper.initAndStart(service);
+      assertEquals(0, service.storeSize());
+      for (int i = 0; i < maxCount; i++) {
+        AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+        msg.addMetadata(DEFAULT_METADATA_KEY, "123");
+        service.doService(msg);
+      }
+      assertEquals(maxPrevious, service.storeSize());
+    } finally {
+      LifecycleHelper.stopAndClose(service);
+    }
+  }
 
-    msg.addMetadata(metadataKey, "456");
-    service.doService(msg);
-    assertEquals(3, service.storeSize());
+  public void testService_Exception() throws Exception {
+    StoreMetadataValueService service = createService();
+    try {
+      execute(service, null);
+      fail();
+    } catch (ServiceException expected) {
 
-    // simulate restart...
-    service = null;
-
-    service = new StoreMetadataValueService();
-
-    service.setMetadataKey(metadataKey);
-    service.setStoreFileUrl(storeFileUrl);
-
-    LifecycleHelper.init(service);
-
-    assertEquals(3, service.storeSize()); // still 3 values in store
+    }
   }
 
   @Override
-  protected Object retrieveObjectForSampleConfig() {
-    service = new StoreMetadataValueService();
-
-    service.setMetadataKey(metadataKey);
-    service.setStoreFileUrl(storeFileUrl);
-
-    return service;
+  protected StoreMetadataValueService retrieveObjectForSampleConfig() {
+    return createService();
   }
 
   @Override

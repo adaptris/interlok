@@ -16,16 +16,15 @@
 
 package com.adaptris.core.services.duplicate;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.ObjectOutputStream;
-
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -50,6 +49,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"metadataKey", "nextServiceIdIfUnique", "nextServiceIdIfDuplicate", "storeFileUrl"})
 public class StoreMetadataValueService extends DuplicateMetadataValueService {
 
+  @InputFieldDefault(value = "1000")
   private int numberOfPreviousValuesToStore;
 
   /**
@@ -65,8 +65,8 @@ public class StoreMetadataValueService extends DuplicateMetadataValueService {
    *   #doService(com.adaptris.core.AdaptrisMessage) */
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    String value = msg.getMetadataValue(getMetadataKey());
     try {
+      String value = msg.getMetadataValue(getMetadataKey());
       Args.notBlank(value, "metadataKey");
       previousValuesStore.add(value);
       while (previousValuesStore.size() > getNumberOfPreviousValuesToStore()) {
@@ -75,27 +75,13 @@ public class StoreMetadataValueService extends DuplicateMetadataValueService {
       storePreviouslyReceivedValues();
     }
     catch (Exception e) {
-      throw new ServiceException(e);
+      throw ExceptionHelper.wrapServiceException(e);
     }
   }
 
-  private void storePreviouslyReceivedValues() throws FileNotFoundException, IOException {
-    if (store != null) {
-      try (FileOutputStream out = new FileOutputStream(store); ObjectOutputStream o = new ObjectOutputStream(out)) {
-        o.writeObject(previousValuesStore);
-      }
-    }
-  }
-
-  @Override
-  int storeSize() {
-    return previousValuesStore.size();
-  }
-
-  @Override
-  void deleteStore() {
-    if (store != null) {
-      store.delete();
+  private void storePreviouslyReceivedValues() throws Exception {
+    try (FileOutputStream out = new FileOutputStream(store); ObjectOutputStream o = new ObjectOutputStream(out)) {
+      o.writeObject(previousValuesStore);
     }
   }
 

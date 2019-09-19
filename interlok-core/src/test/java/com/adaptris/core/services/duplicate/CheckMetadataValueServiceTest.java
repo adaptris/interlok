@@ -16,15 +16,21 @@
 
 package com.adaptris.core.services.duplicate;
 
+import java.io.File;
+import org.apache.commons.io.FileUtils;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BranchingServiceCollection;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.services.BranchingServiceExample;
 import com.adaptris.core.services.LogMessageService;
 import com.adaptris.core.util.LifecycleHelper;
 
 public class CheckMetadataValueServiceTest extends BranchingServiceExample {
+
+  private static final String STORE_FILE_URL = "CheckMetadataValueServiceTest.storeFileUrl";
+  private static final String DEFAULT_METADATA_KEY = "key";
 
   /**
    * <p>
@@ -42,133 +48,112 @@ public class CheckMetadataValueServiceTest extends BranchingServiceExample {
    */
   private static final String DEFAULT_SERVICE_ID_DUPLICATE = "002";
 
-  private CheckMetadataValueService checkMetadataValueService;
-  private StoreMetadataValueService storeMetadataValueService;
-  private AdaptrisMessage msg;
-  private String metadataKey;
-  private String storeFileUrl;
-
   public CheckMetadataValueServiceTest(String name) {
     super(name);
-
-    metadataKey = "key";
-
-    storeFileUrl = PROPERTIES
-        .getProperty("CheckMetadataValueServiceTest.storeFileUrl");
-
-    msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
   }
 
   @Override
   protected void setUp() throws Exception {
-    storeMetadataValueService = new StoreMetadataValueService();
-    storeMetadataValueService.setMetadataKey(metadataKey);
-    storeMetadataValueService.setStoreFileUrl(storeFileUrl);
-
-    LifecycleHelper.init(storeMetadataValueService);
-    storeMetadataValueService.deleteStore();
-    LifecycleHelper.start(storeMetadataValueService);
-
-    checkMetadataValueService = new CheckMetadataValueService();
-    checkMetadataValueService
-        .setNextServiceIdIfDuplicate(DEFAULT_SERVICE_ID_DUPLICATE);
-    checkMetadataValueService
-        .setNextServiceIdIfUnique(DEFAULT_SERVICE_ID_UNIQUE);
-    checkMetadataValueService.setMetadataKey(metadataKey);
-    checkMetadataValueService.setStoreFileUrl(storeFileUrl);
-
-    LifecycleHelper.init(checkMetadataValueService);
-    LifecycleHelper.start(checkMetadataValueService);
+    File f = FsHelper.toFile(PROPERTIES.getProperty(STORE_FILE_URL));
+    FileUtils.deleteQuietly(f);
   }
 
   @Override
   protected void tearDown() {
-    storeMetadataValueService.deleteStore();
-    LifecycleHelper.stop(storeMetadataValueService);
-    LifecycleHelper.close(storeMetadataValueService);
-    LifecycleHelper.stop(checkMetadataValueService);
-    LifecycleHelper.close(checkMetadataValueService);
   }
 
   public void testInit() throws Exception {
     CheckMetadataValueService newService = new CheckMetadataValueService();
+    assertTrue(newService.isBranching());
     newService.setNextServiceIdIfDuplicate(DEFAULT_SERVICE_ID_DUPLICATE);
     newService.setNextServiceIdIfUnique(DEFAULT_SERVICE_ID_UNIQUE);
-
     try {
-      newService.init();
+      LifecycleHelper.initAndStart(newService);
       fail("no metadata key set");
     }
     catch (Exception e) {
       // expected
+    } finally {
+      LifecycleHelper.stopAndClose(newService);
     }
 
-    newService.setMetadataKey(metadataKey);
+    newService.setMetadataKey(DEFAULT_METADATA_KEY);
+    newService.setStoreFileUrl(PROPERTIES.getProperty(STORE_FILE_URL));
     try {
-      newService.init();
-      fail("no store file URL set");
+      LifecycleHelper.initAndStart(newService);
+    } finally {
+      LifecycleHelper.stopAndClose(newService);
     }
-    catch (Exception e) {
-      // expected
-    }
+  }
 
-    newService.setStoreFileUrl(storeFileUrl);
+  private StoreMetadataValueService createStorer() {
+    StoreMetadataValueService service = new StoreMetadataValueService();
+    service.setMetadataKey(DEFAULT_METADATA_KEY);
+    service.setStoreFileUrl(PROPERTIES.getProperty(STORE_FILE_URL));
+    return service;
+  }
 
+
+  private CheckMetadataValueService createChecker() {
+    CheckMetadataValueService service = new CheckMetadataValueService();
+    service.setNextServiceIdIfDuplicate(DEFAULT_SERVICE_ID_DUPLICATE);
+    service.setNextServiceIdIfUnique(DEFAULT_SERVICE_ID_UNIQUE);
+    service.setMetadataKey(DEFAULT_METADATA_KEY);
+    service.setStoreFileUrl(PROPERTIES.getProperty(STORE_FILE_URL));
+    return service;
+  }
+
+  private void seedStore(String... values) throws Exception {
+    StoreMetadataValueService service = createStorer();
     try {
-      newService.init();
-    }
-    catch (Exception e) {
-      fail(e.getMessage());
+      LifecycleHelper.initAndStart(service);
+      for (int i = 0; i < values.length; i++) {
+        AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+        msg.addMetadata(DEFAULT_METADATA_KEY, values[i]);
+        service.doService(msg);
+      }
+    } finally {
+      LifecycleHelper.stopAndClose(service);
     }
   }
 
   public void testService() throws Exception {
-    // set up store...
-    msg.addMetadata(metadataKey, "123");
-    storeMetadataValueService.doService(msg);
-
-    storeMetadataValueService.doService(msg);
-
-    msg.addMetadata(metadataKey, "456");
-    storeMetadataValueService.doService(msg);
-
-    assertEquals(3, storeMetadataValueService.storeSize());
-
-    msg.addMetadata(metadataKey, "123"); // exists in store
-    checkMetadataValueService.doService(msg);
-
-    assertEquals(DEFAULT_SERVICE_ID_DUPLICATE, msg.getNextServiceId());
-
-    msg.addMetadata(metadataKey, "456"); // exists in store
-    checkMetadataValueService.doService(msg);
-
-    assertEquals(DEFAULT_SERVICE_ID_DUPLICATE, msg.getNextServiceId());
-
-    msg.addMetadata(metadataKey, "789"); // new
-    checkMetadataValueService.doService(msg);
-
-    assertEquals(DEFAULT_SERVICE_ID_UNIQUE, msg.getNextServiceId());
-
-    msg.clearMetadata();
-
+    seedStore("123", "123", "456");
+    CheckMetadataValueService service = createChecker();
     try {
-      execute(checkMetadataValueService, msg);
-      fail();
-    }
-    catch (ServiceException e) {
-      // expected
+      LifecycleHelper.initAndStart(service);
+      assertEquals(3, service.storeSize());
+
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+
+      msg.addMetadata(DEFAULT_METADATA_KEY, "123"); // exists in store
+      service.doService(msg);
+      assertEquals(DEFAULT_SERVICE_ID_DUPLICATE, msg.getNextServiceId());
+
+      msg.addMetadata(DEFAULT_METADATA_KEY, "789"); // doesn't exist
+      service.doService(msg);
+      assertEquals(DEFAULT_SERVICE_ID_UNIQUE, msg.getNextServiceId());
+
+      msg.clearMetadata();
+
+      try {
+        service.doService(msg);
+        fail();
+      } catch (ServiceException e) {
+        // expected
+      }
+
+    } finally {
+      LifecycleHelper.stopAndClose(service);
     }
   }
 
   @Override
   protected Object retrieveObjectForSampleConfig() {
-    CheckMetadataValueService s = new CheckMetadataValueService();
-    s.setMetadataKey(metadataKey);
-    s.setStoreFileUrl(storeFileUrl);
+    CheckMetadataValueService s = createChecker();
     s.setNextServiceIdIfDuplicate("duplicate");
     s.setNextServiceIdIfUnique("unique");
     s.setUniqueId("CheckMetadataAgainstPreviousValues");
-
     BranchingServiceCollection sl = new BranchingServiceCollection();
     sl.addService(s);
     sl.setFirstServiceId(s.getUniqueId());
