@@ -18,6 +18,8 @@ package com.adaptris.core.services.metadata;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.MetadataCollection;
+import com.adaptris.core.metadata.MetadataFilterImpl;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 
 public class CreateQueryStringFromMetadataTest extends MetadataServiceExample {
@@ -63,6 +65,23 @@ public class CreateQueryStringFromMetadataTest extends MetadataServiceExample {
     assertTrue(msg.getMetadataValue("resultKey").contains("param3=three"));
   }
 
+  public void testService_WithException() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    CreateQueryStringFromMetadata service = createService().withMetadataFilter(new MetadataFilterImpl() {
+
+      @Override
+      public MetadataCollection filter(MetadataCollection original) {
+        throw new RuntimeException();
+      }
+      
+    });
+    try {
+      execute(service, msg);
+      fail();
+    } catch (Exception expected) {
+
+    }
+  }
 
   public void testService_SimpleQueryString_NoQueryPrefix() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
