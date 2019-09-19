@@ -42,7 +42,7 @@ public class FormDataToMetadataTest extends MetadataServiceExample {
 
   public void testService_NoContentType() throws Exception {
     String payload = formatAsFormData(createProperties());
-    FormDataToMetadata service = new FormDataToMetadata();
+    FormDataToMetadata service = new FormDataToMetadata().withMetadataPrefix(null);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(payload);
     execute(service, msg);
     assertEquals(payload, msg.getContent());

@@ -16,6 +16,7 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertNotEquals;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 
@@ -37,6 +38,15 @@ public class TrimMetadataServiceTest extends MetadataServiceExample {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata(SOURCE_METADATA_KEY, PADDED);
     return msg;
+  }
+
+  public void testService_NoKey() throws Exception {
+    TrimMetadataService service = new TrimMetadataService("");
+    AdaptrisMessage msg = createMessage();
+    execute(service, msg);
+    assertTrue(msg.containsKey(SOURCE_METADATA_KEY));
+    assertNotEquals(TRIMMED, msg.getMetadataValue(SOURCE_METADATA_KEY));
+    assertEquals(PADDED, msg.getMetadataValue(SOURCE_METADATA_KEY));
   }
 
   public void testService() throws Exception {

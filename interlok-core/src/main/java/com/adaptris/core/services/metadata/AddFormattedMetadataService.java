@@ -16,10 +16,12 @@
 package com.adaptris.core.services.metadata;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import org.apache.commons.lang3.ObjectUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
@@ -133,6 +135,11 @@ public class AddFormattedMetadataService extends ServiceImp {
     return this;
   }
 
+  public AddFormattedMetadataService withArgumentMetadataKeys(String... s) {
+    return withArgumentMetadataKeys(new ArrayList<>(Arrays.asList(s)));
+  }
+
+
   /**
    * @return the metadatakey
    */
@@ -170,7 +177,7 @@ public class AddFormattedMetadataService extends ServiceImp {
     this.elementFormatter = elementFormatter;
   }
 
-  ElementFormatter elementFormatter() {
-    return getElementFormatter() != null ? getElementFormatter() : DEF_FORMATTER;
+  private ElementFormatter elementFormatter() {
+    return ObjectUtils.defaultIfNull(getElementFormatter(), DEF_FORMATTER);
   }
 }

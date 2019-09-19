@@ -18,7 +18,6 @@ package com.adaptris.core.services.metadata;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -70,8 +69,10 @@ public class AddMetadataServiceTest extends MetadataServiceExample {
   public void testDoService() throws CoreException {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance()
         .newMessage();
+    msg.addMetadata("key1", "originalValue");
     execute(service, msg);
 
+    assertFalse(msg.getMetadataValue("key1").contentEquals("originalValue"));
     assertTrue(msg.getMetadataValue("key1").equals("val1"));
     assertTrue(msg.getMetadataValue("key2").equals("val2"));
     assertTrue(msg.getMetadataValue("key3") == null);
@@ -141,7 +142,8 @@ public class AddMetadataServiceTest extends MetadataServiceExample {
 
   @Override
   protected Object retrieveObjectForSampleConfig() {
-    return service;
+    return new AddMetadataService(new MetadataElement("msgSize", "$MSG_SIZE$"), new MetadataElement("msgUniqueId", "$UNIQUE_ID$"),
+        new MetadataElement("key1", "value1"));
   }
 
 }

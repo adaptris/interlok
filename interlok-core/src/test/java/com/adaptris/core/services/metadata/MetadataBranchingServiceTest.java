@@ -18,7 +18,6 @@ package com.adaptris.core.services.metadata;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BranchingServiceCollection;
@@ -28,6 +27,7 @@ import com.adaptris.core.services.BranchingServiceExample;
 import com.adaptris.core.services.LogMessageService;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairList;
 
@@ -171,6 +171,32 @@ public class MetadataBranchingServiceTest extends BranchingServiceExample {
     msg.addMetadata(KEY1, toUpper == true ? VAL1.toUpperCase() : VAL1);
     msg.addMetadata(KEY2, toUpper == true ? VAL2.toUpperCase() : VAL2);
     return msg;
+  }
+
+  public void testInitialise() throws Exception {
+    MetadataValueBranchingService service = new MetadataValueBranchingService();
+    try {
+      LifecycleHelper.initAndStart(service);
+      fail();
+    } catch (Exception expected) {
+
+    } finally {
+      LifecycleHelper.stopAndClose(service);
+    }
+    try {
+      service.setValueMatcher(new UseKeyAsServiceIdValueMatcher());
+      LifecycleHelper.initAndStart(service);
+    } finally {
+      LifecycleHelper.stopAndClose(service);
+    }
+
+    service = createService();
+    service.setValueMatcher(new UseKeyAsServiceIdValueMatcher());
+    try {
+      LifecycleHelper.initAndStart(service);
+    } finally {
+      LifecycleHelper.stopAndClose(service);
+    }
   }
 
   public void testDoStandardService() throws Exception {
