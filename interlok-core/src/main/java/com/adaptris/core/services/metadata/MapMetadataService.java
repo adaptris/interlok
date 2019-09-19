@@ -17,13 +17,13 @@
 package com.adaptris.core.services.metadata;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import org.apache.commons.lang3.ObjectUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
@@ -79,10 +79,9 @@ public class MapMetadataService extends MetadataServiceImpl {
       return;
     }
     String metadataValue = msg.getMetadataValue(metadataKey);
-    metadataValue = metadataValue == null ? "" : metadataValue;
+    metadataValue = ObjectUtils.defaultIfNull(metadataValue, "");
     List<MetadataElement> mapped = new ArrayList<>();
-    for (Iterator i = getMetadataKeyMap().getKeyValuePairs().iterator(); i.hasNext();) {
-      KeyValuePair k = (KeyValuePair) i.next();
+    for (KeyValuePair k : getMetadataKeyMap()) {
       if (metadataValue.matches(k.getKey())) {
         String newMetadataValue = doSubstitution(metadataValue, k, msg);
         MetadataElement e = new MetadataElement(metadataKey, newMetadataValue);
@@ -100,11 +99,10 @@ public class MapMetadataService extends MetadataServiceImpl {
     Matcher keyMatcher = keyPattern.matcher(result);
     if (keyMatcher.matches()) {
       int group = Integer.parseInt(keyMatcher.group(1));
-      Pattern p = Pattern.compile(kvp.getKey());
-      Matcher m = p.matcher(metadataValue);
-      if (m.matches()) {
-        result = m.group(group);
-      }
+      Matcher m = Pattern.compile(kvp.getKey()).matcher(metadataValue);
+      // This should match since it is the same as the test in the calling method.
+      m.matches();
+      result = m.group(group);
     }
     return result;
   }
