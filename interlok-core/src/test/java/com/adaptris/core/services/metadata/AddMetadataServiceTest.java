@@ -16,9 +16,10 @@
 
 package com.adaptris.core.services.metadata;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -70,8 +71,10 @@ public class AddMetadataServiceTest extends MetadataServiceExample {
   public void testDoService() throws CoreException {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance()
         .newMessage();
+    msg.addMetadata("key1", "originalValue");
     execute(service, msg);
 
+    assertFalse(msg.getMetadataValue("key1").contentEquals("originalValue"));
     assertTrue(msg.getMetadataValue("key1").equals("val1"));
     assertTrue(msg.getMetadataValue("key2").equals("val2"));
     assertTrue(msg.getMetadataValue("key3") == null);
@@ -80,7 +83,7 @@ public class AddMetadataServiceTest extends MetadataServiceExample {
   public void testDoService_NotSameObject() throws CoreException {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     MetadataElement element = new MetadataElement("mykey", "myvalue");
-    AddMetadataService myService = new AddMetadataService(element);
+    AddMetadataService myService = new AddMetadataService(new ArrayList<>(Arrays.asList(element)));
     execute(myService, msg);
     assertEquals("myvalue", msg.getMetadataValue("mykey"));
     assertFalse(element == msg.getMetadata("mykey"));
