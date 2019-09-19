@@ -27,9 +27,9 @@ public class CreateQueryStringFromMetadataTest extends MetadataServiceExample {
   }
 
   public CreateQueryStringFromMetadata createService() {
-    CreateQueryStringFromMetadata svc = new CreateQueryStringFromMetadata();
+    CreateQueryStringFromMetadata svc = new CreateQueryStringFromMetadata()
+        .withMetadataFilter(new RegexMetadataFilter().withIncludePatterns("param1", "param2", "param3")).withQuerySeparator(null);
     svc.setResultKey("resultKey");
-    svc.setMetadataFilter(new RegexMetadataFilter().withIncludePatterns("param1", "param2", "param3"));
     return svc;
   }
 
