@@ -33,12 +33,6 @@ import com.adaptris.core.util.ExceptionHelper;
  * <p>
  * Abstract super-class of the two <code>Service</code>s which handle duplicate message checking.
  * </p>
- * <p>
- * In the adapter configuration file this class is aliased as <b>duplicate-metadata-value-service</b> which is the preferred
- * alternative to the fully qualified classname when building your configuration.
- * </p>
- * 
- * 
  */
 public abstract class DuplicateMetadataValueService extends ServiceImp {
 
