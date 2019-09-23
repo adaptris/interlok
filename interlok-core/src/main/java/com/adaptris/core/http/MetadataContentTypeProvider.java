@@ -67,7 +67,7 @@ public class MetadataContentTypeProvider extends ContentTypeProviderImpl {
     if (isBlank(getMetadataKey())) {
       throw new CoreException("metadata key is blank");
     }
-    return defaultIfBlank(msg.getMetadataValue(getMetadataKey()), defaultMimeType).toLowerCase(Locale.ROOT);
+    return defaultIfBlank(msg.getMetadataValue(getMetadataKey()), getDefaultMimeType()).toLowerCase(Locale.ROOT);
   }
 
 

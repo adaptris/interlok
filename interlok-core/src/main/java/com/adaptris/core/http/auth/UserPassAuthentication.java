@@ -16,9 +16,9 @@
 package com.adaptris.core.http.auth;
 
 import java.net.PasswordAuthentication;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
+import com.adaptris.security.password.Password;
 
 
 public abstract class UserPassAuthentication implements HttpAuthenticator {
@@ -42,4 +42,11 @@ public abstract class UserPassAuthentication implements HttpAuthenticator {
     AdapterResourceAuthenticator.getInstance().removeAuthenticator(threadLocalCreds);
   }
 
+  protected static char[] decodePassword(String pw) throws CoreException {
+    try {
+      return Password.decode(pw).toCharArray();
+    } catch (Exception e) {
+      throw new CoreException("Unable to decode password", e);
+    }
+  }
 }

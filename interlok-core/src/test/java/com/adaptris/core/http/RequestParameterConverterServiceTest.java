@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.Properties;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.http.Http;
 
@@ -118,6 +119,19 @@ public class RequestParameterConverterServiceTest extends HttpServiceExample {
     assertEquals("Payload Equality", payload, msg.getContent());
     assertEquals("Metadata Count", 12, msg.getMetadata().size());
     assertEquals("Metadata value", TEST_VALUE, msg.getMetadataValue(SAVE_PARAM));
+  }
+
+  public void testService_Failure() throws Exception {
+    String payload = formatAsFormData(createProperties(), "UTF-8");
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(payload);
+    // Use an invalid MIME type which should cause the ContentType constructor to fail.
+    msg.addMetadata(Http.CONTENT_TYPE, "/x-www-form-urlencoded");
+    try {
+      execute(service, msg);
+      fail();
+    } catch (ServiceException e) {
+
+    }
   }
 
   public void testServiceWithInferredCharset() throws Exception {
