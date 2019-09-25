@@ -8,7 +8,7 @@ import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Simplified version of {@link AddToCacheService} that doesn't use {@link CacheEntryEvaluators}.
+ * Version of {@link AddToCacheService} that doesn't use {@link CacheEntryEvaluators}.
  * 
  * <p>
  * Most of the time, you only want to add a single item to the cache rather than a list of items;

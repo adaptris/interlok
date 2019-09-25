@@ -10,14 +10,13 @@ import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Simplified version of {@link RetrieveFromCacheService} that doesn't use
- * {@link CacheEntryEvaluators}.
+ * Version of {@link RetrieveFromCacheService} that doesn't use {@link CacheEntryEvaluators}.
  * 
  * <p>
  * Most of the time, you only want to retrieve a single item to the cache rather than a list of
  * items; this simplified service allows you to do just that. It does not have a list of entries
  * that are evaluated, you simply specify a key and a {@link CacheValueTranslator} which is used to
- * insert the value from the cache.
+ * insert the value from the cache into the current message.
  * </p>
  * 
  * @config get-single-value-from-cache

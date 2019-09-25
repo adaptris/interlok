@@ -21,8 +21,7 @@ public abstract class SingleKeyValueCacheImpl extends SingleKeyCacheService {
   /**
    * What to do with the cache-value.
    * 
-   * @param translator default is null, which depending on the concrete classes has different
-   *        meanings.
+   * @param translator the translator, which depending on the concrete classes has different meanings.
    */
   public void setValueTranslator(CacheValueTranslator translator) {
     valueTranslator = Args.notNull(translator, "valueTranslator");

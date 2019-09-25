@@ -8,10 +8,11 @@ import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Simplified version of {@link RemoveFromCacheService} that doesn't retrieve the value.
+ * Simplified version of {@link RemoveFromCacheService} that doesn't retrieve the value for
+ * insertion into the message.
  * 
  * 
- * @config remove-keyfrom-cache
+ * @config remove-key-from-cache
  */
 @XStreamAlias("remove-key-from-cache")
 @ComponentProfile(summary = "Remove a key from the configured cache", since = "3.9.2", tag = "service,cache",
