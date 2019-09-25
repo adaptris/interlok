@@ -35,7 +35,7 @@ public class StaticCacheValueTranslator implements CacheValueTranslator<String>,
    */
   @Override
   public String getValueFromMessage(AdaptrisMessage msg) throws CoreException {
-    return msg.resolve(value);
+    return msg.resolve(getValue());
   }
 
   /**
@@ -49,6 +49,11 @@ public class StaticCacheValueTranslator implements CacheValueTranslator<String>,
 
   public String getValue() {
     return value;
+  }
+
+  public StaticCacheValueTranslator withValue(String s) {
+    setValue(s);
+    return this;
   }
 
   @Override

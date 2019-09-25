@@ -36,6 +36,7 @@ public class XpathCacheValueTranslator implements CacheValueTranslator<String>, 
   @InputFieldHint(expression = true)
   private String xpath;
   @Valid
+  @AdvancedConfig
   private KeyValuePairSet namespaceContext = null;
   @AdvancedConfig
   @Valid
@@ -55,7 +56,7 @@ public class XpathCacheValueTranslator implements CacheValueTranslator<String>, 
   @Override
   public String getValueFromMessage(AdaptrisMessage msg) throws CoreException {
     NamespaceContext ctx = SimpleNamespaceContext.create(getNamespaceContext(), msg);
-    DocumentBuilderFactoryBuilder builder = documentFactoryBuilder();
+    DocumentBuilderFactoryBuilder builder = documentFactoryBuilder(ctx);
     String result = null;
     try {
       XPath xp = XPath.newXPathInstance(builder, ctx);
@@ -102,8 +103,8 @@ public class XpathCacheValueTranslator implements CacheValueTranslator<String>, 
     this.xmlDocumentFactoryConfig = xml;
   }
 
-  DocumentBuilderFactoryBuilder documentFactoryBuilder() {
-    return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig() : DocumentBuilderFactoryBuilder.newInstance();
+  private DocumentBuilderFactoryBuilder documentFactoryBuilder(NamespaceContext ctx) {
+    return DocumentBuilderFactoryBuilder.newInstanceIfNull(getXmlDocumentFactoryConfig(), ctx);
   }
 
   @Override

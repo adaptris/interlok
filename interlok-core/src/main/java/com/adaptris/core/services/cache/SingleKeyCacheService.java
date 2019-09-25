@@ -28,7 +28,7 @@ public abstract class SingleKeyCacheService extends CacheServiceImpl {
   /**
    * Set the cache key.
    * 
-   * @param key the key.
+   * @param key the key, which supports the {@code %message{}} syntax to resolve metadata.
    */
   public void setKey(String key) {
     this.key = Args.notBlank(key, "key");
