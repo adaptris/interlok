@@ -2,7 +2,6 @@ package com.adaptris.core.services.cache;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.adaptris.core.BranchingServiceCollection;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceCase;
@@ -10,7 +9,7 @@ import com.adaptris.core.cache.Cache;
 
 public abstract class CacheServiceExample extends ServiceCase {
 
-  private static final String BASE_DIR_KEY = "CacheServiceExamples.baseDir";
+  protected static final String BASE_DIR_KEY = "CacheServiceExamples.baseDir";
   protected static final String HYPHEN = "-";
 
   public CacheServiceExample() {
