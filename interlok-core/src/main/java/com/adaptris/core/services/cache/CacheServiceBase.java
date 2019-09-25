@@ -17,13 +17,10 @@ package com.adaptris.core.services.cache;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisConnection;
-import com.adaptris.core.AdaptrisConnectionImp;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConnectedService;
 import com.adaptris.core.CoreException;
@@ -43,10 +40,8 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 public abstract class CacheServiceBase extends ServiceImp implements ConnectedService {
 
   @Valid
+  @NotNull
   private AdaptrisConnection connection;
-
-  // All this for backwards compatibility. dammit.
-  private transient AdaptrisConnection cacheConnection;
 
   @Valid
   @XStreamImplicit
@@ -62,8 +57,8 @@ public abstract class CacheServiceBase extends ServiceImp implements ConnectedSe
   @Override
   public void prepare() throws CoreException {
     try {
-      cacheConnection = Args.notNull(connection, "connection");
-      LifecycleHelper.prepare(cacheConnection);
+      Args.notNull(getConnection(), "connection");
+      LifecycleHelper.prepare(getConnection());
     }
     catch (IllegalArgumentException e) {
       throw ExceptionHelper.wrapCoreException(e);
@@ -72,29 +67,29 @@ public abstract class CacheServiceBase extends ServiceImp implements ConnectedSe
 
   @Override
   public void closeService() {
-    LifecycleHelper.close(cacheConnection);
+    LifecycleHelper.close(getConnection());
   }
 
   @Override
   public void initService() throws CoreException {
-    LifecycleHelper.init(cacheConnection);
+    LifecycleHelper.init(getConnection());
 
   }
 
   @Override
   public void start() throws CoreException {
     super.start();
-    LifecycleHelper.start(cacheConnection);
+    LifecycleHelper.start(getConnection());
   }
 
   @Override
   public void stop() {
     super.stop();
-    LifecycleHelper.stop(cacheConnection);
+    LifecycleHelper.stop(getConnection());
   }
 
   protected Cache retrieveCache() {
-    return cacheConnection.retrieveConnection(CacheProvider.class).retrieveCache();
+    return getConnection().retrieveConnection(CacheProvider.class).retrieveCache();
   }
 
   public List<CacheEntryEvaluator> getCacheEntryEvaluators() {
@@ -120,7 +115,7 @@ public abstract class CacheServiceBase extends ServiceImp implements ConnectedSe
 
   @Override
   public void setConnection(AdaptrisConnection cacheConnection) {
-    this.connection = cacheConnection;
+    this.connection = Args.notNull(cacheConnection, "connection");
   }
 
   /**
@@ -139,44 +134,6 @@ public abstract class CacheServiceBase extends ServiceImp implements ConnectedSe
       }
     }
     cvt.addValueToMessage(msg, value);
-  }
-
-  private class CacheWrapper extends AdaptrisConnectionImp implements CacheProvider {
-    private Cache myCache;
-    public CacheWrapper(Cache c) {
-      myCache = c;
-    }
-
-    @Override
-    protected void prepareConnection() throws CoreException {
-      LifecycleHelper.prepare(myCache);
-    }
-
-    @Override
-    protected void initConnection() throws CoreException {
-      LifecycleHelper.init(myCache);
-    }
-
-    @Override
-    protected void startConnection() throws CoreException {
-      LifecycleHelper.start(myCache);
-    }
-
-    @Override
-    protected void stopConnection() {
-      LifecycleHelper.stop(myCache);
-    }
-
-    @Override
-    protected void closeConnection() {
-      LifecycleHelper.close(myCache);
-    }
-
-    @Override
-    public Cache retrieveCache() {
-      return myCache;
-    }
-
   }
 
 }
