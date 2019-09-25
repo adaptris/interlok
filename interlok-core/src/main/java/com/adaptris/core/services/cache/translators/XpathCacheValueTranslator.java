@@ -69,15 +69,6 @@ public class XpathCacheValueTranslator implements CacheValueTranslator<String>, 
   }
 
   /**
-   * @throws UnsupportedOperationException this method is not implemented for this translator
-   */
-  @Override
-  public void addValueToMessage(AdaptrisMessage msg, String value) throws CoreException {
-    throw new UnsupportedOperationException(
-        "We do not support direct injection into payload via XPath, store as metadata and post process using XSLT instead");
-  }
-
-  /**
    * Sets the XPath to use to query the message
    *
    * @param s

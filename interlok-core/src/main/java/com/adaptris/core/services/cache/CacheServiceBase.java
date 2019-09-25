@@ -20,28 +20,17 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.AutoPopulated;
-import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ConnectedService;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.ServiceImp;
-import com.adaptris.core.cache.Cache;
-import com.adaptris.core.cache.CacheProvider;
 import com.adaptris.core.util.Args;
-import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
  * Base class that provides common functions used by all cache services
  * 
  */
-public abstract class CacheServiceBase extends ServiceImp implements ConnectedService {
-
-  @Valid
-  @NotNull
-  private AdaptrisConnection connection;
+public abstract class CacheServiceBase extends CacheServiceImpl {
 
   @Valid
   @XStreamImplicit
@@ -51,45 +40,6 @@ public abstract class CacheServiceBase extends ServiceImp implements ConnectedSe
 
   public CacheServiceBase() {
     setCacheEntryEvaluators(new ArrayList<CacheEntryEvaluator>());
-  }
-
-
-  @Override
-  public void prepare() throws CoreException {
-    try {
-      Args.notNull(getConnection(), "connection");
-      LifecycleHelper.prepare(getConnection());
-    }
-    catch (IllegalArgumentException e) {
-      throw ExceptionHelper.wrapCoreException(e);
-    }
-  }
-
-  @Override
-  public void closeService() {
-    LifecycleHelper.close(getConnection());
-  }
-
-  @Override
-  public void initService() throws CoreException {
-    LifecycleHelper.init(getConnection());
-
-  }
-
-  @Override
-  public void start() throws CoreException {
-    super.start();
-    LifecycleHelper.start(getConnection());
-  }
-
-  @Override
-  public void stop() {
-    super.stop();
-    LifecycleHelper.stop(getConnection());
-  }
-
-  protected Cache retrieveCache() {
-    return getConnection().retrieveConnection(CacheProvider.class).retrieveCache();
   }
 
   public List<CacheEntryEvaluator> getCacheEntryEvaluators() {
@@ -106,16 +56,6 @@ public abstract class CacheServiceBase extends ServiceImp implements ConnectedSe
 
   public void addCacheEntryEvaluator(CacheEntryEvaluator generator) {
     cacheEntryEvaluators.add(generator);
-  }
-
-  @Override
-  public AdaptrisConnection getConnection() {
-    return connection;
-  }
-
-  @Override
-  public void setConnection(AdaptrisConnection cacheConnection) {
-    this.connection = Args.notNull(cacheConnection, "connection");
   }
 
   /**

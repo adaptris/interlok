@@ -16,17 +16,15 @@
 package com.adaptris.core.services.cache;
 
 import javax.validation.Valid;
-
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -157,7 +155,7 @@ public class CacheEntryEvaluator {
    * @return the configured key translator via {@link #setKeyTranslator(CacheKeyTranslator)} or a default translator if null.
    */
   public CacheKeyTranslator keyTranslator() {
-    return getKeyTranslator() != null ? getKeyTranslator() : new NullCacheTranslator();
+    return ObjectUtils.defaultIfNull(getKeyTranslator(), (msg) -> null);
   }
 
   /**
@@ -184,7 +182,7 @@ public class CacheEntryEvaluator {
    * @return the configured key translator via {@link #setValueTranslator(CacheValueTranslator)} or a default translator if null.
    */
   public CacheValueTranslator valueTranslator() {
-    return getValueTranslator() != null ? getValueTranslator() : new NullCacheTranslator();
+    return ObjectUtils.defaultIfNull(getValueTranslator(), (msg) -> null);
   }
 
   public String getFriendlyName() {
@@ -201,23 +199,6 @@ public class CacheEntryEvaluator {
   }
 
   public String friendlyName() {
-    return getFriendlyName() == null ? this.getClass().getSimpleName() : getFriendlyName();
-  }
-
-  private class NullCacheTranslator implements CacheValueTranslator, CacheKeyTranslator {
-
-    @Override
-    public Object getValueFromMessage(AdaptrisMessage msg) throws CoreException {
-      return null;
-    }
-
-    @Override
-    public void addValueToMessage(AdaptrisMessage msg, Object value) throws CoreException {
-    }
-
-    @Override
-    public String getKeyFromMessage(AdaptrisMessage msg) throws CoreException {
-      return null;
-    }
+    return ObjectUtils.defaultIfNull(getFriendlyName(), this.getClass().getSimpleName());
   }
 }

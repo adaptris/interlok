@@ -39,14 +39,6 @@ public class StaticCacheValueTranslator implements CacheValueTranslator<String>,
   }
 
   /**
-   * @throws UnsupportedOperationException this method is not implemented for this translator
-   */
-  @Override
-  public void addValueToMessage(AdaptrisMessage msg, String value) throws CoreException {
-    throw new UnsupportedOperationException("StaticCacheValueTranslator can't add things to a message.");
-  }
-
-  /**
    * Sets the static value.
    *
    * @param s the value, which supports the {@code %message{}} syntax to resolve metadata.
