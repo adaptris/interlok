@@ -1,25 +1,32 @@
 package com.adaptris.core.services.cache.translators;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
-@SuppressWarnings("deprecation")
 public class XpathCacheValueTranslatorTest extends CacheValueTranslatorBaseCase {
 
 
-  public XpathCacheValueTranslatorTest(String s) {
-    super(s);
+  @Test
+  public void testGetKeyFromMessage() throws Exception {
+    XpathCacheValueTranslator translator = createTranslator();
+    AdaptrisMessage message = createMessage();
+    assertEquals("abc", translator.getKeyFromMessage(message));
   }
 
+  @Test
   public void testGetValueFromMessage() throws Exception {
     XpathCacheValueTranslator translator = createTranslator();
     AdaptrisMessage message = createMessage();
     assertEquals("abc", translator.getValueFromMessage(message));
   }
 
+  @Test
   public void testGetValueFromMessage_DocumentBuilderFactory() throws Exception {
     XpathCacheValueTranslator translator = createTranslator();
     translator.setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder.newInstance());
@@ -27,10 +34,11 @@ public class XpathCacheValueTranslatorTest extends CacheValueTranslatorBaseCase 
     assertEquals("abc", translator.getValueFromMessage(message));
   }
 
+  @Test
   public void testGetValueFromMessage_NotXml() throws Exception {
     XpathCacheValueTranslator translator = createTranslator();
     AdaptrisMessage message = createMessage();
-    message.setStringPayload("This is not XML");
+    message.setContent("This is not XML", null);
     try {
       translator.getValueFromMessage(message);
       fail();
@@ -40,14 +48,7 @@ public class XpathCacheValueTranslatorTest extends CacheValueTranslatorBaseCase 
     }
   }
 
-  // No longer a valid test, change to use SAXON means that this will never resolve
-  // public void testGetValueFromMessage_NoNamespace() throws Exception {
-  // XpathCacheValueTranslator translator = new XpathCacheValueTranslator();
-  // translator.setXpath("/root/element[@id='one']");
-  // AdaptrisMessage message = createMessage();
-  // assertEquals("abc", translator.getValueFromMessage(message));
-  // }
-
+  @Test
   public void testAddValue() throws Exception {
     XpathCacheValueTranslator translator = createTranslator();
     AdaptrisMessage message = createMessage();

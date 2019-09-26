@@ -23,6 +23,7 @@ import com.adaptris.core.CoreException;
  * value into one.
  *
  */
+@FunctionalInterface
 public interface CacheValueTranslator<S> {
 
   /**
@@ -33,8 +34,12 @@ public interface CacheValueTranslator<S> {
 
   /**
    * Injects the supplied Object value into the message,
-   *
+   * 
+   * @implNote The default implementation throws an UnsupportedOperationException and should be
+   *           overridden.
    */
-  void addValueToMessage(AdaptrisMessage msg, S value) throws CoreException;
+  default void addValueToMessage(AdaptrisMessage msg, S value) throws CoreException {
+    throw new UnsupportedOperationException("Add value is not supported for this type of translator");
+  }
 
 }

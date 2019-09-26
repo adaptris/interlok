@@ -43,7 +43,7 @@ public class DefectiveAdaptrisMessage extends DefaultAdaptrisMessageImp {
 
   @Override
   public InputStream getInputStream() throws IOException {
-    if (((DefectiveMessageFactory) getFactory()).brokenInput()) {
+    if (getFactory().brokenInput()) {
       return new ErroringInputStream(super.getInputStream());
     }
     return super.getInputStream();
@@ -51,7 +51,7 @@ public class DefectiveAdaptrisMessage extends DefaultAdaptrisMessageImp {
 
   @Override
   public OutputStream getOutputStream() throws IOException {
-    if (((DefectiveMessageFactory) getFactory()).brokenOutput()) {
+    if (getFactory().brokenOutput()) {
       return new ErroringOutputStream();
     }
     return super.getOutputStream();
@@ -65,7 +65,7 @@ public class DefectiveAdaptrisMessage extends DefaultAdaptrisMessageImp {
   /** @see AdaptrisMessage#headersContainsKey(String) */
   @Override
   public boolean headersContainsKey(String key) {
-    if (((DefectiveMessageFactory) getFactory()).brokenMetadataGet()) {
+    if (getFactory().brokenMetadataGet()) {
       throw new RuntimeException();
     }
     return super.headersContainsKey(key);
@@ -74,7 +74,7 @@ public class DefectiveAdaptrisMessage extends DefaultAdaptrisMessageImp {
   /** @see AdaptrisMessage#addMetadata(MetadataElement) */
   @Override
   public synchronized void addMetadata(MetadataElement e) {
-    if (((DefectiveMessageFactory) getFactory()).brokenMetadataSet()) {
+    if (getFactory().brokenMetadataSet()) {
       throw new RuntimeException();
     }
     super.addMetadata(e);
@@ -83,7 +83,7 @@ public class DefectiveAdaptrisMessage extends DefaultAdaptrisMessageImp {
   /** @see AdaptrisMessage#removeMetadata(MetadataElement) */
   @Override
   public void removeMetadata(MetadataElement element) {
-    if (((DefectiveMessageFactory) getFactory()).brokenMetadataSet()) {
+    if (getFactory().brokenMetadataSet()) {
       throw new RuntimeException();
     }
     super.removeMetadata(element);
@@ -92,7 +92,7 @@ public class DefectiveAdaptrisMessage extends DefaultAdaptrisMessageImp {
   /** @see AdaptrisMessage#removeMessageHeader(String) */
   @Override
   public void removeMessageHeader(String key) {
-    if (((DefectiveMessageFactory) getFactory()).brokenMetadataSet()) {
+    if (getFactory().brokenMetadataSet()) {
       throw new RuntimeException();
     }
     super.removeMessageHeader(key);
@@ -100,7 +100,7 @@ public class DefectiveAdaptrisMessage extends DefaultAdaptrisMessageImp {
 
   @Override
   public synchronized void clearMetadata() {
-    if (((DefectiveMessageFactory) getFactory()).brokenMetadataSet()) {
+    if (getFactory().brokenMetadataSet()) {
       throw new RuntimeException();
     }
     super.clearMetadata();
@@ -108,7 +108,7 @@ public class DefectiveAdaptrisMessage extends DefaultAdaptrisMessageImp {
 
   @Override
   public Map<String, String> getMessageHeaders() {
-    if (((DefectiveMessageFactory) getFactory()).brokenMetadataGet()) {
+    if (getFactory().brokenMetadataGet()) {
       throw new RuntimeException();
     }
     return super.getMessageHeaders();
@@ -116,10 +116,31 @@ public class DefectiveAdaptrisMessage extends DefaultAdaptrisMessageImp {
 
   @Override
   public Set<MetadataElement> getMetadata() { // lgtm [java/unsynchronized-getter]
-    if (((DefectiveMessageFactory) getFactory()).brokenMetadataGet()) {
+    if (getFactory().brokenMetadataGet()) {
       throw new RuntimeException();
     }
     return super.getMetadata();
+  }
+
+  @Override
+  public String getMetadataValue(String key) { // is case-sensitive
+    if (getFactory().brokenMetadataGet()) {
+      throw new RuntimeException();
+    }
+    return super.getMetadataValue(key);
+  }
+
+  @Override
+  public String getMetadataValueIgnoreKeyCase(String key) {
+    if (getFactory().brokenMetadataGet()) {
+      throw new RuntimeException();
+    }
+    return super.getMetadataValueIgnoreKeyCase(key);
+  }
+
+  @Override
+  public DefectiveMessageFactory getFactory() {
+    return (DefectiveMessageFactory) super.getFactory();
   }
 
 

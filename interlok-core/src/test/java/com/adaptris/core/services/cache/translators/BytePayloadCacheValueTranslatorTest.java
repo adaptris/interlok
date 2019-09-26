@@ -1,16 +1,16 @@
 package com.adaptris.core.services.cache.translators;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.security.MessageDigest;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.services.cache.CacheValueTranslator;
 
 public class BytePayloadCacheValueTranslatorTest extends CacheValueTranslatorBaseCase {
 
-  public BytePayloadCacheValueTranslatorTest(String s) {
-    super(s);
-  }
-
+  @Test
   public void testGetValueFromMessage() throws Exception {
     BytePayloadCacheValueTranslator translator = new BytePayloadCacheValueTranslator();
     AdaptrisMessage message = createMessage();
@@ -18,6 +18,7 @@ public class BytePayloadCacheValueTranslatorTest extends CacheValueTranslatorBas
     assertEquals(PAYLOAD.getBytes().length, translator.getValueFromMessage(message).length);
   }
 
+  @Test
   public void testAddValueToMessage() throws Exception {
     BytePayloadCacheValueTranslator translator = new BytePayloadCacheValueTranslator();
     AdaptrisMessage message = createMessage();
@@ -25,6 +26,7 @@ public class BytePayloadCacheValueTranslatorTest extends CacheValueTranslatorBas
     assertTrue(MessageDigest.isEqual("Hello World".getBytes(), message.getPayload()));
   }
 
+  @Test
   public void testAddInvalidValueToMessage() throws Exception {
     AdaptrisMessage message = createMessage();
     CacheValueTranslator translator = new BytePayloadCacheValueTranslator();
