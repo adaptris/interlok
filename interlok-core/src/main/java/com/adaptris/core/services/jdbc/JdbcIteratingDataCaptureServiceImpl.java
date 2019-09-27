@@ -52,10 +52,10 @@ public abstract class JdbcIteratingDataCaptureServiceImpl extends JdbcDataCaptur
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean iterates = null;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private KeyValuePairSet namespaceContext;
 
