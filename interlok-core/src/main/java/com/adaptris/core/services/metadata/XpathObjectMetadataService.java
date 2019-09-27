@@ -64,14 +64,14 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 public class XpathObjectMetadataService extends ServiceImp {
 
   @Valid
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private KeyValuePairSet namespaceContext;
   @NotNull
   @AutoPopulated
   @Valid
   @XStreamImplicit(itemFieldName = "xpath-query")
   private List<XpathObjectQuery> xpathQueries;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
   private transient List<XpathObjectQuery> queriesToExecute;

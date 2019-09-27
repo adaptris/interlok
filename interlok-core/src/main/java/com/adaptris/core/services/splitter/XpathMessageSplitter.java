@@ -80,9 +80,9 @@ public class XpathMessageSplitter extends MessageSplitterImp {
   private String xpath = null;
   @AdvancedConfig
   private String encoding = null;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private KeyValuePairSet namespaceContext;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
   public XpathMessageSplitter() {

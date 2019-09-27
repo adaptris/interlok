@@ -35,7 +35,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("xml-basic-validator")
 public class XmlBasicValidator extends MessageValidatorImpl {
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 

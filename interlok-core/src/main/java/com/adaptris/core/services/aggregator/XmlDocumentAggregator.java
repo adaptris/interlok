@@ -56,7 +56,7 @@ public class XmlDocumentAggregator extends MessageAggregatorImpl {
   @NotNull
   @Valid
   private DocumentMerge mergeImplementation;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
   public XmlDocumentAggregator() {

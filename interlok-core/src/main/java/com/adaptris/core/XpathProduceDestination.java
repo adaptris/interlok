@@ -54,10 +54,10 @@ public class XpathProduceDestination implements MessageDrivenDestination {
   @NotNull
   private String defaultDestination;
 
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private KeyValuePairSet namespaceContext;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 

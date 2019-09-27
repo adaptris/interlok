@@ -29,8 +29,9 @@ import com.adaptris.util.text.xml.XPath;
 public abstract class XmlSyntaxIdentifierImpl extends SyntaxIdentifierImpl {
 
   @Valid
+  @AdvancedConfig(rare = true)
   private KeyValuePairSet namespaceContext;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 

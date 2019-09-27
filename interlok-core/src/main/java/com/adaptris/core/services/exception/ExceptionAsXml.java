@@ -57,7 +57,7 @@ public class ExceptionAsXml implements ExceptionSerializer {
   private ExceptionReportGenerator exceptionGenerator;
   @InputFieldDefault(value = "UTF-8")
   private String xmlEncoding;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
