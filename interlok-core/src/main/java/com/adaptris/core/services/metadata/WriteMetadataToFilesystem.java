@@ -80,6 +80,7 @@ public class WriteMetadataToFilesystem extends ServiceImp {
   private Boolean overwriteIfExists;
   @AdvancedConfig
   @Valid
+  @InputFieldDefault(value = "preserve-all-metadata")
   private MetadataFilter metadataFilter;
 
   public enum OutputStyle {
