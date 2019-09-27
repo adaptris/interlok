@@ -4,11 +4,9 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -34,7 +32,7 @@ public abstract class MetadataConverter {
   private MetadataFilter metadataFilter;
 
   @InputFieldDefault(value = "false")
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private Boolean strictConversion;
 
   /**

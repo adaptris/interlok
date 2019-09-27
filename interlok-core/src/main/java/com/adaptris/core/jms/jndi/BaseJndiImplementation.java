@@ -45,7 +45,7 @@ public abstract class BaseJndiImplementation extends VendorImplementationImp {
   @InputFieldDefault(value = "false")
   private Boolean enableEncodedPasswords;
   @AdvancedConfig
-  protected String encodedPasswordKeys;
+  private String encodedPasswordKeys;
   @NotNull
   @AutoPopulated
   @Valid
