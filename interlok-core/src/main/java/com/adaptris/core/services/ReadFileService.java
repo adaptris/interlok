@@ -51,7 +51,7 @@ public class ReadFileService extends ServiceImp {
   @InputFieldDefault(value = "null")
   private String contentTypeMetadataKey;
 
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   @InputFieldDefault(value = "Files.probeContentType(Path)")
   private ContentTypeProbe contentTypeProbe;

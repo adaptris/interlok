@@ -65,10 +65,10 @@ public class MimePartSelector extends ServiceImp {
   private Boolean preservePartHeadersAsMetadata;
   @InputFieldDefault(value = "false")
   private Boolean markAsNonMime;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "")
   private String headerPrefix;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "")
   private String partHeaderPrefix;
   @NotNull

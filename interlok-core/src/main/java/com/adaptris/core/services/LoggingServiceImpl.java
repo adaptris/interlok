@@ -20,7 +20,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -115,7 +114,7 @@ public abstract class LoggingServiceImpl extends ServiceImp {
   @InputFieldDefault(value = "DEBUG")
   @AutoPopulated
   private LoggingLevel logLevel;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value="the classname")
   private String logCategory;
 
