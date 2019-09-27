@@ -100,17 +100,17 @@ public class MimeAggregator extends MessageAggregatorImpl {
   @InputFieldHint(expression = true)
   @InputFieldDefault(value = "built from the appropriate message id")
   private String partContentId;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldHint(expression = true)
   @InputFieldDefault(value = DEFAULT_CONTENT_TYPE)
   private String partContentType;
   @Valid
   @InputFieldDefault(value = "RemoveAllMetadata")
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private MetadataFilter partHeaderFilter;
   @Valid
   @InputFieldDefault(value = "RemoveAllMetadata")
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private MetadataFilter mimeHeaderFilter;
 
   private transient boolean contentTypeWarning;
