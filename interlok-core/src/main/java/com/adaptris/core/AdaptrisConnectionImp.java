@@ -45,7 +45,7 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
   @AdvancedConfig
   @Valid
   private ConnectionErrorHandler connectionErrorHandler;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean workersFirstOnShutdown;
   private String uniqueId;
