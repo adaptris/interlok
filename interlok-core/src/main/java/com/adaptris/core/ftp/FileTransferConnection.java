@@ -17,18 +17,14 @@
 package com.adaptris.core.ftp;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.concurrent.TimeUnit;
-
 import javax.validation.Valid;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.CoreException;
@@ -38,7 +34,6 @@ import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.util.NumberUtils;
 import com.adaptris.util.TimeInterval;
-
 import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
@@ -60,7 +55,7 @@ public abstract class FileTransferConnection extends NoOpConnection {
   private static final String UTF_8 = "UTF-8";
 
   private String defaultUserName;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private Integer defaultControlPort;
   @AdvancedConfig
   @InputFieldDefault(value = "false")
@@ -68,15 +63,16 @@ public abstract class FileTransferConnection extends NoOpConnection {
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean additionalDebug;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean windowsWorkAround;
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean cacheConnection;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
+  @InputFieldDefault(value = "16")
   private Integer maxClientCacheSize;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "1 Hour")
   @Valid
   private TimeInterval cacheExpiration;
