@@ -21,13 +21,11 @@ import static com.adaptris.core.jms.JmsConstants.JMS_DELIVERY_MODE;
 import static com.adaptris.core.jms.JmsConstants.JMS_EXPIRATION;
 import static com.adaptris.core.jms.JmsConstants.JMS_PRIORITY;
 import static com.adaptris.core.jms.NullCorrelationIdSource.defaultIfNull;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -37,11 +35,9 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -80,7 +76,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   @AdvancedConfig
   private CorrelationIdSource correlationIdSource;
 
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean captureOutgoingMessageDetails;
 
@@ -100,7 +96,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   @InputFieldDefault(value = "0")
   private Long ttl;
 
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean perMessageProperties;
   @AutoPopulated

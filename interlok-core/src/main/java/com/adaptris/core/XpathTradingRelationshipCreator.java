@@ -69,9 +69,9 @@ public class XpathTradingRelationshipCreator implements
   @NotBlank
   private String typeXpath;
 
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private KeyValuePairSet namespaceContext;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
   /**
@@ -95,6 +95,7 @@ public class XpathTradingRelationshipCreator implements
   /**
    * @see TradingRelationshipCreator #create(AdaptrisMessage)
    */
+  @Override
   public TradingRelationship create(AdaptrisMessage msg) throws CoreException {
     TradingRelationship result = null;
     try {

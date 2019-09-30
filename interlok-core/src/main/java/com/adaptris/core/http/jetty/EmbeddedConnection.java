@@ -19,12 +19,9 @@ package com.adaptris.core.http.jetty;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-
 import javax.validation.Valid;
-
 import org.eclipse.jetty.security.SecurityHandler;
 import org.eclipse.jetty.webapp.WebAppContext;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -74,7 +71,7 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
   @Deprecated
   @Removal(version = "3.10.0", message = "Has no meaning since you must configure a security-handler")
   private Set<String> roles;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private TimeInterval maxStartupWait;
   @Valid
   @AdvancedConfig

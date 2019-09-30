@@ -20,7 +20,6 @@ import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import static com.adaptris.core.http.HttpConstants.CONTENT_TYPE;
 import static com.adaptris.util.stream.StreamUtil.copyAndClose;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,16 +31,13 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-
 import javax.mail.internet.ContentType;
 import javax.mail.internet.ParseException;
 import javax.net.ssl.HttpsURLConnection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -140,15 +136,15 @@ public class StandardHttpProducer extends HttpProducer<HttpURLConnection, HttpUR
   @AutoPopulated
   private HttpAuthenticator authenticator = new NoAuthentication();
 
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean alwaysSendPayload;
 
   @Valid
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private TimeInterval connectTimeout;
   @Valid
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private TimeInterval readTimeout;
 
   public StandardHttpProducer() {

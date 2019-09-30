@@ -24,11 +24,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
-
 import javax.management.MalformedObjectNameException;
-
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.runtime.AdapterManager;
 import com.adaptris.core.runtime.ParentRuntimeInfoComponent;
 import com.adaptris.core.runtime.RuntimeInfoComponent;
@@ -59,6 +59,8 @@ public class DefaultFailedMessageRetrier extends FailedMessageRetrierImp {
 
   private transient ExecutorService failedMessageExecutor = null;
 
+  @InputFieldDefault(value = "60 seconds")
+  @AdvancedConfig(rare = true)
   private TimeInterval shutdownWaitTime;
 
   @Override

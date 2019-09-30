@@ -62,7 +62,7 @@ public class AddFormattedMetadataService extends ServiceImp {
   @AffectsMetadata
   private String metadataKey;
   @Valid
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private ElementFormatter elementFormatter;
 
   public AddFormattedMetadataService() {

@@ -79,18 +79,18 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
   @InputFieldDefault(value = "true")
   private Boolean alwaysReplaceMetadata;
   @InputFieldHint(style = "SQL")
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String selectStatement = null;
   @InputFieldHint(style = "SQL")
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String insertStatement = null;
   @InputFieldHint(style = "SQL")
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String updateStatement = null;
   @InputFieldHint(style = "SQL")
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String resetStatement = null;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean createDatabase;
   @AdvancedConfig

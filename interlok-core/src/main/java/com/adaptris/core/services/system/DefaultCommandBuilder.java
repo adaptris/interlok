@@ -51,11 +51,11 @@ public class DefaultCommandBuilder implements CommandBuilder {
 
   @NotNull
   @AutoPopulated
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private List<String> environmentMetadataKeys;
   @NotNull
   @AutoPopulated
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private KeyValuePairSet environmentProperties;
   @NotNull
   @AutoPopulated

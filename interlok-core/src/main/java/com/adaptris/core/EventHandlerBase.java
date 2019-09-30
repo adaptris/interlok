@@ -21,14 +21,11 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
 import javax.validation.Valid;
-
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.LifecycleHelper;
@@ -52,7 +49,7 @@ public abstract class EventHandlerBase implements EventHandler {
   @AdvancedConfig
   private AdaptrisMessageFactory messageFactory;
   private String uniqueId;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "60")
   private Integer shutdownWaitSeconds;
   @AdvancedConfig

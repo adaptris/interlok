@@ -76,10 +76,10 @@ public class JdbcDataQueryService extends JdbcServiceWithParameters implements D
   @AutoPopulated
   @Valid
   private ResultSetTranslator resultSetTranslator;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private KeyValuePairSet namespaceContext;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 

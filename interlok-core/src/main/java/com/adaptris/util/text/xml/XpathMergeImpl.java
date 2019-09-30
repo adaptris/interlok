@@ -24,9 +24,9 @@ import com.adaptris.util.XmlUtils;
 
 public abstract class XpathMergeImpl extends MergeImpl {
 
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private KeyValuePairSet namespaceContext;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
   XpathMergeImpl() {

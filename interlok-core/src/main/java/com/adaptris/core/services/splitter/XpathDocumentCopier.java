@@ -75,9 +75,9 @@ public class XpathDocumentCopier extends MessageCopier {
 
   @NotBlank
   private String xpath = null;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private KeyValuePairSet namespaceContext;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
   public XpathDocumentCopier() {

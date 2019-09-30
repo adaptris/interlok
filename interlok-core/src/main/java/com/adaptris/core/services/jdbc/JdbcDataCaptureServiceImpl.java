@@ -42,7 +42,7 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
   @NotNull
   @InputFieldHint(style = "SQL", expression = true)
   private String statement = null;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean saveReturnedKeys = null;
   @InputFieldDefault(value = "")

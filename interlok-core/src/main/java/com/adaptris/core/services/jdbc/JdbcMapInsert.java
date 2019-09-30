@@ -195,7 +195,7 @@ public abstract class JdbcMapInsert extends JdbcService {
   private KeyValuePairSet fieldMappings;
 
   @InputFieldDefault(value = "")
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private Character columnBookendCharacter;
 
   @InputFieldDefault(value = "")

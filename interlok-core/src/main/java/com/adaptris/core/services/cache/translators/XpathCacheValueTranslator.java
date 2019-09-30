@@ -36,9 +36,9 @@ public class XpathCacheValueTranslator implements CacheValueTranslator<String>, 
   @InputFieldHint(expression = true)
   private String xpath;
   @Valid
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private KeyValuePairSet namespaceContext = null;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig = null;
   public XpathCacheValueTranslator() {

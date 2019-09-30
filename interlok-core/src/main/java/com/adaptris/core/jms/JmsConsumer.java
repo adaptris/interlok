@@ -17,11 +17,9 @@
 package com.adaptris.core.jms;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.Topic;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -71,7 +69,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"destination", "acknowledgeMode", "messageTranslator"})
 public class JmsConsumer extends JmsConsumerImpl {
   
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @AutoPopulated
   @InputFieldDefault(value = "false")
   private Boolean deferConsumerCreationToVendor;

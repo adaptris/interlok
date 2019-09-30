@@ -52,9 +52,9 @@ public abstract class CoreSecurityService extends ServiceImp {
   @Valid
   @AutoPopulated
   private EncryptionAlgorithm encryptionAlgorithm = null;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String successId = null;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String failId = null;
   @AdvancedConfig
   private String remotePartnerMetadataKey;

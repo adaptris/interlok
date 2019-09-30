@@ -36,7 +36,7 @@ public abstract class XmlTransformerFactoryImpl implements XmlTransformerFactory
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
   @NotNull

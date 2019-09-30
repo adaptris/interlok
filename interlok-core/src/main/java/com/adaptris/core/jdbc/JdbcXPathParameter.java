@@ -62,9 +62,9 @@ public class JdbcXPathParameter extends NullableParameter {
   @NotNull
   @NotBlank
   private String xpath;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private KeyValuePairSet namespaceContext;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
 

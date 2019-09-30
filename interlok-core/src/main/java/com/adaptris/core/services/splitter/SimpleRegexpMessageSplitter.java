@@ -42,9 +42,9 @@ public class SimpleRegexpMessageSplitter extends StringPayloadSplitter {
   @NotNull
   @NotBlank
   private String splitPattern;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String matchPattern;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean compareToPreviousMatch;
   @AdvancedConfig

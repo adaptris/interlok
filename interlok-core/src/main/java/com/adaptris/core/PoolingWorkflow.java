@@ -126,15 +126,15 @@ public class PoolingWorkflow extends WorkflowImp {
   @InputFieldDefault(value = "10")
   private Integer maxIdle;
 
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "1 minute")
   @Valid
   private TimeInterval threadKeepAlive;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "1 minute")
   @Valid
   private TimeInterval shutdownWaitTime;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "1 minute")
   @Valid
   private TimeInterval initWaitTime;

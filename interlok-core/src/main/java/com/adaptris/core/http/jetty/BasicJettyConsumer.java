@@ -24,7 +24,6 @@ import static com.adaptris.core.http.jetty.JettyConstants.JETTY_USER_ROLES;
 import static com.adaptris.core.http.jetty.JettyConstants.JETTY_USER_ROLE_ATTR;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.join;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -42,17 +41,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
@@ -88,14 +84,14 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   @AdvancedConfig
   private Boolean additionalDebug;
 
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "return 202 after 10 minutes")
   private TimeoutAction timeoutAction;
 
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "Never")
   private TimeInterval warnAfter;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "20 Seconds")
   private TimeInterval sendProcessingInterval;
 

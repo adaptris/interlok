@@ -48,7 +48,7 @@ public final class MarshalledClassDestination implements MessageDrivenDestinatio
   @NotNull
   @AutoPopulated
   private KeyValuePairSet mappings;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private AdaptrisMarshaller marshaller;
   @NotBlank
   private String defaultDestination;
