@@ -18,7 +18,6 @@ package com.adaptris.jdbc;
 
 import java.sql.CallableStatement;
 import java.sql.SQLException;
-
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -34,7 +33,7 @@ public class NoResultSetCallableStatementExecutor implements CallableStatementEx
   @Override
   public JdbcResult executeCallableStatement(CallableStatement statement) throws SQLException {
     statement.execute();
-    JdbcResult result = new JdbcResultBuilder().build();
+    JdbcResult result = new JdbcResultBuilder().trackStatement(statement).build();
     return result;
   }
 
