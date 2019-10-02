@@ -2,14 +2,17 @@
 #
 # Check https://circleci.com/docs/2.0/language-java/ for more details
 #
-version: 2
+version: 2.1
+
+executors:
+  my-executor:
+    machine:
+      - image: ubuntu-1604:201903-01
 
 jobs:
   build:
-    docker:
-      - image: circleci/openjdk:8-jdk
-      - image: circleci/mysql:5.7.25
-
+    executor: my-executor
+    
     working_directory: ~/interlok
 
     environment:
@@ -24,9 +27,9 @@ jobs:
           command: |
             mkdir -p ~/.gradle
             echo "org.gradle.warning.mode=none" > ~/.gradle/gradle.properties
-            sudo apt-get update
-            sudo apt-get install haveged
-            sudo haveged --run 0
+            sudo apt-get -y update
+            sudo apt-get -y install haveged openjdk-8-jdk
+            sudo systemctl restart haveged
             echo "default.jdbc.storedproc.tests.enabled=true" >> interlok-core/build.properties
             echo "default.jdbc.storedproc.url=jdbc:mysql://localhost:3306/" >> interlok-core/build.properties
             echo "default.jdbc.storedproc.driver=com.mysql.jdbc.Driver" >> interlok-core/build.properties
@@ -48,7 +51,8 @@ jobs:
       # run tests!
       - run:
           name: Run Tests
-          command: ./gradlew -PverboseTests=true test jacocoTestReport
+          command: 
+            ./gradlew -PverboseTests=true test jacocoTestReport
 
       - run:
           name: Save test results
