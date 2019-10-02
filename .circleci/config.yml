@@ -4,15 +4,13 @@
 #
 version: 2.1
 
-executors:
-  my-executor:
-    machine:
-      - image: ubuntu-1604:201903-01
-
 jobs:
   build:
-    executor: my-executor
-    
+    machine:
+      - image: ubuntu-1604:201903-01
+      # - image: circleci/openjdk:8-jdk
+      # - image: circleci/mysql:5.7.25
+
     working_directory: ~/interlok
 
     environment:
