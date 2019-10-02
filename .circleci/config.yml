@@ -8,6 +8,7 @@ jobs:
   build:
     docker:
       - image: circleci/openjdk:8-jdk
+      - image: harbur/haveged:latest
       - image: circleci/mysql:5.7.25
 
     working_directory: ~/interlok
