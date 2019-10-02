@@ -26,6 +26,7 @@ jobs:
           command: |
             mkdir -p ~/.gradle
             echo "org.gradle.warning.mode=none" > ~/.gradle/gradle.properties
+            sudo -E apt-get -y -q update
             sudo -E apt-get -y -q install haveged openjdk-8-jdk mysql-server
             sudo -E systemctl restart haveged
             # Enable root mysql user for the circleci user...
