@@ -16,21 +16,23 @@
 
 package com.adaptris.core.jms;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyByte;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
-
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
-
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageEOFException;
 import javax.jms.Session;
-
+import org.junit.Assume;
+import org.junit.Test;
 import org.mockito.Mockito;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.MetadataElement;
@@ -53,16 +55,13 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
       BYTES_ALT[i] = (byte) j;
     }
   }
-  
-  public BytesMessageTranslatorTest(String name) {
-    super(name);
-  }
-
 
   // We aren't actually producing the message, so we have to
   // switch to read-only mode.
   @Override
+  @Test
   public void testMoveMetadataJmsMessageToAdaptrisMessage() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     try {
@@ -88,7 +87,9 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
   // We aren't actually producing the message, so we have to
   // switch to read-only mode.
   @Override
+  @Test
   public void testMoveJmsHeadersJmsMessageToAdaptrisMessage() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     try {
@@ -124,7 +125,9 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
   }
 
   @Override
+  @Test
   public void testMoveMetadataJmsMessageToAdaptrisMessage_RemoveAllFilter() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     trans.setMetadataFilter(new RemoveAllMetadataFilter());
@@ -149,7 +152,9 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
   }
 
   @Override
+  @Test
   public void testMoveMetadata_JmsMessageToAdaptrisMessage_WithFilter() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     RegexMetadataFilter regexp = new RegexMetadataFilter();
@@ -177,7 +182,9 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
 
   }
 
+  @Test
   public void testBytesMessageToAdaptrisMessage() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     try {
@@ -198,7 +205,9 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
     }
   }
 
+  @Test
   public void testBytesMessageToAdaptrisMessage_Alt() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     try {
@@ -219,8 +228,9 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
   }
 
 
-
+  @Test
   public void testBytesMessageToAdaptrisMessage_StreamFailure() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     try {
@@ -243,12 +253,15 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
     }
   }
 
+  @Test
   public void testBytesMessageToAdaptrisMessage_StreamFailure_CheckedJMSException() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     BytesMessage jmsMsg = Mockito.mock(BytesMessage.class);
     Session session = Mockito.mock(Session.class);
-    doThrow(new JMSException(getName())).when(jmsMsg).readByte();
+    doThrow(new JMSException(testName.getMethodName())).when(jmsMsg).readByte();
     when(session.createBytesMessage()).thenReturn(jmsMsg);
     BytesMessageTranslator trans = new BytesMessageTranslator() {
+      @Override
       long streamThreshold() {
         return TEXT.length() - 1;
       }
@@ -266,8 +279,9 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
     }
   }
 
-
+  @Test
   public void testAdaptrisMessageToBytesMessage() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     try {
@@ -288,9 +302,12 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
     }
   }
 
+  @Test
   public void testAdaptrisMessageToBytesMessage_StreamFailure() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     BytesMessageTranslator trans = new BytesMessageTranslator() {
+      @Override
       long streamThreshold() {
         return TEXT.length() - 1;
       }
@@ -312,12 +329,15 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
     }
   }
 
+  @Test
   public void testAdaptrisMessageToBytesMessage_StreamFailure_CheckedJMSException() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     BytesMessage jmsMsg = Mockito.mock(BytesMessage.class);
     Session session = Mockito.mock(Session.class);
-    doThrow(new JMSException(getName())).when(jmsMsg).writeByte(anyByte());
+    doThrow(new JMSException(testName.getMethodName())).when(jmsMsg).writeByte(anyByte());
     when(session.createBytesMessage()).thenReturn(jmsMsg);
     BytesMessageTranslator trans = new BytesMessageTranslator() {
+      @Override
       long streamThreshold() {
         return TEXT.length() - 1;
       }
@@ -341,6 +361,7 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     BytesMessageTranslator trans = new BytesMessageTranslator() {
 
+      @Override
       long streamThreshold() {
         return TEXT.length() -1;
       }
