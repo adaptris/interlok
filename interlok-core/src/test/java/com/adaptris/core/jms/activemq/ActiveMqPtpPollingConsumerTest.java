@@ -16,18 +16,22 @@
 
 package com.adaptris.core.jms.activemq;
 
+import static com.adaptris.core.BaseCase.start;
+import static com.adaptris.core.BaseCase.waitForMessages;
 import static com.adaptris.core.jms.JmsProducerCase.assertMessages;
 import static com.adaptris.core.jms.JmsProducerCase.createMessage;
 import static com.adaptris.core.jms.activemq.ActiveMqPasPollingConsumerTest.shutdownQuietly;
-
 import java.util.concurrent.TimeUnit;
-
-import com.adaptris.core.BaseCase;
+import org.junit.Assume;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
+import com.adaptris.core.jms.JmsConfig;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.PtpPollingConsumer;
 import com.adaptris.core.jms.PtpProducer;
@@ -35,27 +39,21 @@ import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.TimeInterval;
 
-public class ActiveMqPtpPollingConsumerTest extends BaseCase {
+public class ActiveMqPtpPollingConsumerTest {
   private static final ManagedThreadFactory MY_THREAD_FACTORY = new ManagedThreadFactory();
 
-  public ActiveMqPtpPollingConsumerTest(String arg0) {
-    super(arg0);
-  }
+  @Rule
+  public TestName testName = new TestName();
 
-  @Override
-  protected void setUp() throws Exception {
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-  }
-
+  @Test
   public void testProduceConsume() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     int msgCount = 5;
     final EmbeddedActiveMq broker = new EmbeddedActiveMq();
     final StandaloneProducer sender = new StandaloneProducer(broker.getJmsConnection(), new PtpProducer(
-        new ConfiguredProduceDestination(getName())));
-    final StandaloneConsumer receiver = createConsumer(broker, "testProduceConsume", getName());
+            new ConfiguredProduceDestination(testName.getMethodName())));
+    final StandaloneConsumer receiver =
+        createConsumer(broker, "testProduceConsume", testName.getMethodName());
     try {
       broker.start();
       MockMessageListener jms = new MockMessageListener();

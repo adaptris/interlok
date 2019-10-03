@@ -16,15 +16,20 @@
 
 package com.adaptris.core.jms.activemq;
 
+import static com.adaptris.core.BaseCase.start;
+import static com.adaptris.core.BaseCase.stop;
+import static com.adaptris.core.BaseCase.waitForMessages;
 import static com.adaptris.core.jms.JmsProducerCase.assertMessages;
 import static com.adaptris.core.jms.JmsProducerCase.createMessage;
-
+import static junit.framework.TestCase.fail;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Assume;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
 import com.adaptris.core.AdaptrisPollingConsumer;
-import com.adaptris.core.BaseCase;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
@@ -32,6 +37,7 @@ import com.adaptris.core.RandomIntervalPoller;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandardWorkflow;
+import com.adaptris.core.jms.JmsConfig;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.PasPollingConsumer;
 import com.adaptris.core.jms.PasProducer;
@@ -41,24 +47,15 @@ import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.SafeGuidGenerator;
 import com.adaptris.util.TimeInterval;
 
-public class ActiveMqPasPollingConsumerTest extends BaseCase {
+public class ActiveMqPasPollingConsumerTest {
 
   private static final String MY_SUBSCRIPTION_ID = new SafeGuidGenerator().safeUUID();
   private static final ManagedThreadFactory MY_THREAD_FACTORY = new ManagedThreadFactory();
 
+  @Rule
+  public TestName testName = new TestName();
 
-  public ActiveMqPasPollingConsumerTest(String arg0) {
-    super(arg0);
-  }
-
-  @Override
-  protected void setUp() throws Exception {
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-  }
-
+  @Test
   public void testInitNoClientIdOrSubscriptionId() throws Exception {
     PasPollingConsumer consumer = create();
     try {
@@ -70,6 +67,7 @@ public class ActiveMqPasPollingConsumerTest extends BaseCase {
     }
   }
 
+  @Test
   public void testInitClientOnly() throws Exception {
     PasPollingConsumer consumer = create();
     consumer.setClientId("xxxx");
@@ -83,6 +81,7 @@ public class ActiveMqPasPollingConsumerTest extends BaseCase {
     }
   }
 
+  @Test
   public void testInitSubscriptionOnly() throws Exception {
     PasPollingConsumer consumer = create();
     consumer.setSubscriptionId("xxxx");
@@ -96,6 +95,7 @@ public class ActiveMqPasPollingConsumerTest extends BaseCase {
     }
   }
 
+  @Test
   public void testInitClientAndSubscriptionSet() throws Exception {
     PasPollingConsumer consumer = create();
     consumer.setClientId("xxxx");
@@ -109,12 +109,15 @@ public class ActiveMqPasPollingConsumerTest extends BaseCase {
     }
   }
 
+  @Test
   public void testProduceConsume() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     int msgCount = 5;
     final EmbeddedActiveMq activeBroker = new EmbeddedActiveMq();
     final StandaloneProducer sender = new StandaloneProducer(activeBroker.getJmsConnection(), new PasProducer(
-        new ConfiguredProduceDestination(getName())));
-    final StandaloneConsumer receiver = createStandalone(activeBroker, "testProduceConsume", getName());
+            new ConfiguredProduceDestination(testName.getMethodName())));
+    final StandaloneConsumer receiver =
+        createStandalone(activeBroker, "testProduceConsume", testName.getMethodName());
     activeBroker.start();
     try {
       MockMessageListener jms = new MockMessageListener();
@@ -197,6 +200,7 @@ public class ActiveMqPasPollingConsumerTest extends BaseCase {
   static void shutdownQuietly(final StandaloneProducer sender, final StandaloneConsumer receiver,
       final EmbeddedActiveMq activeMqBroker) {
     MY_THREAD_FACTORY.newThread(new Runnable() {
+      @Override
       public void run() {
         LifecycleHelper.waitQuietly(1000);
         stop(sender);
