@@ -157,7 +157,8 @@ public abstract class BaseCase extends TestCase {
     }
   }
 
-  protected static void assertRoundtripEquality(Object input, Object output, List<Class> classesToIgnore) throws Exception {
+  public static void assertRoundtripEquality(Object input, Object output,
+      List<Class> classesToIgnore) throws Exception {
     if (input == null && output == null) {
       return;
     }
@@ -205,7 +206,7 @@ public abstract class BaseCase extends TestCase {
     }
   }
 
-  protected static void assertRoundtripEquality(Object input, Object output) throws Exception {
+  public static void assertRoundtripEquality(Object input, Object output) throws Exception {
     assertRoundtripEquality(input, output, new ArrayList<Class>());
   }
 
@@ -260,14 +261,15 @@ public abstract class BaseCase extends TestCase {
     return ObjectUtils.invokeGetter(obj, methodName);
   }
 
-  protected static EventHandler createandStartDummyEventHandler() throws CoreException {
+  public static EventHandler createandStartDummyEventHandler() throws CoreException {
     DefaultEventHandler eh = new DefaultEventHandler();
     LifecycleHelper.init(eh);
     LifecycleHelper.start(eh);
     return eh;
   }
 
-  protected static ProcessingExceptionHandler createandStartDummyMessageErrorHandler() throws CoreException {
+  public static ProcessingExceptionHandler createandStartDummyMessageErrorHandler()
+      throws CoreException {
     StandardProcessingExceptionHandler eh = new StandardProcessingExceptionHandler();
     LifecycleHelper.init(eh);
     LifecycleHelper.start(eh);
