@@ -18,10 +18,8 @@ package com.adaptris.core.jms;
 
 import static com.adaptris.core.jms.JmsConfig.DEFAULT_PAYLOAD;
 import static com.adaptris.core.jms.JmsUtils.closeQuietly;
-
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
 import javax.jms.Destination;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -31,14 +29,12 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.jms.Topic;
 import javax.jms.TopicSubscriber;
-
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQQueueSender;
 import org.apache.activemq.ActiveMQSession;
 import org.apache.activemq.ActiveMQTopicPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
@@ -68,6 +64,11 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
 
   // INTERLOK-2121
   public void testProducerSession_Invalided() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     DefinedJmsProducer producer = createProducer(new ConfiguredProduceDestination(getName()));
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
@@ -86,6 +87,11 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
   }
 
   public void testProduce_CaptureOutgoingMessageDetails() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     DefinedJmsProducer producer = createProducer(new ConfiguredProduceDestination(getName()));
     producer.setCaptureOutgoingMessageDetails(true);
@@ -107,6 +113,11 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
   }
 
   public void testProduceAndConsume_IntegerAcknowledgementMode_IntegerDeliveryMode() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
     consumer.setAcknowledgeMode(String.valueOf(AcknowledgeMode.Mode.AUTO_ACKNOWLEDGE.acknowledgeMode()));
@@ -143,6 +154,11 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
   }
 
   public void testDefaultSessionFactory() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
@@ -169,6 +185,11 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
   }
 
   public void testPerMessageSession() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
@@ -195,6 +216,11 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
   }
 
   public void testTimedInactivitySession() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
@@ -228,6 +254,11 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
   }
 
   public void testTimedInactivitySession_SessionStillValid() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
@@ -258,6 +289,11 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
   }
 
   public void testMessageCountSession() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
@@ -290,6 +326,11 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
   }
 
   public void testMessageCountSession_SessionStillValid() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
@@ -320,6 +361,11 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
   }
 
   public void testMessageSizeSession() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
@@ -353,6 +399,11 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
   }
 
   public void testMessageSizeSession_SessionStillValid() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
@@ -382,6 +433,11 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
   }
 
   public void testMetadataSession() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
@@ -423,6 +479,11 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
   }
 
   public void testMultipleProducersWithSession() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
@@ -451,6 +512,11 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
   }
 
   public void testMultipleRequestorWithSession() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     ServiceList serviceList = new ServiceList(new Service[]
     {

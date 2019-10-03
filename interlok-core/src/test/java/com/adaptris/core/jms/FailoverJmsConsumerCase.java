@@ -18,7 +18,6 @@ package com.adaptris.core.jms;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.Channel;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
@@ -35,6 +34,11 @@ public abstract class FailoverJmsConsumerCase extends JmsConsumerCase {
 
 
   public void testBug1012() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     FailoverJmsConnection connection = new FailoverJmsConnection();
     try {

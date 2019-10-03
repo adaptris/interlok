@@ -20,23 +20,20 @@ import static com.adaptris.core.jms.MessageTypeTranslatorCase.addMetadata;
 import static com.adaptris.core.jms.MessageTypeTranslatorCase.addProperties;
 import static com.adaptris.core.jms.MessageTypeTranslatorCase.assertJmsProperties;
 import static com.adaptris.core.jms.MessageTypeTranslatorCase.assertMetadata;
-
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.jms.Message;
 import javax.jms.Session;
-
 import org.apache.activemq.ActiveMQSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.StandaloneProducer;
+import com.adaptris.core.jms.JmsConfig;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.JmsConstants;
 import com.adaptris.core.jms.JmsProducer;
@@ -70,6 +67,11 @@ public class BlobMessageTranslatorTest extends JmsProducerExample {
   }
 
   public void testMoveMetadataJmsMessageToAdaptrisMessage() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     MessageTypeTranslatorImp trans = new BlobMessageTranslator();
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConnection conn = null;
@@ -96,6 +98,11 @@ public class BlobMessageTranslatorTest extends JmsProducerExample {
   }
 
   public void testMoveJmsHeadersJmsMessageToAdaptrisMessage() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     MessageTypeTranslatorImp trans = new BlobMessageTranslator();
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConnection conn = null;
@@ -134,6 +141,11 @@ public class BlobMessageTranslatorTest extends JmsProducerExample {
   }
 
   public void testMoveMetadataAdaptrisMessageToJmsMessage() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     MessageTypeTranslatorImp trans = new BlobMessageTranslator();
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConnection conn = null;
@@ -162,6 +174,11 @@ public class BlobMessageTranslatorTest extends JmsProducerExample {
   }
 
   public void testBug895() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     MessageTypeTranslatorImp trans = new BlobMessageTranslator();
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConnection conn = null;

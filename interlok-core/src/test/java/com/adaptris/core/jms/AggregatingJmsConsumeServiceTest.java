@@ -17,7 +17,6 @@
 package com.adaptris.core.jms;
 
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.DefaultMessageFactory;
@@ -46,19 +45,27 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
     super(name);
   }
 
+  @Override
   public void setUp() throws Exception {
     super.setUp();
   }
 
+  @Override
   public void tearDown() throws Exception {
     super.tearDown();
   }
 
+  @Override
   protected boolean doStateTests() {
     return false;
   }
   
   public void testNoOpMethods() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     AggregatingJmsConsumeService service = createService(broker);
     try {
@@ -79,6 +86,11 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
   }
 
   public void testService() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     AggregatingJmsConsumeService service = createService(broker);
     try {
@@ -98,6 +110,11 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
   }
 
   public void testServiceWithTimeout() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     AggregatingJmsConsumeService service = createService(broker);
     try {
@@ -120,6 +137,11 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
   }
 
   public void testService_MultipleMessages() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     AggregatingQueueConsumer consumer = new AggregatingQueueConsumer();
     consumer.setMessageAggregator(new IgnoreOriginalMimeAggregator());
