@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -53,8 +53,13 @@ public class JdbcResultBuilder {
     return setResultSet(statement, false);
   }
 
-  public JdbcResultBuilder setResultSet(Statement statement, boolean moreResultsQuietly) throws SQLException {
+  public JdbcResultBuilder trackStatement(Statement statement) throws SQLException {
     result.setStatement(statement);
+    return this;
+  }
+
+  public JdbcResultBuilder setResultSet(Statement statement, boolean moreResultsQuietly) throws SQLException {
+    trackStatement(statement);
     result.setResultSets(this.mapResultSet(statement, moreResultsQuietly));
     return this;
   }
@@ -84,7 +89,7 @@ public class JdbcResultBuilder {
       while (statement.getMoreResults(Statement.KEEP_CURRENT_RESULT));
     }
     catch (SQLException e) {
-      if (ignoreException) { 
+      if (ignoreException) {
         log.debug("Ignoring SQLException({}) : {}", e.getClass().getSimpleName(), e.getMessage());
       }
       else {
