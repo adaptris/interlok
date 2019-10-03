@@ -19,16 +19,15 @@ package com.adaptris.core.jms.activemq;
 import javax.jms.Destination;
 import javax.jms.Queue;
 import javax.jms.Session;
-
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ExampleProduceDestinationCase;
 import com.adaptris.core.ProduceDestination;
+import com.adaptris.core.jms.JmsConfig;
 import com.adaptris.core.jms.JmsConstants;
 import com.adaptris.core.jms.JmsReplyToDestination;
 
@@ -57,6 +56,11 @@ public class JmsReplyToDestinationTest extends ExampleProduceDestinationCase {
   }
 
   public void testRetrieveDestination() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();
@@ -72,6 +76,11 @@ public class JmsReplyToDestinationTest extends ExampleProduceDestinationCase {
 
 
   public void testRetrieveDestination_ByName() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();
@@ -87,6 +96,11 @@ public class JmsReplyToDestinationTest extends ExampleProduceDestinationCase {
   }
 
   public void testGetDestination() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();
@@ -101,6 +115,11 @@ public class JmsReplyToDestinationTest extends ExampleProduceDestinationCase {
   }
 
   public void testGetDestination_MetadataDoesNotExist() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();
