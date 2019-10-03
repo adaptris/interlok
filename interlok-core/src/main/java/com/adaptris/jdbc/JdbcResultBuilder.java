@@ -21,7 +21,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,8 +52,19 @@ public class JdbcResultBuilder {
     return setResultSet(statement, false);
   }
 
-  public JdbcResultBuilder setResultSet(Statement statement, boolean moreResultsQuietly) throws SQLException {
+  /**
+   * Set the statement on the JdbcResultSet for tracking purposes.
+   * <p>
+   * Differs from {@link #setResultSet(Statement)} since it doesn't do any processing
+   * </p>
+   */
+  public JdbcResultBuilder trackStatement(Statement statement) throws SQLException {
     result.setStatement(statement);
+    return this;
+  }
+
+  public JdbcResultBuilder setResultSet(Statement statement, boolean moreResultsQuietly) throws SQLException {
+    this.trackStatement(statement);
     result.setResultSets(this.mapResultSet(statement, moreResultsQuietly));
     return this;
   }
