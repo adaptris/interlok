@@ -64,7 +64,9 @@ public abstract class MetadataConverterCase {
     }
   }
 
+  @Test
   public void testSetPropertyWithReserved() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MetadataConverter mc = createConverter();
     try {
