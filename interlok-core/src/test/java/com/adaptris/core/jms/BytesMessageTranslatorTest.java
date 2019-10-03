@@ -357,7 +357,9 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
 
 
 
+  @Test
   public void testAdaptrisMessageToBytesMessage_ExceedsThreshold() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     BytesMessageTranslator trans = new BytesMessageTranslator() {
 
