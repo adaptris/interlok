@@ -44,6 +44,7 @@ public class BasicActiveMqImplementationTest {
   @Rule
   public TestName testName = new TestName();
 
+  @Test
   public void testConnectionFactory() throws Exception {
     VendorImplementation mq = create();
     JmsConnection c = new JmsConnection();
