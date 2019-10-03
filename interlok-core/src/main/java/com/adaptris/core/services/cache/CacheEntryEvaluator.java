@@ -25,6 +25,7 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -182,7 +183,7 @@ public class CacheEntryEvaluator {
    * @return the configured key translator via {@link #setValueTranslator(CacheValueTranslator)} or a default translator if null.
    */
   public CacheValueTranslator valueTranslator() {
-    return ObjectUtils.defaultIfNull(getValueTranslator(), (msg) -> null);
+    return ObjectUtils.defaultIfNull(getValueTranslator(), new NullCacheValueTranslator());
   }
 
   public String getFriendlyName() {
@@ -200,5 +201,17 @@ public class CacheEntryEvaluator {
 
   public String friendlyName() {
     return ObjectUtils.defaultIfNull(getFriendlyName(), this.getClass().getSimpleName());
+  }
+  
+  public static class NullCacheValueTranslator implements CacheValueTranslator {
+    @Override
+    public Object getValueFromMessage(AdaptrisMessage msg) throws CoreException {
+      return null;
+    }
+
+    @Override
+    public void addValueToMessage(AdaptrisMessage msg, Object value) throws CoreException {
+
+    }
   }
 }
