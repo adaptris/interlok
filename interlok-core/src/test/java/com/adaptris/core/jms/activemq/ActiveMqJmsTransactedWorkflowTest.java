@@ -16,8 +16,12 @@
 
 package com.adaptris.core.jms.activemq;
 
+import static com.adaptris.core.BaseCase.start;
+import static com.adaptris.core.BaseCase.stop;
+import static com.adaptris.core.BaseCase.waitForMessages;
 import static com.adaptris.core.jms.JmsConfig.DEFAULT_PAYLOAD;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createSafeUniqueId;
+import static junit.framework.TestCase.assertEquals;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,9 +31,10 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Assume;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.BaseCase;
 import com.adaptris.core.Channel;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
@@ -45,6 +50,7 @@ import com.adaptris.core.ServiceList;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandardProcessingExceptionHandler;
 import com.adaptris.core.Workflow;
+import com.adaptris.core.jms.JmsConfig;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.JmsConsumerImpl;
 import com.adaptris.core.jms.JmsPollingConsumerImpl;
@@ -66,24 +72,15 @@ import com.adaptris.util.TimeInterval;
 /**
  * Tests for JmsTransactedWorkflow that don't rely on Sonic.
  */
-public class ActiveMqJmsTransactedWorkflowTest extends BaseCase {
+public class ActiveMqJmsTransactedWorkflowTest {
 
   private static Log logR = LogFactory.getLog(ActiveMqJmsTransactedWorkflowTest.class);
 
-  public ActiveMqJmsTransactedWorkflowTest(String arg0) {
-    super(arg0);
-  }
 
-  @Override
-  protected void setUp() throws Exception {
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-  }
-
+  @Test
   public void testHandleChannelUnavailableWithException_Bug2343() throws Exception {
     int msgCount = 10;
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
     final Channel channel = createStartableChannel(activeMqBroker, true, "testHandleChannelUnavailableWithException_Bug2343",
@@ -114,7 +111,9 @@ public class ActiveMqJmsTransactedWorkflowTest extends BaseCase {
     activeMqBroker.destroy();
   }
 
+  @Test
   public void testHandleChannelUnavailable_Bug2343() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     int msgCount = 10;
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
@@ -146,8 +145,10 @@ public class ActiveMqJmsTransactedWorkflowTest extends BaseCase {
     activeMqBroker.destroy();
   }
 
+  @Test
   public void testServiceException() throws Exception {
     int msgCount = 10;
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
 
@@ -169,8 +170,9 @@ public class ActiveMqJmsTransactedWorkflowTest extends BaseCase {
     activeMqBroker.destroy();
   }
 
-
+  @Test
   public void testProduceException() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     int msgCount = 10;
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
@@ -202,7 +204,9 @@ public class ActiveMqJmsTransactedWorkflowTest extends BaseCase {
     activeMqBroker.destroy();
   }
 
+  @Test
   public void testRuntimeException() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     int msgCount = 10;
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
@@ -236,7 +240,9 @@ public class ActiveMqJmsTransactedWorkflowTest extends BaseCase {
 
   // In Non-Strict Mode, if you have configured an error handler, then
   // the transaction is successful.
+  @Test
   public void testServiceExceptionNonStrictWithErrorHandler() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     int msgCount = 10;
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
@@ -270,7 +276,9 @@ public class ActiveMqJmsTransactedWorkflowTest extends BaseCase {
   // In Strict Mode, Then even if you have configured an error handler, then
   // the transaction is unsucessful if we have an exception, leading to msgs on
   // the queue.
+  @Test
   public void testServiceExceptionStrictWithErrorHandler() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     int msgCount = 10;
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
@@ -298,7 +306,9 @@ public class ActiveMqJmsTransactedWorkflowTest extends BaseCase {
     activeMqBroker.destroy();
   }
 
+  @Test
   public void testMessagesRolledBackUsingQueue() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     int msgCount = 10;
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
@@ -321,7 +331,9 @@ public class ActiveMqJmsTransactedWorkflowTest extends BaseCase {
     activeMqBroker.destroy();
   }
 
+  @Test
   public void testMessagesRolledBackUsingTopic() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     int msgCount = 10;
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
@@ -346,7 +358,9 @@ public class ActiveMqJmsTransactedWorkflowTest extends BaseCase {
     activeMqBroker.destroy();
   }
 
+  @Test
   public void testMessagesCommittedUsingQueue() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     int msgCount = 10;
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
@@ -369,7 +383,9 @@ public class ActiveMqJmsTransactedWorkflowTest extends BaseCase {
     activeMqBroker.destroy();
   }
 
+  @Test
   public void testWorkflow_SkipProducer() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
 
     int msgCount = 10;
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
@@ -400,7 +416,9 @@ public class ActiveMqJmsTransactedWorkflowTest extends BaseCase {
     activeMqBroker.destroy();
   }
 
+  @Test
   public void testMessagesCommittedUsingTopic() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     int msgCount = 10;
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
@@ -421,7 +439,9 @@ public class ActiveMqJmsTransactedWorkflowTest extends BaseCase {
     activeMqBroker.destroy();
   }
 
+  @Test
   public void testWorkflowWithInterceptor() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     int msgCount = 10;
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
@@ -445,7 +465,9 @@ public class ActiveMqJmsTransactedWorkflowTest extends BaseCase {
     activeMqBroker.destroy();
   }
 
+  @Test
   public void testMessagesOrderedUsingQueue() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     int msgCount = 10;
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
@@ -478,7 +500,9 @@ public class ActiveMqJmsTransactedWorkflowTest extends BaseCase {
     activeMqBroker.destroy();
   }
 
+  @Test
   public void testMessagesOrderedUsingTopic() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     int msgCount = 10;
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
@@ -509,7 +533,9 @@ public class ActiveMqJmsTransactedWorkflowTest extends BaseCase {
     activeMqBroker.destroy();
   }
 
+  @Test
   public void testMessagesOrderedUsingQueuePollingConsumer() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     int msgCount = 10;
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());

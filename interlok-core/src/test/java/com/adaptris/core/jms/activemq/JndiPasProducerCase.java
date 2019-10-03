@@ -16,15 +16,22 @@
 
 package com.adaptris.core.jms.activemq;
 
+import static com.adaptris.core.BaseCase.execute;
+import static com.adaptris.core.BaseCase.start;
+import static com.adaptris.core.BaseCase.stop;
 import static com.adaptris.core.jms.JmsProducerCase.assertMessages;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
-
-import com.adaptris.core.BaseCase;
+import static org.junit.Assert.fail;
+import org.junit.Assume;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
+import com.adaptris.core.jms.JmsConfig;
 import com.adaptris.core.jms.PasConsumer;
 import com.adaptris.core.jms.PasProducer;
 import com.adaptris.core.jms.jndi.SimpleFactoryConfiguration;
@@ -33,20 +40,22 @@ import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
-public abstract class JndiPasProducerCase extends BaseCase {
+public abstract class JndiPasProducerCase {
 
-  public JndiPasProducerCase(String name) {
-    super(name);
-  }
+  @Rule
+  public TestName testName = new TestName();
 
   protected abstract StandardJndiImplementation createVendorImplementation();
 
+  @Test
   public void testProduceAndConsume() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     StandardJndiImplementation recvVendorImp = createVendorImplementation();
     StandardJndiImplementation sendVendorImp = createVendorImplementation();
-    String queueName = getName() + "_queue";
-    String topicName = getName() + "_topic";
+    String queueName = testName.getMethodName() + "_queue";
+    String topicName = testName.getMethodName() + "_topic";
 
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(broker.getJndiPasConnection(recvVendorImp, false, queueName,
         topicName), new PasConsumer(new ConfiguredConsumeDestination(topicName)));
@@ -65,9 +74,11 @@ public abstract class JndiPasProducerCase extends BaseCase {
     }
   }
 
+  @Test
   public void testProduceAndConsume_ExtraConfig() throws Exception {
-    String queueName = getName() + "_queue";
-    String topicName = getName() + "_topic";
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    String queueName = testName.getMethodName() + "_queue";
+    String topicName = testName.getMethodName() + "_topic";
     SimpleFactoryConfiguration sfc = new SimpleFactoryConfiguration();
     KeyValuePairSet kvps = new KeyValuePairSet();
     kvps.add(new KeyValuePair("ClientID", "testProduceAndConsume_ExtraConfig"));
@@ -97,9 +108,11 @@ public abstract class JndiPasProducerCase extends BaseCase {
     }
   }
 
+  @Test
   public void testProduceAndConsumeUsingJndiOnly() throws Exception {
-    String queueName = getName() + "_queue";
-    String topicName = getName() + "_topic";
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    String queueName = testName.getMethodName() + "_queue";
+    String topicName = testName.getMethodName() + "_topic";
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     StandardJndiImplementation recvVendorImp = createVendorImplementation();
     StandardJndiImplementation sendVendorImp = createVendorImplementation();
@@ -122,9 +135,11 @@ public abstract class JndiPasProducerCase extends BaseCase {
 
   }
 
+  @Test
   public void testProduceJndiOnlyObjectNotFound() throws Exception {
-    String queueName = getName() + "_queue";
-    String topicName = getName() + "_topic";
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    String queueName = testName.getMethodName() + "_queue";
+    String topicName = testName.getMethodName() + "_topic";
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     StandardJndiImplementation sendVendorImp = createVendorImplementation();
     StandaloneProducer standaloneProducer = new StandaloneProducer(broker.getJndiPasConnection(sendVendorImp, true, queueName,
@@ -136,8 +151,7 @@ public abstract class JndiPasProducerCase extends BaseCase {
       standaloneProducer.produce(createMessage(null));
       fail("Expected ProduceException");
     }
-    catch (ProduceException e) {
-      log.trace("Expected Exception", e);
+    catch (ProduceException expected) {
     }
     finally {
       stop(standaloneProducer);

@@ -16,32 +16,37 @@
 
 package com.adaptris.core.jms.activemq;
 
+import static com.adaptris.core.BaseCase.execute;
 import static com.adaptris.core.jms.JmsProducerCase.assertMessages;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
-
-import com.adaptris.core.BaseCase;
+import org.junit.Assume;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
+import com.adaptris.core.jms.JmsConfig;
 import com.adaptris.core.jms.PasConsumer;
 import com.adaptris.core.jms.PasProducer;
 import com.adaptris.core.stubs.MockMessageListener;
 
-public class FailoverPasProducerTest extends BaseCase {
+public class FailoverPasProducerTest {
 
-  public FailoverPasProducerTest(String name) {
-    super(name);
-  }
+  @Rule
+  public TestName testName = new TestName();
 
+  @Test
   public void testProduceAndConsume() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(broker.getFailoverJmsConnection(false), new PasConsumer(
-        new ConfiguredConsumeDestination(getName())));
+            new ConfiguredConsumeDestination(testName.getMethodName())));
     MockMessageListener jms = new MockMessageListener();
     standaloneConsumer.registerAdaptrisMessageListener(jms);
     StandaloneProducer standaloneProducer = new StandaloneProducer(broker.getFailoverJmsConnection(false), new PasProducer(
-        new ConfiguredProduceDestination(getName())));
+            new ConfiguredProduceDestination(testName.getMethodName())));
     try {
       broker.start();
       execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
