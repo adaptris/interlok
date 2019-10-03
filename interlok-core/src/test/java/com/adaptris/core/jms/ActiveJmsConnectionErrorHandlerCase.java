@@ -16,17 +16,25 @@
 
 package com.adaptris.core.jms;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import java.util.concurrent.TimeUnit;
-
-import com.adaptris.core.BaseCase;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.adaptris.util.TimeInterval;
 
-public abstract class ActiveJmsConnectionErrorHandlerCase extends BaseCase {
+public abstract class ActiveJmsConnectionErrorHandlerCase {
 
-  public ActiveJmsConnectionErrorHandlerCase(String name) {
-    super(name);
-  }
+  @Rule
+  public TestName testName = new TestName();
+  protected Logger log = LoggerFactory.getLogger(this.getClass());
 
+  @Test
   public void testRetryInterval() {
     ActiveJmsConnectionErrorHandler handler = new ActiveJmsConnectionErrorHandler();
     assertNull(handler.getCheckInterval());
@@ -48,6 +56,7 @@ public abstract class ActiveJmsConnectionErrorHandlerCase extends BaseCase {
     assertEquals(5000, handler.retryInterval());
   }
 
+  @Test
   public void testAdditionalLogging() {
     ActiveJmsConnectionErrorHandler ajceh = new ActiveJmsConnectionErrorHandler();
     assertNull(ajceh.getAdditionalLogging());

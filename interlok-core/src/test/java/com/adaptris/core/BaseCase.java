@@ -49,8 +49,8 @@ import junit.framework.TestCase;
  * </p>
  */
 public abstract class BaseCase extends TestCase {
-  protected static final long MAX_WAIT = 65000;
-  protected static final int DEFAULT_WAIT_INTERVAL = 100;
+  public static final long MAX_WAIT = 65000;
+  public static final int DEFAULT_WAIT_INTERVAL = 100;
 
   public static final Properties PROPERTIES;
   public static final String PROPERTIES_RESOURCE = "unit-tests.properties";
