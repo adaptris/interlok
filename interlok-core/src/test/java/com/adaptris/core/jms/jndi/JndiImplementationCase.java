@@ -16,11 +16,20 @@
 
 package com.adaptris.core.jms.jndi;
 
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.concurrent.TimeUnit;
-
-import com.adaptris.core.BaseCase;
+import org.junit.Assume;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.StandaloneProducer;
+import com.adaptris.core.jms.JmsConfig;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.JmsConnectionConfig;
 import com.adaptris.core.jms.PasProducer;
@@ -34,14 +43,14 @@ import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.TimeInterval;
 
-public abstract class JndiImplementationCase extends BaseCase {
-
-  public JndiImplementationCase(String name) {
-    super(name);
-  }
+public abstract class JndiImplementationCase {
 
   protected abstract StandardJndiImplementation createVendorImplementation();
 
+  @Rule
+  public TestName testName = new TestName();
+
+  @Test
   public void testSetEnableJndiForQueues() throws Exception {
     BaseJndiImplementation vendorImp = createVendorImplementation();
     assertNull(vendorImp.getUseJndiForQueues());
@@ -54,6 +63,7 @@ public abstract class JndiImplementationCase extends BaseCase {
     assertFalse(vendorImp.useJndiForQueues());
   }
 
+  @Test
   public void testSetEnableJndiForTopics() throws Exception {
     BaseJndiImplementation vendorImp = createVendorImplementation();
     assertNull(vendorImp.getUseJndiForTopics());
@@ -67,6 +77,7 @@ public abstract class JndiImplementationCase extends BaseCase {
 
   }
 
+  @Test
   public void testSetEnableEncodedPasswords() throws Exception {
     BaseJndiImplementation vendorImp = createVendorImplementation();
     assertNull(vendorImp.getEnableEncodedPasswords());
@@ -79,6 +90,7 @@ public abstract class JndiImplementationCase extends BaseCase {
     assertFalse(vendorImp.enableEncodedPasswords());
   }
 
+  @Test
   public void testSetNewContextOnException() throws Exception {
     BaseJndiImplementation jv = createVendorImplementation();
     assertNull(jv.getNewContextOnException());
@@ -92,6 +104,7 @@ public abstract class JndiImplementationCase extends BaseCase {
     assertFalse(jv.newContextOnException());
   }
 
+  @Test
   public void testSetJndiName() throws Exception {
     BaseJndiImplementation jv = createVendorImplementation();
     jv.setJndiName("ABCDE");
@@ -113,6 +126,7 @@ public abstract class JndiImplementationCase extends BaseCase {
     assertEquals("ABCDE", jv.getJndiName());
   }
 
+  @Test
   public void testSetExtraConfiguration() throws Exception {
     BaseJndiImplementation jv = createVendorImplementation();
     assertEquals(NoOpFactoryConfiguration.class, jv.getExtraFactoryConfiguration().getClass());
@@ -129,6 +143,7 @@ public abstract class JndiImplementationCase extends BaseCase {
   }
 
 
+  @Test
   public void testSetJndiParams() throws Exception {
     BaseJndiImplementation jv = createVendorImplementation();
     KeyValuePairSet set = new KeyValuePairSet();
@@ -143,9 +158,11 @@ public abstract class JndiImplementationCase extends BaseCase {
     assertEquals(set, jv.getJndiParams());
   }
   
+  @Test
   public void testInitialiseDefaultArtemisBroker() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     EmbeddedArtemis broker = new EmbeddedArtemis();
-    String topicName = getName() + "_topic";
+    String topicName = testName.getMethodName() + "_topic";
     
     PasProducer producer = new PasProducer(new ConfiguredProduceDestination(topicName));
     JmsConnection c = broker.getJmsConnection();
@@ -161,10 +178,12 @@ public abstract class JndiImplementationCase extends BaseCase {
     }
   }
 
+  @Test
   public void testInitialiseWithCredentials() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     RequiresCredentialsBroker broker = new RequiresCredentialsBroker();
-    String queueName = getName() + "_queue";
-    String topicName = getName() + "_topic";
+    String queueName = testName.getMethodName() + "_queue";
+    String topicName = testName.getMethodName() + "_topic";
     PasProducer producer = new PasProducer(new ConfiguredProduceDestination(topicName));
     StandardJndiImplementation jv = createVendorImplementation();
     JmsConnection c = broker.getJndiPasConnection(jv, false, queueName, topicName);
@@ -182,10 +201,12 @@ public abstract class JndiImplementationCase extends BaseCase {
     }
   }
 
+  @Test
   public void testInitialiseWithEncryptedPassword_viaEncodedPasswordKeys() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     RequiresCredentialsBroker broker = new RequiresCredentialsBroker();
-    String queueName = getName() + "_queue";
-    String topicName = getName() + "_topic";
+    String queueName = testName.getMethodName() + "_queue";
+    String topicName = testName.getMethodName() + "_topic";
     PasProducer producer = new PasProducer(new ConfiguredProduceDestination(queueName));
     StandardJndiImplementation jv = createVendorImplementation();
     JmsConnection c = broker.getJndiPasConnection(jv, false, queueName, topicName);
@@ -205,9 +226,11 @@ public abstract class JndiImplementationCase extends BaseCase {
     }
   }
 
+  @Test
   public void testInitialiseWithEncryptedPassword_withEnableEncodedPasswords() throws Exception {
-    String queueName = getName() + "_queue";
-    String topicName = getName() + "_topic";
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    String queueName = testName.getMethodName() + "_queue";
+    String topicName = testName.getMethodName() + "_topic";
     RequiresCredentialsBroker broker = new RequiresCredentialsBroker();
     PasProducer producer = new PasProducer(new ConfiguredProduceDestination(queueName));
     StandardJndiImplementation jv = createVendorImplementation();
@@ -229,10 +252,12 @@ public abstract class JndiImplementationCase extends BaseCase {
     }
   }
 
+  @Test
   public void testInitialiseWithEncryptedPasswordNotSupported() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     RequiresCredentialsBroker broker = new RequiresCredentialsBroker();
-    String queueName = getName() + "_queue";
-    String topicName = getName() + "_topic";
+    String queueName = testName.getMethodName() + "_queue";
+    String topicName = testName.getMethodName() + "_topic";
     PasProducer producer = new PasProducer(new ConfiguredProduceDestination(queueName));
     StandardJndiImplementation jv = createVendorImplementation();
     JmsConnection c = broker.getJndiPasConnection(jv, false, queueName, topicName);
@@ -253,10 +278,12 @@ public abstract class JndiImplementationCase extends BaseCase {
     }
   }
 
+  @Test
   public void testInitialiseWithTopicConnectionFactoryNotFound() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    String queueName = getName() + "_queue";
-    String topicName = getName() + "_topic";
+    String queueName = testName.getMethodName() + "_queue";
+    String topicName = testName.getMethodName() + "_topic";
     PasProducer producer = new PasProducer(new ConfiguredProduceDestination(queueName));
     StandardJndiImplementation jv = createVendorImplementation();
     JmsConnection c = broker.getJndiPasConnection(jv, false, queueName, topicName);
@@ -277,10 +304,12 @@ public abstract class JndiImplementationCase extends BaseCase {
     }
   }
 
+  @Test
   public void testInitialiseWithQueueConnectionFactoryNotFound() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    String queueName = getName() + "_queue";
-    String topicName = getName() + "_topic";
+    String queueName = testName.getMethodName() + "_queue";
+    String topicName = testName.getMethodName() + "_topic";
     PasProducer producer = new PasProducer(new ConfiguredProduceDestination(topicName));
     StandardJndiImplementation jv = createVendorImplementation();
     JmsConnection c = broker.getJndiPtpConnection(jv, false, queueName, topicName);
