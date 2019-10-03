@@ -76,6 +76,11 @@ public class AdvancedActiveMqProducerTest extends BasicActiveMqProducerTest {
   }
 
   public void testQueueProduceAndConsumeWithPrefetch() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();
