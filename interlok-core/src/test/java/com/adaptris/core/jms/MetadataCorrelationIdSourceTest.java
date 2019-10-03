@@ -16,20 +16,26 @@
 
 package com.adaptris.core.jms;
 
+import static com.adaptris.core.BaseCase.start;
+import static com.adaptris.core.BaseCase.stop;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import javax.jms.Session;
 import javax.jms.TextMessage;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.junit.Assume;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.BaseCase;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 
 @SuppressWarnings("deprecation")
-public class MetadataCorrelationIdSourceTest extends BaseCase {
+public class MetadataCorrelationIdSourceTest {
 
   private static final String CORRELATIONID_KEY = "correlationid_key";
   private static final String TEXT = "The quick brown fox";
@@ -37,16 +43,9 @@ public class MetadataCorrelationIdSourceTest extends BaseCase {
 
   protected transient Log log = LogFactory.getLog(this.getClass());
 
-  /**
-   * <p>
-   * Creates a new instance.
-   * </p>
-   */
-  public MetadataCorrelationIdSourceTest(String arg0) throws Exception {
-    super(arg0);
-  }
-
+  @Test
   public void testAdaptrisMessageMetadataToJmsCorrelationId() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
 
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     JmsConnection conn = broker.getJmsConnection();
@@ -68,7 +67,9 @@ public class MetadataCorrelationIdSourceTest extends BaseCase {
     }
   }
 
+  @Test
   public void testAdaptrisMessageMetadataToJmsCorrelationId_NoMetadataKey() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     JmsConnection conn = broker.getJmsConnection();
     try {
@@ -89,7 +90,9 @@ public class MetadataCorrelationIdSourceTest extends BaseCase {
     }
   }
 
+  @Test
   public void testAdaptrisMessageMetadataToJmsCorrelationId_EmptyValue() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     JmsConnection conn = broker.getJmsConnection();
     try {
@@ -110,7 +113,9 @@ public class MetadataCorrelationIdSourceTest extends BaseCase {
     }
   }
 
+  @Test
   public void testJmsCorrelationIdToAdaptrisMessageMetadata() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     JmsConnection conn = broker.getJmsConnection();
     try {
@@ -131,7 +136,9 @@ public class MetadataCorrelationIdSourceTest extends BaseCase {
     }
   }
 
+  @Test
   public void testJmsCorrelationIdToAdaptrisMessageMetadata_NoMetadataKey() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     JmsConnection conn = broker.getJmsConnection();
     try {
@@ -152,7 +159,9 @@ public class MetadataCorrelationIdSourceTest extends BaseCase {
     }
   }
 
+  @Test
   public void testJmsCorrelationIdToAdaptrisMessageMetadata_NoValue() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     JmsConnection conn = broker.getJmsConnection();
     try {
@@ -172,6 +181,7 @@ public class MetadataCorrelationIdSourceTest extends BaseCase {
     }
   }
 
+  @Test
   public void testSetMetadataKey() {
     MetadataCorrelationIdSource mcs = new MetadataCorrelationIdSource();
     assertEquals(null, mcs.getMetadataKey());
