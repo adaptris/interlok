@@ -1,8 +1,8 @@
 <ivysettings>
   <settings defaultResolver="chain-resolver"/>
-  <credentials host="development.adaptris.net" realm="Sonatype Nexus Repository Manager" username="${ivy.user}" passwd="${ivy.password}"/>
+  <credentials host="nexus.adaptris.net" realm="Sonatype Nexus Repository Manager" username="${ivy.user}" passwd="${ivy.password}"/>
   <properties file="${user.home}/.ivy2/ivy-settings.properties"/>
-  <property name="nexus-base-url" value="https://development.adaptris.net" override="false"/>
+  <property name="nexus-base-url" value="https://nexus.adaptris.net" override="false"/>
   <property name="nexus-public" value="${nexus-base-url}/nexus/content/groups/public" override="false"/>
   <property name="nexus-private" value="${nexus-base-url}/nexus/content/groups/private" override="false"/>
   <property name="nexus-releases" value="${nexus-base-url}/nexus/content/repositories/releases" override="false"/>
