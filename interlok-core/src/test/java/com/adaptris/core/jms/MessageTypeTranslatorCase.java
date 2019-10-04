@@ -37,7 +37,6 @@ import javax.jms.Message;
 import javax.jms.Session;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -146,7 +145,7 @@ public abstract class MessageTypeTranslatorCase {
 
   @Test
   public void testMoveMetadataJmsMessageToAdaptrisMessage() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     try {
@@ -167,7 +166,7 @@ public abstract class MessageTypeTranslatorCase {
 
   @Test
   public void testMoveMetadataJmsMessageToAdaptrisMessage_RemoveAllFilter() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     trans.setMetadataFilter(new RemoveAllMetadataFilter());
@@ -190,7 +189,7 @@ public abstract class MessageTypeTranslatorCase {
 
   @Test
   public void testMoveMetadata_JmsMessageToAdaptrisMessage_WithFilter() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     RegexMetadataFilter regexp = new RegexMetadataFilter();
@@ -216,7 +215,7 @@ public abstract class MessageTypeTranslatorCase {
 
   @Test
   public void testMoveJmsHeadersJmsMessageToAdaptrisMessage() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     try {
@@ -248,7 +247,7 @@ public abstract class MessageTypeTranslatorCase {
 
   @Test
   public void testMoveJmsHeadersAdaptrisMessageToJmsMessage() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator().withMoveJmsHeaders(true);
     try {
@@ -280,7 +279,7 @@ public abstract class MessageTypeTranslatorCase {
 
   @Test
   public void testMoveMetadataAdaptrisMessageToJmsMessage() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     try {
@@ -303,7 +302,7 @@ public abstract class MessageTypeTranslatorCase {
 
   @Test
   public void testMoveMetadata_AdaptrisMessageToJmsMessage_RemoveAll() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans =
         createTranslator().withMetadataFilter(new RemoveAllMetadataFilter());
@@ -329,7 +328,7 @@ public abstract class MessageTypeTranslatorCase {
 
   @Test
   public void testMoveMetadata_AdaptrisMessageToJmsMessage_WithFilter() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     RegexMetadataFilter regexp = new RegexMetadataFilter();
@@ -355,7 +354,7 @@ public abstract class MessageTypeTranslatorCase {
 
   @Test
   public void testBug895() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     try {

@@ -23,7 +23,6 @@ import static com.adaptris.core.jms.JmsProducerCase.createMessage;
 import static com.adaptris.core.jms.activemq.ActiveMqPasPollingConsumerTest.shutdownQuietly;
 import static com.adaptris.core.jms.activemq.ActiveMqPasPollingConsumerTest.startAndStop;
 import java.util.concurrent.TimeUnit;
-import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -33,7 +32,6 @@ import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.Poller;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
-import com.adaptris.core.jms.JmsConfig;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.JmsPollingConsumer;
 import com.adaptris.core.jms.JmsProducer;
@@ -51,7 +49,6 @@ public class ActiveMqJmsPollingConsumerTest {
 
   @Test
   public void testTopic_NoSubscriptionId() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     String rfc6167 = "jms:topic:" + testName.getMethodName();
     final EmbeddedActiveMq broker = new EmbeddedActiveMq();
     final StandaloneConsumer consumer =
@@ -68,7 +65,6 @@ public class ActiveMqJmsPollingConsumerTest {
 
   @Test
   public void testQueue_ProduceConsume() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     int msgCount = 5;
     String rfc6167 = "jms:queue:" + testName.getMethodName();
     final EmbeddedActiveMq broker = new EmbeddedActiveMq();
@@ -95,7 +91,6 @@ public class ActiveMqJmsPollingConsumerTest {
 
   @Test
   public void testTopic_ProduceConsume() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     int msgCount = 5;
     String rfc6167 =
         "jms:topic:" + testName.getMethodName() + "?subscriptionId=" + testName.getMethodName();

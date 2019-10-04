@@ -18,7 +18,6 @@ package com.adaptris.core.jms;
 
 import static org.junit.Assert.assertNotSame;
 import javax.jms.Session;
-import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -31,7 +30,7 @@ public class JmsConnectionTest {
 
   @Test
   public void testSession() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     JmsConnection conn = broker.getJmsConnection();
     try {

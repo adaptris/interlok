@@ -23,13 +23,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import java.util.concurrent.TimeUnit;
-import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.StandaloneProducer;
-import com.adaptris.core.jms.JmsConfig;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.JmsConnectionConfig;
 import com.adaptris.core.jms.PasProducer;
@@ -160,7 +158,7 @@ public abstract class JndiImplementationCase {
   
   @Test
   public void testInitialiseDefaultArtemisBroker() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedArtemis broker = new EmbeddedArtemis();
     String topicName = testName.getMethodName() + "_topic";
     
@@ -180,7 +178,7 @@ public abstract class JndiImplementationCase {
 
   @Test
   public void testInitialiseWithCredentials() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     RequiresCredentialsBroker broker = new RequiresCredentialsBroker();
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
@@ -203,7 +201,7 @@ public abstract class JndiImplementationCase {
 
   @Test
   public void testInitialiseWithEncryptedPassword_viaEncodedPasswordKeys() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     RequiresCredentialsBroker broker = new RequiresCredentialsBroker();
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
@@ -228,7 +226,7 @@ public abstract class JndiImplementationCase {
 
   @Test
   public void testInitialiseWithEncryptedPassword_withEnableEncodedPasswords() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
     RequiresCredentialsBroker broker = new RequiresCredentialsBroker();
@@ -254,7 +252,7 @@ public abstract class JndiImplementationCase {
 
   @Test
   public void testInitialiseWithEncryptedPasswordNotSupported() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     RequiresCredentialsBroker broker = new RequiresCredentialsBroker();
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
@@ -280,7 +278,7 @@ public abstract class JndiImplementationCase {
 
   @Test
   public void testInitialiseWithTopicConnectionFactoryNotFound() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
@@ -306,7 +304,7 @@ public abstract class JndiImplementationCase {
 
   @Test
   public void testInitialiseWithQueueConnectionFactoryNotFound() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";

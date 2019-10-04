@@ -33,7 +33,6 @@ import javax.jms.MessageEOFException;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import javax.jms.TextMessage;
-import org.junit.Assume;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -58,7 +57,7 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
 
   @Test
   public void testConvertFromConsumeTypeBytes() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
 
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
@@ -89,7 +88,7 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
 
   @Test
   public void testConvertFromConsumeTypeText() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
 
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
@@ -120,7 +119,7 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
   
   @Test
   public void testConvertFromConsumeTypeTextRemoveKeyAfter() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
 
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
 
@@ -156,7 +155,7 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
 
   @Test
   public void testConvertFromConsumeTypeTextDefaultRemoveKeyAfter() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
 
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
@@ -190,7 +189,7 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
   
   @Test
   public void testConvertFromConsumeTypeMap() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
 
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
 
@@ -221,7 +220,7 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
   
   @Test
   public void testConvertFromConsumeTypeObject() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
 
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
 
@@ -254,7 +253,7 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
   
   @Test
   public void testConvertFromConsumeTypeBytesNoMetadataKey() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
 
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
 
@@ -287,7 +286,7 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
   
   @Test
   public void testConvertFromConsumeTypeBytesIllegalMetadataKey() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
 
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
 
@@ -319,7 +318,7 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
   
   @Test
   public void testBytesMessageToAdaptrisMessage() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
 
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
 
@@ -347,7 +346,7 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
 
   @Test
   public void testAdaptrisMessageToBytesMessage() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
 
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
@@ -373,7 +372,7 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
 
   @Test
   public void testAdaptrisMessageToTextMessage() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
 
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
@@ -397,7 +396,7 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
 
   @Test
   public void testMapMessageToAdaptrisMessage() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
 
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
 
@@ -423,7 +422,7 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
 
   @Test
   public void testAdaptrisMessageToMapMessage() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
 
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
@@ -449,7 +448,7 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
 
   @Test
   public void testObjectMessageToAdaptrisMessage() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
 
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
 
@@ -477,7 +476,7 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
 
   @Test
   public void testAdaptrisMessageToObjectMessage() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
 
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
@@ -503,7 +502,7 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
   
   @Test
   public void testMessageToAdaptrisMessageWithFallback() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
 
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
 
@@ -527,7 +526,7 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
   
   @Test
   public void testAdaptrisMessageToMessageWithFallback() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
 
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
 

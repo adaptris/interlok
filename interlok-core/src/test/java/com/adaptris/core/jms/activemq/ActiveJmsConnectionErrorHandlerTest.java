@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals;
 import java.security.SecureRandom;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-import org.junit.Assume;
 import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -38,7 +37,6 @@ import com.adaptris.core.StartedState;
 import com.adaptris.core.Workflow;
 import com.adaptris.core.jms.ActiveJmsConnectionErrorHandler;
 import com.adaptris.core.jms.ActiveJmsConnectionErrorHandlerCase;
-import com.adaptris.core.jms.JmsConfig;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.PasConsumer;
 import com.adaptris.core.jms.PasProducer;
@@ -53,7 +51,6 @@ public class ActiveJmsConnectionErrorHandlerTest extends ActiveJmsConnectionErro
 
   @Test
   public void testConnectionErrorHandler() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
@@ -80,7 +77,6 @@ public class ActiveJmsConnectionErrorHandlerTest extends ActiveJmsConnectionErro
 
   @Test
   public void testConnectionErrorHandlerWithJndi() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     String oldName = Thread.currentThread().getName();
     Thread.currentThread().setName(testName.getMethodName());
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
@@ -114,7 +110,6 @@ public class ActiveJmsConnectionErrorHandlerTest extends ActiveJmsConnectionErro
 
   @Test
   public void testConnectionErrorHandlerWhileConnectionIsClosed() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
@@ -141,7 +136,6 @@ public class ActiveJmsConnectionErrorHandlerTest extends ActiveJmsConnectionErro
 
   @Test
   public void testBug1926() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
@@ -167,7 +161,6 @@ public class ActiveJmsConnectionErrorHandlerTest extends ActiveJmsConnectionErro
 
   @Test
   public void testActiveRestartSharedConnection() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     Adapter adapter = new Adapter();
     adapter.setUniqueId(testName.getMethodName());
@@ -216,7 +209,6 @@ public class ActiveJmsConnectionErrorHandlerTest extends ActiveJmsConnectionErro
 
   @Test
   public void testActiveRestartSharedConnection_ChannelNotStarted() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     Adapter adapter = new Adapter();
     adapter.setUniqueId(testName.getMethodName());

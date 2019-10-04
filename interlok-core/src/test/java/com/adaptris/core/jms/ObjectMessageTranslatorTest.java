@@ -26,7 +26,6 @@ import java.io.OutputStream;
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
-import org.junit.Assume;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -36,7 +35,7 @@ public class ObjectMessageTranslatorTest extends GenericMessageTypeTranslatorCas
 
   @Test
   public void testObjectMessageToAdaptrisMessage() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = new ObjectMessageTranslator();
     try {
@@ -62,7 +61,7 @@ public class ObjectMessageTranslatorTest extends GenericMessageTypeTranslatorCas
 
   @Test
   public void testAdaptrisMessageToObjectMessage() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = new ObjectMessageTranslator();
     try {

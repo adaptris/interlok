@@ -24,13 +24,11 @@ import static org.junit.Assert.assertTrue;
 import java.util.Map;
 import javax.jms.Queue;
 import javax.jms.Topic;
-import org.junit.Assume;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.MetadataDestination;
 import com.adaptris.core.StandaloneProducer;
-import com.adaptris.core.jms.JmsConfig;
 import com.adaptris.core.jms.PtpProducer;
 import com.adaptris.core.jms.jndi.CachedDestinationJndiImplementation;
 import com.adaptris.core.stubs.MockMessageListener;
@@ -45,7 +43,7 @@ public class DestinationCacheJndiPtpProducerTest extends JndiPtpProducerCase {
 
   @Test
   public void testProduceWithCache() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     DestinationCachingJndiVendorImpl sendVendorImp = new DestinationCachingJndiVendorImpl();
     sendVendorImp.setUseJndiForQueues(true);
@@ -70,7 +68,7 @@ public class DestinationCacheJndiPtpProducerTest extends JndiPtpProducerCase {
 
   @Test
   public void testProduceWithCacheExceeded() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     DestinationCachingJndiVendorImpl jv = new DestinationCachingJndiVendorImpl(2);
     MockMessageListener jms = new MockMessageListener();

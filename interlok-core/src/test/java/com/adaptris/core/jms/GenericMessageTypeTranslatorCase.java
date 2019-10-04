@@ -17,7 +17,6 @@ package com.adaptris.core.jms;
 
 import javax.jms.Message;
 import javax.jms.Session;
-import org.junit.Assume;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -29,7 +28,7 @@ public abstract class GenericMessageTypeTranslatorCase extends MessageTypeTransl
 
   @Test
   public void testMetadataConverter() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator().withMetadataConverters(
         new StringMetadataConverter(new RegexMetadataFilter().withIncludePatterns(STRING_METADATA)),

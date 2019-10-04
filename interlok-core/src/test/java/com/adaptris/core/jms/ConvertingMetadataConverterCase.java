@@ -20,7 +20,6 @@ import static org.junit.Assert.fail;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
-import org.junit.Assume;
 import org.junit.Test;
 import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.MetadataElement;
@@ -30,7 +29,7 @@ public abstract class ConvertingMetadataConverterCase extends MetadataConverterC
 
   @Test
   public void testConvertFailure() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MetadataConverter mc = createConverter();
     try {
@@ -49,7 +48,7 @@ public abstract class ConvertingMetadataConverterCase extends MetadataConverterC
 
   @Test
   public void testConvertFailure_Strict() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MetadataConverter mc = createConverter();
     mc.setStrictConversion(true);

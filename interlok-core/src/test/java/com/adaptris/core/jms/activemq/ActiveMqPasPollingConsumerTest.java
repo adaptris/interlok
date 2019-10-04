@@ -25,7 +25,6 @@ import static junit.framework.TestCase.fail;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -37,7 +36,6 @@ import com.adaptris.core.RandomIntervalPoller;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandardWorkflow;
-import com.adaptris.core.jms.JmsConfig;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.PasPollingConsumer;
 import com.adaptris.core.jms.PasProducer;
@@ -111,7 +109,7 @@ public class ActiveMqPasPollingConsumerTest {
 
   @Test
   public void testProduceConsume() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     int msgCount = 5;
     final EmbeddedActiveMq activeBroker = new EmbeddedActiveMq();
     final StandaloneProducer sender = new StandaloneProducer(activeBroker.getJmsConnection(), new PasProducer(

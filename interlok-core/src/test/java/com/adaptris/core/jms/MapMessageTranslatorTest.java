@@ -20,7 +20,6 @@ import static org.junit.Assert.assertTrue;
 import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.jms.Session;
-import org.junit.Assume;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -51,7 +50,7 @@ public class MapMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
 
   @Test
   public void testMapMessageToAdaptrisMessage() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MapMessageTranslator t = new MapMessageTranslator();
     try {
@@ -74,7 +73,7 @@ public class MapMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
 
   @Test
   public void testAdaptrisMessageToMapMessage() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MapMessageTranslator t = new MapMessageTranslator();
     try {
@@ -100,7 +99,7 @@ public class MapMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
 
   @Test
   public void testAdaptrisMessageToMapMessageWithMetadataAsPayload() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MapMessageTranslator t = new MapMessageTranslator();
     try {

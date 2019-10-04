@@ -21,15 +21,12 @@ import static com.adaptris.core.PortManager.release;
 import static com.adaptris.core.jms.JmsConfig.DEFAULT_PAYLOAD;
 import static com.adaptris.core.jms.JmsConfig.DEFAULT_TTL;
 import static com.adaptris.core.jms.JmsConfig.HIGHEST_PRIORITY;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-
 import javax.jms.DeliveryMode;
 import javax.jms.JMSException;
 import javax.naming.Context;
-
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.Broker;
@@ -39,10 +36,11 @@ import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.jndi.ActiveMQInitialContextFactory;
 import org.apache.activemq.store.memory.MemoryPersistenceAdapter;
 import org.apache.commons.io.FileUtils;
-
+import org.junit.Assume;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.jms.FailoverJmsConnection;
+import com.adaptris.core.jms.JmsConfig;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.JmsConstants;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
@@ -71,6 +69,7 @@ public class EmbeddedActiveMq {
   }
 
   public EmbeddedActiveMq() throws Exception {
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     brokerName = createSafeUniqueId(this);
     port = nextUnusedPort(61616);
   }

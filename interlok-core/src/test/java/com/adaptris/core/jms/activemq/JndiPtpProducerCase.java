@@ -22,7 +22,6 @@ import static com.adaptris.core.BaseCase.stop;
 import static com.adaptris.core.jms.JmsProducerCase.assertMessages;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
 import static org.junit.Assert.fail;
-import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -31,7 +30,6 @@ import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
-import com.adaptris.core.jms.JmsConfig;
 import com.adaptris.core.jms.PtpConsumer;
 import com.adaptris.core.jms.PtpProducer;
 import com.adaptris.core.jms.jndi.SimpleFactoryConfiguration;
@@ -49,7 +47,7 @@ public abstract class JndiPtpProducerCase {
 
   @Test
   public void testProduceAndConsume() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     StandardJndiImplementation recvVendorImp = createVendorImplementation();
     StandardJndiImplementation sendVendorImp = createVendorImplementation();
@@ -73,7 +71,7 @@ public abstract class JndiPtpProducerCase {
 
   @Test
   public void testProduceAndConsume_ExtraConfig() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     SimpleFactoryConfiguration sfc = new SimpleFactoryConfiguration();
     KeyValuePairSet kvps = new KeyValuePairSet();
     kvps.add(new KeyValuePair("ClientID", "testProduceAndConsume_ExtraConfig"));
@@ -103,7 +101,7 @@ public abstract class JndiPtpProducerCase {
 
   @Test
   public void testProduceAndConsumeUsingJndiOnly() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     StandardJndiImplementation recvVendorImp = createVendorImplementation();
     StandardJndiImplementation sendVendorImp = createVendorImplementation();
@@ -130,7 +128,7 @@ public abstract class JndiPtpProducerCase {
 
   @Test
   public void testProduceJndiOnlyObjectNotFound() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";

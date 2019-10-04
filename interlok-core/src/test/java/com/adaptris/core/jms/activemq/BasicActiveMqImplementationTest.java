@@ -25,14 +25,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import javax.jms.JMSException;
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.StandaloneProducer;
-import com.adaptris.core.jms.JmsConfig;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.JmsDestination;
 import com.adaptris.core.jms.PtpProducer;
@@ -64,7 +62,7 @@ public class BasicActiveMqImplementationTest {
 
   @Test
   public void testRfc6167_Basic() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     StandaloneProducer producer = null;
 
@@ -93,7 +91,7 @@ public class BasicActiveMqImplementationTest {
 
   @Test
   public void testRfc6167_WithParams() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     StandaloneProducer producer = null;
 
@@ -132,7 +130,7 @@ public class BasicActiveMqImplementationTest {
 
   @Test
   public void testRfc6167_Invalid() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     StandaloneProducer producer = null;
 

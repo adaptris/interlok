@@ -28,7 +28,6 @@ import javax.jms.TextMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Assume;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -45,7 +44,7 @@ public class MetadataCorrelationIdSourceTest {
 
   @Test
   public void testAdaptrisMessageMetadataToJmsCorrelationId() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
 
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     JmsConnection conn = broker.getJmsConnection();
@@ -69,7 +68,7 @@ public class MetadataCorrelationIdSourceTest {
 
   @Test
   public void testAdaptrisMessageMetadataToJmsCorrelationId_NoMetadataKey() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     JmsConnection conn = broker.getJmsConnection();
     try {
@@ -92,7 +91,7 @@ public class MetadataCorrelationIdSourceTest {
 
   @Test
   public void testAdaptrisMessageMetadataToJmsCorrelationId_EmptyValue() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     JmsConnection conn = broker.getJmsConnection();
     try {
@@ -115,7 +114,7 @@ public class MetadataCorrelationIdSourceTest {
 
   @Test
   public void testJmsCorrelationIdToAdaptrisMessageMetadata() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     JmsConnection conn = broker.getJmsConnection();
     try {
@@ -138,7 +137,7 @@ public class MetadataCorrelationIdSourceTest {
 
   @Test
   public void testJmsCorrelationIdToAdaptrisMessageMetadata_NoMetadataKey() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     JmsConnection conn = broker.getJmsConnection();
     try {
@@ -161,7 +160,7 @@ public class MetadataCorrelationIdSourceTest {
 
   @Test
   public void testJmsCorrelationIdToAdaptrisMessageMetadata_NoValue() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     JmsConnection conn = broker.getJmsConnection();
     try {

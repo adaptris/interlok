@@ -21,7 +21,6 @@ import static com.adaptris.core.BaseCase.stop;
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.fail;
 import java.util.concurrent.TimeUnit;
-import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -33,7 +32,6 @@ import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.NullConnectionErrorHandler;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.StandaloneRequestor;
-import com.adaptris.core.jms.JmsConfig;
 import com.adaptris.core.jms.JmsReplyToWorkflow;
 import com.adaptris.core.jms.PasConsumer;
 import com.adaptris.core.jms.PasProducer;
@@ -61,7 +59,7 @@ public class JmsReplyToWorkflowTest {
 
   @Test
   public void testInitWithNullProducerConsumer() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
@@ -80,7 +78,7 @@ public class JmsReplyToWorkflowTest {
 
   @Test
   public void testInitWithNullConsumer() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
@@ -101,7 +99,7 @@ public class JmsReplyToWorkflowTest {
 
   @Test
   public void testInitWithNullProducer() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
@@ -121,7 +119,7 @@ public class JmsReplyToWorkflowTest {
 
   @Test
   public void testInitWithMisMatchedProducer() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
@@ -142,7 +140,7 @@ public class JmsReplyToWorkflowTest {
 
   @Test
   public void testInit() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
@@ -162,7 +160,7 @@ public class JmsReplyToWorkflowTest {
 
   @Test
   public void testPtpWorkflow() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
@@ -192,7 +190,7 @@ public class JmsReplyToWorkflowTest {
 
   @Test
   public void testPasWorkflow() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
@@ -222,7 +220,7 @@ public class JmsReplyToWorkflowTest {
 
   @Test
   public void testWorkflow_SkipProducer_HasNoEffect() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
 
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     broker.start();
@@ -258,7 +256,7 @@ public class JmsReplyToWorkflowTest {
 
   @Test
   public void testWorkflowWithInterceptor() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     MockWorkflowInterceptor interceptor = new MockWorkflowInterceptor();
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     broker.start();

@@ -22,7 +22,6 @@ import static com.adaptris.core.jms.JmsProducerCase.assertMessages;
 import static com.adaptris.core.jms.JmsProducerCase.createMessage;
 import static com.adaptris.core.jms.activemq.ActiveMqPasPollingConsumerTest.shutdownQuietly;
 import java.util.concurrent.TimeUnit;
-import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -31,7 +30,6 @@ import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
-import com.adaptris.core.jms.JmsConfig;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.PtpPollingConsumer;
 import com.adaptris.core.jms.PtpProducer;
@@ -47,7 +45,7 @@ public class ActiveMqPtpPollingConsumerTest {
 
   @Test
   public void testProduceConsume() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     int msgCount = 5;
     final EmbeddedActiveMq broker = new EmbeddedActiveMq();
     final StandaloneProducer sender = new StandaloneProducer(broker.getJmsConnection(), new PtpProducer(

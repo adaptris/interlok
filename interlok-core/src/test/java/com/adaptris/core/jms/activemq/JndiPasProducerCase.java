@@ -22,7 +22,6 @@ import static com.adaptris.core.BaseCase.stop;
 import static com.adaptris.core.jms.JmsProducerCase.assertMessages;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
 import static org.junit.Assert.fail;
-import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -31,7 +30,6 @@ import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
-import com.adaptris.core.jms.JmsConfig;
 import com.adaptris.core.jms.PasConsumer;
 import com.adaptris.core.jms.PasProducer;
 import com.adaptris.core.jms.jndi.SimpleFactoryConfiguration;
@@ -49,7 +47,7 @@ public abstract class JndiPasProducerCase {
 
   @Test
   public void testProduceAndConsume() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
 
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     StandardJndiImplementation recvVendorImp = createVendorImplementation();
@@ -76,7 +74,7 @@ public abstract class JndiPasProducerCase {
 
   @Test
   public void testProduceAndConsume_ExtraConfig() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
     SimpleFactoryConfiguration sfc = new SimpleFactoryConfiguration();
@@ -110,7 +108,7 @@ public abstract class JndiPasProducerCase {
 
   @Test
   public void testProduceAndConsumeUsingJndiOnly() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
@@ -137,7 +135,7 @@ public abstract class JndiPasProducerCase {
 
   @Test
   public void testProduceJndiOnlyObjectNotFound() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
     EmbeddedActiveMq broker = new EmbeddedActiveMq();

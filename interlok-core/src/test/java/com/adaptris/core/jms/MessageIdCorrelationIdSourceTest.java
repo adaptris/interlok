@@ -20,7 +20,6 @@ import static org.junit.Assert.assertNotSame;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import org.junit.After;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -44,7 +43,7 @@ public class MessageIdCorrelationIdSourceTest {
 
   @Test
   public void testCorrelationIdAdaptrisMessage_ToMessage() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     JmsConnection conn = broker.getJmsConnection();
     try {
@@ -65,7 +64,7 @@ public class MessageIdCorrelationIdSourceTest {
 
   @Test
   public void testCorrelationIdMessage_AdaptrisMessage() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     JmsConnection conn = broker.getJmsConnection();
     try {
@@ -90,7 +89,7 @@ public class MessageIdCorrelationIdSourceTest {
 
   @Test
   public void testCorrelationIdMessage_AdaptrisMessage_NoCorrelationId() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     JmsConnection conn = broker.getJmsConnection();
     try {

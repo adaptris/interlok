@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
-import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -47,7 +46,7 @@ public abstract class MetadataConverterCase {
 
   @Test
   public void testSetProperty() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MetadataConverter mc = createConverter();
     try {
@@ -66,7 +65,7 @@ public abstract class MetadataConverterCase {
 
   @Test
   public void testSetPropertyWithReserved() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MetadataConverter mc = createConverter();
     try {

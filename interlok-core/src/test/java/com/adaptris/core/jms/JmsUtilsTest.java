@@ -26,7 +26,6 @@ import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TemporaryQueue;
 import javax.jms.TemporaryTopic;
-import org.junit.Assume;
 import org.junit.Test;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 
@@ -34,7 +33,7 @@ public class JmsUtilsTest {
 
   @Test
   public void testCloseSession() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     try {
       broker.start();
@@ -55,7 +54,7 @@ public class JmsUtilsTest {
 
   @Test
   public void testCloseConnection() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     try {
       broker.start();
@@ -83,7 +82,7 @@ public class JmsUtilsTest {
 
   @Test
   public void testStopConnection() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     try {
       broker.start();
@@ -106,7 +105,7 @@ public class JmsUtilsTest {
 
   @Test
   public void testDeleteTemporaryTopic() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     try {
       broker.start();
@@ -130,7 +129,7 @@ public class JmsUtilsTest {
 
   @Test
   public void testDeleteTemporaryQueue() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     try {
       broker.start();
@@ -153,7 +152,7 @@ public class JmsUtilsTest {
 
   @Test
   public void testDeleteTemporaryDestination() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     try {
       broker.start();
@@ -179,7 +178,7 @@ public class JmsUtilsTest {
 
   @Test
   public void testCloseProducer() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     try {
       broker.start();
@@ -202,7 +201,7 @@ public class JmsUtilsTest {
 
   @Test
   public void testCloseConsumer() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     try {
       broker.start();

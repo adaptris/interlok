@@ -22,7 +22,6 @@ import static org.junit.Assert.assertTrue;
 import javax.jms.Message;
 import javax.jms.Session;
 import javax.jms.TextMessage;
-import org.junit.Assume;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -34,7 +33,7 @@ public class TextMessageTranslatorTest extends GenericMessageTypeTranslatorCase 
 
   @Test
   public void testTextMessageToAdaptrisMessage() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     TextMessageTranslator trans = new TextMessageTranslator();
     try {
@@ -55,7 +54,7 @@ public class TextMessageTranslatorTest extends GenericMessageTypeTranslatorCase 
 
   @Test
   public void testAdaptrisMessageToTextMessage() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     TextMessageTranslator trans = new TextMessageTranslator();
     try {
@@ -78,7 +77,7 @@ public class TextMessageTranslatorTest extends GenericMessageTypeTranslatorCase 
 
   @Test
   public void testAdaptrisMessageToTextMessageWithMetadataFilter() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     TextMessageTranslator trans = new TextMessageTranslator();
 
