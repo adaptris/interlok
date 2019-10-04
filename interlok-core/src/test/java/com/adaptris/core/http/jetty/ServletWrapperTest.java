@@ -19,7 +19,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
 import javax.servlet.http.HttpServlet;
+
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.junit.After;
 import org.junit.Before;
@@ -46,11 +48,7 @@ public class ServletWrapperTest {
     MyServlet servlet = new MyServlet();
     ServletWrapper wrapper = new ServletWrapper(servlet, "/url");
     assertNotNull(wrapper.getServletHolder());
-    // As of jetty-all.9.4.21.v20190926 the internals of getServlet/setServlet has changed
-    // Previously setServlet set _servlet to be what you passed in, and getServlet would return it
-    // Now setServlet doesn't do that exactly, and getServlet returns you the initialised servlet.
-    // which in this case is null (since we aren't initialising).
-    // assertEquals(servlet, wrapper.getServletHolder().getServlet());
+    assertEquals(servlet, wrapper.getServletHolder().getServlet());
   }
 
   @Test
