@@ -13,7 +13,7 @@ public class RemoteFile extends File {
   private boolean isDirectory;
   private boolean isFile;
 
-  public RemoteFile(String filepath) {
+  private RemoteFile(String filepath) {
     super(filepath);
   }
 
@@ -43,23 +43,66 @@ public class RemoteFile extends File {
     return isDirectory;
   }
 
-  public RemoteFile withLength(long size) {
+
+  private RemoteFile withLength(long size) {
     this.length = size;
     return this;
   }
 
-  public RemoteFile withLastModified(long time) {
+  private RemoteFile withLastModified(long time) {
     setLastModified(time);
     return this;
   }
 
-  public RemoteFile withIsDirectory(boolean b) {
+  private RemoteFile withIsDirectory(boolean b) {
     isDirectory = b;
     return this;
   }
 
-  public RemoteFile withIsFile(boolean b) {
+  private RemoteFile withIsFile(boolean b) {
     isFile = b;
     return this;
+  }
+
+  public static class Builder {
+    private long length = -1;
+    private long lastModified = -1;
+    private boolean isDirectory;
+    private boolean isFile;
+    private String path;
+
+    public Builder() {
+
+    }
+
+    public RemoteFile build() {
+      return
+          new RemoteFile(path).withIsDirectory(isDirectory).withIsFile(isFile).withLastModified(lastModified).withLength(length);
+    }
+
+    public Builder setPath(String path) {
+      this.path = path;
+      return this;
+    }
+
+    public Builder setLength(long size) {
+      this.length = size;
+      return this;
+    }
+
+    public Builder setLastModified(long time) {
+      this.lastModified = time;
+      return this;
+    }
+
+    public Builder setIsDirectory(boolean b) {
+      isDirectory = b;
+      return this;
+    }
+
+    public Builder setIsFile(boolean b) {
+      isFile = b;
+      return this;
+    }
   }
 }

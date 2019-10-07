@@ -256,8 +256,9 @@ public class SftpClient extends FileTransferClientImp {
       // Is a regular file a file or could it be both a file & a directory.
       // Unix knowledge is poor.
       boolean isFile = f.getAttrs().isReg();
-      result.add(new RemoteFile(f.getFilename()).withIsDirectory(isDir).withIsFile(isFile)
-          .withLastModified(lastModified).withLength(size));
+      result.add(new RemoteFile.Builder().setPath(f.getFilename()).setIsDirectory(isDir).setIsFile(isFile)
+          .setLastModified(lastModified)
+              .setLength(size).build());
     }
     return result;
   }
