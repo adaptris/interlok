@@ -11,14 +11,14 @@ public class RemoteFileTest {
   public void testIsDirectory() {
     RemoteFile f = new RemoteFile.Builder().setPath("hello").build();
     assertFalse(f.isDirectory());
-    assertTrue(new RemoteFile.Builder().setIsDirectory(true).build().isDirectory());
+    assertTrue(new RemoteFile.Builder().setPath("hello").setIsDirectory(true).build().isDirectory());
   }
 
   @Test
   public void testIsFile() {
     RemoteFile f = new RemoteFile.Builder().setPath("hello").build();
     assertFalse(f.isFile());
-    assertTrue(new RemoteFile.Builder().setIsFile(true).build().isFile());
+    assertTrue(new RemoteFile.Builder().setPath("hello").setIsFile(true).build().isFile());
   }
 
   @Test
@@ -26,7 +26,7 @@ public class RemoteFileTest {
     RemoteFile f = new RemoteFile.Builder().setPath("hello").build();
     assertEquals(-1, f.lastModified());
     long now = System.currentTimeMillis();
-    assertEquals(now, new RemoteFile.Builder().setLastModified(now).build().lastModified());
+    assertEquals(now, new RemoteFile.Builder().setPath("hello").setLastModified(now).build().lastModified());
   }
 
   @Test
