@@ -1,10 +1,15 @@
 package com.adaptris.core.jms;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
-
-import com.adaptris.core.BaseCase;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
 import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
@@ -14,14 +19,14 @@ import com.adaptris.core.metadata.RegexMetadataFilter;
 /**
  * @author mwarman
  */
-public abstract class MetadataConverterCase extends BaseCase {
+public abstract class MetadataConverterCase {
+
+  @Rule
+  public TestName testName = new TestName();
 
   static final String HEADER = "header";
 
-  MetadataConverterCase(String name) {
-    super(name);
-  }
-
+  @Test
   public void testMetadataFilter() throws Exception {
     MetadataConverter mc = createConverter();
     assertTrue(mc.getMetadataFilter() instanceof NoOpMetadataFilter);
@@ -29,6 +34,7 @@ public abstract class MetadataConverterCase extends BaseCase {
     assertTrue(mc.getMetadataFilter() instanceof RegexMetadataFilter);
   }
 
+  @Test
   public void testStrict() throws Exception {
     MetadataConverter mc = createConverter();
     assertFalse(mc.strict());
@@ -38,7 +44,9 @@ public abstract class MetadataConverterCase extends BaseCase {
     assertEquals(Boolean.FALSE, mc.getStrictConversion());
   }
 
+  @Test
   public void testSetProperty() throws Exception {
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MetadataConverter mc = createConverter();
     try {
@@ -55,7 +63,9 @@ public abstract class MetadataConverterCase extends BaseCase {
     }
   }
 
+  @Test
   public void testSetPropertyWithReserved() throws Exception {
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MetadataConverter mc = createConverter();
     try {

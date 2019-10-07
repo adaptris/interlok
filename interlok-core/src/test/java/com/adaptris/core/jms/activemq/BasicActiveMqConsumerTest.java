@@ -38,6 +38,7 @@ import com.adaptris.core.Workflow;
 import com.adaptris.core.jms.AutoConvertMessageTranslator;
 import com.adaptris.core.jms.BytesMessageTranslator;
 import com.adaptris.core.jms.DefinedJmsProducer;
+import com.adaptris.core.jms.JmsConfig;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.JmsConsumerCase;
 import com.adaptris.core.jms.PasConsumer;
@@ -105,6 +106,11 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
   }
 
   public void testTopicProduceAndConsume() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();
@@ -131,6 +137,11 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
   }
 
   public void testTopicProduceAndConsumeWithImplicitFallbackMessageTranslation() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();
@@ -152,6 +163,11 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
   }
 
   public void testTopicProduceAndConsumeWithExplicitFallbackMessageTranslation() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();
@@ -188,6 +204,11 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
   }
 
   public void testQueue_ProduceWhenConsumerStopped() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     PtpConsumer consumer = new PtpConsumer(new ConfiguredConsumeDestination(getName()));
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
@@ -220,6 +241,11 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
   }
 
   public void testTopic_ProduceWhenConsumerStopped() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     PasConsumer consumer = new PasConsumer(new ConfiguredConsumeDestination(getName()));
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
@@ -252,6 +278,11 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
   }
 
   public void testQueueProduceAndConsume() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();
@@ -274,6 +305,11 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
   }
 
   public void testQueueProduceAndConsumeWithImplicitFallbackMessageTranslation() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();
@@ -295,6 +331,11 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
   }
 
   public void testQueueProduceAndConsumeWithExplicitFallbackMessageTranslation() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();
@@ -319,6 +360,11 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
   public void testBlobProduceConsume() throws Exception {
     if (!ExternalResourcesHelper.isExternalServerAvailable()) {
       log.debug("Blob Server not available; skipping test");
+      return;
+    }
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
       return;
     }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
@@ -348,6 +394,11 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
       log.debug("Blob Server not available; skipping test");
       return;
     }
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();
@@ -371,6 +422,11 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
   }
 
   public void testStartWithDurableSubscribers_WithNonBlockingChannelStrategy() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();

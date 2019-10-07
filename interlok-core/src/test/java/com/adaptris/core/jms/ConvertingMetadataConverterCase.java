@@ -15,39 +15,40 @@
 */
 package com.adaptris.core.jms;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
-
+import org.junit.Test;
 import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 
 public abstract class ConvertingMetadataConverterCase extends MetadataConverterCase {
 
-  public ConvertingMetadataConverterCase(String name) {
-    super(name);
-  }
-
-
+  @Test
   public void testConvertFailure() throws Exception {
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MetadataConverter mc = createConverter();
     try {
       broker.start();
       Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       MetadataCollection metadataCollection = new MetadataCollection();
-      metadataCollection.add(new MetadataElement(HEADER, getName()));
+      metadataCollection.add(new MetadataElement(HEADER, testName.getMethodName()));
       Message jmsMsg = session.createMessage();
       mc.moveMetadata(metadataCollection, jmsMsg);
-      assertEquals(getName(), jmsMsg.getStringProperty(HEADER));
+      assertEquals(testName.getMethodName(), jmsMsg.getStringProperty(HEADER));
     }
     finally {
       broker.destroy();
     }
   }
 
+  @Test
   public void testConvertFailure_Strict() throws Exception {
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MetadataConverter mc = createConverter();
     mc.setStrictConversion(true);
@@ -55,7 +56,7 @@ public abstract class ConvertingMetadataConverterCase extends MetadataConverterC
       broker.start();
       Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       MetadataCollection metadataCollection = new MetadataCollection();
-      metadataCollection.add(new MetadataElement(HEADER, getName()));
+      metadataCollection.add(new MetadataElement(HEADER, testName.getMethodName()));
       Message jmsMsg = session.createMessage();
       mc.moveMetadata(metadataCollection, jmsMsg);
       fail();

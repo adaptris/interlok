@@ -16,14 +16,19 @@
 
 package com.adaptris.core.jms.activemq;
 
+import static com.adaptris.core.BaseCase.MAX_WAIT;
+import static com.adaptris.core.BaseCase.waitForMessages;
 import static com.adaptris.core.stubs.ObjectUtils.asSetters;
 import static com.adaptris.core.stubs.ObjectUtils.invokeSetter;
-
+import static junit.framework.TestCase.assertEquals;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.BaseCase;
 import com.adaptris.core.ClosedState;
 import com.adaptris.core.ComponentState;
 import com.adaptris.core.ConfiguredConsumeDestination;
@@ -47,26 +52,20 @@ import com.adaptris.core.stubs.ObjectUtils;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
-public class JmsConnectionErrorHandlerTest extends BaseCase {
+public class JmsConnectionErrorHandlerTest {
 
   private static final long SLEEP_TIME_MS = 100L;
 
-  public JmsConnectionErrorHandlerTest(String name) {
-    super(name);
-  }
+  private Logger log = LoggerFactory.getLogger(this.getClass());
+  @Rule
+  public TestName testName = new TestName();
 
-  @Override
-  protected void setUp() throws Exception {
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-  }
-
+  @Test
   public void testConnectionErrorHandler() throws Exception {
+
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     MockChannel channel = createChannel(activeMqBroker, activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true),
-        getName(), new JmsConnectionErrorHandler());
+        testName.getMethodName(), new JmsConnectionErrorHandler());
     try {
       activeMqBroker.start();
       channel.requestStart();
@@ -87,11 +86,14 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
   }
 
   // Tests INTERLOK-2063
+  @Test
   public void testConnectionErrorHandler_WithRuntimeException() throws Exception {
+
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     MockChannel channel = createChannel(activeMqBroker,
         new JmsConnectionCloseWithRuntimeException(activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true)),
-        getName(), new JmsConnectionErrorHandler() {
+        testName.getMethodName(), new JmsConnectionErrorHandler() {
+          @Override
           protected long retryWaitTimeMs() {
             return 500L;
           }
@@ -114,11 +116,14 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
     }
   }
 
+  @Test
   public void testConnectionErrorHandler_WithInitialiseException() throws Exception {
+
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     MockChannel channel = new MockChannelFail(createChannel(activeMqBroker,
         activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true),
-        getName(), new JmsConnectionErrorHandler()), MockChannelFail.WhenToFail.INIT_AFTER_CLOSE);
+        testName.getMethodName(), new JmsConnectionErrorHandler()),
+        MockChannelFail.WhenToFail.INIT_AFTER_CLOSE);
     try {
       activeMqBroker.start();
       channel.requestStart();
@@ -140,11 +145,14 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
     }
   }
 
+  @Test
   public void testConnectionErrorHandler_WithStartException() throws Exception {
+
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     MockChannel channel = new MockChannelFail(createChannel(activeMqBroker,
         activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true),
-        getName(), new JmsConnectionErrorHandler()), MockChannelFail.WhenToFail.START_AFTER_CLOSE);
+        testName.getMethodName(), new JmsConnectionErrorHandler()),
+        MockChannelFail.WhenToFail.START_AFTER_CLOSE);
     try {
       activeMqBroker.start();
       channel.requestStart();
@@ -164,10 +172,12 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
     }
   }
 
+  @Test
   public void testConnectionErrorHandler_NotSingleExecution() throws Exception {
+
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     MockChannel channel = createChannel(activeMqBroker, activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true),
-        getName(), new JmsConnectionErrorHandler(false));
+        testName.getMethodName(), new JmsConnectionErrorHandler(false));
     try {
       activeMqBroker.start();
       channel.requestStart();
@@ -187,10 +197,13 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
     }
   }
 
+  @Test
   public void testConnectionErrorHandlerWithUnamedChannel() throws Exception {
+
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     MockChannel channel = createChannel(null, activeMqBroker,
-        activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true), getName());
+        activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true),
+        testName.getMethodName());
     try {
       activeMqBroker.start();
       channel.requestStart();
@@ -210,10 +223,12 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
     }
   }
 
+  @Test
   public void testConnectionErrorHandlerWithJndi() throws Exception {
+
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    String queueName = getName() + "_queue";
-    String topicName = getName() + "_topic";
+    String queueName = testName.getMethodName() + "_queue";
+    String topicName = testName.getMethodName() + "_topic";
     MockChannel channel = createChannel(activeMqBroker,
         activeMqBroker.getJndiPasConnection(new StandardJndiImplementation(), false, queueName, topicName), topicName,
         new JmsConnectionErrorHandler());
@@ -236,10 +251,12 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
     }
   }
 
+  @Test
   public void testBug1926() throws Exception {
+
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     MockChannel channel = createChannel(activeMqBroker, activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true),
-        getName(), new JmsConnectionErrorHandler());
+        testName.getMethodName(), new JmsConnectionErrorHandler());
     try {
       activeMqBroker.start();
       channel.requestStart();
@@ -259,16 +276,19 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
     }
   }
 
+  @Test
   public void testRestartSharedConnection() throws Exception {
+
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     Adapter adapter = new Adapter();
-    adapter.setUniqueId(getName());
+    adapter.setUniqueId(testName.getMethodName());
     JmsConnection connection = activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true);
     connection.setConnectionErrorHandler(new JmsConnectionErrorHandler());
-    connection.setUniqueId(getName());
+    connection.setUniqueId(testName.getMethodName());
     connection.setConnectionRetryInterval(new TimeInterval(5L, "SECONDS"));
     adapter.getSharedComponents().addConnection(connection);
-    MockChannel channel = createChannel(activeMqBroker, new SharedConnection(getName()), getName());
+    MockChannel channel = createChannel(activeMqBroker,
+        new SharedConnection(testName.getMethodName()), testName.getMethodName());
     MockMessageProducer producer = (MockMessageProducer) channel.getWorkflowList().get(0).getProducer();
     adapter.getChannelList().add(channel);
     try {
@@ -276,24 +296,28 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
       adapter.requestStart();
       assertEquals(StartedState.getInstance(), channel.retrieveComponentState());
       // Now try and send a message
-      ServiceCase.execute(createProducer(activeMqBroker, getName()), AdaptrisMessageFactory.getDefaultInstance().newMessage("ABC"));
+      ServiceCase.execute(createProducer(activeMqBroker, testName.getMethodName()),
+          AdaptrisMessageFactory.getDefaultInstance().newMessage("ABC"));
       waitForMessages(producer, 1);
 
       activeMqBroker.stop();
-      log.trace(getName() + ": Waiting for channel death (i.e. !StartedState)");
+      log.trace(testName.getMethodName() + ": Waiting for channel death (i.e. !StartedState)");
       long totalWaitTime = waitForChannelToChangeState(StartedState.getInstance(), channel);
-      log.trace(getName() + ": Channel appears to be not started now, and I waited for " + totalWaitTime);
+      log.trace(testName.getMethodName()
+          + ": Channel appears to be not started now, and I waited for " + totalWaitTime);
 
       activeMqBroker.start();
 
       totalWaitTime = waitForChannelToMatchState(StartedState.getInstance(), channel);
-      log.trace(getName() + ": Channel now started now, and I waited for " + totalWaitTime);
+      log.trace(testName.getMethodName() + ": Channel now started now, and I waited for "
+          + totalWaitTime);
 
       waitForChannelToMatchState(StartedState.getInstance(), channel);
       assertEquals(StartedState.getInstance(), channel.retrieveComponentState());
 
       // Now try and send a message
-      ServiceCase.execute(createProducer(activeMqBroker, getName()), AdaptrisMessageFactory.getDefaultInstance().newMessage("ABC"));
+      ServiceCase.execute(createProducer(activeMqBroker, testName.getMethodName()),
+          AdaptrisMessageFactory.getDefaultInstance().newMessage("ABC"));
       waitForMessages(producer, 2);
 
     }
@@ -303,17 +327,21 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
     }
   }
 
+  @Test
   public void testRestartSharedConnection_ChannelNotStarted() throws Exception {
+
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     Adapter adapter = new Adapter();
-    adapter.setUniqueId(getName());
+    adapter.setUniqueId(testName.getMethodName());
     JmsConnection connection = activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true);
     connection.setConnectionErrorHandler(new JmsConnectionErrorHandler());
-    connection.setUniqueId(getName());
+    connection.setUniqueId(testName.getMethodName());
     connection.setConnectionRetryInterval(new TimeInterval(5L, "SECONDS"));
     adapter.getSharedComponents().addConnection(connection);
-    MockChannel started = createChannel(activeMqBroker, new SharedConnection(getName()), getName());
-    MockChannel neverStarted = createChannel(activeMqBroker, new SharedConnection(getName()), getName() + "_2");
+    MockChannel started = createChannel(activeMqBroker,
+        new SharedConnection(testName.getMethodName()), testName.getMethodName());
+    MockChannel neverStarted = createChannel(activeMqBroker,
+        new SharedConnection(testName.getMethodName()), testName.getMethodName() + "_2");
     neverStarted.setAutoStart(false);
     MockMessageProducer producer = (MockMessageProducer) started.getWorkflowList().get(0).getProducer();
     adapter.getChannelList().add(started);
@@ -324,23 +352,27 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
       assertEquals(StartedState.getInstance(), started.retrieveComponentState());
       assertEquals(ClosedState.getInstance(), neverStarted.retrieveComponentState());
       // Now try and send a message
-      ServiceCase.execute(createProducer(activeMqBroker, getName()), AdaptrisMessageFactory.getDefaultInstance().newMessage("ABC"));
+      ServiceCase.execute(createProducer(activeMqBroker, testName.getMethodName()),
+          AdaptrisMessageFactory.getDefaultInstance().newMessage("ABC"));
       waitForMessages(producer, 1);
 
       activeMqBroker.stop();
-      log.trace(getName() + ": Waiting for channel death (i.e. !StartedState)");
+      log.trace(testName.getMethodName() + ": Waiting for channel death (i.e. !StartedState)");
       long totalWaitTime = waitForChannelToChangeState(StartedState.getInstance(), started);
-      log.trace(getName() + ": Channel appears to be not started now, and I waited for " + totalWaitTime);
+      log.trace(testName.getMethodName()
+          + ": Channel appears to be not started now, and I waited for " + totalWaitTime);
 
       activeMqBroker.start();
 
       totalWaitTime = waitForChannelToMatchState(StartedState.getInstance(), started);
-      log.trace(getName() + ": Channel now started now, and I waited for " + totalWaitTime);
+      log.trace(testName.getMethodName() + ": Channel now started now, and I waited for "
+          + totalWaitTime);
       assertEquals(StartedState.getInstance(), started.retrieveComponentState());
 
 
       // Now try and send a message
-      ServiceCase.execute(createProducer(activeMqBroker, getName()), AdaptrisMessageFactory.getDefaultInstance().newMessage("ABC"));
+      ServiceCase.execute(createProducer(activeMqBroker, testName.getMethodName()),
+          AdaptrisMessageFactory.getDefaultInstance().newMessage("ABC"));
       waitForMessages(producer, 2);
       assertEquals(ClosedState.getInstance(), neverStarted.retrieveComponentState());
       assertEquals(0, neverStarted.getInitCount());

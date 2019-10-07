@@ -15,14 +15,16 @@
 */
 
 package com.adaptris.core.jms.activemq;
-
+import static com.adaptris.core.BaseCase.start;
+import static com.adaptris.core.BaseCase.stop;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
-
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import java.util.Map;
-
 import javax.jms.Queue;
 import javax.jms.Topic;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.MetadataDestination;
@@ -34,26 +36,19 @@ import com.adaptris.util.KeyValuePair;
 
 public class DestinationCacheJndiPtpProducerTest extends JndiPtpProducerCase {
 
-  public DestinationCacheJndiPtpProducerTest(String name) {
-    super(name);
-  }
-
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-  }
-
   @Override
   protected CachedDestinationJndiImplementation createVendorImplementation() {
     return new CachedDestinationJndiImplementation();
   }
 
+  @Test
   public void testProduceWithCache() throws Exception {
+
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     DestinationCachingJndiVendorImpl sendVendorImp = new DestinationCachingJndiVendorImpl();
     sendVendorImp.setUseJndiForQueues(true);
-    String queueName = getName() + "_queue";
-    String topicName = getName() + "_topic";
+    String queueName = testName.getMethodName() + "_queue";
+    String topicName = testName.getMethodName() + "_topic";
 
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJndiPtpConnection(sendVendorImp, false,
         queueName, topicName), new PtpProducer(new ConfiguredProduceDestination(queueName)));
@@ -71,15 +66,17 @@ public class DestinationCacheJndiPtpProducerTest extends JndiPtpProducerCase {
     }
   }
 
+  @Test
   public void testProduceWithCacheExceeded() throws Exception {
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     DestinationCachingJndiVendorImpl jv = new DestinationCachingJndiVendorImpl(2);
     MockMessageListener jms = new MockMessageListener();
     MetadataDestination dest = new MetadataDestination();
     dest.addKey("testProduceWithCacheExceeded");
 
-    String queueName = getName() + "_queue";
-    String topicName = getName() + "_topic";
+    String queueName = testName.getMethodName() + "_queue";
+    String topicName = testName.getMethodName() + "_topic";
 
     StandaloneProducer sp1 = new StandaloneProducer(broker.getJndiPtpConnection(jv, false, queueName, topicName), new PtpProducer(
         dest));

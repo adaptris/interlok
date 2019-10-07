@@ -17,14 +17,13 @@
 package com.adaptris.core.jms.activemq;
 
 import static com.adaptris.core.jms.activemq.AdvancedActiveMqImplementationTest.createImpl;
-
 import org.apache.activemq.ActiveMQPrefetchPolicy;
 import org.apache.activemq.RedeliveryPolicy;
-
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
+import com.adaptris.core.jms.JmsConfig;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.PtpConsumer;
 import com.adaptris.core.jms.PtpProducer;
@@ -49,6 +48,11 @@ public class AdvancedActiveMqProducerTest extends BasicActiveMqProducerTest {
   }
 
   public void testQueueProduceAndConsumeWithRedeliveryPolicy() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();
@@ -72,6 +76,11 @@ public class AdvancedActiveMqProducerTest extends BasicActiveMqProducerTest {
   }
 
   public void testQueueProduceAndConsumeWithPrefetch() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();

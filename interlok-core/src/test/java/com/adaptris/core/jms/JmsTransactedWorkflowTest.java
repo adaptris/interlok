@@ -20,10 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import com.adaptris.core.Channel;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
@@ -67,6 +65,11 @@ public class JmsTransactedWorkflowTest extends ExampleWorkflowCase {
   }
 
   public void testInit_UnsupportedConsumer() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     Channel channel = createStartableChannel(broker);
     JmsTransactedWorkflow workflow = (JmsTransactedWorkflow) channel.getWorkflowList().get(0);
@@ -95,6 +98,11 @@ public class JmsTransactedWorkflowTest extends ExampleWorkflowCase {
   }
 
   public void testInit_UnsupportedProduceExceptionHandler() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     Channel channel = createStartableChannel(broker);
     JmsTransactedWorkflow workflow = (JmsTransactedWorkflow) channel.getWorkflowList().get(0);
@@ -114,6 +122,11 @@ public class JmsTransactedWorkflowTest extends ExampleWorkflowCase {
   }
 
   public void testInit() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     Channel channel = createStartableChannel(broker);
     try {
@@ -127,6 +140,11 @@ public class JmsTransactedWorkflowTest extends ExampleWorkflowCase {
   }
 
   public void testStart() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     Channel channel = createStartableChannel(broker);
     try {

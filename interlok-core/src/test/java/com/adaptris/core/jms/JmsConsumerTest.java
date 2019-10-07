@@ -23,16 +23,12 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.jms.MessageConsumer;
-
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.StandaloneConsumer;
@@ -48,6 +44,7 @@ public class JmsConsumerTest extends JmsConsumerCase {
   @Mock private BasicActiveMqImplementation mockVendor;
   @Mock MessageConsumer mockMessageConsumer;
 
+  @Override
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
   }
@@ -58,6 +55,11 @@ public class JmsConsumerTest extends JmsConsumerCase {
 
 
   public void testDeferConsumerCreationToVendor() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     
     when(mockVendor.createConsumer(any(JmsDestination.class), any(String.class), any(JmsActorConfig.class)))
@@ -98,6 +100,11 @@ public class JmsConsumerTest extends JmsConsumerCase {
   }
   
   public void testDefaultFalseDeferConsumerCreationToVendor() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     
     when(mockVendor.createConsumer(any(JmsDestination.class), any(String.class), any(JmsActorConfig.class)))
@@ -140,6 +147,11 @@ public class JmsConsumerTest extends JmsConsumerCase {
   }
   
   public void testDurableTopicConsume() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String rfc6167 = "jms:topic:" + getName() + "?subscriptionId=" + getName();
 
@@ -165,6 +177,11 @@ public class JmsConsumerTest extends JmsConsumerCase {
   }
   
   public void testSharedDurableTopicConsume() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedArtemis activeMqBroker = new EmbeddedArtemis();
     String rfc6167 = "jms:topic:" + getName() + "?subscriptionId=MySubId&sharedConsumerId=" + getName();
 
@@ -190,6 +207,11 @@ public class JmsConsumerTest extends JmsConsumerCase {
   }
   
   public void testSharedTopicConsume() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedArtemis activeMqBroker = new EmbeddedArtemis();
     String rfc6167 = "jms:topic:" + getName() + "?sharedConsumerId=" + getName();
 
@@ -215,6 +237,11 @@ public class JmsConsumerTest extends JmsConsumerCase {
   }
 
   public void testTopicConsume() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String rfc6167 = "jms:topic:" + getName();
 
@@ -240,6 +267,11 @@ public class JmsConsumerTest extends JmsConsumerCase {
   }
 
   public void testQueueConsume() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String rfc6167 = "jms:queue:" + getName();
 
