@@ -1,4 +1,4 @@
-package com.adaptris.filetransfer;
+package com.adaptris.interlok.cloud;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

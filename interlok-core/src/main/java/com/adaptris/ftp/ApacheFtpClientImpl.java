@@ -39,7 +39,7 @@ import com.adaptris.core.util.Args;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferClientImp;
 import com.adaptris.filetransfer.FileTransferException;
-import com.adaptris.filetransfer.RemoteFile;
+import com.adaptris.interlok.cloud.RemoteFile;
 import com.adaptris.util.FifoMutexLock;
 
 /**

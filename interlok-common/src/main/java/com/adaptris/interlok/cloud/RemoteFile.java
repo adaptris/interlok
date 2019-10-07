@@ -1,4 +1,4 @@
-package com.adaptris.filetransfer;
+package com.adaptris.interlok.cloud;
 
 import java.io.File;
 
