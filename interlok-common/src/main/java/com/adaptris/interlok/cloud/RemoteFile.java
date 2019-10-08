@@ -8,6 +8,8 @@ import java.io.File;
 // we should be OK.
 public class RemoteFile extends File {
 
+  private static final long serialVersionUID = 2019100801L;
+
   private long length = -1;
   private long lastModified = -1;
   private boolean isDirectory;
