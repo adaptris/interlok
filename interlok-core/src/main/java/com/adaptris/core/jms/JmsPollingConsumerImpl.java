@@ -117,23 +117,12 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
     messageHandler = new OnMessageHandler(this);
   }
 
-  protected ConnectionFactory createConnectionFactory() throws CoreException {
-    try {
-      return getVendorImplementation().createConnectionFactory();
-    }
-    catch (JMSException e) {
-      throw new CoreException(e);
-    }
+  protected ConnectionFactory createConnectionFactory() throws Exception {
+    return configuredVendorImplementation().createConnectionFactory();
   }
-
-
-  protected Connection createConnection(ConnectionFactory factory, String user, String password) throws JMSException {
-    return factory.createConnection(user, password);
-  }
-
 
   protected Session createSession(Connection connection, int acknowledgeMode, boolean transacted) throws JMSException {
-    return getVendorImplementation().createSession(connection, transacted, acknowledgeMode);
+    return configuredVendorImplementation().createSession(connection, transacted, acknowledgeMode);
   }
 
 
