@@ -63,7 +63,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean isTrackingEndpoint;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private OutOfStateHandler outOfStateHandler;
   @AutoPopulated
