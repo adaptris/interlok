@@ -41,8 +41,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.interlok.resolver.ExternalResolver;
-import com.adaptris.security.password.Password;
 import com.adaptris.util.TimeInterval;
 
 /**
@@ -142,7 +140,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
   private void initialiseConnection() throws Exception {
     long start = System.currentTimeMillis();
     ConnectionFactory factory = createConnectionFactory();
-    connection = createConnection(factory, userName, Password.decode(ExternalResolver.resolve(configuredPassword())));
+    connection = configuredVendorImplementation().createConnection(factory, this);
 
     if (clientId != null) {
       connection.setClientID(clientId);
