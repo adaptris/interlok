@@ -749,6 +749,7 @@ public class PoolingWorkflow extends WorkflowImp {
     public AdaptrisMessage handleMessage(AdaptrisMessage msg) {
       AdaptrisMessage wip = null;
       try {
+        putMDC(msg);
         long start = System.currentTimeMillis();
         log.debug("start processing msg [{}]", messageLogger().toString(msg));
         wip = (AdaptrisMessage) msg.clone();
@@ -770,6 +771,7 @@ public class PoolingWorkflow extends WorkflowImp {
       }
       finally {
         sendMessageLifecycleEvent(wip);
+        removeMDC();
       }
       return wip;
     }

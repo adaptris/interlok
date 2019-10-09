@@ -79,6 +79,7 @@ public class StandardWorkflow extends StandardWorkflowImpl {
     AdaptrisMessage wip = addConsumeLocation(msg);
     workflowStart(msg);
     try {
+      putMDC(msg);
       long start = System.currentTimeMillis();
       log.debug("start processing msg [{}]", messageLogger().toString(msg));
       if (clone) {
@@ -104,6 +105,7 @@ public class StandardWorkflow extends StandardWorkflowImpl {
     }
     finally {
       sendMessageLifecycleEvent(wip);
+      removeMDC();
     }
     workflowEnd(msg, wip);
   }
