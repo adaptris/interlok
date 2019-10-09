@@ -52,8 +52,8 @@ public interface VendorImplementation extends VendorImplementationBase {
    *           or not; this should be appropriate for all JMS 1.1 specifications.
    * @param factory the jms connection factory.
    * @param cfg the connection configuration (i.e. username/password)
-   * @return
-   * @throws Exception
+   * @return a {@code javax.jms.Connection} instance
+   * @throws Exception on exception
    */
   default Connection createConnection(ConnectionFactory factory, JmsConnectionConfig cfg) throws Exception {
     Connection jmsConnection = null;
