@@ -92,9 +92,9 @@ public class LoggingContextWorkflowInterceptor extends WorkflowInterceptorImpl {
       MDC.put(CoreConstants.MESSAGE_UNIQUE_ID_KEY, inputMsg.getUniqueId());
     }
 
-    String keyToUse = resolve(key, inputMsg);
+    String keyToUse = resolve(getKey(), inputMsg);
     if(!isEmpty(keyToUse)) {
-      String valueToUse = resolve(value, inputMsg);
+      String valueToUse = resolve(getValue(), inputMsg);
       if(!isEmpty(valueToUse)) {
         MDC.put(keyToUse, valueToUse);
       }
@@ -111,7 +111,7 @@ public class LoggingContextWorkflowInterceptor extends WorkflowInterceptorImpl {
       MDC.remove(pair.getKey());
     }
 
-    String keyToUse = resolve(key, inputMsg);
+    String keyToUse = resolve(getKey(), inputMsg);
     if(!isEmpty(keyToUse)) {
       MDC.remove(keyToUse);
     }
@@ -162,7 +162,7 @@ public class LoggingContextWorkflowInterceptor extends WorkflowInterceptorImpl {
 
   private String resolve(String s, AdaptrisMessage msg) {
     if (!isEmpty(s))
-      return msg == null ? s : msg.resolve(s);
+      return msg.resolve(s);
     if (!isEmpty(getUniqueId())) {
       return getUniqueId();
     }
