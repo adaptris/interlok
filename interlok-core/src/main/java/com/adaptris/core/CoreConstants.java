@@ -77,6 +77,27 @@ public abstract class CoreConstants {
 
   /**
    * <p>
+   * A channel's id is stored against this key in the logger's Mapped Diagnostic Context
+   * </p>
+   */
+  public static final String CHANNEL_ID_KEY = "channelid";
+
+  /**
+   * <p>
+   * A workflow's id is stored against this key in the logger's Mapped Diagnostic Context
+   * </p>
+   */
+  public static final String WORKFLOW_ID_KEY = "workflowid";
+
+  /**
+   * <p>
+   * A message's unique ID is stored against this key in various places
+   * </p>
+   */
+  public static final String MESSAGE_UNIQUE_ID_KEY = "messageuniqueid";
+
+  /**
+   * <p>
    * Metadata key which <code>MessageSplitterService</code> uses to store the unique ID of the original parent message on the split,
    * child message.
    * </p>

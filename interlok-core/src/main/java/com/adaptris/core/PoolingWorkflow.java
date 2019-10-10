@@ -703,6 +703,7 @@ public class PoolingWorkflow extends WorkflowImp {
       Thread.currentThread().setName(getThreadName());
       AdaptrisMessage result = null;
       try {
+        processingStart(message);
         result = worker.handleMessage(message);
         workflowEnd(message, result);
         objectPool.returnObject(worker);

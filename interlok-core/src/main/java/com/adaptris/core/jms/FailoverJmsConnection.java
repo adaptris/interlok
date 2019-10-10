@@ -183,8 +183,7 @@ public class FailoverJmsConnection extends JmsConnection {
   }
 
   @Override
-  protected void createConnection(ConnectionFactory factory)
-      throws JMSException {
+  protected void createConnection(ConnectionFactory factory) throws Exception {
     current.createConnection(factory);
   }
 

@@ -78,6 +78,7 @@ public class StandardWorkflow extends StandardWorkflowImpl {
   protected void handleMessage(final AdaptrisMessage msg, boolean clone) {
     AdaptrisMessage wip = addConsumeLocation(msg);
     workflowStart(msg);
+    processingStart(msg);
     try {
       long start = System.currentTimeMillis();
       log.debug("start processing msg [{}]", messageLogger().toString(msg));
