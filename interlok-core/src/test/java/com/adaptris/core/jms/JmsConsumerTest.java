@@ -68,8 +68,9 @@ public class JmsConsumerTest extends JmsConsumerCase {
     when(mockVendor.getBrokerUrl())
         .thenReturn("vm://" + activeMqBroker.getName());
     
-    when(mockVendor.createConnectionFactory())
-        .thenReturn(new ActiveMQConnectionFactory("vm://" + activeMqBroker.getName()));
+    ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("vm://" + activeMqBroker.getName());
+    when(mockVendor.createConnectionFactory()).thenReturn(factory);
+    when(mockVendor.createConnection(any(), any())).thenReturn(factory.createConnection());
     
     String rfc6167 = "jms:topic:" + getName() + "?subscriptionId=" + getName();
 
@@ -90,7 +91,7 @@ public class JmsConsumerTest extends JmsConsumerCase {
 
       LifecycleHelper.initAndStart(standaloneConsumer);
       
-      verify(mockVendor).createConsumer((any(JmsDestination.class)), any(String.class), any(JmsActorConfig.class));
+      verify(mockVendor).createConsumer(any(JmsDestination.class), any(String.class), any(JmsActorConfig.class));
       
       LifecycleHelper.stopAndClose(standaloneConsumer);
       
@@ -137,7 +138,7 @@ public class JmsConsumerTest extends JmsConsumerCase {
         LifecycleHelper.initAndStart(standaloneConsumer);
       } catch (Exception ex) {}
       
-      verify(mockVendor, times(0)).createConsumer((any(JmsDestination.class)), any(String.class), any(JmsActorConfig.class));
+      verify(mockVendor, times(0)).createConsumer(any(JmsDestination.class), any(String.class), any(JmsActorConfig.class));
       
       LifecycleHelper.stopAndClose(standaloneConsumer);
       
