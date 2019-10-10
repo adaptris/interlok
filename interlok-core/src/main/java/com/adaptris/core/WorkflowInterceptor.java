@@ -33,7 +33,7 @@ public interface WorkflowInterceptor extends AdaptrisComponent, ComponentLifecyc
 
   /**
    * Mark the start of processing a message. This method may be called on a different thread
-   * from {#workflowStart}
+   * from {@code #workflowStart}
    *
    * @param inputMsg
    */
