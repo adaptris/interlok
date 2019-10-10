@@ -32,7 +32,6 @@ import com.adaptris.util.GuidGenerator;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 import javax.validation.constraints.NotNull;
-import javax.xml.crypto.dsig.keyinfo.KeyValue;
 
 /**
  * WorkflowInterceptor implementation that adds a mapped diagnostic context via {@code org.slf4j.MDC#put(String, String)}.
