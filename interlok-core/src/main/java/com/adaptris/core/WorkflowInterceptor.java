@@ -24,11 +24,20 @@ package com.adaptris.core;
 public interface WorkflowInterceptor extends AdaptrisComponent, ComponentLifecycleExtension {
 
   /**
-   * Mark the start of a workflow.
+   * Mark the start of a workflow. This doesn't mean the message has started processing
+   * but only that the message will - at some point - be processed by the workflow.
    *
    * @param inputMsg the message that will be processed by this workflow.
    */
   void workflowStart(AdaptrisMessage inputMsg);
+
+  /**
+   * Mark the start of processing a message. This method may be called on a different thread
+   * from {#workflowStart}
+   *
+   * @param inputMsg
+   */
+  default void processingStart(AdaptrisMessage inputMsg) { }
 
   /**
    * Mark the end of a workflow.

@@ -45,7 +45,6 @@ import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.util.PlainIdGenerator;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
-import org.slf4j.MDC;
 
 /**
  * Partial implementation of <code>Workflow</code>.
@@ -86,9 +85,6 @@ public abstract class WorkflowImp implements Workflow {
   @AdvancedConfig
   @InputFieldDefault(value = "true")
   private Boolean sendEvents;
-  @AdvancedConfig
-  @InputFieldDefault(value = "true")
-  private Boolean useMappedDiagnosticContext;
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   @Deprecated
@@ -470,23 +466,6 @@ public abstract class WorkflowImp implements Workflow {
     return obtainWorkflowId();
   }
 
-
-  protected void putMDC(AdaptrisMessage message) {
-    if(useMappedDiagnosticContext()) {
-      MDC.put(CoreConstants.CHANNEL_ID_KEY, obtainChannel().getUniqueId());
-      MDC.put(CoreConstants.WORKFLOW_ID_KEY, getUniqueId());
-      MDC.put(CoreConstants.MESSAGE_UNIQUE_ID_KEY, message.getUniqueId());
-    }
-  }
-
-  protected void removeMDC() {
-    if(useMappedDiagnosticContext()) {
-      MDC.remove(CoreConstants.CHANNEL_ID_KEY);
-      MDC.remove(CoreConstants.WORKFLOW_ID_KEY);
-      MDC.remove(CoreConstants.MESSAGE_UNIQUE_ID_KEY);
-    }
-  }
-
   /**
    * <p>
    * Sets the <code>ServiceCollection</code> to use. May not be null.
@@ -609,38 +588,6 @@ public abstract class WorkflowImp implements Workflow {
 
   /**
    * <p>
-   * Sets whether to write channel, workflow and message id into the Mapped Diagnostic Context. The following
-   * keys will be added for each message:
-   * </p>
-   * <ul>
-   *     <li>channelid</li>
-   *     <li>workflowid</li>
-   *     <li>messageuniqueid</li>
-   * </ul>
-   *
-   * @param useMappedDiagnosticContext whether to populate the Mapped Diagnostic Context
-   */
-  public void setUseMappedDiagnosticContext(Boolean useMappedDiagnosticContext) {
-    this.useMappedDiagnosticContext = useMappedDiagnosticContext;
-  }
-
-  /**
-   * <p>
-   * Return whether the Mapped Diagnostic Context will be populated
-   * </p>
-   *
-   * @return whether the Mapped Diagnostic Context will be populated
-   */
-  public Boolean getUseMappedDiagnosticContext() {
-    return useMappedDiagnosticContext;
-  }
-
-  boolean useMappedDiagnosticContext() {
-    return BooleanUtils.toBooleanDefaultIfNull(getUseMappedDiagnosticContext(), true);
-  }
-
-  /**
-   * <p>
    * Returns true if payload should be logged.
    * </p>
    *
@@ -759,7 +706,7 @@ public abstract class WorkflowImp implements Workflow {
   }
 
   /**
-   * Mark the workflow having started processing on a message.
+   * Mark the workflow having accepted a message.
    *
    * @param msg the input message
    * @see WorkflowInterceptor
@@ -767,6 +714,18 @@ public abstract class WorkflowImp implements Workflow {
   protected void workflowStart(AdaptrisMessage msg) {
     for (WorkflowInterceptor i : getInterceptors()) {
       i.workflowStart(msg);
+    }
+  }
+
+  /**
+   * Mark the workflow having started processing a message.
+   *
+   * @param msg the input message
+   * @see WorkflowInterceptor
+   */
+  protected void processingStart(AdaptrisMessage msg) {
+    for (WorkflowInterceptor i : getInterceptors()) {
+      i.processingStart(msg);
     }
   }
 
