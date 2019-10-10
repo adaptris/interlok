@@ -25,12 +25,6 @@ package com.adaptris.core.jms;
 public final class JmsConstants {
 
   /**
-   * <p>
-   * A message's unique ID is stored against this key in JMS properties.
-   * </p>
-   */
-  public static final String MESSAGE_UNIQUE_ID_KEY = "messageuniqueid";
-  /**
    * Key used to store the JMSCorrelationID header property.
    *
    */

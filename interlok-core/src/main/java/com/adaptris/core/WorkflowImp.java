@@ -706,7 +706,7 @@ public abstract class WorkflowImp implements Workflow {
   }
 
   /**
-   * Mark the workflow having started processing on a message.
+   * Mark the workflow having accepted a message.
    *
    * @param msg the input message
    * @see WorkflowInterceptor
@@ -714,6 +714,18 @@ public abstract class WorkflowImp implements Workflow {
   protected void workflowStart(AdaptrisMessage msg) {
     for (WorkflowInterceptor i : getInterceptors()) {
       i.workflowStart(msg);
+    }
+  }
+
+  /**
+   * Mark the workflow having started processing a message.
+   *
+   * @param msg the input message
+   * @see WorkflowInterceptor
+   */
+  protected void processingStart(AdaptrisMessage msg) {
+    for (WorkflowInterceptor i : getInterceptors()) {
+      i.processingStart(msg);
     }
   }
 
