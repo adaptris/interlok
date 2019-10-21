@@ -32,6 +32,7 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -70,6 +71,7 @@ public class JettyRouteCondition extends ConditionImpl {
 
   @NotBlank
   private String urlPattern;
+  @InputFieldHint(style = "com.adaptris.core.http.client.RequestMethodProvider.RequestMethod")
   private String method;
   @XStreamImplicit(itemFieldName = "metadata-key")
   @AffectsMetadata

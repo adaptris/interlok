@@ -70,7 +70,7 @@ public abstract class HttpRequestServiceImpl extends ServiceImp {
   @NotBlank
   @AutoPopulated
   @InputFieldDefault(value = "POST")
-  @InputFieldHint(expression = true)
+  @InputFieldHint(expression = true, style = "com.adaptris.core.http.client.RequestMethodProvider.RequestMethod")
   private String method;
 
   @AdvancedConfig
