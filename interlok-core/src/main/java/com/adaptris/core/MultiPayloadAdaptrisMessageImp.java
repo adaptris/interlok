@@ -28,44 +28,74 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
-import static com.adaptris.core.metadata.MetadataResolver.resolveKey;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
- * {@link AdaptrisMessage} implementation created by {@link DefaultMessageFactory}
+ * The standard implementation of multi-payload messages; {@link MultiPayloadAdaptrisMessage} implementation created by
+ * {@link MultiPayloadMessageFactory}.
  *
  * @author aanderson
- * @author $Author: aanderson $
+ * @see MultiPayloadAdaptrisMessage
+ * @see MultiPayloadMessageFactory
+ * @see AdaptrisMessageImp
+ * @since 3.9.x
  */
-public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp
+public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implements MultiPayloadAdaptrisMessage
 {
 	static final String DEFAULT_PAYLOAD = "default-payload";
 
 	private Map<String, Payload> payloads = new HashMap<>();
-	private String currentPayload = DEFAULT_PAYLOAD;
+	private String currentPayloadId = DEFAULT_PAYLOAD;
 
-	protected MultiPayloadAdaptrisMessageImp(IdGenerator guid, AdaptrisMessageFactory fac) throws RuntimeException
+	protected MultiPayloadAdaptrisMessageImp(IdGenerator guid, AdaptrisMessageFactory messageFactory)
 	{
-		super(guid, fac);
-		setPayload(currentPayload, new byte[0]);
+		this(DEFAULT_PAYLOAD, guid, messageFactory);
 	}
 
-	public void setCurrentPayload(String payloadKey)
+	protected MultiPayloadAdaptrisMessageImp(String payloadId, IdGenerator guid, AdaptrisMessageFactory messageFactory)
 	{
-		currentPayload = payloadKey;
+		this(payloadId, guid, messageFactory, new byte[0]);
 	}
 
-	public String getCurrentPayload()
+	protected MultiPayloadAdaptrisMessageImp(String payloadId, IdGenerator guid, AdaptrisMessageFactory messageFactory, byte[] payload)
 	{
-		return currentPayload;
+		super(guid, messageFactory);
+		addPayload(payloadId, payload);
 	}
 
 	/**
-	 * @see AdaptrisMessage#equivalentForTracking (com.adaptris.core.AdaptrisMessage)
+	 * {@inheritDoc}.
+	 */
+	@Override
+	public void switchPayload(String payloadId)
+	{
+		currentPayloadId = payloadId;
+	}
+
+	/**
+	 * {@inheritDoc}.
+	 */
+	@Override
+	public void setCurrentPayloadId(String payloadId)
+	{
+		Payload payload = payloads.remove(currentPayloadId);
+		currentPayloadId = payloadId;
+		payloads.put(currentPayloadId, payload);
+	}
+
+	/**
+	 * {@inheritDoc}.
+	 */
+	@Override
+	public String getCurrentPayloadId()
+	{
+		return currentPayloadId;
+	}
+
+	/**
+	 * @see AdaptrisMessage#equivalentForTracking (com.adaptris.core.AdaptrisMessage).
 	 */
 	@Override
 	public boolean equivalentForTracking(AdaptrisMessage other)
@@ -88,15 +118,22 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp
 	}
 
 	/**
+	 * Set the current payload data.
+	 *
+	 * @param bytes The payload data.
 	 * @see AdaptrisMessage#setPayload(byte[])
 	 */
 	@Override
 	public void setPayload(byte[] bytes)
 	{
-		setPayload(currentPayload, bytes);
+		addPayload(currentPayloadId, bytes);
 	}
 
-	public void setPayload(String payloadKey, byte[] bytes)
+	/**
+	 * {@inheritDoc}.
+	 */
+	@Override
+	public void addPayload(String payloadId, byte[] bytes)
 	{
 		byte[] payload;
 		if (bytes == null)
@@ -107,22 +144,29 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp
 		{
 			payload = bytes;
 		}
-		payloads.put(payloadKey, new Payload(payload));
+		payloads.put(payloadId, new Payload(payload));
 	}
 
 	/**
+	 * Get the current payload data.
+	 *
+	 * @return The payload data.
 	 * @see AdaptrisMessage#getPayload()
 	 */
 	@Override
 	public byte[] getPayload()
 	{
-		return getPayload(currentPayload);
+		return getPayload(currentPayloadId);
 	}
 
-	public byte[] getPayload(String payloadKey)
+	/**
+	 * {@inheritDoc}.
+	 */
+	@Override
+	public byte[] getPayload(String payloadId)
 	{
 		byte[] result = null;
-		byte[] payload = payloads.get(payloadKey).data;
+		byte[] payload = payloads.get(payloadId).data;
 		if (payload != null)
 		{
 			result = new byte[payload.length];
@@ -132,58 +176,89 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp
 	}
 
 	/**
+	 * Get the current payload size.
+	 *
+	 * @return The payload size.
 	 * @see AdaptrisMessage#getSize()
 	 */
 	@Override
 	public long getSize()
 	{
-		return getSize(currentPayload);
+		return getSize(currentPayloadId);
 	}
 
-	public long getSize(String payloadKey)
+	/**
+	 * {@inheritDoc}.
+	 */
+	@Override
+	public long getSize(String payloadId)
 	{
-		byte[] payload = payloads.get(payloadKey).data;
+		byte[] payload = payloads.get(payloadId).data;
 		return payload != null ? payload.length : 0;
 	}
 
 	/**
+	 * Set the current payload content.
+	 *
+	 * @param payloadString The payload content.
+	 * @param charEnc       The content encoding.
 	 * @see AdaptrisMessage#setContent(String, String)
 	 */
 	@Override
 	public void setContent(String payloadString, String charEnc)
 	{
-		setContent(currentPayload, payloadString, charEnc);
+		addContent(currentPayloadId, payloadString, charEnc);
 	}
 
-	public void setContent(String payloadKey, String payloadString, String charEnc)
+	/**
+	 * {@inheritDoc}.
+	 */
+	@Override
+	public void addContent(String payloadId, String payloadString)
+	{
+		addContent(payloadId, payloadString, null);
+	}
+
+	/**
+	 * {@inheritDoc}.
+	 */
+	@Override
+	public void addContent(String payloadId, String payloadString, String charEnc)
 	{
 		byte[] payload;
 		if (payloadString != null)
 		{
 			Charset charset = Charset.forName(StringUtils.defaultIfBlank(charEnc, Charset.defaultCharset().name()));
 			payload = payloadString.getBytes(charset);
-			setContentEncoding(payloadKey, charEnc);
+			setContentEncoding(payloadId, charEnc);
 		}
 		else
 		{
 			payload = new byte[0];
-			setContentEncoding(payloadKey, charEnc);
+			setContentEncoding(payloadId, charEnc);
 		}
-		setPayload(payloadKey, payload);
+		addPayload(payloadId, payload);
 	}
 
 	/**
+	 * Get the current payload content.
+	 *
+	 * @return The payload content.
 	 * @see AdaptrisMessage#getContent()
 	 */
 	@Override
 	public String getContent()
 	{
-		return getContent(currentPayload);
+		return getContent(currentPayloadId);
 	}
 
-	public String getContent(String payloadKey)
+	/**
+	 * {@inheritDoc}.
+	 */
+	@Override
+	public String getContent(String payloadId)
 	{
-		byte[] payload = getPayload(payloadKey);
+		byte[] payload = getPayload(payloadId);
 		if (payload != null)
 		{
 			if (isEmpty(getContentEncoding()))
@@ -198,27 +273,41 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp
 		return null;
 	}
 
+	/**
+	 * {@inheritDoc}.
+	 */
 	@Override
 	public void setContentEncoding(String enc)
 	{
-		setContentEncoding(currentPayload, enc);
+		setContentEncoding(currentPayloadId, enc);
 	}
 
-	public void setContentEncoding(String payloadKey, String enc)
+	/**
+	 * {@inheritDoc}.
+	 */
+	@Override
+	public void setContentEncoding(String payloadId, String enc)
 	{
 		String contentEncoding = enc != null ? Charset.forName(enc).name() : null;
-		payloads.get(payloadKey).encoding = contentEncoding;
+		payloads.get(payloadId).encoding = contentEncoding;
 	}
 
+	/**
+	 * {@inheritDoc}.
+	 */
 	@Override
 	public String getContentEncoding()
 	{
-		return getContentEncoding(currentPayload);
+		return getContentEncoding(currentPayloadId);
 	}
 
-	public String getContentEncoding(String payloadKey)
+	/**
+	 * {@inheritDoc}.
+	 */
+	@Override
+	public String getContentEncoding(String payloadId)
 	{
-		return payloads.get(payloadKey).encoding;
+		return payloads.get(payloadId).encoding;
 	}
 
 	/**
@@ -228,15 +317,15 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp
 	public Object clone() throws CloneNotSupportedException
 	{
 		MultiPayloadAdaptrisMessageImp result = (MultiPayloadAdaptrisMessageImp)super.clone();
-		// clone the payload.
+		// clone the payloads.
 		try
 		{
-			for (String payloadKey : payloads.keySet())
+			for (String payloadId : payloads.keySet())
 			{
-				byte[] payload = payloads.get(payloadKey).data;
+				byte[] payload = payloads.get(payloadId).data;
 				byte[] newPayload = new byte[payload.length];
 				System.arraycopy(payload, 0, newPayload, 0, payload.length);
-				result.setPayload(payloadKey, newPayload);
+				result.addPayload(payloadId, newPayload);
 			}
 		}
 		catch (Exception e)
@@ -250,14 +339,18 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp
 	 * @see AdaptrisMessage#getInputStream()
 	 */
 	@Override
-	public InputStream getInputStream() throws IOException
+	public InputStream getInputStream()
 	{
-		return getInputStream(currentPayload);
+		return getInputStream(currentPayloadId);
 	}
 
-	public InputStream getInputStream(String payloadKey) throws IOException
+	/**
+	 * {@inheritDoc}.
+	 */
+	@Override
+	public InputStream getInputStream(String payloadId)
 	{
-		byte[] payload = getPayload(payloadKey);
+		byte[] payload = getPayload(payloadId);
 		return payload != null ? new ByteArrayInputStream(payload) : new ByteArrayInputStream(new byte[0]);
 	}
 
@@ -267,22 +360,26 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp
 	@Override
 	public OutputStream getOutputStream()
 	{
-		return getOutputStream(currentPayload);
+		return getOutputStream(currentPayloadId);
 	}
 
-	public OutputStream getOutputStream(String payloadKey)
+	/**
+	 * {@inheritDoc}.
+	 */
+	@Override
+	public OutputStream getOutputStream(String payloadId)
 	{
-		return new ByteFilterStream(payloadKey, new ByteArrayOutputStream());
+		return new ByteFilterStream(payloadId, new ByteArrayOutputStream());
 	}
 
 	private class ByteFilterStream extends FilterOutputStream
 	{
-		private String payloadKey;
+		private String payloadId;
 
-		ByteFilterStream(String payloadKey, OutputStream out)
+		ByteFilterStream(String payloadId, OutputStream out)
 		{
 			super(out);
-			this.payloadKey = payloadKey;
+			this.payloadId = payloadId;
 		}
 
 		@Override
@@ -290,7 +387,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp
 		{
 			super.close();
 			byte[] payload = ((ByteArrayOutputStream)super.out).toByteArray();
-			setPayload(payloadKey, payload);
+			addPayload(payloadId, payload);
 		}
 	}
 
