@@ -45,8 +45,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp
 {
 	static final String DEFAULT_PAYLOAD = "default-payload";
 
-	private Map<String, byte[]> payloads = new HashMap<>();
-	private Map<String, String> contentEncodings = new HashMap<>();
+	private Map<String, Payload> payloads = new HashMap<>();
 	private String currentPayload = DEFAULT_PAYLOAD;
 
 	protected MultiPayloadAdaptrisMessageImp(IdGenerator guid, AdaptrisMessageFactory fac) throws RuntimeException
@@ -108,7 +107,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp
 		{
 			payload = bytes;
 		}
-		payloads.put(payloadKey, payload);
+		payloads.put(payloadKey, new Payload(payload));
 	}
 
 	/**
@@ -123,7 +122,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp
 	public byte[] getPayload(String payloadKey)
 	{
 		byte[] result = null;
-		byte[] payload = payloads.get(payloadKey);
+		byte[] payload = payloads.get(payloadKey).data;
 		if (payload != null)
 		{
 			result = new byte[payload.length];
@@ -143,7 +142,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp
 
 	public long getSize(String payloadKey)
 	{
-		byte[] payload = payloads.get(payloadKey);
+		byte[] payload = payloads.get(payloadKey).data;
 		return payload != null ? payload.length : 0;
 	}
 
@@ -208,7 +207,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp
 	public void setContentEncoding(String payloadKey, String enc)
 	{
 		String contentEncoding = enc != null ? Charset.forName(enc).name() : null;
-		contentEncodings.put(payloadKey, contentEncoding);
+		payloads.get(payloadKey).encoding = contentEncoding;
 	}
 
 	@Override
@@ -219,7 +218,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp
 
 	public String getContentEncoding(String payloadKey)
 	{
-		return contentEncodings.get(payloadKey);
+		return payloads.get(payloadKey).encoding;
 	}
 
 	/**
@@ -234,7 +233,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp
 		{
 			for (String payloadKey : payloads.keySet())
 			{
-				byte[] payload = payloads.get(payloadKey);
+				byte[] payload = payloads.get(payloadKey).data;
 				byte[] newPayload = new byte[payload.length];
 				System.arraycopy(payload, 0, newPayload, 0, payload.length);
 				result.setPayload(payloadKey, newPayload);
@@ -292,6 +291,23 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp
 			super.close();
 			byte[] payload = ((ByteArrayOutputStream)super.out).toByteArray();
 			setPayload(payloadKey, payload);
+		}
+	}
+
+	private class Payload
+	{
+		public String encoding;
+		public byte[] data;
+
+		public Payload(String encoding, byte[] data)
+		{
+			this.encoding = encoding;
+			this.data = data;
+		}
+
+		public Payload(byte[] data)
+		{
+			this.data = data;
 		}
 	}
 }
