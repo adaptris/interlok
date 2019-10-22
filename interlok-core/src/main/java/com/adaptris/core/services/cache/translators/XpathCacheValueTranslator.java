@@ -1,11 +1,9 @@
 package com.adaptris.core.services.cache.translators;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.xml.namespace.NamespaceContext;
-
-import org.hibernate.validator.constraints.NotBlank;
 import org.w3c.dom.Document;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
@@ -38,8 +36,9 @@ public class XpathCacheValueTranslator implements CacheValueTranslator<String>, 
   @InputFieldHint(expression = true)
   private String xpath;
   @Valid
+  @AdvancedConfig(rare = true)
   private KeyValuePairSet namespaceContext = null;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig = null;
   public XpathCacheValueTranslator() {
@@ -57,7 +56,7 @@ public class XpathCacheValueTranslator implements CacheValueTranslator<String>, 
   @Override
   public String getValueFromMessage(AdaptrisMessage msg) throws CoreException {
     NamespaceContext ctx = SimpleNamespaceContext.create(getNamespaceContext(), msg);
-    DocumentBuilderFactoryBuilder builder = documentFactoryBuilder();
+    DocumentBuilderFactoryBuilder builder = documentFactoryBuilder(ctx);
     String result = null;
     try {
       XPath xp = XPath.newXPathInstance(builder, ctx);
@@ -68,15 +67,6 @@ public class XpathCacheValueTranslator implements CacheValueTranslator<String>, 
       throw ExceptionHelper.wrapCoreException(e);
     }
     return result;
-  }
-
-  /**
-   * @throws UnsupportedOperationException this method is not implemented for this translator
-   */
-  @Override
-  public void addValueToMessage(AdaptrisMessage msg, String value) throws CoreException {
-    throw new UnsupportedOperationException(
-        "We do not support direct injection into payload via XPath, store as metadata and post process using XSLT instead");
   }
 
   /**
@@ -113,8 +103,8 @@ public class XpathCacheValueTranslator implements CacheValueTranslator<String>, 
     this.xmlDocumentFactoryConfig = xml;
   }
 
-  DocumentBuilderFactoryBuilder documentFactoryBuilder() {
-    return getXmlDocumentFactoryConfig() != null ? getXmlDocumentFactoryConfig() : DocumentBuilderFactoryBuilder.newInstance();
+  private DocumentBuilderFactoryBuilder documentFactoryBuilder(NamespaceContext ctx) {
+    return DocumentBuilderFactoryBuilder.newInstanceIfNull(getXmlDocumentFactoryConfig(), ctx);
   }
 
   @Override

@@ -5,17 +5,13 @@ import static com.adaptris.fs.FsWorker.isFile;
 import static org.apache.commons.io.IOUtils.copy;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
-
 import javax.validation.Valid;
-
-import org.hibernate.validator.constraints.NotBlank;
-
+import javax.validation.constraints.NotBlank;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
@@ -55,7 +51,7 @@ public class ReadFileService extends ServiceImp {
   @InputFieldDefault(value = "null")
   private String contentTypeMetadataKey;
 
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   @InputFieldDefault(value = "Files.probeContentType(Path)")
   private ContentTypeProbe contentTypeProbe;

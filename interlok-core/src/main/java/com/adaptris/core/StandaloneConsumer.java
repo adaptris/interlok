@@ -44,7 +44,7 @@ public class StandaloneConsumer implements AdaptrisMessageConsumer, StateManaged
 
   private AdaptrisConnection connection;
   private AdaptrisMessageConsumer consumer;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean isTrackingEndpoint;
   private transient ComponentState consumerState;

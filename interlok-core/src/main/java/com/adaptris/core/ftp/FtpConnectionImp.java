@@ -17,12 +17,9 @@
 package com.adaptris.core.ftp;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 import java.io.IOException;
 import java.util.TimeZone;
-
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.CoreException;
@@ -54,15 +51,15 @@ public abstract class FtpConnectionImp extends FileTransferConnectionUsingPasswo
   @AutoPopulated
   private TransferType transferType;
   @AutoPopulated
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private Integer socketTimeout;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String serverTimezone;
   @AutoPopulated
   private FtpDataMode ftpDataMode;
   @AdvancedConfig
   private String defaultAccount;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @NotNull
   @AutoPopulated
   private KeyValuePairSet additionalSettings;

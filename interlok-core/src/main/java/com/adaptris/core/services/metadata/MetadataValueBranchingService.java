@@ -17,12 +17,10 @@
 package com.adaptris.core.services.metadata;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 import java.util.Iterator;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
@@ -74,7 +72,9 @@ public class MetadataValueBranchingService extends MetadataBranchingServiceImp {
       super.initService();
       Args.notNull(getValueMatcher(), "valueMatcher");
       Args.notNull(getMetadataToServiceIdMappings(), "metadataToServiceMappings");
-      if (valueMatcher instanceof UseKeyAsServiceIdValueMatcher && getMetadataToServiceIdMappings().size() > 0) {
+      if (BooleanUtils.and(new boolean[] {getValueMatcher() instanceof UseKeyAsServiceIdValueMatcher,
+          getMetadataToServiceIdMappings().size() > 0})) {
+
         log.warn("{} configured with metadata-to-service-id-mappings; mappings will be ignored",
             UseKeyAsServiceIdValueMatcher.class.getSimpleName());
       }
@@ -98,6 +98,7 @@ public class MetadataValueBranchingService extends MetadataBranchingServiceImp {
    *
    * @see com.adaptris.core.Service#doService(com.adaptris.core.AdaptrisMessage)
    */
+  @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     String serviceKey = createServiceKey(msg);
     String nextServiceId = valueMatcher.getNextServiceId(serviceKey, getMetadataToServiceIdMappings());

@@ -42,7 +42,7 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
   @NotNull
   @InputFieldHint(style = "SQL", expression = true)
   private String statement = null;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean saveReturnedKeys = null;
   @InputFieldDefault(value = "")
@@ -190,6 +190,7 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
     public PreparedStatement getInsertStatement(AdaptrisMessage msg) throws SQLException {
       String currentStatement = getParameterApplicator().prepareParametersToStatement(msg.resolve(getStatement()));
       if (!lastInsertStatement.equals(currentStatement) || insertStatement == null) {
+        JdbcUtil.closeQuietly(insertStatement);
         insertStatement = prepare(currentStatement);
         lastInsertStatement = currentStatement;
       }
@@ -214,8 +215,7 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
     }
 
     void destroy() {
-      JdbcUtil.closeQuietly(insertStatement);
-      JdbcUtil.closeQuietly(sqlConnection);
+      JdbcUtil.closeQuietly(insertStatement, sqlConnection);
       sqlConnection = null;
       insertStatement = null;
     }

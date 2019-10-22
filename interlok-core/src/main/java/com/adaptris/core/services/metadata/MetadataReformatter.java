@@ -31,7 +31,7 @@ public interface MetadataReformatter {
   /**
    * Reformat a metadata value
    * 
-   * @implSpec The default implementation simply returns the input string.
+   * @implNote The default implementation simply returns the input string.
    * @param s the string to reformat
    * @param msgCharset the charset of the message
    * @return the replacment string.
@@ -44,7 +44,7 @@ public interface MetadataReformatter {
   /**
    * Reformat a metadata value
    * 
-   * @implSpec The default implementation calls {@link MetadataReformatter#reformat(String, String)} with
+   * @implNote The default implementation calls {@link MetadataReformatter#reformat(String, String)} with
    *           {@link AdaptrisMessage#getContentEncoding()}.
    * @param s the string to reformat
    * @param msg the current Mesage.

@@ -16,10 +16,11 @@
 
 package com.adaptris.core.jms;
 
+import static org.junit.Assert.assertTrue;
 import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.jms.Session;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
@@ -28,11 +29,6 @@ import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
  */
 public class MapMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
   private static final String BODY_KEY1 = "bodykey1";
-
-  public MapMessageTranslatorTest(String name) {
-    super(name);
-  }
-
 
   /**
    * @see com.adaptris.core.jms.MessageTypeTranslatorCase#createMessage(javax.jms.Session)
@@ -52,7 +48,9 @@ public class MapMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
     return t;
   }
 
+  @Test
   public void testMapMessageToAdaptrisMessage() throws Exception {
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MapMessageTranslator t = new MapMessageTranslator();
     try {
@@ -73,7 +71,9 @@ public class MapMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
     }
   }
 
+  @Test
   public void testAdaptrisMessageToMapMessage() throws Exception {
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MapMessageTranslator t = new MapMessageTranslator();
     try {
@@ -97,7 +97,9 @@ public class MapMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
     }
   }
 
+  @Test
   public void testAdaptrisMessageToMapMessageWithMetadataAsPayload() throws Exception {
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MapMessageTranslator t = new MapMessageTranslator();
     try {

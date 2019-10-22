@@ -17,7 +17,6 @@ package com.adaptris.core.http.jetty;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,10 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
+import javax.validation.constraints.NotBlank;
 import org.eclipse.jetty.util.security.Credential;
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.security.access.IdentityBuilder;

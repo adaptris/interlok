@@ -17,21 +17,18 @@ package com.adaptris.core.jdbc;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-
 import javax.sql.DataSource;
-
-import org.hibernate.validator.constraints.NotBlank;
-
+import javax.validation.constraints.NotBlank;
+import org.apache.commons.io.IOUtils;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.JdbcUtil;
-import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 public abstract class JdbcPooledConnectionImpl extends DatabaseConnection {
   @NotBlank
   private String connectUrl;
-  protected transient ComboPooledDataSource connectionPool;
+  protected transient PooledDataSource connectionPool;
 
   @Override
   protected Connection makeConnection() throws SQLException {
@@ -41,7 +38,7 @@ public abstract class JdbcPooledConnectionImpl extends DatabaseConnection {
   @Override
   protected void initialiseDatabaseConnection() throws CoreException {
     try {
-      connectionPool = createPool();
+      validatePool();
       connect().close();
     }
     catch (Exception e) {
@@ -58,24 +55,26 @@ public abstract class JdbcPooledConnectionImpl extends DatabaseConnection {
   }
 
   @Override
+  @SuppressWarnings("deprecation")
   protected void closeDatabaseConnection() {
-    if (connectionPool != null) {
-      connectionPool.close();
-      connectionPool = null;
+    IOUtils.closeQuietly(connectionPool);
+    connectionPool = null;
+  }
+
+  protected abstract PooledDataSource createPool() throws Exception;
+
+  private synchronized void validatePool() throws Exception {
+    if (connectionPool == null) {
+      connectionPool = createPool();
     }
   }
 
-  protected abstract ComboPooledDataSource createPool() throws CoreException;
-
   @Override
   public DataSource asDataSource() throws SQLException {
-    if (connectionPool == null) {
-      try {
-        connectionPool = createPool();
-      }
-      catch (CoreException ex) {
-        throw new SQLException(ex);
-      }
+    try {
+      validatePool();
+    } catch (Exception ex) {
+      throw new SQLException(ex);
     }
     return connectionPool;
   }

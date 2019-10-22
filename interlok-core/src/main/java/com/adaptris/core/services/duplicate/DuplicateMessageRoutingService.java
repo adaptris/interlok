@@ -22,21 +22,21 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.util.LinkedList;
-
-import org.hibernate.validator.constraints.NotBlank;
-
+import javax.validation.constraints.NotBlank;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.fs.FsHelper;
+import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -58,8 +58,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Set Metadata based on whether the message is considered a duplicate or not", tag = "service,duplicate")
 @DisplayOrder(order = {"keyToCheck", "destinationKey", "uniqueDestination", "duplicateDestination", "configLocation"})
 public class DuplicateMessageRoutingService extends ServiceImp {
-  private transient LinkedList<String> comparators = new LinkedList<String>();
 
+  private static final Logger slf4jLogger = LoggerFactory.getLogger(DuplicateMessageRoutingService.class);
   /**
    * <p>
    * Metadata key against which the value to check for uniqueness is stored.
@@ -67,7 +67,8 @@ public class DuplicateMessageRoutingService extends ServiceImp {
    */
   public static final String DEFAULT_CHECK_KEY = "DuplicateCheck";
 
-  private int historySize = 100;
+  @InputFieldDefault(value = "100")
+  private int historySize;
   @NotBlank
   @AutoPopulated
   private String keyToCheck = DEFAULT_CHECK_KEY;
@@ -82,6 +83,11 @@ public class DuplicateMessageRoutingService extends ServiceImp {
 
   // not marshalled
   private transient File file = null;
+  private transient LinkedList<String> comparators = new LinkedList<String>();
+
+  public DuplicateMessageRoutingService() {
+    setHistorySize(100);
+  }
 
   /**
    * <p>
@@ -279,75 +285,50 @@ public class DuplicateMessageRoutingService extends ServiceImp {
 
   @Override
   protected void initService() throws CoreException {
-    file = initialiseFile();
-    try {
+    tryAndWrap(() -> {
+      file = FsHelper.toFile(getConfigLocation());
       load();
-    } catch (Exception e) {
-      throw new CoreException("Failed to initialise DuplicateMessageRoutingService successfully", e);
-    }
+    });
   }
 
   @Override
   protected void closeService() {
-    try {
-      store();
-    } catch (Exception e) {
-      log.trace("Failed to shutdown component cleanly, logging exception for informational purposes only", e);
-    }
+    tryAndLog("Failed to shutdown component cleanly, logging exception for informational purposes only", () -> store());
   }
 
 
-  private File initialiseFile() throws CoreException {
-    File result = null;
-    try {
-      try {
-        result = new File(new URI(getConfigLocation()));
-      }
-      catch (URISyntaxException e) {
-        // Specifically here to copy with file:///c:/ (which is what
-        // the user wants illegal due to additional :
-        // (which should be encoded)
-        // Specifically here to cope with file:///c:/ (which is
-        // technically illegal according to RFC2396 but we need
-        // to support it
-        if (getConfigLocation().split(":").length >= 3) {
-          result = new File(new URI(URLEncoder.encode(getConfigLocation(),
-              "UTF-8")).toString());
-        }
-        else {
-          throw e;
-        }
-      }
-    }
-    catch (Exception e) {
-      throw new CoreException(e);
-    }
-    return result;
-  }
-
-  /** @see com.adaptris.core.AdaptrisComponent#start() */
   @Override
   public void start() throws CoreException {
-    try {
-      load();
-    }
-    catch (Exception e) {
-      throw new CoreException(
-          "Failed to start DuplicateMessageRoutingService successfully", e);
-    }
+    tryAndWrap(() -> load());
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#stop() */
   @Override
   public void stop() {
-    try {
-      store();
-    }
-    catch (Exception e) {
-      log.trace("Failed to stop component cleanly, logging exception for informational purposes only", e);
-    }
+    tryAndLog("Failed to stop component cleanly, logging exception for informational purposes only", () -> store());
   }
 
   @Override
   public void prepare() throws CoreException {}
+
+
+  protected static void tryAndLog(String logMsg, Operator l) {
+    try {
+      l.doOperation();
+    } catch (Exception e) {
+      slf4jLogger.trace(logMsg, e);
+    }
+  }
+
+  protected static void tryAndWrap(Operator l) throws CoreException {
+    try {
+      l.doOperation();
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
+    }
+  }
+
+  @FunctionalInterface
+  protected interface Operator {
+    void doOperation() throws Exception;
+  }
 }

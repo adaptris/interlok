@@ -18,9 +18,9 @@ package com.adaptris.core.services.exception;
 
 import static com.adaptris.core.util.ServiceUtil.discardNulls;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;

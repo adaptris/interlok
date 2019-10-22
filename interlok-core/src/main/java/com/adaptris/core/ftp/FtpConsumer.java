@@ -78,9 +78,9 @@ public class FtpConsumer extends FtpConsumerImpl {
   @NotNull
   @AutoPopulated
   private String workDirectory = "/work";
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String procDirectory;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String wipSuffix;
 
   public FtpConsumer() {

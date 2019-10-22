@@ -18,16 +18,13 @@ package com.adaptris.core.jms;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Session;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -70,7 +67,7 @@ public class FailoverJmsConnection extends JmsConnection {
   @Valid
   private List<JmsConnection> connections = null;
   private transient JmsConnection current;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean registerOwner;
 
@@ -186,8 +183,7 @@ public class FailoverJmsConnection extends JmsConnection {
   }
 
   @Override
-  protected void createConnection(ConnectionFactory factory)
-      throws JMSException {
+  protected void createConnection(ConnectionFactory factory) throws Exception {
     current.createConnection(factory);
   }
 

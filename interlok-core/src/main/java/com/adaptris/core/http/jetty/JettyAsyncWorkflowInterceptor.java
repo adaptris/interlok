@@ -16,15 +16,11 @@
 package com.adaptris.core.http.jetty;
 
 import static com.adaptris.core.http.jetty.JettyConstants.JETTY_WRAPPER;
-
 import java.util.concurrent.TimeUnit;
-
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -36,7 +32,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 import net.jodah.expiringmap.ExpiringMap;
 
 /**
@@ -113,7 +108,7 @@ public class JettyAsyncWorkflowInterceptor extends JettyWorkflowInterceptorImpl 
 
   @InputFieldHint(style = "BLANKABLE")
   @InputFieldDefault(value = "")
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String cacheKey;
 
   @Override

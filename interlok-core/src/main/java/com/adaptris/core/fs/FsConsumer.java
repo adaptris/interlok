@@ -20,9 +20,9 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
+import javax.validation.constraints.NotBlank;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.lang3.BooleanUtils;
-import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -100,9 +100,9 @@ public class FsConsumer extends FsConsumerImpl {
 
   @NotBlank
   @AutoPopulated
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String wipSuffix;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean resetWipFiles;
 

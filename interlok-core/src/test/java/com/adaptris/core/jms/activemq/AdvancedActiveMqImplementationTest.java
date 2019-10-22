@@ -16,11 +16,12 @@
 
 package com.adaptris.core.jms.activemq;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQPrefetchPolicy;
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.blob.BlobTransferPolicy;
-
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
@@ -28,13 +29,6 @@ public class AdvancedActiveMqImplementationTest extends BasicActiveMqImplementat
 
   private static final String TRUE = Boolean.TRUE.toString();
   private static final String FALSE = Boolean.FALSE.toString();
-
-  /**
-   * @param name
-   */
-  public AdvancedActiveMqImplementationTest(String name) {
-    super(name);
-  }
 
   @Override
   protected void doAssertions(ActiveMQConnectionFactory f) throws Exception {
@@ -48,9 +42,12 @@ public class AdvancedActiveMqImplementationTest extends BasicActiveMqImplementat
 
   private void doAssertions(BlobTransferPolicy p) throws Exception {
     assertNotNull("BlobTransferPolicy", p);
-    assertEquals("BlobUploadStrategy", ExampleNoOpBlobUploadStrategy.class, p.getUploadStrategy().getClass());
-    assertEquals("setBrokerUploadUrl", "http://localhost:80/activemq", p.getBrokerUploadUrl());
-    assertEquals("setDefaultUploadUrl", "ftp://myname:mypassword@localhost:21/activemq", p.getDefaultUploadUrl());
+    assertEquals("BlobUploadStrategy", ExampleNoOpBlobUploadStrategy.class,
+        p.getUploadStrategy().getClass());
+    assertEquals("setBrokerUploadUrl", "http://localhost:80/activemq",
+        p.getBrokerUploadUrl());
+    assertEquals("setDefaultUploadUrl", "ftp://myname:mypassword@localhost:21/activemq",
+        p.getDefaultUploadUrl());
     assertEquals("setUploadUrl", "https://localhost:443/activemq", p.getUploadUrl());
     assertEquals("setBufferSize", 256 * 1024, p.getBufferSize());
   }
@@ -67,7 +64,8 @@ public class AdvancedActiveMqImplementationTest extends BasicActiveMqImplementat
 
   private void doAssertions(RedeliveryPolicy p) throws Exception {
     assertNotNull("RedeliveryPolicy", p);
-    assertEquals("setBackOffMultiplier", Double.valueOf("10"), p.getBackOffMultiplier());
+    assertEquals("setBackOffMultiplier", Double.valueOf("10"),
+        Double.valueOf(p.getBackOffMultiplier()));
     assertEquals("setCollisionAvoidancePercent", 50, p.getCollisionAvoidancePercent());
     assertEquals("setInitialRedeliveryDelay", 10000, p.getInitialRedeliveryDelay());
     assertEquals("setUseCollisionAvoidance", true, p.isUseCollisionAvoidance());

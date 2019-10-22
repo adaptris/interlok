@@ -16,9 +16,9 @@
 package com.adaptris.core.common;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.Args;

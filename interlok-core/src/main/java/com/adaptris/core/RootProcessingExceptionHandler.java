@@ -19,7 +19,6 @@ package com.adaptris.core;
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.runtime.MessageErrorDigester;
@@ -40,7 +39,7 @@ public abstract class RootProcessingExceptionHandler implements ProcessingExcept
 
   private transient ComponentState state;
   private String uniqueId;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean alwaysHandleException;
 
@@ -88,26 +87,32 @@ public abstract class RootProcessingExceptionHandler implements ProcessingExcept
     }
   }
 
+  @Override
   public void requestInit() throws CoreException {
     state.requestInit(this);
   }
 
+  @Override
   public void requestStart() throws CoreException {
     state.requestStart(this);
   }
 
+  @Override
   public void requestStop() {
     state.requestStop(this);
   }
 
+  @Override
   public void requestClose() {
     state.requestClose(this);
   }
 
+  @Override
   public ComponentState retrieveComponentState() {
     return state;
   }
 
+  @Override
   public void changeState(ComponentState newState) {
     state = newState;
   }
@@ -116,10 +121,12 @@ public abstract class RootProcessingExceptionHandler implements ProcessingExcept
     return messageErrorDigester;
   }
 
+  @Override
   public void registerDigester(MessageErrorDigester digest) {
     messageErrorDigester = digest;
   }
 
+  @Override
   public String getUniqueId() {
     return uniqueId;
   }

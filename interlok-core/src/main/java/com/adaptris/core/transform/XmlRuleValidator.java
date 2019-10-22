@@ -75,9 +75,9 @@ public class XmlRuleValidator extends MessageValidatorImpl {
   @NotNull
   @AutoPopulated
   private List<ValidationStage> validationStages = new ArrayList<>();
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private KeyValuePairSet namespaceContext;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 

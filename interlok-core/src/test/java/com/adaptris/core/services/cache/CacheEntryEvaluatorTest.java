@@ -3,13 +3,14 @@ package com.adaptris.core.services.cache;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-
+import java.util.Collections;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.services.cache.CacheEntryEvaluator.NullCacheValueTranslator;
 import com.adaptris.core.services.cache.translators.MetadataCacheValueTranslator;
 import com.adaptris.core.services.cache.translators.StaticCacheValueTranslator;
 
@@ -231,6 +232,12 @@ public class CacheEntryEvaluatorTest extends BaseCase {
     eval.setErrorOnEmptyValue(false);
     AdaptrisMessage msg = createMessage(new ArrayList<MetadataElement>());
     assertEquals(null, eval.getValue(msg));
+  }
+
+  public void testNullCacheValueTranslator() throws Exception {
+    NullCacheValueTranslator cvt = new CacheEntryEvaluator.NullCacheValueTranslator();
+    assertNull(cvt.getValueFromMessage(createMessage(Collections.EMPTY_SET)));
+    cvt.addValueToMessage(createMessage(Collections.EMPTY_SET), null);
   }
 
   protected AdaptrisMessage createMessage(Collection<MetadataElement> metadata) {

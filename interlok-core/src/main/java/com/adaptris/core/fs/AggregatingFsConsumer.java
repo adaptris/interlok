@@ -71,7 +71,7 @@ public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFs
   private String fileFilterImp;
   @AdvancedConfig
   private Boolean deleteAggregatedFiles;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String wipSuffix;
   @Valid
   @AdvancedConfig

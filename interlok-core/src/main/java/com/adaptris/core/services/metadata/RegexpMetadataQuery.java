@@ -19,10 +19,9 @@ package com.adaptris.core.services.metadata;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.validation.constraints.NotBlank;
+
 import org.apache.commons.lang3.BooleanUtils;
-import org.hibernate.validator.constraints.NotBlank;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.InputFieldDefault;
@@ -50,8 +49,6 @@ public class RegexpMetadataQuery {
   private Boolean allowNulls;
   private transient Pattern pattern = null;
 
-  private transient Logger logR = LoggerFactory.getLogger(this.getClass());
-
   public RegexpMetadataQuery() {
   }
 
@@ -74,26 +71,19 @@ public class RegexpMetadataQuery {
    * @throws CoreException wrapping any underlying Exception
    */
   public synchronized MetadataElement doQuery(String message)
-    throws CoreException {
+      throws Exception {
+    Args.notBlank(getMetadataKey(), "metadata-key");
+    Args.notBlank(getQueryExpression(), "query-expression");
     if (pattern == null) {
-      try {
-        pattern = Pattern.compile(queryExpression);
-      }
-      catch (Exception e) {
-        throw new CoreException(
-          "Failed to create Query [" + e.getMessage() + "]",
-          e);
-      }
+      pattern = Pattern.compile(getQueryExpression());
     }
-
     Matcher matcher = pattern.matcher(message);
 
     MetadataElement elem = new MetadataElement();
-    elem.setKey(metadataKey);
+    elem.setKey(getMetadataKey());
 
     if (matcher.find()) {
-      String value = matcher.group(1);
-      elem.setValue(value);
+      elem.setValue(matcher.group(1));
     }
     else {
       if (!allowNullResults()) {

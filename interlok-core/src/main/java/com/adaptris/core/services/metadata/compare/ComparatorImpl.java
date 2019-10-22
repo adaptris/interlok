@@ -16,8 +16,7 @@
 
 package com.adaptris.core.services.metadata.compare;
 
-import org.hibernate.validator.constraints.NotBlank;
-
+import javax.validation.constraints.NotBlank;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
 

@@ -19,7 +19,6 @@ package com.adaptris.jdbc;
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -40,7 +39,7 @@ public class ExecuteQueryCallableStatementExecutor implements CallableStatementE
   public JdbcResult executeCallableStatement(CallableStatement statement) throws SQLException {
     ResultSet resultSet = statement.executeQuery(); // lgtm
     
-    JdbcResult result = new JdbcResultBuilder()
+    JdbcResult result = new JdbcResultBuilder().trackStatement(statement)
     .setHasResultSet(true)
     .setResultSet(resultSet)
     .build();

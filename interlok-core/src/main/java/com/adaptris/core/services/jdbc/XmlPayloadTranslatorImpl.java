@@ -21,16 +21,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
-
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
@@ -53,9 +50,9 @@ public abstract class XmlPayloadTranslatorImpl extends ResultSetTranslatorImp {
   protected static final String ELEMENT_NAME_ROW = "Row";
   protected static final String ELEMENT_NAME_RESULTS = "Results";
 
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String xmlColumnPrefix = null;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String xmlColumnRegexp = null;
   @AdvancedConfig
   private String cdataColumnRegexp = null;

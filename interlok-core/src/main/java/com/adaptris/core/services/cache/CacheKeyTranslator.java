@@ -22,6 +22,7 @@ import com.adaptris.core.CoreException;
  * Get the key from the message.
  *
  */
+@FunctionalInterface
 public interface CacheKeyTranslator {
 
   String getKeyFromMessage(AdaptrisMessage msg) throws CoreException;

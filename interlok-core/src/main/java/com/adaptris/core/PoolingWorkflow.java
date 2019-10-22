@@ -126,15 +126,15 @@ public class PoolingWorkflow extends WorkflowImp {
   @InputFieldDefault(value = "10")
   private Integer maxIdle;
 
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "1 minute")
   @Valid
   private TimeInterval threadKeepAlive;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "1 minute")
   @Valid
   private TimeInterval shutdownWaitTime;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "1 minute")
   @Valid
   private TimeInterval initWaitTime;
@@ -703,6 +703,7 @@ public class PoolingWorkflow extends WorkflowImp {
       Thread.currentThread().setName(getThreadName());
       AdaptrisMessage result = null;
       try {
+        processingStart(message);
         result = worker.handleMessage(message);
         workflowEnd(message, result);
         objectPool.returnObject(worker);

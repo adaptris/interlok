@@ -203,10 +203,10 @@ public class XPathService extends ServiceImp {
   @XStreamImplicit(itemFieldName="xpath-execution")
   private List<Execution> executions;
   
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private KeyValuePairSet namespaceContext;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
   

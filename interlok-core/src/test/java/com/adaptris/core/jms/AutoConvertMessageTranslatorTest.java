@@ -19,9 +19,12 @@ package com.adaptris.core.jms;
 import static com.adaptris.core.jms.ObjectMessageTranslatorTest.assertException;
 import static com.adaptris.core.jms.ObjectMessageTranslatorTest.readException;
 import static com.adaptris.core.jms.ObjectMessageTranslatorTest.write;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayOutputStream;
-
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
@@ -30,7 +33,7 @@ import javax.jms.MessageEOFException;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import javax.jms.TextMessage;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.MetadataElement;
@@ -51,11 +54,10 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
       INTEGER_VALUE, BOOLEAN_VALUE, STRING_VALUE
   };
 
-  public AutoConvertMessageTranslatorTest(String name) {
-    super(name);
-  }
 
+  @Test
   public void testConvertFromConsumeTypeBytes() throws Exception {
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
 
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
@@ -83,8 +85,10 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
     }
 
   }
-  
+
+  @Test
   public void testConvertFromConsumeTypeText() throws Exception {
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
 
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
@@ -113,7 +117,10 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
 
   }
   
+  @Test
   public void testConvertFromConsumeTypeTextRemoveKeyAfter() throws Exception {
+
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
 
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
@@ -145,8 +152,10 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
     }
 
   }
-  
+
+  @Test
   public void testConvertFromConsumeTypeTextDefaultRemoveKeyAfter() throws Exception {
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
 
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
@@ -178,7 +187,10 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
 
   }
   
+  @Test
   public void testConvertFromConsumeTypeMap() throws Exception {
+
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
 
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
@@ -206,7 +218,10 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
 
   }
   
+  @Test
   public void testConvertFromConsumeTypeObject() throws Exception {
+
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
 
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
@@ -236,7 +251,10 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
 
   }
   
+  @Test
   public void testConvertFromConsumeTypeBytesNoMetadataKey() throws Exception {
+
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
 
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
@@ -266,7 +284,10 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
 
   }
   
+  @Test
   public void testConvertFromConsumeTypeBytesIllegalMetadataKey() throws Exception {
+
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
 
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
@@ -295,7 +316,10 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
 
   }
   
+  @Test
   public void testBytesMessageToAdaptrisMessage() throws Exception {
+
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
 
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
@@ -320,7 +344,10 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
 
   }
 
+  @Test
   public void testAdaptrisMessageToBytesMessage() throws Exception {
+
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
     trans.setJmsOutputType(AutoConvertMessageTranslator.SupportedMessageType.Bytes.name());
@@ -343,7 +370,10 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
     }
   }
 
+  @Test
   public void testAdaptrisMessageToTextMessage() throws Exception {
+
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
     trans.setJmsOutputType(AutoConvertMessageTranslator.SupportedMessageType.Text.name());
@@ -364,7 +394,10 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
     }
   }
 
+  @Test
   public void testMapMessageToAdaptrisMessage() throws Exception {
+
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
 
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
@@ -387,7 +420,10 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
     }
   }
 
+  @Test
   public void testAdaptrisMessageToMapMessage() throws Exception {
+
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
     trans.setJmsOutputType(AutoConvertMessageTranslator.SupportedMessageType.Map.name());
@@ -410,7 +446,10 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
     }
   }
 
+  @Test
   public void testObjectMessageToAdaptrisMessage() throws Exception {
+
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
 
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
@@ -435,7 +474,10 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
     }
   }
 
+  @Test
   public void testAdaptrisMessageToObjectMessage() throws Exception {
+
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
     trans.setJmsOutputType(AutoConvertMessageTranslator.SupportedMessageType.Object.name());
@@ -458,7 +500,10 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
     }
   }
   
+  @Test
   public void testMessageToAdaptrisMessageWithFallback() throws Exception {
+
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
 
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
@@ -479,7 +524,10 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
     }
   }
   
+  @Test
   public void testAdaptrisMessageToMessageWithFallback() throws Exception {
+
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
 
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();

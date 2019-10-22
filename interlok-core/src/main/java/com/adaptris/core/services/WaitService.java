@@ -20,9 +20,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -55,7 +53,7 @@ public class WaitService extends ServiceImp {
   private TimeInterval waitInterval;
   @InputFieldDefault(value = "false")
   private Boolean randomize;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean exceptionOnInterrupt;
 

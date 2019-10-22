@@ -5,16 +5,13 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import javax.jms.CompletionListener;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageProducer;
-
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
@@ -43,6 +40,7 @@ public class JmsAsyncProducerTest extends JmsProducerExample {
   @Mock private StandardProcessingExceptionHandler mockExceptionHandler;
   
   
+  @Override
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
     
@@ -151,6 +149,11 @@ public class JmsAsyncProducerTest extends JmsProducerExample {
   }
   
   public void testEmbeddedSuccessHandler() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedArtemis broker = new EmbeddedArtemis();
     JmsAsyncProducer producer = new JmsAsyncProducer();
     producer.setAsyncMessageErrorHandler(mockExceptionHandler);
@@ -178,6 +181,11 @@ public class JmsAsyncProducerTest extends JmsProducerExample {
   }
   
   public void testEmbeddedJmsException() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedArtemis broker = new EmbeddedArtemis();
     JmsAsyncProducer producer = new JmsAsyncProducer();
     producer.setAsyncMessageErrorHandler(mockExceptionHandler);

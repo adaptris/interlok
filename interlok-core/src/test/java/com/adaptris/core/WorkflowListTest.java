@@ -18,9 +18,9 @@ package com.adaptris.core;
 
 import java.util.Arrays;
 import java.util.ListIterator;
-
+import java.util.Set;
+import javax.validation.ConstraintViolation;
 import org.apache.log4j.Logger;
-
 import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.PlainIdGenerator;
@@ -365,6 +365,21 @@ public class WorkflowListTest extends BaseCase {
     WorkflowList output = (WorkflowList) m.unmarshal(xml);
     log.debug("Unmarshalled " + m.marshal(output));
     assertRoundtripEquality(input, output);
+  }
+
+
+  public void testJavaxValidation() throws Exception {
+    Channel channel = new Channel("testJavaxValidation");
+    WorkflowList list = new WorkflowList();
+    list.add(new StandardWorkflow()); // this is invalid, cos no UID.
+    channel.setWorkflowList(list);
+    Set<ConstraintViolation<Object>> violations = validate(null, channel);
+    logViolations(violations);
+    // We expect 2 violations, one from channel, one from workflowList
+    assertEquals(2, violations.size());
+    list.clear();
+    violations = validate(null, channel);
+    assertEquals(0, violations.size());
   }
 
   private StandardWorkflow createWorkflow(String uid) {

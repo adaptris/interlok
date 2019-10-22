@@ -17,16 +17,19 @@
 package com.adaptris.core.management;
 
 import static com.adaptris.core.management.Constants.CFG_KEY_START_QUIETLY;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
-
+import java.util.Map;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.management.logging.LoggingConfigurator;
 import com.adaptris.core.runtime.AdapterManagerMBean;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.Resource;
+import io.github.classgraph.ResourceList;
+import io.github.classgraph.ScanResult;
 
 /**
  * Abstract boostrap that contains standard commandline parsing.
@@ -103,10 +106,28 @@ abstract class CmdLineBootstrap {
       // calling prepare probably makes no difference.
       Adapter clonedAdapter = (Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(adapter.getConfiguration());
       LifecycleHelper.prepare(clonedAdapter);
+
       // INTERLOK-1455 Shutdown the logging subsystem if we're only just doing a config check.
       LoggingConfigurator.newConfigurator().requestShutdown();
       // No starting an adapter, so just terminate.
+      logClasspathIssues();
       System.err.println("Config check only; terminating");
+    }
+  }
+
+  private static void logClasspathIssues() {
+    if (Constants.DBG) {
+      try (ScanResult result = new ClassGraph().scan()) {
+        for (Map.Entry<String, ResourceList> dup : result.getAllResources().classFilesOnly().findDuplicatePaths()) {
+          if (dup.getKey().equalsIgnoreCase("module-info.class")) {
+            continue;
+          }
+          System.err.println(String.format("%s has possible duplicates", dup.getKey()));
+          for (Resource res : dup.getValue()) {
+            System.err.println(String.format(" -> Found in %s", res.getURI()));
+          }
+        }
+      }
     }
   }
 

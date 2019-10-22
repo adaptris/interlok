@@ -16,10 +16,7 @@
 
 package com.adaptris.core.services.duplicate;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-
-import org.hibernate.validator.constraints.NotBlank;
-
+import javax.validation.constraints.NotBlank;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -66,7 +63,6 @@ public class CheckMetadataValueService extends DuplicateMetadataValueService {
     try {
       Args.notBlank(getNextServiceIdIfDuplicate(), "nextServiceIdIfDuplicate");
       Args.notBlank(getNextServiceIdIfUnique(), "nextServiceIdIfUnique");
-
       super.initService();
     }
     catch (Exception e) {
@@ -74,37 +70,23 @@ public class CheckMetadataValueService extends DuplicateMetadataValueService {
     }
   }
   
-  /** @see com.adaptris.core.Service
-   *   #doService(com.adaptris.core.AdaptrisMessage) */
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    loadPreviouslyReceivedValues();
-    
-    String value = msg.getMetadataValue(getMetadataKey());
-    
-    if (isEmpty(value)) {
-      throw new ServiceException
-        ("required metadata [" + getMetadataKey() + "] missing");
-    }
-    
-    if (previousValuesStore.contains(value)) {
-      handleDuplicate(msg, value);
-    }
-    else {
-      log.debug("unique value [" + value + "] received");
-      msg.setNextServiceId(getNextServiceIdIfUnique());
+    try {
+      loadPreviouslyReceivedValues();
+      String value = Args.notBlank(msg.getMetadataValue(getMetadataKey()), "required-metadata");
+      if (previousValuesStore.contains(value)) {
+        log.warn("Value [{}] stored [{}] exists in list of previously stored values", value, getMetadataKey());
+        msg.setNextServiceId(getNextServiceIdIfDuplicate());
+      } else {
+        log.debug("unique value [{}] received", value);
+        msg.setNextServiceId(getNextServiceIdIfUnique());
+      }
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapServiceException(e);
     }
   }
 
-  private void handleDuplicate(AdaptrisMessage msg, String value) 
-    throws ServiceException {
-    
-    String errorMessage = createErrorMessage(value);
-    log.warn(errorMessage);
-    
-    msg.setNextServiceId(getNextServiceIdIfDuplicate());
-  }
-  
   /** 
    * <p>
    * This is a branching service, even though its parent(s) aren't.
@@ -115,18 +97,6 @@ public class CheckMetadataValueService extends DuplicateMetadataValueService {
   public boolean isBranching() {
     return true;
   }
-
-  private String createErrorMessage(String value) {
-    StringBuffer result = new StringBuffer();
-    result.append("value [");
-    result.append(value);
-    result.append("] stored against key [");
-    result.append(getMetadataKey());
-    result.append("] exists in list of previously stored values");
-    
-    return result.toString();
-  }
-
 
   // properties...
 

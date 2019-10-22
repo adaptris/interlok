@@ -1,8 +1,10 @@
 package com.adaptris.core.jms;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import javax.jms.JMSException;
 import javax.jms.Message;
-
+import org.junit.Test;
 import com.adaptris.core.metadata.NoOpMetadataFilter;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 
@@ -13,10 +15,6 @@ public class BooleanMetadataConverterTest extends ConvertingMetadataConverterCas
 
   private static final boolean VALUE = true;
   private static final String STRING_VALUE = String.valueOf(VALUE);
-
-  public BooleanMetadataConverterTest(String name) {
-    super(name);
-  }
 
   @Override
   MetadataConverter createConverter() {
@@ -33,6 +31,7 @@ public class BooleanMetadataConverterTest extends ConvertingMetadataConverterCas
     assertEquals(VALUE, jmsMsg.getBooleanProperty(HEADER));
   }
 
+  @Test
   public void testConstruct() throws Exception {
     BooleanMetadataConverter mc = new BooleanMetadataConverter();
     assertTrue(mc.getMetadataFilter() instanceof NoOpMetadataFilter);

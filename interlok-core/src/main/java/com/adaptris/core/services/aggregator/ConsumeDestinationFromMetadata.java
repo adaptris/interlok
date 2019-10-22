@@ -37,7 +37,7 @@ public class ConsumeDestinationFromMetadata implements ConsumeDestinationGenerat
   private String destinationMetadataKey;
   @AdvancedConfig
   private String defaultFilterExpression;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String filterMetadataKey;
 
   public String getDefaultDestination() {

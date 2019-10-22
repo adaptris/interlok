@@ -16,10 +16,8 @@
 package com.adaptris.core.services.conditional.conditions;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisConnection;

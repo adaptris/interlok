@@ -1,8 +1,10 @@
 package com.adaptris.core.jms;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import javax.jms.JMSException;
 import javax.jms.Message;
-
+import org.junit.Test;
 import com.adaptris.core.metadata.NoOpMetadataFilter;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 
@@ -12,10 +14,6 @@ import com.adaptris.core.metadata.RegexMetadataFilter;
 public class StringMetadataConverterTest extends MetadataConverterCase {
 
   private static final String VALUE = "value";
-
-  public StringMetadataConverterTest(String name) {
-    super(name);
-  }
 
   @Override
   MetadataConverter createConverter() {
@@ -32,6 +30,7 @@ public class StringMetadataConverterTest extends MetadataConverterCase {
     assertEquals(VALUE, jmsMsg.getStringProperty(HEADER));
   }
 
+  @Test
   public void testConstruct() throws Exception {
     StringMetadataConverter mc = new StringMetadataConverter();
     assertTrue(mc.getMetadataFilter() instanceof NoOpMetadataFilter);

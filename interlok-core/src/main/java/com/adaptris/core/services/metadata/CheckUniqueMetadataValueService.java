@@ -24,9 +24,7 @@ import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.hibernate.validator.constraints.NotBlank;
-
+import javax.validation.constraints.NotBlank;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -135,6 +133,7 @@ public class CheckUniqueMetadataValueService extends BranchingServiceImp {
    * @see com.adaptris.core.Service
    *      #doService(com.adaptris.core.AdaptrisMessage)
    */
+  @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     String value = msg.getMetadataValue(this.getMetadataKeyToCheck());
     try {

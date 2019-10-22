@@ -16,12 +16,19 @@
 
 package com.adaptris.core.jms.activemq;
 
+import static com.adaptris.core.BaseCase.start;
+import static com.adaptris.core.BaseCase.stop;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import javax.jms.JMSException;
-
 import org.apache.activemq.ActiveMQConnectionFactory;
-
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.BaseCase;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.JmsConnection;
@@ -29,17 +36,13 @@ import com.adaptris.core.jms.JmsDestination;
 import com.adaptris.core.jms.PtpProducer;
 import com.adaptris.core.jms.VendorImplementation;
 
-public class BasicActiveMqImplementationTest extends BaseCase {
+public class BasicActiveMqImplementationTest {
 
   protected static final String PRIMARY = "tcp://localhost:61616";
+  @Rule
+  public TestName testName = new TestName();
 
-  /**
-   * @param name
-   */
-  public BasicActiveMqImplementationTest(String name) {
-    super(name);
-  }
-
+  @Test
   public void testConnectionFactory() throws Exception {
     VendorImplementation mq = create();
     JmsConnection c = new JmsConnection();
@@ -57,14 +60,16 @@ public class BasicActiveMqImplementationTest extends BaseCase {
   }
 
 
+  @Test
   public void testRfc6167_Basic() throws Exception {
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     StandaloneProducer producer = null;
 
     try {
       broker.start();
       BasicActiveMqImplementation vendorImp = create();
-      PtpProducer ptp = new PtpProducer(new ConfiguredProduceDestination(getName()));
+      PtpProducer ptp = new PtpProducer(new ConfiguredProduceDestination(testName.getMethodName()));
       producer = new StandaloneProducer(broker.getJmsConnection(vendorImp), ptp);
       start(producer);
       // Send a message so that the session is correct.
@@ -84,14 +89,16 @@ public class BasicActiveMqImplementationTest extends BaseCase {
     }
   }
 
+  @Test
   public void testRfc6167_WithParams() throws Exception {
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     StandaloneProducer producer = null;
 
     try {
       broker.start();
       BasicActiveMqImplementation vendorImp = create();
-      PtpProducer ptp = new PtpProducer(new ConfiguredProduceDestination(getName()));
+      PtpProducer ptp = new PtpProducer(new ConfiguredProduceDestination(testName.getMethodName()));
       producer = new StandaloneProducer(broker.getJmsConnection(vendorImp), ptp);
       start(producer);
       // Send a message so that the session is correct.
@@ -121,15 +128,16 @@ public class BasicActiveMqImplementationTest extends BaseCase {
   }
 
 
-
+  @Test
   public void testRfc6167_Invalid() throws Exception {
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     StandaloneProducer producer = null;
 
     try {
       broker.start();
       BasicActiveMqImplementation vendorImp = create();
-      PtpProducer ptp = new PtpProducer(new ConfiguredProduceDestination(getName()));
+      PtpProducer ptp = new PtpProducer(new ConfiguredProduceDestination(testName.getMethodName()));
       producer = new StandaloneProducer(broker.getJmsConnection(vendorImp), ptp);
       start(producer);
       // Send a message so that the session is correct.

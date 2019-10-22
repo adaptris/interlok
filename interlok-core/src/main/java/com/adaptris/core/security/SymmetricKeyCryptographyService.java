@@ -5,18 +5,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
-
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.ObjectUtils;
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
@@ -33,6 +30,7 @@ import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.interlok.types.MessageWrapper;
 import com.adaptris.security.password.Password;
+import com.adaptris.security.util.SecurityUtil;
 import com.adaptris.util.stream.StreamUtil;
 import com.adaptris.util.text.Conversion;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -111,6 +109,7 @@ public class SymmetricKeyCryptographyService extends ServiceImp {
 
 
   public SymmetricKeyCryptographyService() {
+    SecurityUtil.addProvider();
     setOperationMode(OpMode.DECRYPT);
   }
 

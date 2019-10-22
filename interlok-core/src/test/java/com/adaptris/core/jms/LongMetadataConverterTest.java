@@ -1,8 +1,10 @@
 package com.adaptris.core.jms;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import javax.jms.JMSException;
 import javax.jms.Message;
-
+import org.junit.Test;
 import com.adaptris.core.metadata.NoOpMetadataFilter;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 
@@ -13,10 +15,6 @@ public class LongMetadataConverterTest extends ConvertingMetadataConverterCase {
 
   private static final long VALUE = 10L;
   private static final String STRING_VALUE = String.valueOf(VALUE);
-
-  public LongMetadataConverterTest(String name) {
-    super(name);
-  }
 
   @Override
   MetadataConverter createConverter() {
@@ -33,6 +31,7 @@ public class LongMetadataConverterTest extends ConvertingMetadataConverterCase {
     assertEquals(VALUE, jmsMsg.getLongProperty(HEADER));
   }
 
+  @Test
   public void testConstruct() throws Exception {
     LongMetadataConverter mc = new LongMetadataConverter();
     assertTrue(mc.getMetadataFilter() instanceof NoOpMetadataFilter);

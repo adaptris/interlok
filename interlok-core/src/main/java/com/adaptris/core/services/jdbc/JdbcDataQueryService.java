@@ -76,10 +76,10 @@ public class JdbcDataQueryService extends JdbcServiceWithParameters implements D
   @AutoPopulated
   @Valid
   private ResultSetTranslator resultSetTranslator;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private KeyValuePairSet namespaceContext;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
@@ -329,8 +329,7 @@ public class JdbcDataQueryService extends JdbcServiceWithParameters implements D
     }
 
     void destroy() {
-      JdbcUtil.closeQuietly(queryStatement);
-      JdbcUtil.closeQuietly(sqlConnection);
+      JdbcUtil.closeQuietly(queryStatement, sqlConnection);
       sqlConnection = null;
     }
 
@@ -346,6 +345,7 @@ public class JdbcDataQueryService extends JdbcServiceWithParameters implements D
       // This will prepare the statement *every time* because queryString never equals the statement.
       // Can we just rely on the fact that the JDBC driver will optimize that out of the way?
       if (queryStatement == null || !queryString.equals(statement)) {
+        JdbcUtil.closeQuietly(queryStatement);
         queryStatement = prepareStatement(sqlConnection, prepareStringStatement(statement));
       }
       return queryStatement;

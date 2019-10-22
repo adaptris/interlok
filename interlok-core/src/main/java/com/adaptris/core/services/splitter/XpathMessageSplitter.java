@@ -18,13 +18,12 @@ package com.adaptris.core.services.splitter;
 
 import static com.adaptris.core.util.XmlHelper.createDocument;
 import java.io.IOException;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
-import org.hibernate.validator.constraints.NotBlank;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -77,14 +76,13 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"xpath", "encoding", "copyMetadata", "copyObjectMetadata", "namespaceContext", "xmlDocumentFactoryConfig"})
 public class XpathMessageSplitter extends MessageSplitterImp {
 
-  @NotNull
   @NotBlank
   private String xpath = null;
   @AdvancedConfig
   private String encoding = null;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private KeyValuePairSet namespaceContext;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
   public XpathMessageSplitter() {

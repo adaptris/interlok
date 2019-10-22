@@ -17,12 +17,8 @@
 package com.adaptris.core.services.metadata;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
-
 import java.util.HashSet;
 import java.util.Set;
-
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MetadataElement;
@@ -45,7 +41,6 @@ import com.adaptris.core.util.ExceptionHelper;
  */
 public abstract class ReformatMetadata extends MetadataServiceImpl implements MetadataReformatter {
 
-  @NotBlank
   @AffectsMetadata
   private String metadataKeyRegexp;
 

@@ -23,9 +23,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import org.apache.commons.lang3.StringUtils;
+import javax.validation.constraints.NotBlank;
 import org.apache.commons.lang3.BooleanUtils;
-import org.hibernate.validator.constraints.NotBlank;
+import org.apache.commons.lang3.StringUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -79,18 +79,18 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
   @InputFieldDefault(value = "true")
   private Boolean alwaysReplaceMetadata;
   @InputFieldHint(style = "SQL")
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String selectStatement = null;
   @InputFieldHint(style = "SQL")
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String insertStatement = null;
   @InputFieldHint(style = "SQL")
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String updateStatement = null;
   @InputFieldHint(style = "SQL")
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String resetStatement = null;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean createDatabase;
   @AdvancedConfig

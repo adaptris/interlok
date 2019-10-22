@@ -75,6 +75,8 @@ subprojects { subproject ->
     all*.exclude group: 'net.sf.saxon', module: 'saxon'
     all*.exclude group: 'org.codehaus.woodstox'
     all*.exclude group: 'org.eclipse.jetty.orbit', module: 'javax.mail.glassfish'
+    all*.exclude group: 'javax.el', module: 'javax.el-api'
+    all*.exclude group: 'org.hibernate', module: 'hibernate-validator'
   }
 
   dependencies {
@@ -88,7 +90,7 @@ subprojects { subproject ->
 
   if (jacocoEnabled(subproject)) {
     jacoco {
-      toolVersion="0.8.1"
+      toolVersion="0.8.3"
     }
     jacocoTestReport {
       reports {

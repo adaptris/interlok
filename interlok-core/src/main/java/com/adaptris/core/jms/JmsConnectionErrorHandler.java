@@ -17,12 +17,9 @@
 package com.adaptris.core.jms;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.CoreException;
@@ -36,7 +33,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("jms-connection-error-handler")
 public class JmsConnectionErrorHandler extends JmsConnectionErrorHandlerImpl implements ExceptionListener {
 
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "true")
   private Boolean singleExecution;
   private transient AtomicBoolean inOnException = new AtomicBoolean(false);

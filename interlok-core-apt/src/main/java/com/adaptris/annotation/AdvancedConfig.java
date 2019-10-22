@@ -24,10 +24,16 @@ import java.lang.annotation.Target;
 /**
  * An interface for making a "hint" for the UI where to display this field.
  * 
- * @author lchan
  * @since 3.0.5
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface AdvancedConfig {
+  /**
+   * Whether or not this field should be considered 'rare' and hidden most of the time.
+   * 
+   * @return true if enabled, defaults to false.
+   * @since 3.9.2
+   */
+  boolean rare() default false;
 }

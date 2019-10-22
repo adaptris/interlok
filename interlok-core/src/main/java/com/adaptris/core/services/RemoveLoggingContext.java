@@ -16,9 +16,8 @@
 
 package com.adaptris.core.services;
 
-import org.hibernate.validator.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
 import org.slf4j.MDC;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -62,6 +61,7 @@ public class RemoveLoggingContext extends ServiceImp {
     setKey(key);
   }
 
+  @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     try {
       MDC.remove(msg.resolve(getKey()));

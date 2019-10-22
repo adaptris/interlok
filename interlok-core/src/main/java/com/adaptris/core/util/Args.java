@@ -16,52 +16,14 @@
 
 package com.adaptris.core.util;
 
-import org.apache.commons.lang3.StringUtils;
+/**
+ * 
+ *
+ */
+// Not deprecated because it's madness, also because really interlok-common probably shouldn't exist.
+// @Deprecated
+// @Removal(version = "4.0", message = "Use com.adaptris.interlok.util.Args instead")
+public abstract class Args extends com.adaptris.interlok.util.Args {
 
-public abstract class Args {
-
-  /**
-   * Convenience to throw an {@link IllegalArgumentException} if the associated argument null.
-   * 
-   * @param argument the argument.
-   * @param member the member name associated with this argument.
-   * @return the argument
-   */
-  public static <T> T notNull(final T argument, final String member) {
-    if (argument == null) {
-      throw new IllegalArgumentException(member + " may not be null");
-    }
-    return argument;
-  }
-
-  /**
-   * Convenience to throw an {@link IllegalArgumentException} if the associated argument is the
-   * empty string (or null) as defined by {@link StringUtils#isEmpty(String)}.
-   * 
-   * @param argument the argument.
-   * @param member the member name associated with this argument.
-   * @return the argument
-   */
-  public static String notEmpty(String argument, final String member) {
-    if (StringUtils.isEmpty(argument)) {
-      throw new IllegalArgumentException(member + " is empty/null");
-    }
-    return argument;
-  }
-
-  /**
-   * Convenience to throw an {@link IllegalArgumentException} if the associated argument is the
-   * blank string as defined by {@link StringUtils#isBlank(String)}.
-   * 
-   * @param argument the argument.
-   * @param member the member name associated with this argument.
-   * @return the argument
-   */
-  public static String notBlank(final String argument, final String member) {
-    if (StringUtils.isBlank(argument)) {
-      throw new IllegalArgumentException(member + " may not be blank/empty/null");
-    }
-    return argument;
-  }
 }
 

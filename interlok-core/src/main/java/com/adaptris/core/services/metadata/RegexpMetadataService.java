@@ -17,15 +17,11 @@
 package com.adaptris.core.services.metadata;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -33,10 +29,10 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -85,14 +81,14 @@ public class RegexpMetadataService extends MetadataServiceImpl {
     try {
       for (RegexpMetadataQuery q : getRegexpMetadataQueries()) {
         MetadataElement elem = q.doQuery(message);
-        if (!isEmpty(elem.getValue()) || addNullValues()) {
+        if (BooleanUtils.or(new boolean[] {!isEmpty(elem.getValue()), addNullValues()})) {
           msg.addMetadata(elem);
           added.add(elem);
         }
       }
     }
-    catch (CoreException e) {
-      throw new ServiceException(e);
+    catch (Exception e) {
+      throw ExceptionHelper.wrapServiceException(e);
     }
     logMetadata("Added metadata : {}", added);
   }

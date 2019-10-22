@@ -17,19 +17,15 @@
 package com.adaptris.core.jms;
 
 import static com.adaptris.core.jms.MetadataHandler.isReserved;
-
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Set;
-
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
 import javax.jms.Message;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.BooleanUtils;
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
@@ -94,13 +90,14 @@ public final class MapMessageTranslator extends MessageTypeTranslatorImp {
    * @return a new <code>MapMessage</code>
    * @throws JMSException
    */
+  @Override
   public Message translate(AdaptrisMessage msg) throws JMSException {
     MapMessage jmsMsg = session.createMapMessage();
     jmsMsg.setString(getKeyForPayload(), msg.getContent());
     if (treatMetadataAsPartOfMessage()) {
       Set<MetadataElement> metadata = msg.getMetadata();
       for (Iterator<MetadataElement> itr = metadata.iterator(); itr.hasNext();) {
-        MetadataElement element = (MetadataElement) itr.next();
+        MetadataElement element = itr.next();
         if (!isReserved(element.getKey())) {
           jmsMsg.setString(element.getKey(), element.getValue());
         }
@@ -119,6 +116,7 @@ public final class MapMessageTranslator extends MessageTypeTranslatorImp {
    * @return an <code>AdaptrisMessage</code>
    * @throws JMSException
    */
+  @Override
   public AdaptrisMessage translate(Message msg) throws JMSException {
     MapMessage jmsMsg = (MapMessage) msg;
     AdaptrisMessage result = currentMessageFactory().newMessage(jmsMsg.getString(getKeyForPayload()));

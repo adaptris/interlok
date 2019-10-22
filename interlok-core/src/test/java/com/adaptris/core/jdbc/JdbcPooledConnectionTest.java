@@ -19,9 +19,9 @@ package com.adaptris.core.jdbc;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.core.ClosedState;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.TimeInterval;
@@ -30,17 +30,9 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 public class JdbcPooledConnectionTest extends DatabaseConnectionCase<JdbcPooledConnection> {
   
   private static final GuidGenerator GUID = new GuidGenerator();
-  private transient boolean testsEnabled = false;
 
   public JdbcPooledConnectionTest(String arg0) {
     super(arg0);
-  }
-
-  protected void setUp() throws Exception {
-    if (Boolean.parseBoolean(PROPERTIES.getProperty(StoredProcedureProducerTest.JDBC_STOREDPROC_TESTS_ENABLED, "false"))) {
-      super.setUp();
-      testsEnabled = true;
-    }
   }
 
   @Override
@@ -139,7 +131,7 @@ public class JdbcPooledConnectionTest extends DatabaseConnectionCase<JdbcPooledC
     try {
       LifecycleHelper.initAndStart(con);
       Thread.sleep(500);
-      ComboPooledDataSource poolDs = (ComboPooledDataSource) con.asDataSource();
+      ComboPooledDataSource poolDs = ((C3P0PooledDataSource) con.asDataSource()).wrapped();
       assertEquals(0, poolDs.getNumBusyConnections());
       Connection c1 = poolDs.getConnection();
       log.info("1 get: NumConnections=" + poolDs.getNumConnections() + ", NumBusyConnnections=" + poolDs.getNumBusyConnections() + ", NumIdleConnections" + poolDs.getNumIdleConnections());
@@ -162,13 +154,7 @@ public class JdbcPooledConnectionTest extends DatabaseConnectionCase<JdbcPooledC
       log.info("7 get: NumConnections=" + poolDs.getNumConnections() + ", NumBusyConnnections=" + poolDs.getNumBusyConnections() + ", NumIdleConnections" + poolDs.getNumIdleConnections());
 
       assertEquals(7, poolDs.getNumBusyConnections());
-      c1.close();
-      c2.close();
-      c3.close();
-      c4.close();
-      c5.close();
-      c6.close();
-      c7.close();
+      JdbcUtil.closeQuietly(c1, c2, c3, c4, c5, c6, c7);
       Thread.sleep(2000);
       log.info("closed: NumConnections=" + poolDs.getNumConnections() + ", NumBusyConnnections=" + poolDs.getNumBusyConnections() + ", NumIdleConnections" + poolDs.getNumIdleConnections());
 

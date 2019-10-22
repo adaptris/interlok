@@ -16,14 +16,11 @@
 package com.adaptris.core.http.auth;
 
 import java.net.PasswordAuthentication;
-
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.interlok.resolver.ExternalResolver;
-import com.adaptris.security.exc.PasswordException;
-import com.adaptris.security.password.Password;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -52,12 +49,8 @@ public class ConfiguredUsernamePassword extends UserPassAuthentication {
 
   @Override
   protected PasswordAuthentication getPasswordAuthentication(AdaptrisMessage msg) throws CoreException {
-    try {
-      return new PasswordAuthentication(msg.resolve(getUsername()),
-          Password.decode(msg.resolve(ExternalResolver.resolve(getPassword()))).toCharArray());
-    } catch (PasswordException e) {
-      throw new CoreException("Unable to decode password", e);
-    }
+    return new PasswordAuthentication(msg.resolve(getUsername()),
+          decodePassword(msg.resolve(ExternalResolver.resolve(getPassword()))));
   }
 
   public String getUsername() {

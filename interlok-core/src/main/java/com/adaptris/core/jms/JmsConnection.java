@@ -16,7 +16,6 @@
 
 package com.adaptris.core.jms;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
@@ -37,8 +36,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.interlok.resolver.ExternalResolver;
-import com.adaptris.security.password.Password;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -216,22 +213,8 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
     return result;
   }
 
-  protected void createConnection(ConnectionFactory factory) throws JMSException {
-    try {
-      if (isEmpty(configuredUserName())) {
-        connection = factory.createConnection();
-      }
-      else {
-        connection = factory.createConnection(configuredUserName(),
-            Password.decode(ExternalResolver.resolve(configuredPassword())));
-      }
-    }
-    catch (JMSException e) {
-      throw e;
-    }
-    catch (Exception e) {
-      JmsUtils.rethrowJMSException(e);
-    }
+  protected void createConnection(ConnectionFactory factory) throws Exception {
+    connection = configuredVendorImplementation().createConnection(factory, this);
   }
 
   @Override

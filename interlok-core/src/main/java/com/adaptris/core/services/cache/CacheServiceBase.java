@@ -17,36 +17,20 @@ package com.adaptris.core.services.cache;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AutoPopulated;
-import com.adaptris.core.AdaptrisConnection;
-import com.adaptris.core.AdaptrisConnectionImp;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ConnectedService;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.ServiceImp;
-import com.adaptris.core.cache.Cache;
-import com.adaptris.core.cache.CacheProvider;
 import com.adaptris.core.util.Args;
-import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
  * Base class that provides common functions used by all cache services
  * 
  */
-public abstract class CacheServiceBase extends ServiceImp implements ConnectedService {
-
-  @Valid
-  private AdaptrisConnection connection;
-
-  // All this for backwards compatibility. dammit.
-  private transient AdaptrisConnection cacheConnection;
+public abstract class CacheServiceBase extends CacheServiceImpl {
 
   @Valid
   @XStreamImplicit
@@ -56,45 +40,6 @@ public abstract class CacheServiceBase extends ServiceImp implements ConnectedSe
 
   public CacheServiceBase() {
     setCacheEntryEvaluators(new ArrayList<CacheEntryEvaluator>());
-  }
-
-
-  @Override
-  public void prepare() throws CoreException {
-    try {
-      cacheConnection = Args.notNull(connection, "connection");
-      LifecycleHelper.prepare(cacheConnection);
-    }
-    catch (IllegalArgumentException e) {
-      throw ExceptionHelper.wrapCoreException(e);
-    }
-  }
-
-  @Override
-  public void closeService() {
-    LifecycleHelper.close(cacheConnection);
-  }
-
-  @Override
-  public void initService() throws CoreException {
-    LifecycleHelper.init(cacheConnection);
-
-  }
-
-  @Override
-  public void start() throws CoreException {
-    super.start();
-    LifecycleHelper.start(cacheConnection);
-  }
-
-  @Override
-  public void stop() {
-    super.stop();
-    LifecycleHelper.stop(cacheConnection);
-  }
-
-  protected Cache retrieveCache() {
-    return cacheConnection.retrieveConnection(CacheProvider.class).retrieveCache();
   }
 
   public List<CacheEntryEvaluator> getCacheEntryEvaluators() {
@@ -113,16 +58,6 @@ public abstract class CacheServiceBase extends ServiceImp implements ConnectedSe
     cacheEntryEvaluators.add(generator);
   }
 
-  @Override
-  public AdaptrisConnection getConnection() {
-    return connection;
-  }
-
-  @Override
-  public void setConnection(AdaptrisConnection cacheConnection) {
-    this.connection = cacheConnection;
-  }
-
   /**
    * Retrieves the value from the cache and then stores it against the message using the supplied value translator
    *
@@ -139,44 +74,6 @@ public abstract class CacheServiceBase extends ServiceImp implements ConnectedSe
       }
     }
     cvt.addValueToMessage(msg, value);
-  }
-
-  private class CacheWrapper extends AdaptrisConnectionImp implements CacheProvider {
-    private Cache myCache;
-    public CacheWrapper(Cache c) {
-      myCache = c;
-    }
-
-    @Override
-    protected void prepareConnection() throws CoreException {
-      LifecycleHelper.prepare(myCache);
-    }
-
-    @Override
-    protected void initConnection() throws CoreException {
-      LifecycleHelper.init(myCache);
-    }
-
-    @Override
-    protected void startConnection() throws CoreException {
-      LifecycleHelper.start(myCache);
-    }
-
-    @Override
-    protected void stopConnection() {
-      LifecycleHelper.stop(myCache);
-    }
-
-    @Override
-    protected void closeConnection() {
-      LifecycleHelper.close(myCache);
-    }
-
-    @Override
-    public Cache retrieveCache() {
-      return myCache;
-    }
-
   }
 
 }
