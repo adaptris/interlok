@@ -18,11 +18,9 @@ package com.adaptris.core.fs;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
@@ -33,9 +31,9 @@ import org.junit.Test;
  */
 public class CompositeFileFilterTest {
   protected transient Log logR = LogFactory.getLog(this.getClass());
-  private static final String FILTER_SIZE = "SizeGT=1024__@@__Perl=.*\\.xml";
-  private static final String FILTER_CUSTOM = "SizeGT=1024__@@__Perl=.*\\.xml__@@__com.adaptris.core.fs.YesOrNo=false";
-  private static final String FILTER_N0CLASSDEF = "SizeGT=1024__@@__Perl=.*\\.xml__@@__com.adaptris.core.fs.Blah=false";
+  private static final String FILTER_SIZE = "SizeGT=1024__@@__Regex=.*\\.xml";
+  private static final String FILTER_CUSTOM = "SizeGT=1024__@@__Regex=.*\\.xml__@@__com.adaptris.core.fs.YesOrNo=false";
+  private static final String FILTER_N0CLASSDEF = "SizeGT=1024__@@__Regex=.*\\.xml__@@__com.adaptris.core.fs.Blah=false";
 
   private static final String[] FILTER_STRINGS = {
       "NewerThan=-PT1H",
@@ -45,7 +43,6 @@ public class CompositeFileFilterTest {
       "SizeLT=1024",
       "SizeLTE=1024",
       "com.adaptris.core.fs.YesOrNo=false",
-      "IWon'tWork"
   };
 
   @Test
@@ -53,6 +50,11 @@ public class CompositeFileFilterTest {
     for (String filter : FILTER_STRINGS) {
       CompositeFileFilter df = new CompositeFileFilter(filter, true);
     }
+  }
+
+  @Test(expected = RuntimeException.class)
+  public void testCreate_Invalid() throws Exception {
+    CompositeFileFilter df = new CompositeFileFilter("IWon'tWork", true);
   }
 
   @Test
@@ -88,15 +90,9 @@ public class CompositeFileFilterTest {
     assertFalse(text, accepted);
   }
 
-  @Test
+  @Test(expected = RuntimeException.class)
   public void testCustomFilterNoClassDef() throws Exception {
-    File src = File.createTempFile(this.getClass().getSimpleName(), ".xml");
-    write(2048, src);
     CompositeFileFilter df = new CompositeFileFilter(FILTER_N0CLASSDEF);
-    boolean accepted = df.accept(src);
-    String text = src + ", size=" + src.length() + " should match, custom filefilter ignored.";
-    src.delete();
-    assertTrue(text, accepted);
   }
 
   private void write(long size, File f) throws IOException {
