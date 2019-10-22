@@ -16,6 +16,7 @@
 
 package com.adaptris.core;
 
+import javax.validation.constraints.NotNull;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -38,7 +39,7 @@ public interface MultiPayloadAdaptrisMessage extends AdaptrisMessage
 	 *
 	 * @param id The ID of the payload to switch to.
 	 */
-	void switchPayload(String id);
+	void switchPayload(@NotNull String id);
 
 	/**
 	 * Indicates whether the given payload ID exists in the message.
@@ -46,7 +47,7 @@ public interface MultiPayloadAdaptrisMessage extends AdaptrisMessage
 	 * @param id The payload ID to check.
 	 * @return True if there's a payload with the given ID, false otherwise.
 	 */
-	boolean hasPayloadId(String id);
+	boolean hasPayloadId(@NotNull String id);
 
 	/**
 	 * Get the ID of the current payload.
@@ -60,7 +61,7 @@ public interface MultiPayloadAdaptrisMessage extends AdaptrisMessage
 	 *
 	 * @param id The new payload ID.
 	 */
-	void setCurrentPayloadId(String id);
+	void setCurrentPayloadId(@NotNull String id);
 
 	/**
 	 * Add a new payload to the message, with the given ID and data.
@@ -68,14 +69,14 @@ public interface MultiPayloadAdaptrisMessage extends AdaptrisMessage
 	 * @param id      The new payload ID.
 	 * @param payload The payload data.
 	 */
-	void addPayload(String id, byte[] payload);
+	void addPayload(@NotNull String id, byte[] payload);
 
 	/**
 	 * Delete an existing payload, with the given payload ID.
 	 *
 	 * @param id The payload ID.
 	 */
-	void deletePayload(String id);
+	void deletePayload(@NotNull String id);
 
 	/**
 	 * Get the payload data for the given ID.
@@ -83,7 +84,7 @@ public interface MultiPayloadAdaptrisMessage extends AdaptrisMessage
 	 * @param id The payload ID.
 	 * @return The payload data.
 	 */
-	byte[] getPayload(String id);
+	byte[] getPayload(@NotNull String id);
 
 	/**
 	 * Get the size of the payload for the given ID.
@@ -91,7 +92,7 @@ public interface MultiPayloadAdaptrisMessage extends AdaptrisMessage
 	 * @param id The payload ID.
 	 * @return The payload size.
 	 */
-	long getSize(String id);
+	long getSize(@NotNull String id);
 
 	/**
 	 * Return the number of payloads contained within the message.
@@ -106,7 +107,7 @@ public interface MultiPayloadAdaptrisMessage extends AdaptrisMessage
 	 * @param id      The new payload ID.
 	 * @param content The payload content.
 	 */
-	void addContent(String id, String content);
+	void addContent(@NotNull String id, String content);
 
 	/**
 	 * Add a new payload to the message, with the given ID and content and encoding.
@@ -115,7 +116,7 @@ public interface MultiPayloadAdaptrisMessage extends AdaptrisMessage
 	 * @param content  The payload content.
 	 * @param encoding The content encoding.
 	 */
-	void addContent(String id, String content, String encoding);
+	void addContent(@NotNull String id, String content, String encoding);
 
 	/**
 	 * Get the payload content for the given ID.
@@ -123,7 +124,7 @@ public interface MultiPayloadAdaptrisMessage extends AdaptrisMessage
 	 * @param id The payload ID.
 	 * @return The payload content.
 	 */
-	String getContent(String id);
+	String getContent(@NotNull String id);
 
 	/**
 	 * Set the payload content encoding for the given payload ID.
@@ -131,7 +132,7 @@ public interface MultiPayloadAdaptrisMessage extends AdaptrisMessage
 	 * @param id       The payload ID.
 	 * @param encoding The content encoding.
 	 */
-	void setContentEncoding(String id, String encoding);
+	void setContentEncoding(@NotNull String id, String encoding);
 
 	/**
 	 * Get the content encoding for the given payload ID.
@@ -139,7 +140,7 @@ public interface MultiPayloadAdaptrisMessage extends AdaptrisMessage
 	 * @param id The payload ID.
 	 * @return The content encoding.
 	 */
-	String getContentEncoding(String id);
+	String getContentEncoding(@NotNull String id);
 
 	/**
 	 * Get the input stream for the given payload ID.
@@ -147,7 +148,7 @@ public interface MultiPayloadAdaptrisMessage extends AdaptrisMessage
 	 * @param id The payload ID.
 	 * @return The payload input stream.
 	 */
-	InputStream getInputStream(String id);
+	InputStream getInputStream(@NotNull String id);
 
 	/**
 	 * Get the output stream for the given payload ID.
@@ -155,5 +156,5 @@ public interface MultiPayloadAdaptrisMessage extends AdaptrisMessage
 	 * @param id The payload ID.
 	 * @return The payload output stream.
 	 */
-	OutputStream getOutputStream(String id);
+	OutputStream getOutputStream(@NotNull String id);
 }

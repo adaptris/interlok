@@ -19,6 +19,7 @@ package com.adaptris.core;
 import com.adaptris.util.IdGenerator;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.validation.constraints.NotNull;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FilterOutputStream;
@@ -45,6 +46,8 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implements MultiPayloadAdaptrisMessage
 {
 	private Map<String, Payload> payloads = new HashMap<>();
+
+	@NotNull
 	private String currentPayloadId = DEFAULT_PAYLOAD_ID;
 
 	protected MultiPayloadAdaptrisMessageImp(IdGenerator guid, AdaptrisMessageFactory messageFactory)
@@ -52,18 +55,18 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 		this(DEFAULT_PAYLOAD_ID, guid, messageFactory);
 	}
 
-	protected MultiPayloadAdaptrisMessageImp(String payloadId, IdGenerator guid, AdaptrisMessageFactory messageFactory)
+	protected MultiPayloadAdaptrisMessageImp(@NotNull String payloadId, IdGenerator guid, AdaptrisMessageFactory messageFactory)
 	{
 		this(payloadId, guid, messageFactory, new byte[0]);
 	}
 
-	protected MultiPayloadAdaptrisMessageImp(String payloadId, IdGenerator guid, AdaptrisMessageFactory messageFactory, byte[] payload)
+	protected MultiPayloadAdaptrisMessageImp(@NotNull String payloadId, IdGenerator guid, AdaptrisMessageFactory messageFactory, byte[] payload)
 	{
 		super(guid, messageFactory);
 		addPayload(payloadId, payload);
 	}
 
-	protected MultiPayloadAdaptrisMessageImp(String payloadId, IdGenerator guid, AdaptrisMessageFactory messageFactory, String content, Charset encoding)
+	protected MultiPayloadAdaptrisMessageImp(@NotNull String payloadId, IdGenerator guid, AdaptrisMessageFactory messageFactory, String content, Charset encoding)
 	{
 		super(guid, messageFactory);
 		addContent(payloadId, content, encoding.toString());
@@ -73,7 +76,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 	 * {@inheritDoc}.
 	 */
 	@Override
-	public void switchPayload(String payloadId)
+	public void switchPayload(@NotNull String payloadId)
 	{
 		currentPayloadId = payloadId;
 	}
@@ -82,7 +85,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 	 * {@inheritDoc}.
 	 */
 	@Override
-	public boolean hasPayloadId(String payloadId)
+	public boolean hasPayloadId(@NotNull String payloadId)
 	{
 		return payloads.containsKey(payloadId);
 	}
@@ -91,7 +94,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 	 * {@inheritDoc}.
 	 */
 	@Override
-	public void setCurrentPayloadId(String payloadId)
+	public void setCurrentPayloadId(@NotNull String payloadId)
 	{
 		Payload payload = payloads.remove(currentPayloadId);
 		currentPayloadId = payloadId;
@@ -146,7 +149,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 	 * {@inheritDoc}.
 	 */
 	@Override
-	public void addPayload(String payloadId, byte[] bytes)
+	public void addPayload(@NotNull String payloadId, byte[] bytes)
 	{
 		byte[] payload;
 		if (bytes == null)
@@ -164,7 +167,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 	 * {@inheritDoc}.
 	 */
 	@Override
-	public void deletePayload(String payloadId)
+	public void deletePayload(@NotNull String payloadId)
 	{
 		payloads.remove(payloadId);
 	}
@@ -185,7 +188,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 	 * {@inheritDoc}.
 	 */
 	@Override
-	public byte[] getPayload(String payloadId)
+	public byte[] getPayload(@NotNull String payloadId)
 	{
 		byte[] result = null;
 		byte[] payload = payloads.get(payloadId).data;
@@ -221,7 +224,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 	 * {@inheritDoc}.
 	 */
 	@Override
-	public long getSize(String payloadId)
+	public long getSize(@NotNull String payloadId)
 	{
 		byte[] payload = payloads.get(payloadId).data;
 		return payload != null ? payload.length : 0;
@@ -244,7 +247,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 	 * {@inheritDoc}.
 	 */
 	@Override
-	public void addContent(String payloadId, String payloadString)
+	public void addContent(@NotNull String payloadId, String payloadString)
 	{
 		addContent(payloadId, payloadString, null);
 	}
@@ -253,7 +256,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 	 * {@inheritDoc}.
 	 */
 	@Override
-	public void addContent(String payloadId, String payloadString, String charEnc)
+	public void addContent(@NotNull String payloadId, String payloadString, String charEnc)
 	{
 		byte[] payload;
 		if (payloadString != null)
@@ -286,7 +289,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 	 * {@inheritDoc}.
 	 */
 	@Override
-	public String getContent(String payloadId)
+	public String getContent(@NotNull String payloadId)
 	{
 		byte[] payload = getPayload(payloadId);
 		if (payload != null)
@@ -316,7 +319,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 	 * {@inheritDoc}.
 	 */
 	@Override
-	public void setContentEncoding(String payloadId, String enc)
+	public void setContentEncoding(@NotNull String payloadId, String enc)
 	{
 		String contentEncoding = enc != null ? Charset.forName(enc).name() : null;
 		payloads.get(payloadId).encoding = contentEncoding;
@@ -335,7 +338,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 	 * {@inheritDoc}.
 	 */
 	@Override
-	public String getContentEncoding(String payloadId)
+	public String getContentEncoding(@NotNull String payloadId)
 	{
 		return payloads.get(payloadId).encoding;
 	}
@@ -378,7 +381,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 	 * {@inheritDoc}.
 	 */
 	@Override
-	public InputStream getInputStream(String payloadId)
+	public InputStream getInputStream(@NotNull String payloadId)
 	{
 		byte[] payload = getPayload(payloadId);
 		return payload != null ? new ByteArrayInputStream(payload) : new ByteArrayInputStream(new byte[0]);
@@ -397,16 +400,16 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 	 * {@inheritDoc}.
 	 */
 	@Override
-	public OutputStream getOutputStream(String payloadId)
+	public OutputStream getOutputStream(@NotNull String payloadId)
 	{
 		return new ByteFilterStream(payloadId, new ByteArrayOutputStream());
 	}
 
 	private class ByteFilterStream extends FilterOutputStream
 	{
-		private String payloadId;
+		private final String payloadId;
 
-		ByteFilterStream(String payloadId, OutputStream out)
+		ByteFilterStream(@NotNull String payloadId, OutputStream out)
 		{
 			super(out);
 			this.payloadId = payloadId;

@@ -22,6 +22,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.constraints.NotNull;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
@@ -63,7 +64,7 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 		return newMessage(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, payload, null);
 	}
 
-	public AdaptrisMessage newMessage(String payloadId, byte[] payload)
+	public AdaptrisMessage newMessage(@NotNull String payloadId, byte[] payload)
 	{
 		return newMessage(payloadId, payload, null);
 	}
@@ -85,7 +86,7 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 	 * @param metadata Any metadata.
 	 * @return The new multi-payload message.
 	 */
-	public AdaptrisMessage newMessage(String payloadId, byte[] payload, Set metadata)
+	public AdaptrisMessage newMessage(@NotNull String payloadId, byte[] payload, Set metadata)
 	{
 		AdaptrisMessage result = new MultiPayloadAdaptrisMessageImp(payloadId, uniqueIdGenerator(), this, payload);
 		result.setMetadata(metadata);
@@ -136,7 +137,7 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 	 * @param metadata Any metadata.
 	 * @return The new multi-payload message.
 	 */
-	public AdaptrisMessage newMessage(String payloadId, String content, String charEncoding, Set metadata)
+	public AdaptrisMessage newMessage(@NotNull String payloadId, String content, String charEncoding, Set metadata)
 	{
 		Charset charset = Charset.defaultCharset();
 		try
@@ -161,7 +162,7 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 		return newMessage(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, source, metadataKeysToPreserve);
 	}
 
-	public AdaptrisMessage newMessage(String payloadId, AdaptrisMessage source, Collection<String> metadataKeysToPreserve) throws CloneNotSupportedException
+	public AdaptrisMessage newMessage(@NotNull String payloadId, AdaptrisMessage source, Collection<String> metadataKeysToPreserve) throws CloneNotSupportedException
 	{
 		MultiPayloadAdaptrisMessage result = (MultiPayloadAdaptrisMessage)newMessage();
 		if (!payloadId.equals(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID))
