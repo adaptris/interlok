@@ -29,11 +29,24 @@ import java.io.OutputStream;
 public interface MultiPayloadAdaptrisMessage extends AdaptrisMessage
 {
 	/**
+	 * The ID to use for the default payload.
+	 */
+	String DEFAULT_PAYLOAD_ID = "default-payload";
+
+	/**
 	 * Switch from one payload to another, given by the ID.
 	 *
 	 * @param id The ID of the payload to switch to.
 	 */
 	void switchPayload(String id);
+
+	/**
+	 * Indicates whether the given payload ID exists in the message.
+	 *
+	 * @param id The payload ID to check.
+	 * @return True if there's a payload with the given ID, false otherwise.
+	 */
+	boolean hasPayloadId(String id);
 
 	/**
 	 * Get the ID of the current payload.
@@ -58,6 +71,13 @@ public interface MultiPayloadAdaptrisMessage extends AdaptrisMessage
 	void addPayload(String id, byte[] payload);
 
 	/**
+	 * Delete an existing payload, with the given payload ID.
+	 *
+	 * @param id The payload ID.
+	 */
+	void deletePayload(String id);
+
+	/**
 	 * Get the payload data for the given ID.
 	 *
 	 * @param id The payload ID.
@@ -72,6 +92,13 @@ public interface MultiPayloadAdaptrisMessage extends AdaptrisMessage
 	 * @return The payload size.
 	 */
 	long getSize(String id);
+
+	/**
+	 * Return the number of payloads contained within the message.
+	 *
+	 * @return The number of payloads.
+	 */
+	int getPayloadCount();
 
 	/**
 	 * Add a new payload to the message, with the given ID and content.

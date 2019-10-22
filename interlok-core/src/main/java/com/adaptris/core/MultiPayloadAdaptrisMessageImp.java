@@ -44,14 +44,12 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  */
 public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implements MultiPayloadAdaptrisMessage
 {
-	static final String DEFAULT_PAYLOAD = "default-payload";
-
 	private Map<String, Payload> payloads = new HashMap<>();
-	private String currentPayloadId = DEFAULT_PAYLOAD;
+	private String currentPayloadId = DEFAULT_PAYLOAD_ID;
 
 	protected MultiPayloadAdaptrisMessageImp(IdGenerator guid, AdaptrisMessageFactory messageFactory)
 	{
-		this(DEFAULT_PAYLOAD, guid, messageFactory);
+		this(DEFAULT_PAYLOAD_ID, guid, messageFactory);
 	}
 
 	protected MultiPayloadAdaptrisMessageImp(String payloadId, IdGenerator guid, AdaptrisMessageFactory messageFactory)
@@ -65,6 +63,12 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 		addPayload(payloadId, payload);
 	}
 
+	protected MultiPayloadAdaptrisMessageImp(String payloadId, IdGenerator guid, AdaptrisMessageFactory messageFactory, String content, Charset encoding)
+	{
+		super(guid, messageFactory);
+		addContent(payloadId, content, encoding.toString());
+	}
+
 	/**
 	 * {@inheritDoc}.
 	 */
@@ -72,6 +76,15 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 	public void switchPayload(String payloadId)
 	{
 		currentPayloadId = payloadId;
+	}
+
+	/**
+	 * {@inheritDoc}.
+	 */
+	@Override
+	public boolean hasPayloadId(String payloadId)
+	{
+		return payloads.containsKey(payloadId);
 	}
 
 	/**
@@ -148,6 +161,15 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 	}
 
 	/**
+	 * {@inheritDoc}.
+	 */
+	@Override
+	public void deletePayload(String payloadId)
+	{
+		payloads.remove(payloadId);
+	}
+
+	/**
 	 * Get the current payload data.
 	 *
 	 * @return The payload data.
@@ -185,6 +207,14 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 	public long getSize()
 	{
 		return getSize(currentPayloadId);
+	}
+
+	/**
+	 * {@inheritDoc}.
+	 */
+	public int getPayloadCount()
+	{
+		return payloads.size();
 	}
 
 	/**
