@@ -97,15 +97,6 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 	 * {@inheritDoc}.
 	 */
 	@Override
-	public AdaptrisMessage newMessage(String payload, Set metadata)
-	{
-		return newMessage(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, payload, null, metadata);
-	}
-
-	/**
-	 * {@inheritDoc}.
-	 */
-	@Override
 	public AdaptrisMessage newMessage(String payload)
 	{
 		return newMessage(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, payload, null, null);
@@ -115,18 +106,27 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 	 * {@inheritDoc}.
 	 */
 	@Override
-	public AdaptrisMessage newMessage(String payload, String charEncoding, Set metadata)
+	public AdaptrisMessage newMessage(String payload, String charEncoding)
 	{
-		return newMessage(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, payload, charEncoding, metadata);
+		return newMessage(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, payload, charEncoding, null);
 	}
 
 	/**
 	 * {@inheritDoc}.
 	 */
 	@Override
-	public AdaptrisMessage newMessage(String payload, String charEncoding)
+	public AdaptrisMessage newMessage(String payload, Set metadata)
 	{
-		return newMessage(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, payload, charEncoding, null);
+		return newMessage(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, payload, null, metadata);
+	}
+
+	/**
+	 * {@inheritDoc}.
+	 */
+	@Override
+	public AdaptrisMessage newMessage(String payload, String charEncoding, Set metadata)
+	{
+		return newMessage(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, payload, charEncoding, metadata);
 	}
 
 	/**
@@ -144,7 +144,7 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 		{
 			charset = Charset.forName(charEncoding);
 		}
-		catch (UnsupportedCharsetException e)
+		catch (IllegalArgumentException e)
 		{
 			log.warn("Character set [" + charEncoding + "] is not available; using [" + charset.displayName() + "] instead.");
 		}
@@ -165,21 +165,17 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 	public AdaptrisMessage newMessage(@NotNull String payloadId, AdaptrisMessage source, Collection<String> metadataKeysToPreserve) throws CloneNotSupportedException
 	{
 		MultiPayloadAdaptrisMessage result = (MultiPayloadAdaptrisMessage)newMessage();
-		if (!payloadId.equals(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID))
-		{
-			/* delete the default payload if it's not being used */
-			result.deletePayload(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID);
-		}
 		result.setUniqueId(source.getUniqueId());
+		result.setCurrentPayloadId(payloadId);
+		result.setPayload(source.getPayload());
 		if (metadataKeysToPreserve == null)
 		{
 			result.setMetadata(source.getMetadata());
 		}
 		else
 		{
-			for (Iterator i = metadataKeysToPreserve.iterator(); i.hasNext(); )
+			for (String metadataKey : metadataKeysToPreserve)
 			{
-				String metadataKey = (String)i.next();
 				if (source.headersContainsKey(metadataKey))
 				{
 					result.addMetadata(metadataKey, source.getMetadataValue(metadataKey));
@@ -188,10 +184,9 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 		}
 		MessageLifecycleEvent mle = result.getMessageLifecycleEvent();
 		List<MleMarker> markers = source.getMessageLifecycleEvent().getMleMarkers();
-		for (int i = 0; i < markers.size(); i++)
+		for (MleMarker marker : markers)
 		{
-			MleMarker marker = (MleMarker)(markers.get(i)).clone();
-			mle.addMleMarker(marker);
+			mle.addMleMarker((MleMarker)marker.clone());
 		}
 		result.getObjectHeaders().putAll(source.getObjectHeaders());
 		return result;
@@ -203,7 +198,7 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 	@Override
 	public AdaptrisMessage newMessage()
 	{
-		AdaptrisMessage m = new MultiPayloadAdaptrisMessageImp(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, uniqueIdGenerator(), this);
+		AdaptrisMessage m = new MultiPayloadAdaptrisMessageImp(uniqueIdGenerator(), this);
 		if (!isEmpty(getDefaultCharEncoding()))
 		{
 			m.setContentEncoding(getDefaultCharEncoding());
