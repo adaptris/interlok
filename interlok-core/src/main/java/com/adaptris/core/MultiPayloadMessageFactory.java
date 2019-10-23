@@ -17,17 +17,13 @@
 package com.adaptris.core;
 
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.util.IdGenerator;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.validation.constraints.NotNull;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-import java.nio.charset.UnsupportedCharsetException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -82,8 +78,8 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 	 * Create a new multi-payload message, with the given ID, payload, and metadata.
 	 *
 	 * @param payloadId The payload ID to use.
-	 * @param payload The payload.
-	 * @param metadata Any metadata.
+	 * @param payload   The payload.
+	 * @param metadata  Any metadata.
 	 * @return The new multi-payload message.
 	 */
 	public AdaptrisMessage newMessage(@NotNull String payloadId, byte[] payload, Set metadata)
@@ -133,8 +129,8 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 	 * Create a new multi-payload message, with the given ID, payload, and metadata.
 	 *
 	 * @param payloadId The payload ID to use.
-	 * @param content The payload content.
-	 * @param metadata Any metadata.
+	 * @param content   The payload content.
+	 * @param metadata  Any metadata.
 	 * @return The new multi-payload message.
 	 */
 	public AdaptrisMessage newMessage(@NotNull String payloadId, String content, String charEncoding, Set metadata)

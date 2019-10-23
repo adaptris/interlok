@@ -1,7 +1,6 @@
 package com.adaptris.core;
 
 import com.adaptris.core.common.ConstantDataInputParameter;
-import com.adaptris.core.common.StringPayloadDataInputParameter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,7 +12,7 @@ import java.util.Set;
 
 import static org.junit.Assert.assertArrayEquals;
 
-public class MultiPayloadMessageTests extends ServiceCase
+public class MultiPayloadMessageFactoryTest extends ServiceCase
 {
 	private final MultiPayloadMessageFactory messageFactory = new MultiPayloadMessageFactory();
 
