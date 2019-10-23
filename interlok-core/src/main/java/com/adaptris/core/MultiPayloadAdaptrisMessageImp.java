@@ -151,16 +151,27 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 	@Override
 	public void addPayload(@NotNull String payloadId, byte[] bytes)
 	{
-		byte[] payload;
+		byte[] pb;
 		if (bytes == null)
 		{
-			payload = new byte[0];
+			pb = new byte[0];
 		}
 		else
 		{
-			payload = bytes;
+			pb = bytes;
 		}
-		payloads.put(payloadId, new Payload(payload));
+		Payload payload;
+		if (payloads.containsKey(payloadId))
+		{
+			payload = payloads.get(payloadId);
+			payload.data = pb;
+		}
+		else
+		{
+			payload = new Payload(pb);
+		}
+		payloads.put(payloadId, payload);
+		currentPayloadId = payloadId;
 	}
 
 	/**
@@ -322,7 +333,17 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 	public void setContentEncoding(@NotNull String payloadId, String enc)
 	{
 		String contentEncoding = enc != null ? Charset.forName(enc).name() : null;
-		payloads.get(payloadId).encoding = contentEncoding;
+		Payload payload;
+		if (payloads.containsKey(payloadId))
+		{
+			payload = payloads.get(payloadId);
+			payload.encoding = contentEncoding;
+		}
+		else
+		{
+			payload = new Payload(contentEncoding, new byte[0]);
+		}
+		payloads.put(payloadId, payload);
 	}
 
 	/**
