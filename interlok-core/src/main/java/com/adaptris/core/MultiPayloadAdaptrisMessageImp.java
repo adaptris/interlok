@@ -69,7 +69,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 	protected MultiPayloadAdaptrisMessageImp(@NotNull String payloadId, IdGenerator guid, AdaptrisMessageFactory messageFactory, String content, Charset encoding)
 	{
 		super(guid, messageFactory);
-		addContent(payloadId, content, encoding.toString());
+		addContent(payloadId, content, encoding != null ? encoding.toString() : null);
 	}
 
 	/**

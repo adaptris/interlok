@@ -1,6 +1,5 @@
 package com.adaptris.core;
 
-import com.adaptris.core.common.ConstantDataInputParameter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,8 +10,10 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-public class MultiPayloadMessageFactoryTest extends ServiceCase
+public class MultiPayloadMessageFactoryTest extends AdaptrisMessageFactoryImplCase
 {
 	private final MultiPayloadMessageFactory messageFactory = new MultiPayloadMessageFactory();
 
@@ -40,6 +41,7 @@ public class MultiPayloadMessageFactoryTest extends ServiceCase
 	@Test
 	public void testMessageFactoryPayload()
 	{
+		messageFactory.setDefaultCharEncoding(null);
 		MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage)messageFactory.newMessage(PAYLOAD);
 		assertEquals(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, message.getCurrentPayloadId());
 		assertEquals(1, message.getPayloadCount());
@@ -138,7 +140,7 @@ public class MultiPayloadMessageFactoryTest extends ServiceCase
 		MultiPayloadAdaptrisMessage multiMessage = (MultiPayloadAdaptrisMessage)messageFactory.newMessage(singleMessage, null);
 		assertEquals(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, multiMessage.getCurrentPayloadId());
 		assertEquals(1, multiMessage.getPayloadCount());
-		assertArrayEquals(PAYLOAD, multiMessage.getPayload());
+		assertEquals(0, multiMessage.getPayload().length);
 		assertEquals(1, multiMessage.getMetadata().size());
 	}
 
@@ -154,17 +156,13 @@ public class MultiPayloadMessageFactoryTest extends ServiceCase
 		MultiPayloadAdaptrisMessage multiMessage = (MultiPayloadAdaptrisMessage)messageFactory.newMessage(singleMessage, keys);
 		assertEquals(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, multiMessage.getCurrentPayloadId());
 		assertEquals(1, multiMessage.getPayloadCount());
-		assertArrayEquals(PAYLOAD, multiMessage.getPayload());
+		assertEquals(0, multiMessage.getPayload().length);
 		assertEquals(1, multiMessage.getMetadata().size());
 	}
 
 	@Override
-	protected Object retrieveObjectForSampleConfig()
+	protected AdaptrisMessageFactory getMessageFactory()
 	{
-		AddPayloadService service = new AddPayloadService();
-		service.setNewPayloadId(ID);
-		service.setNewPayload(new ConstantDataInputParameter(CONTENT));
-		service.setNewPayloadEncoding("UTF-8");
-		return service;
+		return messageFactory;
 	}
 }

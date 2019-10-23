@@ -85,6 +85,10 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 	public AdaptrisMessage newMessage(@NotNull String payloadId, byte[] payload, Set metadata)
 	{
 		AdaptrisMessage result = new MultiPayloadAdaptrisMessageImp(payloadId, uniqueIdGenerator(), this, payload);
+		if (!isEmpty(getDefaultCharEncoding()))
+		{
+			result.setContentEncoding(getDefaultCharEncoding());
+		}
 		result.setMetadata(metadata);
 		return result;
 	}
@@ -95,7 +99,7 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 	@Override
 	public AdaptrisMessage newMessage(String payload)
 	{
-		return newMessage(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, payload, null, null);
+		return newMessage(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, payload, defaultCharEncoding, null);
 	}
 
 	/**
@@ -113,7 +117,7 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 	@Override
 	public AdaptrisMessage newMessage(String payload, Set metadata)
 	{
-		return newMessage(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, payload, null, metadata);
+		return newMessage(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, payload, defaultCharEncoding, metadata);
 	}
 
 	/**
@@ -135,14 +139,14 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 	 */
 	public AdaptrisMessage newMessage(@NotNull String payloadId, String content, String charEncoding, Set metadata)
 	{
-		Charset charset = Charset.defaultCharset();
+		Charset charset = null;
 		try
 		{
 			charset = Charset.forName(charEncoding);
 		}
 		catch (IllegalArgumentException e)
 		{
-			log.warn("Character set [" + charEncoding + "] is not available; using [" + charset.displayName() + "] instead.");
+			log.warn("Character set [" + charEncoding + "] is not available");
 		}
 		AdaptrisMessage result = new MultiPayloadAdaptrisMessageImp(payloadId, uniqueIdGenerator(), this, content, charset);
 		result.setMetadata(metadata);
@@ -163,7 +167,6 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 		MultiPayloadAdaptrisMessage result = (MultiPayloadAdaptrisMessage)newMessage();
 		result.setUniqueId(source.getUniqueId());
 		result.setCurrentPayloadId(payloadId);
-		result.setPayload(source.getPayload());
 		if (metadataKeysToPreserve == null)
 		{
 			result.setMetadata(source.getMetadata());
