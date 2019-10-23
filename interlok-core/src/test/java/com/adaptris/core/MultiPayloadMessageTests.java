@@ -15,7 +15,7 @@ import static org.junit.Assert.assertArrayEquals;
 
 public class MultiPayloadMessageTests extends ServiceCase
 {
-	private static final MultiPayloadMessageFactory messageFactory = new MultiPayloadMessageFactory();
+	private final MultiPayloadMessageFactory messageFactory = new MultiPayloadMessageFactory();
 
 	private static final String ID = "custom-message-id";
 	private static final String ENCODING = "UTF-8";
@@ -144,12 +144,14 @@ public class MultiPayloadMessageTests extends ServiceCase
 	}
 
 	@Test
-	public void testMessageFactoryCloneMessageSomeMetadata() throws Exception
+	public void testMessageFactoryCloneMessageMetadata() throws Exception
 	{
 		AdaptrisMessage singleMessage = DefaultMessageFactory.getDefaultInstance().newMessage(PAYLOAD, METADATA);
+		singleMessage.getMessageLifecycleEvent().addMleMarker(new MleMarker());
 		List<String> keys = new ArrayList<>();
 		keys.add("KEY");
 		keys.add("UNKNOWN");
+		messageFactory.setDefaultCharEncoding(null);
 		MultiPayloadAdaptrisMessage multiMessage = (MultiPayloadAdaptrisMessage)messageFactory.newMessage(singleMessage, keys);
 		assertEquals(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, multiMessage.getCurrentPayloadId());
 		assertEquals(1, multiMessage.getPayloadCount());
