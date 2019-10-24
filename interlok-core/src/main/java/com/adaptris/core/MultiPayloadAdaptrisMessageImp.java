@@ -114,23 +114,41 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 	 * @see AdaptrisMessage#equivalentForTracking (com.adaptris.core.AdaptrisMessage).
 	 */
 	@Override
-	public boolean equivalentForTracking(AdaptrisMessage other)
+	public boolean equivalentForTracking(AdaptrisMessage o)
 	{
-		boolean result = false;
-		if (StringUtils.equals(getUniqueId(), other.getUniqueId()))
+		if (!(o instanceof MultiPayloadAdaptrisMessage))
 		{
-			if (Arrays.equals(getPayload(), other.getPayload()))
+			return false;
+		}
+		MultiPayloadAdaptrisMessage other = (MultiPayloadAdaptrisMessage)o;
+		if (!StringUtils.equals(getUniqueId(), other.getUniqueId()))
+		{
+			return false;
+		}
+		if (!getMetadata().equals(other.getMetadata()))
+		{
+			return false;
+		}
+		if (getPayloadCount() != other.getPayloadCount())
+		{
+			return false;
+		}
+		for (String id : payloads.keySet())
+		{
+			if (!other.hasPayloadId(id))
 			{
-				if (StringUtils.equals(getContentEncoding(), other.getContentEncoding()))
-				{
-					if (getMetadata().equals(other.getMetadata()))
-					{
-						result = true;
-					}
-				}
+				return false;
+			}
+			else if (!Arrays.equals(getPayload(id), other.getPayload(id)))
+			{
+				return false;
+			}
+			else if (!StringUtils.equals(getContentEncoding(id), other.getContentEncoding(id)))
+			{
+				return false;
 			}
 		}
-		return result;
+		return true;
 	}
 
 	/**
@@ -374,18 +392,22 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 		// clone the payloads.
 		try
 		{
+			result.payloads = new HashMap<>();
 			for (String payloadId : payloads.keySet())
 			{
-				byte[] payload = payloads.get(payloadId).data;
-				byte[] newPayload = new byte[payload.length];
-				System.arraycopy(payload, 0, newPayload, 0, payload.length);
-				result.addPayload(payloadId, newPayload);
+				Payload payload = payloads.get(payloadId);
+				byte[] oldData = payload.data;
+				byte[] newData = new byte[oldData.length];
+				System.arraycopy(oldData, 0, newData, 0, oldData.length);
+				result.addPayload(payloadId, newData);
+				result.setContentEncoding(payloadId, payload.encoding);
 			}
 		}
 		catch (Exception e)
 		{
 			throw new RuntimeException(e);
 		}
+		result.switchPayload(currentPayloadId);
 		return result;
 	}
 
