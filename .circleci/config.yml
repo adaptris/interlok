@@ -52,7 +52,7 @@ jobs:
       # run tests!
       - run:
           name: Run Tests
-          command: 
+          command:
             ./gradlew -PverboseTests=true test jacocoTestReport
 
       - run:
@@ -75,11 +75,23 @@ jobs:
             - ~/.gradle/wrapper
           key: dependencies-{{ checksum "build.gradle" }}-{{ checksum "interlok-core/build.gradle" }}-{{ checksum "interlok-common/build.gradle"}}
 
+  sonarbuild:
+    docker:
+      - image: circleci/openjdk:11-jdk
+    steps:
+      - checkout
+      - run:
+          name: Analyze on SonarCloud
+          command: gradle build sonarqube -Dsonar.projectKey="adaptris_interlok" -Dsonar.organization="adaptris" -Dsonar.host.url="https://sonarcloud.io"
+
 workflows:
   version: 2
   commit:
     jobs:
       - build
+      - sonarbuild:
+          context: SonarCloud
+
   nightly:
     triggers:
       - schedule:
