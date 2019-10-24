@@ -9,8 +9,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
 public class MultiPayloadMessageFactoryTest extends AdaptrisMessageFactoryImplCase
@@ -32,10 +34,27 @@ public class MultiPayloadMessageFactoryTest extends AdaptrisMessageFactoryImplCa
 	}
 
 	@Test
-	public void testMessageFactory()
+	public void testMessageFactoryEtAl() throws Exception
 	{
 		MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage)messageFactory.newMessage();
 		assertEquals(messageFactory.getDefaultCharEncoding(), message.getContentEncoding());
+		assertEquals(0, message.getSize());
+		message.switchPayload("null-payload");
+		message.setPayload(null);
+		assertEquals(0, message.getPayload().length);
+		message.setContent(null, ENCODING);
+		assertEquals(0, message.getContent().length());
+		message.addContent("bacon", CONTENT);
+		assertEquals(CONTENT, message.getContent("bacon"));
+		AdaptrisMessage clone = (AdaptrisMessage)message.clone();
+		assertTrue(clone.equivalentForTracking(message));
+		message.setContentEncoding("US-ASCII");
+		assertFalse(clone.equivalentForTracking(message));
+		message.setPayload(null);
+		assertFalse(clone.equivalentForTracking(message));
+		message.deletePayload(message.getCurrentPayloadId());
+		assertFalse(clone.equivalentForTracking(message));
+		assertFalse(message.equivalentForTracking(DefaultMessageFactory.getDefaultInstance().newMessage()));
 	}
 
 	@Test
@@ -53,6 +72,7 @@ public class MultiPayloadMessageFactoryTest extends AdaptrisMessageFactoryImplCa
 	public void testMessageFactoryPayloadID()
 	{
 		MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage)messageFactory.newMessage(ID, PAYLOAD);
+		assertTrue(message.hasPayloadId(ID));
 		assertEquals(ID, message.getCurrentPayloadId());
 		assertEquals(1, message.getPayloadCount());
 		assertArrayEquals(PAYLOAD, message.getPayload());
