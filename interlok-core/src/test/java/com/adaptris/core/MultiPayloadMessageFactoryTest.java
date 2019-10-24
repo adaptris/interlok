@@ -52,8 +52,13 @@ public class MultiPayloadMessageFactoryTest extends AdaptrisMessageFactoryImplCa
 		assertFalse(clone.equivalentForTracking(message));
 		message.setPayload(null);
 		assertFalse(clone.equivalentForTracking(message));
+		message.setCurrentPayloadId("ham");
+		assertFalse(clone.equivalentForTracking(message));
 		message.deletePayload(message.getCurrentPayloadId());
 		assertFalse(clone.equivalentForTracking(message));
+		message.setMetadata(METADATA);
+		assertFalse(clone.equivalentForTracking(message));
+		assertFalse(message.equivalentForTracking(messageFactory.newMessage()));
 		assertFalse(message.equivalentForTracking(DefaultMessageFactory.getDefaultInstance().newMessage()));
 	}
 
