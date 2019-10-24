@@ -46,6 +46,8 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 
 	private String defaultCharEncoding;
 
+	private String defaultPayloadId;
+
 	public MultiPayloadMessageFactory()
 	{
 		super();
@@ -57,7 +59,7 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 	@Override
 	public AdaptrisMessage newMessage(byte[] payload)
 	{
-		return newMessage(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, payload, null);
+		return newMessage(defaultPayloadId(), payload, null);
 	}
 
 	public AdaptrisMessage newMessage(@NotNull String payloadId, byte[] payload)
@@ -71,7 +73,7 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 	@Override
 	public AdaptrisMessage newMessage(byte[] payload, Set metadata)
 	{
-		return newMessage(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, payload, metadata);
+		return newMessage(defaultPayloadId(), payload, metadata);
 	}
 
 	/**
@@ -99,7 +101,7 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 	@Override
 	public AdaptrisMessage newMessage(String payload)
 	{
-		return newMessage(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, payload, defaultCharEncoding, null);
+		return newMessage(defaultPayloadId(), payload, defaultCharEncoding, null);
 	}
 
 	/**
@@ -108,7 +110,7 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 	@Override
 	public AdaptrisMessage newMessage(String payload, String charEncoding)
 	{
-		return newMessage(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, payload, charEncoding, null);
+		return newMessage(defaultPayloadId(), payload, charEncoding, null);
 	}
 
 	/**
@@ -117,7 +119,7 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 	@Override
 	public AdaptrisMessage newMessage(String payload, Set metadata)
 	{
-		return newMessage(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, payload, defaultCharEncoding, metadata);
+		return newMessage(defaultPayloadId(), payload, defaultCharEncoding, metadata);
 	}
 
 	/**
@@ -126,7 +128,7 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 	@Override
 	public AdaptrisMessage newMessage(String payload, String charEncoding, Set metadata)
 	{
-		return newMessage(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, payload, charEncoding, metadata);
+		return newMessage(defaultPayloadId(), payload, charEncoding, metadata);
 	}
 
 	/**
@@ -173,7 +175,7 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 	@Override
 	public AdaptrisMessage newMessage(AdaptrisMessage source, Collection<String> metadataKeysToPreserve) throws CloneNotSupportedException
 	{
-		return newMessage(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, source, metadataKeysToPreserve);
+		return newMessage(defaultPayloadId(), source, metadataKeysToPreserve);
 	}
 
 	public AdaptrisMessage newMessage(@NotNull String payloadId, AdaptrisMessage source, Collection<String> metadataKeysToPreserve) throws CloneNotSupportedException
@@ -243,5 +245,34 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 	public void setDefaultCharEncoding(String s)
 	{
 		defaultCharEncoding = s;
+	}
+
+	/**
+	 * Get the default payload ID.
+	 *
+	 * @return The default payload ID.
+	 */
+	public String getDefaultPayloadId()
+	{
+		return defaultPayloadId;
+	}
+
+	/**
+	 * Set the default payload ID.
+	 *
+	 * @param defaultPayloadId The default payload ID.
+	 */
+	public void setDefaultPayloadId(String defaultPayloadId)
+	{
+		this.defaultPayloadId = defaultPayloadId;
+	}
+
+	private String defaultPayloadId()
+	{
+		if (isEmpty(defaultPayloadId))
+		{
+			return MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID;
+		}
+		return defaultPayloadId;
 	}
 }
