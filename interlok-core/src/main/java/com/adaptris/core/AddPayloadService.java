@@ -24,7 +24,7 @@ import java.io.OutputStream;
  */
 @XStreamAlias("add-payload-service")
 @AdapterComponent
-@ComponentProfile(summary = "Switch the active payload of a multi-payload message", tag = "multi-payload,multi,payload,add")
+@ComponentProfile(summary = "Add a new payload to a multi-payload message", tag = "multi-payload,multi,payload,add")
 public class AddPayloadService extends ServiceImp
 {
 	private transient Logger log = LoggerFactory.getLogger(AddPayloadService.class.getName());
