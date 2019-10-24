@@ -2,6 +2,7 @@ plugins {
   // Manage optional dependencies in maven pom.
   id 'nebula.optional-base' version '5.0.3' apply false
   id 'com.github.spotbugs' version '2.0.0' apply false
+  id "org.sonarqube" version '2.7.1' apply false
 }
 
 ext {
@@ -66,6 +67,7 @@ subprojects { subproject ->
   apply plugin: 'maven-publish'
   apply plugin: 'nebula.optional-base'
   apply plugin: 'com.github.spotbugs'
+  apply plugin: 'org.sonarqube'
   if (jacocoEnabled(subproject)) {
     apply plugin: "jacoco"
   }
