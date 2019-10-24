@@ -57,7 +57,8 @@ public interface MultiPayloadAdaptrisMessage extends AdaptrisMessage
 	String getCurrentPayloadId();
 
 	/**
-	 * Update the ID of the current payload.
+	 * Update the ID of the current payload. This does not change the current working payload, rather updates the ID of
+	 * the current working payload.
 	 *
 	 * @param id The new payload ID.
 	 */

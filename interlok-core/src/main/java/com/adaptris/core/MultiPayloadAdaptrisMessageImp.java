@@ -214,14 +214,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 	@Override
 	public byte[] getPayload(@NotNull String payloadId)
 	{
-		byte[] result = null;
-		byte[] payload = payloads.get(payloadId).data;
-		if (payload != null)
-		{
-			result = new byte[payload.length];
-			System.arraycopy(payload, 0, result, 0, payload.length);
-		}
-		return result;
+		return payloads.get(payloadId).data;
 	}
 
 	/**
@@ -250,8 +243,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 	@Override
 	public long getSize(@NotNull String payloadId)
 	{
-		byte[] payload = payloads.get(payloadId).data;
-		return payload != null ? payload.length : 0;
+		return getPayload(payloadId).length;
 	}
 
 	/**
@@ -287,13 +279,12 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 		{
 			Charset charset = Charset.forName(StringUtils.defaultIfBlank(charEnc, Charset.defaultCharset().name()));
 			payload = payloadString.getBytes(charset);
-			setContentEncoding(payloadId, charEnc);
 		}
 		else
 		{
 			payload = new byte[0];
-			setContentEncoding(payloadId, charEnc);
 		}
+		setContentEncoding(payloadId, charEnc);
 		addPayload(payloadId, payload);
 	}
 
@@ -316,18 +307,14 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 	public String getContent(@NotNull String payloadId)
 	{
 		byte[] payload = getPayload(payloadId);
-		if (payload != null)
+		if (isEmpty(getContentEncoding()))
 		{
-			if (isEmpty(getContentEncoding()))
-			{
-				return new String(payload);
-			}
-			else
-			{
-				return new String(payload, Charset.forName(getContentEncoding()));
-			}
+			return new String(payload);
 		}
-		return null;
+		else
+		{
+			return new String(payload, Charset.forName(getContentEncoding()));
+		}
 	}
 
 	/**
@@ -391,10 +378,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 			for (String payloadId : payloads.keySet())
 			{
 				Payload payload = payloads.get(payloadId);
-				byte[] oldData = payload.data;
-				byte[] newData = new byte[oldData.length];
-				System.arraycopy(oldData, 0, newData, 0, oldData.length);
-				result.addPayload(payloadId, newData);
+				result.addPayload(payloadId, payload.data.clone());
 				result.setContentEncoding(payloadId, payload.encoding);
 			}
 		}
@@ -421,8 +405,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 	@Override
 	public InputStream getInputStream(@NotNull String payloadId)
 	{
-		byte[] payload = getPayload(payloadId);
-		return payload != null ? new ByteArrayInputStream(payload) : new ByteArrayInputStream(new byte[0]);
+		return new ByteArrayInputStream(getPayload(payloadId));
 	}
 
 	/**
@@ -457,23 +440,22 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 		public void close() throws IOException
 		{
 			super.close();
-			byte[] payload = ((ByteArrayOutputStream)super.out).toByteArray();
-			addPayload(payloadId, payload);
+			addPayload(payloadId, ((ByteArrayOutputStream)super.out).toByteArray());
 		}
 	}
 
 	private class Payload
 	{
 		public String encoding;
-		public byte[] data;
+		@NotNull public byte[] data;
 
-		public Payload(String encoding, byte[] data)
+		public Payload(String encoding, @NotNull byte[] data)
 		{
 			this.encoding = encoding;
 			this.data = data;
 		}
 
-		public Payload(byte[] data)
+		public Payload(@NotNull byte[] data)
 		{
 			this.data = data;
 		}
