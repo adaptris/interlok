@@ -16,6 +16,7 @@
 
 package com.adaptris.core;
 
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.slf4j.Logger;
@@ -44,9 +45,10 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 {
 	private static final Logger log = LoggerFactory.getLogger(MultiPayloadMessageFactory.class);
 
-	private String defaultCharEncoding;
+	@AdvancedConfig(rare=true)
+	private String defaultCharEncoding = "UTF-8";
 
-	private String defaultPayloadId;
+	private String defaultPayloadId = MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID;
 
 	public MultiPayloadMessageFactory()
 	{
@@ -213,7 +215,7 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 	@Override
 	public AdaptrisMessage newMessage()
 	{
-		AdaptrisMessage m = new MultiPayloadAdaptrisMessageImp(uniqueIdGenerator(), this);
+		AdaptrisMessage m = new MultiPayloadAdaptrisMessageImp(defaultPayloadId(), uniqueIdGenerator(), this);
 		if (!isEmpty(getDefaultCharEncoding()))
 		{
 			m.setContentEncoding(getDefaultCharEncoding());
