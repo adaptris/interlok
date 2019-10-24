@@ -43,16 +43,15 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
+            - dependencies-{{ .Environment.CIRCLE_JOB}}-{{ checksum "build.gradle" }}-{{ checksum "interlok-core/build.gradle" }}-{{ checksum "interlok-common/build.gradle"}}
             - dependencies-{{ checksum "build.gradle" }}-{{ checksum "interlok-core/build.gradle" }}-{{ checksum "interlok-common/build.gradle"}}
             - dependencies-{{ checksum "build.gradle" }}
-            # fallback to using the latest cache if no exact match is found
-            - dependencies
-
 
       # run tests!
       - run:
           name: Run Tests
-          command:
+          command: |
+            chmod +x ./gradlew
             ./gradlew -PverboseTests=true test jacocoTestReport
 
       - run:
@@ -73,16 +72,62 @@ jobs:
           paths:
             - ~/.gradle/caches
             - ~/.gradle/wrapper
-          key: dependencies-{{ checksum "build.gradle" }}-{{ checksum "interlok-core/build.gradle" }}-{{ checksum "interlok-common/build.gradle"}}
+          key: dependencies-{{ .Environment.CIRCLE_JOB}}-{{ checksum "build.gradle" }}-{{ checksum "interlok-core/build.gradle" }}-{{ checksum "interlok-common/build.gradle"}}
 
   sonarbuild:
-    docker:
-      - image: circleci/openjdk:8-jdk
+    machine:
+      image: ubuntu-1604:201903-01
+
+    working_directory: ~/interlok
+
+    environment:
+      JAVA_TOOL_OPTIONS: -Xmx2G
+      TERM: dumb
+      DEBIAN_FRONTEND: noninteractive
+
     steps:
       - checkout
+
+      - run:
+          name: Configure
+          command: |
+            sudo -E apt-get -y -q update
+            sudo -E apt-get -y -q install haveged openjdk-8-jdk mysql-server
+            sudo -E systemctl restart haveged
+            # Enable root mysql user for the circleci user...
+            sudo mysql -e"ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root'"
+            sudo mysql -uroot -proot -e"FLUSH PRIVILEGES"
+            mkdir -p ~/.gradle
+            echo "org.gradle.warning.mode=none" > ~/.gradle/gradle.properties
+            echo "default.jdbc.storedproc.tests.enabled=true" >> interlok-core/build.properties
+            echo "default.jdbc.storedproc.url=jdbc:mysql://localhost:3306/" >> interlok-core/build.properties
+            echo "default.jdbc.storedproc.driver=com.mysql.jdbc.Driver" >> interlok-core/build.properties
+            echo "default.jdbc.storedproc.database=circle_test" >> interlok-core/build.properties
+            echo "default.jdbc.storedproc.username=root" >> interlok-core/build.properties
+            echo "default.jdbc.storedproc.password=root" >> interlok-core/build.properties
+            echo "default.jdbc.storedproc.vendor=mysql" >> interlok-core/build.properties
+            echo "default.jdbc.storedproc.teststatement=" >> interlok-core/build.properties
+            echo "default.jdbc.storedproc.url.params=?useSSL=false" >> interlok-core/build.properties
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - dependencies-{{ .Environment.CIRCLE_JOB}}-{{ checksum "build.gradle" }}-{{ checksum "interlok-core/build.gradle" }}-{{ checksum "interlok-common/build.gradle"}}
+            - dependencies-{{ checksum "build.gradle" }}-{{ checksum "interlok-core/build.gradle" }}-{{ checksum "interlok-common/build.gradle"}}
+            - dependencies-{{ checksum "build.gradle" }}
+            - dependencies
+
       - run:
           name: Analyze on SonarCloud
-          command: gradle build sonarqube -Dsonar.projectKey="adaptris_interlok" -Dsonar.organization="adaptris" -Dsonar.host.url="https://sonarcloud.io"
+          command: |
+            chmod +x ./gradlew
+            ./gradlew -PverboseTests=true test build sonarqube -Dsonar.projectKey="adaptris_interlok" -Dsonar.organization="adaptris" -Dsonar.host.url="https://sonarcloud.io"
+
+      - save_cache:
+          paths:
+            - ~/.gradle/caches
+            - ~/.gradle/wrapper
+          key: dependencies-{{ .Environment.CIRCLE_JOB}}-{{ checksum "build.gradle" }}-{{ checksum "interlok-core/build.gradle" }}-{{ checksum "interlok-common/build.gradle"}}
 
 workflows:
   version: 2
