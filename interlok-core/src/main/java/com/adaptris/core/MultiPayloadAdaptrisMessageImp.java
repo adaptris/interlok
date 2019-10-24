@@ -50,11 +50,6 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 	@NotNull
 	private String currentPayloadId = DEFAULT_PAYLOAD_ID;
 
-	protected MultiPayloadAdaptrisMessageImp(IdGenerator guid, AdaptrisMessageFactory messageFactory)
-	{
-		this(DEFAULT_PAYLOAD_ID, guid, messageFactory);
-	}
-
 	protected MultiPayloadAdaptrisMessageImp(@NotNull String payloadId, IdGenerator guid, AdaptrisMessageFactory messageFactory)
 	{
 		this(payloadId, guid, messageFactory, new byte[0]);
