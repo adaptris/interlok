@@ -71,6 +71,7 @@ public class MultiPayloadMessageFactoryTest extends AdaptrisMessageFactoryImplCa
 	@Test
 	public void testMessageFactoryPayload()
 	{
+		messageFactory.setDefaultPayloadId(null);
 		messageFactory.setDefaultCharEncoding(null);
 		MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage)messageFactory.newMessage(PAYLOAD);
 		assertEquals(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, message.getCurrentPayloadId());

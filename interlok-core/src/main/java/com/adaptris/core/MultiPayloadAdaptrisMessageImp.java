@@ -372,19 +372,12 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 	{
 		MultiPayloadAdaptrisMessageImp result = (MultiPayloadAdaptrisMessageImp)super.clone();
 		// clone the payloads.
-		try
+		result.payloads = new HashMap<>();
+		for (String payloadId : payloads.keySet())
 		{
-			result.payloads = new HashMap<>();
-			for (String payloadId : payloads.keySet())
-			{
-				Payload payload = payloads.get(payloadId);
-				result.addPayload(payloadId, payload.data.clone());
-				result.setContentEncoding(payloadId, payload.encoding);
-			}
-		}
-		catch (Exception e)
-		{
-			throw new RuntimeException(e);
+			Payload payload = payloads.get(payloadId);
+			result.addPayload(payloadId, payload.data.clone());
+			result.setContentEncoding(payloadId, payload.encoding);
 		}
 		result.switchPayload(currentPayloadId);
 		return result;
