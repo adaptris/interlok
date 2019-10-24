@@ -3,6 +3,10 @@ package com.adaptris.core;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -183,6 +187,19 @@ public class MultiPayloadMessageFactoryTest extends AdaptrisMessageFactoryImplCa
 		assertEquals(1, multiMessage.getPayloadCount());
 		assertEquals(0, multiMessage.getPayload().length);
 		assertEquals(1, multiMessage.getMetadata().size());
+	}
+
+	@Test
+	public void testMessageStreams() throws Exception
+	{
+		MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage)messageFactory.newMessage();
+		OutputStream os = message.getOutputStream();
+		os.write(PAYLOAD);
+		os.close();
+		InputStream is = message.getInputStream();
+		byte[] bytes = new byte[PAYLOAD.length];
+		is.read(bytes);
+		assertArrayEquals(PAYLOAD, bytes);
 	}
 
 	@Override
