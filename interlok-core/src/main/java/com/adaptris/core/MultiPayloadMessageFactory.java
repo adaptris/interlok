@@ -130,11 +130,25 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 	}
 
 	/**
+	 * Create a new multi-payload message, with the given ID, and payload.
+	 *
+	 * @param payloadId    The payload ID to use.
+	 * @param content      The payload content.
+	 * @param charEncoding The content encoding.
+	 * @return The new multi-payload message.
+	 */
+	public AdaptrisMessage newMessage(@NotNull String payloadId, String content, String charEncoding)
+	{
+		return newMessage(payloadId, content, charEncoding, null);
+	}
+
+	/**
 	 * Create a new multi-payload message, with the given ID, payload, and metadata.
 	 *
-	 * @param payloadId The payload ID to use.
-	 * @param content   The payload content.
-	 * @param metadata  Any metadata.
+	 * @param payloadId    The payload ID to use.
+	 * @param content      The payload content.
+	 * @param charEncoding The content encoding.
+	 * @param metadata     Any metadata.
 	 * @return The new multi-payload message.
 	 */
 	public AdaptrisMessage newMessage(@NotNull String payloadId, String content, String charEncoding, Set metadata)
