@@ -40,7 +40,9 @@ public class MultiPayloadMessageFactoryTest extends AdaptrisMessageFactoryImplCa
 	@Test
 	public void testMessageFactoryEtAl() throws Exception
 	{
+		messageFactory.setDefaultPayloadId(ID);
 		MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage)messageFactory.newMessage();
+		assertEquals(messageFactory.getDefaultPayloadId(), message.getCurrentPayloadId());
 		assertEquals(messageFactory.getDefaultCharEncoding(), message.getContentEncoding());
 		assertEquals(0, message.getSize());
 		message.switchPayload("null-payload");
