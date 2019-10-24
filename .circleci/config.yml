@@ -121,7 +121,7 @@ jobs:
           name: Analyze on SonarCloud
           command: |
             chmod +x ./gradlew
-            ./gradlew -PverboseTests=true test build sonarqube -Dsonar.projectKey="adaptris_interlok" -Dsonar.organization="adaptris" -Dsonar.host.url="https://sonarcloud.io"
+            ./gradlew -PverboseTests=true sonarqube -Dsonar.projectKey="adaptris_interlok" -Dsonar.organization="adaptris" -Dsonar.host.url="https://sonarcloud.io"
 
       - save_cache:
           paths:
@@ -134,8 +134,8 @@ workflows:
   commit:
     jobs:
       - build
-      - sonarbuild:
-          context: SonarCloud
+      # - sonarbuild:
+      #     context: SonarCloud
 
   nightly:
     triggers:
