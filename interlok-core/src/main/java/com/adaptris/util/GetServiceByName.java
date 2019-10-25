@@ -18,14 +18,12 @@ package com.adaptris.util;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.util.StringTokenizer;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,16 +83,11 @@ public final class GetServiceByName {
   private void setFile(String s) throws IOException {
 
     File f = new File(s);
-    int size = Integer.parseInt(String.valueOf(f.length()));
-    DataInputStream di = new DataInputStream(new FileInputStream(f));
-    byte[] b = new byte[size];
-
-    di.readFully(b);
-    di.close();
-
-    input = new ByteArrayInputStream(b);
-    input.mark(0);
-
+    if (f.canRead() && f.isFile()) {
+      byte[] bytes  = Files.readAllBytes(f.toPath());
+      input = new ByteArrayInputStream(Files.readAllBytes(f.toPath()));
+      input.mark(0);     
+    }
   }
 
   /** Parse an individual line in the services file.

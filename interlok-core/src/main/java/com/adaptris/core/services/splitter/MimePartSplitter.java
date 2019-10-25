@@ -17,18 +17,14 @@
 package com.adaptris.core.services.splitter;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-
 import javax.mail.Header;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
@@ -71,11 +67,10 @@ public class MimePartSplitter extends MessageSplitterImp {
   public List<AdaptrisMessage> splitMessage(AdaptrisMessage msg) throws CoreException {
     List<AdaptrisMessage> result = new ArrayList<AdaptrisMessage>();
     AdaptrisMessageFactory fac = selectFactory(msg);
-    try {
-      BodyPartIterator mp = MimeHelper.createBodyPartIterator(msg);
+    try (BodyPartIterator mp = MimeHelper.createBodyPartIterator(msg)) {
       while (mp.hasNext()) {
         AdaptrisMessage splitMsg = fac.newMessage();
-        MimeBodyPart part = (MimeBodyPart) mp.next();
+        MimeBodyPart part = mp.next();
         copy(part, splitMsg);
         copyMetadata(msg, splitMsg);
         result.add(splitMsg);
