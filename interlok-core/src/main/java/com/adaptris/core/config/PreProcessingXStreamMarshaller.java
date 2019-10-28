@@ -2,24 +2,19 @@ package com.adaptris.core.config;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.Charset;
-
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
-import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.URLHelper;
 import com.adaptris.util.URLString;
@@ -57,71 +52,61 @@ public class PreProcessingXStreamMarshaller extends com.adaptris.core.XStreamMar
   @Override
   public Object unmarshal(Reader input) throws CoreException {
     Args.notNull(input, "reader");
-    try (Reader in = input) {
-      String xml = IOUtils.toString(in);
-      return unmarshal(xml);
-    }
-    catch (Exception e) {
-      throw ExceptionHelper.wrapCoreException(e);
-    }
+    return invokeDeserialize(() -> {
+      try (Reader in = input) {
+        String xml = IOUtils.toString(in);
+        return unmarshal(xml);
+      }
+    });
   }
 
   @Override
   public Object unmarshal(String input) throws CoreException {
     Args.notNull(input, "input");
-    Object result = null;
-    try {
-      result = getInstance().fromXML(preProcess(input)); // lgtm [java/unsafe-deserialization]
-    }
-    catch (Exception e) {
-      throw ExceptionHelper.wrapCoreException(e);
-    }
-    return result;
+    return invokeDeserialize(() -> {
+      return getInstance().fromXML(preProcess(input)); // lgtm [java/unsafe-deserialization]
+    });
   }
 
   @Override
   public Object unmarshal(File file) throws CoreException {
     Args.notNull(file, "file");
-    try (FileInputStream in = new FileInputStream(file)) {
-      return unmarshal(in);
-    }
-    catch (Exception e) {
-      throw ExceptionHelper.wrapCoreException(e);
-    }
+    return invokeDeserialize(() -> {
+      try (FileInputStream in = new FileInputStream(file)) {
+        return unmarshal(in);
+      }
+    });
   }
 
   @Override
   public Object unmarshal(URL url) throws CoreException {
     Args.notNull(url, "url");
-    try (InputStream in = url.openStream()) {
-      return this.unmarshal(in);
-    }
-    catch (Exception e) {
-      throw ExceptionHelper.wrapCoreException(e);
-    }
+    return invokeDeserialize(() -> {
+      try (InputStream in = url.openStream()) {
+        return this.unmarshal(in);
+      }
+    });
   }
 
   @Override
   public Object unmarshal(URLString url) throws CoreException {
     Args.notNull(url, "url");
-    try (InputStream in = URLHelper.connect(url)) {
-      return this.unmarshal(in);
-    }
-    catch (Exception e) {
-      throw ExceptionHelper.wrapCoreException(e);
-    }
+    return invokeDeserialize(() -> {
+      try (InputStream in = URLHelper.connect(url)) {
+        return this.unmarshal(in);
+      }
+    });
   }
 
   @Override
   public Object unmarshal(InputStream input) throws CoreException {
     Args.notNull(input, "inputstream");
-    try (InputStream in = input) {
-      String xml = IOUtils.toString(in, Charset.defaultCharset());
-      return unmarshal(xml);
-    }
-    catch (IOException e) {
-      throw ExceptionHelper.wrapCoreException(e);
-    }
+    return invokeDeserialize(() -> {
+      try (InputStream in = input) {
+        String xml = IOUtils.toString(in, Charset.defaultCharset());
+        return unmarshal(xml);
+      }
+    });
   }
 
   public ConfigPreProcessorLoader getPreProcessorLoader() {
@@ -133,7 +118,7 @@ public class PreProcessingXStreamMarshaller extends com.adaptris.core.XStreamMar
   }
 
   ConfigPreProcessorLoader preProcessorLoader() {
-    return (getPreProcessorLoader() != null) ? getPreProcessorLoader() : new DefaultPreProcessorLoader();
+    return getPreProcessorLoader() != null ? getPreProcessorLoader() : new DefaultPreProcessorLoader();
   }
 
   public String getPreProcessors() {

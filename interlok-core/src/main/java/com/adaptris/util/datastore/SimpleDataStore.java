@@ -25,8 +25,6 @@ import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Properties;
 import javax.validation.constraints.NotBlank;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.Args;
@@ -87,8 +85,6 @@ public class SimpleDataStore extends DataStore {
 
   private int maxAttempts = 15;
   private transient boolean haveLock = false;
-
-  private transient Logger logR = LoggerFactory.getLogger(this.getClass());
 
   /**
    * @see DataStore#DataStore()

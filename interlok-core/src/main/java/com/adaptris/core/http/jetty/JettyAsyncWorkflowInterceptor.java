@@ -53,7 +53,7 @@ import net.jodah.expiringmap.ExpiringMap;
 @DisplayOrder(order = {"cacheKey"})
 public class JettyAsyncWorkflowInterceptor extends JettyWorkflowInterceptorImpl {
 
-  private static transient Logger log = LoggerFactory.getLogger(JettyAsyncWorkflowInterceptor.class);
+  private static transient Logger staticLogger = LoggerFactory.getLogger(JettyAsyncWorkflowInterceptor.class);
 
   // Should probably use JSR107 for some caching action?? make it pluggable.
   // But for now, same JVM, so a map will do in a pinch
@@ -69,7 +69,7 @@ public class JettyAsyncWorkflowInterceptor extends JettyWorkflowInterceptorImpl 
       @Override
       void workflowStart(String key, AdaptrisMessage msg) {
         JettyWrapper wrapper = JettyWrapper.unwrap(msg);
-        log.trace("Storing {} in cache against {}", wrapper, key);
+        staticLogger.trace("Storing {} in cache against {}", wrapper, key);
         EXPIRING_CACHE.put(key, wrapper);
       }
 
@@ -86,7 +86,7 @@ public class JettyAsyncWorkflowInterceptor extends JettyWorkflowInterceptorImpl 
       @Override
       void workflowStart(String key, AdaptrisMessage msg) {
         JettyWrapper wrapper = EXPIRING_CACHE.get(key);
-        log.trace("Found {} in cache against {}", wrapper, key);
+        staticLogger.trace("Found {} in cache against {}", wrapper, key);
         if (wrapper != null) {
           EXPIRING_CACHE.remove(key);
           msg.addObjectHeader(JETTY_WRAPPER, wrapper);

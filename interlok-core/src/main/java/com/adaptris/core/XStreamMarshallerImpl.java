@@ -18,7 +18,6 @@ package com.adaptris.core;
 
 import java.io.Reader;
 import java.io.Writer;
-
 import com.thoughtworks.xstream.XStream;
 
 /**
@@ -55,22 +54,18 @@ public abstract class XStreamMarshallerImpl extends AbstractMarshaller{
 
   @Override
   public void marshal(Object obj, Writer writer) throws CoreException {
-    try {
+    invokeSerialize(() -> {
       getInstance().toXML(obj, writer);
       writer.flush();
-    }
-    catch (Exception ex) {
-      throw new CoreException(ex);
-    }
+    });
   }
 
   @Override
   public Object unmarshal(Reader reader) throws CoreException {
-    try (Reader in = reader) {
-      return getInstance().fromXML(reader); // lgtm [java/unsafe-deserialization]
-    }
-    catch (Exception e) {
-      throw new CoreException(e);
-    }
+    return invokeDeserialize(() -> {
+      try (Reader in = reader) {
+        return getInstance().fromXML(reader); // lgtm [java/unsafe-deserialization]
+      }      
+    });
   }
 }

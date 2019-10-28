@@ -27,6 +27,7 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import javax.validation.Valid;
+import org.apache.commons.io.IOUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.PollerImp;
@@ -107,8 +108,9 @@ public class FsImmediateEventPoller extends PollerImp {
       @Override
       @SuppressWarnings("unchecked")
       public void run() {
+        WatchService watcher = null;
         try {
-          WatchService watcher = FileSystems.getDefault().newWatchService();
+          watcher = FileSystems.getDefault().newWatchService();
           File directory = createFileReference(createUrlFromString(retrieveConsumer().getDestination().getDestination(), true));
           Path dir = Paths.get(directory.getCanonicalPath());
           
@@ -162,6 +164,8 @@ public class FsImmediateEventPoller extends PollerImp {
         }
         catch (Exception x) {
           log.error("Caught Exception {}", x.getMessage());
+        } finally {
+          IOUtils.closeQuietly(watcher);
         }
       }
 
