@@ -78,7 +78,7 @@ dependencies {
   compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.20.v20190813")
   compile ("javax.servlet:javax.servlet-api:4.0.1")
   compile ("net.sf.joost:joost:0.9.1")
-  compile ("org.quartz-scheduler:quartz:2.3.1") {
+  compile ("org.quartz-scheduler:quartz:2.3.2") {
     exclude group: "com.zaxxer", module: "HikariCP-java7"
   }
   compile ("com.zaxxer:HikariCP:3.4.1")
