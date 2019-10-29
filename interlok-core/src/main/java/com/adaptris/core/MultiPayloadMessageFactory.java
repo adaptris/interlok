@@ -40,12 +40,12 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  * @since 3.9.x
  */
 @XStreamAlias("multi-payload-message-factory")
-@DisplayOrder(order = { "defaultCharEncoding" })
+@DisplayOrder(order = {"defaultCharEncoding"})
 public class MultiPayloadMessageFactory extends AdaptrisMessageFactory
 {
 	private static final Logger log = LoggerFactory.getLogger(MultiPayloadMessageFactory.class);
 
-	@AdvancedConfig(rare=true)
+	@AdvancedConfig(rare = true)
 	private String defaultCharEncoding = "UTF-8";
 
 	private String defaultPayloadId = MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID;

@@ -130,7 +130,7 @@ public class AddPayloadService extends ServiceImp
 		{
 			newPayloadEncoding = message.getContentEncoding();
 		}
-		message.addContent(newPayloadId, (String)payload, newPayloadEncoding);
+		message.addContent(newPayloadId, payload, newPayloadEncoding);
 		log.info("Added message payload [" + newPayloadId + "]");
 	}
 

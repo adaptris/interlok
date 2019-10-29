@@ -150,7 +150,7 @@ public class MultiPayloadMessageFactoryTest extends AdaptrisMessageFactoryImplCa
 		assertEquals(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, message.getCurrentPayloadId());
 		assertEquals(1, message.getPayloadCount());
 		assertEquals(CONTENT, message.getContent());
-		assertEquals(Charset.defaultCharset().toString(), message.getContentEncoding());
+		assertEquals(messageFactory.getDefaultCharEncoding(), message.getContentEncoding());
 		assertEquals(1, message.getMetadata().size());
 	}
 
