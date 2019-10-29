@@ -30,6 +30,8 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
@@ -45,6 +47,11 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  */
 public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implements MultiPayloadAdaptrisMessage
 {
+	private static final String RESOLVE_PREFIX = "%payload_id";
+	private static final String RESOLVE_REGEXP = "^.*" + RESOLVE_PREFIX + "\\{([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
+	private static final transient Pattern normalPayloadResolver = Pattern.compile(RESOLVE_REGEXP);
+	private static final transient Pattern dotAllPayloadResolver = Pattern.compile(RESOLVE_REGEXP, Pattern.DOTALL);
+
 	private Map<String, Payload> payloads = new HashMap<>();
 
 	@NotNull
@@ -419,6 +426,53 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 		return new ByteFilterStream(payloadId, new ByteArrayOutputStream());
 	}
 
+	/**
+	 * Resolve against this message's payloads or metadata.
+	 * <p>
+	 * This is a helper method that allows you to pass in {@code %payload_id{pl1}} and get the payload associated with
+	 * {@code pl1}, or {@code %message{key1}} and get the metadata associated with {@code key1}. Strings that do not
+	 * match that format will be returned as is. Support for punctuation characters is down to the implementation; the
+	 * standard implementations only support a limited subset of punctuation characters in addition to standard word
+	 * characters ({@code [a-zA-Z_0-9]}); they are {@code _!"#&'+,-.:=}. The magic values {@code %message{%uniqueId}}
+	 * and {@code %message{%size}} should return the message unique-id and message size respectively
+	 *
+	 * @param s      The string to resolve.
+	 * @param dotAll Whether to resolve in {@link java.util.regex.Pattern#DOTALL} mode, allowing
+	 *               you to match against multiple lines.
+	 * @return The original string, the matched payload, an item of metadata, or null (if none exists).
+	 */
+	@Override
+	public String resolve(String s, boolean dotAll)
+	{
+		if (s == null)
+		{
+			return null;
+		}
+		if (!s.contains(RESOLVE_PREFIX))
+		{
+			return super.resolve(s, dotAll);
+		}
+		else
+		{
+			Pattern pattern = dotAll ? normalPayloadResolver : dotAllPayloadResolver;
+			String result = s;
+			Matcher m = pattern.matcher(s);
+			while (m.matches())
+			{
+				String key = m.group(1);
+				if (!hasPayloadId(key))
+				{
+					throw new UnresolvedMetadataException("Could not resolve payload ID [" + key + "]");
+				}
+				String content = getContent(key);
+				String toReplace = RESOLVE_PREFIX + "{" + key + "}";
+				result = result.replace(toReplace, content);
+				m = pattern.matcher(result);
+			}
+			return result;
+		}
+	}
+
 	private class ByteFilterStream extends FilterOutputStream
 	{
 		private final String payloadId;
@@ -440,7 +494,8 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 	private class Payload
 	{
 		public String encoding;
-		@NotNull public byte[] data;
+		@NotNull
+		public byte[] data;
 
 		public Payload(String encoding, @NotNull byte[] data)
 		{

@@ -3,8 +3,6 @@ package com.adaptris.core;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
@@ -203,6 +201,26 @@ public class MultiPayloadMessageFactoryTest extends AdaptrisMessageFactoryImplCa
 		byte[] bytes = new byte[PAYLOAD.length];
 		is.read(bytes);
 		assertArrayEquals(PAYLOAD, bytes);
+	}
+
+	@Test
+	public void testResolve()
+	{
+		try
+		{
+			MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage)messageFactory.newMessage("bacon", CONTENT, ENCODING, METADATA);
+			message.addPayload("cake", PAYLOAD);
+			assertEquals(CONTENT, message.resolve("%payload_id{bacon}", true));
+			assertEquals(new String(PAYLOAD), message.resolve("%payload_id{cake}"));
+			assertNull(message.resolve(null));
+			assertEquals("VALUE", message.resolve("%message{KEY}"));
+			message.resolve("%payload_id{fail}");
+			fail();
+		}
+		catch (UnresolvedMetadataException e)
+		{
+			/* expected */
+		}
 	}
 
 	@Override
