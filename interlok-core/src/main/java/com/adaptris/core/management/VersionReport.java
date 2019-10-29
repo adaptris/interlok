@@ -26,19 +26,16 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import java.util.stream.Collectors;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import com.adaptris.core.util.PropertyHelper;
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Class to report module version numbers.
  * 
- * @config version-report
- * @author lchan
- * @author $Author: hfraser $
  */
-@XStreamAlias("version-report")
-public final class VersionReport {
+public abstract class VersionReport {
 
   private static VersionReport instance = null;
   private static final String NO_BUILD_DATE = "Unspecified";
@@ -51,6 +48,7 @@ public final class VersionReport {
   private static final Pattern UNKONWN_ARTIFACT_PATTERN = Pattern.compile("jar:file:.*/(.*)!/META-INF.*");
 
   private static final String BUILD_DATE_KEY = "build.date";
+  private static final String BUILD_INFO_KEY = "build.info";
   private static final String VERSION_KEY = "build.version";
   private static final String COMPONENT_KEY = "component.name";
   private static final String ARTIFACT_KEY = "artifactId";
@@ -61,8 +59,7 @@ public final class VersionReport {
   private transient Set<ComponentVersion> componentVersions;
   private transient ComponentVersion adapterVersion;
 
-  private VersionReport() {
-    adapterVersion = UNSPECIFIED_VERSION;
+  protected VersionReport() {
     buildReport();
   }
 
@@ -72,7 +69,8 @@ public final class VersionReport {
    * @return the VersionReport object
    */
   public synchronized static VersionReport getInstance() {
-    return instance = instance == null ? new VersionReport() : instance;
+    instance = ObjectUtils.defaultIfNull(instance, new VersionReportImp());
+    return instance;
   }
 
   /**
@@ -90,11 +88,7 @@ public final class VersionReport {
    * @return version numbers of all available adaptris modules.
    */
   public Collection<String> getReport() {
-    Collection<String> versions = new HashSet<>();
-    for (ComponentVersion v : componentVersions) {
-      versions.add(v.toString());
-    }
-    return new TreeSet<String>(versions);
+    return new TreeSet<String>(componentVersions.stream().map(v -> v.toString()).collect(Collectors.toSet()));
   }
 
   /**
@@ -103,35 +97,26 @@ public final class VersionReport {
    * @return version numbers of all available adaptris modules.
    */
   public Collection<String> getArtifactIdentifiers() {
-    Collection<String> versions = new HashSet<>();
-    for (ComponentVersion v : componentVersions) {
-      versions.add(v.artifactIdentifier());
-    }
-    return new TreeSet<String>(versions);
+    return new TreeSet<String>(componentVersions.stream().map(v -> v.artifactIdentifier()).collect(Collectors.toSet()));
   }
 
-  private Set<ComponentVersion> buildFromVersionFile() throws IOException {
+  protected Set<ComponentVersion> buildFromVersionFile() throws IOException {
     Enumeration<URL> versions = this.getClass().getClassLoader().getResources(VERSION_FILE);
     Set<ComponentVersion> result = new HashSet<ComponentVersion>();
     while (versions.hasMoreElements()) {
       ComponentVersion v = createVersionInfo(versions.nextElement());
-      if (v != null) {
-        result.add(v);
-        if (v.name.equalsIgnoreCase(INTERLOK_NAME)) {
-          adapterVersion = v;
-        }
-      }
+      result.add(v);
     }
     return result;
   }
 
-  private ComponentVersion createVersionInfo(URL url) throws IOException {
+  private static ComponentVersion createVersionInfo(URL url) {
     return new ComponentVersion(PropertyHelper.loadQuietly(url), jarName(url.toString()));
   }
 
   // jar:file:/path/to/interlok-common-3.8-SNAPSHOT.jar!/META-INF/adaptris-version
   // into just interlok-common-3.8-SNAPSHOT.jar
-  private static String jarName(String stringifiedUrl) {
+  protected static String jarName(String stringifiedUrl) {
     Matcher m = UNKONWN_ARTIFACT_PATTERN.matcher(stringifiedUrl);
     if (m.matches()) {
       return m.group(1);
@@ -139,35 +124,43 @@ public final class VersionReport {
     return stringifiedUrl;
   }
 
-  private void buildReport() {
+  protected void buildReport() {
     try {
       componentVersions = buildFromVersionFile();
       if (componentVersions.size() == 0) {
         componentVersions.add(UNSPECIFIED_VERSION);
       }
-    }
-    catch (IOException e) {
+      adapterVersion =
+          componentVersions.stream().filter(v -> v.name.equalsIgnoreCase(INTERLOK_NAME)).findAny().orElse(UNSPECIFIED_VERSION);
+    } catch (Exception e) {
       throw new RuntimeException(e);
     }
   }
 
-  private static class ComponentVersion {
-    private transient String name, version, buildDate, artifactId, groupId;
+  protected static class ComponentVersion {
+    private transient String name, version, buildDate, artifactId, groupId, buildInfo;
     private transient String artifactIdentifier;
     private transient String nameAndVersion;
     private transient String versionOnly;
 
-    ComponentVersion(Properties p, String defaultComponentName) {
+    protected ComponentVersion(Properties p, String defaultComponentName) {
       this.name = p.getProperty(COMPONENT_KEY, defaultComponentName);
       this.groupId = p.getProperty(GROUP_KEY, NO_GROUP);
       this.buildDate = p.getProperty(BUILD_DATE_KEY, NO_BUILD_DATE);
       this.artifactId = p.getProperty(ARTIFACT_KEY, defaultComponentName);
       this.version =  p.getProperty(VERSION_KEY, NO_VERSION);
-      nameAndVersion = String.format("%1$s: %2$s(%3$s)", name, version, buildDate);
-      versionOnly = String.format("%1$s(%2$s)", version, buildDate);
+      this.buildInfo = StringUtils.trimToEmpty(StringUtils.chomp(p.getProperty(BUILD_INFO_KEY, "")));
+      if (!StringUtils.isEmpty(buildInfo)) {
+        nameAndVersion = String.format("%1$s: %2$s(%3$s:%4$s)", name, version, buildDate, buildInfo);
+        versionOnly = String.format("%1$s(%2$s:%3$s)", version, buildDate, buildInfo);
+      } else {
+        nameAndVersion = String.format("%1$s: %2$s(%3$s)", name, version, buildDate);
+        versionOnly = String.format("%1$s(%2$s)", version, buildDate);
+      }
       artifactIdentifier = String.format("%s:%s:%s", groupId, artifactId, version);
     }
 
+    @Override
     public String toString() {
       return nameAndVersion;
     }
@@ -175,5 +168,9 @@ public final class VersionReport {
     public String artifactIdentifier() {
       return artifactIdentifier;
     }
+  }
+  
+  private static class VersionReportImp extends VersionReport {
+    
   }
 }

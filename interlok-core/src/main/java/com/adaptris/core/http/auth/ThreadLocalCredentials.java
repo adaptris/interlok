@@ -61,7 +61,7 @@ public class ThreadLocalCredentials implements ResourceAuthenticator {
    * Remove the credentials for the current thread
    */
   public void removeThreadCredentials() {
-    this.threadAuthentication.set(null);
+    this.threadAuthentication.remove();
   }
 
   private ResourceTargetMatcher matcher() {

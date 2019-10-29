@@ -15,7 +15,6 @@
 */
 package com.adaptris.core.http.jetty;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.validation.Valid;
@@ -89,7 +88,6 @@ public class JettyRouteSpec implements ComponentLifecycle {
   private transient JettyRouteCondition conditionToUse = null;
 
   public JettyRouteSpec() {
-    setMetadataKeys(new ArrayList<String>());
   }
 
   @Deprecated
@@ -190,7 +188,10 @@ public class JettyRouteSpec implements ComponentLifecycle {
    * </p>
    * 
    * @param s list of keys.
+   * @deprecated since 3.9.0 use a condition instead
    */
+  @Deprecated
+  @Removal(version = "3.12.0", message = "Use a condition instead")
   public void setMetadataKeys(List<String> s) {
     this.metadataKeys = s;
   }

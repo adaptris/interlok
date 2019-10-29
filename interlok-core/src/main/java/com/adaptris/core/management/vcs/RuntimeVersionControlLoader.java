@@ -19,7 +19,7 @@ package com.adaptris.core.management.vcs;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
-
+import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,12 +47,8 @@ public class RuntimeVersionControlLoader {
   }
 
   private RuntimeVersionControl loadFirst() {
-    RuntimeVersionControl result = null;
-    for(RuntimeVersionControl vcs : runtimeVersionControls) {
-      log.trace("Found version control system for [{}]", vcs.getImplementationName());
-      result = vcs;
-      break;
-    }
+    RuntimeVersionControl result = StreamSupport.stream(runtimeVersionControls.spliterator(), false).findFirst().orElse(null);
+    log.trace("Version control system found: [{}]", result != null ? result.getImplementationName() : "None");
     return newInstance(result);
   }
 
