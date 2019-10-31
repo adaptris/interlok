@@ -97,6 +97,13 @@ public class StandaloneRequestorTest extends GeneralServiceExample {
     assertEquals(service.getProducer().createQualifier(), service.createQualifier());
   }
 
+  public void testNullProducer() throws Exception {
+    StandaloneRequestor service = new StandaloneRequestor();
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("XYZ");
+    execute(service, msg);
+    // all we care here is that a NPE isn't thrown (see INTERLOK-2829)
+  }
+
   @Override
   protected Object retrieveObjectForSampleConfig() {
     return new StandaloneRequestor();
