@@ -1,5 +1,6 @@
 package com.adaptris.core.jms;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
@@ -74,7 +75,7 @@ public class JmsAsyncProducerTest extends JmsProducerExample {
   
   public void testSendFails() throws Exception {
     doThrow(new JMSException("expected"))
-      .when(mockMessageProducer).send(any(Destination.class), any(Message.class), any(CompletionListener.class));
+      .when(mockMessageProducer).send(eq(null), eq(mockMessage), any(CompletionListener.class));
       
     try {
       producer.produce(adaptrisMessage, mockJmsDestination);
@@ -87,14 +88,14 @@ public class JmsAsyncProducerTest extends JmsProducerExample {
   public void testSendPerMessageProperties() throws Exception {
     producer.produce(adaptrisMessage, mockJmsDestination);
     
-    verify(mockMessageProducer).send(any(Destination.class), any(Message.class), any(int.class), any(int.class), any(long.class), any(CompletionListener.class));
+    verify(mockMessageProducer).send(eq(null), eq(mockMessage), any(int.class), any(int.class), any(long.class), any(CompletionListener.class));
   }
   
   public void testSendNotPerMessageProperties() throws Exception {
     producer.setPerMessageProperties(false);
     producer.produce(adaptrisMessage, mockJmsDestination);
     
-    verify(mockMessageProducer).send(any(Destination.class), any(Message.class), any(CompletionListener.class));
+    verify(mockMessageProducer).send(eq(null), eq(mockMessage), any(JmsAsyncProducer.class));
   }
   
   public void testCaptureOutgoingMessageProperties() throws Exception {
@@ -139,7 +140,7 @@ public class JmsAsyncProducerTest extends JmsProducerExample {
   public void testExceptionHandler() throws Exception {
     producer.onException(mockMessage, new Exception());
     
-    verify(mockExceptionHandler).handleProcessingException(any(AdaptrisMessage.class));
+    verify(mockExceptionHandler).handleProcessingException(null);
   }
   
   public void testSuccessHandler() throws Exception {
