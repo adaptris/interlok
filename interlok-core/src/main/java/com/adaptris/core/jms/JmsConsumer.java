@@ -96,8 +96,7 @@ public class JmsConsumer extends JmsConsumerImpl {
     JmsDestination destination = vendor.createDestination(rfc6167, this);
 
     if (deferConsumerCreationToVendor()) {
-      MessageConsumer mc = vendor.createConsumer(destination, filterExp, this);
-      return mc;
+      return vendor.createConsumer(destination, filterExp, this);
     } else {
       MessageConsumer consumer = null;
 

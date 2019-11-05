@@ -75,7 +75,7 @@ public class JmsAsyncProducerTest extends JmsProducerExample {
   
   public void testSendFails() throws Exception {
     doThrow(new JMSException("expected"))
-      .when(mockMessageProducer).send(eq(null), eq(mockMessage), any(CompletionListener.class));
+      .when(mockMessageProducer).send(any(), eq(mockMessage), any(CompletionListener.class));
       
     try {
       producer.produce(adaptrisMessage, mockJmsDestination);
@@ -88,14 +88,14 @@ public class JmsAsyncProducerTest extends JmsProducerExample {
   public void testSendPerMessageProperties() throws Exception {
     producer.produce(adaptrisMessage, mockJmsDestination);
     
-    verify(mockMessageProducer).send(eq(null), eq(mockMessage), any(int.class), any(int.class), any(long.class), any(CompletionListener.class));
+    verify(mockMessageProducer).send(any(), eq(mockMessage), any(int.class), any(int.class), any(long.class), any(CompletionListener.class));
   }
   
   public void testSendNotPerMessageProperties() throws Exception {
     producer.setPerMessageProperties(false);
     producer.produce(adaptrisMessage, mockJmsDestination);
     
-    verify(mockMessageProducer).send(eq(null), eq(mockMessage), any(JmsAsyncProducer.class));
+    verify(mockMessageProducer).send(any(), eq(mockMessage), any(JmsAsyncProducer.class));
   }
   
   public void testCaptureOutgoingMessageProperties() throws Exception {
@@ -140,7 +140,7 @@ public class JmsAsyncProducerTest extends JmsProducerExample {
   public void testExceptionHandler() throws Exception {
     producer.onException(mockMessage, new Exception());
     
-    verify(mockExceptionHandler).handleProcessingException(null);
+    verify(mockExceptionHandler).handleProcessingException(any());
   }
   
   public void testSuccessHandler() throws Exception {

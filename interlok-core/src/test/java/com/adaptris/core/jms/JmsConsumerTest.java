@@ -63,8 +63,7 @@ public class JmsConsumerTest extends JmsConsumerCase {
     }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
 
-    when(mockVendor.createConsumer(any(JmsDestination.class), any(String.class), any(JmsActorConfig.class)))
-        .thenReturn(mockMessageConsumer);
+    when(mockVendor.createConsumer(any(), any(), any(JmsActorConfig.class))).thenReturn(mockMessageConsumer);
 
     when(mockVendor.getBrokerUrl())
         .thenReturn("vm://" + activeMqBroker.getName());
@@ -90,10 +89,9 @@ public class JmsConsumerTest extends JmsConsumerCase {
       MockMessageListener jms = new MockMessageListener();
       standaloneConsumer.registerAdaptrisMessageListener(jms);
 
-      when(mockVendor.createConsumer(eq(null), eq(null), any(JmsActorConfig.class))).thenReturn(mockMessageConsumer);
       LifecycleHelper.initAndStart(standaloneConsumer);
 
-      verify(mockVendor).createConsumer(eq(null), eq(null), any(JmsConsumer.class));
+      verify(mockVendor).createConsumer(any(), any(), any(JmsConsumer.class));
 
       LifecycleHelper.stopAndClose(standaloneConsumer);
 
