@@ -73,6 +73,7 @@ public class StandaloneRequestor extends StandaloneProducer {
       // now enforces the return type to be the same object that was passed in
       // I suppose we can't guarantee that ppl haven't implemented their
       // own.
+      
       if (reply != null && m != null && reply != m) {
         log.trace("Copying reply message into original message");
         copy(reply, m);
