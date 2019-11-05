@@ -41,7 +41,7 @@ public abstract class AdaptrisMessageFactoryImplCase {
 
   @Test
   public void testCreateWithEncoding() {
-    DefaultMessageFactory encodedMF = (DefaultMessageFactory) getMessageFactory();
+    AdaptrisMessageFactory encodedMF = getMessageFactory();
     encodedMF.setDefaultCharEncoding("ISO-8859-1");
 
     AdaptrisMessage m1 = encodedMF.newMessage(TEST_PAYLOAD);
