@@ -14,6 +14,7 @@ This log lists the architectural decisions for Interlok
 * [ADR-0003](0003-deprecate-dynamicservicelocator.md) - Deprecate DynamicServiceLocator
 * [ADR-0004](0004-remove-jndi-bindable-lookup-name.md) - Deprecate and ultimately remove JndiBindable#getLookupName()
 * [ADR-0005](0005-remove-produce-destination.md) - Deprecate and ultimately remove ProduceDestination interface.
+* [ADR-0006](0006-workflow-callback.md) - Make onAdaptrisMessage() have a callback
 
 <!-- adrlogstop -->
 
