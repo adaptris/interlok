@@ -16,11 +16,18 @@
 
 package com.adaptris.core;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import com.adaptris.core.stubs.MockNonStandardRequestReplyProducer;
 import com.adaptris.core.stubs.MockRequestReplyProducer;
 import com.adaptris.util.TimeInterval;
+import org.mockito.Mock;
+
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @SuppressWarnings("deprecation")
 public class StandaloneRequestorTest extends GeneralServiceExample {
@@ -95,6 +102,60 @@ public class StandaloneRequestorTest extends GeneralServiceExample {
     mp.setUniqueId("abc");
     assertEquals("abc", service.createQualifier());
     assertEquals(service.getProducer().createQualifier(), service.createQualifier());
+  }
+
+  public void testNullProducer() throws Exception {
+    StandaloneRequestor service = new StandaloneRequestor();
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("XYZ");
+    execute(service, msg);
+    // all we care here is that a NPE isn't thrown (see INTERLOK-2829)
+  }
+
+  public void testNullMessage() throws Exception {
+    StandaloneRequestor service = new StandaloneRequestor();
+    service.doService(null);
+  }
+
+  public void testConsumerProducer() throws Exception {
+    AdaptrisMessageProducer mp = mock(AdaptrisMessageProducer.class);
+    StandaloneRequestor service = new StandaloneRequestor(mp);
+    service.setReplyTimeout(new TimeInterval(-1L, TimeUnit.MILLISECONDS));
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("XYZ");
+    doReturn(msg).when(mp).request(msg);
+    execute(service, msg);
+  }
+  
+  public void testConsumerProducerCopyFails() throws Exception {
+    AdaptrisMessageProducer mp = mock(AdaptrisMessageProducer.class);
+    StandaloneRequestor service = new StandaloneRequestor(mp);
+    service.setReplyTimeout(new TimeInterval(-1L, TimeUnit.MILLISECONDS));
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("XYZ");
+    AdaptrisMessage reply = mock(AdaptrisMessage.class);
+    doReturn(reply).when(mp).request(msg);
+    doThrow(new IOException("expected")).when(reply).getInputStream();
+    try {
+      service.doService(msg);
+      fail("Output stream on the message should thrpow an error and be caught.");
+    } catch (CoreException ex) {
+      // expected
+    }
+  }
+  
+  public void testConsumerProducerNullMessageWithReply() throws Exception {
+    AdaptrisMessageProducer mp = mock(AdaptrisMessageProducer.class);
+    StandaloneRequestor service = new StandaloneRequestor(mp);
+    service.setReplyTimeout(new TimeInterval(-1L, TimeUnit.MILLISECONDS));
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("XYZ");
+    doReturn(msg).when(mp).request(null);
+    service.doService(null);
+  }
+
+  public void testNullRequest() throws Exception {
+    AdaptrisMessageProducer mp = mock(AdaptrisMessageProducer.class);
+    StandaloneRequestor service = new StandaloneRequestor(mp);
+    service.setReplyTimeout(new TimeInterval(-1L, TimeUnit.MILLISECONDS));
+    doReturn(null).when(mp).request(null);
+    service.doService(null);
   }
 
   @Override
