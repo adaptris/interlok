@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.MarshallingCDATA;
 import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
@@ -109,6 +110,9 @@ public abstract class WorkflowImp implements Workflow {
   @AdvancedConfig
   @InputFieldDefault(value = "message-logger-default")
   private MessageLogger messageLogger;
+  @MarshallingCDATA
+  @AdvancedConfig(rare = true)
+  private String comments;
   
   // not marshalled
   private transient Channel channel;
@@ -823,6 +827,17 @@ public abstract class WorkflowImp implements Workflow {
     this.messageLogger = ml;
   }
   
+
+  @Override
+  public void setComments(String s) {
+    comments = s;
+  }
+
+  @Override
+  public String getComments() {
+    return comments;
+  }
+
   @SuppressWarnings("deprecation")
   public MessageLogger messageLogger() {
     if (getLogPayload() != null) {
