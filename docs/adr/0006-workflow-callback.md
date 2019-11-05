@@ -1,76 +1,86 @@
 ---
 layout: page
-title: template
+title: 0006-workflow-callback
 ---
-# [short title of solved problem and solution]
+# Add a new method to AdaptrisMessageListener
 
-* Status: [accepted , superseeded by [ADR-0005](template.md) , deprecated , ...] <!-- optional -->
-* Deciders: [list everyone involved in the decision] <!-- optional -->
-* Date: [YYYY-MM-DD when the decision was last updated] <!-- optional -->
+* Status: DRAFT
+* Deciders: Aaron McGrath, Lewin Chan, Matt Warman, Paul Higginson, (Sebastien Belin)
+* Date: ... 
 
 Technical Story: [description , ticket/issue URL] <!-- optional -->
 
 ## Context and Problem Statement
 
-[Describe the context and problem statement, e.g., in free form using two to three sentences. You may want to articulate the problem in form of a question.]
+When you enable [Dead Letter Queues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html) in SQS; the contract is that messages read from a source queue are failed over to the dead letter queue once the redrive policy is fired (i.e. after a max number of attempts to deliver the message). From testing, this is predicated on the fact that the message is not deleted. Of course, our sqs-polling-consumer deletes the message after submitting it to the workflow.
 
-## Decision Drivers <!-- optional -->
+Since we can't rely on the JMS semantics either (since onMessage() traditionally doesn't throw exceptions, and RuntimeExceptions aren't propagated by Interlok) we then have to think about some way of having an asynchronous callback.
 
-* [driver 1, e.g., a force, facing concern, ...]
-* [driver 2, e.g., a force, facing concern, ...]
-* ... <!-- numbers of drivers can vary -->
 
 ## Considered Options
 
-* [option 1]
-* [option 2]
-* [option 3]
-* ... <!-- numbers of options can vary -->
+* Do Nothing
+* Modify AdaptrisMessageListener to have callbacks.
 
 ## Decision Outcome
 
-Chosen option: "[option 1]", because [justification. e.g., only option, which meets k.o. criterion decision driver , which resolves force force , ... , comes out best (see below)].
+Chosen option: Modify AdaptrisMessageListener to have callbacks.
 
-### Positive Consequences <!-- optional -->
+## Pros and Cons of the Options
 
-* [e.g., improvement of quality attribute satisfaction, follow-up decisions required, ...]
-* ...
+### Do Nothing
 
-### Negative consequences <!-- optional -->
 
-* [e.g., compromising quality attribute, follow-up decisions required, ...]
-* ...
+* Good, because no change to code.
+* Bad, because we can't use SQS DLC behaviours.
+* Bad, because we might not preserve all message attributes (depending on configuration).
+* Neutral, error handling is still fully within the purview of Interlok (which is predictable)
 
-## Pros and Cons of the Options <!-- optional -->
+### Modify AdaptrisMessageListener to have callbacks.
 
-### [option 1]
+If we change AdaptrisMessageListener to be this : 
 
-[example , description , pointer to more information , ...] <!-- optional -->
+```
+default void onAdaptrisMessage(AdaptrisMessage msg) {
+  onAdaptrisMessage(msg, (s)-> {}, (f)->());
+}
 
-* Good, because [argument a]
-* Good, because [argument b]
-* Bad, because [argument c]
-* ... <!-- numbers of pros and cons can vary -->
+void onAdaptrisMessage(AdaptrisMessage msg, MessageListenerCallback success, MessageListenerCallback failure);
+@FunctionalInterface
+public interface MessageListenerCallback {
+  void handle(AdaptrisMessage msg);
+}
+```
 
-### [option 2]
+Then we can effectively make our SQS polling consumer this : 
+```
+for (Message message : messages) {
+  try {
+    AdaptrisMessage adpMsg = AdaptrisMessageFactory.defaultIfNull(getMessageFactory()).newMessage(message.getBody());
+    adpMsg.addMetadata("SQSMessageID", message.getMessageId());
+    for (Entry<String, String> entry : message.getAttributes().entrySet()) {
+       adpMsg.addMetadata(entry.getKey(), entry.getValue());
+    }
+    for (Entry<String, MessageAttributeValue> entry : message.getMessageAttributes().entrySet()) {
+      adpMsg.addMetadata(entry.getKey(), entry.getValue().getStringValue());
+    }
+    final String handle = message.getReceiptHandle();
+    retrieveAdaptrisMessageListener().onAdaptrisMessage(adpMsg, (s) -> {
+      sqs.deleteMessage(new DeleteMessageRequest(queueUrl, handle))
+    }, (f) -> {});
+    if (!continueProcessingMessages(++count)) {
+      break messageCountLoop;
+    }
+  }
+  catch (Exception e){
+    log.error("Error processing message id: " + message.getMessageId(), e);
+  }
+}
 
-[example , description , pointer to more information , ...] <!-- optional -->
+```
 
-* Good, because [argument a]
-* Good, because [argument b]
-* Bad, because [argument c]
-* ... <!-- numbers of pros and cons can vary -->
-
-### [option 3]
-
-[example , description , pointer to more information , ...] <!-- optional -->
-
-* Good, because [argument a]
-* Good, because [argument b]
-* Bad, because [argument c]
-* ... <!-- numbers of pros and cons can vary -->
-
-## Links <!-- optional -->
-
-* [Link type] [Link to ADR] <!-- example: Refined by [ADR-0005](0005-example.md) -->
-* ... <!-- numbers of links can vary -->
+* Good, because this makes the behavour controllable from the consumers perspective (e.g. fs-consumer could wait until the workflow completed before deleting the file...)
+* Good, because this will have the side effect of enabling callbacks for all consumers if they want it; which means we can get rid of the object monitors and things that we do Jetty + pooling workflow...
+* Bad, because it's a callback, and it happens at some point in the future... is the session/queue whatever still valid.
+* Bad, because threadsafe is hard.
+* Neutral, all workflows have to change (and message listener stub implementations).
