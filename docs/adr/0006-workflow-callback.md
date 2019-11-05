@@ -5,10 +5,8 @@ title: 0006-workflow-callback
 # Add a new method to AdaptrisMessageListener
 
 * Status: DRAFT
-* Deciders: Aaron McGrath, Lewin Chan, Matt Warman, Paul Higginson, (Sebastien Belin)
+* Deciders: Aaron McGrath, Lewin Chan, Gerco Dries, (Matt Warman), (Paul Higginson), (Sebastien Belin)
 * Date: ... 
-
-Technical Story: [description , ticket/issue URL] <!-- optional -->
 
 ## Context and Problem Statement
 
@@ -45,11 +43,7 @@ default void onAdaptrisMessage(AdaptrisMessage msg) {
   onAdaptrisMessage(msg, (s)-> {}, (f)->());
 }
 
-void onAdaptrisMessage(AdaptrisMessage msg, MessageListenerCallback success, MessageListenerCallback failure);
-@FunctionalInterface
-public interface MessageListenerCallback {
-  void handle(AdaptrisMessage msg);
-}
+void onAdaptrisMessage(AdaptrisMessage msg, java.util.function.Consumer<AdaptrisMessage> success, Consumer<AdaptrisMessage> failure);
 ```
 
 Then we can effectively make our SQS polling consumer this : 
@@ -57,14 +51,10 @@ Then we can effectively make our SQS polling consumer this :
 for (Message message : messages) {
   try {
     AdaptrisMessage adpMsg = AdaptrisMessageFactory.defaultIfNull(getMessageFactory()).newMessage(message.getBody());
-    adpMsg.addMetadata("SQSMessageID", message.getMessageId());
-    for (Entry<String, String> entry : message.getAttributes().entrySet()) {
-       adpMsg.addMetadata(entry.getKey(), entry.getValue());
-    }
-    for (Entry<String, MessageAttributeValue> entry : message.getMessageAttributes().entrySet()) {
-      adpMsg.addMetadata(entry.getKey(), entry.getValue().getStringValue());
-    }
+    // stuff skipped for brevity.
     final String handle = message.getReceiptHandle();
+    // on success we delete the message, on failure we leave it in situ.
+    // Might need to make that configurable, since we don't want poison messages
     retrieveAdaptrisMessageListener().onAdaptrisMessage(adpMsg, (s) -> {
       sqs.deleteMessage(new DeleteMessageRequest(queueUrl, handle))
     }, (f) -> {});
