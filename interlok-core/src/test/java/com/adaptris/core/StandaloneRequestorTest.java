@@ -21,6 +21,11 @@ import java.util.concurrent.TimeUnit;
 import com.adaptris.core.stubs.MockNonStandardRequestReplyProducer;
 import com.adaptris.core.stubs.MockRequestReplyProducer;
 import com.adaptris.util.TimeInterval;
+import org.mockito.Mock;
+
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @SuppressWarnings("deprecation")
 public class StandaloneRequestorTest extends GeneralServiceExample {
@@ -102,6 +107,20 @@ public class StandaloneRequestorTest extends GeneralServiceExample {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("XYZ");
     execute(service, msg);
     // all we care here is that a NPE isn't thrown (see INTERLOK-2829)
+  }
+
+  public void testNullMessage() throws Exception {
+    StandaloneRequestor service = new StandaloneRequestor();
+    service.doService(null);
+  }
+
+  public void testConsumerProducer() throws Exception {
+    AdaptrisMessageProducer mp = mock(AdaptrisMessageProducer.class);
+    StandaloneRequestor service = new StandaloneRequestor(mp);
+    service.setReplyTimeout(new TimeInterval(-1L, TimeUnit.MILLISECONDS));
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("XYZ");
+    doReturn(msg).when(mp).request(msg);
+    execute(service, msg);
   }
 
   @Override
