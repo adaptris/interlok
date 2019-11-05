@@ -19,7 +19,6 @@ package com.adaptris.core;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.core.services.WaitService;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
@@ -257,6 +256,7 @@ public class ServiceListTest extends ServiceCollectionCase {
     final ExceptionContainer c = new ExceptionContainer();
     Thread t = new Thread(new Runnable() {
 
+      @Override
       public void run() {
         try {
           AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -387,7 +387,7 @@ public class ServiceListTest extends ServiceCollectionCase {
     result.addService(new NullService());
     result.addService(new NullService());
     result.addService(new NullService());
-
+    result.setComments("Comments Ignored At Runtime");
     return result;
   }
 
@@ -421,6 +421,7 @@ public class ServiceListTest extends ServiceCollectionCase {
       setUniqueId(s);
     }
 
+    @Override
     public void doService(AdaptrisMessage msg) throws ServiceException {
       hasTriggered = true;
     }
@@ -448,6 +449,7 @@ public class ServiceListTest extends ServiceCollectionCase {
       nextServiceId = next;
     }
 
+    @Override
     public void doService(AdaptrisMessage msg) throws ServiceException {
       msg.setNextServiceId(nextServiceId);
     }
