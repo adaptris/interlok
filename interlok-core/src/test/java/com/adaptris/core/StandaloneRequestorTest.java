@@ -150,6 +150,14 @@ public class StandaloneRequestorTest extends GeneralServiceExample {
     service.doService(null);
   }
 
+  public void testNullRequest() throws Exception {
+    AdaptrisMessageProducer mp = mock(AdaptrisMessageProducer.class);
+    StandaloneRequestor service = new StandaloneRequestor(mp);
+    service.setReplyTimeout(new TimeInterval(-1L, TimeUnit.MILLISECONDS));
+    doReturn(null).when(mp).request(null);
+    service.doService(null);
+  }
+
   @Override
   protected Object retrieveObjectForSampleConfig() {
     return new StandaloneRequestor();
