@@ -43,6 +43,8 @@ install:
 
     echo "default.jdbc.storedproc.url.params=?useSSL=false" >> interlok-core/build.properties
 
+    echo "junit.jms.tests.enabled=false" >> interlok-core/build.properties
+
 cache:
 - $HOME/.gradle/caches/
 - $HOME/.gradle/wrapper/
