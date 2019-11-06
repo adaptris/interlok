@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.UUID;
 import com.adaptris.core.services.WaitService;
+import com.adaptris.core.stubs.ConfigCommentHelper;
 import com.adaptris.core.stubs.EventHandlerAwareService;
 import com.adaptris.core.util.LifecycleHelper;
 

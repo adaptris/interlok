@@ -19,6 +19,7 @@ package com.adaptris.core;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
+import com.adaptris.core.stubs.ConfigCommentHelper;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockWorkflowInterceptor;
 import com.adaptris.core.stubs.StubAdapterStartUpEvent;
