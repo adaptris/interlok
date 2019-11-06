@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,6 +19,7 @@ package com.adaptris.core.jms;
 import static com.adaptris.core.jms.JmsConfig.MESSAGE_TRANSLATOR_LIST;
 import static com.adaptris.core.jms.JmsProducerCase.assertMessages;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -40,7 +41,7 @@ import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.util.LifecycleHelper;
 
 public class JmsConsumerTest extends JmsConsumerCase {
-  
+
   @Mock private BasicActiveMqImplementation mockVendor;
   @Mock MessageConsumer mockMessageConsumer;
 
@@ -48,7 +49,7 @@ public class JmsConsumerTest extends JmsConsumerCase {
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
   }
-  
+
   public JmsConsumerTest(String name) {
     super(name);
   }
@@ -61,17 +62,16 @@ public class JmsConsumerTest extends JmsConsumerCase {
       return;
     }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    
-    when(mockVendor.createConsumer(any(JmsDestination.class), any(String.class), any(JmsActorConfig.class)))
-        .thenReturn(mockMessageConsumer);
-    
+
+    when(mockVendor.createConsumer(any(), any(), any(JmsActorConfig.class))).thenReturn(mockMessageConsumer);
+
     when(mockVendor.getBrokerUrl())
         .thenReturn("vm://" + activeMqBroker.getName());
-    
+
     ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("vm://" + activeMqBroker.getName());
     when(mockVendor.createConnectionFactory()).thenReturn(factory);
     when(mockVendor.createConnection(any(), any())).thenReturn(factory.createConnection());
-    
+
     String rfc6167 = "jms:topic:" + getName() + "?subscriptionId=" + getName();
 
     try {
@@ -80,26 +80,26 @@ public class JmsConsumerTest extends JmsConsumerCase {
       JmsConsumer consumer = new JmsConsumer(new ConfiguredConsumeDestination(rfc6167));
       consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
       consumer.setDeferConsumerCreationToVendor(true);
-      
+
       JmsConnection jmsConnection = activeMqBroker.getJmsConnection();
       jmsConnection.setVendorImplementation(mockVendor);
-      
+
       StandaloneConsumer standaloneConsumer = new StandaloneConsumer(jmsConnection, consumer);
 
       MockMessageListener jms = new MockMessageListener();
       standaloneConsumer.registerAdaptrisMessageListener(jms);
 
       LifecycleHelper.initAndStart(standaloneConsumer);
-      
-      verify(mockVendor).createConsumer(any(JmsDestination.class), any(String.class), any(JmsActorConfig.class));
-      
+
+      verify(mockVendor).createConsumer(any(), any(), any(JmsConsumer.class));
+
       LifecycleHelper.stopAndClose(standaloneConsumer);
-      
+
     } finally {
       activeMqBroker.destroy();
     }
   }
-  
+
   public void testDefaultFalseDeferConsumerCreationToVendor() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -107,13 +107,13 @@ public class JmsConsumerTest extends JmsConsumerCase {
       return;
     }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    
+
     when(mockVendor.createConsumer(any(JmsDestination.class), any(String.class), any(JmsActorConfig.class)))
         .thenReturn(mockMessageConsumer);
 
     when(mockVendor.getBrokerUrl())
         .thenReturn("vm://" + activeMqBroker.getName());
-    
+
     when(mockVendor.createConnectionFactory())
         .thenReturn(new ActiveMQConnectionFactory("vm://" + activeMqBroker.getName()));
 
@@ -125,10 +125,10 @@ public class JmsConsumerTest extends JmsConsumerCase {
       JmsConsumer consumer = new JmsConsumer(new ConfiguredConsumeDestination(rfc6167));
       consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
 //      consumer.setDeferConsumerCreationToVendor(true);
-      
+
       JmsConnection jmsConnection = activeMqBroker.getJmsConnection();
       jmsConnection.setVendorImplementation(mockVendor);
-      
+
       StandaloneConsumer standaloneConsumer = new StandaloneConsumer(jmsConnection, consumer);
 
       MockMessageListener jms = new MockMessageListener();
@@ -137,16 +137,16 @@ public class JmsConsumerTest extends JmsConsumerCase {
       try {
         LifecycleHelper.initAndStart(standaloneConsumer);
       } catch (Exception ex) {}
-      
+
       verify(mockVendor, times(0)).createConsumer(any(JmsDestination.class), any(String.class), any(JmsActorConfig.class));
-      
+
       LifecycleHelper.stopAndClose(standaloneConsumer);
-      
+
     } finally {
       activeMqBroker.destroy();
     }
   }
-  
+
   public void testDurableTopicConsume() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -176,7 +176,7 @@ public class JmsConsumerTest extends JmsConsumerCase {
     }
 
   }
-  
+
   public void testSharedDurableTopicConsume() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -206,7 +206,7 @@ public class JmsConsumerTest extends JmsConsumerCase {
     }
 
   }
-  
+
   public void testSharedTopicConsume() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
