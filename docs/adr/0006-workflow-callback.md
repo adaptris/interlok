@@ -4,9 +4,9 @@ title: 0006-workflow-callback
 ---
 # Add a new method to AdaptrisMessageListener
 
-* Status: DRAFT
-* Deciders: Aaron McGrath, Lewin Chan, Gerco Dries, (Matt Warman), (Paul Higginson), (Sebastien Belin)
-* Date: ... 
+* Status: ACCEPTED
+* Deciders: Aaron McGrath, Lewin Chan, Gerco Dries, Matt Warman, Sebastien Belin, (Paul Higginson)
+* Date: 2019-11-06
 
 ## Context and Problem Statement
 
