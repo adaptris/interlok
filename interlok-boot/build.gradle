@@ -1,6 +1,6 @@
 ext {
   componentName='Interlok Bootstrap'
-  springBootLoaderVersion='2.2.0.RELEASE'
+  springBootLoaderVersion='2.2.1.RELEASE'
 }
 
 configurations {
