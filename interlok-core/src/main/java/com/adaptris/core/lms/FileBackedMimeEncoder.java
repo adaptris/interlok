@@ -19,6 +19,7 @@ package com.adaptris.core.lms;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.Set;
 
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -26,6 +27,7 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MimeEncoderImpl;
+import com.adaptris.core.MultiPayloadAdaptrisMessage;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.text.mime.MultiPartFileInput;
 import com.adaptris.util.text.mime.MultiPartOutput;
@@ -57,7 +59,15 @@ public class FileBackedMimeEncoder extends MimeEncoderImpl {
       // Use the message unique id as the message id.
       MultiPartOutput output = new MultiPartOutput(msg.getUniqueId());
       AdaptrisMessageFactory factory = currentMessageFactory();
-      output.addPart(payloadAsMimePart(msg), PAYLOAD_CONTENT_ID);
+      if (msg instanceof MultiPayloadAdaptrisMessage) {
+        MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage)msg;
+        for (String id : message.getPayloadIDs()) {
+          message.switchPayload(id);
+          output.addPart(payloadAsMimePart(message), PAYLOAD_CONTENT_ID + "/" + id);
+        }
+      } else {
+        output.addPart(payloadAsMimePart(msg), PAYLOAD_CONTENT_ID);
+      }
       output.addPart(getMetadata(msg), getMetadataEncoding(), METADATA_CONTENT_ID);
       if (msg.getObjectHeaders().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION)) {
         output.addPart(asMimePart((Exception) msg.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION)),
@@ -84,6 +94,7 @@ public class FileBackedMimeEncoder extends MimeEncoderImpl {
       msg = currentMessageFactory().newMessage();
       File baseFile = asFile(source);
       MultiPartFileInput input = new MultiPartFileInput(baseFile);
+      /* TODO iff there are multiple payloads, switch to MultiPayloadAdaptrisMessage */
       addPartsToMessage(input, msg);
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);

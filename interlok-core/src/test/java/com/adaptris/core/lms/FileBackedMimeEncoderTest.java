@@ -24,6 +24,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Properties;
 
+import com.adaptris.core.MultiPayloadAdaptrisMessage;
+import com.adaptris.core.MultiPayloadMessageFactory;
 import org.junit.Test;
 
 import com.adaptris.core.AdaptrisMessage;
@@ -66,6 +68,25 @@ public class FileBackedMimeEncoderTest {
 
     AdaptrisMessage result = mimeEncoder.readMessage(outputFile);
     assertEquals(msg.getUniqueId(), result.getUniqueId());
+    assertEquals(METADATA_VALUE, result.getMetadataValue(METADATA_KEY));
+    assertEquals(STANDARD_PAYLOAD, result.getContent());
+  }
+
+  @Test
+  public void testMultiPayloadRoundTrip() throws Exception {
+    MultiPayloadMessageFactory mf = new MultiPayloadMessageFactory();
+    mf.setDefaultPayloadId("payload-1");
+    MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage)mf.newMessage(STANDARD_PAYLOAD);
+    message.addContent("payload-2", STANDARD_PAYLOAD_NON_JUST_ALPHA);
+    message.addMetadata(METADATA_KEY, METADATA_VALUE);
+
+    FileBackedMimeEncoder mimeEncoder = new FileBackedMimeEncoder();
+    mimeEncoder.setRetainUniqueId(true);
+    File outputFile = TempFileUtils.createTrackedFile(message);
+    mimeEncoder.writeMessage(message, outputFile);
+
+    AdaptrisMessage result = mimeEncoder.readMessage(outputFile);
+    assertEquals(message.getUniqueId(), result.getUniqueId());
     assertEquals(METADATA_VALUE, result.getMetadataValue(METADATA_KEY));
     assertEquals(STANDARD_PAYLOAD, result.getContent());
   }
