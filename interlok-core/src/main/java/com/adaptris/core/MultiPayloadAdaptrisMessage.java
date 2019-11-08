@@ -19,6 +19,7 @@ package com.adaptris.core;
 import javax.validation.constraints.NotNull;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Set;
 
 /**
  * Interface for Adaptris messages that support multiple payloads, referenced by
@@ -57,6 +58,13 @@ public interface MultiPayloadAdaptrisMessage extends AdaptrisMessage {
    * @return The payload ID.
    */
   String getCurrentPayloadId();
+
+  /**
+   * Get the payload IDs used within this message.
+   *
+   * @return The payload IDs.
+   */
+  Set<String> getPayloadIDs();
 
   /**
    * Update the ID of the current payload. This does not change the current
