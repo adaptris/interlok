@@ -17,6 +17,8 @@
 package com.adaptris.core.services;
 
 import javax.validation.constraints.NotBlank;
+
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import org.slf4j.MDC;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
@@ -28,6 +30,9 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Remove a mapped diagnostic context via {@link MDC#remove(String)}.
@@ -48,9 +53,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 })
 public class RemoveLoggingContext extends ServiceImp {
 
-  @NotBlank
   @InputFieldHint(expression = true)
-  private String key;
+  @XStreamImplicit(itemFieldName = "key")
+  private List<String> keys = new ArrayList<>();
 
   public RemoveLoggingContext() {
     super();
@@ -58,13 +63,15 @@ public class RemoveLoggingContext extends ServiceImp {
 
   public RemoveLoggingContext(String key) {
     this();
-    setKey(key);
+    getKeys().add(key);
   }
 
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     try {
-      MDC.remove(msg.resolve(getKey()));
+      for(String key : getKeys()) {
+        MDC.remove(msg.resolve(key));
+      }
     }
     catch (IllegalArgumentException | IllegalStateException e) {
       throw ExceptionHelper.wrapServiceException(e);
@@ -83,17 +90,17 @@ public class RemoveLoggingContext extends ServiceImp {
   public void prepare() throws CoreException {
   }
 
-  public String getKey() {
-    return key;
+  public List<String> getKeys() {
+    return keys;
   }
 
   /**
-   * Set the key for the mapped diagnostic context.
+   * Set the keys for the mapped diagnostic context.
    * 
-   * @param key the key to set
+   * @param keys the key to set
    */
-  public void setKey(String key) {
-    this.key = key;
+  public void setKey(List<String> keys) {
+    this.keys = keys;
   }
 
 }

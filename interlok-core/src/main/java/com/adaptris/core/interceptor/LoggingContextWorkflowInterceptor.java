@@ -85,11 +85,16 @@ public class LoggingContextWorkflowInterceptor extends WorkflowInterceptorImpl {
   @Override
   public synchronized void processingStart(AdaptrisMessage inputMsg) {
     if(useDefaultKeys()) {
-      if(!isEmpty(parentChannel().getUniqueId()))
+      if(!isEmpty(parentChannel().getUniqueId())) {
         MDC.put(CoreConstants.CHANNEL_ID_KEY, parentChannel().getUniqueId());
-      if(!isEmpty(parentWorkflow().getUniqueId()))
+        inputMsg.addObjectHeader(CoreConstants.CHANNEL_ID_KEY, parentChannel().getUniqueId());
+      }
+      if(!isEmpty(parentWorkflow().getUniqueId())) {
         MDC.put(CoreConstants.WORKFLOW_ID_KEY, parentWorkflow().getUniqueId());
+        inputMsg.addObjectHeader(CoreConstants.WORKFLOW_ID_KEY, parentWorkflow().getUniqueId());
+      }
       MDC.put(CoreConstants.MESSAGE_UNIQUE_ID_KEY, inputMsg.getUniqueId());
+      inputMsg.addObjectHeader(CoreConstants.MESSAGE_UNIQUE_ID_KEY, inputMsg.getUniqueId());
     }
 
     String keyToUse = resolve(getKey(), inputMsg);
