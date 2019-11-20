@@ -97,6 +97,29 @@ public abstract class MimeEncoderImpl extends AdaptrisMessageEncoderImp {
     }
   }
 
+  protected void addPartsToMessage(BodyPartIterator input, MultiPayloadAdaptrisMessage msg) throws IOException, MessagingException {
+    for (int i = 0; i < input.size(); i++) {
+      MimeBodyPart payloadPart = Args.notNull(input.getBodyPart(i), "payload");
+      String id = payloadPart.getContentID();
+      if (!id.startsWith(PAYLOAD_CONTENT_ID)) {
+        continue;
+      }
+      id = id.substring(PAYLOAD_CONTENT_ID.length() + 1);
+      msg.switchPayload(id);
+      try (InputStream payloadIn = payloadPart.getInputStream();
+           OutputStream out = msg.getOutputStream()) {
+        IOUtils.copy(payloadIn, out);
+      }
+    }
+    MimeBodyPart metadataPart = Args.notNull(input.getBodyPart(METADATA_CONTENT_ID), "metadata");
+    try (InputStream metadata = metadataPart.getInputStream()) {
+      msg.setMetadata(getMetadataSet(metadata));
+    }
+    if (retainUniqueId()) {
+      msg.setUniqueId(input.getMessageID());
+    }
+  }
+
   /**
    * <p>
    * Returns the payload MIME encoding.

@@ -28,6 +28,7 @@ import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MimeEncoderImpl;
 import com.adaptris.core.MultiPayloadAdaptrisMessage;
+import com.adaptris.core.MultiPayloadMessageFactory;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.text.mime.MultiPartFileInput;
 import com.adaptris.util.text.mime.MultiPartOutput;
@@ -94,8 +95,17 @@ public class FileBackedMimeEncoder extends MimeEncoderImpl {
       msg = currentMessageFactory().newMessage();
       File baseFile = asFile(source);
       MultiPartFileInput input = new MultiPartFileInput(baseFile);
-      /* TODO iff there are multiple payloads, switch to MultiPayloadAdaptrisMessage */
-      addPartsToMessage(input, msg);
+      try
+      {
+        addPartsToMessage(input, msg);
+      } catch (IllegalArgumentException e) {
+        if (!e.getMessage().equals("payload may not be null")) {
+          throw e;
+        }
+        // there wasn't a payload, but maybe there are multiple payloads...
+        msg = new MultiPayloadMessageFactory().newMessage();
+        addPartsToMessage(input, (MultiPayloadAdaptrisMessage)msg);
+      }
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
