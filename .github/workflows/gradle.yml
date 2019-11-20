@@ -20,6 +20,20 @@ jobs:
         sudo apt-get -y install haveged
         sudo systemctl enable haveged
         sudo systemctl restart haveged
+    - name: Gradle Wrapper Cache
+      uses: actions/cache@v1
+      with:
+        path: ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-wrapper-
+    - name: Gradle Dependencies Cache
+      uses: actions/cache@v1
+      with:
+        path: ~/.gradle/caches
+        key: ${{ runner.os }}-gradle-cache-${{ hashFiles('**/*.gradle') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-cache-
     - name: Gradle Test
       run: |
         echo "default.jdbc.storedproc.tests.enabled=false" >> ./interlok-core/build.properties
