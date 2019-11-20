@@ -13,5 +13,14 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - name: Build with Gradle
-      run: ./gradlew -Dorg.gradle.console=plain --no-daemon -PverboseTests=true test
+    - name: Bootstrap
+      run: |
+        sudo apt-get -y update
+        sudo apt-get -y install haveged
+        sudo systemctl enable haveged
+        sudo systemctl restart haveged
+    - name: Gradle Test
+      run: |
+        echo "default.jdbc.storedproc.tests.enabled=false" >> ./interlok-core/build.properties
+        echo "junit.jms.tests.enabled=false" >> ./interlok-core/build.properties
+        ./gradlew -Djava.security.egd=file:/dev/./urandom -Dorg.gradle.console=plain --no-daemon -PverboseTests=true test
