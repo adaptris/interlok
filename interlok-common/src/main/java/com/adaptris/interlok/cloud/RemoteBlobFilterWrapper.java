@@ -1,10 +1,14 @@
 package com.adaptris.interlok.cloud;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 import java.io.FileFilter;
 import java.lang.reflect.Constructor;
+
 import javax.validation.constraints.NotBlank;
+
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.interlok.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -35,6 +39,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class RemoteBlobFilterWrapper implements RemoteBlobFilter {
 
   @NotBlank
+  @InputFieldHint(implemts = "java.io.FileFilter")
   private String fileFilterImp;
   @NotBlank
   private String filterExpression;
