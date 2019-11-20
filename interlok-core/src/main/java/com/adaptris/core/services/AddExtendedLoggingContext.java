@@ -52,13 +52,13 @@ import javax.validation.constraints.NotNull;
  * </ul>
 
  * 
- * @config add-logging-context-service
+ * @config add-extended-logging-context-service
  * 
  */
 @XStreamAlias("add-extended-logging-context-service")
 @AdapterComponent
 @ComponentProfile(summary = "Add a mapped diagnostic context for logging; useful for filtering", tag = "service,logging,debug")
-@DisplayOrder(order = { "key", "value"})
+@DisplayOrder(order = { "useDefaultKeys", "valuesToSet"})
 public class AddExtendedLoggingContext extends ServiceImp {
 
   @AdvancedConfig
