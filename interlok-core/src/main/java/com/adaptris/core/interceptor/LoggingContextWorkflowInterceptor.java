@@ -57,6 +57,10 @@ public class LoggingContextWorkflowInterceptor extends WorkflowInterceptorImpl {
   @InputFieldDefault(value = "true")
   private Boolean useDefaultKeys;
 
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
+  private Boolean addDefaultKeysAsObjectMetadata;
+
   @NotNull
   @AutoPopulated
   @InputFieldHint(expression = true)
@@ -85,16 +89,9 @@ public class LoggingContextWorkflowInterceptor extends WorkflowInterceptorImpl {
   @Override
   public synchronized void processingStart(AdaptrisMessage inputMsg) {
     if(useDefaultKeys()) {
-      if(!isEmpty(parentChannel().getUniqueId())) {
-        MDC.put(CoreConstants.CHANNEL_ID_KEY, parentChannel().getUniqueId());
-        inputMsg.addObjectHeader(CoreConstants.CHANNEL_ID_KEY, parentChannel().getUniqueId());
-      }
-      if(!isEmpty(parentWorkflow().getUniqueId())) {
-        MDC.put(CoreConstants.WORKFLOW_ID_KEY, parentWorkflow().getUniqueId());
-        inputMsg.addObjectHeader(CoreConstants.WORKFLOW_ID_KEY, parentWorkflow().getUniqueId());
-      }
-      MDC.put(CoreConstants.MESSAGE_UNIQUE_ID_KEY, inputMsg.getUniqueId());
-      inputMsg.addObjectHeader(CoreConstants.MESSAGE_UNIQUE_ID_KEY, inputMsg.getUniqueId());
+      addDefaultKey(inputMsg, CoreConstants.CHANNEL_ID_KEY, parentChannel().getUniqueId());
+      addDefaultKey(inputMsg, CoreConstants.WORKFLOW_ID_KEY, parentWorkflow().getUniqueId());
+      addDefaultKey(inputMsg, CoreConstants.MESSAGE_UNIQUE_ID_KEY, inputMsg.getUniqueId());
     }
 
     String keyToUse = resolve(getKey(), inputMsg);
@@ -107,6 +104,15 @@ public class LoggingContextWorkflowInterceptor extends WorkflowInterceptorImpl {
 
     for(KeyValuePair pair: getValuesToSet()) {
       MDC.put(pair.getKey(), inputMsg.resolve(pair.getValue()));
+    }
+  }
+
+  private void addDefaultKey(AdaptrisMessage inputMsg, String key, String value) {
+    if(!isEmpty(value)) {
+      MDC.put(key, value);
+      if(addDefaultKeysAsObjectMetadata()) {
+        inputMsg.addObjectHeader(key, value);
+      }
     }
   }
 
@@ -247,5 +253,24 @@ public class LoggingContextWorkflowInterceptor extends WorkflowInterceptorImpl {
 
   boolean useDefaultKeys() {
     return BooleanUtils.toBooleanDefaultIfNull(getUseDefaultKeys(), true);
+  }
+
+  public void setAddDefaultKeysAsObjectMetadata(Boolean addDefaultKeysAsObjectMetadata) {
+    this.addDefaultKeysAsObjectMetadata = addDefaultKeysAsObjectMetadata;
+  }
+
+  /**
+   * <p>
+   * Return whether the default keys will be added to object metadata.
+   * </p>
+   *
+   * @return whether the default keys will be added to object metadata
+   */
+  public Boolean getAddDefaultKeysAsObjectMetadata() {
+    return addDefaultKeysAsObjectMetadata;
+  }
+
+  boolean addDefaultKeysAsObjectMetadata() {
+    return BooleanUtils.toBooleanDefaultIfNull(getAddDefaultKeysAsObjectMetadata(), false);
   }
 }
