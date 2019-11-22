@@ -17,25 +17,22 @@
 package com.adaptris.core.fs;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.fs.FsException;
 import com.adaptris.fs.FsFilenameExistsException;
 import com.adaptris.fs.FsWorker;
+import com.adaptris.interlok.util.FileFilterBuilder;
 
 /**
  */
@@ -154,24 +151,7 @@ public abstract class FsHelper {
   }
 
   public static FileFilter createFilter(String filterExpression, String filterImpl) throws Exception {
-    FileFilter result = null;
-    if (isEmpty(filterExpression)) {
-      result = new NoOpFileFilter();
-    }
-    else {
-      Class[] paramTypes =
-      {
-          filterExpression.getClass()
-      };
-      Object[] args =
-      {
-          filterExpression
-      };
-      Class c = Class.forName(filterImpl);
-      Constructor cnst = c.getDeclaredConstructor(paramTypes);
-      result = (FileFilter) cnst.newInstance(args);
-    }
-    return logWarningIfRequired(result);
+    return logWarningIfRequired(FileFilterBuilder.build(filterExpression, filterImpl));
   }
 
   public static FileFilter logWarningIfRequired(FileFilter f) {
@@ -222,13 +202,5 @@ public abstract class FsHelper {
       return url.replaceAll("\\\\", "/");
     }
     return url;
-  }
-
-  private static class NoOpFileFilter implements FileFilter {
-    @Override
-    public boolean accept(File pathname) {
-      return true;
-    }
-
   }
 }
