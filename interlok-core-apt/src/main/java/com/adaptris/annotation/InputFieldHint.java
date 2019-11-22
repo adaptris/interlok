@@ -38,7 +38,7 @@ public @interface InputFieldHint {
   /**
    * The base interface or class for the field value suggestions.
    */
-  String implemts() default "";
+  String ofType() default "";
 
   /**
    * The UI friendly name for the field; particularly enum's.

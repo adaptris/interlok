@@ -68,7 +68,7 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
   private static final String DEFAULT_FILE_FILTER_IMP = "org.apache.commons.io.filefilter.RegexFileFilter";
 
   // marshalled
-  @InputFieldHint(implemts = "java.io.FileFilter")
+  @InputFieldHint(ofType = "java.io.FileFilter")
   @AdvancedConfig
   private String fileFilterImp;
   @InputFieldDefault(value = "false")

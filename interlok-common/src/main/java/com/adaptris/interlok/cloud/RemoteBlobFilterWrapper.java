@@ -39,7 +39,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class RemoteBlobFilterWrapper implements RemoteBlobFilter {
 
   @NotBlank
-  @InputFieldHint(implemts = "java.io.FileFilter")
+  @InputFieldHint(ofType = "java.io.FileFilter")
   private String fileFilterImp;
   @NotBlank
   private String filterExpression;
