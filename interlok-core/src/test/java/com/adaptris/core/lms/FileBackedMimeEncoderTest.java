@@ -73,25 +73,6 @@ public class FileBackedMimeEncoderTest {
   }
 
   @Test
-  public void testMultiPayloadRoundTrip() throws Exception {
-    MultiPayloadMessageFactory mf = new MultiPayloadMessageFactory();
-    mf.setDefaultPayloadId("payload-1");
-    MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage)mf.newMessage(STANDARD_PAYLOAD);
-    message.addContent("payload-2", STANDARD_PAYLOAD_NON_JUST_ALPHA);
-    message.addMetadata(METADATA_KEY, METADATA_VALUE);
-
-    FileBackedMimeEncoder mimeEncoder = new FileBackedMimeEncoder();
-    mimeEncoder.setRetainUniqueId(true);
-    File outputFile = TempFileUtils.createTrackedFile(message);
-    mimeEncoder.writeMessage(message, outputFile);
-
-    AdaptrisMessage result = mimeEncoder.readMessage(outputFile);
-    assertEquals(message.getUniqueId(), result.getUniqueId());
-    assertEquals(METADATA_VALUE, result.getMetadataValue(METADATA_KEY));
-    assertEquals(STANDARD_PAYLOAD, result.getContent());
-  }
-
-  @Test
   public void testRoundTrip_FileBackedFactory() throws Exception {
     FileBackedMimeEncoder mimeEncoder = new FileBackedMimeEncoder();
     mimeEncoder.registerMessageFactory(new FileBackedMessageFactory());

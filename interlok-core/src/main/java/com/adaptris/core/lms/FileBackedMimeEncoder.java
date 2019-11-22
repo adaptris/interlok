@@ -89,27 +89,15 @@ public class FileBackedMimeEncoder extends MimeEncoderImpl {
 
   @Override
   public AdaptrisMessage readMessage(Object source) throws CoreException {
-    AdaptrisMessage msg = null;
-
     try {
-      msg = currentMessageFactory().newMessage();
+      AdaptrisMessage msg = currentMessageFactory().newMessage();
       File baseFile = asFile(source);
       MultiPartFileInput input = new MultiPartFileInput(baseFile);
-      try
-      {
-        addPartsToMessage(input, msg);
-      } catch (IllegalArgumentException e) {
-        if (!e.getMessage().equals("payload may not be null")) {
-          throw e;
-        }
-        // there wasn't a payload, but maybe there are multiple payloads...
-        msg = new MultiPayloadMessageFactory().newMessage();
-        addPartsToMessage(input, (MultiPayloadAdaptrisMessage)msg);
-      }
+      addPartsToMessage(input, msg);
+      return msg;
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
-    return msg;
   }
 
   private File asFile(Object o) {
