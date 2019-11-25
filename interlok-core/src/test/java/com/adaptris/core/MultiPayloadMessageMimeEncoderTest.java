@@ -21,6 +21,7 @@ import com.adaptris.core.stubs.TempFileUtils;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.text.mime.MultiPartOutput;
 import junit.framework.TestCase;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -37,15 +38,16 @@ public class MultiPayloadMessageMimeEncoderTest extends TestCase {
   private static final String STANDARD_PAYLOAD_1 = "Cupcake ipsum dolor sit amet bonbon cotton candy ice cream. Pudding chocolate sweet lemon drops carrot cake pastry sweet roll. Wafer cheesecake lemon drops. Fruitcake tiramisu chocolate cake dessert gummies fruitcake bear claw brownie. Bear claw dessert marshmallow chocolate bar. Gummies bonbon oat cake tootsie roll. Tiramisu topping jelly beans powder soufflé carrot cake. Gummi bears gingerbread tart pie. Oat cake danish gummies fruitcake. Cake icing sweet roll. Sweet roll cake cheesecake gingerbread. Cake brownie pastry. Lemon drops apple pie caramels sweet jelly beans oat cake jujubes dessert wafer. Oat cake sweet roll fruitcake croissant gummies sweet halvah croissant dessert.";
   private static final String STANDARD_PAYLOAD_2 = "Bacon ipsum dolor amet tri-tip bacon kielbasa flank rump pork belly. Pastrami pork t-bone ground round tenderloin, capicola bresaola ham turducken. Rump turkey boudin biltong, doner short loin swine t-bone buffalo pastrami capicola pork loin alcatra beef ribs jerky. Landjaeger chicken cupim corned beef venison. Jerky turducken pork chop burgdoggen. Landjaeger shankle chislic alcatra flank ribeye, short loin swine corned beef drumstick ham hock tri-tip filet mignon. Pastrami boudin turkey, tongue landjaeger ham hock ball tip cupim ground round ribeye pork loin pig sirloin shoulder.";
 
-  private MimeEncoder mimeEncoder;
+  private MimeEncoderImpl mimeEncoder;
 
   public MultiPayloadMessageMimeEncoderTest(String name) {
     super(name);
   }
 
   @Override
+  @Before
   protected void setUp() throws Exception {
-    mimeEncoder = new MimeEncoder();
+    mimeEncoder = new MultiPayloadMessageMimeEncoder();
     mimeEncoder.registerMessageFactory(new DefaultMessageFactory());
   }
 
@@ -59,16 +61,41 @@ public class MultiPayloadMessageMimeEncoderTest extends TestCase {
 
     MultiPayloadMessageMimeEncoder mimeEncoder = new MultiPayloadMessageMimeEncoder();
     mimeEncoder.setRetainUniqueId(true);
-    File outputFile = TempFileUtils.createTrackedFile(message);
-    mimeEncoder.writeMessage(message, outputFile);
 
-    AdaptrisMessage result = mimeEncoder.readMessage(outputFile);
+    ByteArrayOutputStream bo = new ByteArrayOutputStream();
+    mimeEncoder.writeMessage(message, bo);
+
+    ByteArrayInputStream bi = new ByteArrayInputStream(bo.toByteArray());
+    MultiPayloadAdaptrisMessage result = (MultiPayloadAdaptrisMessage)mimeEncoder.readMessage(bi);
+
+    assertEquals(2, result.getPayloadCount());
+    assertEquals(message.getUniqueId(), result.getUniqueId());
+    assertEquals(METADATA_VALUE, result.getMetadataValue(METADATA_KEY));
+    assertEquals(STANDARD_PAYLOAD_1, result.getContent("payload-1"));
+    assertEquals(STANDARD_PAYLOAD_2, result.getContent("payload-2"));
+  }
+
+  @Test
+  public void testNonMultiPayloadMessage() throws Exception {
+    AdaptrisMessageFactory mf = DefaultMessageFactory.getDefaultInstance();
+    AdaptrisMessage message = mf.newMessage(STANDARD_PAYLOAD_1);
+    message.addMetadata(METADATA_KEY, METADATA_VALUE);
+
+    MultiPayloadMessageMimeEncoder mimeEncoder = new MultiPayloadMessageMimeEncoder();
+    mimeEncoder.setRetainUniqueId(true);
+
+    ByteArrayOutputStream bo = new ByteArrayOutputStream();
+    mimeEncoder.writeMessage(message, bo);
+
+    ByteArrayInputStream bi = new ByteArrayInputStream(bo.toByteArray());
+    AdaptrisMessage result = mimeEncoder.readMessage(bi);
+
     assertEquals(message.getUniqueId(), result.getUniqueId());
     assertEquals(METADATA_VALUE, result.getMetadataValue(METADATA_KEY));
     assertEquals(STANDARD_PAYLOAD_1, result.getContent());
   }
 
-  public void testEncode_NonOutputStream() throws Exception {
+  public void testEncodeNonOutputStream() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD_1);
     msg.addMetadata(METADATA_KEY, METADATA_VALUE);
     try {
@@ -79,7 +106,7 @@ public class MultiPayloadMessageMimeEncoderTest extends TestCase {
     }
   }
 
-  public void testDecode_NonInputStream() throws Exception {
+  public void testDecodeNonInputStream() {
     try {
       mimeEncoder.readMessage(new StringWriter());
       fail();
