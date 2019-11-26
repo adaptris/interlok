@@ -16,23 +16,16 @@
 
 package com.adaptris.core.lms;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.util.Set;
-
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.CoreConstants;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.MimeEncoderImpl;
-import com.adaptris.core.MultiPayloadAdaptrisMessage;
-import com.adaptris.core.MultiPayloadMessageFactory;
+import com.adaptris.core.*;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.text.mime.MultiPartFileInput;
 import com.adaptris.util.text.mime.MultiPartOutput;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 
 /**
  * Implementation of {@code AdaptrisMessageEncoder} that stores payload and metadata as a mime-encoded multipart message.
@@ -60,15 +53,7 @@ public class FileBackedMimeEncoder extends MimeEncoderImpl {
       // Use the message unique id as the message id.
       MultiPartOutput output = new MultiPartOutput(msg.getUniqueId());
       AdaptrisMessageFactory factory = currentMessageFactory();
-      if (msg instanceof MultiPayloadAdaptrisMessage) {
-        MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage)msg;
-        for (String id : message.getPayloadIDs()) {
-          message.switchPayload(id);
-          output.addPart(payloadAsMimePart(message), PAYLOAD_CONTENT_ID + "/" + id);
-        }
-      } else {
-        output.addPart(payloadAsMimePart(msg), PAYLOAD_CONTENT_ID);
-      }
+      output.addPart(payloadAsMimePart(msg), PAYLOAD_CONTENT_ID);
       output.addPart(getMetadata(msg), getMetadataEncoding(), METADATA_CONTENT_ID);
       if (msg.getObjectHeaders().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION)) {
         output.addPart(asMimePart((Exception) msg.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION)),
