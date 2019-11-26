@@ -16,29 +16,25 @@
 
 package com.adaptris.core;
 
-import com.adaptris.core.lms.FileBackedMimeEncoder;
-import com.adaptris.core.stubs.TempFileUtils;
-import com.adaptris.util.GuidGenerator;
-import com.adaptris.util.text.mime.MultiPartOutput;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.StringWriter;
-import java.security.MessageDigest;
-import java.util.Properties;
 
 public class MultiPayloadMessageMimeEncoderTest extends TestCase {
 
+  private static final String ENCODING = "UTF-8";
   private static final String METADATA_VALUE = "value";
   private static final String METADATA_KEY = "key";
-  private static final String STANDARD_PAYLOAD_1 = "Cupcake ipsum dolor sit amet bonbon cotton candy ice cream. Pudding chocolate sweet lemon drops carrot cake pastry sweet roll. Wafer cheesecake lemon drops. Fruitcake tiramisu chocolate cake dessert gummies fruitcake bear claw brownie. Bear claw dessert marshmallow chocolate bar. Gummies bonbon oat cake tootsie roll. Tiramisu topping jelly beans powder soufflé carrot cake. Gummi bears gingerbread tart pie. Oat cake danish gummies fruitcake. Cake icing sweet roll. Sweet roll cake cheesecake gingerbread. Cake brownie pastry. Lemon drops apple pie caramels sweet jelly beans oat cake jujubes dessert wafer. Oat cake sweet roll fruitcake croissant gummies sweet halvah croissant dessert.";
-  private static final String STANDARD_PAYLOAD_2 = "Bacon ipsum dolor amet tri-tip bacon kielbasa flank rump pork belly. Pastrami pork t-bone ground round tenderloin, capicola bresaola ham turducken. Rump turkey boudin biltong, doner short loin swine t-bone buffalo pastrami capicola pork loin alcatra beef ribs jerky. Landjaeger chicken cupim corned beef venison. Jerky turducken pork chop burgdoggen. Landjaeger shankle chislic alcatra flank ribeye, short loin swine corned beef drumstick ham hock tri-tip filet mignon. Pastrami boudin turkey, tongue landjaeger ham hock ball tip cupim ground round ribeye pork loin pig sirloin shoulder.";
+  private static final String PAYLOAD_ID[] = { "payload-1", "payload-2" };
+  private static final String STANDARD_PAYLOAD[] = { "Cupcake ipsum dolor sit amet bonbon cotton candy ice cream. Pudding chocolate sweet lemon drops carrot cake pastry sweet roll. Wafer cheesecake lemon drops. Fruitcake tiramisu chocolate cake dessert gummies fruitcake bear claw brownie. Bear claw dessert marshmallow chocolate bar. Gummies bonbon oat cake tootsie roll. Tiramisu topping jelly beans powder souffle carrot cake. Gummi bears gingerbread tart pie. Oat cake danish gummies fruitcake. Cake icing sweet roll. Sweet roll cake cheesecake gingerbread. Cake brownie pastry. Lemon drops apple pie caramels sweet jelly beans oat cake jujubes dessert wafer. Oat cake sweet roll fruitcake croissant gummies sweet halvah croissant dessert.",
+                                                     "Bacon ipsum dolor amet tri-tip bacon kielbasa flank rump pork belly. Pastrami pork t-bone ground round tenderloin, capicola bresaola ham turducken. Rump turkey boudin biltong, doner short loin swine t-bone buffalo pastrami capicola pork loin alcatra beef ribs jerky. Landjaeger chicken cupim corned beef venison. Jerky turducken pork chop burgdoggen. Landjaeger shankle chislic alcatra flank ribeye, short loin swine corned beef drumstick ham hock tri-tip filet mignon. Pastrami boudin turkey, tongue landjaeger ham hock ball tip cupim ground round ribeye pork loin pig sirloin shoulder." };
 
   private MimeEncoderImpl mimeEncoder;
+  private MultiPayloadMessageFactory messageFactory;
 
   public MultiPayloadMessageMimeEncoderTest(String name) {
     super(name);
@@ -47,16 +43,15 @@ public class MultiPayloadMessageMimeEncoderTest extends TestCase {
   @Override
   @Before
   protected void setUp() throws Exception {
+    messageFactory = new MultiPayloadMessageFactory();
     mimeEncoder = new MultiPayloadMessageMimeEncoder();
-    mimeEncoder.registerMessageFactory(new DefaultMessageFactory());
+    mimeEncoder.registerMessageFactory(messageFactory);
   }
 
   @Test
   public void testMultiPayloadRoundTrip() throws Exception {
-    MultiPayloadMessageFactory mf = new MultiPayloadMessageFactory();
-    mf.setDefaultPayloadId("payload-1");
-    MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage)mf.newMessage(STANDARD_PAYLOAD_1);
-    message.addContent("payload-2", STANDARD_PAYLOAD_2);
+    MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage)messageFactory.newMessage(PAYLOAD_ID[0], STANDARD_PAYLOAD[0], ENCODING);
+    message.addContent(PAYLOAD_ID[1], STANDARD_PAYLOAD[1]);
     message.addMetadata(METADATA_KEY, METADATA_VALUE);
 
     MultiPayloadMessageMimeEncoder mimeEncoder = new MultiPayloadMessageMimeEncoder();
@@ -68,17 +63,17 @@ public class MultiPayloadMessageMimeEncoderTest extends TestCase {
     ByteArrayInputStream bi = new ByteArrayInputStream(bo.toByteArray());
     MultiPayloadAdaptrisMessage result = (MultiPayloadAdaptrisMessage)mimeEncoder.readMessage(bi);
 
-    assertEquals(2, result.getPayloadCount());
+    assertEquals(STANDARD_PAYLOAD.length, result.getPayloadCount());
     assertEquals(message.getUniqueId(), result.getUniqueId());
     assertEquals(METADATA_VALUE, result.getMetadataValue(METADATA_KEY));
-    assertEquals(STANDARD_PAYLOAD_1, result.getContent("payload-1"));
-    assertEquals(STANDARD_PAYLOAD_2, result.getContent("payload-2"));
+    assertEquals(STANDARD_PAYLOAD[0], result.getContent(PAYLOAD_ID[0]));
+    assertEquals(STANDARD_PAYLOAD[1], result.getContent(PAYLOAD_ID[1]));
   }
 
   @Test
   public void testNonMultiPayloadMessage() throws Exception {
-    AdaptrisMessageFactory mf = DefaultMessageFactory.getDefaultInstance();
-    AdaptrisMessage message = mf.newMessage(STANDARD_PAYLOAD_1);
+    AdaptrisMessageFactory messageFactory = DefaultMessageFactory.getDefaultInstance();
+    AdaptrisMessage message = messageFactory.newMessage(STANDARD_PAYLOAD[0]);
     message.addMetadata(METADATA_KEY, METADATA_VALUE);
 
     MultiPayloadMessageMimeEncoder mimeEncoder = new MultiPayloadMessageMimeEncoder();
@@ -92,17 +87,17 @@ public class MultiPayloadMessageMimeEncoderTest extends TestCase {
 
     assertEquals(message.getUniqueId(), result.getUniqueId());
     assertEquals(METADATA_VALUE, result.getMetadataValue(METADATA_KEY));
-    assertEquals(STANDARD_PAYLOAD_1, result.getContent());
+    assertEquals(STANDARD_PAYLOAD[0], result.getContent());
   }
 
   public void testEncodeNonOutputStream() {
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD_1);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD[0]);
     msg.addMetadata(METADATA_KEY, METADATA_VALUE);
     try {
       mimeEncoder.writeMessage(msg, new StringWriter());
       fail();
-    }
-    catch (CoreException e) {
+    } catch (CoreException e) {
+      /* expected; do nothing */
     }
   }
 
@@ -110,8 +105,8 @@ public class MultiPayloadMessageMimeEncoderTest extends TestCase {
     try {
       mimeEncoder.readMessage(new StringWriter());
       fail();
-    }
-    catch (CoreException e) {
+    } catch (CoreException e) {
+      /* expected; do nothing */
     }
   }
 
