@@ -23,6 +23,7 @@ import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
+import java.security.MessageDigest;
 
 public class MultiPayloadMessageMimeEncoderTest extends TestCase {
 
@@ -122,23 +123,22 @@ public class MultiPayloadMessageMimeEncoderTest extends TestCase {
     assertEquals(METADATA_VALUE, result.getMetadataValue(METADATA_KEY));
     assertEquals(STANDARD_PAYLOAD_NON_JUST_ALPHA, result.getContent());
     assertTrue(MessageDigest.isEqual(STANDARD_PAYLOAD_NON_JUST_ALPHA.getBytes(), result.getPayload()));
-  }
+  }*/
 
-  public void testRoundTrip_WithException() throws Exception {
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
-    msg.addMetadata(METADATA_KEY, METADATA_VALUE);
-    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception(getName()));
+  public void testRoundTripWithException() throws Exception {
+    AdaptrisMessage message = messageFactory.newMessage(PAYLOAD_ID[0], STANDARD_PAYLOAD[0], ENCODING);
+    message.addMetadata(METADATA_KEY, METADATA_VALUE);
+    message.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception(getName()));
     ByteArrayOutputStream out = new ByteArrayOutputStream();
-    mimeEncoder.writeMessage(msg, out);
-    ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
-    AdaptrisMessage result = mimeEncoder.readMessage(in);
+    mimeEncoder.writeMessage(message, out);
+    AdaptrisMessage result = mimeEncoder.readMessage(new ByteArrayInputStream(out.toByteArray()));
     assertEquals(METADATA_VALUE, result.getMetadataValue(METADATA_KEY));
-    assertEquals(STANDARD_PAYLOAD, result.getContent());
-    assertTrue(MessageDigest.isEqual(STANDARD_PAYLOAD.getBytes(), result.getPayload()));
+    assertEquals(STANDARD_PAYLOAD[0], result.getContent());
+    assertTrue(MessageDigest.isEqual(STANDARD_PAYLOAD[0].getBytes(), result.getPayload()));
     assertFalse(result.getObjectHeaders().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION));
   }
 
-  public void testRoundTrip_Encoded() throws Exception {
+  /*public void testRoundTrip_Encoded() throws Exception {
 
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
     msg.addMetadata(METADATA_KEY, METADATA_VALUE);
