@@ -91,6 +91,7 @@ public class MultiPayloadMessageMimeEncoderTest extends TestCase {
     assertEquals(STANDARD_PAYLOAD[0], result.getContent());
   }
 
+  @Test
   public void testEncodeNonOutputStream() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD[0]);
     msg.addMetadata(METADATA_KEY, METADATA_VALUE);
@@ -102,6 +103,7 @@ public class MultiPayloadMessageMimeEncoderTest extends TestCase {
     }
   }
 
+  @Test
   public void testDecodeNonInputStream() {
     try {
       mimeEncoder.readMessage(new StringWriter());
@@ -111,20 +113,7 @@ public class MultiPayloadMessageMimeEncoderTest extends TestCase {
     }
   }
 
-  /*
-  public void testRoundTrip_WithOddChars() throws Exception {
-
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD_NON_JUST_ALPHA);
-    msg.addMetadata(METADATA_KEY, METADATA_VALUE);
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    mimeEncoder.writeMessage(msg, out);
-    ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
-    AdaptrisMessage result = mimeEncoder.readMessage(in);
-    assertEquals(METADATA_VALUE, result.getMetadataValue(METADATA_KEY));
-    assertEquals(STANDARD_PAYLOAD_NON_JUST_ALPHA, result.getContent());
-    assertTrue(MessageDigest.isEqual(STANDARD_PAYLOAD_NON_JUST_ALPHA.getBytes(), result.getPayload()));
-  }*/
-
+  @Test
   public void testRoundTripWithException() throws Exception {
     AdaptrisMessage message = messageFactory.newMessage(PAYLOAD_ID[0], STANDARD_PAYLOAD[0], ENCODING);
     message.addMetadata(METADATA_KEY, METADATA_VALUE);
@@ -137,125 +126,4 @@ public class MultiPayloadMessageMimeEncoderTest extends TestCase {
     assertTrue(MessageDigest.isEqual(STANDARD_PAYLOAD[0].getBytes(), result.getPayload()));
     assertFalse(result.getObjectHeaders().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION));
   }
-
-  /*public void testRoundTrip_Encoded() throws Exception {
-
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
-    msg.addMetadata(METADATA_KEY, METADATA_VALUE);
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    mimeEncoder.writeMessage(msg, out);
-    mimeEncoder.setPayloadEncoding("base64");
-    mimeEncoder.setMetadataEncoding("base64");
-    ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
-    AdaptrisMessage result = mimeEncoder.readMessage(in);
-    assertEquals(METADATA_VALUE, result.getMetadataValue(METADATA_KEY));
-    assertEquals(STANDARD_PAYLOAD, result.getContent());
-    assertTrue(MessageDigest.isEqual(STANDARD_PAYLOAD.getBytes(), result.getPayload()));
-  }
-
-  public void testRoundTrip_EncodedEncodePlainDecoder() throws Exception {
-
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
-    msg.addMetadata(METADATA_KEY, METADATA_VALUE);
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    mimeEncoder.writeMessage(msg, out);
-    mimeEncoder.setPayloadEncoding("base64");
-    mimeEncoder.setMetadataEncoding("base64");
-    MimeEncoder roundtripper = new MimeEncoder();
-    ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
-    AdaptrisMessage result = roundtripper.readMessage(in);
-    assertEquals(METADATA_VALUE, result.getMetadataValue(METADATA_KEY));
-    assertEquals(STANDARD_PAYLOAD, result.getContent());
-    assertTrue(MessageDigest.isEqual(STANDARD_PAYLOAD.getBytes(), result.getPayload()));
-  }
-
-  public void testRoundTrip_EncodeMetadataWithBackslash() throws Exception {
-
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
-    msg.addMetadata(METADATA_KEY, "blah\\blah");
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-    mimeEncoder.writeMessage(msg, out);
-    ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
-    msg = mimeEncoder.readMessage(in);
-    assertEquals("blah\\blah", msg.getMetadataValue(METADATA_KEY));
-  }
-
-  public void testRoundTrip_PreserveUniqueId() throws Exception {
-
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
-    msg.addMetadata(METADATA_KEY, METADATA_VALUE);
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    mimeEncoder.setRetainUniqueId(true);
-    mimeEncoder.writeMessage(msg, out);
-    ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
-    AdaptrisMessage result = mimeEncoder.readMessage(in);
-    assertEquals(msg.getUniqueId(), result.getUniqueId());
-  }
-
-  public void testRoundTrip_NoPreserveUniqueId() throws Exception {
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
-    msg.setUniqueId("abc-123");
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    mimeEncoder.writeMessage(msg, out);
-    ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
-    AdaptrisMessage result = mimeEncoder.readMessage(in);
-    assertTrue(!"abc-123".equals(result.getUniqueId()));
-  }
-
-  public void testRoundTrip_UseConvenienceMethods() throws Exception {
-
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
-    msg.addMetadata(METADATA_KEY, METADATA_VALUE);
-    AdaptrisMessage result = mimeEncoder.decode(mimeEncoder.encode(msg));
-    assertEquals(METADATA_VALUE, result.getMetadataValue(METADATA_KEY));
-    assertEquals(STANDARD_PAYLOAD, result.getContent());
-    assertTrue(MessageDigest.isEqual(STANDARD_PAYLOAD.getBytes(), result.getPayload()));
-  }
-
-  public void testDecode_IgnoreExtraParts() throws Exception {
-    AdaptrisMessage result = mimeEncoder.decode(createMimeOutput(true, true));
-    assertEquals(METADATA_VALUE, result.getMetadataValue(METADATA_KEY));
-    assertEquals(STANDARD_PAYLOAD, result.getContent());
-    assertTrue(MessageDigest.isEqual(STANDARD_PAYLOAD.getBytes(), result.getPayload()));
-  }
-
-  public void testDecode_NoPayloadPart() throws Exception {
-
-    try {
-      mimeEncoder.decode(createMimeOutput(false, true));
-      fail();
-    }
-    catch (CoreException e) {
-    }
-  }
-
-  public void testDecode_NoMetadataPart() throws Exception {
-
-    try {
-      mimeEncoder.decode(createMimeOutput(true, false));
-      fail();
-    }
-    catch (CoreException e) {
-    }
-  }
-
-  private static byte[] createMimeOutput(boolean includePayloadPart, boolean includeMetadataPart) throws Exception {
-    MultiPartOutput output = new MultiPartOutput(new GuidGenerator().getUUID());
-    if (includePayloadPart) {
-      output.addPart(STANDARD_PAYLOAD.getBytes(), "base64", "AdaptrisMessage/payload");
-    }
-    if (includeMetadataPart) {
-      Properties p = new Properties();
-      p.setProperty(METADATA_KEY, METADATA_VALUE);
-      ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-      p.store(bytes, "");
-      bytes.close();
-      output.addPart(bytes.toByteArray(), "base64", "AdaptrisMessage/metadata");
-    }
-    output.addPart(STANDARD_PAYLOAD_NON_JUST_ALPHA.getBytes(), "base64", "Dude/SomeOtherPart");
-    return output.getBytes();
-  }
-
-   */
 }
