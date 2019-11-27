@@ -16,20 +16,16 @@
 
 package com.adaptris.core.lms;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.CoreConstants;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.MimeEncoderImpl;
+import com.adaptris.core.*;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.text.mime.MultiPartFileInput;
 import com.adaptris.util.text.mime.MultiPartOutput;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 
 /**
  * Implementation of {@code AdaptrisMessageEncoder} that stores payload and metadata as a mime-encoded multipart message.
@@ -78,17 +74,15 @@ public class FileBackedMimeEncoder extends MimeEncoderImpl {
 
   @Override
   public AdaptrisMessage readMessage(Object source) throws CoreException {
-    AdaptrisMessage msg = null;
-
     try {
-      msg = currentMessageFactory().newMessage();
+      AdaptrisMessage msg = currentMessageFactory().newMessage();
       File baseFile = asFile(source);
       MultiPartFileInput input = new MultiPartFileInput(baseFile);
       addPartsToMessage(input, msg);
+      return msg;
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
-    return msg;
   }
 
   private File asFile(Object o) {

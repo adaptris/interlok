@@ -30,6 +30,7 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -103,6 +104,14 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
   @Override
   public String getCurrentPayloadId() {
     return currentPayloadId;
+  }
+
+  /**
+   * {@inheritDoc}.
+   */
+  @Override
+  public Set<String> getPayloadIDs() {
+    return payloads.keySet();
   }
 
   /**

@@ -24,6 +24,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Properties;
 
+import com.adaptris.core.MultiPayloadAdaptrisMessage;
+import com.adaptris.core.MultiPayloadMessageFactory;
 import org.junit.Test;
 
 import com.adaptris.core.AdaptrisMessage;
