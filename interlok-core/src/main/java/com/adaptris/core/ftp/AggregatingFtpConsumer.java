@@ -30,6 +30,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageEncoder;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -71,6 +72,7 @@ public class AggregatingFtpConsumer extends AggregatingConsumerImpl<AggregatingF
   private static final String DEFAULT_FILE_FILTER_IMP = "org.apache.commons.io.filefilter.RegexFileFilter";
   private static final String OBJ_METADATA_KEY_FILENAME = AggregatingFtpConsumer.class.getCanonicalName() + ".filename";
 
+  @InputFieldHint(ofType = "java.io.FileFilter")
   @AdvancedConfig
   private String fileFilterImp;
   @AdvancedConfig
