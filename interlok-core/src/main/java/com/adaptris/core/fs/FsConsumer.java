@@ -161,6 +161,9 @@ public class FsConsumer extends FsConsumerImpl {
    */
   @Override
   public void init() throws CoreException {
+	  if(this.getDestination() == null) {
+		  throw new CoreException("Please configure a valid FS consumer destination.");
+	  }
     try {
       if (resetWipFiles()) {
         renameWipFiles();
