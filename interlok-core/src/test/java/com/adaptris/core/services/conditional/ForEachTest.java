@@ -1,20 +1,36 @@
 package com.adaptris.core.services.conditional;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.DefaultMessageFactory;
-import com.adaptris.core.MultiPayloadAdaptrisMessage;
-import com.adaptris.core.MultiPayloadMessageFactory;
-import com.adaptris.core.Service;
+import com.adaptris.core.*;
 import com.adaptris.core.services.LogMessageService;
+import com.adaptris.core.services.WaitService;
+import com.adaptris.util.GuidGenerator;
+import com.adaptris.util.IdGenerator;
+import com.adaptris.util.TimeInterval;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 
 public class ForEachTest extends ConditionalServiceExample
 {
@@ -44,6 +60,7 @@ public class ForEachTest extends ConditionalServiceExample
 	public void testForEach() throws Exception
 	{
 		forEach.doService(message);
+		assertEquals(new Integer(1), forEach.getThreadCount());
 		verify(mock, times(2)).doService(any(AdaptrisMessage.class));
 	}
 
@@ -59,11 +76,54 @@ public class ForEachTest extends ConditionalServiceExample
 	public void testParallelForEach() throws Exception
 	{
 		forEach.setThreadCount(0);
+		assertEquals(new Integer(0), forEach.getThreadCount());
 		forEach.doService(message);
 		verify(mock, times(2)).doService(any(AdaptrisMessage.class));
 	}
 
-	/* TODO test: bad thread count; then-service exceptions; non-cloneable messages; interrupt exceptions */
+	@Test
+	public void testBadThreadCount()
+	{
+		forEach.setThreadCount(-1);
+		assertEquals(new Integer(0), forEach.getThreadCount());
+	}
+
+	@Test
+	public void testBadThenService() throws Exception
+	{
+		doThrow(new ServiceException()).when(mock).doService(any(AdaptrisMessage.class));
+		forEach.doService(message);
+		verify(mock, times(2)).doService(any(AdaptrisMessage.class));
+	}
+
+	@Test
+	public void testNonCloneableMessage() throws Exception
+	{
+		forEach.doService(new MultiPayloadAdaptrisMessageImp("bacon", new GuidGenerator(), DefaultMessageFactory.getDefaultInstance(), PAYLOAD_1) {
+			@Override
+			public MessageLifecycleEvent getMessageLifecycleEvent()
+			{
+				return new MessageLifecycleEvent()
+				{
+					@Override
+					public List<MleMarker> getMleMarkers()
+					{
+						List<MleMarker> list = new ArrayList<>();
+						list.add(new MleMarker()
+						{
+							@Override
+							public Object clone() throws CloneNotSupportedException
+							{
+								throw new CloneNotSupportedException();
+							}
+						});
+						return list;
+					}
+				};
+			}
+		});
+		verify(mock, never()).doService(any(AdaptrisMessage.class));
+	}
 
 	@Override
 	protected Object retrieveObjectForSampleConfig()
