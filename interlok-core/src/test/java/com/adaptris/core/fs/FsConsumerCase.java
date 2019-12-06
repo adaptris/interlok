@@ -358,7 +358,7 @@ public abstract class FsConsumerCase extends ConsumerCase {
   /*
    * The reason for this is due to the possible number of combinations that are created as part of retrieveObjectsForSampleConfig...
    * At the current time it is 112 example-xml files for each consumer (a combination of poller-impl/file-filter/file-sort)... which
-   * is just going to be fscking insane for a normal example-xml directory.
+   * is just going to be insane for a normal example-xml directory.
    */
   protected abstract void configureExampleConfigBaseDir();
 
