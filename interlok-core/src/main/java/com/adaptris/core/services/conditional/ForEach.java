@@ -139,7 +139,7 @@ public class ForEach extends ServiceImp
 					}
 					catch (CloneNotSupportedException e)
 					{
-						log.error("Could not clone message payload [{}]", id, e);
+						log.error("Could not clone message [{}]", id, e);
 					}
 				}
 			}
