@@ -5,12 +5,14 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.MultiPayloadAdaptrisMessage;
 import com.adaptris.core.MultiPayloadMessageFactory;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@XStreamAlias("multi-payload-splitter")
 public class MultiPayloadMessageSplitter extends MessageSplitterImp
 {
 	private static final transient Logger log = LoggerFactory.getLogger(MultiPayloadMessageSplitter.class.getName());
