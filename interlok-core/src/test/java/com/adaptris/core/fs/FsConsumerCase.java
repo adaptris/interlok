@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.fs;
 
@@ -70,10 +70,10 @@ public abstract class FsConsumerCase extends ConsumerCase {
   public static final String BASE_KEY = "FsMessageConsumerTest.destinationName";
 
   private static final Poller[] POLLERS =
-  {
-      new FixedIntervalPoller(new TimeInterval(60L, TimeUnit.SECONDS)), new QuartzCronPoller("0 */5 * * * ?"),
-      new FsImmediateEventPoller()
-  };
+    {
+        new FixedIntervalPoller(new TimeInterval(60L, TimeUnit.SECONDS)), new QuartzCronPoller("0 */5 * * * ?"),
+        new FsImmediateEventPoller()
+    };
 
   private static final List<Poller> POLLER_LIST = Arrays.asList(POLLERS);
 
