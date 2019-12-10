@@ -1,7 +1,6 @@
 package com.adaptris.core.services.splitter;
 
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.MultiPayloadAdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -11,6 +10,12 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Split a multi-payload Adaptris message into its various payloads
+ * and return a list of standard Adaptris messages. This will copy all
+ * additional metadata; all split messages will have identical metadata
+ * to the original.
+ */
 @XStreamAlias("multi-payload-splitter")
 public class MultiPayloadMessageSplitter extends MessageSplitterImp
 {

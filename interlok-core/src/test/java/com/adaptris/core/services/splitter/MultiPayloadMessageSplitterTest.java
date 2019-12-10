@@ -1,6 +1,12 @@
 package com.adaptris.core.services.splitter;
 
-import com.adaptris.core.*;
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.DefaultMessageFactory;
+import com.adaptris.core.MessageLifecycleEvent;
+import com.adaptris.core.MleMarker;
+import com.adaptris.core.MultiPayloadAdaptrisMessage;
+import com.adaptris.core.MultiPayloadAdaptrisMessageImp;
+import com.adaptris.core.MultiPayloadMessageFactory;
 import com.adaptris.util.GuidGenerator;
 import org.junit.Before;
 import org.junit.Test;
