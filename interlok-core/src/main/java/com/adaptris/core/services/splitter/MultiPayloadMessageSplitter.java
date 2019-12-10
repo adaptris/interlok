@@ -35,6 +35,7 @@ public class MultiPayloadMessageSplitter extends MessageSplitterImp
 				try
 				{
 					AdaptrisMessage splitMessage = DefaultMessageFactory.getDefaultInstance().newMessage(message, null);
+					splitMessage.setPayload(message.getPayload());
 					splitMessages.add(splitMessage);
 				}
 				catch (CloneNotSupportedException e)

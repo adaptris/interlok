@@ -33,14 +33,22 @@ public class MultiPayloadMessageSplitterTest extends SplitterCase
 	}
 
 	@Test
-	public void testMessageSplitter() throws Exception
+	public void testMessageSplitter()
 	{
 		List<AdaptrisMessage> response = (List<AdaptrisMessage>)splitter.splitMessage(message);
 		assertEquals(2, response.size());
+		for (AdaptrisMessage message : response)
+		{
+			String content = message.getContent();
+			if (!PAYLOAD_1.equals(content) && !PAYLOAD_2.equals(content))
+			{
+				fail();
+			}
+		}
 	}
 
 	@Test
-	public void testWrongMessageType() throws Exception
+	public void testWrongMessageType()
 	{
 		AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage(PAYLOAD_1);
 		List<AdaptrisMessage> response = (List<AdaptrisMessage>)splitter.splitMessage(message);
@@ -48,7 +56,7 @@ public class MultiPayloadMessageSplitterTest extends SplitterCase
 	}
 
 	@Test
-	public void testNonCloneableMessage() throws Exception
+	public void testNonCloneableMessage()
 	{
 		List<AdaptrisMessage> response = (List<AdaptrisMessage>)splitter.splitMessage(new MultiPayloadAdaptrisMessageImp("bacon", new GuidGenerator(), DefaultMessageFactory.getDefaultInstance(), PAYLOAD_1.getBytes()) {
 			@Override
