@@ -17,7 +17,7 @@ public class MultiPayloadMessageSplitter extends MessageSplitterImp
 	private static final transient Logger log = LoggerFactory.getLogger(MultiPayloadMessageSplitter.class.getName());
 
 	@Override
-	public Iterable<AdaptrisMessage> splitMessage(AdaptrisMessage msg) throws CoreException
+	public Iterable<AdaptrisMessage> splitMessage(AdaptrisMessage msg)
 	{
 		List<AdaptrisMessage> splitMessages = new ArrayList<>();
 
