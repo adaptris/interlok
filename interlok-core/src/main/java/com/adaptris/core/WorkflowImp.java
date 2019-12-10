@@ -111,7 +111,6 @@ public abstract class WorkflowImp implements Workflow {
   @InputFieldDefault(value = "message-logger-default")
   private MessageLogger messageLogger;
   @MarshallingCDATA
-  @AdvancedConfig(rare = true)
   private String comments;
   
   // not marshalled
