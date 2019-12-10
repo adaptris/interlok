@@ -8,15 +8,6 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.timeout;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
-
-
 public class MultiPayloadMessageSplitterTest extends SplitterCase
 {
 	private static final String ID_1 = "bacon";
@@ -38,13 +29,6 @@ public class MultiPayloadMessageSplitterTest extends SplitterCase
 		splitter = createSplitterForTests();
 		message = (MultiPayloadAdaptrisMessage)new MultiPayloadMessageFactory().newMessage(ID_1, PAYLOAD_1, "UTF-8");
 		message.addContent(ID_2, PAYLOAD_2);
-	}
-
-	@Override
-	@Before
-	protected void tearDown() throws Exception
-	{
-
 	}
 
 	@Test
