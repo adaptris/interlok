@@ -22,7 +22,7 @@ public class MultiPayloadMessageSplitter extends MessageSplitterImp
 	{
 		List<AdaptrisMessage> splitMessages = new ArrayList<>();
 
-		if (!(msg instanceof MultiPayloadMessageFactory))
+		if (!(msg instanceof MultiPayloadAdaptrisMessage))
 		{
 			log.warn("Message [{}] is not a multi-payload message!", msg.getUniqueId());
 			splitMessages.add(msg);
