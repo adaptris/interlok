@@ -134,6 +134,7 @@ public class ForEach extends ServiceImp
 					{
 						message.switchPayload(id);
 						AdaptrisMessage each = DefaultMessageFactory.getDefaultInstance().newMessage(message, null);
+						each.setPayload(message.getPayload());
 
 						executor.execute(() -> iterate(each));
 					}
