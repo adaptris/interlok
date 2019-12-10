@@ -18,7 +18,8 @@ public class MultiPayloadMessageSplitterTest extends SplitterCase
 	private MultiPayloadMessageSplitter splitter;
 	private MultiPayloadAdaptrisMessage message;
 
-	public MultiPayloadMessageSplitterTest(String testName) {
+	public MultiPayloadMessageSplitterTest(String testName)
+	{
 		super (testName);
 	}
 
@@ -83,17 +84,20 @@ public class MultiPayloadMessageSplitterTest extends SplitterCase
 	}
 
 	@Override
-	protected String createBaseFileName(Object object) {
+	protected String createBaseFileName(Object object)
+	{
 		return super.createBaseFileName(object) + "-MultiPayloadMessageSplitter";
 	}
 
 	@Override
-	protected Object retrieveObjectForSampleConfig() {
+	protected Object retrieveObjectForSampleConfig()
+	{
 		return null; // override retrieveObjectsForSampleConfig below instead
 	}
 
 	@Override
-	protected List retrieveObjectsForSampleConfig() {
+	protected List retrieveObjectsForSampleConfig()
+	{
 		return createExamples(createSplitterForTests());
 	}
 }
