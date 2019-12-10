@@ -9,6 +9,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 
+/**
+ * Combine multiple standard Adaptris messages into a single
+ * multi-payload Adaptris message.
+ */
 public class MultiPayloadMessageAggregator extends MessageAggregatorImpl
 {
 	private static final transient Logger log = LoggerFactory.getLogger(MultiPayloadMessageAggregator.class);
