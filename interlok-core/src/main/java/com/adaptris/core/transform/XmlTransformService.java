@@ -180,7 +180,7 @@ public class XmlTransformService extends ServiceImp {
     }
     // INTERLOK-2022 Let the XML parser do its thing, rather than using a reader/writer.
     try (InputStream input = msg.getInputStream(); OutputStream output = msg.getOutputStream()) {
-      Map parameters = getParameterBuilder().createParameters(msg, null);
+      Map<Object, Object> parameters = getParameterBuilder().createParameters(msg, null);
       xmlTransformerImpl.transform(transformer, input, output, urlToUse, parameters);
       if (!StringUtils.isBlank(getOutputMessageEncoding())) {
         msg.setContentEncoding(getOutputMessageEncoding());
