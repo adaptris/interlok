@@ -102,7 +102,7 @@ public class XmlTransformService extends ServiceImp {
   public XmlTransformService() {
     setMetadataKey(CoreConstants.TRANSFORM_OVERRIDE);
     xmlTransformerFactory = new XsltTransformerFactory();
-    transforms = new HashMap<String, Transformer>();
+    this.setTransforms(new HashMap<String, Transformer>());
   }
 
   @Override
@@ -192,10 +192,10 @@ public class XmlTransformService extends ServiceImp {
   }
 
   private Transformer cacheAndGetTransformer(String urlToUse, XmlTransformerFactory xmlTransformerFactory) throws Exception {
-    if (this.transforms.containsKey(urlToUse)) return this.transforms.get(urlToUse);
+    if (this.getTransforms().containsKey(urlToUse)) return this.getTransforms().get(urlToUse);
     else {
       Transformer transformer = xmlTransformerFactory.createTransformer(urlToUse);
-      this.transforms.put(urlToUse, transformer);
+      this.getTransforms().put(urlToUse, transformer);
       return transformer;
     }
   }
@@ -354,5 +354,13 @@ public class XmlTransformService extends ServiceImp {
 
   private XmlTransformParameter getParameterBuilder() {
     return getTransformParameter() != null ? getTransformParameter() : new IgnoreMetadataParameter();
+  }
+
+  HashMap<String, Transformer> getTransforms() {
+    return transforms;
+  }
+
+  void setTransforms(HashMap<String, Transformer> transforms) {
+    this.transforms = transforms;
   }
 }

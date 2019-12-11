@@ -394,6 +394,29 @@ public class XmlTransformServiceTest extends TransformServiceExample {
       stop(service);
     }
   }
+  
+  // INTERLOK-3113
+  public void testOutputWithCacheResetsParameters() throws Exception {
+    AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    m1.addMessageHeader("myKey", "myValue");
+    AdaptrisMessage m2 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+
+    XmlTransformService service = new XmlTransformService();
+    service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
+    service.setCacheTransforms(true);
+    service.setTransformParameter(new StringMetadataParameter(new String[] {"myKey"}, new String[0]));
+    try {
+      start(service);
+      service.doService(m1);
+      assertNotNull(service.getTransforms().get(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL)).getParameter("myKey"));
+      service.doService(m2);
+      assertNull(service.getTransforms().get(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL)).getParameter("myKey"));
+      
+    }
+    finally {
+      stop(service);
+    }
+  }
 
   public void testOutputWithNoCache() throws Exception {
     AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
