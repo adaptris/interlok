@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.fs;
 
@@ -70,10 +70,10 @@ public abstract class FsConsumerCase extends ConsumerCase {
   public static final String BASE_KEY = "FsMessageConsumerTest.destinationName";
 
   private static final Poller[] POLLERS =
-  {
-      new FixedIntervalPoller(new TimeInterval(60L, TimeUnit.SECONDS)), new QuartzCronPoller("0 */5 * * * ?"),
-      new FsImmediateEventPoller()
-  };
+    {
+        new FixedIntervalPoller(new TimeInterval(60L, TimeUnit.SECONDS)), new QuartzCronPoller("0 */5 * * * ?"),
+        new FsImmediateEventPoller()
+    };
 
   private static final List<Poller> POLLER_LIST = Arrays.asList(POLLERS);
 
@@ -358,7 +358,7 @@ public abstract class FsConsumerCase extends ConsumerCase {
   /*
    * The reason for this is due to the possible number of combinations that are created as part of retrieveObjectsForSampleConfig...
    * At the current time it is 112 example-xml files for each consumer (a combination of poller-impl/file-filter/file-sort)... which
-   * is just going to be fscking insane for a normal example-xml directory.
+   * is just going to be insane for a normal example-xml directory.
    */
   protected abstract void configureExampleConfigBaseDir();
 
