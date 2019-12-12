@@ -17,13 +17,14 @@
 package com.adaptris.util.text.xml;
 
 import static com.adaptris.core.util.DocumentBuilderFactoryBuilder.newInstanceIfNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.Iterator;
 import java.util.Map;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Result;
@@ -31,10 +32,12 @@ import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 
 /**
@@ -64,14 +67,12 @@ public class XmlTransformer {
    * stylesheet.
    * @throws Exception in the event of parsing / transform errors
    */
-  public void transform(Transformer transformer, Source xmlIn, Result xmlOut, String xsl, Map properties) throws Exception {
-    if (properties != null) {
-      transformer.clearParameters();
-      Iterator<String> iter = properties.keySet().iterator();
-      while (iter.hasNext()) {
-        Object o = iter.next();
-        transformer.setParameter(o.toString(), properties.get(o));
-      }
+  public void transform(Transformer transformer, Source xmlIn, Result xmlOut, String xsl, Map<Object, Object> properties) throws Exception {
+    transformer.clearParameters();
+    if (properties != null) {  
+      properties.forEach((key, value) -> {
+        transformer.setParameter(key.toString(), value);
+      });
     }
     transformer.transform(xmlIn, xmlOut);
   }
@@ -87,7 +88,7 @@ public class XmlTransformer {
    * stylesheet.
    * @throws Exception in the event of parsing / transform errors
    */
-  public void transform(Transformer transformer, InputStream xmlIn, OutputStream xmlOut, String xsl, Map properties) throws Exception {
+  public void transform(Transformer transformer, InputStream xmlIn, OutputStream xmlOut, String xsl, Map<Object, Object> properties) throws Exception {
     transform(transformer, createSource(xmlIn), new StreamResult(xmlOut), xsl, properties);
   }
 
@@ -102,7 +103,7 @@ public class XmlTransformer {
    * stylesheet.
    * @throws Exception in the event of parsing / transform errors
    */
-  public void transform(Transformer transformer, Reader xmlIn, Writer xmlOut, String xsl, Map properties) throws Exception {
+  public void transform(Transformer transformer, Reader xmlIn, Writer xmlOut, String xsl, Map<Object, Object> properties) throws Exception {
     transform(transformer, createSource(xmlIn), new StreamResult(xmlOut), xsl, properties);
   }
 
