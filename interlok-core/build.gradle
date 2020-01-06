@@ -97,7 +97,7 @@ dependencies {
   compile "org.apache.logging.log4j:log4j-1.2-api:$log4j2Version", optional
 
   testCompile ("log4j:log4j:1.2.17")
-  testCompile ("junit:junit:4.12")
+  testCompile ("junit:junit:4.13")
   testCompile ("org.apache.activemq:artemis-jms-server:$artemisVersion")
   testCompile ("oro:oro:2.0.8")
 
