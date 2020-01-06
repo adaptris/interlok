@@ -17,13 +17,12 @@
 package com.adaptris.core;
 
 import java.util.UUID;
-
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
-
 import com.adaptris.core.jms.MockJmsConnection;
 import com.adaptris.core.jms.MockNoOpConnectionErrorHandler;
 import com.adaptris.core.jms.UrlVendorImplementation;
+import com.adaptris.core.stubs.ConfigCommentHelper;
 
 
 public class ChannelTest extends ExampleChannelCase {
@@ -47,6 +46,7 @@ public class ChannelTest extends ExampleChannelCase {
       c.setUniqueId(UUID.randomUUID().toString());
       c.getWorkflowList().add(createDefaultWorkflow());
       c.getWorkflowList().add(configureWorkflow(new PoolingWorkflow()));
+      c.setComments("Comments Ignored At Runtime");
       cl.addChannel(c);
     } catch (CoreException e) {
       throw new RuntimeException(e);
@@ -57,6 +57,10 @@ public class ChannelTest extends ExampleChannelCase {
   @Override
   protected String createBaseFileName(Object object) {
     return Channel.class.getName();
+  }
+
+  public void testComments() throws Exception {
+    ConfigCommentHelper.testComments(new Channel());
   }
 
   public void testLifecycle_Init() throws Exception {
@@ -380,6 +384,7 @@ public class ChannelTest extends ExampleChannelCase {
     if (uid != null)
       connection.setUniqueId(uid);
     UrlVendorImplementation vendorImp = new UrlVendorImplementation() {
+      @Override
       public ConnectionFactory createConnectionFactory() throws JMSException {
         return null;
       }

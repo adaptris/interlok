@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,15 +143,12 @@ public class CompositeFileFilter implements FileFilter {
     for (String filterString : filterItems) {
       int pos = filterString.indexOf(FILTER_KEY_SEPARATOR);
       if (pos == -1) {
-        log.warn("Ignoring invalid filter [{}]", filterString);
+        throw new RuntimeException("Invalid filter [ " + filterString + "]");
       }
       else {
         String key = filterString.substring(0, pos);
         String value = filterString.substring(pos + 1);
-        FileFilter ff = create(key, value);
-        if (ff != null) {
-          filters.add(ff);
-        }
+        filters.add(create(key, value));
       }
     }
   }
@@ -172,11 +168,11 @@ public class CompositeFileFilter implements FileFilter {
   private FileFilter newInstance(String clazzname, String expr) {
     FileFilter result = null;
     try {
-      log.trace("Trying to use : {}", clazzname);
+      log.trace("Trying to create filter from : {}", clazzname);
       result = FsHelper.createFilter(expr, clazzname);
     }
     catch (Exception e) {
-      log.trace("Error encounted attempting to use {}, ignoring", clazzname, e);
+      throw new RuntimeException("Invalid filter classname [ " + clazzname + "]", e);
     }
     return result;
   }

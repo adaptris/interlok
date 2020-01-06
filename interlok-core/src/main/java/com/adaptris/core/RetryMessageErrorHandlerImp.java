@@ -119,11 +119,6 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
     super.stop();
   }
 
-  @Override
-  public void close() {
-    super.close();
-  }
-
   private void shutdownExecutor() {
     sweeper.cancel(true);
     for (ScheduledFuture f : retries) {

@@ -3,7 +3,7 @@ import org.apache.tools.ant.filters.*
 
 ext {
   componentName='Base Interlok'
-  activeMqVersion='5.15.10'
+  activeMqVersion='5.15.11'
   artemisVersion='2.10.1'
   bouncyCastleVersion='1.64'
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
@@ -49,7 +49,7 @@ dependencies {
 
   compile ("com.thoughtworks.xstream:xstream:$xstreamVersion")
   compile ("org.codehaus.jettison:jettison:1.2")
-  compile ("io.github.classgraph:classgraph:4.8.43")
+  compile ("io.github.classgraph:classgraph:4.8.52")
   compile ("net.jodah:expiringmap:0.5.9")
   compile ("javax.activation:activation:1.1.1")
   compile ("org.apache.activemq:activemq-client:$activeMqVersion") {
@@ -75,10 +75,10 @@ dependencies {
   compile ("org.glassfish.external:opendmk_jdmkrt_jar:1.0-b01-ea")
   compile ("javax.xml.bind:jaxb-api:2.3.1")
   compile ("com.jcraft:jsch:0.1.55")
-  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.20.v20190813")
+  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.24.v20191120")
   compile ("javax.servlet:javax.servlet-api:4.0.1")
   compile ("net.sf.joost:joost:0.9.1")
-  compile ("org.quartz-scheduler:quartz:2.3.1") {
+  compile ("org.quartz-scheduler:quartz:2.3.2") {
     exclude group: "com.zaxxer", module: "HikariCP-java7"
   }
   compile ("com.zaxxer:HikariCP:3.4.1")
@@ -106,10 +106,10 @@ dependencies {
   testCompile ("org.apache.activemq:activemq-kahadb-store:$activeMqVersion")
   testCompile ("org.apache.activemq.protobuf:activemq-protobuf:1.1")
 
-  testCompile ("org.jruby:jruby-complete:9.2.8.0")
+  testCompile ("org.jruby:jruby-complete:9.2.9.0")
   testCompile ("org.mockftpserver:MockFtpServer:2.7.1")
-  testCompile ("org.mockito:mockito-all:1.10.19")
-
+  testCompile ("org.mockito:mockito-core:$mockitoVersion")
+  testCompile ("org.mockito:mockito-inline:$mockitoVersion")
   testCompile("net.sourceforge.jtds:jtds:1.3.1")
   testCompile("com.microsoft.sqlserver:mssql-jdbc:6.4.0.jre8")
   testCompile ("mysql:mysql-connector-java:5.1.47")

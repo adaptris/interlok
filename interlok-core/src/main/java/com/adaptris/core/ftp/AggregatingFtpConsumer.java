@@ -18,14 +18,19 @@ package com.adaptris.core.ftp;
 
 import static com.adaptris.core.ftp.FtpHelper.FORWARD_SLASH;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import javax.validation.Valid;
+
 import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageEncoder;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -61,12 +66,13 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("aggregating-ftp-consumer")
 @DisplayOrder(order =
 {
-    "destination", "messageAggregator", "filterFilterImp", "deleteAggrgatedFiles", "encoder"
+    "destination", "messageAggregator", "filterFilterImp", "deleteAggregatedFiles", "encoder"
 })
 public class AggregatingFtpConsumer extends AggregatingConsumerImpl<AggregatingFtpConsumeService> {
   private static final String DEFAULT_FILE_FILTER_IMP = "org.apache.commons.io.filefilter.RegexFileFilter";
   private static final String OBJ_METADATA_KEY_FILENAME = AggregatingFtpConsumer.class.getCanonicalName() + ".filename";
 
+  @InputFieldHint(ofType = "java.io.FileFilter")
   @AdvancedConfig
   private String fileFilterImp;
   @AdvancedConfig

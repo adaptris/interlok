@@ -30,15 +30,20 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface InputFieldHint {
-	/**
-	 * The style associated with this InputField.
-	 */
-	String style() default "";
+  /**
+   * The style associated with this InputField.
+   */
+  String style() default "";
 
-	/**
-	 * The UI friendly name for the field; particularly enum's.
-	 */
-	String friendly() default "";
+  /**
+   * The base interface or class for the field value suggestions.
+   */
+  String ofType() default "";
+
+  /**
+   * The UI friendly name for the field; particularly enum's.
+   */
+  String friendly() default "";
 
   /**
    * Whether or not this field allows the new {@code %message{}} style expressions

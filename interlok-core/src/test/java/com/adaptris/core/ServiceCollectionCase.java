@@ -22,8 +22,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.UUID;
-
 import com.adaptris.core.services.WaitService;
+import com.adaptris.core.stubs.ConfigCommentHelper;
 import com.adaptris.core.stubs.EventHandlerAwareService;
 import com.adaptris.core.util.LifecycleHelper;
 
@@ -36,6 +36,10 @@ public abstract class ServiceCollectionCase extends ServiceCollectionExample {
   public abstract ServiceCollectionImp createServiceCollection();
 
   public abstract ServiceCollectionImp createServiceCollection(Collection<Service> services);
+
+  public void testComments() throws Exception {
+    ConfigCommentHelper.testComments(createServiceCollection());
+  }
 
   public void testCollectionConstructor() {
     ServiceCollectionImp sc = createServiceCollection();

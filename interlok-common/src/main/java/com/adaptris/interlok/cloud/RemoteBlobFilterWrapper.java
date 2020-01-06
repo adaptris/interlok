@@ -1,11 +1,14 @@
 package com.adaptris.interlok.cloud;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 import java.io.FileFilter;
-import java.lang.reflect.Constructor;
+
 import javax.validation.constraints.NotBlank;
+
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.interlok.util.Args;
+import com.adaptris.interlok.util.FileFilterBuilder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -35,6 +38,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class RemoteBlobFilterWrapper implements RemoteBlobFilter {
 
   @NotBlank
+  @InputFieldHint(ofType = "java.io.FileFilter")
   private String fileFilterImp;
   @NotBlank
   private String filterExpression;
@@ -44,7 +48,7 @@ public class RemoteBlobFilterWrapper implements RemoteBlobFilter {
   @Override
   public boolean accept(RemoteBlob blob) {
     if (fileFilter == null) {
-      fileFilter = createFilter(getFilterExpression(), getFileFilterImp());
+      fileFilter = FileFilterBuilder.build(getFilterExpression(), getFileFilterImp());
     }
     return fileFilter.accept(blob.toFile());
   }
@@ -86,22 +90,4 @@ public class RemoteBlobFilterWrapper implements RemoteBlobFilter {
     return this;
   }
 
-  // Copied from FsHelper which makes me a little bit sad.
-  private static FileFilter createFilter(String filterExpression, String filterImpl) {
-    FileFilter result = null;
-    try {
-      if (isEmpty(filterExpression)) {
-        result = (filePath) -> true;
-      } else {
-        Class[] paramTypes = {String.class};
-        Object[] args = {filterExpression};
-        Class c = Class.forName(filterImpl);
-        Constructor cnst = c.getDeclaredConstructor(paramTypes);
-        result = (FileFilter) cnst.newInstance(args);
-      }
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-    return result;
-  }
 }

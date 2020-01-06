@@ -28,9 +28,11 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.MarshallingCDATA;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -47,7 +49,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("channel")
 @AdapterComponent
 @ComponentProfile(summary = "Channels bind two connections together for workflows to do their work", tag = "base")
-public class Channel implements ComponentLifecycleExtension, StateManagedComponentContainer, EventHandlerAware {
+public class Channel implements ComponentLifecycleExtension, StateManagedComponentContainer, EventHandlerAware, ConfigComment {
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
   @NotNull
@@ -68,6 +70,8 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
   private String uniqueId;
   @InputFieldDefault(value = "true")
   private Boolean autoStart;
+  @MarshallingCDATA
+  private String comments;
 
   private transient boolean available;
   private transient ComponentState state;
@@ -490,5 +494,15 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
    */
   public Date lastStopTime() {
     return stopTime;
+  }
+
+  @Override
+  public void setComments(String s) {
+    comments = s;
+  }
+
+  @Override
+  public String getComments() {
+    return comments;
   }
 }

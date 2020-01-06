@@ -37,9 +37,7 @@ import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
-
 import javax.sql.DataSource;
-
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.slf4j.Logger;
@@ -296,7 +294,6 @@ public class FailoverDataSource implements DataSource {
         conn.getWrappedConnection();
       }
       catch (Exception e) {
-        e.printStackTrace();
         return false;
       }
       return true;
@@ -771,22 +768,27 @@ public class FailoverDataSource implements DataSource {
       return getWrappedConnection().unwrap(iface);
     }
     
+    @Override
     public void setSchema(String schema) throws SQLException {
       getWrappedConnection().setSchema(schema);
     }
 
+    @Override
     public String getSchema() throws SQLException {
       return getWrappedConnection().getSchema();
     }
 
+    @Override
     public void abort(Executor executor) throws SQLException {
       getWrappedConnection().abort(executor);
     }
 
+    @Override
     public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
       getWrappedConnection().setNetworkTimeout(executor, milliseconds);
     }
 
+    @Override
     public int getNetworkTimeout() throws SQLException {
       return getWrappedConnection().getNetworkTimeout();
     }

@@ -19,7 +19,7 @@ package com.adaptris.core;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
-
+import com.adaptris.core.stubs.ConfigCommentHelper;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockWorkflowInterceptor;
 import com.adaptris.core.stubs.StubAdapterStartUpEvent;
@@ -62,7 +62,7 @@ public abstract class ExampleWorkflowCase extends ExampleConfigCase {
     String result = getExampleCommentHeader(object);
 
     Channel w = (Channel) object;
-
+    w.setComments("Comments Ignored At Runtime");
     result = result + configMarshaller.marshal(w);
     return result;
   }
@@ -72,6 +72,10 @@ public abstract class ExampleWorkflowCase extends ExampleConfigCase {
     w.requestStart();
     w.onAdaptrisMessage(m);
     w.requestClose();
+  }
+
+  public void testComments() throws Exception {
+    ConfigCommentHelper.testComments(createWorkflowForGenericTests());
   }
 
   public void testSetServiceCollection() throws Exception {

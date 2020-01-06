@@ -157,6 +157,7 @@ public class LoggingContextInterceptorTest {
   @Test
   public void testInterceptor_Defaults() throws Exception {
     LoggingContextWorkflowInterceptor interceptor = new LoggingContextWorkflowInterceptor(null);
+    interceptor.setAddDefaultKeysAsObjectMetadata(true);
     StandardWorkflow wf = StatisticsMBeanCase.createWorkflow("workflowName", interceptor);
     MockMessageProducer prod = new MockMessageProducer();
     wf.setProducer(prod);
@@ -169,12 +170,49 @@ public class LoggingContextInterceptorTest {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
       wf.onAdaptrisMessage(msg);
       Map<String, String> metadata = prod.getMessages().get(0).getMessageHeaders();
+      Map<Object, Object> object = prod.getMessages().get(0).getObjectHeaders();
       assertTrue(metadata.containsKey(CoreConstants.CHANNEL_ID_KEY));
       assertEquals("channelName", metadata.get(CoreConstants.CHANNEL_ID_KEY));
       assertTrue(metadata.containsKey(CoreConstants.WORKFLOW_ID_KEY));
       assertEquals("workflowName", metadata.get(CoreConstants.WORKFLOW_ID_KEY));
       assertTrue(metadata.containsKey(CoreConstants.MESSAGE_UNIQUE_ID_KEY));
       assertEquals(msg.getUniqueId(), metadata.get(CoreConstants.MESSAGE_UNIQUE_ID_KEY));
+      assertTrue(object.containsKey(CoreConstants.CHANNEL_ID_KEY));
+      assertEquals("channelName", object.get(CoreConstants.CHANNEL_ID_KEY));
+      assertTrue(object.containsKey(CoreConstants.WORKFLOW_ID_KEY));
+      assertEquals("workflowName", object.get(CoreConstants.WORKFLOW_ID_KEY));
+      assertTrue(metadata.containsKey(CoreConstants.MESSAGE_UNIQUE_ID_KEY));
+      assertEquals(msg.getUniqueId(), object.get(CoreConstants.MESSAGE_UNIQUE_ID_KEY));
+    } finally {
+      BaseCase.stop(c);
+    }
+  }
+
+  @Test
+  public void testInterceptor_Defaults_NotAsObjectMetadata() throws Exception {
+    LoggingContextWorkflowInterceptor interceptor = new LoggingContextWorkflowInterceptor(null);
+    StandardWorkflow wf = StatisticsMBeanCase.createWorkflow("workflowName", interceptor);
+    MockMessageProducer prod = new MockMessageProducer();
+    wf.setProducer(prod);
+    wf.getServiceCollection().add(new LoggingContextToMetadata());
+    MockChannel c = new MockChannel();
+    c.setUniqueId("channelName");
+    c.getWorkflowList().add(wf);
+    try {
+      BaseCase.start(c);
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+      wf.onAdaptrisMessage(msg);
+      Map<String, String> metadata = prod.getMessages().get(0).getMessageHeaders();
+      Map<Object, Object> object = prod.getMessages().get(0).getObjectHeaders();
+      assertTrue(metadata.containsKey(CoreConstants.CHANNEL_ID_KEY));
+      assertEquals("channelName", metadata.get(CoreConstants.CHANNEL_ID_KEY));
+      assertTrue(metadata.containsKey(CoreConstants.WORKFLOW_ID_KEY));
+      assertEquals("workflowName", metadata.get(CoreConstants.WORKFLOW_ID_KEY));
+      assertTrue(metadata.containsKey(CoreConstants.MESSAGE_UNIQUE_ID_KEY));
+      assertEquals(msg.getUniqueId(), metadata.get(CoreConstants.MESSAGE_UNIQUE_ID_KEY));
+      assertFalse(object.containsKey(CoreConstants.CHANNEL_ID_KEY));
+      assertFalse(object.containsKey(CoreConstants.WORKFLOW_ID_KEY));
+      assertFalse(object.containsKey(CoreConstants.MESSAGE_UNIQUE_ID_KEY));
     } finally {
       BaseCase.stop(c);
     }
@@ -196,9 +234,13 @@ public class LoggingContextInterceptorTest {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
       wf.onAdaptrisMessage(msg);
       Map<String, String> metadata = prod.getMessages().get(0).getMessageHeaders();
+      Map<Object, Object> object = prod.getMessages().get(0).getObjectHeaders();
       assertFalse(metadata.containsKey(CoreConstants.CHANNEL_ID_KEY));
       assertFalse(metadata.containsKey(CoreConstants.WORKFLOW_ID_KEY));
       assertFalse(metadata.containsKey(CoreConstants.MESSAGE_UNIQUE_ID_KEY));
+      assertFalse(object.containsKey(CoreConstants.CHANNEL_ID_KEY));
+      assertFalse(object.containsKey(CoreConstants.WORKFLOW_ID_KEY));
+      assertFalse(object.containsKey(CoreConstants.MESSAGE_UNIQUE_ID_KEY));
     } finally {
       BaseCase.stop(c);
     }

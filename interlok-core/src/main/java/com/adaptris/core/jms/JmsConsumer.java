@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -58,9 +58,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <li>jms:topic:MyTopicName?subscriptionId=mySubscriptionId&sharedConsumerId=mySharedConsumerId</li>
  * </ul>
  * </p>
- * 
+ *
  * @config jms-consumer
- * 
+ *
  */
 @XStreamAlias("jms-consumer")
 @AdapterComponent
@@ -68,7 +68,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
     recommended = {JmsConnection.class})
 @DisplayOrder(order = {"destination", "acknowledgeMode", "messageTranslator"})
 public class JmsConsumer extends JmsConsumerImpl {
-  
+
   @AdvancedConfig(rare = true)
   @AutoPopulated
   @InputFieldDefault(value = "false")
@@ -91,44 +91,44 @@ public class JmsConsumer extends JmsConsumerImpl {
   protected MessageConsumer createConsumer() throws JMSException, CoreException {
     String rfc6167 = getDestination().getDestination();
     String filterExp = getDestination().getFilterExpression();
-    
+
     VendorImplementation vendor = retrieveConnection(JmsConnection.class).configuredVendorImplementation();
     JmsDestination destination = vendor.createDestination(rfc6167, this);
-    
-    if(deferConsumerCreationToVendor())
+
+    if (deferConsumerCreationToVendor()) {
       return vendor.createConsumer(destination, filterExp, this);
-    else {
+    } else {
       MessageConsumer consumer = null;
-      
+
       if(destination.destinationType().equals(DestinationType.TOPIC)) {
         if(!isEmpty(destination.subscriptionId())) {  // then durable, maybe shared
           if(!isEmpty(destination.sharedConsumerId()))  {
             log.trace("Creating new shared durable consumer.");
-            consumer = ((ConsumerCreator) 
+            consumer = ((ConsumerCreator)
                 (session, dest, filterExpression) -> session.createSharedDurableConsumer((Topic) dest.getDestination(), dest.subscriptionId(), filterExpression)
             ).createConsumer(currentSession(), destination, filterExp);
           }
           else {
             log.trace("Creating new durable consumer.");
-            consumer = ((ConsumerCreator) 
+            consumer = ((ConsumerCreator)
                 (session, dest, filterExpression) -> session.createDurableSubscriber((Topic) dest.getDestination(), filterExpression)
             ).createConsumer(currentSession(), destination, filterExp);
           }
         } else if (!isEmpty(destination.sharedConsumerId())) {
           log.trace("Creating new shared consumer.");
-          consumer = ((ConsumerCreator) 
+          consumer = ((ConsumerCreator)
               (session, dest, filterExpression) -> session.createSharedConsumer((Topic) dest.getDestination(), dest.sharedConsumerId(), filterExpression)
           ).createConsumer(currentSession(), destination, filterExp);
         }
       }
-  
+
       if(consumer == null) {
         log.trace("Creating new standard consumer.");
-        consumer = ((ConsumerCreator) 
+        consumer = ((ConsumerCreator)
             (session, dest, filterExpression) -> session.createConsumer(dest.getDestination(), filterExpression)
         ).createConsumer(currentSession(), destination, filterExp);
       }
-      
+
       return consumer;
     }
   }
@@ -136,10 +136,10 @@ public class JmsConsumer extends JmsConsumerImpl {
   protected Boolean deferConsumerCreationToVendor() {
     return this.getDeferConsumerCreationToVendor() == null ? false : this.getDeferConsumerCreationToVendor();
   }
-  
+
   /**
    * <p>
-   * Returns a boolean value which determines if the JMS message consumer should be created by the configured vendor implementation or not. 
+   * Returns a boolean value which determines if the JMS message consumer should be created by the configured vendor implementation or not.
    * </p>
    * <p>
    * Generally this will be false or null, such is the default.  When false/null a standard JMS message consumer will be created.

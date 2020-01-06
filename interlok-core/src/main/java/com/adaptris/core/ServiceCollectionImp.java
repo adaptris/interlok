@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.MarshallingCDATA;
 import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
@@ -70,6 +71,8 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   @NotNull
   @Valid
   private List<Service> services;
+  @MarshallingCDATA
+  private String comments;
   
   private transient FifoMutexLock lock = new FifoMutexLock();
   protected transient EventHandler eventHandler;
@@ -187,6 +190,16 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
    */
   public void setServices(List<Service> serviceList) {
     services = (List<Service>) enforceRequirements(Args.notNull(serviceList, "serviceList"));
+  }
+
+  @Override
+  public void setComments(String s) {
+    comments = s;
+  }
+
+  @Override
+  public String getComments() {
+    return comments;
   }
 
   @Override
