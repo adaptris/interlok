@@ -16,6 +16,7 @@
 
 package com.adaptris.core;
 
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.text.mime.BodyPartIterator;
@@ -33,6 +34,15 @@ import java.io.OutputStream;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
+/**
+ * Multi-payload message MIME encoder. Encode a multi-payload message
+ * with each payload as a separate MIME block.
+ *
+ * @author amanderson
+ * @see MultiPayloadAdaptrisMessage
+ * @since 3.9.3
+ */
+@ComponentProfile(summary = "A multi-payload message MIME encoder/decoder", tag = "multi-payload,MIME,encode,decode", since="3.9.3")
 public class MultiPayloadMessageMimeEncoder extends MimeEncoderImpl {
 
   public MultiPayloadMessageMimeEncoder() {
