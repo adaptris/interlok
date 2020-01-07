@@ -20,10 +20,10 @@ import java.util.List;
  * @author amanderson
  * @config multi-payload-splitter
  * @see MultiPayloadAdaptrisMessage
- * @since 3.9.4
+ * @since 3.10
  */
 @XStreamAlias("multi-payload-splitter")
-@ComponentProfile(summary = "Split a multi-payload message so that each payload can be serviced independently", tag = "multi-payload,splitter", since="3.9.4")
+@ComponentProfile(summary = "Split a multi-payload message so that each payload can be serviced independently", tag = "multi-payload,splitter", since="3.10")
 public class MultiPayloadMessageSplitter extends MessageSplitterImp
 {
 	private static final transient Logger log = LoggerFactory.getLogger(MultiPayloadMessageSplitter.class.getName());
