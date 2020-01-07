@@ -29,6 +29,19 @@ import java.util.concurrent.TimeUnit;
  * a single thread to iterate over the payloads, but a thread pool can
  * be used to parallelize the loop.
  *
+ * <pre>{@code
+ * <for-each>
+ *   <unique-id>for-each-id</unique-id>
+ *   <then>
+ *     <service class="shared-service">
+ *       <lookup-name>for-each-service-list-id</lookup-name>
+ *       <unique-id>for-each-service-list-id</unique-id>
+ *     </service>
+ *   </then>
+ *   <thread-count>1</thread-count>
+ * </for-each>
+ * }</pre>
+ *
  * @author amanderson
  * @config for-each
  * @see MultiPayloadAdaptrisMessage
