@@ -17,6 +17,20 @@ import java.util.List;
  * additional metadata; all split messages will have identical metadata
  * to the original.
  *
+ * <pre>{@code
+ * <split-join-service>
+ *   <unique-id>split-join-id</unique-id>
+ *   <service class="shared-service">
+ *     <lookup-name>for-each-service-list-id</lookup-name>
+ *     <unique-id>for-each-service-list-id</unique-id>
+ *   </service>
+ *   <splitter class="multi-payload-splitter"/>
+ *   <aggregator class="multi-payload-aggregator">
+ *     <replace-original-message>false</replace-original-message>
+ *   </aggregator>
+ * </split-join-service>
+ * }</pre>
+ *
  * @author amanderson
  * @config multi-payload-splitter
  * @see MultiPayloadAdaptrisMessage
