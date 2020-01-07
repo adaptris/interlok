@@ -28,12 +28,18 @@ import java.util.concurrent.TimeUnit;
  * payload then execute the given service (list). The default is to use
  * a single thread to iterate over the payloads, but a thread pool can
  * be used to parallelize the loop.
+ *
+ * @author amanderson
+ * @config for-each
+ * @see MultiPayloadAdaptrisMessage
+ * @since 3.9.4
  */
 @XStreamAlias("for-each")
 @AdapterComponent
 @ComponentProfile(
 		summary = "Runs the configured service/list for each multi-payload message payload.",
-		tag = "for,each,for each,for-each,then,multi-payload")
+		tag = "for,each,for each,for-each,then,multi-payload",
+		since = "3.9.4")
 @DisplayOrder(order = {"then", "threadCount"})
 public class ForEach extends ServiceImp
 {
