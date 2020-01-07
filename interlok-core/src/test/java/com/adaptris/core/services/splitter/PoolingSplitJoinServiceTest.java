@@ -18,11 +18,15 @@ package com.adaptris.core.services.splitter;
 
 import static com.adaptris.core.ServiceCase.asCollection;
 import static com.adaptris.core.ServiceCase.execute;
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.TimeUnit;
 
+import org.awaitility.Duration;
 import org.junit.Test;
 
 import com.adaptris.core.AdaptrisMessage;
@@ -57,6 +61,13 @@ public class PoolingSplitJoinServiceTest extends SplitJoinServiceTest {
     service.setAggregator(new MimeAggregator());
     execute(service, msg);
     BodyPartIterator input = MimeHelper.createBodyPartIterator(msg);
+    await()
+      .atLeast(Duration.ONE_HUNDRED_MILLISECONDS)
+      .atMost(Duration.FIVE_SECONDS)
+    .with()
+      .pollInterval(Duration.ONE_HUNDRED_MILLISECONDS)
+      .until(input::size, equalTo(11));
+    
     assertEquals(11, input.size());
   }
 
@@ -73,8 +84,17 @@ public class PoolingSplitJoinServiceTest extends SplitJoinServiceTest {
     service.setAggregator(new MimeAggregator());
     execute(service, msg);
     BodyPartIterator input = MimeHelper.createBodyPartIterator(msg);
+    
+    await()
+    .atLeast(Duration.ONE_HUNDRED_MILLISECONDS)
+    .atMost(Duration.FIVE_SECONDS)
+  .with()
+    .pollInterval(Duration.ONE_HUNDRED_MILLISECONDS)
+    .until(input::size, equalTo(11));
+    
     assertEquals(11, input.size());
-  }
+    }
+  @Override
   protected PoolingSplitJoinService createServiceForTests() {
     return new PoolingSplitJoinService();
   }
