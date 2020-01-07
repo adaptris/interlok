@@ -1,11 +1,13 @@
 package com.adaptris.core.services.aggregator;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MultiPayloadAdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.Args;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +18,14 @@ import java.util.Collection;
 /**
  * Combine multiple standard Adaptris messages into a single
  * multi-payload Adaptris message.
+ *
+ * @author amanderson
+ * @config multi-payload-aggregator
+ * @see MultiPayloadAdaptrisMessage
+ * @since 3.10
  */
+@XStreamAlias("multi-payload-aggregator")
+@ComponentProfile(summary = "Combine many Adaptris messages into a single multi-payload message with each payload separate", tag = "multi-payload,aggregator", since = "3.10")
 public class MultiPayloadMessageAggregator extends MessageAggregatorImpl
 {
 	private static final transient Logger log = LoggerFactory.getLogger(MultiPayloadMessageAggregator.class);
