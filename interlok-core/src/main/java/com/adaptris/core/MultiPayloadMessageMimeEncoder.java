@@ -38,10 +38,19 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  * Multi-payload message MIME encoder. Encode a multi-payload message
  * with each payload as a separate MIME block.
  *
+ * <pre>{@code
+ * <encoder class="com.adaptris.core.MultiPayloadMessageMimeEncoder">
+ *   <metadata-encoding>base64</metadata-encoding>
+ *   <payload-encoding>base64</payload-encoding>
+ *   <retain-unique-id>true</retain-unique-id>
+ * </encoder>
+ * }</pre>
+ *
  * @author amanderson
  * @see MultiPayloadAdaptrisMessage
  * @since 3.9.3
  */
+
 @ComponentProfile(summary = "A multi-payload message MIME encoder/decoder", tag = "multi-payload,MIME,encode,decode", since="3.9.3")
 public class MultiPayloadMessageMimeEncoder extends MimeEncoderImpl {
 

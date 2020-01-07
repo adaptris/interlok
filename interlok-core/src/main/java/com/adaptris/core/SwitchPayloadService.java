@@ -12,6 +12,13 @@ import javax.validation.constraints.NotNull;
 /**
  * Switch the message payload from one payload to another.
  *
+ * <pre>{@code
+ * <switch-payload-service>
+ *   <unique-id>switch-payload-unique-id</unique-id>
+ *   <new-payload-id>payload-1</new-payload-id>
+ * </switch-payload-service>
+ * }</pre>
+ *
  * @author aanderson
  * @since 3.9.x
  */

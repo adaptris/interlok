@@ -34,6 +34,13 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  * The multi-payload message factory which returns an implementations of
  * <code>MultiPayloadAdaptrisMessage</code>.
  *
+ * <pre>{@code
+ * <message-factory class="multi-payload-message-factory">
+ *   <default-char-encoding>UTF-8</default-char-encoding>
+ *   <default-payload-id>payload-1</default-payload-id>
+ * </message-factory>
+ * }</pre>
+ *
  * @author aanderson
  * @config multi-payload-message-factory
  * @see AdaptrisMessageFactory
