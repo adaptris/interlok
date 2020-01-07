@@ -32,14 +32,14 @@ import java.util.concurrent.TimeUnit;
  * @author amanderson
  * @config for-each
  * @see MultiPayloadAdaptrisMessage
- * @since 3.9.4
+ * @since 3.10
  */
 @XStreamAlias("for-each")
 @AdapterComponent
 @ComponentProfile(
 		summary = "Runs the configured service/list for each multi-payload message payload.",
 		tag = "for,each,for each,for-each,then,multi-payload",
-		since = "3.9.4")
+		since = "3.10")
 @DisplayOrder(order = {"then", "threadCount"})
 public class ForEach extends ServiceImp
 {
