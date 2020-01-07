@@ -2,8 +2,8 @@ name: Java CI
 
 on:
   push:
-    branches:
-      - develop
+    branches-ignore:
+      - master
       
 jobs:
   build:
