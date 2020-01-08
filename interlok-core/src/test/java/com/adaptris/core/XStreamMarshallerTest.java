@@ -28,7 +28,6 @@ import com.adaptris.core.services.metadata.AddMetadataService;
 import com.adaptris.core.services.metadata.XpathMetadataService;
 import com.adaptris.core.services.metadata.xpath.ConfiguredXpathQuery;
 import com.adaptris.core.services.metadata.xpath.XpathQuery;
-import com.adaptris.core.stubs.XStreamBeanInfoWrapper;
 import com.adaptris.core.stubs.XStreamCDataWrapper;
 import com.adaptris.core.stubs.XStreamImplicitWrapper;
 import com.adaptris.core.util.XmlHelper;
@@ -73,18 +72,6 @@ public class XStreamMarshallerTest extends MarshallingBaseCase {
     assertEquals(2, roundTrip.getMarshalledStrings().size());
     assertEquals(2, roundTrip.getParentStrings().size());
     assertRoundtripEquality(wrapper, roundTrip);
-  }
-
-  public void testXStreamBeanInfo() throws Exception {
-    XStreamMarshaller xm = createMarshaller();
-    XStreamBeanInfoWrapper wrapper = new XStreamBeanInfoWrapper();
-    String id = wrapper.getMarshalledIdentity();
-    assertFalse(wrapper.getSetterCalled());
-    String xml = xm.marshal(wrapper);
-    System.err.println(xml);
-    XStreamBeanInfoWrapper roundTrip = (XStreamBeanInfoWrapper) xm.unmarshal(xml);
-    assertEquals(id, roundTrip.getMarshalledIdentity());
-    assertTrue(roundTrip.getSetterCalled());
   }
 
   public void testXStreamCdata() throws Exception {
