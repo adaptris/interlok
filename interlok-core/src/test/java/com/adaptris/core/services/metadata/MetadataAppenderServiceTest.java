@@ -16,6 +16,10 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -26,12 +30,13 @@ public class MetadataAppenderServiceTest extends MetadataServiceExample {
   private String resultKey;
   private AdaptrisMessage msg;
 
-  public MetadataAppenderServiceTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata("key1", "val1");
     msg.addMetadata("key2", "val2");
@@ -43,6 +48,7 @@ public class MetadataAppenderServiceTest extends MetadataServiceExample {
     service.setResultKey(resultKey);
   }
 
+  @Test
   public void testSetEmptyResultKey() throws Exception {
     MetadataAppenderService service = new MetadataAppenderService();
     try {
@@ -55,6 +61,7 @@ public class MetadataAppenderServiceTest extends MetadataServiceExample {
 
   }
 
+  @Test
   public void testSetNullResultKey() throws Exception {
     MetadataAppenderService service = new MetadataAppenderService();
     try {
@@ -67,6 +74,7 @@ public class MetadataAppenderServiceTest extends MetadataServiceExample {
 
   }
 
+  @Test
   public void testTwoKeys() throws CoreException {
     service.addAppendKey("key1");
     service.addAppendKey("key3");
@@ -74,7 +82,8 @@ public class MetadataAppenderServiceTest extends MetadataServiceExample {
     execute(service, msg);
     assertTrue("val1val3".equals(msg.getMetadataValue(resultKey)));
   }
-  
+
+  @Test
   public void testTwoReferencedKeys() throws CoreException {
     msg.addMessageHeader("RefKey1", "key1");
     msg.addMessageHeader("RefKey3", "key3");
@@ -86,6 +95,7 @@ public class MetadataAppenderServiceTest extends MetadataServiceExample {
     assertTrue("val1val3".equals(msg.getMetadataValue(resultKey)));
   }
 
+  @Test
   public void testTwoKeysOneNotSet() throws CoreException {
     service.addAppendKey("key1");
     service.addAppendKey("key4");
@@ -94,6 +104,7 @@ public class MetadataAppenderServiceTest extends MetadataServiceExample {
     assertTrue("val1".equals(msg.getMetadataValue(resultKey)));
   }
 
+  @Test
   public void testNullKey() throws CoreException {
     try {
       service.addAppendKey(null);
@@ -104,6 +115,7 @@ public class MetadataAppenderServiceTest extends MetadataServiceExample {
     }
   }
 
+  @Test
   public void testEmptyKey() throws CoreException {
     try {
       service.addAppendKey("");

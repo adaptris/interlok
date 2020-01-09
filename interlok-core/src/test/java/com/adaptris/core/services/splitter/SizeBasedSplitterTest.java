@@ -16,8 +16,12 @@
 
 package com.adaptris.core.services.splitter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import java.util.List;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 
@@ -26,8 +30,9 @@ public class SizeBasedSplitterTest extends SplitterCase {
   private static final String METADATA_KEY = "hello";
   private static final String OBJ_KEY = "blah";
 
-  public SizeBasedSplitterTest(java.lang.String testName) {
-    super(testName);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
 
@@ -36,6 +41,7 @@ public class SizeBasedSplitterTest extends SplitterCase {
     return new SizeBasedSplitter();
   }
 
+  @Test
   public void testSetSplitBySize() throws Exception {
     SizeBasedSplitter s = createSplitterForTests();
     assertNull(s.getSplitSizeBytes());
@@ -50,7 +56,7 @@ public class SizeBasedSplitterTest extends SplitterCase {
     assertEquals(SizeBasedSplitter.DEFAULT_SPLIT_SIZE, s.splitSizeBytes());
   }
 
-
+  @Test
   public void testSplitMessage() throws Exception {
     SizeBasedSplitter splitter = new SizeBasedSplitter();
     splitter.setSplitSizeBytes(1);
@@ -70,6 +76,7 @@ public class SizeBasedSplitterTest extends SplitterCase {
     assertEquals(LINE, resultString);
   }
 
+  @Test
   public void testSplitMessageWithObjectMetadata() throws Exception {
     SizeBasedSplitter splitter = new SizeBasedSplitter();
     splitter.setSplitSizeBytes(1);

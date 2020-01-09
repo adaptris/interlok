@@ -25,15 +25,17 @@ import static com.adaptris.core.ftp.SftpExampleHelper.CFG_REMOTE_DIR;
 import static com.adaptris.core.ftp.SftpExampleHelper.CFG_TEMP_HOSTS_FILE;
 import static com.adaptris.core.ftp.SftpExampleHelper.CFG_UNKNOWN_HOSTS_FILE;
 import static com.adaptris.core.ftp.SftpExampleHelper.CFG_USER;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.io.FileCleaningTracker;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FileUtils;
-
+import org.junit.Test;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.security.exc.PasswordException;
@@ -46,20 +48,12 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
   private static FileCleaningTracker cleaner = new FileCleaningTracker();
   private Object fileTracker = new Object();
 
-  public StandardSftpConnectionTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
-  }
-
+  @Test
   public void testSocketTimeout() throws Exception {
     StandardSftpConnection conn = new StandardSftpConnection();
     assertNull(conn.getSocketTimeout());
@@ -76,6 +70,7 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
 
   }
 
+  @Test
   public void testSetKnownHostsFile() throws Exception {
     StandardSftpConnection conn = new StandardSftpConnection();
     assertNull(conn.getKnownHostsFile());
@@ -83,7 +78,7 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
     assertEquals("abc", conn.getKnownHostsFile());
   }
 
-
+  @Test
   public void testConnectOnly_KeyAuth() throws Exception {
     if (areTestsEnabled()) {
       StandardSftpConnection conn = createConnection();
@@ -99,6 +94,7 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
     }
   }
 
+  @Test
   public void testConnectOnly_PasswordAuth() throws Exception {
     if (areTestsEnabled()) {
       StandardSftpConnection conn = createConnection();
@@ -115,6 +111,7 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
     }
   }
 
+  @Test
   public void testConnectOnly_PasswordAuth_Override() throws Exception {
     if (areTestsEnabled()) {
       StandardSftpConnection conn = createConnection();
@@ -131,6 +128,7 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
     }
   }
 
+  @Test
   public void testConnectOnly_Composite() throws Exception {
     if (areTestsEnabled()) {
       StandardSftpConnection conn = createConnection();
@@ -150,6 +148,7 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
     }
   }
 
+  @Test
   public void testConnectOnly_Composite_Fails() throws Exception {
     if (areTestsEnabled()) {
       StandardSftpConnection conn = createConnection();
@@ -170,6 +169,7 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
     }
   }
 
+  @Test
   public void testConnectOnly_StrictKnownHosts_UnknownHost() throws Exception {
     if (areTestsEnabled()) {
       File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_UNKNOWN_HOSTS_FILE)));
@@ -191,6 +191,7 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
     }
   }
 
+  @Test
   public void testConnectOnly_StrictKnownHosts_KnownHost() throws Exception {
     if (areTestsEnabled()) {
       File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_KNOWN_HOSTS_FILE)));
@@ -210,6 +211,7 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
     }
   }
 
+  @Test
   public void testConnectOnly_LenientKnownHosts_UnknownHost() throws Exception {
     if (areTestsEnabled()) {
       File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_UNKNOWN_HOSTS_FILE)));
@@ -229,6 +231,7 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
     }
   }
 
+  @Test
   public void testConnectOnly_LenientKnownHosts_KnownHost() throws Exception {
     if (areTestsEnabled()) {
       File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_KNOWN_HOSTS_FILE)));

@@ -15,13 +15,15 @@
 */
 
 package com.adaptris.core.interceptor;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import javax.management.Notification;
 import javax.management.ObjectName;
-
+import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -34,10 +36,12 @@ import com.adaptris.util.TimeInterval;
 
 public class MessageCountNotificationTest extends MessageNotificationCase {
 
-  public MessageCountNotificationTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testNotifyThreshold() throws Exception {
     MessageCountNotification notif = new MessageCountNotification();
     final TimeInterval defaultThreshold = new TimeInterval(1L, TimeUnit.MINUTES);
@@ -51,6 +55,7 @@ public class MessageCountNotificationTest extends MessageNotificationCase {
     assertEquals(newInterval.toMilliseconds(), notif.timesliceDurationMs());
   }
 
+  @Test
   public void testNotification_NoNotifications() throws Exception {
     MessageCountNotification notif = new MessageCountNotification(getName(), new TimeInterval(10L, TimeUnit.SECONDS));
     StandardWorkflow workflow = createWorkflow(getName() + "_Workflow", notif);
@@ -72,7 +77,7 @@ public class MessageCountNotificationTest extends MessageNotificationCase {
     assertEquals(0, listener.getNotifications().size());
   }
 
-
+  @Test
   public void testNotification_AboveThreshold() throws Exception {
     MessageCountNotification notif = new MessageCountNotification(getName(), new TimeInterval(200L, TimeUnit.MILLISECONDS));
     notif.setMessageCount(1);
@@ -100,6 +105,7 @@ public class MessageCountNotificationTest extends MessageNotificationCase {
     }
   }
 
+  @Test
   public void testNotification_AboveThreshold_MaxExceeded() throws Exception {
     MessageCountNotification notif = new MessageCountNotification(getName(), new TimeInterval(200L, TimeUnit.MILLISECONDS));
     notif.setMessageCount(1);
@@ -131,7 +137,7 @@ public class MessageCountNotificationTest extends MessageNotificationCase {
     }
   }
 
-
+  @Test
   public void testNotification_StaysBelowThreshold() throws Exception {
     MessageCountNotification notif = new MessageCountNotification(getName(), new TimeInterval(1L, TimeUnit.SECONDS));
     notif.setMessageCount(5);
@@ -160,7 +166,7 @@ public class MessageCountNotificationTest extends MessageNotificationCase {
     assertEquals(0, listener.getNotifications().size());
   }
 
-
+  @Test
   public void testNotification_BelowThreshold() throws Exception {
     MessageCountNotification notif = new MessageCountNotification(getName(), new TimeInterval(200L, TimeUnit.MILLISECONDS));
     notif.setMessageCount(2);
@@ -194,7 +200,7 @@ public class MessageCountNotificationTest extends MessageNotificationCase {
     }
   }
 
-
+  @Test
   public void testNotification_BelowThreshold_MaxExceeded() throws Exception {
     MessageCountNotification notif = new MessageCountNotification(getName(), new TimeInterval(200L, TimeUnit.MILLISECONDS));
     notif.setMessageCount(2);

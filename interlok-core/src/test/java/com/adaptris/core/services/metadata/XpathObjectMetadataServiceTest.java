@@ -16,9 +16,15 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -52,15 +58,7 @@ public class XpathObjectMetadataServiceTest extends MetadataServiceExample {
       + "<svrl:text>Error: Anglia Farmer's Supplier Number must be 5 digits long. (Current Value: 62826123)</svrl:text>\n"
       + "</svrl:failed-assert>\n" + "</svrl:schematron-output>";
 
-  public XpathObjectMetadataServiceTest(String name) {
-    super(name);
-  }
-
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-  }
-
+  @Test
   public void testSetNamespaceContext() {
     XpathObjectMetadataService obj = new XpathObjectMetadataService();
     assertNull(obj.getNamespaceContext());
@@ -72,6 +70,7 @@ public class XpathObjectMetadataServiceTest extends MetadataServiceExample {
     assertNull(obj.getNamespaceContext());
   }
 
+  @Test
   public void testDoService_NotXML() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("ABCDEFG");
     XpathObjectMetadataService service = new XpathObjectMetadataService();
@@ -86,6 +85,7 @@ public class XpathObjectMetadataServiceTest extends MetadataServiceExample {
     }
   }
 
+  @Test
   public void testDoService_UsingXpathQuery() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
     XpathObjectMetadataService service = new XpathObjectMetadataService();
@@ -98,6 +98,7 @@ public class XpathObjectMetadataServiceTest extends MetadataServiceExample {
     assertTrue(msg.getObjectHeaders().containsKey("destination"));
   }
 
+  @Test
   public void testDoService_UsingXpathQuery_WithNamespaceContext() throws CoreException {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_WITH_NAMESPACE);
     XpathObjectMetadataService service = new XpathObjectMetadataService();
@@ -112,6 +113,7 @@ public class XpathObjectMetadataServiceTest extends MetadataServiceExample {
     assertTrue(msg.getObjectHeaders().containsKey("failureCount"));
   }
 
+  @Test
   public void testSetXpathQueryList() {
     XpathObjectMetadataService service = new XpathObjectMetadataService();
     assertEquals(0, service.getXpathQueries().size());
@@ -130,6 +132,7 @@ public class XpathObjectMetadataServiceTest extends MetadataServiceExample {
     assertEquals(list, service.getXpathQueries());
   }
 
+  @Test
   public void testAddXpathQuery() {
     XpathObjectMetadataService service = new XpathObjectMetadataService();
     service.setXmlDocumentFactoryConfig(null);

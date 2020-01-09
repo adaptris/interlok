@@ -16,6 +16,10 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BranchingServiceCollection;
@@ -27,12 +31,13 @@ public class MetadataExistsBranchingServiceTest extends BranchingServiceExample 
   private MetadataExistsBranchingService service;
   private AdaptrisMessage msg;
 
-  public MetadataExistsBranchingServiceTest(String arg0) {
-    super(arg0);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     service = new MetadataExistsBranchingService();
     service.addMetadataKey("key1");
     service.setDefaultServiceId("default");
@@ -41,6 +46,7 @@ public class MetadataExistsBranchingServiceTest extends BranchingServiceExample 
     msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("xxxxzzzz");
   }
 
+  @Test
   public void testSetters() throws Exception {
     MetadataExistsBranchingService service = new MetadataExistsBranchingService();
     try {
@@ -73,24 +79,28 @@ public class MetadataExistsBranchingServiceTest extends BranchingServiceExample 
     }
   }
 
+  @Test
   public void testMetadataExists() throws Exception {
     msg.addMetadata("key1", "val1");
     execute(service, msg);
     assertTrue("exists".equals(msg.getNextServiceId()));
   }
 
+  @Test
   public void testMetadataExistsButIsEmpty() throws Exception {
     msg.addMetadata("key1", "");
     execute(service, msg);
     assertTrue("default".equals(msg.getNextServiceId()));
   }
 
+  @Test
   public void testMetadataDoesntExist() throws Exception {
     execute(service, msg);
 
     assertTrue("default".equals(msg.getNextServiceId()));
   }
 
+  @Test
   public void testMultipleKeysExists() throws Exception {
     msg.clearMetadata();
     msg.addMetadata("key2", "val2");
@@ -101,6 +111,7 @@ public class MetadataExistsBranchingServiceTest extends BranchingServiceExample 
     assertTrue("exists".equals(msg.getNextServiceId()));
   }
 
+  @Test
   public void testMultipleKeysDoesntExist() throws Exception {
     msg.clearMetadata();
 

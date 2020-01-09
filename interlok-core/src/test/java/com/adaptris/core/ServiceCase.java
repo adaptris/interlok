@@ -16,8 +16,14 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.List;
-
+import org.junit.Test;
 import com.adaptris.core.stubs.ObjectUtils;
 import com.adaptris.core.util.LifecycleHelper;
 
@@ -39,11 +45,6 @@ public abstract class ServiceCase extends ExampleConfigCase {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
-  }
-
-  public ServiceCase(String name) {
-    this();
-    setName(name);
   }
 
   @Override
@@ -81,6 +82,7 @@ public abstract class ServiceCase extends ExampleConfigCase {
     }
   }
 
+  @Test
   public void testMessageEventGenerator() throws Exception {
     Object input = retrieveObjectForCastorRoundTrip();
     if (input != null) {
@@ -124,6 +126,7 @@ public abstract class ServiceCase extends ExampleConfigCase {
     assertTrue(meg.isTrackingEndpoint());
   }
 
+  @Test
   public void testDefaults() throws Exception {
     Object input = retrieveObjectForCastorRoundTrip();
     if (input != null) {
@@ -147,6 +150,7 @@ public abstract class ServiceCase extends ExampleConfigCase {
     return true;
   }
 
+  @Test
   public void testServiceStates() {
     if (doStateTests()) {
       Object object = retrieveObjectForCastorRoundTrip();
@@ -197,6 +201,7 @@ public abstract class ServiceCase extends ExampleConfigCase {
     }
   }
 
+  @Test
   public void testSetUniqueId() throws Exception {
     Object input = retrieveObjectForCastorRoundTrip();
     if (input != null) {
@@ -210,6 +215,7 @@ public abstract class ServiceCase extends ExampleConfigCase {
     }
   }
 
+  @Test
   public void testMessageEventGeneratorQualifier() throws Exception {
     Object input = retrieveObjectForCastorRoundTrip();
     if (input != null) {
@@ -223,7 +229,7 @@ public abstract class ServiceCase extends ExampleConfigCase {
     }
   }
 
-
+  @Test
   public void testLookupName() throws Exception {
     Object input = retrieveObjectForCastorRoundTrip();
     if (input != null) {

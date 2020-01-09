@@ -15,11 +15,11 @@
 */
 
 package com.adaptris.core.jdbc;
-
+import static org.junit.Assert.fail;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.LifecycleHelper;
@@ -37,20 +37,12 @@ public class PasswordProtectedDatabaseConnectionTest extends BaseCase {
   protected static final String KEY_JDBC_DRIVER = "jdbc.storedproc.driver";
   protected static final String KEY_JDBC_TEST_STATEMENT = "jdbc.storedproc.teststatement";
 
-  public PasswordProtectedDatabaseConnectionTest(String arg0) {
-    super(arg0);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
-  }
-
+  @Test
   public void testConnect_WithPlainPassword() throws Exception {
     if (Boolean.parseBoolean(PROPERTIES.getProperty(KEY_TESTS_ENABLED, "false"))) {
       DatabaseConnection con = createConnection();
@@ -59,6 +51,7 @@ public class PasswordProtectedDatabaseConnectionTest extends BaseCase {
     }
   }
 
+  @Test
   public void testConnect_WithIncorrectPassword() throws Exception {
     if (Boolean.parseBoolean(PROPERTIES.getProperty(KEY_TESTS_ENABLED, "false"))) {
       DatabaseConnection con = createConnection();
@@ -78,6 +71,7 @@ public class PasswordProtectedDatabaseConnectionTest extends BaseCase {
     }
   }
 
+  @Test
   public void testConnect_WithEncryptedPassword() throws Exception {
     if (Boolean.parseBoolean(PROPERTIES.getProperty(KEY_TESTS_ENABLED, "false"))) {
       DatabaseConnection con = createConnection();
@@ -87,6 +81,7 @@ public class PasswordProtectedDatabaseConnectionTest extends BaseCase {
     }
   }
 
+  @Test
   public void testConnect_WithPoorlyEncryptedPassword() throws Exception {
     if (Boolean.parseBoolean(PROPERTIES.getProperty(KEY_TESTS_ENABLED, "false"))) {
       DatabaseConnection con = createConnection();

@@ -16,18 +16,19 @@
 
 package com.adaptris.core.services.jmx;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-
 import java.util.concurrent.TimeUnit;
-
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
-
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
@@ -41,20 +42,23 @@ public class JmxWaitServiceTest extends ServiceCase {
   @Mock
   private JmxOperationInvoker<Boolean> mockInvoker;
 
-  public JmxWaitServiceTest(String name) {
-    super(name);
+  public JmxWaitServiceTest() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
   }
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
+  @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
   }
 
-  public void tearDown() throws Exception {
-  }
-
+  @Test
   public void testWaitError() throws Exception {
     JmxWaitService service = new JmxWaitService();
     service.setOperationName(getName());
@@ -76,6 +80,7 @@ public class JmxWaitServiceTest extends ServiceCase {
     }
   }
 
+  @Test
   public void testNoWait() throws Exception {
     JmxWaitService service = new JmxWaitService();
     service.setOperationName(getName());
@@ -92,6 +97,7 @@ public class JmxWaitServiceTest extends ServiceCase {
     }
   }
 
+  @Test
   public void testWait() throws Exception {
     JmxWaitService service = new JmxWaitService();
     service.setOperationName(getName());
@@ -109,6 +115,7 @@ public class JmxWaitServiceTest extends ServiceCase {
     }
   }
 
+  @Test
   public void testWaitNegation() throws Exception {
     JmxWaitService service = new JmxWaitService();
     service.setOperationName(getName());

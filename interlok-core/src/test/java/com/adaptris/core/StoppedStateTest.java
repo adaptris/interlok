@@ -15,21 +15,25 @@
 */
 
 package com.adaptris.core;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.stubs.MockConnection;
 
 
 public class StoppedStateTest extends ComponentStateCase {
 
-  public StoppedStateTest(java.lang.String testName) {
-    super(testName);
+  public StoppedStateTest() {
   }
 
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
 
+  @Test
   public void testInstance() throws Exception {
     StoppedState one = StoppedState.getInstance();
     assertTrue(one == StoppedState.getInstance());
@@ -38,6 +42,7 @@ public class StoppedStateTest extends ComponentStateCase {
 
   }
 
+  @Test
   public void testStopped_To_Initialised() throws Exception {
     MockConnection component = new MockConnection();
     component.requestStart();
@@ -52,6 +57,7 @@ public class StoppedStateTest extends ComponentStateCase {
     assertEquals(0, component.getCloseCount());
   }
 
+  @Test
   public void testStopped_To_Started() throws Exception {
     MockConnection component = new MockConnection();
     component.requestStart();
@@ -66,6 +72,7 @@ public class StoppedStateTest extends ComponentStateCase {
     assertEquals(0, component.getCloseCount());
   }
 
+  @Test
   public void testStopped_To_Stopped() throws Exception {
     MockConnection component = new MockConnection();
     component.requestStart();
@@ -80,6 +87,7 @@ public class StoppedStateTest extends ComponentStateCase {
     assertEquals(0, component.getCloseCount());
   }
 
+  @Test
   public void testStopped_To_Closed() throws Exception {
     MockConnection component = new MockConnection();
     component.requestStart();
@@ -94,6 +102,7 @@ public class StoppedStateTest extends ComponentStateCase {
     assertEquals(1, component.getCloseCount());
   }
 
+  @Test
   public void testRestart() throws Exception {
     MockConnection component = new MockConnection();
     component.requestStart();

@@ -19,9 +19,9 @@ import static com.adaptris.core.http.jetty.HttpConsumerTest.JETTY_HTTP_PORT;
 import static com.adaptris.core.http.jetty.HttpConsumerTest.URL_TO_POST_TO;
 import static com.adaptris.core.http.jetty.HttpConsumerTest.XML_PAYLOAD;
 import static com.adaptris.core.http.jetty.JettyHelper.createConnection;
-
+import static org.junit.Assert.assertTrue;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
@@ -37,9 +37,9 @@ import com.adaptris.core.stubs.StaticMockMessageProducer;
 import com.adaptris.util.TimeInterval;
 
 public class ShortCutJettyResponseTest extends HttpServiceExample {
-
-  public ShortCutJettyResponseTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
@@ -47,6 +47,7 @@ public class ShortCutJettyResponseTest extends HttpServiceExample {
     return new ShortCutJettyResponse();
   }
 
+  @Test
   public void testService() throws Exception {
     HttpConnection connection = createConnection(Integer.parseInt(PROPERTIES.getProperty(JETTY_HTTP_PORT)));
     MockMessageProducer mockProducer = new StaticMockMessageProducer();

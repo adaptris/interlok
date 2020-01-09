@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.core.Channel;
 import com.adaptris.core.ExampleWorkflowCase;
 import com.adaptris.core.StandardWorkflow;
@@ -41,13 +40,9 @@ public class MetadataTotalsWorkflowTest extends ExampleWorkflowCase {
       + "If you have duplicate Mbean Names, then the adapter may not start properly\n"
       + "Check the Advanced Topics manual for more information" + "\n-->\n";
 
-  public MetadataTotalsWorkflowTest(java.lang.String testName) {
-    super(testName);
-  }
-
   @Override
-  protected void setUp() {
-
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override

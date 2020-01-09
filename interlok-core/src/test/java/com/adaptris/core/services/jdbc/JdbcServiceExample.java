@@ -18,7 +18,6 @@ package com.adaptris.core.services.jdbc;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.jdbc.DatabaseConnection;
@@ -38,6 +37,7 @@ public abstract class JdbcServiceExample extends JdbcServiceCase {
 
   private enum ConnectionBuilder {
     FailoverJdbcConnectionBuilder {
+      @Override
       DatabaseConnection build() {
         FailoverJdbcConnection connection = new FailoverJdbcConnection();
         connection.addConnectUrl(DB_STRING);
@@ -65,6 +65,7 @@ public abstract class JdbcServiceExample extends JdbcServiceCase {
     // }
     // },
     JdbcConnectionBuilder {
+      @Override
       DatabaseConnection build() {
         JdbcConnection connection = new JdbcConnection();
         connection.setConnectUrl(DB_STRING);
@@ -75,8 +76,7 @@ public abstract class JdbcServiceExample extends JdbcServiceCase {
     abstract DatabaseConnection build();
   }
 
-  public JdbcServiceExample(String name) {
-    super(name);
+  public JdbcServiceExample() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }

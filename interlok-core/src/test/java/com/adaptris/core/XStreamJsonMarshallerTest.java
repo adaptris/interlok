@@ -17,7 +17,7 @@
 package com.adaptris.core;
 
 import java.io.InputStream;
-
+import org.junit.Test;
 import com.adaptris.core.AdapterMarshallerFactory.MarshallingOutput;
 import com.thoughtworks.xstream.XStream;
 
@@ -28,10 +28,6 @@ public class XStreamJsonMarshallerTest extends MarshallingBaseCase {
   
   AdapterMarshallerFactory marshallerFactory = AdapterXStreamMarshallerFactory.getInstance();
   
-  public XStreamJsonMarshallerTest(java.lang.String testName) {
-    super(testName);
-  }
-
   @Override
   protected XStreamJsonMarshaller createMarshaller() throws Exception {
     return (XStreamJsonMarshaller)marshallerFactory.createMarshaller(MarshallingOutput.JSON);
@@ -43,7 +39,7 @@ public class XStreamJsonMarshallerTest extends MarshallingBaseCase {
   }
   
   
-  // Standard JSON roundtrip test
+  @Test
   public void testXStreamFullConfigMarshall() throws Exception {
     try {
       // Create factory

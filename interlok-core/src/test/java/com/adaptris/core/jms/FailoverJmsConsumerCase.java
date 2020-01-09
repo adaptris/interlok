@@ -16,8 +16,11 @@
 
 package com.adaptris.core.jms;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.Channel;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
@@ -28,11 +31,12 @@ import com.adaptris.core.util.LifecycleHelper;
 
 public abstract class FailoverJmsConsumerCase extends JmsConsumerCase {
 
-  public FailoverJmsConsumerCase(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-
+  @Test
   public void testBug1012() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());

@@ -15,13 +15,12 @@
 */
 
 package com.adaptris.core.jms;
-
+import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.junit.Test;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
@@ -30,14 +29,12 @@ public class FailoverPtpProducerTest extends FailoverJmsProducerCase {
 
   private static final Log LOG = LogFactory.getLog(FailoverPtpProducerTest.class);
 
-  public FailoverPtpProducerTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testBug845() throws Exception {
     Object input = retrieveObjectForSampleConfig();
     String xml = defaultMarshaller.marshal(input);

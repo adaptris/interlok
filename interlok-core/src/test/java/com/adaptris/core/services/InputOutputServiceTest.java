@@ -15,6 +15,8 @@
 */
 package com.adaptris.core.services;
 
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
@@ -23,11 +25,13 @@ import com.adaptris.core.stubs.DefectiveMessageFactory;
 
 public class InputOutputServiceTest extends GeneralServiceExample {
 
+  @Test
   public void testService() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("hello world");
     execute(new InputOutputService(), msg);
   }
 
+  @Test
   public void testService_BrokenInput() throws Exception {
     AdaptrisMessage msg = new DefectiveMessageFactory(DefectiveMessageFactory.WhenToBreak.INPUT).newMessage("hello world");
     try {
@@ -39,6 +43,7 @@ public class InputOutputServiceTest extends GeneralServiceExample {
     }
   }
 
+  @Test
   public void testService_BrokenOutput() throws Exception {
     AdaptrisMessage msg = new DefectiveMessageFactory(DefectiveMessageFactory.WhenToBreak.OUTPUT).newMessage("hello world");
     try {

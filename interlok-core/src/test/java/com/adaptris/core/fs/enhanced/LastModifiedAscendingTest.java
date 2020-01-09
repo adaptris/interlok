@@ -15,16 +15,14 @@
 */
 
 package com.adaptris.core.fs.enhanced;
-
+import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.List;
+import org.junit.Test;
 
 public class LastModifiedAscendingTest extends FileSorterCase {
 
-  public LastModifiedAscendingTest(String testName) {
-    super(testName);
-  }
-
+  @Test
   public void testSort() throws Exception {
     LastModifiedAscending sorter = new LastModifiedAscending();
     List<File> files = createFiles(10, 100l);

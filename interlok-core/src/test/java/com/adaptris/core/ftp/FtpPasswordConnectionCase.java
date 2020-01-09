@@ -16,18 +16,16 @@
 
 package com.adaptris.core.ftp;
 
+import static org.junit.Assert.fail;
 import java.io.IOException;
-
+import org.junit.Test;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
 
 public abstract class FtpPasswordConnectionCase extends FtpConnectionCase {
 
-  public FtpPasswordConnectionCase(String name) {
-    super(name);
-  }
-
+  @Test
   public void testConnect_BadEncodedPassword() throws Exception {
     if (areTestsEnabled()) {
       FileTransferConnectionUsingPassword connection = (FileTransferConnectionUsingPassword) createConnection();
@@ -46,6 +44,7 @@ public abstract class FtpPasswordConnectionCase extends FtpConnectionCase {
     }
   }
 
+  @Test
   public void testConnect_EncodedPassword() throws Exception {
     if (areTestsEnabled()) {
       FileTransferConnectionUsingPassword connection = (FileTransferConnectionUsingPassword) createConnection();
@@ -61,6 +60,7 @@ public abstract class FtpPasswordConnectionCase extends FtpConnectionCase {
     }
   }
 
+  @Test
   public void testConnect_OverrideUserOnly() throws Exception {
     if (areTestsEnabled()) {
       FileTransferConnectionUsingPassword connection = (FileTransferConnectionUsingPassword) createConnection();
@@ -75,6 +75,7 @@ public abstract class FtpPasswordConnectionCase extends FtpConnectionCase {
     }
   }
 
+  @Test
   public void testConnect_NoPassword() throws Exception {
     if (areTestsEnabled()) {
       FileTransferConnectionUsingPassword connection = (FileTransferConnectionUsingPassword) createConnection();
@@ -93,6 +94,7 @@ public abstract class FtpPasswordConnectionCase extends FtpConnectionCase {
     }
   }
 
+  @Test
   public void testConnect_PasswordOverride() throws Exception {
     if (areTestsEnabled()) {
       FileTransferConnectionUsingPassword connection = (FileTransferConnectionUsingPassword) createConnection();

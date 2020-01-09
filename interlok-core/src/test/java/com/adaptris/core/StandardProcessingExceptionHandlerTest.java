@@ -15,10 +15,11 @@
 */
 
 package com.adaptris.core;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import org.junit.Test;
 import com.adaptris.core.fs.FsProducer;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
@@ -31,10 +32,12 @@ import com.adaptris.core.util.LifecycleHelper;
 @SuppressWarnings("deprecation")
 public class StandardProcessingExceptionHandlerTest extends ExampleErrorHandlerCase {
 
-  public StandardProcessingExceptionHandlerTest(java.lang.String testName) {
-    super(testName);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testNoServices() throws Exception {
     StandardProcessingExceptionHandler meh = new StandardProcessingExceptionHandler();
     try {
@@ -47,6 +50,7 @@ public class StandardProcessingExceptionHandlerTest extends ExampleErrorHandlerC
     }
   }
 
+  @Test
   public void testSingleProducer() throws Exception {
     StandardProcessingExceptionHandler meh = new StandardProcessingExceptionHandler();
     MockMessageProducer producer = new MockMessageProducer();
@@ -65,6 +69,7 @@ public class StandardProcessingExceptionHandlerTest extends ExampleErrorHandlerC
     }
   }
 
+  @Test
   public void testServiceList() throws Exception {
     StandardProcessingExceptionHandler meh = new StandardProcessingExceptionHandler();
     MockMessageProducer producer = new MockMessageProducer();
@@ -84,6 +89,7 @@ public class StandardProcessingExceptionHandlerTest extends ExampleErrorHandlerC
     }
   }
 
+  @Test
   public void testAdapter_HasEventHandler() throws Exception {
     EventHandlerAwareService srv = new EventHandlerAwareService();
     StandardProcessingExceptionHandler meh = new StandardProcessingExceptionHandler(srv);
@@ -99,6 +105,7 @@ public class StandardProcessingExceptionHandlerTest extends ExampleErrorHandlerC
     }
   }
 
+  @Test
   public void testChannel_HasEventHandler() throws Exception {
     EventHandlerAwareService srv = new EventHandlerAwareService();
     StandardProcessingExceptionHandler meh = new StandardProcessingExceptionHandler(srv);
@@ -116,6 +123,7 @@ public class StandardProcessingExceptionHandlerTest extends ExampleErrorHandlerC
     }
   }
 
+  @Test
   public void testWorkflow_HasEventHandler() throws Exception {
     EventHandlerAwareService srv = new EventHandlerAwareService();
     StandardProcessingExceptionHandler meh = new StandardProcessingExceptionHandler(srv);
@@ -135,6 +143,7 @@ public class StandardProcessingExceptionHandlerTest extends ExampleErrorHandlerC
     }
   }
 
+  @Test
   public void testMultipleErrorHandlers_AlwaysHandle_True() throws Exception {
     MockMessageProducer aep = new MockMessageProducer();
     MockMessageProducer wep = new MockMessageProducer();
@@ -161,6 +170,7 @@ public class StandardProcessingExceptionHandlerTest extends ExampleErrorHandlerC
     }
   }
 
+  @Test
   public void testMultipleErrorHandlers_AlwaysHandle_False() throws Exception {
     MockMessageProducer aep = new MockMessageProducer();
     MockMessageProducer wep = new MockMessageProducer();
@@ -186,6 +196,7 @@ public class StandardProcessingExceptionHandlerTest extends ExampleErrorHandlerC
     }
   }
 
+  @Test
   public void testServiceListWithErrorWithServiceId() throws Exception {
     StandardProcessingExceptionHandler meh = new StandardProcessingExceptionHandler();
     MockMessageProducer producer = new MockMessageProducer();
@@ -206,6 +217,7 @@ public class StandardProcessingExceptionHandlerTest extends ExampleErrorHandlerC
     }
   }
 
+  @Test
   public void testServiceListWithErrorWithBlankServiceId() throws Exception {
     StandardProcessingExceptionHandler meh = new StandardProcessingExceptionHandler();
     MockMessageProducer producer = new MockMessageProducer();
@@ -226,6 +238,7 @@ public class StandardProcessingExceptionHandlerTest extends ExampleErrorHandlerC
     }
   }
 
+  @Test
   public void testServiceListWithAddMetadata() throws Exception {
     StandardProcessingExceptionHandler meh = new StandardProcessingExceptionHandler();
     MockMessageProducer producer = new MockMessageProducer();

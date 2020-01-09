@@ -15,28 +15,27 @@
 */
 
 package com.adaptris.core;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.util.TimeInterval;
 
 public class FixedIntervalPollerTest extends BaseCase {
-
-  public FixedIntervalPollerTest(java.lang.String testName) {
-    super(testName);
-  }
-
   @Override
-  protected void tearDown() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testSetConstructors() throws Exception {
     FixedIntervalPoller p = new FixedIntervalPoller();
     p = new FixedIntervalPoller(new TimeInterval(10L, TimeUnit.SECONDS));
   }
 
+  @Test
   public void testSetPollInterval() throws Exception {
     TimeInterval defaultInterval = new TimeInterval(20L, TimeUnit.SECONDS);
     TimeInterval interval = new TimeInterval(60L, TimeUnit.SECONDS);
@@ -55,8 +54,8 @@ public class FixedIntervalPollerTest extends BaseCase {
     assertEquals(defaultInterval.toMilliseconds(), p.pollInterval());
 
   }
-  
-  
+
+  @Test
   public void testLifecycle() throws Exception {
     PollingTrigger consumer = new PollingTrigger();
     consumer.setPoller(new FixedIntervalPoller(new TimeInterval(100L, TimeUnit.MILLISECONDS)));

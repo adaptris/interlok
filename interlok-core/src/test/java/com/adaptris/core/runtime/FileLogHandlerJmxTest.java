@@ -18,18 +18,20 @@ package com.adaptris.core.runtime;
 
 import static com.adaptris.core.runtime.AdapterComponentMBean.ID_PREFIX;
 import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_LOG_HANDLER_TYPE;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
-
 import javax.management.JMX;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.FileLogHandler;
 import com.adaptris.core.FileLogHandlerJmxMBean;
@@ -43,8 +45,7 @@ public class FileLogHandlerJmxTest extends ComponentManagerCase {
   protected transient Log logR = LogFactory.getLog(this.getClass());
   private static final File LOG_DIRECTORY;
 
-  public FileLogHandlerJmxTest(String name) {
-    super(name);
+  public FileLogHandlerJmxTest() {
   }
 
   static {
@@ -56,21 +57,26 @@ public class FileLogHandlerJmxTest extends ComponentManagerCase {
     }
   }
 
-  @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void beforeMyTests() throws Exception {
     super.setUp();
     LogHandlerTest.ensureDirectory(LOG_DIRECTORY);
   }
 
 
-  @Override
-  protected void tearDown() throws Exception {
+  @After
+  public void afterMyTests() throws Exception {
     FileUtils.deleteQuietly(LOG_DIRECTORY);
     FileUtils.deleteDirectory(LOG_DIRECTORY);
     super.tearDown();
   }
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
 
+  @Test
   public void testExistsInAdapterManager() throws Exception {
     Adapter adapter = createAdapter(getName());
     FileLogHandler handler = createHandler();
@@ -81,6 +87,7 @@ public class FileLogHandlerJmxTest extends ComponentManagerCase {
 
   }
 
+  @Test
   public void testMBean_GetParentId() throws Exception {
     Adapter adapter = createAdapter(getName());
     FileLogHandler handler = createHandler();
@@ -99,6 +106,7 @@ public class FileLogHandlerJmxTest extends ComponentManagerCase {
 
   }
 
+  @Test
   public void testMBean_GetParentObjectName() throws Exception {
     Adapter adapter = createAdapter(getName());
     FileLogHandler handler = createHandler();
@@ -116,6 +124,7 @@ public class FileLogHandlerJmxTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_CleanupLogfiles() throws Exception {
     Adapter adapter = createAdapter(getName());
     FileLogHandler handler = createHandler();

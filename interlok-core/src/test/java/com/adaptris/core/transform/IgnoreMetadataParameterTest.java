@@ -16,16 +16,17 @@
 
 package com.adaptris.core.transform;
 
+import static org.junit.Assert.assertNull;
 import java.util.HashMap;
 import java.util.Map;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 
 public class IgnoreMetadataParameterTest extends TransformParameterCase {
-  public IgnoreMetadataParameterTest(String name) {
-    super(name);
-  }
 
+
+  @Override
+  @Test
   public void testIgnoreMetadataParameter() throws Exception {
     IgnoreMetadataParameter p = new IgnoreMetadataParameter();
     Map existingParams = new HashMap();

@@ -15,11 +15,12 @@
 */
 
 package com.adaptris.core;
-
+import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import org.junit.Test;
 import com.adaptris.core.services.EmbeddedScriptingService;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
@@ -45,15 +46,7 @@ public class PollingTriggerTest extends ConsumerCase {
 
   private static final List<Poller> POLLER_LIST = Arrays.asList(POLLERS);
 
-
-  public PollingTriggerTest(java.lang.String testName) {
-    super(testName);
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-  }
-
+  @Test
   public void testTriggerWithStaticTemplate() throws Exception {
     Trigger trigger = new Trigger();
     MockMessageProducer mockProducer = new MockMessageProducer();
@@ -71,6 +64,7 @@ public class PollingTriggerTest extends ConsumerCase {
     }
   }
 
+  @Test
   public void testTriggerWithDynamicTemplate() throws Exception {
     Trigger trigger = new Trigger();
     String script = "message.setContent('" + PAYLOAD + "', 'UTF-8')";
@@ -88,6 +82,7 @@ public class PollingTriggerTest extends ConsumerCase {
     }
   }
 
+  @Test
   public void testTriggerWithDynamicTemplate_NoConfig() throws Exception {
     Trigger trigger = new Trigger();
     MockMessageProducer mockProducer = new MockMessageProducer();
@@ -103,6 +98,7 @@ public class PollingTriggerTest extends ConsumerCase {
     }
   }
 
+  @Test
   public void testTrigger_TemplateFails() throws Exception {
     String script = "message.setContent('" + PAYLOAD + "')"; // setContent must have a encoding...
     Trigger trigger = new Trigger();
@@ -119,6 +115,7 @@ public class PollingTriggerTest extends ConsumerCase {
     }
   }
 
+  @Test
   public void testTriggerWithEmptyMessages() throws Exception {
     Trigger trigger = new Trigger();
     MockMessageProducer mockProducer = new MockMessageProducer();

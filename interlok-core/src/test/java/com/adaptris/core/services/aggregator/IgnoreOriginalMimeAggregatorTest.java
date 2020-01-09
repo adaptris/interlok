@@ -16,8 +16,10 @@
 
 package com.adaptris.core.services.aggregator;
 
+import static org.junit.Assert.assertEquals;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
@@ -30,20 +32,15 @@ import com.adaptris.core.util.MimeHelper;
 import com.adaptris.util.TimeInterval;
 import com.adaptris.util.text.mime.BodyPartIterator;
 
+@SuppressWarnings("deprecation")
 public class IgnoreOriginalMimeAggregatorTest extends MimeAggregatorCase {
 
-  public IgnoreOriginalMimeAggregatorTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-  }
-
+  @Test
   public void testService_ContentEncoding() throws Exception {
     // This is a 100 line message, so we expect to get 10 parts.
     AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
@@ -60,7 +57,7 @@ public class IgnoreOriginalMimeAggregatorTest extends MimeAggregatorCase {
     assertEquals(10, input.size());
   }
 
-  @SuppressWarnings("deprecation")
+  @Test
   public void testService_ContentIdProvided() throws Exception {
     // This is a 100 line message, so we expect to get 10 parts.
     AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
@@ -77,6 +74,7 @@ public class IgnoreOriginalMimeAggregatorTest extends MimeAggregatorCase {
     assertEquals(10, input.size());
   }
 
+  @Test
   public void testService_MimeSplitter() throws Exception {
     // This is a 3 part message, so that should generate 3 split messages; which should generate 3 parts at the end.
     AdaptrisMessage msg = MimeJunitHelper.create();

@@ -1,8 +1,12 @@
 package com.adaptris.core.jdbc;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
+import org.junit.Test;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.core.util.LifecycleHelper;
@@ -16,8 +20,12 @@ public class AdvancedJdbcPooledConnectionTest extends DatabaseConnectionCase<Adv
 
   private static final GuidGenerator GUID = new GuidGenerator();
 
-  public AdvancedJdbcPooledConnectionTest(String arg0) {
-    super(arg0);
+  public AdvancedJdbcPooledConnectionTest() {
+  }
+
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
@@ -40,6 +48,7 @@ public class AdvancedJdbcPooledConnectionTest extends DatabaseConnectionCase<Adv
     return conn1;
   }
 
+  @Test
   public void testBrokenPool() throws Exception {
     JdbcPooledConnectionImpl con = configure(createConnection());
     con.setConnectUrl("jdbc:derby:memory:" + GUID.safeUUID() + ";create=true");
@@ -62,6 +71,7 @@ public class AdvancedJdbcPooledConnectionTest extends DatabaseConnectionCase<Adv
     }
   }
 
+  @Test
   public void testEquals() throws Exception {
     JdbcPooledConnectionImpl con = createConnection();
     String url = "jdbc:derby:memory:" + GUID.safeUUID() + ";create=true";
@@ -74,7 +84,7 @@ public class AdvancedJdbcPooledConnectionTest extends DatabaseConnectionCase<Adv
     assertTrue(con.equals(con2));
   }
 
-  // INTERLOK-107
+  @Test
   public void testConnectionDataSource_Poolsize() throws Exception {
     String originalThread = Thread.currentThread().getName();
     Thread.currentThread().setName("testConnectionDataSource_Poolsize");

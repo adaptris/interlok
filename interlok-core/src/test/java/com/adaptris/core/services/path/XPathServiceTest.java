@@ -16,9 +16,11 @@
 
 package com.adaptris.core.services.path;
 
+import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceCase;
@@ -43,13 +45,18 @@ public class XPathServiceTest extends ServiceCase {
    */
   public static final String BASE_DIR_KEY = "XmlServiceExamples.baseDir";
 
-  public XPathServiceTest(String name) {
-    super(name);
+  public XPathServiceTest() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
   }
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
+  @Before
   public void setUp() throws Exception {
     service = new XPathService();
     message = DefaultMessageFactory.getDefaultInstance().newMessage();
@@ -58,7 +65,8 @@ public class XPathServiceTest extends ServiceCase {
   public void tearDown() throws Exception {
     
   }
-  
+
+  @Test
   public void testPayloadSimpleValueXPathIntoMetadata() throws Exception {
     message.setContent(sampleXml, message.getContentEncoding());
     
@@ -77,7 +85,8 @@ public class XPathServiceTest extends ServiceCase {
     
     assertEquals("value1", message.getMetadataValue("targetMetadataKey"));
   }
-  
+
+  @Test
   public void testForCoveragePurposesInvalidXml() throws Exception {
     message.setContent("not valid xml!", message.getContentEncoding());
     
@@ -99,7 +108,8 @@ public class XPathServiceTest extends ServiceCase {
       // expected
     }
   }
-  
+
+  @Test
   public void testPayloadSimpleValueXPathIntoPayload() throws Exception {
     message.setContent(sampleXml, message.getContentEncoding());
     message.addMetadata("sourceXpathMetadataKey", "//some/random/xml/node1/text()");
@@ -117,7 +127,8 @@ public class XPathServiceTest extends ServiceCase {
     
     assertEquals("value1", message.getContent());
   }
-  
+
+  @Test
   public void testPayloadComplexValueXPathIntoMetadata() throws Exception {
     message.setContent(sampleXml, message.getContentEncoding());
     
@@ -136,7 +147,8 @@ public class XPathServiceTest extends ServiceCase {
     
     assertEquals("<node1>value1</node1>", message.getMetadataValue("targetMetadataKey"));
   }
-  
+
+  @Test
   public void testPayloadSimpleValueXPathIntoMultipleMetadataExecutions() throws Exception {
     message.setContent(sampleXml, message.getContentEncoding());
     
@@ -168,7 +180,8 @@ public class XPathServiceTest extends ServiceCase {
     assertEquals("value2", message.getMetadataValue("targetMetadataKey2"));
     assertEquals("value3", message.getMetadataValue("targetMetadataKey3"));
   }
-  
+
+  @Test
   public void testPayloadSimpleValueXPathIntoPayloadWithNamespace() throws Exception {
     message.setContent(sampleXmlWithInternalNamespaces, message.getContentEncoding());
     message.addMetadata("sourceXpathMetadataKey", "//some/random/xml/node1/text()");
@@ -186,7 +199,8 @@ public class XPathServiceTest extends ServiceCase {
     
     assertEquals("value1", message.getContent());
   }
-  
+
+  @Test
   public void testPayloadSimpleValueXPathIntoPayloadWithHeaderNamespaces() throws Exception {
     message.setContent(sampleXmlWithHeaderNamespaces, message.getContentEncoding());
     message.addMetadata("sourceXpathMetadataKey", "//some:some/random/xml/n1:node1/text()");

@@ -16,6 +16,11 @@
 
 package com.adaptris.core.transform;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +29,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import com.adaptris.core.AdaptrisMessage;
@@ -126,16 +132,14 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     }
   }
 
-  public XmlTransformServiceTest(String name) throws Exception {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  // This explicit tests some behavioural changes that might have occured due to migration SaxonHE
+  @Test
   public void testRemoveNamespaceMapping() throws Exception {
+    // This explicit tests some behavioural changes that might have occured due to migration SaxonHE
     XmlTransformService service = new XmlTransformService();
     service.setUrl(PROPERTIES.getProperty(KEY_XML_REMOVE_NAMESPACE_MAPPING));
     service.setOutputMessageEncoding("ISO-8859-1");
@@ -144,6 +148,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     log.debug(msg.getContent());
   }
 
+  @Test
   public void testSetUrl() {
     try {
       XmlTransformService service = new XmlTransformService();
@@ -157,6 +162,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     assertEquals("url", service.getUrl());
   }
 
+  @Test
   public void testSetMetadataKey() {
     try {
       XmlTransformService service = new XmlTransformService();
@@ -170,6 +176,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     assertEquals("key", service.getMetadataKey());
   }
 
+  @Test
   public void testInitDefault() {
     XmlTransformService service = new XmlTransformService();
     try {
@@ -184,6 +191,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testInitWithUrl() {
     XmlTransformService service = new XmlTransformService();
     try {
@@ -199,6 +207,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testInitWithMetadataKey() {
     XmlTransformService service = new XmlTransformService();
     try {
@@ -214,6 +223,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testObtainUrlWithUrlOnly() throws Exception {
     XmlTransformService service = new XmlTransformService();
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage();
@@ -228,6 +238,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testObtainUrlWithNullMetadataValueInMessage() throws Exception {
     XmlTransformService service = new XmlTransformService();
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage();
@@ -243,6 +254,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testObtainUrlWithEmptyMetadataValueInMessage() throws Exception {
     XmlTransformService service = new XmlTransformService();
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage();
@@ -259,6 +271,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testObtainUrlWithMetadataValueInMessage() throws Exception {
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage();
     msg.addMetadata("key", "val");
@@ -276,6 +289,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testObtainUrlWithMetadataValueInMessageAllowOverride() throws Exception {
 
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage();
@@ -295,6 +309,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testObtainUrlWithNoMetadataValueNoUrl() throws Exception {
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage();
     XmlTransformService service = new XmlTransformService();
@@ -313,6 +328,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testObtainUrlWithNoMetadataValue() throws Exception {
     XmlTransformService service = new XmlTransformService();
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage();
@@ -328,6 +344,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testObtainUrlWithEmptyMetadataValue() throws Exception {
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage();
     msg.addMetadata("key", "");
@@ -377,6 +394,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     return result;
   }
 
+  @Test
   public void testOutputWithCache() throws Exception {
     AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     AdaptrisMessage m2 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
@@ -396,6 +414,8 @@ public class XmlTransformServiceTest extends TransformServiceExample {
   }
   
   // INTERLOK-3113
+
+  @Test
   public void testOutputWithCacheResetsParameters() throws Exception {
     AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     m1.addMessageHeader("myKey", "myValue");
@@ -418,6 +438,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testOutputWithNoCache() throws Exception {
     AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     AdaptrisMessage m2 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
@@ -437,6 +458,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testXSLTOutput() throws Exception {
     AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     XmlTransformService service = new XmlTransformService();
@@ -445,7 +467,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     assertEquals("payload " + m1.getContent(), PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getContent());
   }
 
-
+  @Test
   public void testXSLTOutput_NamedXsltTransformFactory() throws Exception {
     AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     XmlTransformService service = new XmlTransformService();
@@ -456,6 +478,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     assertEquals("payload " + m1.getContent(), PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getContent());
   }
 
+  @Test
   public void testSTXOutput() throws Exception {
     AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     XmlTransformService service = new XmlTransformService();
@@ -466,7 +489,8 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     execute(service, m1);
     assertEquals("payload " + m1.getContent(), PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getContent());
   }
-  
+
+  @Test
   public void testXSLT_RecoverableError() throws Exception {
     AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     String oldName = Thread.currentThread().getName();
@@ -485,6 +509,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testXSLT_RecoverableError_NoFail() throws Exception {
     AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     String oldName = Thread.currentThread().getName();
@@ -504,6 +529,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     
   }
 
+  @Test
   public void testXSLT_FatalError() throws Exception {
     AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     XmlTransformService service = new XmlTransformService();
@@ -516,6 +542,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testSingleParameter_XSLTOutput() throws Exception {
     AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     msg.addMetadata("world", "World");
@@ -528,6 +555,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
 
   }
 
+  @Test
   public void testObjectMetadataParameter_XSLTOutput() throws Exception {
     AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     msg.addObjectHeader("myDocumentObject", XmlHelper.createDocument("<data>World</data>"));
@@ -541,6 +569,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
 
   }
 
+  @Test
   public void testObjectMetadataParameter_NoRegexp() throws Exception {
     AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     msg.addObjectHeader("myDocumentObject", XmlHelper.createDocument("<data>World</data>"));
@@ -557,6 +586,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testParameterBuilder_XSLTOutput() throws Exception {
     AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     msg.addMetadata("world", "World");
@@ -569,6 +599,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
         msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
 
+  @Test
   public void testParameterBuilder_ObjectMetadata_XSLTOutput() throws Exception {
     AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     msg.addMetadata("key", "value");
@@ -582,6 +613,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
         msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
 
+  @Test
   public void testSingleParameter_STXOutput() throws Exception {
     AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     msg.addMetadata("world", "World");
@@ -594,6 +626,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
         msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
 
+  @Test
   public void testMultipleParameters_XSLTOutput() throws Exception {
     AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     msg.addMetadata("world", "World");
@@ -610,6 +643,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
         msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
 
+  @Test
   public void testMultipleParameters_STXOutput() throws Exception {
     AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     msg.addMetadata("world", "World");
@@ -626,6 +660,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
         msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
 
+  @Test
   public void testIssue2641() throws Exception {
     DefaultMessageFactory factory = new DefaultMessageFactory();
     factory.setDefaultCharEncoding("ISO-8859-1");
@@ -654,6 +689,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
 
   }
 
+  @Test
   public void testIssue2641_NoOutputMessageEncoding() throws Exception {
     DefaultMessageFactory factory = new DefaultMessageFactory();
     factory.setDefaultCharEncoding("ISO-8859-1");
@@ -680,6 +716,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     assertEquals(srcValue, destValue);
   }
 
+  @Test
   public void testXSLT_XslMessageTerminate() throws Exception {
     AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     XmlTransformService service = new XmlTransformService();

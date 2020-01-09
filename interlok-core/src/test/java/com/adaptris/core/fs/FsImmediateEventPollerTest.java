@@ -16,21 +16,20 @@
 
 package com.adaptris.core.fs;
 
-import com.adaptris.core.BaseCase;
+import static org.junit.Assert.fail;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.PollingTrigger;
 import com.adaptris.util.TimeInterval;
 
-public class FsImmediateEventPollerTest extends BaseCase {
+public class FsImmediateEventPollerTest {
   
-  public FsImmediateEventPollerTest(String name) {
-    super(name);
-  }
-
   private FsConsumer consumer;
   private FsImmediateEventPoller poller;
-  
+
+  @Before
   public void setUp() throws Exception {
     consumer = new FsConsumer();
     consumer.setDestination(new ConfiguredConsumeDestination("."));
@@ -44,11 +43,13 @@ public class FsImmediateEventPollerTest extends BaseCase {
   public void tearDown() throws Exception {
     
   }
-  
+
+  @Test
   public void testStandardInitNoExc() throws Exception {
     consumer.init();
   }
-  
+
+  @Test
   public void testNoQuitePeriod() throws Exception {
     try {
       consumer.setQuietInterval(null);
@@ -58,7 +59,8 @@ public class FsImmediateEventPollerTest extends BaseCase {
       //expected.
     }
   }
-  
+
+  @Test
   public void testWrongConsumerType() throws Exception {
     try {
       PollingTrigger ptConsumer = new PollingTrigger();

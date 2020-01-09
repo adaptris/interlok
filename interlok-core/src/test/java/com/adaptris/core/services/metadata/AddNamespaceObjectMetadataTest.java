@@ -16,8 +16,13 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 import javax.xml.namespace.NamespaceContext;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.util.KeyValuePair;
@@ -26,15 +31,12 @@ import com.adaptris.util.text.xml.SimpleNamespaceContext;
 
 public class AddNamespaceObjectMetadataTest extends MetadataServiceExample {
 
-  public AddNamespaceObjectMetadataTest(String name) {
-    super(name);
-  }
-
   @Override
-  public void setUp() {
-
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testService() throws Exception {
     AddNamespaceObjectMetadata service = new AddNamespaceObjectMetadata(createContextEntries());
     try {
@@ -52,6 +54,7 @@ public class AddNamespaceObjectMetadataTest extends MetadataServiceExample {
     }
   }
 
+  @Test
   public void testService_NoNamespaceContext() throws Exception {
     AddNamespaceObjectMetadata service = new AddNamespaceObjectMetadata();
     try {

@@ -16,6 +16,13 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.util.GuidGenerator;
@@ -24,11 +31,12 @@ import com.adaptris.util.PlainIdGenerator;
 
 @SuppressWarnings("deprecation")
 public class GenerateUniqueMetadataValueServiceTest extends MetadataServiceExample {
-
-  public GenerateUniqueMetadataValueServiceTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testSetGenerator() throws Exception {
     GenerateUniqueMetadataValueService service = new GenerateUniqueMetadataValueService();
     assertNotNull(service.getGenerator());
@@ -48,6 +56,7 @@ public class GenerateUniqueMetadataValueServiceTest extends MetadataServiceExamp
     assertEquals(gen, service.getGenerator());
   }
 
+  @Test
   public void testSetMetadataKey() throws Exception {
     GenerateUniqueMetadataValueService service = new GenerateUniqueMetadataValueService();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -71,6 +80,7 @@ public class GenerateUniqueMetadataValueServiceTest extends MetadataServiceExamp
     assertNotSame("", service.metadataKey(msg));
   }
 
+  @Test
   public void testDoService() throws Exception {
     GenerateUniqueMetadataValueService service = new GenerateUniqueMetadataValueService("key");
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();

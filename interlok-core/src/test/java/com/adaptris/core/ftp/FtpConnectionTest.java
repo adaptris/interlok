@@ -15,7 +15,8 @@
 */
 
 package com.adaptris.core.ftp;
-
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.ftp.FtpDataMode;
 import com.adaptris.ftp.TransferType;
@@ -28,10 +29,6 @@ public class FtpConnectionTest extends FtpPasswordConnectionCase {
   public static final String CFG_PASSWORD = "FtpConsumerTest.password";
   public static final String CFG_REMOTE_DIR = "FtpConsumerTest.remotedir";
 
-  public FtpConnectionTest(String name) {
-    super(name);
-  }
-
   @Override
   protected FtpConnectionImp createConnection() {
     FtpConnectionImp c = createConnectionObj();
@@ -43,10 +40,15 @@ public class FtpConnectionTest extends FtpPasswordConnectionCase {
     return c;
   }
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
   protected FtpConnectionImp createConnectionObj() {
     return new FtpConnection();
   }
 
+  @Test
   public void testConnect_WithAccount() throws Exception {
     if (areTestsEnabled()) {
       FtpConnectionImp connection = createConnection();
@@ -82,6 +84,7 @@ public class FtpConnectionTest extends FtpPasswordConnectionCase {
     return "ftp";
   }
 
+  @Override
   protected void assertDefaultControlPort(int defaultControlPort) {
     assertEquals(FtpConnectionImp.DEFAULT_FTP_CONTROL_PORT, defaultControlPort);
   }

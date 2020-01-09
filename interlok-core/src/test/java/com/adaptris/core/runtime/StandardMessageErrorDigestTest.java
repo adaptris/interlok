@@ -20,21 +20,22 @@ import static com.adaptris.core.runtime.AdapterComponentMBean.ADAPTER_PREFIX;
 import static com.adaptris.core.runtime.AdapterComponentMBean.ID_PREFIX;
 import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_MSG_ERR_DIGESTER_TYPE;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.management.JMX;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
-
 import org.apache.commons.io.FileCleaningTracker;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -53,20 +54,15 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
   protected transient Log logR = LogFactory.getLog(this.getClass());
   private static FileCleaningTracker cleaner = new FileCleaningTracker();
 
-  public StandardMessageErrorDigestTest(String name) {
-    super(name);
+  public StandardMessageErrorDigestTest() {
   }
 
   @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
-  }
-
+  @Test
   public void testSetMaxCount() throws Exception {
     StandardMessageErrorDigester digester = createDigester();
     assertEquals(StandardMessageErrorDigester.MAX_MESSAGES, digester.getDigestMaxSize());
@@ -74,7 +70,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
     assertEquals(10, digester.getDigestMaxSize());
   }
 
-
+  @Test
   public void testDigest() throws Exception {
     StandardMessageErrorDigester digester = createDigester();
     File tempDir = Files.createTempDirectory(this.getClass().getSimpleName()).toFile();
@@ -94,6 +90,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testDigest_NoException() throws Exception {
     StandardMessageErrorDigester digester = createDigester();
     try {
@@ -114,6 +111,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testAddToAdapterManager() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -123,6 +121,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
     assertTrue(adapterManager.getChildRuntimeInfoComponents().contains(digesterObj));
   }
 
+  @Test
   public void testAddToAdapterManager_NoUniqueId() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -132,6 +131,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
     assertEquals(1, adapterManager.getChildRuntimeInfoComponents().size());
   }
 
+  @Test
   public void testMBean_JMXRegistration() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -152,6 +152,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
 
   }
 
+  @Test
   public void testMBean_GetMessageDigest() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -179,6 +180,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_GetMessageDigestMultipleWorkflow() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -218,6 +220,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_getDigestSubset_FromIndex() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -248,6 +251,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_getDigestSubset_FromToIndex() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -279,6 +283,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testGetParentRuntimeInfo() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -302,6 +307,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_RemoveDigestEntry_ByEntry() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -333,6 +339,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_RemoveDigestEntry_ByEntry_WithDelete() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -366,6 +373,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_RemoveDigestEntry_ByMessageId() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -397,6 +405,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_RemoveDigestEntry_ByMessageId_WithDelete() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -450,6 +459,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
     return msgs;
   }
 
+  @Test
   public void testTotalCount_AcrossLifecycle() throws Exception {
     StandardMessageErrorDigester digester = createDigester();
     doDigesting(digester, "testTotalCount_AcrossLifecycle", null);

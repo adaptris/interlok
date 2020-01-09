@@ -16,6 +16,8 @@
 
 package com.adaptris.core.lms;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
@@ -24,6 +26,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.apache.oro.io.Perl5FilenameFilter;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.DefaultAdaptrisMessageImp;
@@ -43,10 +46,7 @@ public class LargeFsConsumerTest extends FsMessageConsumerTest {
 
   private static final GuidGenerator GUID = new GuidGenerator();
 
-  public LargeFsConsumerTest(java.lang.String testName) {
-    super(testName);
-  }
-
+  @Test
   public void testConsumeWithAlternateFactory() throws Exception {
     String subDir = GUID.safeUUID();
     MockMessageListener stub = new MockMessageListener(10);
@@ -73,6 +73,7 @@ public class LargeFsConsumerTest extends FsMessageConsumerTest {
     }
   }
 
+  @Test
   public void testConsume_WithEncoder() throws Exception {
     String subDir = GUID.safeUUID();
     MockMessageListener stub = new MockMessageListener(10);
@@ -98,6 +99,7 @@ public class LargeFsConsumerTest extends FsMessageConsumerTest {
     }
   }
 
+  @Test
   public void testConsume_WithUnsupportedEncoder() throws Exception {
     String subDir = GUID.safeUUID();
     MockMessageListener stub = new MockMessageListener(10);

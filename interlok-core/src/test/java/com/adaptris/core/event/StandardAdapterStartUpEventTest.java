@@ -16,6 +16,8 @@
 
 package com.adaptris.core.event;
 
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.BaseCase;
@@ -28,16 +30,20 @@ public class StandardAdapterStartUpEventTest extends BaseCase {
       + "  <creation-time>1431347295942</creation-time>" + "  <was-successful>true</was-successful>"
       + "  <compressed-adapter-xml>...</compressed-adapter-xml>" + "  <adapter>...</adapter>"
       + "</standard-adapter-start-up-event>";
-  public StandardAdapterStartUpEventTest(java.lang.String testName) {
-    super(testName);
+
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testSetAdapter() throws Exception {
     StandardAdapterStartUpEvent evt = new StandardAdapterStartUpEvent();
     Adapter adapter = new Adapter();
     evt.setAdapter(adapter);
   }
 
+  @Test
   public void testMarshalledHasNoAdapter() throws Exception {
     StandardAdapterStartUpEvent event = new StandardAdapterStartUpEvent();
     Adapter adapter = new Adapter();
@@ -49,6 +55,7 @@ public class StandardAdapterStartUpEventTest extends BaseCase {
     System.out.println("mEvent unmarshalled - " + mEvent.toString());
   }
 
+  @Test
   public void testLegacyUnmarshal() throws Exception {
     AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
     StandardAdapterStartUpEvent evt = (StandardAdapterStartUpEvent) m.unmarshal(LEGACY_EVENT_XML);

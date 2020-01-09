@@ -16,12 +16,17 @@
 
 package com.adaptris.core.services.splitter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMessageFactory;
@@ -34,10 +39,6 @@ import com.adaptris.core.services.WaitService;
 import com.adaptris.core.stubs.StubMessageFactory;
 import com.adaptris.core.util.CloseableIterable;
 
-/**
- * @author lchan
- * @author $Author: lchan $
- */
 public abstract class SplitterCase extends SplitterServiceExample {
 
   public static final String XML_MESSAGE = "<?xml version=\"1.0\" "
@@ -50,10 +51,6 @@ public abstract class SplitterCase extends SplitterServiceExample {
   public static final String XML_WITH_DOCTYPE = "<?xml version=\"1.0\"?>\n" + "<!DOCTYPE document [\n"
       + "<!ENTITY LOCAL_ENTITY 'entity'>\n" + "<!ENTITY % StandardInfo SYSTEM \"../StandardInfo.dtd\">\n" + "%StandardInfo;\n"
       + "]>\n" + "<document>\n" + "</document>\n";
-
-  public SplitterCase(String name) {
-    super(name);
-  }
 
   static BasicMessageSplitterService createBasic(MessageSplitter ms) {
     BasicMessageSplitterService service = new BasicMessageSplitterService();
@@ -124,6 +121,7 @@ public abstract class SplitterCase extends SplitterServiceExample {
         out.toByteArray());
   }
 
+  @Test
   public void testSetMessageFactory() throws Exception {
     MessageSplitterImp splitter = createSplitterForTests();
     assertNull(splitter.getMessageFactory());
@@ -142,6 +140,7 @@ public abstract class SplitterCase extends SplitterServiceExample {
     assertEquals(StubMessageFactory.class, splitter.selectFactory(new StubMessageFactory().newMessage()).getClass());
   }
 
+  @Test
   public void testSetCopyMetadata() throws Exception {
     MessageSplitterImp splitter = createSplitterForTests();
     assertNull(splitter.getCopyMetadata());
@@ -155,6 +154,7 @@ public abstract class SplitterCase extends SplitterServiceExample {
     assertTrue(splitter.copyMetadata());
   }
 
+  @Test
   public void testSetCopyObjectMetadata() throws Exception {
     MessageSplitterImp splitter = createSplitterForTests();
     assertNull(splitter.getCopyObjectMetadata());

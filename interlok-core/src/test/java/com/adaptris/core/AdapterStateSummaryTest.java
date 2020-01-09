@@ -15,7 +15,12 @@
 */
 
 package com.adaptris.core;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
@@ -23,23 +28,16 @@ import com.adaptris.util.KeyValuePairSet;
 public class AdapterStateSummaryTest extends BaseCase {
   private static final String DEFAULT_KEY = "DEFAULT";
 
-  public AdapterStateSummaryTest(String name) {
-    super(name);
+  public AdapterStateSummaryTest() {
   }
 
-
-  @Override
-  public void setUp() throws Exception {
-  }
-
-  @Override
-  public void tearDown() throws Exception {
-  }
-
+  @Test
   public void testAdapterStateSummary() throws Exception {
+
     assertNotNull(new AdapterStateSummary());
   }
 
+  @Test
   public void testAdapterStateSummaryAdapter() throws Exception {
     Adapter a = new Adapter();
     a.setUniqueId(DEFAULT_KEY);
@@ -53,6 +51,7 @@ public class AdapterStateSummaryTest extends BaseCase {
     assertEquals(0, summary.getChannelStates().size());
   }
 
+  @Test
   public void testAdapterStateSummaryAdapterInit() throws Exception {
     Adapter a = new Adapter();
     a.setUniqueId(DEFAULT_KEY);
@@ -65,6 +64,7 @@ public class AdapterStateSummaryTest extends BaseCase {
     assertNull(summary.getLastStartTime());
   }
 
+  @Test
   public void testAdapterStateSummaryAdapterStart() throws Exception {
     Adapter a = new Adapter();
     a.setUniqueId(DEFAULT_KEY);
@@ -77,7 +77,8 @@ public class AdapterStateSummaryTest extends BaseCase {
     assertNotNull(summary.getLastStopTime());
     assertNotNull(summary.getLastStartTime());
   }
-  
+
+  @Test
   public void testSetAdapterStateStringComponentState() throws Exception {
     Adapter a = new Adapter();
     a.setUniqueId(DEFAULT_KEY);
@@ -100,7 +101,7 @@ public class AdapterStateSummaryTest extends BaseCase {
     }
   }
 
-
+  @Test
   public void testSetAdapterStateKeyValuePair() {
     AdapterStateSummary s1 = new AdapterStateSummary();
     s1.setAdapterState(new KeyValuePair(DEFAULT_KEY, ClosedState.getInstance().getClass().getName()));
@@ -129,6 +130,7 @@ public class AdapterStateSummaryTest extends BaseCase {
   }
 
 
+  @Test
   public void testAddChannelStateStringComponentState() {
     AdapterStateSummary s1 = new AdapterStateSummary();
     s1.addChannelState(DEFAULT_KEY, ClosedState.getInstance());
@@ -151,6 +153,7 @@ public class AdapterStateSummaryTest extends BaseCase {
   }
 
 
+  @Test
   public void testAddChannelStateKeyValuePair() {
     AdapterStateSummary s1 = new AdapterStateSummary();
     s1.addChannelState(new KeyValuePair(DEFAULT_KEY, ClosedState.getInstance().getClass().getName()));
@@ -176,12 +179,13 @@ public class AdapterStateSummaryTest extends BaseCase {
   }
 
 
+  @Test
   public void testGetChannelStates() {
     AdapterStateSummary s1 = new AdapterStateSummary();
     assertEquals(0, s1.getChannelStates().size());
   }
 
-
+  @Test
   public void testSetChannelStates() {
     AdapterStateSummary s1 = new AdapterStateSummary();
     s1.setChannelStates(new KeyValuePairSet());
@@ -189,12 +193,14 @@ public class AdapterStateSummaryTest extends BaseCase {
   }
 
 
+  @Test
   public void testToString() {
     AdapterStateSummary s1 = new AdapterStateSummary();
     s1.addChannelState(new KeyValuePair(DEFAULT_KEY, ClosedState.getInstance().getClass().getName()));
     assertNotNull(s1.toString());
   }
 
+  @Test
   public void testRoundTrip() throws Exception {
     Adapter a = new Adapter();
     a.setUniqueId(DEFAULT_KEY);
@@ -204,4 +210,10 @@ public class AdapterStateSummaryTest extends BaseCase {
     AdapterStateSummary s2 = (AdapterStateSummary) cm.unmarshal(xml);
     assertRoundtripEquality(s1, s2);
   }
+
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
 }

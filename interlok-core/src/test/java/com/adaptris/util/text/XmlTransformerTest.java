@@ -18,20 +18,16 @@ package com.adaptris.util.text;
 import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_INPUT;
 import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_TRANSFORM_URL;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.HashMap;
-
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.stubs.MessageHelper;
@@ -50,6 +46,10 @@ public class XmlTransformerTest extends BaseCase {
   public void tearDown() throws Exception {
   }
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
   @Test
   public void testTransform() throws Exception {
     XmlTransformerFactory factory = new XsltTransformerFactory();

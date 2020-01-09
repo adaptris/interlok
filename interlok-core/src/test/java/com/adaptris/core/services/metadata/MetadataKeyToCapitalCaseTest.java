@@ -16,8 +16,10 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import org.apache.commons.lang3.text.WordUtils;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 
@@ -32,8 +34,9 @@ public class MetadataKeyToCapitalCaseTest extends MetadataKeyCaseChanger {
   private static final String HELLO_WORLD = "Hello World";
   private static final String METADATA_VALUE = "VALUE";
 
-  public MetadataKeyToCapitalCaseTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override

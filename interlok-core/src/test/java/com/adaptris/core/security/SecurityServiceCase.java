@@ -21,10 +21,14 @@ import static com.adaptris.core.security.JunitSecurityHelper.KEYSTORE_TYPE;
 import static com.adaptris.core.security.JunitSecurityHelper.KEYSTORE_URL;
 import static com.adaptris.core.security.JunitSecurityHelper.SECURITY_ALIAS;
 import static com.adaptris.core.security.JunitSecurityHelper.SECURITY_PASSWORD;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.File;
 import java.util.ArrayList;
-
+import org.junit.Test;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.security.EncryptionAlgorithm;
@@ -39,12 +43,9 @@ public abstract class SecurityServiceCase extends SecurityServiceExample {
   protected static final String FAIL = "FAIL";
   protected static final String EXAMPLE_MSG = "The quick brown fox jumps over the lazy dog.";
 
-  public SecurityServiceCase(String name) {
-    super(name);
-  }
-
   protected abstract CoreSecurityService create();
 
+  @Test
   public void testSetEncryptionAlgorithm() throws Exception {
     CoreSecurityService input = create();
     assertNotNull(input.getEncryptionAlgorithm());
@@ -62,6 +63,7 @@ public abstract class SecurityServiceCase extends SecurityServiceExample {
     assertEquals(newAlg, input.getEncryptionAlgorithm());
   }
 
+  @Test
   public void testSetKeystoreUrls() throws Exception {
     CoreSecurityService input = create();
     ConfiguredUrl url = new ConfiguredUrl(PROPERTIES.getProperty(KEYSTORE_URL), PROPERTIES.getProperty(SECURITY_PASSWORD));
@@ -81,6 +83,7 @@ public abstract class SecurityServiceCase extends SecurityServiceExample {
     assertEquals(newList, input.getKeystoreUrls());
   }
 
+  @Test
   public void testInit_FailedToGetPrivateKey() throws Exception {
     CoreSecurityService input = create();
     input.setPrivateKeyPasswordProvider(new FailingPrivateKeyPasswordProvider());
@@ -96,6 +99,7 @@ public abstract class SecurityServiceCase extends SecurityServiceExample {
     }
   }
 
+  @Test
   public void testInit_NoLocalPartner() throws Exception {
     CoreSecurityService input = create();
     input.setPrivateKeyPasswordProvider(new ConfiguredPrivateKeyPasswordProvider(PROPERTIES.getProperty(SECURITY_PASSWORD)));
@@ -112,6 +116,7 @@ public abstract class SecurityServiceCase extends SecurityServiceExample {
     }
   }
 
+  @Test
   public void testInit_NoRemotePartner() throws Exception {
     CoreSecurityService input = create();
     String url = createKeystore();
@@ -126,6 +131,7 @@ public abstract class SecurityServiceCase extends SecurityServiceExample {
     }
   }
 
+  @Test
   public void testInit_InvalidUrl() throws Exception {
     CoreSecurityService input = create();
     input.addKeystoreUrl(new ConfiguredUrl(createDummyKeystoreUrl(), PROPERTIES.getProperty(SECURITY_PASSWORD)));
@@ -145,6 +151,7 @@ public abstract class SecurityServiceCase extends SecurityServiceExample {
     }
   }
 
+  @Test
   public void testInit_Branching() throws Exception {
     CoreSecurityService input = create();
     String url = createKeystore();

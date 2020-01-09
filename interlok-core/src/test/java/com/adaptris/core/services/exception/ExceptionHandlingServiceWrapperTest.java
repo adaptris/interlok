@@ -16,8 +16,11 @@
 
 package com.adaptris.core.services.exception;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import java.util.Arrays;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultEventHandler;
@@ -28,14 +31,13 @@ import com.adaptris.core.services.metadata.AddMetadataService;
 
 public class ExceptionHandlingServiceWrapperTest extends ExceptionServiceExample {
 
-  public ExceptionHandlingServiceWrapperTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+
+  @Test
   public void testWithExceptionFromWrappedServices() throws Exception {
     ExceptionHandlingServiceWrapper service = create();
     service.registerEventHandler(new DefaultEventHandler());
@@ -55,6 +57,7 @@ public class ExceptionHandlingServiceWrapperTest extends ExceptionServiceExample
     assertNull(msg.getMetadataValue("servicesComplete"));
   }
 
+  @Test
   public void testNoExceptionFromWrappedServices() throws Exception {
     AddMetadataService s1 = new AddMetadataService();
     s1.addMetadataElement("servicesComplete", "true");

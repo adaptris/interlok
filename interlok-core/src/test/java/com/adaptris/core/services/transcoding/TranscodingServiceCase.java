@@ -19,8 +19,7 @@ public abstract class TranscodingServiceCase extends ServiceCase {
   static final String TEST_METADATA_VALUE_2 = "World";
   static final String TEST_PAYLOAD = "The quick brown fox jumped over the lazy dog.";
 
-  public TranscodingServiceCase(String name) {
-    super(name);
+  public TranscodingServiceCase() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }

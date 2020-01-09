@@ -18,14 +18,16 @@ package com.adaptris.core.http.jetty;
 
 import static com.adaptris.core.http.jetty.EmbeddedJettyHelper.URL_TO_POST_TO;
 import static com.adaptris.core.http.jetty.EmbeddedJettyHelper.XML_PAYLOAD;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
 import org.eclipse.jetty.util.security.Constraint;
-
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
@@ -59,20 +61,17 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
 
   protected StandardHttpProducer httpProducer;
 
-  public EmbeddedHttpConsumerTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     httpProducer = createProducer();
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-
-  }
-
+  @Test
   public void testMaxStartupWaitTime() throws Exception {
     EmbeddedConnection c = new EmbeddedConnection();
     TimeInterval newInterval = new TimeInterval(10L, TimeUnit.SECONDS);
@@ -87,6 +86,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
     assertEquals(defaultInterval.toMilliseconds(), c.maxStartupWaitTimeMs());
   }
 
+  @Test
   public void testBasicConsumeWorkflow_ConsumeDestinationContainsURL() throws Exception {
     EmbeddedJettyHelper helper = new EmbeddedJettyHelper();
     helper.startServer();
@@ -110,6 +110,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @Test
   public void testBasicConsumeWorkflow() throws Exception {
     EmbeddedJettyHelper helper = new EmbeddedJettyHelper();
     helper.startServer();
@@ -172,7 +173,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
     }
   }
 
-
+  @Test
   public void testBasicConsumeWorkflow_AcrossRestarts() throws Exception {
     EmbeddedJettyHelper helper = new EmbeddedJettyHelper();
     helper.startServer();
@@ -230,6 +231,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @Test
   public void testChannelStarted_WorkflowStopped() throws Exception {
     EmbeddedJettyHelper helper = new EmbeddedJettyHelper();
     helper.startServer();
@@ -262,6 +264,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @Test
   public void testChannelStarted_MultipleWorkflows_OneWorkflowStopped() throws Exception {
     EmbeddedJettyHelper helper = new EmbeddedJettyHelper();
     helper.startServer();
@@ -302,6 +305,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @Test
   public void testPoolingWorkflow_WithInterceptor() throws Exception {
 
     EmbeddedJettyHelper helper = new EmbeddedJettyHelper();
@@ -336,6 +340,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @Test
   public void testPoolingWorkflow_WithoutInterceptor() throws Exception {
     EmbeddedJettyHelper helper = new EmbeddedJettyHelper();
     helper.startServer();
@@ -368,7 +373,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
     }
   }
 
-
+  @Test
   public void testStart_WithWait() throws Exception {
     EmbeddedJettyHelper helper = new EmbeddedJettyHelper();
     EmbeddedConnection connection = new EmbeddedConnection();

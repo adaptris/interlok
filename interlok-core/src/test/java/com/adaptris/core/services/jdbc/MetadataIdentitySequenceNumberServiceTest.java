@@ -16,11 +16,13 @@
 
 package com.adaptris.core.services.jdbc;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ComponentLifecycle;
@@ -43,13 +45,18 @@ public class MetadataIdentitySequenceNumberServiceTest extends SequenceNumberCas
 
   private static final String BASE_DIR_KEY = "SequenceNumberServiceExamples.baseDir";
 
-  public MetadataIdentitySequenceNumberServiceTest(String name) {
-    super(name);
+  public MetadataIdentitySequenceNumberServiceTest() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
   }
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
+  @Test
   public void testMessageHasNoIdentityMetadata() throws Exception {
     createDatabase();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -63,10 +70,12 @@ public class MetadataIdentitySequenceNumberServiceTest extends SequenceNumberCas
     }
   }
 
+  @Test
   public void test_Failure() throws Exception {
     createDatabase();
     AdaptrisMessage msg = createMessageForTests();
     MetadataIdentitySequenceNumberService service = configureForTests(new MetadataIdentitySequenceNumberService() {
+      @Override
       protected Connection getConnection(AdaptrisMessage msg) throws SQLException {
         throw new SQLException();
       }
@@ -80,10 +89,12 @@ public class MetadataIdentitySequenceNumberServiceTest extends SequenceNumberCas
     }
   }
 
+  @Override
   protected MetadataIdentitySequenceNumberService createService() {
     return new MetadataIdentitySequenceNumberService();
   }
 
+  @Override
   protected MetadataIdentitySequenceNumberService createServiceForTests() {
     return configureForTests(createService(), true);
   }
@@ -100,6 +111,7 @@ public class MetadataIdentitySequenceNumberServiceTest extends SequenceNumberCas
     return service;
   }
 
+  @Test
   public void testService_PooledConnection() throws Exception {
     int maxServices = 5;
     final int iterations = 5;
@@ -137,7 +149,8 @@ public class MetadataIdentitySequenceNumberServiceTest extends SequenceNumberCas
       Thread.currentThread().setName(name);
     }
   }
-  
+
+  @Test
   public void testService_AdvancedPooledConnection() throws Exception {
     int maxServices = 5;
     final int iterations = 5;
@@ -196,7 +209,7 @@ public class MetadataIdentitySequenceNumberServiceTest extends SequenceNumberCas
     return service;
   }
 
-  @Override
+  @Test
   public void testBackReferences() throws Exception {
     this.testBackReferences(createServiceForTests());
   }

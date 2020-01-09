@@ -16,6 +16,12 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.MetadataCollection;
@@ -24,8 +30,9 @@ import com.adaptris.core.metadata.RegexMetadataFilter;
 
 public class CreateQueryStringFromMetadataTest extends MetadataServiceExample {
 
-  public CreateQueryStringFromMetadataTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   public CreateQueryStringFromMetadata createService() {
@@ -53,6 +60,7 @@ public class CreateQueryStringFromMetadataTest extends MetadataServiceExample {
     assertEquals("&", service.separator());
   }
 
+  @Test
   public void testService_SimpleQueryString() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata("param1", "one");
@@ -65,6 +73,7 @@ public class CreateQueryStringFromMetadataTest extends MetadataServiceExample {
     assertTrue(msg.getMetadataValue("resultKey").contains("param3=three"));
   }
 
+  @Test
   public void testService_WithException() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     CreateQueryStringFromMetadata service = createService().withMetadataFilter(new MetadataFilterImpl() {
@@ -83,6 +92,7 @@ public class CreateQueryStringFromMetadataTest extends MetadataServiceExample {
     }
   }
 
+  @Test
   public void testService_SimpleQueryString_NoQueryPrefix() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     CreateQueryStringFromMetadata service = createService();
@@ -97,13 +107,14 @@ public class CreateQueryStringFromMetadataTest extends MetadataServiceExample {
     assertFalse(msg.getMetadataValue("resultKey").startsWith("?"));
   }
 
-
+  @Test
   public void testService_NoOutput() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     execute(createService(), msg);
     assertEquals("", msg.getMetadataValue("resultKey"));
   }
 
+  @Test
   public void testService_ComplexQueryString() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata("param1", "this is a field");

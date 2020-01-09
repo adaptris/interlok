@@ -19,7 +19,11 @@ package com.adaptris.core.http.jetty;
 import static com.adaptris.core.http.jetty.JettyHelper.createChannel;
 import static com.adaptris.core.http.jetty.JettyHelper.createConsumer;
 import static com.adaptris.core.http.jetty.JettyHelper.createWorkflow;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -27,9 +31,8 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.Set;
-
 import javax.servlet.http.HttpServletResponse;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageEncoderImp;
 import com.adaptris.core.Channel;
@@ -70,13 +73,12 @@ public class StandardResponseProducerTest extends HttpProducerExample {
   protected static final String URL_TO_POST_TO = "/url/to/post/to";
   protected static final String TEXT = "ABCDEFG";
 
-  public StandardResponseProducerTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void setUp() throws Exception {}
-
+  @Test
   public void testNoObjectMetadata() throws Exception {
     StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.OK_200);
     StandaloneProducer p = new StandaloneProducer(responder);
@@ -89,6 +91,7 @@ public class StandardResponseProducerTest extends HttpProducerExample {
     }
   }
 
+  @Test
   public void testDoService() throws Exception {
     StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.OK_200);
     HttpConnection httpConnection = createConnection();
@@ -110,6 +113,7 @@ public class StandardResponseProducerTest extends HttpProducerExample {
     }
   }
 
+  @Test
   public void testDoService_NoFlush() throws Exception {
     StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.OK_200);
     responder.setFlushBuffer(Boolean.FALSE);
@@ -131,6 +135,7 @@ public class StandardResponseProducerTest extends HttpProducerExample {
     }
   }
 
+  @Test
   public void testResponseWithError() throws Exception {
     StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.INTERNAL_ERROR_500);
     HttpConnection httpConnection = createConnection();
@@ -151,6 +156,7 @@ public class StandardResponseProducerTest extends HttpProducerExample {
     }
   }
 
+  @Test
   public void testResponse_ConfiguredResponseHeaders() throws Exception {
     StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.OK_200);
     ConfiguredResponseHeaderProvider headers = new ConfiguredResponseHeaderProvider(new KeyValuePair(CUSTOM_HEADER1, CUSTOM_VALUE1),
@@ -177,6 +183,7 @@ public class StandardResponseProducerTest extends HttpProducerExample {
     }
   }
 
+  @Test
   public void testResponse_MetadataResponseHeaders() throws Exception {
     StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.OK_200);
     RegexMetadataFilter filter = new RegexMetadataFilter();
@@ -206,6 +213,7 @@ public class StandardResponseProducerTest extends HttpProducerExample {
     }
   }
 
+  @Test
   public void testResponse_NoOpResponseHeaders() throws Exception {
     StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.OK_200);
     responder.setResponseHeaderProvider(new NoOpResponseHeaderProvider());
@@ -227,7 +235,7 @@ public class StandardResponseProducerTest extends HttpProducerExample {
     }
   }
 
-
+  @Test
   public void testResponse_MetadataContentType() throws Exception {
     StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.OK_200);
     responder.setContentTypeProvider(new MetadataContentTypeProvider("MyContentType"));
@@ -253,6 +261,7 @@ public class StandardResponseProducerTest extends HttpProducerExample {
     }
   }
 
+  @Test
   public void testResponse_MetadataContentType_MissingMetadata() throws Exception {
     StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.OK_200);
     responder.setContentTypeProvider(new MetadataContentTypeProvider("MyContentType"));
@@ -273,6 +282,7 @@ public class StandardResponseProducerTest extends HttpProducerExample {
     }
   }
 
+  @Test
   public void testResponse_MultipleAttempts() throws Exception {
     StandardResponseProducer r1 = new StandardResponseProducer(HttpStatus.OK_200);
     // 2nd responder will not fire...
@@ -300,6 +310,7 @@ public class StandardResponseProducerTest extends HttpProducerExample {
     }
   }
 
+  @Test
   public void testResponseWithZeroLengthPayload() throws Exception {
     StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.OK_200);
     PayloadFromMetadataService pms = new PayloadFromMetadataService();
@@ -325,6 +336,7 @@ public class StandardResponseProducerTest extends HttpProducerExample {
     }
   }
 
+  @Test
   public void testResponseWithEncoder() throws Exception {
     StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.OK_200);
     responder.setSendPayload(true);
@@ -347,6 +359,7 @@ public class StandardResponseProducerTest extends HttpProducerExample {
     }
   }
 
+  @Test
   public void testResponseWithNoSendPayload() throws Exception {
     StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.OK_200);
     responder.setSendPayload(false);
@@ -366,6 +379,7 @@ public class StandardResponseProducerTest extends HttpProducerExample {
     }
   }
 
+  @Test
   public void testResponse_CompositeResponseHeaders() throws Exception {
     StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.OK_200);
     responder.setSendPayload(false);

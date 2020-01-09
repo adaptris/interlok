@@ -16,6 +16,7 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -33,13 +34,16 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TestName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.core.stubs.MessageCounter;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.stubs.ObjectUtils;
+import com.adaptris.core.stubs.UpgradedToJunit4;
 import com.adaptris.core.util.LifecycleHelper;
-import junit.framework.TestCase;
 
 /**
  * <p>
@@ -48,7 +52,7 @@ import junit.framework.TestCase;
  * checking files exist and deleting them.
  * </p>
  */
-public abstract class BaseCase extends TestCase {
+public abstract class BaseCase implements UpgradedToJunit4 {
   public static final long MAX_WAIT = 65000;
   public static final int DEFAULT_WAIT_INTERVAL = 100;
 
@@ -68,13 +72,19 @@ public abstract class BaseCase extends TestCase {
 
   protected transient Log log = LogFactory.getLog(this.getClass().getName());
   protected static transient Logger slf4jLogger = LoggerFactory.getLogger(BaseCase.class);
+  @Rule
+  public TestName testName = new TestName();
 
-  public BaseCase() {
-    super();
+  @Before
+  public void beforeTests() {
+    if (!isAnnotatedForJunit4()) {
+      throw new RuntimeException(this.getClass().getCanonicalName()
+          + ": isAnnotatedForJunit4() method returned false, please add annotations, and override the method.");
+    }
   }
 
-  public BaseCase(String name) {
-    super(name);
+  public String getName() {
+    return testName.getMethodName();
   }
 
   public static void execute(StandaloneConsumer c, StandaloneProducer p, AdaptrisMessage m, MockMessageListener stub)
@@ -305,5 +315,12 @@ public abstract class BaseCase extends TestCase {
     Thread.currentThread().setName(newName);
     return name;
   }
+
+  
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+  
 
 }

@@ -15,29 +15,26 @@
 */
 package com.adaptris.core.transaction;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import javax.jms.XAConnectionFactory;
 import javax.transaction.xa.XAResource;
-
+import org.junit.Test;
 import org.mockito.Mockito;
-
 import com.adaptris.core.Adapter;
 import com.adaptris.core.BaseCase;
 
 public class SharedTransactionManagerTest extends BaseCase {
 
-  public SharedTransactionManagerTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  public void setUp() throws Exception {
-    super.setUp();
-  }
-
-  public void tearDown() throws Exception {
-    super.tearDown();
-  }
-
-
+  @Test
   public void testSharedTransactionManager_StandardLookup() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
@@ -54,6 +51,7 @@ public class SharedTransactionManagerTest extends BaseCase {
     }
   }
 
+  @Test
   public void testSharedTransactionManager_CompEnvLookupName() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
@@ -70,7 +68,7 @@ public class SharedTransactionManagerTest extends BaseCase {
     }
   }
 
-
+  @Test
   public void testSharedTransactionManager_NoName() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
@@ -86,6 +84,7 @@ public class SharedTransactionManagerTest extends BaseCase {
     }
   }
 
+  @Test
   public void testSharedTransactionManager_transactions() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
@@ -108,6 +107,7 @@ public class SharedTransactionManagerTest extends BaseCase {
     }
   }
 
+  @Test
   public void testSharedTransactionManager_XAResources() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());

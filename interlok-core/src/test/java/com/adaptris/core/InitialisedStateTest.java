@@ -15,19 +15,23 @@
 */
 
 package com.adaptris.core;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.stubs.MockConnection;
 
 public class InitialisedStateTest extends ComponentStateCase {
 
-  public InitialisedStateTest(java.lang.String testName) {
-    super(testName);
+  public InitialisedStateTest() {
   }
 
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testInstance() throws Exception {
     InitialisedState one = InitialisedState.getInstance();
     assertTrue(one == InitialisedState.getInstance());
@@ -35,6 +39,7 @@ public class InitialisedStateTest extends ComponentStateCase {
     assertEquals(InitialisedState.class.getSimpleName(), one.toString());
   }
 
+  @Test
   public void testInitialised_To_Initialised() throws Exception {
     MockConnection component = new MockConnection();
     component.requestInit();
@@ -44,6 +49,7 @@ public class InitialisedStateTest extends ComponentStateCase {
     assertEquals(1, component.getInitCount());
   }
 
+  @Test
   public void testInitialised_To_Started() throws Exception {
     MockConnection component = new MockConnection();
     component.requestInit();
@@ -56,6 +62,7 @@ public class InitialisedStateTest extends ComponentStateCase {
 
   }
 
+  @Test
   public void testInitialised_To_Stopped() throws Exception {
     MockConnection component = new MockConnection();
     component.requestInit();
@@ -68,6 +75,7 @@ public class InitialisedStateTest extends ComponentStateCase {
     assertEquals(0, component.getStopCount());
   }
 
+  @Test
   public void testInitialised_To_Closed() throws Exception {
     MockConnection component = new MockConnection();
     component.requestInit();
@@ -80,6 +88,7 @@ public class InitialisedStateTest extends ComponentStateCase {
     assertEquals(1, component.getCloseCount());
   }
 
+  @Test
   public void testRestart() throws Exception {
     MockConnection component = new MockConnection();
     component.requestInit();

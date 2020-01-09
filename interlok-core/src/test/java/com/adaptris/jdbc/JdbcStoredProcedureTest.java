@@ -15,7 +15,9 @@
 */
 
 package com.adaptris.jdbc;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import java.sql.Connection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -24,7 +26,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
-
+import org.junit.Test;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.jdbc.JdbcConnection;
@@ -32,8 +34,10 @@ import com.adaptris.core.util.LifecycleHelper;
 
 public class JdbcStoredProcedureTest extends BaseCase {
 
-  public JdbcStoredProcedureTest(String name) {
-    super(name);
+
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   private static final String JDBC_STOREDPROC_TESTS_ENABLED = "jdbc.storedproc.tests.enabled";
@@ -86,6 +90,7 @@ public class JdbcStoredProcedureTest extends BaseCase {
       connection.close();
   }
 
+  @Test
   public void testNoParams() throws Exception {
     if (testsEnabled) {
       storedProcedure.setName("no_params");
@@ -94,7 +99,8 @@ public class JdbcStoredProcedureTest extends BaseCase {
       assertEquals(true, procedureResult.isHasResultSet());
     }
   }
-  
+
+  @Test
   public void testOneIn() throws Exception {
     if(testsEnabled) {
       storedProcedure.setName("one_in");
@@ -106,7 +112,8 @@ public class JdbcStoredProcedureTest extends BaseCase {
       assertEquals(true, procedureResult.isHasResultSet());
     }
   }
-  
+
+  @Test
   public void testManyIn() throws Exception {
     if(testsEnabled) {
       storedProcedure.setName("many_in");
@@ -121,7 +128,8 @@ public class JdbcStoredProcedureTest extends BaseCase {
       assertEquals(true, procedureResult.isHasResultSet());
     }
   }
-  
+
+  @Test
   public void testOneOut() throws Exception {
     if(testsEnabled) {
       storedProcedure.setName("one_out");
@@ -134,7 +142,8 @@ public class JdbcStoredProcedureTest extends BaseCase {
       assertEquals(31, Integer.parseInt(procedureResult.getParameters().get(0).getOutValue().toString()));
     }
   }
-  
+
+  @Test
   public void testManyOut() throws Exception {
     if(testsEnabled) {
       storedProcedure.setName("many_out");
@@ -155,7 +164,8 @@ public class JdbcStoredProcedureTest extends BaseCase {
       assertEquals(31, Integer.parseInt(procedureResult.getParameters().get(2).getOutValue().toString()));
     }
   }
-  
+
+  @Test
   public void testOneInout() throws Exception {
     if(testsEnabled) {
       storedProcedure.setName("one_inout");
@@ -169,7 +179,8 @@ public class JdbcStoredProcedureTest extends BaseCase {
       assertEquals(105, Integer.parseInt(procedureResult.getParameters().get(0).getOutValue().toString()));
     }
   }
-  
+
+  @Test
   public void testOneInOneOut() throws Exception {
     if(testsEnabled) {
       storedProcedure.setName("one_in_one_out");
@@ -186,7 +197,8 @@ public class JdbcStoredProcedureTest extends BaseCase {
       assertEquals(15, Integer.parseInt(procedureResult.getParameters().get(1).getOutValue().toString()));
     }
   }
-  
+
+  @Test
   public void testManyInManyOut() throws Exception {
     if(testsEnabled) {
       storedProcedure.setName("many_in_many_out");
@@ -209,7 +221,8 @@ public class JdbcStoredProcedureTest extends BaseCase {
       assertEquals("Emile Heskey", procedureResult.getParameters().get(4).getOutValue());
     }
   }
-  
+
+  @Test
   public void testOneInoutOneIn() throws Exception {
     if(testsEnabled) {
       storedProcedure.setName("one_inout_one_in");
@@ -226,7 +239,8 @@ public class JdbcStoredProcedureTest extends BaseCase {
       assertEquals(14500500, Integer.parseInt(procedureResult.getParameters().get(0).getOutValue().toString()));
     }
   }
-  
+
+  @Test
   public void testOneInoutOneOut() throws Exception {
     if(testsEnabled) {
       storedProcedure.setName("one_inout_one_out");
@@ -244,7 +258,8 @@ public class JdbcStoredProcedureTest extends BaseCase {
       assertEquals("Sander Westerveld", procedureResult.getParameters().get(1).getOutValue());
     }
   }
-  
+
+  @Test
   public void testOneInoutOneInOneOut() throws Exception {
     if(testsEnabled) {
       storedProcedure.setName("one_inout_one_in_one_out");
@@ -264,7 +279,8 @@ public class JdbcStoredProcedureTest extends BaseCase {
       assertEquals("Peter Crouch", procedureResult.getParameters().get(2).getOutValue());
     }
   }
-  
+
+  @Test
   public void testOneInoutOneInOneOutExecuteExecutor() throws Exception {
     if(testsEnabled) {
       storedProcedure.setName("one_inout_one_in_one_out");
@@ -285,7 +301,8 @@ public class JdbcStoredProcedureTest extends BaseCase {
       assertEquals("Peter Crouch", procedureResult.getParameters().get(2).getOutValue());
     }
   }
-  
+
+  @Test
   public void testNoNamesOneInoutOneInOneOut() throws Exception {
     if(testsEnabled) {
       storedProcedure.setName("one_inout_one_in_one_out");
@@ -305,7 +322,8 @@ public class JdbcStoredProcedureTest extends BaseCase {
       assertEquals("Peter Crouch", procedureResult.getParameters().get(2).getOutValue());
     }
   }
-  
+
+  @Test
   public void testOneResultsetExecuteUpdate() throws Exception {
     if(testsEnabled) {
       storedProcedure.setName("one_resultset");
@@ -319,7 +337,8 @@ public class JdbcStoredProcedureTest extends BaseCase {
       }
     }
   }
-  
+
+  @Test
   public void testOneResultsetExecuteQuery() throws Exception {
     if(testsEnabled) {
       storedProcedure.setName("one_resultset");
@@ -332,7 +351,8 @@ public class JdbcStoredProcedureTest extends BaseCase {
       assertEquals(5, countRows(procedureResult.getResultSet(0).getRows()));  
     }
   }
-  
+
+  @Test
   public void testOneResultset() throws Exception {
     if(testsEnabled) {
       storedProcedure.setName("one_resultset");
@@ -344,7 +364,8 @@ public class JdbcStoredProcedureTest extends BaseCase {
       assertEquals(5, countRows(procedureResult.getResultSet(0).getRows()));  
     }
   }
-  
+
+  @Test
   public void testManyResultsets() throws Exception {
     if(testsEnabled) {
       storedProcedure.setName("many_resultsets");
@@ -358,7 +379,8 @@ public class JdbcStoredProcedureTest extends BaseCase {
       assertEquals(5, countRows(procedureResult.getResultSet(1).getRows()));  
     }
   }
-  
+
+  @Test
   public void testStoredProcedureMultiParamConstructor() throws Exception {
     if(testsEnabled) {
       StoredProcedure storedProcedure = new StoredProcedure("many_resultsets", new ArrayList<StoredProcedureParameter>(), connection, statementCreator);
@@ -373,7 +395,8 @@ public class JdbcStoredProcedureTest extends BaseCase {
       assertEquals(5, countRows(procedureResult.getResultSet(1).getRows()));  
     }
   }
-  
+
+  @Test
   public void testStoredProcedureNameDoesntExist() throws Exception {
     if(testsEnabled) {
       StoredProcedure storedProcedure = new StoredProcedure("I_do_not_exist", new ArrayList<StoredProcedureParameter>(), connection, statementCreator);

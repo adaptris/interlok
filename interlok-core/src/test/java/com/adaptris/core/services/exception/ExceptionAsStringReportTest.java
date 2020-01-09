@@ -16,6 +16,9 @@
 
 package com.adaptris.core.services.exception;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreConstants;
@@ -28,14 +31,13 @@ import com.adaptris.interlok.types.InterlokMessage;
 
 public class ExceptionAsStringReportTest extends ExceptionServiceExample {
 
-  public ExceptionAsStringReportTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+
+  @Test
   public void testDoService_Payload() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));
@@ -44,6 +46,7 @@ public class ExceptionAsStringReportTest extends ExceptionServiceExample {
     assertTrue(msg.getContent().contains("This is the exception"));
   }
 
+  @Test
   public void testDoService_Payload_Exception() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));
@@ -62,6 +65,7 @@ public class ExceptionAsStringReportTest extends ExceptionServiceExample {
     }
   }
 
+  @Test
   public void testDoService_Metadata() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));

@@ -15,12 +15,19 @@
 */
 
 package com.adaptris.core;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.ListIterator;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import org.apache.log4j.Logger;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.PlainIdGenerator;
@@ -30,15 +37,18 @@ public class WorkflowListTest extends BaseCase {
   private IdGenerator idGenerator;
   private Logger log = Logger.getLogger(this.getClass());
 
-  public WorkflowListTest(java.lang.String testName) {
-    super(testName);
-  }
 
   @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
+  @Before
   public void setUp() throws Exception {
     idGenerator = new PlainIdGenerator();
   }
 
+  @Test
   public void testRemoveThenAddAgain() throws Exception {
     WorkflowList list = new WorkflowList();
     Workflow workflow1 = createWorkflow(getName());
@@ -50,6 +60,7 @@ public class WorkflowListTest extends BaseCase {
     assertEquals(1, list.size());
   }
 
+  @Test
   public void testRemoveByObject() throws Exception {
     WorkflowList list = new WorkflowList();
     Workflow workflow1 = createWorkflow(getName());
@@ -59,22 +70,26 @@ public class WorkflowListTest extends BaseCase {
     assertEquals(0, list.size());
   }
 
+  @Test
   public void testRedmine5407() throws Exception {
     testRemoveThenAddAgain();
   }
 
+  @Test
   public void testRemoveNull() throws Exception {
     WorkflowList list = new WorkflowList();
     assertFalse(list.remove(null));
     assertFalse(list.removeWorkflow(null));
   }
 
+  @Test
   public void testRemovePlainObject() throws Exception {
     WorkflowList list = new WorkflowList();
     assertFalse(list.remove(new Object()));
 
   }
 
+  @Test
   public void testSetWorkflows() {
     WorkflowList list = new WorkflowList();
     try {
@@ -90,6 +105,7 @@ public class WorkflowListTest extends BaseCase {
     assertEquals(1, list.size());
   }
 
+  @Test
   public void testSetWorkflowsWithDuplicateID() {
     WorkflowList list = new WorkflowList();
     String id = idGenerator.create(this);
@@ -104,6 +120,7 @@ public class WorkflowListTest extends BaseCase {
     }
   }
 
+  @Test
   public void testAddAllWorkflowsWithDuplicateID() {
     WorkflowList list = new WorkflowList();
     String id = idGenerator.create(this);
@@ -119,6 +136,7 @@ public class WorkflowListTest extends BaseCase {
     }
   }
 
+  @Test
   public void testAddAllAtPosition() {
     WorkflowList list = new WorkflowList();
     Workflow workflow1 = createWorkflow(idGenerator.create(list));
@@ -137,7 +155,7 @@ public class WorkflowListTest extends BaseCase {
     assertEquals(workflow1, list2.get(1));
   }
 
-
+  @Test
   public void testAddDuplicate() {
     WorkflowList list = new WorkflowList();
     StandardWorkflow toAdd = createWorkflow(idGenerator.create(list));
@@ -147,6 +165,7 @@ public class WorkflowListTest extends BaseCase {
     assertEquals(2, list.size());
   }
 
+  @Test
   public void testCollectionConstructor() {
     WorkflowList list = new WorkflowList();
     Workflow workflow1 = createWorkflow(idGenerator.create(list));
@@ -159,6 +178,7 @@ public class WorkflowListTest extends BaseCase {
     assertTrue(list2.contains(workflow1));
   }
 
+  @Test
   public void testAdd() {
     WorkflowList list = new WorkflowList();
     list.add(createWorkflow(idGenerator.create(list)));
@@ -173,6 +193,7 @@ public class WorkflowListTest extends BaseCase {
     assertEquals(1, list.size());
   }
 
+  @Test
   public void testAddAtPosition() {
     WorkflowList list = new WorkflowList();
     list.add(createWorkflow(idGenerator.create(list)));
@@ -193,6 +214,7 @@ public class WorkflowListTest extends BaseCase {
     assertEquals(toAdd, list.get(1));
   }
 
+  @Test
   public void testSetLifecycleStrategy() throws Exception {
     WorkflowList list = new WorkflowList();
     assertNull(list.getLifecycleStrategy());
@@ -203,6 +225,7 @@ public class WorkflowListTest extends BaseCase {
     assertNull(list.getLifecycleStrategy());
   }
 
+  @Test
   public void testGetByInt() {
     WorkflowList list = new WorkflowList();
     Workflow toAdd = createWorkflow(idGenerator.create(list));
@@ -211,6 +234,7 @@ public class WorkflowListTest extends BaseCase {
     assertEquals(toAdd, list.get(1));
   }
 
+  @Test
   public void testSetByInt() {
     WorkflowList list = new WorkflowList();
     list.add(createWorkflow(idGenerator.create(list)));
@@ -222,6 +246,7 @@ public class WorkflowListTest extends BaseCase {
     assertNull(list.getWorkflow("replacedWorkflow"));
   }
 
+  @Test
   public void testGetWorkflows() {
     WorkflowList list = new WorkflowList();
     list.add(createWorkflow(idGenerator.create(list)));
@@ -229,6 +254,7 @@ public class WorkflowListTest extends BaseCase {
     assertEquals(1, list.getWorkflows().size());
   }
 
+  @Test
   public void testIndexOf() {
     WorkflowList list = new WorkflowList();
     list.add(createWorkflow(idGenerator.create(list)));
@@ -239,6 +265,7 @@ public class WorkflowListTest extends BaseCase {
     assertEquals(2, list.indexOf(toAdd));
   }
 
+  @Test
   public void testIterator() {
     WorkflowList list = new WorkflowList();
     list.add(createWorkflow(idGenerator.create(list)));
@@ -247,6 +274,7 @@ public class WorkflowListTest extends BaseCase {
     assertTrue(list.iterator().hasNext());
   }
 
+  @Test
   public void testLastIndexOf() {
     WorkflowList list = new WorkflowList();
     Workflow toAdd = createWorkflow(idGenerator.create(list));
@@ -256,6 +284,7 @@ public class WorkflowListTest extends BaseCase {
     assertEquals(2, list.lastIndexOf(toAdd));
   }
 
+  @Test
   public void testListIterator() {
     WorkflowList list = new WorkflowList();
     list.add(createWorkflow(idGenerator.create(list)));
@@ -266,6 +295,7 @@ public class WorkflowListTest extends BaseCase {
     assertNotNull(list.listIterator(1));
   }
 
+  @Test
   public void testListIterator_hasNextPrevious() {
     WorkflowList list = new WorkflowList();
     list.add(createWorkflow(idGenerator.create(list)));
@@ -301,6 +331,7 @@ public class WorkflowListTest extends BaseCase {
     }
   }
 
+  @Test
   public void testRemove() {
     WorkflowList list = new WorkflowList();
     list.add(createWorkflow(idGenerator.create(list)));
@@ -318,6 +349,7 @@ public class WorkflowListTest extends BaseCase {
     assertNull(list.getWorkflow(workflow.getUniqueId()));
   }
 
+  @Test
   public void testSubList() {
     WorkflowList list = new WorkflowList();
     list.add(createWorkflow(idGenerator.create(list)));
@@ -328,6 +360,7 @@ public class WorkflowListTest extends BaseCase {
     assertEquals(2, list.subList(0, 2).size());
   }
 
+  @Test
   public void testGetWorkflowById() throws Exception {
     WorkflowList list = new WorkflowList();
     StandardWorkflow wf1 = createWorkflow("wf1");
@@ -354,6 +387,7 @@ public class WorkflowListTest extends BaseCase {
     assertNull(list.getWorkflow("WF3"));
   }
 
+  @Test
   public void testXmlRoundTrip() throws Exception {
     WorkflowList input = new WorkflowList();
     input.add(createWorkflow(idGenerator.create(input)));
@@ -367,7 +401,7 @@ public class WorkflowListTest extends BaseCase {
     assertRoundtripEquality(input, output);
   }
 
-
+  @Test
   public void testJavaxValidation() throws Exception {
     Channel channel = new Channel("testJavaxValidation");
     WorkflowList list = new WorkflowList();

@@ -15,14 +15,15 @@
 */
 
 package com.adaptris.core.interceptor;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-
 import javax.management.Notification;
 import javax.management.ObjectName;
-
+import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -36,10 +37,12 @@ import com.adaptris.util.TimeInterval;
 @SuppressWarnings("deprecation")
 public class SlowMessageNotificationTest extends MessageNotificationCase {
 
-  public SlowMessageNotificationTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testNotifyThreshold() throws Exception {
     SlowMessageNotification notif = new SlowMessageNotification();
     final TimeInterval defaultThreshold = new TimeInterval(1L, TimeUnit.MINUTES);
@@ -53,6 +56,7 @@ public class SlowMessageNotificationTest extends MessageNotificationCase {
     assertEquals(newInterval.toMilliseconds(), notif.notifyThreshold());
   }
 
+  @Test
   public void testNotification_SlowMessage_Success() throws Exception {
     SlowMessageNotification notif =
         new SlowMessageNotification(getName(), new TimeInterval(100L, TimeUnit.MILLISECONDS), new TimeInterval(1L, TimeUnit.MINUTES));
@@ -82,6 +86,7 @@ public class SlowMessageNotificationTest extends MessageNotificationCase {
     }
   }
 
+  @Test
   public void testNotification_SlowMessage_Failure() throws Exception {
     SlowMessageNotification notif =
         new SlowMessageNotification(getName(), new TimeInterval(100L, TimeUnit.MILLISECONDS));
@@ -112,6 +117,7 @@ public class SlowMessageNotificationTest extends MessageNotificationCase {
     }
   }
 
+  @Test
   public void testNotification_SentAsPartOfCleanup() throws Exception {
     SlowMessageNotification notif =
         new SlowMessageNotification(getName(), new TimeInterval(100L, TimeUnit.MILLISECONDS),

@@ -15,16 +15,16 @@
 */
 
 package com.adaptris.core.runtime;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import java.util.concurrent.TimeUnit;
-
 import javax.management.JMX;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
@@ -39,10 +39,15 @@ public class MessagesInFlightTest extends ComponentManagerCase {
 
   protected transient Log logR = LogFactory.getLog(this.getClass());
 
-  public MessagesInFlightTest(String name) {
-    super(name);
+  public MessagesInFlightTest() {
   }
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
+  @Test
   public void testInFlightMessageCount() throws Exception {
     PoolingWorkflow workflow = new PoolingWorkflow(getName());
     Adapter adapter = buildAdapter(workflow);
@@ -65,6 +70,7 @@ public class MessagesInFlightTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testPendingMessageCount() throws Exception {
     final PoolingWorkflow workflow = new PoolingWorkflow(getName());
     Adapter adapter = buildAdapter(workflow);

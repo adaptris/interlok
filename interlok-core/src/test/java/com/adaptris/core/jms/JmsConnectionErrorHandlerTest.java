@@ -16,9 +16,11 @@
 
 
 package com.adaptris.core.jms;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
@@ -26,26 +28,18 @@ import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
 public class JmsConnectionErrorHandlerTest extends BaseCase {
-
-  public JmsConnectionErrorHandlerTest(java.lang.String testName) {
-    super(testName);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-
-  }
-
+  @Test
   public void testRetryTimeMs() {
     MyJmsConnectionErrorHandler jms1 = new MyJmsConnectionErrorHandler();
     assertEquals(TimeUnit.SECONDS.toMillis(10L), jms1.retryWaitTimeMs());
   }
 
+  @Test
   public void testJmsAllowedInConjunction() throws Exception {
     JmsConnectionErrorHandler jms1 = new JmsConnectionErrorHandler();
     jms1.registerConnection(new JmsConnection(new BasicActiveMqImplementation("tcp://localhost:61616")));
@@ -54,6 +48,7 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
     assertTrue(jms1.allowedInConjunctionWith(jms2));
   }
 
+  @Test
   public void testActiveJmsAllowedInConjunction() throws Exception {
     ActiveJmsConnectionErrorHandler jms1 = new ActiveJmsConnectionErrorHandler();
     jms1.registerConnection(new JmsConnection(new BasicActiveMqImplementation("tcp://localhost:61616")));
@@ -62,11 +57,13 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
     assertTrue(jms1.allowedInConjunctionWith(jms2));
   }
 
+  @Test
   public void testRedmine_2303() throws Exception {
     testJmsAllowedInConjunctionWith_NullConnectString();
     testActiveJmsAllowedInConjunctionWith_NullConnectString();
   }
 
+  @Test
   public void testJmsAllowedInConjunctionWith_NullConnectString() throws Exception {
     JmsConnectionErrorHandler jms1 = new JmsConnectionErrorHandler();
     JmsConnection c = new JmsConnection(new BasicActiveMqImplementation("tcp://localhost:61616"));
@@ -76,6 +73,7 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
     assertFalse(jms1.allowedInConjunctionWith(jms2));
   }
 
+  @Test
   public void testActiveJmsAllowedInConjunctionWith_NullConnectString() throws Exception {
     ActiveJmsConnectionErrorHandler jms1 = new ActiveJmsConnectionErrorHandler();
     JmsConnection c = new JmsConnection(new BasicActiveMqImplementation("tcp://localhost:61616"));
@@ -85,6 +83,7 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
     assertFalse(jms1.allowedInConjunctionWith(jms2));
   }
 
+  @Test
   public void testJmsAllowedInConjunctionWith_MatchingConnectString() throws Exception {
     JmsConnectionErrorHandler jms1 = new JmsConnectionErrorHandler();
     jms1.registerConnection(new JmsConnection(new BasicActiveMqImplementation("tcp://localhost:61616")));
@@ -93,6 +92,7 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
     assertFalse(jms1.allowedInConjunctionWith(jms2));
   }
 
+  @Test
   public void testActiveJmsAllowedInConjunctionWith_MatchingConnectString() throws Exception {
     ActiveJmsConnectionErrorHandler jms1 = new ActiveJmsConnectionErrorHandler();
     jms1.registerConnection(new JmsConnection(new BasicActiveMqImplementation("tcp://localhost:61616")));
@@ -101,6 +101,7 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
     assertFalse(jms1.allowedInConjunctionWith(jms2));
   }
 
+  @Test
   public void testComparatorWith2IdenticalConnections() throws Exception {
     JmsConnectionErrorHandler connectionErrorHandler1 = new JmsConnectionErrorHandler();
     JmsConnectionErrorHandler connectionErrorHandler2 = new JmsConnectionErrorHandler();
@@ -113,7 +114,8 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
     
     assertFalse(connectionErrorHandler1.allowedInConjunctionWith(connectionErrorHandler2));
   }
-  
+
+  @Test
   public void testComparatorWith2IdenticalJNDIConnections() throws Exception {
     JmsConnectionErrorHandler connectionErrorHandler1 = new JmsConnectionErrorHandler();
     JmsConnectionErrorHandler connectionErrorHandler2 = new JmsConnectionErrorHandler();
@@ -162,7 +164,8 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
     
     assertFalse(connectionErrorHandler1.allowedInConjunctionWith(connectionErrorHandler2));
   }
-  
+
+  @Test
   public void testComparatorWith2DifferemtJNDIConnections() throws Exception {
     JmsConnectionErrorHandler connectionErrorHandler1 = new JmsConnectionErrorHandler();
     JmsConnectionErrorHandler connectionErrorHandler2 = new JmsConnectionErrorHandler();
@@ -216,6 +219,7 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
   }
 
   protected class MyJmsConnectionErrorHandler extends JmsConnectionErrorHandler {
+    @Override
     public long retryWaitTimeMs() {
       return super.retryWaitTimeMs();
     }

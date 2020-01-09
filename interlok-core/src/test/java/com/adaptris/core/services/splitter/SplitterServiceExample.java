@@ -26,8 +26,7 @@ public abstract class SplitterServiceExample extends ServiceCase {
    */
   public static final String BASE_DIR_KEY = "SplitterServiceExamples.baseDir";
 
-  public SplitterServiceExample(String name) {
-    super(name);
+  public SplitterServiceExample() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
