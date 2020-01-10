@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
  * be used to parallelize the loop.
  *
  * <pre>{@code
- * <for-each>
+ * <for-each-payload>
  *   <unique-id>for-each-id</unique-id>
  *   <then>
  *     <service class="shared-service">
@@ -39,15 +39,15 @@ import java.util.concurrent.TimeUnit;
  *     </service>
  *   </then>
  *   <thread-count>1</thread-count>
- * </for-each>
+ * </for-each-payload>
  * }</pre>
  *
  * @author amanderson
- * @config for-each
+ * @config for-each-payload
  * @see MultiPayloadAdaptrisMessage
  * @since 3.10
  */
-@XStreamAlias("for-each")
+@XStreamAlias("for-each-payload")
 @AdapterComponent
 @ComponentProfile(
 		summary = "Runs the configured service/list for each multi-payload message payload.",
