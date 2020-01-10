@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Properties;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -48,6 +49,40 @@ public class JndiContextFactoryTest {
 
     bootstrapProps.put(Constants.CFG_KEY_JNDI_SERVER, "true");
   }
+
+  @Test
+  public void testMergeEnvs() throws Exception {
+    Properties src = new Properties();
+    Properties dest = new Properties();
+    src.put("hello", "world");
+    src.put("a", "b");
+    src.put("1", "2");
+    dest.put("a", "z");
+    Hashtable result = JndiContextFactory.merge(src, dest);
+    assertTrue(result.containsKey("hello"));
+    assertEquals("z", result.get("a").toString());
+  }
+
+  @Test
+  public void testAddAdapterScheme() throws Exception {
+    Hashtable<String, Object> env1 = new Hashtable<>();
+    Hashtable<String, Object> result = JndiContextFactory.addAdapterSchemePackage(env1);
+    assertTrue(result.containsKey(Context.URL_PKG_PREFIXES));
+
+    Hashtable<String, Object> env2 = new Hashtable<>();
+    env2.put(Context.URL_PKG_PREFIXES, "com.adaptris.alt.naming");
+    result = JndiContextFactory.addAdapterSchemePackage(env2);
+    String pkgs = (String) result.get(Context.URL_PKG_PREFIXES);
+    assertEquals("com.adaptris.alt.naming:com.adaptris.naming", pkgs);
+
+    Hashtable<String, Object> env3 = new Hashtable<>();
+    env3.put(Context.URL_PKG_PREFIXES, "com.adaptris.naming");
+    result = JndiContextFactory.addAdapterSchemePackage(env3);
+    pkgs = (String) result.get(Context.URL_PKG_PREFIXES);
+    assertEquals("com.adaptris.naming", pkgs);
+
+  }
+
 
   @Test
   public void testJndiLookupSingle() throws Exception {
