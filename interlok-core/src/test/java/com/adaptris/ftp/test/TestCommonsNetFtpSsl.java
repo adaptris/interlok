@@ -19,9 +19,7 @@ package com.adaptris.ftp.test;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
-
 import org.apache.oro.io.GlobFilenameFilter;
-
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FtpCase;
 import com.adaptris.ftp.CommonsNetFtpSslClient;
@@ -37,9 +35,9 @@ public class TestCommonsNetFtpSsl extends FtpCase {
   private static final String FTP_GET_REMOTEDIR = "ftp.get.remotedir";
   private static final String FTP_PASSWORD = "ftp.password";
   private static final String FTP_USERNAME = "ftp.username";
-
-  public TestCommonsNetFtpSsl(String testName) {
-    super(testName);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
