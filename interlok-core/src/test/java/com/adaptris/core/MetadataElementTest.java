@@ -32,7 +32,7 @@ public class MetadataElementTest {
 
 
   @Before
-  protected void setUp() {
+  public void setUp() {
     me1 = new MetadataElement("key1", "val1");
     me2 = new MetadataElement("key1", "val1");
     me3 = new MetadataElement("key1", "val2");
@@ -81,6 +81,8 @@ public class MetadataElementTest {
     MetadataElement cloned = (MetadataElement) me1.clone();
     assertEquals(me1, cloned);
   }
+
+  @Test
   public void testGetValue() {
     assertTrue("val1".equals(me1.getValue()));
   }

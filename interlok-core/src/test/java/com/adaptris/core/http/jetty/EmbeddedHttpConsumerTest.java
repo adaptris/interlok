@@ -50,6 +50,7 @@ import com.adaptris.core.stubs.StaticMockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
+@SuppressWarnings("deprecation")
 public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
 
   static final String METADATA_VALUE2 = "value2";
@@ -133,7 +134,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
     }
   }
 
-  @SuppressWarnings("deprecation")
+  @Test
   public void testBasicConsumeWorkflow_WithACL() throws Exception {
 
     EmbeddedJettyHelper helper = new EmbeddedJettyHelper();
@@ -199,6 +200,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
   }
 
   // INTERLOK-201
+  @Test
   public void testBasicConsumeWorkflow_UpdatedConfig() throws Exception {
     EmbeddedJettyHelper helper = new EmbeddedJettyHelper();
     helper.startServer();

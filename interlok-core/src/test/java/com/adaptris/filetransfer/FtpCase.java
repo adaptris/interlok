@@ -299,6 +299,7 @@ public abstract class FtpCase extends BaseCase {
 
   }
 
+  @Test
   public void testGetLastModifiedWithRelativePath() throws Exception {
     Assume.assumeTrue(areTestsEnabled());
     String oldName = Thread.currentThread().getName();
