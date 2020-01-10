@@ -20,7 +20,7 @@ import static com.adaptris.core.BaseCase.MAX_WAIT;
 import static com.adaptris.core.BaseCase.waitForMessages;
 import static com.adaptris.core.stubs.ObjectUtils.asSetters;
 import static com.adaptris.core.stubs.ObjectUtils.invokeSetter;
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertEquals;
 import java.util.concurrent.TimeUnit;
 import org.junit.Rule;
 import org.junit.Test;
