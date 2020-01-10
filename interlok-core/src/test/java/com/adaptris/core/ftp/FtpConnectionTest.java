@@ -16,6 +16,7 @@
 
 package com.adaptris.core.ftp;
 import static org.junit.Assert.assertEquals;
+import org.junit.Assume;
 import org.junit.Test;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.ftp.FtpDataMode;
@@ -50,16 +51,14 @@ public class FtpConnectionTest extends FtpPasswordConnectionCase {
 
   @Test
   public void testConnect_WithAccount() throws Exception {
-    if (areTestsEnabled()) {
-      FtpConnectionImp connection = createConnection();
-      connection.setDefaultAccount(getName());
-      try {
-        start(connection);
-        FileTransferClient client = connection.connect(getDestinationString());
-      }
-      finally {
-        stop(connection);
-      }
+    Assume.assumeTrue(areTestsEnabled());
+    FtpConnectionImp connection = createConnection();
+    connection.setDefaultAccount(getName());
+    try {
+      start(connection);
+      FileTransferClient client = connection.connect(getDestinationString());
+    } finally {
+      stop(connection);
     }
   }
 

@@ -1,20 +1,18 @@
 /*
  * Copyright 2015 Adaptris Ltd.
  * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
-*/
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS"
+ * BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
+ */
 
 package com.adaptris.core.ftp;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -23,6 +21,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import java.util.concurrent.TimeUnit;
+import org.junit.Assume;
 import org.junit.Test;
 import com.adaptris.core.BaseCase;
 import com.adaptris.filetransfer.FileTransferClient;
@@ -36,8 +35,7 @@ import com.adaptris.util.TimeInterval;
  */
 public abstract class FtpConnectionCase extends BaseCase {
 
-  public FtpConnectionCase() {
-  }
+  public FtpConnectionCase() {}
 
   protected static boolean areTestsEnabled() {
     return Boolean.parseBoolean(PROPERTIES.getProperty("ftp.tests.enabled", "false"));
@@ -143,23 +141,20 @@ public abstract class FtpConnectionCase extends BaseCase {
 
   @Test
   public void testConnect() throws Exception {
-    if (areTestsEnabled()) {
-      FileTransferConnection connection = createConnection();
-      try {
-        start(connection);
-        FileTransferClient client = connection.connect(getDestinationString());
-      }
-      finally {
-        stop(connection);
-      }
+    Assume.assumeTrue(areTestsEnabled());
+    FileTransferConnection connection = createConnection();
+    try {
+      start(connection);
+      FileTransferClient client = connection.connect(getDestinationString());
+    } finally {
+      stop(connection);
     }
   }
 
   @Test
   public void testCachedConnection() throws Exception {
-    if (!areTestsEnabled()) {
-      return;
-    }
+    Assume.assumeTrue(areTestsEnabled());
+
     FileTransferConnection connection = createConnection();
     connection.setCacheConnection(true);
     try {
@@ -176,17 +171,15 @@ public abstract class FtpConnectionCase extends BaseCase {
 
       cached = connection.connect(getDestinationStringWithOverride());
       assertEquals(client2, cached);
-    }
-    finally {
+    } finally {
       stop(connection);
     }
   }
 
   @Test
   public void testConnection_Cached_Disconnect() throws Exception {
-    if (!areTestsEnabled()) {
-      return;
-    }
+    Assume.assumeTrue(areTestsEnabled());
+
     FileTransferConnection connection = createConnection();
     connection.setCacheConnection(true);
     try {
@@ -195,17 +188,15 @@ public abstract class FtpConnectionCase extends BaseCase {
       client = connection.connect(getDestinationString());
       connection.disconnect(client);
       assertTrue(client.isConnected());
-    }
-    finally {
+    } finally {
       stop(connection);
     }
   }
 
   @Test
   public void testConnection_NoCache_Disconnect() throws Exception {
-    if (!areTestsEnabled()) {
-      return;
-    }
+    Assume.assumeTrue(areTestsEnabled());
+
     FileTransferConnection connection = createConnection();
     connection.setCacheConnection(false);
     try {
@@ -214,17 +205,15 @@ public abstract class FtpConnectionCase extends BaseCase {
       client = connection.connect(getDestinationString());
       connection.disconnect(client);
       assertFalse(client.isConnected());
-    }
-    finally {
+    } finally {
       stop(connection);
     }
   }
 
   @Test
   public void testCachedConnection_ExceedsMaxSize() throws Exception {
-    if (!areTestsEnabled()) {
-      return;
-    }
+    Assume.assumeTrue(areTestsEnabled());
+
     FileTransferConnection connection = createConnection();
     connection.setCacheConnection(true);
     connection.setMaxClientCache(1);
@@ -241,17 +230,15 @@ public abstract class FtpConnectionCase extends BaseCase {
       cached = connection.connect(getDestinationString());
       assertNotSame(client, cached);
       assertFalse(client.isConnected());
-    }
-    finally {
+    } finally {
       stop(connection);
     }
   }
 
   @Test
   public void testCachedConnection_DisconnectedClient() throws Exception {
-    if (!areTestsEnabled()) {
-      return;
-    }
+    Assume.assumeTrue(areTestsEnabled());
+
     FileTransferConnection connection = createConnection();
     connection.setCacheConnection(true);
     try {
@@ -266,45 +253,41 @@ public abstract class FtpConnectionCase extends BaseCase {
       // Now it should be a new entry.
       cached = connection.connect(getDestinationString());
       assertNotSame(client, cached);
-    }
-    finally {
+    } finally {
       stop(connection);
     }
   }
 
   @Test
   public void testConnect_NoUser() throws Exception {
-    if (areTestsEnabled()) {
-      FileTransferConnection connection = createConnection();
-      connection.setDefaultUserName(null);
-      try {
-        start(connection);
-        FileTransferClient client = connection.connect(getDestinationString());
-        fail();
-      }
-      catch (Exception expected) {
+    Assume.assumeTrue(areTestsEnabled());
+    FileTransferConnection connection = createConnection();
+    connection.setDefaultUserName(null);
+    try {
+      start(connection);
+      FileTransferClient client = connection.connect(getDestinationString());
+      fail();
+    } catch (Exception expected) {
 
-      }
-      finally {
-        stop(connection);
-      }
+    } finally {
+      stop(connection);
     }
+
   }
 
   @Test
   public void testConnect_UserOverride() throws Exception {
-    if (areTestsEnabled()) {
-      FileTransferConnection connection = createConnection();
-      connection.setDefaultUserName(null);
-      try {
-        start(connection);
-        log.debug("testConnect_UserOverride connecting to : " + getDestinationStringWithOverride());
-        FileTransferClient client = connection.connect(getDestinationStringWithOverride());
-      }
-      finally {
-        stop(connection);
-      }
+    Assume.assumeTrue(areTestsEnabled());
+    FileTransferConnection connection = createConnection();
+    connection.setDefaultUserName(null);
+    try {
+      start(connection);
+      log.debug("testConnect_UserOverride connecting to : " + getDestinationStringWithOverride());
+      FileTransferClient client = connection.connect(getDestinationStringWithOverride());
+    } finally {
+      stop(connection);
     }
+
   }
 
   protected abstract FileTransferConnection createConnection() throws Exception;
