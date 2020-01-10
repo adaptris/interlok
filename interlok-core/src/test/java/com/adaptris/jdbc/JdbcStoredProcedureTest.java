@@ -26,6 +26,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.CoreException;
@@ -56,6 +58,7 @@ public class JdbcStoredProcedureTest extends BaseCase {
 
   private boolean testsEnabled = false;
 
+  @Before
   public void setUp() throws Exception {
     if(Boolean.parseBoolean(PROPERTIES.getProperty(JDBC_STOREDPROC_TESTS_ENABLED, "false"))) {
       jdbcConnection = new JdbcConnection(PROPERTIES.getProperty(JDBC_URL), PROPERTIES.getProperty(JDBC_DRIVER));
@@ -85,6 +88,7 @@ public class JdbcStoredProcedureTest extends BaseCase {
 
   }
 
+  @After
   public void tearDown() throws Exception {
     if(testsEnabled)
       connection.close();

@@ -28,6 +28,7 @@ import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.metadata.MetadataFilterImpl;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 
+@SuppressWarnings("deprecation")
 public class CreateQueryStringFromMetadataTest extends MetadataServiceExample {
 
   @Override
@@ -43,7 +44,7 @@ public class CreateQueryStringFromMetadataTest extends MetadataServiceExample {
   }
 
 
-  @SuppressWarnings("deprecation")
+  @Test
   public void testQuerySeparator() throws Exception {
     CreateQueryStringFromMetadata service = new CreateQueryStringFromMetadata();
     assertNull(service.getSeparator());
