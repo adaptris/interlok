@@ -16,17 +16,16 @@
 
 package com.adaptris.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-
+import org.junit.Test;
 
 public class TestKeyValuePairSet extends KeyValuePairCollectionCase {
 
-  public TestKeyValuePairSet(java.lang.String testName) {
-    super(testName);
-  }
-
+  @Test
   public void testAddTheSame() {
     KeyValuePairSet set = new KeyValuePairSet();
     set.addKeyValuePair(new KeyValuePair(KEY1, VALUE1));
@@ -35,6 +34,7 @@ public class TestKeyValuePairSet extends KeyValuePairCollectionCase {
     assertEquals(1, set.size());
   }
 
+  @Test
   public void testSetEquality() {
     KeyValuePairSet bag1 = new KeyValuePairSet();
     bag1.addKeyValuePair(new KeyValuePair(KEY1, VALUE1));
@@ -44,6 +44,7 @@ public class TestKeyValuePairSet extends KeyValuePairCollectionCase {
     assertFalse(bag1.equals(bag2));
   }
 
+  @Test
   public void testCollectionConstructor() {
     KeyValuePairSet set = new KeyValuePairSet();
     set.addKeyValuePair(new KeyValuePair(KEY1, VALUE1));
@@ -54,6 +55,7 @@ public class TestKeyValuePairSet extends KeyValuePairCollectionCase {
     assertEquals(set.hashCode(), set2.hashCode());
   }
 
+  @Test
   public void testPropertiesConstructor() {
     Properties p = new Properties();
     p.setProperty(KEY1, VALUE1);
@@ -65,6 +67,7 @@ public class TestKeyValuePairSet extends KeyValuePairCollectionCase {
     assertEquals(set.hashCode(), set2.hashCode());
   }
 
+  @Test
   public void testMapConstructor() {
     Map<String, String> p = new HashMap<>();
     p.put(KEY1, VALUE1);

@@ -16,20 +16,22 @@
 
 package com.adaptris.core;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Before;
+import org.junit.Test;
 
-public class MetadataElementTest extends TestCase {
+public class MetadataElementTest {
 
   private MetadataElement me1;
   private MetadataElement me2;
   private MetadataElement me3;
   private MetadataElement me4;
 
-  public MetadataElementTest(java.lang.String testName) {
-    super(testName);
-  }
 
-  @Override
+  @Before
   protected void setUp() {
     me1 = new MetadataElement("key1", "val1");
     me2 = new MetadataElement("key1", "val1");
@@ -37,6 +39,7 @@ public class MetadataElementTest extends TestCase {
     me4 = new MetadataElement("key2", "val2");
   }
 
+  @Test
   public void testSetKey() {
     try {
       me1.setKey(null);
@@ -51,12 +54,12 @@ public class MetadataElementTest extends TestCase {
     catch (IllegalArgumentException e) { /* ok */ }
   }
 
-
+  @Test
   public void testGetKey() {
     assertTrue("key1".equals(me1.getKey()));
   }
 
-
+  @Test
   public void testSetValue() {
     try {
       me1.setValue(null);
@@ -73,6 +76,7 @@ public class MetadataElementTest extends TestCase {
     }
   }
 
+  @Test
   public void testClose() throws Exception {
     MetadataElement cloned = (MetadataElement) me1.clone();
     assertEquals(me1, cloned);
@@ -81,6 +85,7 @@ public class MetadataElementTest extends TestCase {
     assertTrue("val1".equals(me1.getValue()));
   }
 
+  @Test
   public void testEquals() {
     assertTrue(me1.equals(me2));
     assertTrue(me1.equals(me3));
@@ -88,12 +93,14 @@ public class MetadataElementTest extends TestCase {
     assertFalse(me1.equals(new Object()));
   }
 
+  @Test
   public void testHashCode() {
     assertTrue(me1.hashCode() == me2.hashCode());
     assertTrue(me1.hashCode() == me3.hashCode());
     assertTrue(!(me1.hashCode() == me4.hashCode()));
   }
 
+  @Test
   public void testConstructors() {
     new MetadataElement();
     new MetadataElement("key", "val");

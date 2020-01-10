@@ -16,13 +16,17 @@
 
 package com.adaptris.core.services.jmx;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.Date;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
-import junit.framework.TestCase;
 
-public class ConstantValueTranslatorTest extends TestCase {
+public class ConstantValueTranslatorTest {
   
   private ConstantValueTranslator constantValueTranslator;
   
@@ -32,16 +36,14 @@ public class ConstantValueTranslatorTest extends TestCase {
     super();
   }
   
-  @Override
+  @Before
   public void setUp() throws Exception {
     constantValueTranslator = new ConstantValueTranslator();
     message = DefaultMessageFactory.getDefaultInstance().newMessage();
   }
   
-  @Override
-  public void tearDown() throws Exception {
-  }
-  
+
+  @Test
   public void testSetValue() throws Exception {
     String newValue = "NewValue";
     String originalValue = "OriginalValue";
@@ -50,14 +52,15 @@ public class ConstantValueTranslatorTest extends TestCase {
     constantValueTranslator.setValue(message, newValue);
     assertEquals(originalValue, constantValueTranslator.getValue());
   }
-  
 
+  @Test
   public void testGetValueDefaultType() throws Exception {
     String originalValue = "OriginalValue";
     constantValueTranslator.setValue(originalValue);
     assertEquals(originalValue, constantValueTranslator.getValue(message));
   }
-  
+
+  @Test
   public void testGetValueDateType() throws Exception {
     Date todaysDate = new Date();
     String originalValue = Long.toString(todaysDate.getTime());
@@ -69,7 +72,8 @@ public class ConstantValueTranslatorTest extends TestCase {
     assertTrue(value instanceof Date);
     assertEquals(originalValue, Long.toString(((Date)value).getTime()));
   }
-  
+
+  @Test
   public void testGetValueIntegerType() throws Exception {
     String originalValue = "1";
     constantValueTranslator.setType(Integer.class.getName());
@@ -78,7 +82,8 @@ public class ConstantValueTranslatorTest extends TestCase {
     assertTrue(value instanceof Integer);
     assertEquals(originalValue, value.toString());
   }
-  
+
+  @Test
   public void testGetValueInvalidType() throws Exception {
     String originalValue = "1";
     constantValueTranslator.setType("MyInvalidType");

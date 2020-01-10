@@ -16,24 +16,25 @@
 
 package com.adaptris.core.services.metadata.xpath;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.junit.Test;
 import com.adaptris.core.CoreException;
 
-import junit.framework.TestCase;
-
-public abstract class XpathQueryCase extends TestCase {
+public abstract class XpathQueryCase {
 
   private static Log log = LogFactory.getLog(XpathQueryCase.class);
 
@@ -53,17 +54,9 @@ public abstract class XpathQueryCase extends TestCase {
       + "<svrl:text>Error: Anglia Farmer's Supplier Number must be 5 digits long. (Current Value: 62826123)</svrl:text>\n"
       + "</svrl:failed-assert>\n" + "</svrl:schematron-output>";
 
-  public XpathQueryCase(java.lang.String testName) {
-    super(testName);
-  }
-
-  @Override
-  protected void setUp() throws Exception {
-  }
-
-
   protected abstract XpathObjectQuery create();
 
+  @Test
   public void testSetMetadataKey() throws Exception {
     XpathQueryImpl query = (XpathQueryImpl) create();
     assertNull(query.getMetadataKey());
@@ -87,6 +80,7 @@ public abstract class XpathQueryCase extends TestCase {
     assertEquals("key", query.getMetadataKey());
   }
 
+  @Test
   public void testSetAllowNullResults() throws Exception {
     XpathQueryImpl query = (XpathQueryImpl) create();
     assertNull(query.getAllowEmptyResults());
@@ -100,6 +94,7 @@ public abstract class XpathQueryCase extends TestCase {
     assertNull(query.getAllowEmptyResults());
   }
 
+  @Test
   public void testInit_NoMetadataKey() throws Exception {
     XpathQueryImpl query = (XpathQueryImpl) create();
     try {

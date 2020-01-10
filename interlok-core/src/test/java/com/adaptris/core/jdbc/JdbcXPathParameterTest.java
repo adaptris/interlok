@@ -16,6 +16,11 @@
 
 package com.adaptris.core.jdbc;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.util.KeyValuePair;
@@ -36,7 +41,8 @@ public class JdbcXPathParameterTest extends NullableParameterCase {
   		"<element2>" + ELEMENT_TWO_VALUE + "</element2>" +
   		"</body>" +
   		"</head>";
-    
+
+  @Before
   public void setUp() throws Exception {
     message = DefaultMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
   }
@@ -46,6 +52,7 @@ public class JdbcXPathParameterTest extends NullableParameterCase {
     return new JdbcXPathParameter();
   }
 
+  @Test
   public void testNoXPathInputParam() throws Exception {
     JdbcXPathParameter parameter = new JdbcXPathParameter();
     
@@ -56,7 +63,8 @@ public class JdbcXPathParameterTest extends NullableParameterCase {
       // expected, pass.
     }
   }
-  
+
+  @Test
   public void testSetNamespaceContext() {
     JdbcXPathParameter parameter = new JdbcXPathParameter();
     assertNull(parameter.getNamespaceContext());
@@ -68,6 +76,7 @@ public class JdbcXPathParameterTest extends NullableParameterCase {
     assertNull(parameter.getNamespaceContext());
   }
 
+  @Test
   public void testNoXPathOutputParam() throws Exception {
     JdbcXPathParameter parameter = new JdbcXPathParameter();
     
@@ -78,7 +87,8 @@ public class JdbcXPathParameterTest extends NullableParameterCase {
       // expected, pass.
     }
   }
-  
+
+  @Test
   public void testIllegalXPathInputParam() throws Exception {
     JdbcXPathParameter parameter = new JdbcXPathParameter();
     parameter.setXpath("/##~[]{}");
@@ -90,7 +100,8 @@ public class JdbcXPathParameterTest extends NullableParameterCase {
       // expected, pass.
     }
   }
-  
+
+  @Test
   public void testIllegalXPathOutputParam() throws Exception {
     JdbcXPathParameter parameter = new JdbcXPathParameter();
     parameter.setXpath("/##~[]{}");
@@ -102,13 +113,15 @@ public class JdbcXPathParameterTest extends NullableParameterCase {
       // expected, pass.
     }
   }
-  
+
+  @Test
   public void testNoNodeXPathInputParameter() throws Exception {
     JdbcXPathParameter parameter = new JdbcXPathParameter();
     parameter.setXpath("/head/body/element999");
     assertEquals("", parameter.applyInputParam(message));
   }
-  
+
+  @Test
   public void testNoNodeXPathOutputParameter() throws Exception {
     assertEquals(message.getContent(), XML_PAYLOAD);
     
@@ -122,14 +135,16 @@ public class JdbcXPathParameterTest extends NullableParameterCase {
       // expected
     }
   }
-  
+
+  @Test
   public void testXPathInputParameter() throws Exception {
     JdbcXPathParameter parameter = new JdbcXPathParameter();
     parameter.setXpath("/head/body/element1");
     
     assertEquals(parameter.applyInputParam(message), ELEMENT_ONE_VALUE);
   }
-  
+
+  @Test
   public void testXPathOutputParameter() throws Exception {
     JdbcXPathParameter parameter = new JdbcXPathParameter();
     parameter.setXpath("/head/body/element1/");

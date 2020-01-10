@@ -16,6 +16,10 @@
 
 package com.adaptris.core.jdbc;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 
@@ -25,6 +29,7 @@ public class JdbcObjectMetadataParameterTest extends NullableParameterCase {
   private static final String METADATA_KEY = "PARAM_METADATA_KEY";
   private AdaptrisMessage message;
   
+  @Before
   public void setUp() throws Exception {    
     message = DefaultMessageFactory.getDefaultInstance().newMessage();
   }
@@ -34,6 +39,7 @@ public class JdbcObjectMetadataParameterTest extends NullableParameterCase {
     return new JdbcObjectMetadataParameter();
   }
 
+  @Test
   public void testNoMetadataKeyForInputParam() throws Exception {    
     JdbcObjectMetadataParameter param = new JdbcObjectMetadataParameter();
     try {
@@ -43,6 +49,7 @@ public class JdbcObjectMetadataParameterTest extends NullableParameterCase {
     }
   }
 
+  @Test
   public void testNoMetadataKeyForOutputParam() throws Exception {    
     JdbcObjectMetadataParameter param = new JdbcObjectMetadataParameter();
     try {
@@ -51,7 +58,8 @@ public class JdbcObjectMetadataParameterTest extends NullableParameterCase {
       // expected, pass
     }
   }
-  
+
+  @Test
   public void testMetadataDoesNotExistInputParam() throws Exception {
     JdbcObjectMetadataParameter param = new JdbcObjectMetadataParameter();
     param.setMetadataKey("DOES_NOT_EXIST_KEY");
@@ -61,14 +69,16 @@ public class JdbcObjectMetadataParameterTest extends NullableParameterCase {
       // expected, pass
     }
   }
-  
+
+  @Test
   public void testMetadataDoesNotExistOutputParam() throws Exception {
     JdbcObjectMetadataParameter param = new JdbcObjectMetadataParameter();
     param.setMetadataKey("DOES_NOT_EXIST_KEY");
     param.applyOutputParam(null, message);
     // expected, pass
   }
-  
+
+  @Test
   public void testMetadataAlreadyExistsOutputParam() throws Exception {
     message.addObjectHeader(METADATA_KEY, METADATA_VALUE);
     assertEquals(message.getObjectHeaders().get(METADATA_KEY), METADATA_VALUE);
@@ -80,7 +90,8 @@ public class JdbcObjectMetadataParameterTest extends NullableParameterCase {
     
     assertEquals(message.getObjectHeaders().get(METADATA_KEY), "NEW_PARAM_METADATA_VALUE");
   }
-  
+
+  @Test
   public void testMetadataAppliedInputParam() throws Exception {
     message.addObjectHeader(METADATA_KEY, METADATA_VALUE);
     
@@ -90,7 +101,8 @@ public class JdbcObjectMetadataParameterTest extends NullableParameterCase {
     
     assertEquals(appliedInputParam, METADATA_VALUE);
   }
-  
+
+  @Test
   public void testMetadataAppliedOutputParam() throws Exception {    
     JdbcObjectMetadataParameter param = new JdbcObjectMetadataParameter();
     param.setMetadataKey(METADATA_KEY);

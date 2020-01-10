@@ -1,21 +1,21 @@
 package com.adaptris.core.metadata;
 
+import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 
-import junit.framework.TestCase;
-
-public class MetadataResolverTest extends TestCase {
+public class MetadataResolverTest {
   
   private AdaptrisMessage message;
     
+  @Before
   public void setUp() throws Exception {
     message = DefaultMessageFactory.getDefaultInstance().newMessage();
   }
   
-  public void tearDown() {
-  }
-
+  @Test
   public void testGetNormal() {
     message.addMessageHeader("key1", "value1");
     message.addMessageHeader("key2", "value2");
@@ -25,7 +25,8 @@ public class MetadataResolverTest extends TestCase {
     assertEquals("key2", MetadataResolver.resolveKey(message, "key2"));
     assertEquals("key3", MetadataResolver.resolveKey(message, "key3"));
   }
-  
+
+  @Test
   public void testGetReferenced() {
     message.addMessageHeader("key1", "value1");
     message.addMessageHeader("key2", "value2");

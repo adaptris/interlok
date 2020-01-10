@@ -16,27 +16,25 @@
 
 package com.adaptris.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Properties;
-
 import javax.mail.internet.MimeBodyPart;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.util.stream.StreamUtil;
 import com.adaptris.util.text.mime.MimeConstants;
 import com.adaptris.util.text.mime.MultiPartInput;
 import com.adaptris.util.text.mime.MultiPartOutput;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
 @SuppressWarnings("deprecation")
-public class TestMultipartInput extends TestCase implements MimeConstants {
+public class TestMultipartInput implements MimeConstants {
 
   private static final String NUMBER_OF_PARTS = "Number of parts";
   private static final String PROPERTY_FILE_HEADER = "Header";
@@ -58,20 +56,8 @@ public class TestMultipartInput extends TestCase implements MimeConstants {
 
   private Properties txtProps;
 
-  public TestMultipartInput(java.lang.String testName) {
-    super(testName);
-  }
 
-  public static void main(java.lang.String[] args) {
-    junit.textui.TestRunner.run(suite());
-  }
-
-  public static Test suite() {
-    TestSuite suite = new TestSuite(TestMultipartInput.class);
-    return suite;
-  }
-
-  @Override
+  @Before
   public void setUp() throws Exception {
     guid = new GuidGenerator();
     txtProps = new Properties();
@@ -80,10 +66,7 @@ public class TestMultipartInput extends TestCase implements MimeConstants {
     txtProps.setProperty(PROPERTY_KEY_3, PAYLOAD_3);
   }
 
-  @Override
-  public void tearDown() {
-  }
-
+  @Test
   public void testSingleMultipartSelectBodyPartBytesByContentId() throws Exception {
     MultiPartOutput output = new MultiPartOutput(guid.getUUID());
     String contentId = guid.getUUID();
@@ -98,6 +81,7 @@ public class TestMultipartInput extends TestCase implements MimeConstants {
     verifyProperties(new ByteArrayInputStream(readPayload));
   }
 
+  @Test
   public void testSingleMultipartSelectBodyPartByContentId() throws Exception {
     MultiPartOutput output = new MultiPartOutput(guid.getUUID());
     String contentId = guid.getUUID();
@@ -114,6 +98,7 @@ public class TestMultipartInput extends TestCase implements MimeConstants {
     verifyProperties(new ByteArrayInputStream(out.toByteArray()));
   }
 
+  @Test
   public void testMultiPartInputSelectBodyPartBytesByContentID() throws Exception {
     MultiPartOutput output = new MultiPartOutput(guid.getUUID());
     String contentId = guid.getUUID();
@@ -131,6 +116,7 @@ public class TestMultipartInput extends TestCase implements MimeConstants {
     assertEquals(TXT_COMPARE_PAYLOADS, PAYLOAD_1, new String(body));
   }
 
+  @Test
   public void testMultiPartInputSelectBodyPartBytesByPosition() throws Exception {
     MultiPartOutput output = new MultiPartOutput(guid.getUUID());
     String contentId = guid.getUUID();
@@ -149,7 +135,7 @@ public class TestMultipartInput extends TestCase implements MimeConstants {
     assertTrue(input.getBodyPart(10) == null);
   }
 
-
+  @Test
   public void testMultiPartInputSelectBodyPartByContentID() throws Exception {
     MultiPartOutput output = new MultiPartOutput(guid.getUUID());
     String contentId = guid.getUUID();
@@ -173,6 +159,7 @@ public class TestMultipartInput extends TestCase implements MimeConstants {
     assertEquals(TXT_COMPARE_PAYLOADS, PAYLOAD_1, out.toString());
   }
 
+  @Test
   public void testMultiPartInputSelectBodyPartByPosition() throws Exception {
     MultiPartOutput output = new MultiPartOutput(guid.getUUID());
     String contentId = guid.getUUID();
@@ -197,7 +184,7 @@ public class TestMultipartInput extends TestCase implements MimeConstants {
     assertTrue(input.getBodyPart(10) == null);
   }
 
-
+  @Test
   public void testSimpleMultiPartInputIterator() throws Exception {
     MultiPartOutput output = new MultiPartOutput(guid.getUUID());
     //int max = r.nextInt(5);
@@ -212,11 +199,11 @@ public class TestMultipartInput extends TestCase implements MimeConstants {
     while(input.hasNext()) {
       Object o = input.next();
       assertNotNull(o);
-      assertTrue((o instanceof byte[]));
+      assertTrue(o instanceof byte[]);
     }
   }
 
-
+  @Test
   public void testMultiPartInputIterator() throws Exception {
     MultiPartOutput output = new MultiPartOutput(guid.getUUID());
 //    int max = r.nextInt(5);
@@ -231,7 +218,7 @@ public class TestMultipartInput extends TestCase implements MimeConstants {
     while(input.hasNext()) {
       Object o = input.next();
       assertNotNull(o);
-      assertTrue((o instanceof MimeBodyPart));
+      assertTrue(o instanceof MimeBodyPart);
     }
   }
 
