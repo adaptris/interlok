@@ -17,20 +17,33 @@
 package com.adaptris.core.fs.enhanced;
 import static org.junit.Assert.assertTrue;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import org.junit.Test;
+import com.adaptris.interlok.cloud.RemoteFile;
 
 public class SizeDescendingTest extends FileSorterCase {
 
   @Test
   public void testSort() throws Exception {
     SizeDescending sorter = new SizeDescending();
-    List<File> files = createFiles(10);
+    List<File> files = buildFileList(10);
     files = sorter.sort(files);
-    log("Sorted", files);
-
     File firstFile = files.get(0);
     File lastFile = files.get(9);
-    assertTrue(firstFile.length() > lastFile.length());
+    assertTrue(firstFile.length() >= lastFile.length());
+  }
+
+  private List<File> buildFileList(int count) {
+    List<File> result = new ArrayList<File>();
+    Random r = ThreadLocalRandom.current();
+    for (int i = 0; i < count; i++) {
+      long size = r.nextInt(10000);
+      result.add(new RemoteFile.Builder().setPath("file_a" + i).setLength(size).build());
+      result.add(new RemoteFile.Builder().setPath("file_b" + i).setLength(size).build());
+    }
+    return result;
   }
 }
