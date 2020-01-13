@@ -316,11 +316,4 @@ public abstract class BaseCase implements UpgradedToJunit4 {
     return name;
   }
 
-  
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-  
-
 }

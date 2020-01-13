@@ -86,6 +86,11 @@ public class AdapterRegistryTest extends ComponentManagerCase {
   public AdapterRegistryTest() {
   }
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+  
   @Before
   public void beforeMyTests() throws Exception {
     contextEnv.put(Context.INITIAL_CONTEXT_FACTORY, JndiContextFactory.class.getName());

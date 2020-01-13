@@ -32,6 +32,10 @@ public class ThrottlingInterceptorWorkflowTest extends ExampleWorkflowCase {
 
 
   @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+  @Override
   protected Object retrieveObjectForSampleConfig() {
     Channel c = new Channel();
     StandardWorkflow wf = new StandardWorkflow();

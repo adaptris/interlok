@@ -22,6 +22,10 @@ public class CheckCacheServiceTest extends CacheServiceBaseCase {
   static final String LOOKUP_VALUE = "lookupValue";
   static final String LOOKED_UP_VALUE = "lookedUpValue";
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
   @Test
   public void testIsBranching() throws Exception {
 

@@ -60,6 +60,10 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
     }
   }
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
   @Before
   public void setUp() throws Exception {
     branchService = new TestBranchingService();

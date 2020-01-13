@@ -58,6 +58,11 @@ public class XpathObjectMetadataServiceTest extends MetadataServiceExample {
       + "<svrl:text>Error: Anglia Farmer's Supplier Number must be 5 digits long. (Current Value: 62826123)</svrl:text>\n"
       + "</svrl:failed-assert>\n" + "</svrl:schematron-output>";
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+  
   @Test
   public void testSetNamespaceContext() {
     XpathObjectMetadataService obj = new XpathObjectMetadataService();

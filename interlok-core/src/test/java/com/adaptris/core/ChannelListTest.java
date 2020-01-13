@@ -44,6 +44,10 @@ public class ChannelListTest extends BaseCase {
     idGenerator = new PlainIdGenerator();
   }
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
   @Test
   public void testRemoveThenAddAgain() throws Exception {
     ChannelList channelList = new ChannelList();

@@ -49,6 +49,10 @@ public class JmxNotificationConsumerTest extends ConsumerCase {
     }
   }
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
 
   @Test
   public void testNotFound() throws Exception {

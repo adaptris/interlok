@@ -76,6 +76,10 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
   @Before
   public void setUp() throws Exception {
     if (Boolean.parseBoolean(PROPERTIES.getProperty(JDBC_STOREDPROC_TESTS_ENABLED, "false"))) {

@@ -26,6 +26,10 @@ import com.adaptris.core.services.LoggingServiceImpl.LoggingLevel;
 public class LoggingServiceTest extends GeneralServiceExample {
 
   @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+  @Override
   protected LoggingService retrieveObjectForSampleConfig() {
     return new LoggingService(LoggingLevel.DEBUG, "Using Metadata [%message{the-metadata-key}] to as the lookup");
   }

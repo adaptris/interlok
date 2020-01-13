@@ -46,6 +46,10 @@ public class PollingTriggerTest extends ConsumerCase {
 
   private static final List<Poller> POLLER_LIST = Arrays.asList(POLLERS);
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
   @Test
   public void testTriggerWithStaticTemplate() throws Exception {
     Trigger trigger = new Trigger();

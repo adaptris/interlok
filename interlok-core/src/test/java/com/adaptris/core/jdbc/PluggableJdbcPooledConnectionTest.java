@@ -24,6 +24,10 @@ public class PluggableJdbcPooledConnectionTest extends DatabaseConnectionCase<Pl
   }
 
   @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+  @Override
   protected PluggableJdbcPooledConnection createConnection() {
     return new PluggableJdbcPooledConnection().withBuilder(new HikariPoolBuilder());
   }

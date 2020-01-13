@@ -61,6 +61,10 @@ public class JdbcRawDataCaptureServiceTest extends JdbcServiceExample {
   protected static final String JDBC_CAPTURE_SERVICE_URL = "jdbc.captureservice.url";
 
   @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+  @Override
   protected JdbcRawDataCaptureService retrieveObjectForSampleConfig() {
     JdbcRawDataCaptureService service = createService();
     JdbcConnection connection = new JdbcConnection();
