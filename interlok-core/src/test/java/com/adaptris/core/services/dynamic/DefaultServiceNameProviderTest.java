@@ -43,6 +43,8 @@ public class DefaultServiceNameProviderTest {
 
     }
   }
+
+  @Test
   public void testStandard() throws Exception {
     TradingRelationship t = new TradingRelationship("src", "dest", "type");
     String result = provider.obtain(t);
