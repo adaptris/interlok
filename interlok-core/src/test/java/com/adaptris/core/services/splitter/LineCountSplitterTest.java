@@ -16,14 +16,19 @@
 
 package com.adaptris.core.services.splitter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.Reader;
 import java.util.Iterator;
 import java.util.List;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.stubs.MockMessageProducer;
@@ -37,20 +42,18 @@ public class LineCountSplitterTest extends SplitterCase {
   private MockMessageProducer producer;
   private BasicMessageSplitterService service;
 
-  public LineCountSplitterTest(java.lang.String testName) {
-    super(testName);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void setUp() throws Exception {
+
+  @Before
+  public void setUp() throws Exception {
     msg = createLineCountMessageInput();
     producer = new MockMessageProducer();
     service = createBasic(new LineCountSplitter());
     service.setProducer(producer);
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
   }
 
   @Override
@@ -73,6 +76,7 @@ public class LineCountSplitterTest extends SplitterCase {
     assertEquals(StubMessageFactory.class, splitter.selectFactory(new StubMessageFactory().newMessage()).getClass());
   }
 
+  @Test
   public void testSetBufferSize() {
     LineCountSplitter s = new LineCountSplitter();
     assertNull(s.getBufferSize());
@@ -87,6 +91,7 @@ public class LineCountSplitterTest extends SplitterCase {
     assertEquals(8192, s.bufferSize());
   }
 
+  @Test
   public void testSetIgnoreBlankLines() {
     LineCountSplitter s = new LineCountSplitter();
     assertNull(s.getIgnoreBlankLines());
@@ -101,12 +106,14 @@ public class LineCountSplitterTest extends SplitterCase {
     assertEquals(false, s.ignoreBlankLines());
   }
 
+  @Test
   public void testDefaultSplit() throws Exception {
     LineCountSplitter s = new LineCountSplitter();
     List<AdaptrisMessage> msgs = toList(s.splitMessage(msg));
     assertEquals("10 split messages", 10, msgs.size());
   }
 
+  @Test
   public void testDefaultSplit_WithCharEncoding() throws Exception {
     LineCountSplitter s = new LineCountSplitter();
     msg.setContentEncoding(System.getProperty("file.encoding"));
@@ -114,6 +121,7 @@ public class LineCountSplitterTest extends SplitterCase {
     assertEquals("10 split messages", 10, msgs.size());
   }
 
+  @Test
   public void testSingleLineSplit() throws Exception {
     LineCountSplitter s = new LineCountSplitter();
     s.setSplitOnLine(1);
@@ -121,6 +129,7 @@ public class LineCountSplitterTest extends SplitterCase {
     assertEquals("100 split messages", 100, msgs.size());
   }
 
+  @Test
   public void testSplitWithIgnore() throws Exception {
     LineCountSplitter s = new LineCountSplitter();
     s.setIgnoreBlankLines(true);
@@ -130,6 +139,7 @@ public class LineCountSplitterTest extends SplitterCase {
     assertEquals("5 split messages", 5, msgs.size());
   }
 
+  @Test
   public void testDoServiceWithLineCountSplitter() throws Exception {
     msg.addMetadata("key", "value");
     execute(service, msg);
@@ -137,6 +147,7 @@ public class LineCountSplitterTest extends SplitterCase {
         .size());
   }
 
+  @Test
   public void testSplitMessage() throws Exception {
     String obj = "ABCDEFG";
     msg.addObjectHeader(obj, obj);
@@ -148,6 +159,7 @@ public class LineCountSplitterTest extends SplitterCase {
     }
   }
 
+  @Test
   public void testSplitMessageWithObjectMetadata() throws Exception {
     String obj = "ABCDEFG";
     msg.addObjectHeader(obj, obj);
@@ -160,7 +172,8 @@ public class LineCountSplitterTest extends SplitterCase {
       assertEquals(obj, m.getObjectHeaders().get(obj));
     }
   }
-  
+
+  @Test
   public void testSplitMessageWithHeader1() throws Exception {
     LineCountSplitter s = new LineCountSplitter();
     s.setKeepHeaderLines(1);
@@ -180,7 +193,8 @@ public class LineCountSplitterTest extends SplitterCase {
       assertEquals("Must be regular line", LINE, lines.get(1));
     }
   }
-  
+
+  @Test
   public void testSplitMessageWithHeader2() throws Exception {
     LineCountSplitter s = new LineCountSplitter();
     s.setKeepHeaderLines(2);
@@ -207,6 +221,7 @@ public class LineCountSplitterTest extends SplitterCase {
     }
   }
 
+  @Test
   public void testIterator_DoubleProtection() throws Exception {
     MessageSplitterImp splitter = new LineCountSplitter(1);
     try (com.adaptris.core.util.CloseableIterable<AdaptrisMessage> iterable = com.adaptris.core.util.CloseableIterable.ensureCloseable(splitter.splitMessage(msg))) {
@@ -221,6 +236,7 @@ public class LineCountSplitterTest extends SplitterCase {
     
   }
 
+  @Test
   public void testIterator_Remove() throws Exception {
     MessageSplitterImp splitter = new LineCountSplitter(1);
     try (com.adaptris.core.util.CloseableIterable<AdaptrisMessage> iterable = com.adaptris.core.util.CloseableIterable
@@ -237,6 +253,7 @@ public class LineCountSplitterTest extends SplitterCase {
     }
   }
 
+  @Test
   public void testIterator_HasNext() throws Exception {
     MessageSplitterImp splitter = new LineCountSplitter(1);
     try (com.adaptris.core.util.CloseableIterable<AdaptrisMessage> iterable = com.adaptris.core.util.CloseableIterable

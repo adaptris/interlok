@@ -16,8 +16,11 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.Arrays;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.MetadataElement;
@@ -34,8 +37,9 @@ public class CopyMetadataServiceTest extends MetadataServiceExample {
   private static final String METADATA_VALUE = "Some_Metadata_Value";
   private static final String KEY_TO_BE_COPIED = "Metadata_Key_To_Copy_From";
 
-  public CopyMetadataServiceTest(String arg0) {
-    super(arg0);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   private CopyMetadataService createService() {
@@ -52,6 +56,7 @@ public class CopyMetadataServiceTest extends MetadataServiceExample {
     return msg;
   }
 
+  @Test
   public void testSetter() throws Exception {
     CopyMetadataService service = createService();
     try {
@@ -63,6 +68,7 @@ public class CopyMetadataServiceTest extends MetadataServiceExample {
     }
   }
 
+  @Test
   public void testService() throws Exception {
     CopyMetadataService service = createService();
     AdaptrisMessage msg = createMessage();
@@ -72,6 +78,7 @@ public class CopyMetadataServiceTest extends MetadataServiceExample {
     assertTrue(msg.getMetadataValue(NEW_KEY_1).equals(METADATA_VALUE));
   }
 
+  @Test
   public void testNewKeyOverwritten() throws Exception {
     CopyMetadataService service = createService();
     AdaptrisMessage msg = createMessage();
@@ -82,6 +89,7 @@ public class CopyMetadataServiceTest extends MetadataServiceExample {
     assertTrue(msg.getMetadataValue(NEW_KEY_1).equals(METADATA_VALUE)); // overwrites
   }
 
+  @Test
   public void testNoOriginalKey() throws Exception {
     CopyMetadataService service = createService();
     AdaptrisMessage msg = createMessage();
@@ -90,6 +98,7 @@ public class CopyMetadataServiceTest extends MetadataServiceExample {
     assertTrue(msg.getMetadata().size() == 0);
   }
 
+  @Test
   public void testBug2101_SameSourceKeyMultipleDestinationKeys() throws Exception {
     CopyMetadataService service = createService();
     service.getMetadataKeys().add(new KeyValuePair(KEY_TO_BE_COPIED, NEW_KEY_2));

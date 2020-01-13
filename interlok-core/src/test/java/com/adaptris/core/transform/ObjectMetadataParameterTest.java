@@ -16,20 +16,22 @@
 
 package com.adaptris.core.transform;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.HashMap;
 import java.util.Map;
-
+import org.junit.Test;
 import org.w3c.dom.Document;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 
 
 public class ObjectMetadataParameterTest extends TransformParameterCase {
-  public ObjectMetadataParameterTest(String name) {
-    super(name);
-  }
 
+  @Test
   public void testConstructor() throws Exception {
     ObjectMetadataParameter p = new ObjectMetadataParameter();
     assertNull(p.getObjectMetadataKeyRegexp());
@@ -44,6 +46,7 @@ public class ObjectMetadataParameterTest extends TransformParameterCase {
     assertEquals(".*", p.getObjectMetadataKeyRegexp());
   }
 
+  @Test
   public void testCreateParameters() throws Exception {
     ObjectMetadataParameter p = new ObjectMetadataParameter(".*");
     AdaptrisMessage msg = createMessage();
@@ -61,6 +64,7 @@ public class ObjectMetadataParameterTest extends TransformParameterCase {
     assertTrue(map.containsKey("key"));
   }
 
+  @Test
   public void testCreateParameters_NoRegexp() throws Exception {
     ObjectMetadataParameter p = new ObjectMetadataParameter();
     AdaptrisMessage msg = createMessage();
@@ -73,6 +77,7 @@ public class ObjectMetadataParameterTest extends TransformParameterCase {
     }
   }
 
+  @Test
   public void testCreateParameters_UnmatchedRegexp() throws Exception {
     ObjectMetadataParameter p = new ObjectMetadataParameter(".*Unmatched.*");
     AdaptrisMessage msg = createMessage();

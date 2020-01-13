@@ -16,18 +16,21 @@
 
 package com.adaptris.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import org.junit.Test;
 
 
 public class TestKeyValuePairList extends KeyValuePairCollectionCase {
 
-  public TestKeyValuePairList(java.lang.String testName) {
-    super(testName);
-  }
 
+  @Test
   public void testAddTheSame() {
     KeyValuePairList set = createBag();
     set.addKeyValuePair(new KeyValuePair(KEY1, VALUE1));
@@ -36,6 +39,7 @@ public class TestKeyValuePairList extends KeyValuePairCollectionCase {
     assertEquals(3, set.size());
   }
 
+  @Test
   public void testCollectionConstructor() {
     KeyValuePairList set = new KeyValuePairList();
     set.addKeyValuePair(new KeyValuePair(KEY1, VALUE1));
@@ -46,6 +50,7 @@ public class TestKeyValuePairList extends KeyValuePairCollectionCase {
     assertEquals(set.hashCode(), set2.hashCode());
   }
 
+  @Test
   public void testPropertiesConstructor() {
     Properties p = new Properties();
     p.setProperty(KEY1, VALUE1);
@@ -57,6 +62,7 @@ public class TestKeyValuePairList extends KeyValuePairCollectionCase {
     assertEquals(set.hashCode(), set2.hashCode());
   }
 
+  @Test
   public void testMapConstructor() {
     Map<String, String> p = new HashMap<>();
     p.put(KEY1, VALUE1);
@@ -68,6 +74,7 @@ public class TestKeyValuePairList extends KeyValuePairCollectionCase {
     assertEquals(set.hashCode(), set2.hashCode());
   }
 
+  @Test
   public void testAddAtIndex() {
     KeyValuePairList list = createBag();
     list.addKeyValuePair(new KeyValuePair(KEY1, VALUE1));
@@ -77,6 +84,7 @@ public class TestKeyValuePairList extends KeyValuePairCollectionCase {
     assertTrue(list.contains(new KeyValuePair(KEY2, "")));
   }
 
+  @Test
   public void testGetIndex() {
     KeyValuePairList list = createWithEntries();
 
@@ -84,12 +92,14 @@ public class TestKeyValuePairList extends KeyValuePairCollectionCase {
     assertEquals(new KeyValuePair(KEY2, VALUE2), kvp);
   }
 
+  @Test
   public void testIndexOf() {
     KeyValuePairList list = createWithEntries();
 
     assertEquals(1, list.indexOf(new KeyValuePair(KEY2, VALUE2)));
   }
 
+  @Test
   public void testLastIndexOf() {
     KeyValuePairList set = createBag();
     set.addKeyValuePair(new KeyValuePair(KEY1, VALUE1));
@@ -98,6 +108,7 @@ public class TestKeyValuePairList extends KeyValuePairCollectionCase {
     assertEquals(2, set.lastIndexOf(new KeyValuePair(KEY1, "")));
   }
 
+  @Test
   public void testListIterator() {
     KeyValuePairList list = createWithEntries();
 
@@ -105,6 +116,7 @@ public class TestKeyValuePairList extends KeyValuePairCollectionCase {
     assertNotNull(list.listIterator(1));
   }
 
+  @Test
   public void testSubList() {
     KeyValuePairList list = createWithEntries();
     assertNotNull(list.subList(0, 2));
@@ -112,6 +124,7 @@ public class TestKeyValuePairList extends KeyValuePairCollectionCase {
     assertTrue(list.subList(0, 2).contains(new KeyValuePair(KEY2, VALUE2)));
   }
 
+  @Test
   public void testAddAllAtIndex() {
     KeyValuePairList list = createWithEntries();
     KeyValuePairList list2 = createWithEntries();
@@ -119,6 +132,7 @@ public class TestKeyValuePairList extends KeyValuePairCollectionCase {
     assertEquals(8, list.size());
   }
 
+  @Test
   public void testSetAtIndex() {
     KeyValuePairList list = createWithEntries();
     list.set(1, new KeyValuePair(KEY3, VALUE3));
@@ -126,6 +140,7 @@ public class TestKeyValuePairList extends KeyValuePairCollectionCase {
     assertFalse(list.contains(new KeyValuePair(KEY2, "")));
   }
 
+  @Test
   public void testRemoveByIntPosition() {
     KeyValuePairList list = createWithEntries();
     list.remove(1);

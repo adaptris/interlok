@@ -16,8 +16,12 @@
 
 package com.adaptris.core.http.oauth;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.Date;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
@@ -29,14 +33,12 @@ import com.adaptris.util.text.DateFormatUtil;
 public class GetOauthTokenTest extends HttpServiceExample {
   private static final String TEXT = "ABCDEFG";
 
-  public GetOauthTokenTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testService_Lifecycle() throws Exception {
     GetOauthToken service = new GetOauthToken();
     try {
@@ -51,6 +53,7 @@ public class GetOauthTokenTest extends HttpServiceExample {
     LifecycleHelper.stopAndClose(LifecycleHelper.initAndStart(service));
   }
 
+  @Test
   public void testService_WithExpiry() throws Exception {
     long now = System.currentTimeMillis();
     String expiryDate = DateFormatUtil.format(new Date(now));
@@ -73,6 +76,7 @@ public class GetOauthTokenTest extends HttpServiceExample {
     assertEquals(expiryDate, msg.getMetadataValue("expiry"));
   }
 
+  @Test
   public void testService_WithError() throws Exception {
     long now = System.currentTimeMillis();
     String expiryDate = DateFormatUtil.format(new Date(now));
@@ -91,6 +95,7 @@ public class GetOauthTokenTest extends HttpServiceExample {
     }
   }
 
+  @Test
   public void testService_WithExpiry_NoAccessTokenExpiry() throws Exception {
     AccessToken t = new AccessToken(getName());
     GetOauthToken service = new GetOauthToken();
@@ -109,6 +114,7 @@ public class GetOauthTokenTest extends HttpServiceExample {
     assertFalse(msg.headersContainsKey("expiry"));
   }
 
+  @Test
   public void testService_NoExpiry() throws Exception {
     long now = System.currentTimeMillis();
     String expiryDate = DateFormatUtil.format(new Date(now));

@@ -16,30 +16,32 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.util.TimeInterval;
 
-import junit.framework.TestCase;
-
-public class WaitingOutOfStateHandlerTest extends TestCase {
+public class WaitingOutOfStateHandlerTest {
   
   private DummyComponent component;
   
+  @Before
   public void setUp() throws Exception {
     component = new DummyComponent();
   }
 
-  public void tearDown() throws Exception {
-    
-  }
-  
+  @Test
   public void testExpectedStateOnInit() {
     WaitingOutOfStateHandler outOfStateHandler = new WaitingOutOfStateHandler();
     
     assertEquals(StartedState.getInstance(), outOfStateHandler.getCorrectState().getComponentState());
   }
-  
+
+  @Test
   public void testIsInCorrectStateFromNew() throws OutOfStateException {
     WaitingOutOfStateHandler outOfStateHandler = new WaitingOutOfStateHandler();
     
@@ -55,7 +57,8 @@ public class WaitingOutOfStateHandlerTest extends TestCase {
     component.changeState(StartedState.getInstance());
     assertTrue(outOfStateHandler.isInCorrectState(component));
   }
-  
+
+  @Test
   public void testIsInCorrectStateModified() throws OutOfStateException {
     WaitingOutOfStateHandler outOfStateHandler = new WaitingOutOfStateHandler();
     outOfStateHandler.setCorrectState(ConfiguredComponentState.INITIALISED);
@@ -72,7 +75,8 @@ public class WaitingOutOfStateHandlerTest extends TestCase {
     component.changeState(InitialisedState.getInstance());
     assertTrue(outOfStateHandler.isInCorrectState(component));
   }
-  
+
+  @Test
   public void testAlreadyInCorrectState() throws Exception {
     WaitingOutOfStateHandler outOfStateHandler = new WaitingOutOfStateHandler();
     outOfStateHandler.setCorrectState(ConfiguredComponentState.STARTED);
@@ -80,7 +84,8 @@ public class WaitingOutOfStateHandlerTest extends TestCase {
     component.changeState(StartedState.getInstance());
     outOfStateHandler.handleOutOfState(component);
   }
-  
+
+  @Test
   public void testExceptionAfterTimeout() throws Exception {
     WaitingOutOfStateHandler outOfStateHandler = new WaitingOutOfStateHandler();
     outOfStateHandler.setCorrectState(ConfiguredComponentState.STARTED);
@@ -95,7 +100,8 @@ public class WaitingOutOfStateHandlerTest extends TestCase {
       // expected
     }
   }
-  
+
+  @Test
   public void testNoExceptionNoTimeout() throws Exception {
     WaitingOutOfStateHandler outOfStateHandler = new WaitingOutOfStateHandler();
     outOfStateHandler.setCorrectState(ConfiguredComponentState.STARTED);
@@ -106,6 +112,7 @@ public class WaitingOutOfStateHandlerTest extends TestCase {
     
     // update the state to the correct one before the max time runs out.
     new Thread() {
+      @Override
       public void run () {
         try {
           Thread.sleep(1000);

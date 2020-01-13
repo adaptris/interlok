@@ -15,7 +15,8 @@
 */
 
 package com.adaptris.core.metadata;
-
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.BaseCase;
@@ -23,12 +24,12 @@ import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.MetadataCollection;
 
-public class CompositeMetadataFilterTest extends BaseCase {
+public class CompositeMetadataFilterTest {
 
-  public CompositeMetadataFilterTest(String name) {
-    super(name);
+  public CompositeMetadataFilterTest() {
   }
 
+  @Test
   public void testFilter() {
     CompositeMetadataFilter filterer = new CompositeMetadataFilter(new NoOpMetadataFilter(), new RegexMetadataFilter());
     AdaptrisMessage message = newMessage();
@@ -36,11 +37,12 @@ public class CompositeMetadataFilterTest extends BaseCase {
     assertEquals(message.getMetadata().size(), resultingCollection.size());
   }
 
+  @Test
   public void testRoundTrip() throws Exception {
     CompositeMetadataFilter f1 = new CompositeMetadataFilter(new NoOpMetadataFilter(), new RegexMetadataFilter());
     AdaptrisMarshaller cm = DefaultMarshaller.getDefaultMarshaller();
     CompositeMetadataFilter f2 = (CompositeMetadataFilter) cm.unmarshal(cm.marshal(f1));
-    assertRoundtripEquality(f1, f2);
+    BaseCase.assertRoundtripEquality(f1, f2);
   }
 
   private AdaptrisMessage newMessage() {

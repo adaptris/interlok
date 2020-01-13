@@ -16,7 +16,12 @@
 
 package com.adaptris.core.jms;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import java.util.concurrent.TimeUnit;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.DefaultMessageFactory;
@@ -41,25 +46,16 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
 
   private static final String DEFAULT_FILTER_KEY = "metadataFilterKey";
 
-  public AggregatingJmsConsumeServiceTest(String name) {
-    super(name);
-  }
-
   @Override
-  public void setUp() throws Exception {
-    super.setUp();
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
-
-  @Override
-  public void tearDown() throws Exception {
-    super.tearDown();
-  }
-
   @Override
   protected boolean doStateTests() {
     return false;
   }
-  
+
+  @Test
   public void testNoOpMethods() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -85,6 +81,7 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
 
   }
 
+  @Test
   public void testService() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -109,6 +106,7 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
     }
   }
 
+  @Test
   public void testServiceWithTimeout() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -136,6 +134,7 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
     }
   }
 
+  @Test
   public void testService_MultipleMessages() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());

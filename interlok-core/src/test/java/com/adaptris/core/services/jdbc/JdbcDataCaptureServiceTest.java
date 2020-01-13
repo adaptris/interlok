@@ -15,11 +15,13 @@
 */
 
 package com.adaptris.core.services.jdbc;
+import org.junit.Test;
 
 public class JdbcDataCaptureServiceTest extends JdbcDataCaptureServiceCase {
 
-  public JdbcDataCaptureServiceTest(String arg0) {
-    super(arg0);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
 
@@ -28,7 +30,7 @@ public class JdbcDataCaptureServiceTest extends JdbcDataCaptureServiceCase {
     return new JdbcDataCaptureService();
   }
 
-  @Override
+  @Test
   public void testBackReferences() throws Exception {
     this.testBackReferences(new JdbcDataCaptureService("INSERT INTO MYTABLE ('ABC');"));
   }

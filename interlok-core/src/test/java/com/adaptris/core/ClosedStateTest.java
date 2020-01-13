@@ -15,21 +15,24 @@
 */
 
 package com.adaptris.core;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.stubs.MockConnection;
 
 
 public class ClosedStateTest extends ComponentStateCase {
 
-  public ClosedStateTest(java.lang.String testName) {
-    super(testName);
+  public ClosedStateTest() {
   }
 
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-
+  @Test
   public void testInstance() throws Exception {
     ClosedState one = ClosedState.getInstance();
     assertTrue(one == ClosedState.getInstance());
@@ -38,6 +41,7 @@ public class ClosedStateTest extends ComponentStateCase {
 
   }
 
+  @Test
   public void testClosed_To_Initialised() throws Exception {
     MockConnection channel = new MockConnection();
     ClosedState state = ClosedState.getInstance();
@@ -49,6 +53,7 @@ public class ClosedStateTest extends ComponentStateCase {
     assertEquals(0, channel.getCloseCount());
   }
 
+  @Test
   public void testClosed_To_Started() throws Exception {
     MockConnection channel = new MockConnection();
     ClosedState state = ClosedState.getInstance();
@@ -60,6 +65,7 @@ public class ClosedStateTest extends ComponentStateCase {
     assertEquals(0, channel.getCloseCount());
   }
 
+  @Test
   public void testClosed_To_Stopped() throws Exception {
     MockConnection channel = new MockConnection();
     ClosedState state = ClosedState.getInstance();
@@ -72,6 +78,7 @@ public class ClosedStateTest extends ComponentStateCase {
     assertEquals(0, channel.getCloseCount());
   }
 
+  @Test
   public void testClosed_To_Closed() throws Exception {
     MockConnection channel = new MockConnection();
     ClosedState state = ClosedState.getInstance();
@@ -84,6 +91,7 @@ public class ClosedStateTest extends ComponentStateCase {
     assertEquals(0, channel.getCloseCount());
   }
 
+  @Test
   public void testRestart() throws Exception {
     MockConnection channel = new MockConnection();
     ClosedState state = ClosedState.getInstance();

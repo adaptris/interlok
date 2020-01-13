@@ -15,26 +15,28 @@
  */
 
 package com.adaptris.core.jdbc;
-
+import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
 public class FailoverJdbcConnectionTest extends DatabaseConnectionCase<FailoverJdbcConnection> {
 
 
-  public FailoverJdbcConnectionTest(String arg0) {
-    super(arg0);
+  public FailoverJdbcConnectionTest() {
+
   }
+
 
   @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testBug2082() throws Exception {
     FailoverJdbcConnection conn = configure(createConnection());
     conn.setTestStatement("SELECT 1;");
@@ -47,6 +49,7 @@ public class FailoverJdbcConnectionTest extends DatabaseConnectionCase<FailoverJ
     }
   }
 
+  @Test
   public void testInitialUrlConnectFailure() throws Exception {
     FailoverJdbcConnection conn = configure(createConnection());
     List<String> urls = conn.getConnectUrls();
@@ -55,6 +58,7 @@ public class FailoverJdbcConnectionTest extends DatabaseConnectionCase<FailoverJ
     conn.connect();
   }
 
+  @Test
   public void testAlwaysValidateConnectionFalse() throws Exception {
     FailoverJdbcConnection conn = configure(createConnection());
     conn.setAlwaysValidateConnection(false);
@@ -65,6 +69,7 @@ public class FailoverJdbcConnectionTest extends DatabaseConnectionCase<FailoverJ
     conn.connect();
   }
 
+  @Test
   public void testTestStatementEmptyString() throws Exception {
     FailoverJdbcConnection conn = configure(createConnection());
     conn.setAlwaysValidateConnection(true);

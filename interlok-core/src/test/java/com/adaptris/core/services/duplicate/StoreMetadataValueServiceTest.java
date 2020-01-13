@@ -16,8 +16,12 @@
 
 package com.adaptris.core.services.duplicate;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import java.io.File;
 import org.apache.commons.io.FileUtils;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceException;
@@ -30,12 +34,13 @@ public class StoreMetadataValueServiceTest extends SyntaxRoutingServiceExample {
   private static final String STORE_URL = "StoreMetadataValueServiceTest.storeFileUrl";
   private static final String DEFAULT_METADATA_KEY = "key";
 
-  public StoreMetadataValueServiceTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     File f = FsHelper.toFile(PROPERTIES.getProperty(STORE_URL));
     FileUtils.deleteQuietly(f);
   }
@@ -47,6 +52,7 @@ public class StoreMetadataValueServiceTest extends SyntaxRoutingServiceExample {
     return service;
   }
 
+  @Test
   public void testPreviousValues() throws Exception {
     StoreMetadataValueService newService = new StoreMetadataValueService();
     assertEquals(1000, newService.getNumberOfPreviousValuesToStore());
@@ -61,6 +67,7 @@ public class StoreMetadataValueServiceTest extends SyntaxRoutingServiceExample {
     assertEquals(1, newService.getNumberOfPreviousValuesToStore());
   }
 
+  @Test
   public void testInit() throws Exception {
     StoreMetadataValueService newService = new StoreMetadataValueService();
     try {
@@ -75,6 +82,7 @@ public class StoreMetadataValueServiceTest extends SyntaxRoutingServiceExample {
     LifecycleHelper.initAndStart(newService);
   }
 
+  @Test
   public void testService() throws Exception {
     StoreMetadataValueService service = createService();
     StoreMetadataValueService service2 = createService();
@@ -100,6 +108,7 @@ public class StoreMetadataValueServiceTest extends SyntaxRoutingServiceExample {
     }
   }
 
+  @Test
   public void testService_ExceedsHistory() throws Exception {
     final int maxPrevious = 10;
     final int maxCount = maxPrevious + 10;
@@ -119,6 +128,7 @@ public class StoreMetadataValueServiceTest extends SyntaxRoutingServiceExample {
     }
   }
 
+  @Test
   public void testService_Exception() throws Exception {
     StoreMetadataValueService service = createService();
     try {

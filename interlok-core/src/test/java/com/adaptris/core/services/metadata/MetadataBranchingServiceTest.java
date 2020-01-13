@@ -16,8 +16,11 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BranchingServiceCollection;
@@ -122,12 +125,10 @@ public class MetadataBranchingServiceTest extends BranchingServiceExample {
     abstract KeyValuePairList createMappings();
   }
 
-  public MetadataBranchingServiceTest(String name) {
-    super(name);
-  }
 
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   private static MetadataValueBranchingService createService() {
@@ -141,6 +142,7 @@ public class MetadataBranchingServiceTest extends BranchingServiceExample {
     return service;
   }
 
+  @Test
   public void testSetters() throws Exception {
     MetadataValueBranchingService service = createService();
     try {
@@ -173,6 +175,7 @@ public class MetadataBranchingServiceTest extends BranchingServiceExample {
     return msg;
   }
 
+  @Test
   public void testInitialise() throws Exception {
     MetadataValueBranchingService service = new MetadataValueBranchingService();
     try {
@@ -199,6 +202,7 @@ public class MetadataBranchingServiceTest extends BranchingServiceExample {
     }
   }
 
+  @Test
   public void testDoStandardService() throws Exception {
     MetadataValueBranchingService service = createService();
 
@@ -208,6 +212,7 @@ public class MetadataBranchingServiceTest extends BranchingServiceExample {
     assertTrue(NEXT_SERVICE_ID.equals(msg.getNextServiceId()));
   }
 
+  @Test
   public void testServiceWithEqualsMatcher() throws Exception {
     MetadataValueBranchingService service = createService();
     service.setValueMatcher(new EqualsValueMatcher());
@@ -217,6 +222,7 @@ public class MetadataBranchingServiceTest extends BranchingServiceExample {
     assertTrue(NEXT_SERVICE_ID.equals(msg.getNextServiceId()));
   }
 
+  @Test
   public void testDoMissingMetadataService() throws Exception {
     MetadataValueBranchingService service = createService();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(DUMMY_PAYLOAD);
@@ -230,6 +236,7 @@ public class MetadataBranchingServiceTest extends BranchingServiceExample {
     }
   }
 
+  @Test
   public void testNoMetadataService() throws Exception {
     MetadataValueBranchingService service = createService();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(DUMMY_PAYLOAD);
@@ -242,6 +249,7 @@ public class MetadataBranchingServiceTest extends BranchingServiceExample {
     }
   }
 
+  @Test
   public void testDefaultServiceId() throws Exception {
     MetadataValueBranchingService service = createService();
     service.setDefaultServiceId(DEFAULT_SERVICE_ID);
@@ -250,6 +258,7 @@ public class MetadataBranchingServiceTest extends BranchingServiceExample {
     assertTrue(DEFAULT_SERVICE_ID.equals(msg.getNextServiceId()));
   }
 
+  @Test
   public void testDefaultServiceIdWithValidMetadata() throws Exception {
     MetadataValueBranchingService service = createService();
     service.setDefaultServiceId(DEFAULT_SERVICE_ID);
@@ -266,6 +275,7 @@ public class MetadataBranchingServiceTest extends BranchingServiceExample {
     }
   }
 
+  @Test
   public void testServiceWithIgnoresCaseValueMatcher() throws Exception {
     MetadataValueBranchingService service = createService();
     service.setValueMatcher(new IgnoresCaseValueMatcher());

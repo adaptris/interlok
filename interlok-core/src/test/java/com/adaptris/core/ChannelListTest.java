@@ -16,11 +16,19 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.ListIterator;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import org.apache.log4j.Logger;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.PlainIdGenerator;
 
@@ -28,15 +36,15 @@ public class ChannelListTest extends BaseCase {
   private IdGenerator idGenerator;
   private Logger log = Logger.getLogger(this.getClass());
 
-  public ChannelListTest(java.lang.String testName) {
-    super(testName);
+  public ChannelListTest() {
   }
 
-  @Override
+  @Before
   public void setUp() throws Exception {
     idGenerator = new PlainIdGenerator();
   }
 
+  @Test
   public void testRemoveThenAddAgain() throws Exception {
     ChannelList channelList = new ChannelList();
     Channel c = new Channel();
@@ -49,6 +57,7 @@ public class ChannelListTest extends BaseCase {
     assertEquals(1, channelList.size());
   }
 
+  @Test
   public void testRemoveByObject() throws Exception {
     ChannelList channelList = new ChannelList();
     Channel c = new Channel();
@@ -59,22 +68,26 @@ public class ChannelListTest extends BaseCase {
     assertEquals(0, channelList.size());
   }
 
+  @Test
   public void testRedmine5407() throws Exception {
     testRemoveThenAddAgain();
   }
 
+  @Test
   public void testRemoveNull() throws Exception {
     ChannelList channelList = new ChannelList();
     assertFalse(channelList.remove(null));
     assertFalse(channelList.removeChannel(null));
   }
 
+  @Test
   public void testRemovePlainObject() throws Exception {
     ChannelList channelList = new ChannelList();
     assertFalse(channelList.remove(new Object()));
 
   }
 
+  @Test
   public void testAddDuplicate() {
     ChannelList channelList = new ChannelList();
     Channel toAdd = new Channel();
@@ -83,6 +96,7 @@ public class ChannelListTest extends BaseCase {
     assertEquals(2, channelList.size());
   }
 
+  @Test
   public void testCollectionConstructor() {
     ChannelList channelList = new ChannelList();
     Channel channel1 = new Channel();
@@ -95,6 +109,7 @@ public class ChannelListTest extends BaseCase {
     assertTrue(channelList2.contains(channel1));
   }
 
+  @Test
   public void testAddAllAtPosition() {
     ChannelList channelList = new ChannelList();
     Channel channel1 = new Channel();
@@ -110,6 +125,7 @@ public class ChannelListTest extends BaseCase {
     assertTrue(channelList2.contains(channel1));
   }
 
+  @Test
   public void testAdd() {
     ChannelList channelList = new ChannelList();
     channelList.add(new Channel());
@@ -122,6 +138,7 @@ public class ChannelListTest extends BaseCase {
     assertEquals(1, channelList.size());
   }
 
+  @Test
   public void testAddAtPosition() {
     ChannelList channelList = new ChannelList();
     channelList.add(new Channel());
@@ -133,6 +150,7 @@ public class ChannelListTest extends BaseCase {
     assertEquals(toAdd, channelList.get(1));
   }
 
+  @Test
   public void testGetByInt() {
     ChannelList wl = new ChannelList();
     Channel toAdd = new Channel();
@@ -141,6 +159,7 @@ public class ChannelListTest extends BaseCase {
     assertEquals(toAdd, wl.get(1));
   }
 
+  @Test
   public void testGetChannels() {
     ChannelList wl = new ChannelList();
     wl.add(new Channel());
@@ -148,6 +167,7 @@ public class ChannelListTest extends BaseCase {
     assertEquals(1, wl.getChannels().size());
   }
 
+  @Test
   public void testIndexOf() {
     ChannelList wl = new ChannelList();
     wl.add(new Channel());
@@ -158,6 +178,7 @@ public class ChannelListTest extends BaseCase {
     assertEquals(2, wl.indexOf(toAdd));
   }
 
+  @Test
   public void testIterator() {
     ChannelList wl = new ChannelList();
     wl.add(new Channel());
@@ -166,6 +187,7 @@ public class ChannelListTest extends BaseCase {
     assertTrue(wl.iterator().hasNext());
   }
 
+  @Test
   public void testListIterator_HasPreviousNext() {
     ChannelList list = new ChannelList();
     list.add(new Channel());
@@ -201,6 +223,7 @@ public class ChannelListTest extends BaseCase {
     }
   }
 
+  @Test
   public void testLastIndexOf() {
     ChannelList wl = new ChannelList();
     Channel toAdd = new Channel();
@@ -210,6 +233,7 @@ public class ChannelListTest extends BaseCase {
     assertEquals(2, wl.lastIndexOf(toAdd));
   }
 
+  @Test
   public void testListIterator() {
     ChannelList wl = new ChannelList();
     wl.add(new Channel());
@@ -220,6 +244,7 @@ public class ChannelListTest extends BaseCase {
     assertNotNull(wl.listIterator(1));
   }
 
+  @Test
   public void testRemove() {
     ChannelList list = new ChannelList();
     list.add(new Channel());
@@ -238,6 +263,7 @@ public class ChannelListTest extends BaseCase {
     assertEquals(3, list.size());
   }
 
+  @Test
   public void testSubList() {
     ChannelList list = new ChannelList();
     list.add(new Channel());
@@ -248,6 +274,7 @@ public class ChannelListTest extends BaseCase {
     assertEquals(2, list.subList(0, 2).size());
   }
 
+  @Test
   public void testAddChannelUniqueIds() throws CoreException {
 
     Channel ch1 = new Channel();
@@ -275,6 +302,7 @@ public class ChannelListTest extends BaseCase {
     assertEquals(4, list.size());
   }
 
+  @Test
   public void testSetChannels() throws Exception {
     ChannelList list = new ChannelList();
     try {
@@ -289,6 +317,7 @@ public class ChannelListTest extends BaseCase {
     assertEquals(1, list.size());
   }
 
+  @Test
   public void testSetChannelsWithDuplicateID() {
     ChannelList list = new ChannelList();
     try {
@@ -313,6 +342,7 @@ public class ChannelListTest extends BaseCase {
     }
   }
 
+  @Test
   public void testAddAllChannelsWithDuplicateID() {
     ChannelList list = new ChannelList();
     try {
@@ -337,6 +367,7 @@ public class ChannelListTest extends BaseCase {
     }
   }
 
+  @Test
   public void testSetByInt() {
     ChannelList list = new ChannelList();
     list.add(new Channel());
@@ -353,6 +384,7 @@ public class ChannelListTest extends BaseCase {
     assertNull(list.getChannel("replacedChannel"));
   }
 
+  @Test
   public void testGetChannelByUniqueId() throws Exception {
     ChannelList list = new ChannelList();
     list.setChannels(Arrays.asList(new Channel[]
@@ -390,6 +422,7 @@ public class ChannelListTest extends BaseCase {
     }
   }
 
+  @Test
   public void testGetChannelByPosition() throws Exception {
     ChannelList list = new ChannelList();
     list.setChannels(Arrays.asList(new Channel[]
@@ -423,6 +456,7 @@ public class ChannelListTest extends BaseCase {
     }
   }
 
+  @Test
   public void testChannelAutoStartFalse() throws Exception {
     ChannelList list = new ChannelList();
     Channel testChannel = new Channel();
@@ -437,6 +471,7 @@ public class ChannelListTest extends BaseCase {
     assertEquals(ClosedState.getInstance(), testChannel.retrieveComponentState());
   }
 
+  @Test
   public void testChannelAutoStartTrue() throws Exception {
     ChannelList list = new ChannelList();
     Channel testChannel = new Channel();
@@ -452,6 +487,7 @@ public class ChannelListTest extends BaseCase {
   }
 
   // No ID means that we always start regardless of auto-start being false.
+  @Test
   public void testChannelAutoStartFalseNoUniqueId() throws Exception {
     ChannelList list = new ChannelList();
     Channel testChannel = new Channel();
@@ -465,6 +501,7 @@ public class ChannelListTest extends BaseCase {
     assertEquals(StartedState.getInstance(), testChannel.retrieveComponentState());
   }
 
+  @Test
   public void testChannelAutoStartTrueNoUniqueId() throws Exception {
     ChannelList list = new ChannelList();
     Channel testChannel = new Channel();
@@ -478,6 +515,7 @@ public class ChannelListTest extends BaseCase {
     assertEquals(StartedState.getInstance(), testChannel.retrieveComponentState());
   }
 
+  @Test
   public void testChannelAutoStartNotSpecified() throws Exception {
     ChannelList list = new ChannelList();
     Channel testChannel = new Channel();
@@ -490,6 +528,7 @@ public class ChannelListTest extends BaseCase {
     assertEquals(StartedState.getInstance(), testChannel.retrieveComponentState());
   }
 
+  @Test
   public void testJavaxValidation() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId("testJavaxValidation");

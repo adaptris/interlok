@@ -15,17 +15,12 @@
 */
 
 package com.adaptris.core.fs;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 
-/**
- * @author lchan
- * @author $Author: lchan $
- */
+
 public class NoCacheTest extends ItemCacheCase {
-
-  public NoCacheTest(String name) {
-    super(name);
-  }
 
   @Override
   protected void assertCache(ProcessedItemCache cache, int count) {

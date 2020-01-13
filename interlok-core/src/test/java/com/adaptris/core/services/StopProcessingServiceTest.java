@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services;
 
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.DefaultMessageFactory;
@@ -23,15 +25,12 @@ import com.adaptris.core.GeneralServiceExample;
 
 
 public class StopProcessingServiceTest extends GeneralServiceExample {
-
-  public StopProcessingServiceTest(java.lang.String testName) {
-    super(testName);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testService() throws Exception {
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage();
     execute(new StopProcessingService(), msg);

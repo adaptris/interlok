@@ -13,12 +13,14 @@
  */
 
 package com.adaptris.core.services.metadata;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Properties;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceException;
@@ -36,10 +38,16 @@ public class FormDataToMetadataTest extends MetadataServiceExample {
   private static final String COMPLEX_PARAM = "complexParam";
 
   @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
+  @Override
   protected FormDataToMetadata retrieveObjectForSampleConfig() {
     return new FormDataToMetadata().withContentTypeKey("Content-Type");
   }
 
+  @Test
   public void testService_NoContentType() throws Exception {
     String payload = formatAsFormData(createProperties());
     FormDataToMetadata service = new FormDataToMetadata().withMetadataPrefix(null);
@@ -49,6 +57,7 @@ public class FormDataToMetadataTest extends MetadataServiceExample {
     assertEquals(0, msg.getMetadata().size());
   }
 
+  @Test
   public void testService_ContentTypeNotFormData() throws Exception {
     String payload = formatAsFormData(createProperties());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(payload);
@@ -60,6 +69,7 @@ public class FormDataToMetadataTest extends MetadataServiceExample {
     assertEquals(1, msg.getMetadata().size());
   }
 
+  @Test
   public void testService() throws Exception {
     String payload = formatAsFormData(createProperties(true));
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(payload);
@@ -71,6 +81,7 @@ public class FormDataToMetadataTest extends MetadataServiceExample {
     assertEquals(XML_VALUE, msg.getMetadataValue(COMPLEX_PARAM));
   }
 
+  @Test
   public void testService_Failure() throws Exception {
     String payload = formatAsFormData(createProperties());
     AdaptrisMessage msg = new DefectiveMessageFactory(WhenToBreak.METADATA_GET).newMessage(payload);

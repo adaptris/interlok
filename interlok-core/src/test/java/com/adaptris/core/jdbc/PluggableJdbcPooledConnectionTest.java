@@ -1,8 +1,13 @@
 package com.adaptris.core.jdbc;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
+import org.junit.Test;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.core.util.LifecycleHelper;
@@ -15,8 +20,7 @@ public class PluggableJdbcPooledConnectionTest extends DatabaseConnectionCase<Pl
 
   private static final GuidGenerator GUID = new GuidGenerator();
 
-  public PluggableJdbcPooledConnectionTest(String arg0) {
-    super(arg0);
+  public PluggableJdbcPooledConnectionTest() {
   }
 
   @Override
@@ -38,6 +42,7 @@ public class PluggableJdbcPooledConnectionTest extends DatabaseConnectionCase<Pl
     return conn1;
   }
 
+  @Test
   public void testBrokenPool() throws Exception {
     JdbcPooledConnectionImpl con = configure(createConnection());
     con.setConnectUrl("jdbc:derby:memory:" + GUID.safeUUID() + ";create=true");
@@ -60,6 +65,7 @@ public class PluggableJdbcPooledConnectionTest extends DatabaseConnectionCase<Pl
     }
   }
 
+  @Test
   public void testEquals() throws Exception {
     JdbcPooledConnectionImpl con = createConnection();
     String url = "jdbc:derby:memory:" + GUID.safeUUID() + ";create=true";
@@ -73,6 +79,7 @@ public class PluggableJdbcPooledConnectionTest extends DatabaseConnectionCase<Pl
     assertFalse(con.equals(con2));
   }
 
+  @Test
   public void testConnection_UsesPool() throws Exception {
     String originalThread = Thread.currentThread().getName();
     Thread.currentThread().setName("testConnectionDataSource_Poolsize");

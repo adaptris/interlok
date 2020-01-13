@@ -16,8 +16,11 @@
 
 package com.adaptris.core.services.jdbc;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import java.util.List;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 
 public class MetadataStatementCreatorTest extends JdbcQueryServiceCase {
@@ -26,16 +29,12 @@ public class MetadataStatementCreatorTest extends JdbcQueryServiceCase {
       "SELECT adapter_version"
       + " FROM adapter_type_version " + " WHERE adapter_unique_id = ?";
 
-  public MetadataStatementCreatorTest(String arg0) {
-    super(arg0);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @SuppressWarnings("deprecation")
+  @Test
   public void testMetadataStatementCreator() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -63,7 +62,7 @@ public class MetadataStatementCreatorTest extends JdbcQueryServiceCase {
     assertFalse(msg.containsKey(JdbcDataQueryService.class.getCanonicalName()));
   }
   
-  @SuppressWarnings("deprecation")
+  @Test
   public void testMultipleExecutions() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);

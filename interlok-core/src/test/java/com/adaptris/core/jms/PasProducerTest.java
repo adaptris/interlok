@@ -24,8 +24,9 @@ import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 
 public class PasProducerTest extends BasicJmsProducerCase {
 
-  public PasProducerTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   /**

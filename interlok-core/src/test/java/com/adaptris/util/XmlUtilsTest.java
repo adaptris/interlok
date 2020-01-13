@@ -16,6 +16,13 @@
 
 package com.adaptris.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -23,16 +30,13 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
-
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.stubs.MessageHelper;
@@ -54,6 +58,11 @@ public class XmlUtilsTest extends BaseCase {
   static String unpadded = "<root><test>" + CHAR_80 + CHAR_80 + "</test></root>";
 
   static String multiLine = "<root><test att='1'>one</test><test att='2'>two</test></root>";
+
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
 
   @Test
   public void testConstructors() {

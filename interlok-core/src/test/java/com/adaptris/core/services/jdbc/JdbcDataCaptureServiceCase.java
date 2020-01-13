@@ -16,6 +16,11 @@
 
 package com.adaptris.core.services.jdbc;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -24,7 +29,7 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ComponentLifecycle;
@@ -171,10 +176,6 @@ public abstract class JdbcDataCaptureServiceCase extends JdbcServiceExample {
 
   }
 
-  public JdbcDataCaptureServiceCase(String arg0) {
-    super(arg0);
-  }
-
   @Override
   protected Object retrieveObjectForSampleConfig() {
     return null;
@@ -244,6 +245,7 @@ public abstract class JdbcDataCaptureServiceCase extends JdbcServiceExample {
     return name;
   }
 
+  @Test
   public void testSetNamespaceContext() throws Exception {
     JdbcIteratingDataCaptureServiceImpl service = newService();
     assertNull(service.getNamespaceContext());
@@ -255,6 +257,7 @@ public abstract class JdbcDataCaptureServiceCase extends JdbcServiceExample {
     assertNull(service.getNamespaceContext());
   }
 
+  @Test
   public void testService() throws Exception {
     createDatabase();
     JdbcIteratingDataCaptureServiceImpl service = createBasicService();
@@ -266,6 +269,7 @@ public abstract class JdbcDataCaptureServiceCase extends JdbcServiceExample {
     doBasicCaptureAsserts(1);
   }
 
+  @Test
   public void testServiceSequentialParameterApplicator() throws Exception {
     createDatabase();
     JdbcIteratingDataCaptureServiceImpl service = createBasicService();
@@ -276,6 +280,7 @@ public abstract class JdbcDataCaptureServiceCase extends JdbcServiceExample {
     doBasicCaptureAsserts(1);
   }
 
+  @Test
   public void testServiceNamedParameterApplicator() throws Exception {
     createDatabase();
 
@@ -294,6 +299,7 @@ public abstract class JdbcDataCaptureServiceCase extends JdbcServiceExample {
     doBasicCaptureAsserts(1);
   }
 
+  @Test
   public void testService_PooledConnection() throws Exception {
     int maxServices = 5;
     final int iterations = 5;
@@ -332,6 +338,7 @@ public abstract class JdbcDataCaptureServiceCase extends JdbcServiceExample {
     }
   }
 
+  @Test
   public void testService_AdvancedPooledConnection() throws Exception {
     int maxServices = 5;
     final int iterations = 5;
@@ -392,6 +399,7 @@ public abstract class JdbcDataCaptureServiceCase extends JdbcServiceExample {
     }
   }
 
+  @Test
   public void testServiceSaveKeys() throws Exception {
     createDatabase();
     JdbcDataCaptureService service = createSaveKeysService();
@@ -416,6 +424,7 @@ public abstract class JdbcDataCaptureServiceCase extends JdbcServiceExample {
     assertTrue(msg.headersContainsKey("1"));
   }
 
+  @Test
   public void testIteratesService_StatementParams() throws Exception {
     createDatabase();
     JdbcDataCaptureService service = createIteratesService(true);
@@ -444,6 +453,7 @@ public abstract class JdbcDataCaptureServiceCase extends JdbcServiceExample {
     }
   }
 
+  @Test
   public void testIteratesService_StringParams() throws Exception {
     createDatabase();
     JdbcDataCaptureService service = createIteratesService(false);
@@ -472,6 +482,7 @@ public abstract class JdbcDataCaptureServiceCase extends JdbcServiceExample {
     }
   }
 
+  @Test
   public void testServiceInvalidType() throws Exception {
     createDatabase();
     JdbcIteratingDataCaptureServiceImpl service = createBasicService();
@@ -489,6 +500,7 @@ public abstract class JdbcDataCaptureServiceCase extends JdbcServiceExample {
     }
   }
 
+  @Test
   public void testServiceNonXml() throws Exception {
     createDatabase();
     JdbcDataCaptureService service = createSaveKeysService();

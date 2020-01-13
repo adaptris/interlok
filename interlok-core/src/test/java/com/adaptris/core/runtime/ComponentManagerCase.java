@@ -13,22 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
-
 package com.adaptris.core.runtime;
 
 import static com.adaptris.core.runtime.AdapterComponentMBean.ID_PREFIX;
 import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_ADAPTER_TYPE;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import javax.management.JMX;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-
+import org.junit.After;
+import org.junit.Before;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.Channel;
@@ -48,18 +46,17 @@ public abstract class ComponentManagerCase extends BaseCase {
   protected MBeanServer mBeanServer;
   protected List<ObjectName> registeredObjects;
 
-  public ComponentManagerCase(String name) {
-    super(name);
+  public ComponentManagerCase() {
   }
 
-  @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     mBeanServer = JmxHelper.findMBeanServer();
     registeredObjects = new ArrayList<ObjectName>();
   }
 
-  @Override
-  protected void tearDown() throws Exception {
+  @After
+  public void tearDown() throws Exception {
     for (ObjectName bean : registeredObjects) {
       if (mBeanServer.isRegistered(bean)) {
         mBeanServer.unregisterMBean(bean);
@@ -69,7 +66,7 @@ public abstract class ComponentManagerCase extends BaseCase {
   }
 
   protected File deleteLater(Object marker) throws IOException {
-    return TempFileUtils.createTrackedFile(getName(), null, marker);
+    return TempFileUtils.createTrackedFile(testName.getMethodName(), null, marker);
   }
 
   protected Adapter createAdapter(String uid) throws CoreException {

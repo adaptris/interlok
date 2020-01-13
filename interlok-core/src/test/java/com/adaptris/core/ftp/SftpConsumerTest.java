@@ -20,10 +20,8 @@ import static com.adaptris.core.ftp.SftpExampleHelper.createConnectionsForExampl
 import static com.adaptris.core.ftp.SftpExampleHelper.createPollers;
 import static com.adaptris.core.ftp.SftpExampleHelper.getConfigSimpleName;
 import static com.adaptris.core.ftp.SftpExampleHelper.setConfigBuilder;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.Poller;
 import com.adaptris.core.StandaloneConsumer;
@@ -33,8 +31,7 @@ public class SftpConsumerTest extends FtpConsumerCase {
 
   private static final String BASE_DIR_KEY = "SftpConsumerExamples.baseDir";
 
-  public SftpConsumerTest(String name) {
-    super(name);
+  public SftpConsumerTest() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }

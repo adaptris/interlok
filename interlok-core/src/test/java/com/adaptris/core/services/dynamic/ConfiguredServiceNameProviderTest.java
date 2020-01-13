@@ -15,9 +15,13 @@
 */
 
 package com.adaptris.core.services.dynamic;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.HashSet;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.DefaultMarshaller;
@@ -28,16 +32,21 @@ public class ConfiguredServiceNameProviderTest extends BaseCase {
 
   private ConfiguredServiceNameProvider provider;
 
-  public ConfiguredServiceNameProviderTest(String name) {
-    super(name);
+  public ConfiguredServiceNameProviderTest() {
   }
 
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
+  @Before
+  public void beforeMyTests() throws Exception {
     provider = new ConfiguredServiceNameProvider();
     this.fillStore();
   }
 
+  @Test
   public void testCastor() throws Exception {
     AdaptrisMarshaller c = DefaultMarshaller.getDefaultMarshaller();
     String s = c.marshal(provider);
@@ -45,6 +54,7 @@ public class ConfiguredServiceNameProviderTest extends BaseCase {
     assertRoundtripEquality(provider, p);
   }
 
+  @Test
   public void testStoreSameAndEqualItems() {
     ServiceNameMapper mapper = new ServiceNameMapper("src", "dst", "diff", "1");
     assertTrue(provider.addServiceNameMapper(mapper));
@@ -55,16 +65,19 @@ public class ConfiguredServiceNameProviderTest extends BaseCase {
     assertTrue(!provider.addServiceNameMapper(mapper2));
   }
 
+  @Test
   public void testNameExists() throws Exception {
     TradingRelationship t = new TradingRelationship("src", "dst", "typ");
     assertEquals(provider.obtain(t), "1");
   }
 
+  @Test
   public void testNameDoesNotExist() throws Exception {
     TradingRelationship t = new TradingRelationship("src", "dst", "blah");
     assertEquals(provider.obtain(t), null);
   }
 
+  @Test
   public void testNameExistsArray() throws Exception {
     TradingRelationship t = new TradingRelationship("src", "dst", "typ");
     TradingRelationship[] ts = new TradingRelationship[1];
@@ -73,6 +86,7 @@ public class ConfiguredServiceNameProviderTest extends BaseCase {
     assertEquals(provider.obtain(ts), "1");
   }
 
+  @Test
   public void testNameDoesNotExistArray() throws Exception {
     TradingRelationship t = new TradingRelationship("src", "dst", "blah");
     TradingRelationship[] ts = new TradingRelationship[1];
@@ -81,6 +95,7 @@ public class ConfiguredServiceNameProviderTest extends BaseCase {
     assertEquals(provider.obtain(ts), null);
   }
 
+  @Test
   public void testNullParams() throws Exception {
     TradingRelationship t = null;
     try {
@@ -110,6 +125,7 @@ public class ConfiguredServiceNameProviderTest extends BaseCase {
     }
   }
 
+  @Test
   public void testSetServiceNameMappers() throws Exception {
     ServiceNameMapper mapper1 = new ServiceNameMapper("src", "dst", "typ", "2");
     provider.setServiceNameMappers(new HashSet(Arrays.asList(new ServiceNameMapper[]

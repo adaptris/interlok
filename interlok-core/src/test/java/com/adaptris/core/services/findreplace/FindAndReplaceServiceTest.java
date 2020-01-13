@@ -16,9 +16,11 @@
 
 package com.adaptris.core.services.findreplace;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
@@ -128,15 +130,12 @@ public class FindAndReplaceServiceTest extends GeneralServiceExample {
       return result;
     }
   }
-
-  public FindAndReplaceServiceTest(String arg0) {
-    super(arg0);
-  }
-
   @Override
-  protected void setUp() {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testSetFindReplaceUnits() throws Exception {
     FindAndReplaceService service = new FindAndReplaceService();
     assertEquals(0, service.getFindAndReplaceUnits().size());
@@ -148,6 +147,7 @@ public class FindAndReplaceServiceTest extends GeneralServiceExample {
     assertTrue(frList.get(0).equals(service.getFindAndReplaceUnits().get(0)));
   }
 
+  @Test
   public void testReplaceFirstConfigured() throws Exception {
     FindAndReplaceService service = createServiceForTests(ReplacementSourceImpl.Configured, true);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
@@ -155,6 +155,7 @@ public class FindAndReplaceServiceTest extends GeneralServiceExample {
     assertTrue(msg.getContent().equals(PAYLOAD_REPLACED_FIRST_ONLY));
   }
 
+  @Test
   public void testReplaceFirst_RegExp_MatchGroups() throws Exception {
     FindAndReplaceService service = new FindAndReplaceService();
     service.setReplaceFirstOnly(true);
@@ -166,6 +167,7 @@ public class FindAndReplaceServiceTest extends GeneralServiceExample {
     assertEquals(REGEXP_PAYLOAD_EXPECTED, msg.getContent());
   }
 
+  @Test
   public void testReplaceAllConfigured() throws Exception {
     FindAndReplaceService service = createServiceForTests(ReplacementSourceImpl.Configured, false);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
@@ -173,6 +175,7 @@ public class FindAndReplaceServiceTest extends GeneralServiceExample {
     assertTrue(msg.getContent().equals(PAYLOAD_REPLACED_ALL));
   }
 
+  @Test
   public void testReplaceAll_RegExp_MatchGroups() throws Exception {
     FindAndReplaceService service = new FindAndReplaceService();
     service.setReplaceFirstOnly(false);
@@ -184,6 +187,7 @@ public class FindAndReplaceServiceTest extends GeneralServiceExample {
     assertEquals(REGEXP_PAYLOAD_EXPECTED, msg.getContent());
   }
 
+  @Test
   public void testReplaceFirstMetadata() throws Exception {
     FindAndReplaceService service = createServiceForTests(ReplacementSourceImpl.Metadata, true);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
@@ -193,6 +197,7 @@ public class FindAndReplaceServiceTest extends GeneralServiceExample {
     assertTrue(msg.getContent().equals(PAYLOAD_REPLACED_FIRST_ONLY));
   }
 
+  @Test
   public void testReplaceAllMetadata() throws Exception {
     FindAndReplaceService service = createServiceForTests(ReplacementSourceImpl.Metadata, false);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
@@ -202,6 +207,7 @@ public class FindAndReplaceServiceTest extends GeneralServiceExample {
     assertTrue(msg.getContent().equals(PAYLOAD_REPLACED_ALL));
   }
 
+  @Test
   public void testReplaceFirstHexadecimal() throws Exception {
     FindAndReplaceService service = createServiceForTests(ReplacementSourceImpl.Hexadecimal, true);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
@@ -209,6 +215,7 @@ public class FindAndReplaceServiceTest extends GeneralServiceExample {
     assertTrue(msg.getContent().equals(PAYLOAD_REPLACED_FIRST_ONLY_HEX));
   }
 
+  @Test
   public void testReplaceAllHexadecimal() throws Exception {
     FindAndReplaceService service = createServiceForTests(ReplacementSourceImpl.Hexadecimal, false);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);

@@ -26,8 +26,7 @@ public abstract class BranchingServiceExample extends ServiceCase {
    */
   public static final String BASE_DIR_KEY = "BranchingServiceExamples.baseDir";
 
-  public BranchingServiceExample(String name) {
-    super(name);
+  public BranchingServiceExample() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }

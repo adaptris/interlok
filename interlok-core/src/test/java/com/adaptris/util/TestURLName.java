@@ -16,18 +16,13 @@
 
 package com.adaptris.util;
 
+import static org.junit.Assert.assertEquals;
 import javax.mail.URLName;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
 
-import junit.framework.TestCase;
-
-/**
- *
- * @author lchan
- */
-public class TestURLName extends TestCase {
+public class TestURLName {
 
   private static Log logR = LogFactory.getLog(TestURLName.class);
 
@@ -37,10 +32,7 @@ public class TestURLName extends TestCase {
   private static String host = "mail.btinternet.com";
   private static String protocol = "smtp";
 
-  public TestURLName(java.lang.String testName) {
-    super(testName);
-  }
-
+  @Test
   public void testUrl() throws Exception {
     URLName url = new URLName(testUrl);
     assertEquals(protocol, url.getProtocol());

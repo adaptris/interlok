@@ -15,28 +15,24 @@
 */
 
 package com.adaptris.core.fs;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import java.util.Random;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.junit.Test;
 import com.adaptris.core.BaseCase;
 
-/**
- * @author lchan
- * @author $Author: lchan $
- */
 public abstract class ItemCacheCase extends BaseCase {
-
-  public ItemCacheCase(String name) {
-    super(name);
-  }
 
   protected transient Log logR = LogFactory.getLog(this.getClass());
 
   protected static final String CACHE_PREFIX = "CacheEntry_";
 
+  @Test
   public void testCache() throws Exception {
     String oldName = Thread.currentThread().getName();
     ProcessedItemCache cache = null;
@@ -57,6 +53,7 @@ public abstract class ItemCacheCase extends BaseCase {
     }
   }
 
+  @Test
   public void testUpdateProcessedItemList() throws Exception {
     String oldName = Thread.currentThread().getName();
     ProcessedItemCache cache = null;
@@ -75,7 +72,7 @@ public abstract class ItemCacheCase extends BaseCase {
     }
   }
 
-
+  @Test
   public void testCacheClear() throws Exception {
     String oldName = Thread.currentThread().getName();
     ProcessedItemCache cache = null;

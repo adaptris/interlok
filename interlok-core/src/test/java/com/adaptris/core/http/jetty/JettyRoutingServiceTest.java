@@ -16,9 +16,11 @@
 
 package com.adaptris.core.http.jetty;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BranchingServiceCollection;
@@ -31,14 +33,13 @@ import com.adaptris.core.util.LifecycleHelper;
 
 public class JettyRoutingServiceTest extends BranchingServiceExample {
 
-  public JettyRoutingServiceTest(String name) {
-    super(name);
-  }
 
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testMatchedRoute() throws Exception {
     JettyRoutingService service = new JettyRoutingService("NotHandled", createRoutes());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -60,6 +61,7 @@ public class JettyRoutingServiceTest extends BranchingServiceExample {
 
   }
 
+  @Test
   public void testMatchedRoute_NoMethod() throws Exception {
     JettyRoutingService service = new JettyRoutingService("NotHandled", createRoutes());
     try {
@@ -86,6 +88,7 @@ public class JettyRoutingServiceTest extends BranchingServiceExample {
     }
   }
 
+  @Test
   public void testUnMatchedRoute() throws Exception {
     JettyRoutingService service = new JettyRoutingService("NotHandled", createRoutes());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();

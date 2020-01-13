@@ -16,29 +16,32 @@
 
 package com.adaptris.core.services.dynamic;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.TradingRelationship;
-import junit.framework.TestCase;
 
 @SuppressWarnings("deprecation")
-public class SafeServiceNameProviderTest extends TestCase {
+public class SafeServiceNameProviderTest {
 
   private DefaultServiceNameProvider provider;
-  
-  public SafeServiceNameProviderTest(String arg0) {
-    super(arg0);
-  }
-  
-  protected void setUp() throws Exception {
+
+  @Before
+  public void setUp() throws Exception {
     provider = new SafeServiceNameProvider();
   }
-  
+
+  @Test
   public void testStandard() throws Exception {
     TradingRelationship t = new TradingRelationship("src", "dest", "type");
     String result = provider.obtain(t);
     
     assertEquals(result, "src-dest-type");
   }
-  
+
+  @Test
   public void testDifferentSeparator() throws Exception {
     TradingRelationship t = new TradingRelationship("src", "dest", "type");
     provider.setSeparator(":");
@@ -46,7 +49,8 @@ public class SafeServiceNameProviderTest extends TestCase {
     
     assertEquals(result, "srcdesttype");
   }
-  
+
+  @Test
   public void testNoSeparator() throws Exception {
     TradingRelationship t = new TradingRelationship("src", "dest", "type");
     provider.setSeparator("");
@@ -54,7 +58,8 @@ public class SafeServiceNameProviderTest extends TestCase {
     
     assertEquals(result, "srcdesttype");
   }
-  
+
+  @Test
   public void testNullParams() throws Exception {
     TradingRelationship t = null;
     try {
@@ -86,6 +91,7 @@ public class SafeServiceNameProviderTest extends TestCase {
     }
   }
 
+  @Test
   public void testBadChars() throws Exception {
     TradingRelationship t = new TradingRelationship("/\\?*:| &\"<>\'src", "dest", "type");
     String result = provider.obtain(t);

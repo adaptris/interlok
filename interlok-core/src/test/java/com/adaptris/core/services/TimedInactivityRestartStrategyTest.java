@@ -16,29 +16,31 @@
 
 package com.adaptris.core.services;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.util.TimeInterval;
 
-import junit.framework.TestCase;
-
-public class TimedInactivityRestartStrategyTest extends TestCase {
+public class TimedInactivityRestartStrategyTest {
 
   private TimedInactivityRestartStrategy restartStrategy;
   private AdaptrisMessageFactory messageFactory;
   
+  @Before
   public void setUp() throws Exception {
     restartStrategy = new TimedInactivityRestartStrategy();
     messageFactory = DefaultMessageFactory.getDefaultInstance();
   }
   
-  public void tearDown() throws Exception {
-  }
-  
+  @Test
   public void testNoMessage() throws Exception {
     assertFalse(restartStrategy.requiresRestart());
   }
-  
+
+  @Test
   public void testDoesNotExceedTimeout() throws Exception {
     restartStrategy.setInactivityPeriod(new TimeInterval(5L, "SECONDS"));
     
@@ -57,7 +59,8 @@ public class TimedInactivityRestartStrategyTest extends TestCase {
     restartStrategy.messageProcessed(messageFactory.newMessage());
     assertFalse(restartStrategy.requiresRestart());
   }
-  
+
+  @Test
   public void testExceedsTimeoutNoMessage() throws Exception {
     restartStrategy.setInactivityPeriod(new TimeInterval(1L, "SECONDS"));
     assertFalse(restartStrategy.requiresRestart());
@@ -69,7 +72,8 @@ public class TimedInactivityRestartStrategyTest extends TestCase {
     
     assertTrue(restartStrategy.requiresRestart());
   }
-  
+
+  @Test
   public void testDoesNotExceedsTimeoutSteadyStreamOfMessage() throws Exception {
     restartStrategy.setInactivityPeriod(new TimeInterval(1L, "SECONDS"));
     assertFalse(restartStrategy.requiresRestart());
@@ -86,7 +90,8 @@ public class TimedInactivityRestartStrategyTest extends TestCase {
     
     assertFalse(restartStrategy.requiresRestart());
   }
-  
+
+  @Test
   public void testExceedsTimeoutSteadyStreamOfMessage() throws Exception {
     restartStrategy.setInactivityPeriod(new TimeInterval(1L, "SECONDS"));
     assertFalse(restartStrategy.requiresRestart());

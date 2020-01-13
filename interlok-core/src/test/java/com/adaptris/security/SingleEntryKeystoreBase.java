@@ -30,7 +30,6 @@ import com.adaptris.security.exc.KeystoreException;
 import com.adaptris.security.keystore.KeystoreFactory;
 import com.adaptris.security.keystore.KeystoreLocation;
 import com.adaptris.security.keystore.KeystoreProxy;
-import junit.framework.TestCase;
 
 /**
  * Test Keystore Functionality wrapping a single KEYSTORE_PKCS12 certificate
@@ -41,7 +40,6 @@ public abstract class SingleEntryKeystoreBase {
   protected Config config;
   protected transient Logger logR = null;
 
-  /** @see TestCase */
   public SingleEntryKeystoreBase() {
     logR = LoggerFactory.getLogger(this.getClass());
   }

@@ -20,6 +20,8 @@ import static com.adaptris.core.jms.MessageTypeTranslatorCase.addMetadata;
 import static com.adaptris.core.jms.MessageTypeTranslatorCase.addProperties;
 import static com.adaptris.core.jms.MessageTypeTranslatorCase.assertJmsProperties;
 import static com.adaptris.core.jms.MessageTypeTranslatorCase.assertMetadata;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +30,7 @@ import javax.jms.Session;
 import org.apache.activemq.ActiveMQSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ConfiguredProduceDestination;
@@ -48,24 +51,16 @@ public class BlobMessageTranslatorTest extends JmsProducerExample {
 
   private static final String INPUT = "Quick zephyrs blow, vexing daft Jim";
 
-  public BlobMessageTranslatorTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   private Message createMessage(Session session) throws Exception {
     return ((ActiveMQSession) session).createBlobMessage(new ByteArrayInputStream(INPUT.getBytes()));
   }
 
+  @Test
   public void testMoveMetadataJmsMessageToAdaptrisMessage() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -97,6 +92,7 @@ public class BlobMessageTranslatorTest extends JmsProducerExample {
     }
   }
 
+  @Test
   public void testMoveJmsHeadersJmsMessageToAdaptrisMessage() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -140,6 +136,7 @@ public class BlobMessageTranslatorTest extends JmsProducerExample {
 
   }
 
+  @Test
   public void testMoveMetadataAdaptrisMessageToJmsMessage() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -173,6 +170,7 @@ public class BlobMessageTranslatorTest extends JmsProducerExample {
 
   }
 
+  @Test
   public void testBug895() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());

@@ -16,26 +16,27 @@
 
 package com.adaptris.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.Test;
 
-import junit.framework.TestCase;
-
-public class FifoMutexLockTest extends TestCase {
+public class FifoMutexLockTest {
 
   protected transient Log log = LogFactory.getLog(this.getClass().getName());
   private FifoMutexLock lock;
   private int locksAcquired = 0;
   private int locksInterrupted = 0;
-  public FifoMutexLockTest(String arg0) {
-    super(arg0);
-  }
 
-  @Override
-  protected void setUp() {
+
+  @Before
+  public void setUp() {
     lock = new FifoMutexLock(true);
   }
 
+  @Test
   public void testSingleThreaded() throws Exception {
     assertTrue(lock.permitAvailable() == true);
     assertTrue(lock.attempt(0L));
@@ -80,6 +81,7 @@ public class FifoMutexLockTest extends TestCase {
     assertTrue(lock.permitAvailable() == true);
   }
 
+  @Test
   public void testMultiThreaded() throws Exception {
     int count = 10;
     for (int i = 0; i < count; i++) {
@@ -112,7 +114,7 @@ public class FifoMutexLockTest extends TestCase {
     assertEquals(true, lock.permitAvailable());
   }
 
-
+  @Test
   public void testLock() throws Exception {
     FifoMutexLock lock = new FifoMutexLock();
 

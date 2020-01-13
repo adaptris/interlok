@@ -18,7 +18,6 @@ package com.adaptris.core.interceptor;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.core.Channel;
 import com.adaptris.core.ExampleWorkflowCase;
 import com.adaptris.core.StandardWorkflow;
@@ -31,14 +30,6 @@ public class ThrottlingInterceptorWorkflowTest extends ExampleWorkflowCase {
       + "If you have configured multiple interceptors with the same cache-name then\n"
       + "they must share the same timeslice configuration.\n" + "Check the Advanced Topics manual for more information" + "\n-->\n";
 
-  public ThrottlingInterceptorWorkflowTest(java.lang.String testName) {
-    super(testName);
-  }
-
-  @Override
-  protected void setUp() {
-
-  }
 
   @Override
   protected Object retrieveObjectForSampleConfig() {

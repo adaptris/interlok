@@ -17,28 +17,23 @@
 package com.adaptris.core;
 
 import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.IOException;
-
+import org.junit.Test;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairCollection;
 
 public class ExceptionDestinationTest extends ExampleProduceDestinationCase {
 
   private static final String DEFAULT_DEST = "DEFAULT_DEST";
-  public ExceptionDestinationTest(String name) {
-    super(name);
-  }
-
   @Override
-  public void setUp() {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  public void tearDown() {
-
-  }
-
+  @Test
   public void testSetDefaultDestination() {
     ExceptionDestination d = new ExceptionDestination();
     d.setDefaultDestination(DEFAULT_DEST);
@@ -61,6 +56,7 @@ public class ExceptionDestinationTest extends ExampleProduceDestinationCase {
 
   }
 
+  @Test
   public void testSetExceptionMapping() {
     ExceptionDestination d = new ExceptionDestination();
     KeyValuePairCollection col = createExceptionMappings();
@@ -77,6 +73,7 @@ public class ExceptionDestinationTest extends ExampleProduceDestinationCase {
     assertEquals(col, d.getExceptionMapping());
   }
 
+  @Test
   public void testFirstMatchedException() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     Exception e = new CoreException(new ProduceException());
@@ -86,6 +83,7 @@ public class ExceptionDestinationTest extends ExampleProduceDestinationCase {
     assertEquals(ed.toString(), CoreException.class.getName(), dest);
   }
 
+  @Test
   public void testNestedException() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     Exception e = new Exception(new CoreException());
@@ -95,6 +93,7 @@ public class ExceptionDestinationTest extends ExampleProduceDestinationCase {
     assertEquals(ed.toString(), CoreException.class.getName(), dest);
   }
 
+  @Test
   public void testExceptionNotFound() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     Exception e = new Exception(new NullPointerException());
@@ -104,6 +103,7 @@ public class ExceptionDestinationTest extends ExampleProduceDestinationCase {
     assertEquals(ed.toString(), DEFAULT_DEST, dest);
   }
 
+  @Test
   public void testNoException() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     ExceptionDestination ed = new ExceptionDestination(DEFAULT_DEST, createExceptionMappings());

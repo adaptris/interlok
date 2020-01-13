@@ -16,11 +16,17 @@
 
 package com.adaptris.core.jmx;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessageConsumer;
 import com.adaptris.core.AdaptrisMessageListener;
@@ -37,19 +43,14 @@ public class JmxNotificationConsumerTest extends ConsumerCase {
 
   private static final String BASE_DIR_KEY = "JmxConsumerExamples.baseDir";
 
-  public JmxNotificationConsumerTest(String name) {
-    super(name);
+  public JmxNotificationConsumerTest() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
   }
 
-  @Override
-  public void setUp() throws Exception {}
 
-  @Override
-  public void tearDown() throws Exception {}
-
+  @Test
   public void testNotFound() throws Exception {
     MBeanServer mbeanServer = JmxHelper.findMBeanServer();
     String myObjectName = "com.adaptris:type=Junit,id=" + getName();
@@ -68,7 +69,7 @@ public class JmxNotificationConsumerTest extends ConsumerCase {
     }
   }
 
-
+  @Test
   public void testConsumer_NoUserData() throws Exception {
     MBeanServer mbeanServer = JmxHelper.findMBeanServer();
     String myObjectName = "com.adaptris:type=Junit,id=" + getName();
@@ -90,6 +91,7 @@ public class JmxNotificationConsumerTest extends ConsumerCase {
     }
   }
 
+  @Test
   public void testConsumer() throws Exception {
     MBeanServer mbeanServer = JmxHelper.findMBeanServer();
     String myObjectName = "com.adaptris:type=Junit,id=" + getName();
@@ -111,7 +113,7 @@ public class JmxNotificationConsumerTest extends ConsumerCase {
     }
   }
 
-
+  @Test
   public void testNotFound_Retry() throws Exception {
     final MBeanServer mbeanServer = JmxHelper.findMBeanServer();
     final String myObjectName = "com.adaptris:type=Junit,id=" + getName();

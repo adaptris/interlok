@@ -16,9 +16,13 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceException;
@@ -28,9 +32,6 @@ public class RegexpMetadataServiceTest extends MetadataServiceExample {
 
   public static final String PAYLOAD = "Address: Adaptris Limited, 120 Bath Road, " + "Heathrow, Middlesex, UB3 5AN";
   public static final String ALTERNATE_PAYLOAD = "The quick brown fox jumps over the lazy dog";
-  public RegexpMetadataServiceTest(String name) {
-    super(name);
-  }
 
   private RegexpMetadataService createService() {
     RegexpMetadataQuery query1 = new RegexpMetadataQuery();
@@ -44,6 +45,12 @@ public class RegexpMetadataServiceTest extends MetadataServiceExample {
     return service;
   }
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
+  @Test
   public void testService() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD);
     RegexpMetadataService service = createService();
@@ -52,6 +59,7 @@ public class RegexpMetadataServiceTest extends MetadataServiceExample {
     assertEquals("Found the post-code", "UB3 5AN", msg.getMetadataValue("postcode"));
   }
 
+  @Test
   public void testServiceOverwritesMetadata() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD);
     msg.addMetadata("postcode", "GU34 1ET");
@@ -61,6 +69,7 @@ public class RegexpMetadataServiceTest extends MetadataServiceExample {
     assertEquals("Found the post-code", "UB3 5AN", msg.getMetadataValue("postcode"));
   }
 
+  @Test
   public void testServiceNotAllowNulls() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD);
     RegexpMetadataService service = createService();
@@ -77,6 +86,7 @@ public class RegexpMetadataServiceTest extends MetadataServiceExample {
     assertEquals("Found the post-code", "UB3 5AN", msg.getMetadataValue("postcode"));
   }
 
+  @Test
   public void testServiceAllowNulls() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(ALTERNATE_PAYLOAD);
     RegexpMetadataService service = createService();
@@ -88,6 +98,7 @@ public class RegexpMetadataServiceTest extends MetadataServiceExample {
     assertEquals("Found the post-code", "", msg.getMetadataValue("postcode"));
   }
 
+  @Test
   public void testServiceAllowNulls_DoNotAddNullValues() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(ALTERNATE_PAYLOAD);
     RegexpMetadataService service = createService();
@@ -98,7 +109,7 @@ public class RegexpMetadataServiceTest extends MetadataServiceExample {
     assertFalse(msg.containsKey("postcode"));
   }
 
-
+  @Test
   public void testSetters() throws Exception {
     RegexpMetadataQuery query1 = new RegexpMetadataQuery();
     try {

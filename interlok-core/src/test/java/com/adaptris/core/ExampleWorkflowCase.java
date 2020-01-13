@@ -15,10 +15,16 @@
 */
 
 package com.adaptris.core;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
+import org.junit.Test;
 import com.adaptris.core.stubs.ConfigCommentHelper;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockWorkflowInterceptor;
@@ -32,6 +38,7 @@ import com.adaptris.util.TimeInterval;
  * method for marshaling sample XML config.
  * </p>
  */
+@SuppressWarnings("deprecation")
 public abstract class ExampleWorkflowCase extends ExampleConfigCase {
 
   /**
@@ -51,12 +58,6 @@ public abstract class ExampleWorkflowCase extends ExampleConfigCase {
     }
   }
 
-  public ExampleWorkflowCase(String name) {
-    this();
-    setName(name);
-  }
-
-
   @Override
   protected String createExampleXml(Object object) throws Exception {
     String result = getExampleCommentHeader(object);
@@ -74,10 +75,12 @@ public abstract class ExampleWorkflowCase extends ExampleConfigCase {
     w.requestClose();
   }
 
+  @Test
   public void testComments() throws Exception {
     ConfigCommentHelper.testComments(createWorkflowForGenericTests());
   }
 
+  @Test
   public void testSetServiceCollection() throws Exception {
     WorkflowImp wf = createWorkflowForGenericTests();
     ServiceCollection obj = wf.getServiceCollection();
@@ -91,6 +94,7 @@ public abstract class ExampleWorkflowCase extends ExampleConfigCase {
     assertEquals(obj, wf.getServiceCollection());
   }
 
+  @Test
   public void testSetSendEvents() throws Exception {
     WorkflowImp wf = createWorkflowForGenericTests();
     assertNull(wf.getSendEvents());
@@ -104,7 +108,7 @@ public abstract class ExampleWorkflowCase extends ExampleConfigCase {
     assertTrue(wf.sendEvents());
   }
 
-  @SuppressWarnings("deprecation")
+  @Test
   public void testSetLogPayload() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     WorkflowImp wf = createWorkflowForGenericTests();
@@ -123,7 +127,7 @@ public abstract class ExampleWorkflowCase extends ExampleConfigCase {
     assertNotNull(wf.messageLogger().toString(msg));
   }
 
-
+  @Test
   public void testSetMessageLogger() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     WorkflowImp wf = createWorkflowForGenericTests();
@@ -139,6 +143,7 @@ public abstract class ExampleWorkflowCase extends ExampleConfigCase {
     assertNotNull(wf.messageLogger().toString(msg));
   }
 
+  @Test
   public void testSetChannelUnavailableWait() throws Exception {
     WorkflowImp wf = createWorkflowForGenericTests();
     TimeInterval defaultInterval = new TimeInterval(30L, TimeUnit.SECONDS);
@@ -158,6 +163,7 @@ public abstract class ExampleWorkflowCase extends ExampleConfigCase {
     assertEquals(defaultInterval.toMilliseconds(), wf.channelUnavailableWait());
   }
 
+  @Test
   public void testSetConsumer() throws Exception {
     WorkflowImp wf = createWorkflowForGenericTests();
     AdaptrisMessageConsumer obj = wf.getConsumer();
@@ -171,6 +177,7 @@ public abstract class ExampleWorkflowCase extends ExampleConfigCase {
     assertEquals(obj, wf.getConsumer());
   }
 
+  @Test
   public void testSetProducer() throws Exception {
     WorkflowImp wf = createWorkflowForGenericTests();
     AdaptrisMessageProducer obj = wf.getProducer();
@@ -184,6 +191,7 @@ public abstract class ExampleWorkflowCase extends ExampleConfigCase {
     assertEquals(obj, wf.getProducer());
   }
 
+  @Test
   public void testSetProduceExceptionHandler() throws Exception {
     WorkflowImp wf = createWorkflowForGenericTests();
     ProduceExceptionHandler obj = wf.getProduceExceptionHandler();
@@ -197,6 +205,7 @@ public abstract class ExampleWorkflowCase extends ExampleConfigCase {
     assertEquals(obj, wf.getProduceExceptionHandler());
   }
 
+  @Test
   public void testRegisterObjects() throws Exception {
     WorkflowImp wf = createWorkflowForGenericTests();
     wf.registerChannel(new Channel());
@@ -237,6 +246,7 @@ public abstract class ExampleWorkflowCase extends ExampleConfigCase {
 
   }
 
+  @Test
   public void testSetInterceptors() throws Exception {
     WorkflowImp wf = createWorkflowForGenericTests();
     wf.setInterceptors(new ArrayList(Arrays.asList(new WorkflowInterceptor[]
