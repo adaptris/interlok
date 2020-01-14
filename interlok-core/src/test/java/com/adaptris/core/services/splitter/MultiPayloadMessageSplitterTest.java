@@ -14,6 +14,9 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 public class MultiPayloadMessageSplitterTest extends SplitterCase
 {
 	private static final String ID_1 = "bacon";
@@ -24,14 +27,8 @@ public class MultiPayloadMessageSplitterTest extends SplitterCase
 	private MultiPayloadMessageSplitter splitter;
 	private MultiPayloadAdaptrisMessage message;
 
-	public MultiPayloadMessageSplitterTest(String testName)
-	{
-		super (testName);
-	}
-
-	@Override
 	@Before
-	protected void setUp() throws Exception
+	public void setUp() throws Exception
 	{
 		splitter = createSplitterForTests();
 		message = (MultiPayloadAdaptrisMessage)new MultiPayloadMessageFactory().newMessage(ID_1, PAYLOAD_1, "UTF-8");
@@ -113,5 +110,11 @@ public class MultiPayloadMessageSplitterTest extends SplitterCase
 	protected List retrieveObjectsForSampleConfig()
 	{
 		return createExamples(createSplitterForTests());
+	}
+
+	@Override
+	public boolean isAnnotatedForJunit4()
+	{
+		return true;
 	}
 }
