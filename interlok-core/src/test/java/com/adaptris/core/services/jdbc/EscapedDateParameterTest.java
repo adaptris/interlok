@@ -15,21 +15,19 @@
 */
 
 package com.adaptris.core.services.jdbc;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.services.jdbc.StatementParameterImpl.QueryType;
 
-public class EscapedDateParameterTest extends BaseCase {
+public class EscapedDateParameterTest {
   private String dateString;
   private java.sql.Date date;
-
-  public EscapedDateParameterTest(String n) {
-    super(n);
-  }
 
   @Before
   public void setUp() throws Exception {
@@ -70,7 +68,7 @@ public class EscapedDateParameterTest extends BaseCase {
   public void testConvertWithConvertNull() throws Exception {
     JdbcEscapedDateStatementParameter sp = new JdbcEscapedDateStatementParameter();
     sp.setConvertNull(true);
-    long convertedTime = ((java.sql.Date) sp.convert(null)).getTime();
+    long convertedTime = sp.convert(null).getTime();
     long now = System.currentTimeMillis();
     assertTrue("now > convertedTime", now >= convertedTime);
   }
@@ -80,6 +78,6 @@ public class EscapedDateParameterTest extends BaseCase {
   public void testMakeCopy() throws Exception {
     JdbcEscapedDateStatementParameter sp = new JdbcEscapedDateStatementParameter(dateString, QueryType.constant, null, null);
     JdbcEscapedDateStatementParameter copy = sp.makeCopy();
-    assertRoundtripEquality(sp, copy);
+    BaseCase.assertRoundtripEquality(sp, copy);
   }
 }

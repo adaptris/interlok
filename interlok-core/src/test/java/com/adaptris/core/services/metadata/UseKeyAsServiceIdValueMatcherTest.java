@@ -15,20 +15,20 @@
 */
 
 package com.adaptris.core.services.metadata;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import org.junit.Test;
 
-import com.adaptris.core.BaseCase;
+public class UseKeyAsServiceIdValueMatcherTest {
 
-public class UseKeyAsServiceIdValueMatcherTest extends BaseCase {
 
-  public UseKeyAsServiceIdValueMatcherTest(String name) {
-    super(name);
-  }
-
+  @Test
   public void testMatcher() throws Exception {
     UseKeyAsServiceIdValueMatcher matcher = new UseKeyAsServiceIdValueMatcher();
     assertEquals("key", matcher.getNextServiceId("key", null));
   }
 
+  @Test
   public void testMatcherReturnsNull() throws Exception {
     UseKeyAsServiceIdValueMatcher matcher = new UseKeyAsServiceIdValueMatcher();
     assertNull(matcher.getNextServiceId(null, null));

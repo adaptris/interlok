@@ -16,9 +16,15 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.core.event.AdapterCloseEvent;
 import com.adaptris.core.event.AdapterInitEvent;
 import com.adaptris.core.event.AdapterStartEvent;
@@ -37,14 +43,10 @@ import com.adaptris.util.TimeInterval;
 
 public class AdapterTest extends BaseCase {
 
-  public AdapterTest(java.lang.String testName) {
-    super(testName);
+  public AdapterTest() {
   }
 
-  @Override
-  protected void setUp() throws Exception {
-  }
-
+  @Test
   public void testSetUniqueId() throws Exception {
     Adapter a = new Adapter();
     a.setUniqueId("testSetUniqueId");
@@ -67,7 +69,7 @@ public class AdapterTest extends BaseCase {
     assertEquals("testSetUniqueId", a.getUniqueId());
   }
 
-
+  @Test
   public void testAdapterInit() throws Exception {
     Adapter a = new Adapter();
     try {
@@ -89,6 +91,7 @@ public class AdapterTest extends BaseCase {
     a.stop();
   }
 
+  @Test
   public void testAdapterStart() throws Exception {
     Adapter a = new Adapter();
     a.setUniqueId("testAdapterStart");
@@ -97,6 +100,7 @@ public class AdapterTest extends BaseCase {
     a.requestClose();
   }
 
+  @Test
   public void testAdapterStop() throws Exception {
     Adapter a = new Adapter();
     a.setUniqueId("testAdapterStart");
@@ -106,6 +110,7 @@ public class AdapterTest extends BaseCase {
     a.requestClose();
   }
 
+  @Test
   public void testAdapterClose() throws Exception {
     Adapter a = new Adapter();
     a.setUniqueId("testAdapterStart");
@@ -114,6 +119,7 @@ public class AdapterTest extends BaseCase {
     a.requestClose();
   }
 
+  @Test
   public void testSetAdapterHeartbeatEventInterval() throws Exception {
     Adapter a = new Adapter();
     assertEquals(new TimeInterval(15L, TimeUnit.MINUTES.name()).toMilliseconds(), a.heartbeatInterval());
@@ -129,7 +135,7 @@ public class AdapterTest extends BaseCase {
     assertEquals(new TimeInterval(15L, TimeUnit.MINUTES.name()).toMilliseconds(), a.heartbeatInterval());
   }
 
-
+  @Test
   public void testAdapter_StateManagedComponentContainerInit() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId("testAdapter_StateManagedComponentContainerInit");
@@ -148,6 +154,7 @@ public class AdapterTest extends BaseCase {
     assertEquals(InitialisedState.getInstance(), channel.retrieveComponentState());
   }
 
+  @Test
   public void testAdapter_StateManagedComponentContainerStart() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId("testAdapter_StateManagedComponentContainerStart");
@@ -165,6 +172,7 @@ public class AdapterTest extends BaseCase {
     assertEquals(StartedState.getInstance(), channel.retrieveComponentState());
   }
 
+  @Test
   public void testAdapter_StateManagedComponentContainerStop() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId("testAdapter_StateManagedComponentContainerStop");
@@ -183,6 +191,7 @@ public class AdapterTest extends BaseCase {
     assertEquals(StoppedState.getInstance(), channel.retrieveComponentState());
   }
 
+  @Test
   public void testAdapter_StateManagedComponentContainerClose() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId("testAdapter_StateManagedComponentContainerClose");
@@ -201,6 +210,7 @@ public class AdapterTest extends BaseCase {
     assertEquals(ClosedState.getInstance(), channel.retrieveComponentState());
   }
 
+  @Test
   public void testAdapterInitThrowsException() throws Exception {
     MockMessageProducer mockEventProducer = new MockMessageProducer();
     Adapter a = createAdapter("testAdapterInitThrowsException", new DefaultEventHandler(mockEventProducer));
@@ -227,6 +237,7 @@ public class AdapterTest extends BaseCase {
 
   }
 
+  @Test
   public void testAdapterStartThrowsException() throws Exception {
     MockMessageProducer mockEventProducer = new MockMessageProducer();
     Adapter a = createAdapter("testAdapterStartThrowsException", new DefaultEventHandler(mockEventProducer));
@@ -255,6 +266,7 @@ public class AdapterTest extends BaseCase {
 
   // Probably a redundant test, but you get a nice warm feeling from have 100%
   // code coverage don't you
+  @Test
   public void testAdapterLogsEventSendException() throws Exception {
     Adapter a = createAdapter("testAdapterLogsEventSendException", new StubEventHandler() {
       @Override
@@ -273,6 +285,7 @@ public class AdapterTest extends BaseCase {
 
   // Probably a redundant test, but you get a nice warm feeling from have 100%
   // code coverage don't you
+  @Test
   public void testAdapterLogHandlerFails() throws Exception {
     Adapter a = createAdapter("testAdapterLogFileHandlerFails", new StubEventHandler());
     a.setLogHandler(new MockLogHandler() {
@@ -284,6 +297,7 @@ public class AdapterTest extends BaseCase {
     a.prepare();
   }
 
+  @Test
   public void testDuplicateWorkflowsForRetrier() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId("testDuplicateWorkflowsForRetrier");
@@ -301,6 +315,7 @@ public class AdapterTest extends BaseCase {
     assertNotSame(retrier, adapter.getFailedMessageRetrier());
   }
 
+  @Test
   public void testErrorHandlerPropagation() throws Exception {
     Adapter adapter = createAdapter("testErrorHandlerPropagation");
     Channel c1 = adapter.getChannelList().get(0);
@@ -312,6 +327,7 @@ public class AdapterTest extends BaseCase {
     assertEquals(meh, wf.retrieveActiveMsgErrorHandler());
   }
 
+  @Test
   public void testErrorHandlerSetInChannel() throws Exception {
     Adapter adapter = createAdapter("testErrorHandlerSetInChannel");
     NullProcessingExceptionHandler meh1 = new NullProcessingExceptionHandler();
@@ -325,6 +341,7 @@ public class AdapterTest extends BaseCase {
     assertEquals(meh1, wf.retrieveActiveMsgErrorHandler());
   }
 
+  @Test
   public void testErrorHandlerSetInChannelAndWorkflow() throws Exception {
     Adapter adapter = createAdapter("testErrorHandlerSetInChannelAndWorkflow");
 
@@ -347,6 +364,7 @@ public class AdapterTest extends BaseCase {
     return wf;
   }
 
+  @Test
   public void testLifecycleWithBlockingLifecycleStrategy() throws Exception {
     Adapter adapter = AdapterTest.createAdapter("testLifecycleWithBlockingLifecycleStrategy");
     adapter.getChannelList().setLifecycleStrategy(new com.adaptris.core.lifecycle.BlockingChannelLifecycleStrategy());
@@ -376,6 +394,7 @@ public class AdapterTest extends BaseCase {
     assertState(adapter.getChannelList(), ClosedState.getInstance());
   }
 
+  @Test
   public void testLifecycleWithNonBlockingLifecycleStrategy() throws Exception {
     Adapter adapter = AdapterTest.createAdapter("testLifecycleWithBlockingLifecycleStrategy");
     adapter.getChannelList().setLifecycleStrategy(new com.adaptris.core.lifecycle.NonBlockingChannelStartStrategy());
@@ -406,6 +425,7 @@ public class AdapterTest extends BaseCase {
 
   }
 
+  @Test
   public void testBug1654() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId("1234");
@@ -426,6 +446,7 @@ public class AdapterTest extends BaseCase {
     assertEquals(StandardProcessingExceptionHandler.class, initedChannel.retrieveActiveMsgErrorHandler().getClass());
   }
 
+  @Test
   public void testBug469AndBug1268() throws Exception {
     final Adapter adapter = AdapterTest.createRetryingAdapter("testBug469AndBug1268");
     // NonBlockingChannelStartStrategy tests Bug1268...
@@ -457,6 +478,7 @@ public class AdapterTest extends BaseCase {
     }
   }
 
+  @Test
   public void testBug1362() throws Exception {
     int maxChannels = 10;
     int maxWorkflowsInChannels = 10;
@@ -475,6 +497,7 @@ public class AdapterTest extends BaseCase {
     assertEquals(ClosedState.getInstance(), adapter.retrieveComponentState());
   }
 
+  @Test
   public void testXmlRoundTrip() throws Exception {
     Adapter adapter = AdapterTest.createAdapter("test-adapter");
     AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
@@ -484,6 +507,7 @@ public class AdapterTest extends BaseCase {
     assertRoundtripEquality(adapter, a2);
   }
 
+  @Test
   public void testBug1267() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     DefaultEventHandler eh = new DefaultEventHandler(producer);
@@ -500,6 +524,7 @@ public class AdapterTest extends BaseCase {
 
   }
 
+  @Test
   public void testBug2049_Init() throws Exception {
     Adapter a = createAdapter("testBug2049_Init");
     try {
@@ -520,6 +545,7 @@ public class AdapterTest extends BaseCase {
     }
   }
 
+  @Test
   public void testBug2049_Start() throws Exception {
     Adapter a = createAdapter("testBug2049_Start");
     try {
@@ -540,6 +566,7 @@ public class AdapterTest extends BaseCase {
     }
   }
 
+  @Test
   public void testSetters() throws Exception {
     Adapter a = createAdapter("testHeartbeatTimerTask");
     try {
@@ -609,6 +636,7 @@ public class AdapterTest extends BaseCase {
     }
   }
 
+  @Test
   public void testHeartbeatTimerTask() throws Exception {
     Adapter a = createAdapter("testHeartbeatTimerTask");
     MockMessageProducer mock = new MockMessageProducer();
@@ -629,6 +657,7 @@ public class AdapterTest extends BaseCase {
     }
   }
 
+  @Test
   public void testHeartbeatTimerTask_Deprecated() throws Exception {
     Adapter a = createAdapter("testHeartbeatTimerTask_Deprecated");
     MockMessageProducer mock = new MockMessageProducer();
@@ -800,4 +829,10 @@ public class AdapterTest extends BaseCase {
     a.setEventHandler(eventHandler);
     return a;
   }
+
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
 }

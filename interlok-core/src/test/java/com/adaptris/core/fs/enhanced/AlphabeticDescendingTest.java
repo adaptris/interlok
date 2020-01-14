@@ -15,16 +15,14 @@
 */
 
 package com.adaptris.core.fs.enhanced;
-
+import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.util.List;
+import org.junit.Test;
 
 public class AlphabeticDescendingTest extends FileSorterCase {
 
-  public AlphabeticDescendingTest(String testName) {
-    super(testName);
-  }
-
+  @Test
   public void testSort() throws Exception {
     AlphabeticDescending sorter = new AlphabeticDescending();
     List<File> files = createFiles(10);

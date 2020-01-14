@@ -16,9 +16,10 @@
 
 package com.adaptris.core.services.metadata.xpath;
 
+import static org.junit.Assert.assertNotNull;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -27,10 +28,6 @@ import com.adaptris.util.text.xml.XPath;
 
 @SuppressWarnings("deprecation")
 public class ConfiguredXpathNodeListTest extends ConfiguredXpathQueryCase {
-
-  public ConfiguredXpathNodeListTest(String testName) {
-    super(testName);
-  }
 
   @Override
   protected ConfiguredXpathNodeListQuery create() {
@@ -68,6 +65,7 @@ public class ConfiguredXpathNodeListTest extends ConfiguredXpathQueryCase {
   // assertNull(result);
   // }
 
+  @Test
   public void testResolveXpath() throws Exception {
     ConfiguredXpathNodeListQuery query = init(create(), "//extra[@att='multi']");
     Document doc = XmlHelper.createDocument(XML);

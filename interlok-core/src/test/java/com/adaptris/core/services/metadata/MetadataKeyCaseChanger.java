@@ -16,20 +16,12 @@
 
 package com.adaptris.core.services.metadata;
 
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 
 public abstract class MetadataKeyCaseChanger extends MetadataServiceExample {
-
-  public MetadataKeyCaseChanger(String name) {
-    super(name);
-  }
-
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-  }
 
 
   private AdaptrisMessage createMessage() {
@@ -38,6 +30,7 @@ public abstract class MetadataKeyCaseChanger extends MetadataServiceExample {
     return msg;
   }
 
+  @Test
   public void testService() throws Exception {
     ReformatMetadataKey service = createService();
     AdaptrisMessage msg = createMessage();

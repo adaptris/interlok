@@ -15,8 +15,10 @@
 */
 
 package com.adaptris.core.services.metadata;
-
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 
@@ -26,13 +28,7 @@ public class TrimMetadataServiceTest extends MetadataServiceExample {
   private static final String SOURCE_METADATA_KEY = "sourceMetadataKey";
   private static final String PADDED = "  ABCDEFG   ";
   private static final String TRIMMED = PADDED.trim();
-  public TrimMetadataServiceTest(java.lang.String testName) {
-    super(testName);
-  }
 
-  @Override
-  protected void setUp() throws Exception {
-  }
 
   private static AdaptrisMessage createMessage() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -40,6 +36,12 @@ public class TrimMetadataServiceTest extends MetadataServiceExample {
     return msg;
   }
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
+  @Test
   public void testService_NoKey() throws Exception {
     TrimMetadataService service = new TrimMetadataService("");
     AdaptrisMessage msg = createMessage();
@@ -49,6 +51,7 @@ public class TrimMetadataServiceTest extends MetadataServiceExample {
     assertEquals(PADDED, msg.getMetadataValue(SOURCE_METADATA_KEY));
   }
 
+  @Test
   public void testService() throws Exception {
     TrimMetadataService service = new TrimMetadataService(SOURCE_METADATA_KEY);
     AdaptrisMessage msg = createMessage();
@@ -57,6 +60,7 @@ public class TrimMetadataServiceTest extends MetadataServiceExample {
     assertEquals(TRIMMED, msg.getMetadataValue(SOURCE_METADATA_KEY));
   }
 
+  @Test
   public void testServiceWithEmptyString() throws Exception {
     TrimMetadataService service = new TrimMetadataService(SOURCE_METADATA_KEY);
     AdaptrisMessage msg = createMessage();

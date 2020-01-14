@@ -16,6 +16,10 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceException;
@@ -23,13 +27,6 @@ import com.adaptris.core.ServiceException;
 @SuppressWarnings("deprecation")
 public class StringToHexServiceTest extends MetadataServiceExample {
 
-  public StringToHexServiceTest(java.lang.String testName) {
-    super(testName);
-  }
-
-  @Override
-  protected void setUp() throws Exception {
-  }
 
   private static AdaptrisMessage createMessage() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -37,6 +34,12 @@ public class StringToHexServiceTest extends MetadataServiceExample {
     return msg;
   }
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
+  @Test
   public void testService() throws Exception {
     StringToHexService service = new StringToHexService();
     service.setCharset(HexToStringService.UTF_8);
@@ -47,6 +50,7 @@ public class StringToHexServiceTest extends MetadataServiceExample {
     assertEquals(HexToStringServiceTest.HEX_TEXT, msg.getMetadataValue(HexToStringServiceTest.SOURCE_METADATA_KEY));
   }
 
+  @Test
   public void testService_BadEncodingChoice() throws Exception {
     StringToHexService service = new StringToHexService();
     service.setCharset("RandomEncoding!");
@@ -61,6 +65,7 @@ public class StringToHexServiceTest extends MetadataServiceExample {
     }
   }
 
+  @Test
   public void testService_NoEncoding() throws Exception {
     StringToHexService service = new StringToHexService();
     service.setMetadataKeyRegexp(HexToStringServiceTest.SOURCE_METADATA_KEY);

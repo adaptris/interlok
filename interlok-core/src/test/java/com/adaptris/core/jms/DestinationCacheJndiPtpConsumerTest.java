@@ -17,7 +17,6 @@
 package com.adaptris.core.jms;
 
 import static com.adaptris.core.jms.JndiPtpProducerTest.createJndiVendorImpExample;
-
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.jms.jndi.CachedDestinationJndiImplementation;
@@ -31,13 +30,11 @@ public class DestinationCacheJndiPtpConsumerTest extends JmsConsumerCase {
 
   static final String DEFAULT_FILE_SUFFIX = "-CachedDestination-JNDI";
 
-  public DestinationCacheJndiPtpConsumerTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void setUp() throws Exception {
-  }
 
   @Override
   protected Object retrieveObjectForSampleConfig() {

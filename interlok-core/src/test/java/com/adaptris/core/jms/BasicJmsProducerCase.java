@@ -18,6 +18,12 @@ package com.adaptris.core.jms;
 
 import static com.adaptris.core.jms.JmsConfig.DEFAULT_PAYLOAD;
 import static com.adaptris.core.jms.JmsUtils.closeQuietly;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.jms.Destination;
@@ -33,6 +39,7 @@ import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQQueueSender;
 import org.apache.activemq.ActiveMQSession;
 import org.apache.activemq.ActiveMQTopicPublisher;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.core.AdaptrisMessage;
@@ -50,10 +57,6 @@ import com.adaptris.util.TimeInterval;
 
 public abstract class BasicJmsProducerCase extends JmsProducerCase {
 
-  public BasicJmsProducerCase(String name) {
-    super(name);
-  }
-
   protected abstract DefinedJmsProducer createProducer(ConfiguredProduceDestination dest);
 
   protected abstract JmsConsumerImpl createConsumer(ConfiguredConsumeDestination dest);
@@ -63,6 +66,7 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
   private static final Logger logger = LoggerFactory.getLogger(BasicJmsProducerCase.class);
 
   // INTERLOK-2121
+  @Test
   public void testProducerSession_Invalided() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -86,6 +90,7 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testProduce_CaptureOutgoingMessageDetails() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -112,6 +117,7 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testProduceAndConsume_IntegerAcknowledgementMode_IntegerDeliveryMode() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -138,6 +144,7 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testSetProducerSessionFactory() throws Exception {
     DefinedJmsProducer producer = createProducer(new ConfiguredProduceDestination(getName()));
     assertEquals(DefaultProducerSessionFactory.class, producer.getSessionFactory().getClass());
@@ -153,6 +160,7 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
     assertEquals(psf, producer.getSessionFactory());
   }
 
+  @Test
   public void testDefaultSessionFactory() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -184,6 +192,7 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testPerMessageSession() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -215,6 +224,7 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testTimedInactivitySession() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -253,6 +263,7 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testTimedInactivitySession_SessionStillValid() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -288,6 +299,7 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testMessageCountSession() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -325,6 +337,7 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testMessageCountSession_SessionStillValid() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -360,6 +373,7 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testMessageSizeSession() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -398,6 +412,7 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testMessageSizeSession_SessionStillValid() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -432,6 +447,7 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testMetadataSession() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -478,6 +494,7 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testMultipleProducersWithSession() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -511,6 +528,7 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testMultipleRequestorWithSession() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());

@@ -26,9 +26,7 @@ public abstract class HttpServiceExample extends ServiceCase {
    */
   public static final String BASE_DIR_KEY = "HttpServiceExamples.baseDir";
 
-  public HttpServiceExample(String name) {
-    super(name);
-
+  public HttpServiceExample() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }

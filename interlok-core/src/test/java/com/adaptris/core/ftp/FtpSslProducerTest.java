@@ -21,11 +21,15 @@ public class FtpSslProducerTest extends FtpProducerCase {
 
   private static final String BASE_DIR_KEY = "FtpsProducerExamples.baseDir";
 
-  public FtpSslProducerTest(String name) {
-    super(name);
+  public FtpSslProducerTest() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
+  }
+
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override

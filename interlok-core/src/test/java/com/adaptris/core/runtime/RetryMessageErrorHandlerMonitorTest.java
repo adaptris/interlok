@@ -18,17 +18,17 @@ package com.adaptris.core.runtime;
 
 import static com.adaptris.core.runtime.AdapterComponentMBean.ID_PREFIX;
 import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_RETRY_MONITOR_TYPE;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.Properties;
-
 import javax.management.JMX;
 import javax.management.ObjectName;
 import javax.naming.Context;
 import javax.naming.InitialContext;
-
 import org.apache.commons.collections.CollectionUtils;
-
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -43,17 +43,22 @@ public class RetryMessageErrorHandlerMonitorTest extends ComponentManagerCase {
   private Properties env = new Properties();
   private InitialContext initialContext = null;
 
-  public RetryMessageErrorHandlerMonitorTest(String name) {
-    super(name);
+  public RetryMessageErrorHandlerMonitorTest() {
   }
 
-  public void setUp() throws Exception {
-    super.setUp();
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
+
+  @Before
+  public void beforeMyTests() throws Exception {
     env.put(Context.INITIAL_CONTEXT_FACTORY, JndiContextFactory.class.getName());
     initialContext = new InitialContext(env);
   }
 
-
+  @Test
   public void testMBean_FailAllMessages() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -65,7 +70,8 @@ public class RetryMessageErrorHandlerMonitorTest extends ComponentManagerCase {
       registerMBeans(adapterManager);
       adapterManager.requestStart();
       ObjectName retryObjectName = ObjectName
-          .getInstance(JMX_RETRY_MONITOR_TYPE + adapterManager.createObjectHierarchyString() + ID_PREFIX + getName());
+          .getInstance(
+              JMX_RETRY_MONITOR_TYPE + adapterManager.createObjectHierarchyString() + ID_PREFIX + getName());
       RetryMessageErrorHandlerMonitorMBean mbean = JMX.newMBeanProxy(mBeanServer, retryObjectName,
           RetryMessageErrorHandlerMonitorMBean.class);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -85,6 +91,7 @@ public class RetryMessageErrorHandlerMonitorTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_FailMessageById() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -96,7 +103,8 @@ public class RetryMessageErrorHandlerMonitorTest extends ComponentManagerCase {
       registerMBeans(adapterManager);
       adapterManager.requestStart();
       ObjectName retryObjectName = ObjectName
-          .getInstance(JMX_RETRY_MONITOR_TYPE + adapterManager.createObjectHierarchyString() + ID_PREFIX + getName());
+          .getInstance(
+              JMX_RETRY_MONITOR_TYPE + adapterManager.createObjectHierarchyString() + ID_PREFIX + getName());
       RetryMessageErrorHandlerMonitorMBean mbean = JMX.newMBeanProxy(mBeanServer, retryObjectName,
           RetryMessageErrorHandlerMonitorMBean.class);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();

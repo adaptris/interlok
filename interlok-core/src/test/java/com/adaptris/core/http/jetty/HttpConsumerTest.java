@@ -15,7 +15,12 @@
 */
 
 package com.adaptris.core.http.jetty;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -24,9 +29,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
 import org.eclipse.jetty.util.security.Constraint;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
@@ -76,20 +82,22 @@ public class HttpConsumerTest extends HttpConsumerExample {
 
   protected HttpProducer httpProducer;
 
-  public HttpConsumerTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     httpProducer = createProducer();
   }
 
-  @Override
-  protected void tearDown() throws Exception {
+  @After
+  public void tearDown() throws Exception {
     stop(httpProducer);
   }
 
+  @Test
   public void testSetAdditionalDebug() throws Exception {
     JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     consumer.setAdditionalDebug(null);
@@ -100,6 +108,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     assertEquals(true, consumer.additionalDebug());
   }
 
+  @Test
   public void testSetSendProcessingInterval() throws Exception {
     JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     assertNull(consumer.getSendProcessingInterval());
@@ -112,6 +121,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     assertEquals(10, consumer.sendProcessingInterval());
   }
 
+  @Test
   public void testSetTimeoutAction() throws Exception {
     JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);
     assertNull(consumer.getTimeoutAction());
@@ -126,6 +136,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     assertEquals(HttpStatus.OK_200.getStatusCode(), consumer.timeoutAction().status());
   }
 
+  @Test
   public void testConnection_NonDefaults() throws Exception {
     HttpConnection connection = createConnection(null);
     connection.getServerConnectorProperties().addKeyValuePair(new KeyValuePair(ServerConnectorProperty.AcceptQueueSize.name(), "10"));
@@ -140,6 +151,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
 
   }
 
+  @Test
   public void testChannelStarted_WorkflowStopped() throws Exception {
     HttpConnection connection = createConnection(null);
     JettyMessageConsumer consumer1 = JettyHelper.createConsumer(URL_TO_POST_TO);
@@ -168,6 +180,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @Test
   public void testChannelStarted_MultipleWorkflows_OneWorkflowStopped() throws Exception {
     HttpConnection connection = createConnection(null);
 
@@ -206,6 +219,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @Test
   public void testPoolingWorkflow_WithInterceptor() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new StaticMockMessageProducer();
@@ -236,6 +250,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @Test
   public void testPoolingWorkflow_WithoutInterceptor() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new StaticMockMessageProducer();
@@ -265,6 +280,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @Test
   public void testPoolingWorkflow_TimeoutAction_TimeoutExceeded() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new StaticMockMessageProducer();
@@ -296,6 +312,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @Test
   public void testConsumeWorkflow_NoPreserveHeaders() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
@@ -318,6 +335,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @Test
   public void testConsumeWorkflow_IncorrectMethod() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
@@ -341,6 +359,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @Test
   public void testConsumeWorkflow_Options_Automatic() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
@@ -364,7 +383,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
-
+  @Test
   public void testConsumeWorkflow_PreserveHeaders() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
@@ -388,6 +407,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @Test
   public void testConsumeWorkflow_PreserveParams_NoPrefix() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
@@ -419,6 +439,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @Test
   public void testConsumeWorkflow_PreserveObjectParams_NoPrefix() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
@@ -452,6 +473,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @Test
   public void testConsumeWorkflow_PreserveParams_WithPrefix() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
@@ -485,7 +507,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
-
+  @Test
   public void testConsumeWorkflow_PreserveObjectParams_WithPrefix() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
@@ -519,6 +541,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @Test
   public void testBasicConsumeWorkflow_ConsumeDestinationContainsInvalidURL() throws Exception {
     // {} won't be valid for a URL, so this should immediately fail.
     HttpConnection con = createConnection(null);
@@ -538,6 +561,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @Test
   public void testBasicConsumeWorkflow_ConsumeDestinationContainsURL() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
@@ -561,6 +585,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @Test
   public void testBasicConsumeWorkflow() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
@@ -585,6 +610,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @Test
   public void testBasicConsumeWorkflow_AcrossRestarts() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
@@ -608,6 +634,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @Test
   public void testBasicConsumeWorkflow_UpdatedConfig() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
@@ -649,6 +676,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     return msg;
   }
 
+  @Test
   public void testBug1549() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
@@ -692,6 +720,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @Test
   public void testBasicConsumeWithCustomMessageImpl() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
@@ -716,6 +745,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @Test
   public void testDestinationNotFound() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
@@ -747,6 +777,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @Test
   public void testConsume_WithACL() throws Exception {
     String threadName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
@@ -787,6 +818,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @Test
   public void testConsume_WithACL_UnprotectedURL() throws Exception {
     String threadName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
@@ -823,6 +855,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @Test
   public void testConsume_WithACL_IncorrectPassword() throws Exception {
     String threadName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
@@ -881,6 +914,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @Test
   public void testConsume_WithACL_WithNoRoles() throws Exception {
     String threadName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
@@ -940,6 +974,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @Test
   public void testLoopbackWithIncorrectRole() throws Exception {
     String threadName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
@@ -998,6 +1033,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     }
   }
 
+  @Test
   public void testBasicConsumeWorkflow_LongLived_Expect() throws Exception {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();

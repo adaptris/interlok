@@ -18,7 +18,6 @@ package com.adaptris.core.services.aggregator;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceCase;
@@ -39,11 +38,6 @@ public abstract class AggregatingServiceExample extends ServiceCase {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
-  }
-
-  public AggregatingServiceExample(String name) {
-    this();
-    setName(name);
   }
 
   protected static List<Service> createExamples(MessageSplitter splitter, MessageAggregator aggregator) {

@@ -20,11 +20,14 @@ import static com.adaptris.core.fs.FsHelper.createFileReference;
 import static com.adaptris.core.fs.FsHelper.createUrlFromString;
 import static com.adaptris.core.fs.FsMessageProducerTest.BASE_KEY;
 import static com.adaptris.core.fs.FsMessageProducerTest.BASE_TEMP_DIR;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.File;
-
 import org.apache.commons.io.FileUtils;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.DefaultMessageFactory;
@@ -40,25 +43,27 @@ public class LargeFsMessageProducerTest extends FsProducerExample {
 
   private File baseDir, tempDir, destDir;
 
-  public LargeFsMessageProducerTest(java.lang.String testName) {
-    super(testName);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     baseDir = createFileReference(createUrlFromString(PROPERTIES.getProperty(BASE_KEY), true));
     destDir = createFileReference(createUrlFromString(PROPERTIES.getProperty(BASE_KEY) + DEFAULT_DEST, true));
     tempDir = createFileReference(createUrlFromString(PROPERTIES.getProperty(BASE_TEMP_DIR), true));
   }
 
-  @Override
-  protected void tearDown() throws Exception {
+  @After
+  public void tearDown() throws Exception {
     // delete contents of destination...
     FileUtils.deleteQuietly(baseDir);
     FileUtils.deleteQuietly(tempDir);
     FileUtils.deleteQuietly(destDir);
   }
 
+  @Test
   public void testProduceWithDefaultMessageFactory() throws Exception {
     LargeFsProducer producer = create();
     start(producer);
@@ -66,6 +71,7 @@ public class LargeFsMessageProducerTest extends FsProducerExample {
     stop(producer);
   }
 
+  @Test
   public void testProduce() throws Exception {
     LargeFsProducer producer = create();
     start(producer);
@@ -73,6 +79,7 @@ public class LargeFsMessageProducerTest extends FsProducerExample {
     stop(producer);
   }
 
+  @Test
   public void testProduceWithRenameTo() throws Exception {
     LargeFsProducer producer = create();
     producer.setUseRenameTo(true);
@@ -81,6 +88,7 @@ public class LargeFsMessageProducerTest extends FsProducerExample {
     stop(producer);
   }
 
+  @Test
   public void testProduce_WithEncoder() throws Exception {
     LargeFsProducer producer = create();
     producer.setEncoder(new FileBackedMimeEncoder());
@@ -98,6 +106,7 @@ public class LargeFsMessageProducerTest extends FsProducerExample {
     }
   }
 
+  @Test
   public void testProduce_WithUnsupportedEncoder() throws Exception {
     LargeFsProducer producer = create();
     producer.setEncoder(new MimeEncoder());
@@ -118,6 +127,7 @@ public class LargeFsMessageProducerTest extends FsProducerExample {
     }
   }
 
+  @Test
   public void testProduceWithOverride() throws Exception {
     LargeFsProducer producer = create();
     start(producer);
@@ -126,6 +136,7 @@ public class LargeFsMessageProducerTest extends FsProducerExample {
     stop(producer);
   }
 
+  @Test
   public void testProduceWithTempDir() throws Exception {
     String tempDir = PROPERTIES.getProperty(BASE_TEMP_DIR);
     LargeFsProducer producer = create();
@@ -139,6 +150,7 @@ public class LargeFsMessageProducerTest extends FsProducerExample {
     assertTrue(tempDir + " is a directory", f.isDirectory());
   }
 
+  @Test
   public void testSetDestination() {
     LargeFsProducer producer = create();
     ProduceDestination dest = new ConfiguredProduceDestination("destination");

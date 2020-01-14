@@ -22,9 +22,9 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import org.apache.commons.io.FileUtils;
-
+import org.junit.After;
+import org.junit.Before;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.fs.FsHelper;
 import com.adaptris.util.SafeGuidGenerator;
@@ -35,22 +35,22 @@ public abstract class FileSorterCase extends BaseCase {
 
   private File baseDir;
 
-  public FileSorterCase(java.lang.String testName) {
-    super(testName);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void setUp() throws Exception {
+
+  @Before
+  public void setUp() throws Exception {
     File parentDir =
         FsHelper.createFileReference(FsHelper.createUrlFromString(PROPERTIES.getProperty("FileSorterTest.tempDirUrl"), true));
     baseDir = new File(parentDir, safeName());
     baseDir.mkdirs();
-    super.setUp();
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
+  @After
+  public void tearDown() throws Exception {
     FileUtils.deleteQuietly(baseDir);
   }
 

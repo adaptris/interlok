@@ -1,8 +1,12 @@
 package com.adaptris.core.services.cache;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.BranchingServiceCollection;
 import com.adaptris.core.CoreException;
@@ -18,13 +22,18 @@ public class CheckCacheServiceTest extends CacheServiceBaseCase {
   static final String LOOKUP_VALUE = "lookupValue";
   static final String LOOKED_UP_VALUE = "lookedUpValue";
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+  @Test
   public void testIsBranching() throws Exception {
 
     CheckCacheService service = createServiceForTests();
     assertTrue(service.isBranching());
   }
 
-
+  @Test
   public void testDoService_Error() throws Exception {
     AdaptrisMessage msg =
         createMessage("Hello World", Arrays.asList(new MetadataElement[] {new MetadataElement(LOOKUP_VALUE, LOOKUP_VALUE)}));
@@ -50,6 +59,7 @@ public class CheckCacheServiceTest extends CacheServiceBaseCase {
     }
   }
 
+  @Test
   public void testDoService_InCache() throws Exception {
     AdaptrisMessage msg = createMessage("Hello World", Arrays.asList(new MetadataElement[]
     {
@@ -72,6 +82,7 @@ public class CheckCacheServiceTest extends CacheServiceBaseCase {
     }
   }
 
+  @Test
   public void testDoService_DoesNotUseKeys() throws Exception {
     AdaptrisMessage msg = createMessage("Hello World", Arrays.asList(new MetadataElement[]
     {
@@ -95,6 +106,7 @@ public class CheckCacheServiceTest extends CacheServiceBaseCase {
     }
   }
 
+  @Test
   public void testDoService_NotInCache() throws Exception {
     AdaptrisMessage msg = createMessage("Hello World", Arrays.asList(new MetadataElement[]
     {

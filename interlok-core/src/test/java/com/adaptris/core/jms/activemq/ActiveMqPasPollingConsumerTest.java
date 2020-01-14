@@ -21,7 +21,7 @@ import static com.adaptris.core.BaseCase.stop;
 import static com.adaptris.core.BaseCase.waitForMessages;
 import static com.adaptris.core.jms.JmsProducerCase.assertMessages;
 import static com.adaptris.core.jms.JmsProducerCase.createMessage;
-import static junit.framework.TestCase.fail;
+import static org.junit.Assert.fail;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;

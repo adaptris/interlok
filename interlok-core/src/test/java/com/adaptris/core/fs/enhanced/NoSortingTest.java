@@ -15,17 +15,15 @@
 */
 
 package com.adaptris.core.fs.enhanced;
-
+import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.Test;
 
 public class NoSortingTest extends FileSorterCase {
 
-  public NoSortingTest(String testName) {
-    super(testName);
-  }
-
+  @Test
   public void testSort() throws Exception {
     NoSorting sorter = new NoSorting();
     List<File> files = createFiles(10);

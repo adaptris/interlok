@@ -17,14 +17,19 @@
 package com.adaptris.core.services.metadata;
 
 import static com.adaptris.core.services.metadata.ReadMetadataFromFilesystemTest.BASE_DIR;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
@@ -40,15 +45,12 @@ import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.GuidGenerator;
 
 public class WriteMetadataToFilesystemTest extends MetadataServiceExample {
-
-  public WriteMetadataToFilesystemTest(String name) {
-    super(name);
-  }
-
   @Override
-  public void setUp() {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testDestination() throws Exception {
     WriteMetadataToFilesystem service = new WriteMetadataToFilesystem();
     assertNull(service.getDestination());
@@ -73,6 +75,7 @@ public class WriteMetadataToFilesystemTest extends MetadataServiceExample {
     assertEquals("dest", service.getDestination().getDestination(new DefaultMessageFactory().newMessage()));
   }
 
+  @Test
   public void testSetMetadataFilter() throws Exception {
     WriteMetadataToFilesystem service = new WriteMetadataToFilesystem();
     assertNull(service.getMetadataFilter());
@@ -82,6 +85,7 @@ public class WriteMetadataToFilesystemTest extends MetadataServiceExample {
     assertEquals(NoOpMetadataFilter.class, service.metadataFilter().getClass());
   }
 
+  @Test
   public void testOverwriteIfExists() throws Exception {
     WriteMetadataToFilesystem service = new WriteMetadataToFilesystem();
     assertNull(service.getOverwriteIfExists());
@@ -93,6 +97,7 @@ public class WriteMetadataToFilesystemTest extends MetadataServiceExample {
     assertTrue(service.overwriteIfExists());
   }
 
+  @Test
   public void testOutputStyle() throws Exception {
     WriteMetadataToFilesystem service = new WriteMetadataToFilesystem();
     assertNull(service.getOutputStyle());
@@ -100,6 +105,7 @@ public class WriteMetadataToFilesystemTest extends MetadataServiceExample {
     assertEquals(OutputStyle.Text, service.getOutputStyle());
   }
 
+  @Test
   public void testFilenameCreator() throws Exception {
     WriteMetadataToFilesystem service = new WriteMetadataToFilesystem();
     assertEquals(FormattedFilenameCreator.class, service.filenameCreator().getClass());
@@ -109,6 +115,7 @@ public class WriteMetadataToFilesystemTest extends MetadataServiceExample {
     assertEquals(FormattedFilenameCreator.class, service.filenameCreator().getClass());
   }
 
+  @Test
   public void testService_Default() throws Exception {
     String subDir = new GuidGenerator().getUUID().replaceAll(":", "").replaceAll("-", "");
     AdaptrisMessage msg = createMessage();
@@ -121,6 +128,7 @@ public class WriteMetadataToFilesystemTest extends MetadataServiceExample {
     assertEquals("v5", p.getProperty("key5"));
   }
 
+  @Test
   public void testService_OutputXml() throws Exception {
     String subDir = new GuidGenerator().getUUID().replaceAll(":", "").replaceAll("-", "");
     AdaptrisMessage msg = createMessage();
@@ -134,6 +142,7 @@ public class WriteMetadataToFilesystemTest extends MetadataServiceExample {
     assertEquals("v5", p.getProperty("key5"));
   }
 
+  @Test
   public void testService_OutputUnknown() throws Exception {
     String subDir = new GuidGenerator().getUUID().replaceAll(":", "").replaceAll("-", "");
     AdaptrisMessage msg = createMessage();
@@ -146,6 +155,7 @@ public class WriteMetadataToFilesystemTest extends MetadataServiceExample {
     assertEquals("v5", p.getProperty("key5"));
   }
 
+  @Test
   public void testService_Filter() throws Exception {
     String subDir = new GuidGenerator().getUUID().replaceAll(":", "").replaceAll("-", "");
     AdaptrisMessage msg = createMessage();
@@ -163,6 +173,7 @@ public class WriteMetadataToFilesystemTest extends MetadataServiceExample {
     assertEquals("av5", p.getProperty("alt_key5"));
   }
 
+  @Test
   public void testService_OverwriteFalseFileNonExistent() throws Exception {
     String subDir = new GuidGenerator().getUUID().replaceAll(":", "").replaceAll("-", "");
     AdaptrisMessage msg = createMessage();
@@ -176,6 +187,7 @@ public class WriteMetadataToFilesystemTest extends MetadataServiceExample {
     assertEquals("v5", p.getProperty("key5"));
   }
 
+  @Test
   public void testService_OverwriteFalseFileExists() throws Exception {
     String subDir = new GuidGenerator().getUUID().replaceAll(":", "").replaceAll("-", "");
     AdaptrisMessage msg = createMessage();
@@ -193,6 +205,7 @@ public class WriteMetadataToFilesystemTest extends MetadataServiceExample {
     }
   }
 
+  @Test
   public void testService_OverwriteTrueFileNonExistent() throws Exception {
     String subDir = new GuidGenerator().getUUID().replaceAll(":", "").replaceAll("-", "");
     AdaptrisMessage msg = createMessage();
@@ -206,6 +219,7 @@ public class WriteMetadataToFilesystemTest extends MetadataServiceExample {
     assertEquals("v5", p.getProperty("key5"));
   }
 
+  @Test
   public void testService_OverwriteTrueFileExists() throws Exception {
     String subDir = new GuidGenerator().getUUID().replaceAll(":", "").replaceAll("-", "");
     AdaptrisMessage msg = createMessage();

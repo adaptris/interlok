@@ -16,6 +16,11 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
@@ -34,10 +39,12 @@ public class XpathTradingRelationshipCreatorTest extends BaseCase {
   private static final String XML_PAYLOAD = "<?xml version=\"1.0\"?>" + "<document>" + "<source>" + SRC + "</source>"
       + "<destination>" + DEST + "</destination>" + "<type>" + TYPE + "</type>" + "<empty></empty></document>";
 
-  public XpathTradingRelationshipCreatorTest(String arg0) {
-    super(arg0);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testSetDestinationXpath() throws Exception {
     XpathTradingRelationshipCreator creator = new XpathTradingRelationshipCreator();
     try {
@@ -61,6 +68,7 @@ public class XpathTradingRelationshipCreatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testSetSourceXpath() throws Exception {
     XpathTradingRelationshipCreator creator = new XpathTradingRelationshipCreator();
     try {
@@ -84,6 +92,7 @@ public class XpathTradingRelationshipCreatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testSetTypeXpath() throws Exception {
     XpathTradingRelationshipCreator creator = new XpathTradingRelationshipCreator();
     try {
@@ -107,6 +116,7 @@ public class XpathTradingRelationshipCreatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testCreateDefault() throws Exception {
     XpathTradingRelationshipCreator creator = new XpathTradingRelationshipCreator();
     try {
@@ -117,6 +127,7 @@ public class XpathTradingRelationshipCreatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testCreate() throws Exception {
     XpathTradingRelationshipCreator creator = new XpathTradingRelationshipCreator(SRC_XPATH, DEST_XPATH, TYPE_XPATH);
     assertNotNull(creator.create(new DefaultMessageFactory().newMessage(XML_PAYLOAD)));
@@ -127,6 +138,7 @@ public class XpathTradingRelationshipCreatorTest extends BaseCase {
     assertEquals(new TradingRelationship(SRC, DEST, TYPE).toString(), new TradingRelationship(SRC, DEST, TYPE), rel);
   }
 
+  @Test
   public void testInvalidSourceXpath() throws Exception {
     XpathTradingRelationshipCreator creator = new XpathTradingRelationshipCreator(SRC_XPATH, DEST_XPATH, TYPE_XPATH);
     creator.setSourceXpath(BAD_XPATH);
@@ -145,6 +157,7 @@ public class XpathTradingRelationshipCreatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testInvalidDestinationXpath() throws Exception {
     XpathTradingRelationshipCreator creator = new XpathTradingRelationshipCreator(SRC_XPATH, DEST_XPATH, TYPE_XPATH);
     creator.setDestinationXpath(BAD_XPATH);
@@ -163,6 +176,7 @@ public class XpathTradingRelationshipCreatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testInvalidTypeXpath() throws Exception {
     XpathTradingRelationshipCreator creator = new XpathTradingRelationshipCreator(SRC_XPATH, DEST_XPATH, TYPE_XPATH);
     creator.setTypeXpath(BAD_XPATH);
@@ -181,6 +195,7 @@ public class XpathTradingRelationshipCreatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testNonXmlDocument() throws Exception {
     XpathTradingRelationshipCreator creator = new XpathTradingRelationshipCreator(SRC_XPATH, DEST_XPATH, TYPE_XPATH);
     try {
@@ -191,7 +206,7 @@ public class XpathTradingRelationshipCreatorTest extends BaseCase {
     }
   }
 
-
+  @Test
   public void testXmlRoundTrip() throws Exception {
     XpathTradingRelationshipCreator input = new XpathTradingRelationshipCreator(SRC_XPATH, DEST_XPATH, TYPE_XPATH);
     AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
@@ -200,6 +215,7 @@ public class XpathTradingRelationshipCreatorTest extends BaseCase {
     assertRoundtripEquality(input, output);
   }
 
+  @Test
   public void testSetNamespaceContext() {
     XpathTradingRelationshipCreator obj = new XpathTradingRelationshipCreator();
     assertNull(obj.getNamespaceContext());

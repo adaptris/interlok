@@ -16,18 +16,23 @@
 
 package com.adaptris.core.services.splitter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.util.List;
-
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -58,19 +63,17 @@ public class XpathSplitterTest extends SplitterCase {
   private MockMessageProducer producer;
   private BasicMessageSplitterService service;
 
-  public XpathSplitterTest(java.lang.String testName) {
-    super(testName);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void setUp() throws Exception {
+
+  @Before
+  public void setUp() throws Exception {
     producer = new MockMessageProducer();
     service = createBasic(new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8));
     service.setProducer(producer);
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
   }
 
   @Override
@@ -99,6 +102,7 @@ public class XpathSplitterTest extends SplitterCase {
     return new XpathMessageSplitter();
   }
 
+  @Test
   public void testConstructors() throws Exception {
     XpathMessageSplitter splitter = new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8);
     assertEquals(ENVELOPE_DOCUMENT, splitter.getXpath());
@@ -112,6 +116,7 @@ public class XpathSplitterTest extends SplitterCase {
 
   }
 
+  @Test
   public void testSetters() throws Exception {
     XpathMessageSplitter splitter = new XpathMessageSplitter();
     assertNull(splitter.getXpath());
@@ -133,6 +138,7 @@ public class XpathSplitterTest extends SplitterCase {
     assertEquals("", splitter.getEncoding());
   }
 
+  @Test
   public void testSetNamespaceContext() throws Exception {
     XpathMessageSplitter obj = new XpathMessageSplitter();
     assertNull(obj.getNamespaceContext());
@@ -144,6 +150,7 @@ public class XpathSplitterTest extends SplitterCase {
     assertNull(obj.getNamespaceContext());
   }
 
+  @Test
   public void testSplit() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
     String obj = "ABCDEFG";
@@ -160,6 +167,7 @@ public class XpathSplitterTest extends SplitterCase {
 
   }
 
+  @Test
   public void testSplit_AlternativeMessageFactory() throws Exception {
     AdaptrisMessage msg = new StubMessageFactory().newMessage(XML_MESSAGE, ENCODING_UTF8);
     String obj = "ABCDEFG";
@@ -175,6 +183,7 @@ public class XpathSplitterTest extends SplitterCase {
     assertEquals("Number of messages", 3, count);
   }
 
+  @Test
   public void testSplitWithObjectMetadata() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
     String obj = "ABCDEFG";
@@ -192,6 +201,7 @@ public class XpathSplitterTest extends SplitterCase {
     assertEquals("Number of messages", 3, count);
   }
 
+  @Test
   public void testSplitThrowsException() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
     msg.setContent(XML_MESSAGE, msg.getContentEncoding());
@@ -208,6 +218,7 @@ public class XpathSplitterTest extends SplitterCase {
     }
   }
 
+  @Test
   public void testIssue2658() throws Exception {
     AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_ISSUE_2658_INPUT));
     Document srcXml = createDocument(msg.getPayload());
@@ -229,6 +240,7 @@ public class XpathSplitterTest extends SplitterCase {
     assertEquals("Number of messages", 2, count);
   }
 
+  @Test
   public void testDoServiceWithXmlSplitter() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
     msg.addMetadata("key", "value");
@@ -236,6 +248,7 @@ public class XpathSplitterTest extends SplitterCase {
     assertEquals("Number of messages", 3, producer.getMessages().size());
   }
 
+  @Test
   public void testXmlSplitter_Namespace() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XpathMetadataServiceTest.XML_WITH_NAMESPACE);
     XpathMessageSplitter splitter = new XpathMessageSplitter("/svrl:schematron-output/svrl:failed-assert", "UTF-8");
@@ -254,6 +267,7 @@ public class XpathSplitterTest extends SplitterCase {
     assertEquals("Number of messages", 2, count);
   }
 
+  @Test
   public void testSplit_DocTypeNotAllowed() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.setContent(XML_WITH_DOCTYPE, msg.getContentEncoding());

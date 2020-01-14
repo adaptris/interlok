@@ -16,13 +16,17 @@
 
 package com.adaptris.core.management.jmx;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
@@ -31,7 +35,9 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.PortManager;
 import com.adaptris.core.management.Constants;
@@ -52,13 +58,14 @@ public class JmxRemoteComponentTest extends BaseCase {
 
   private Integer unusedPort = -1;
 
-  public JmxRemoteComponentTest(String name) {
-    super(name);
-  }
 
   @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
+  @Before
   public void setUp() throws Exception {
-    super.setUp();
     unusedPort = PortManager.nextUnusedPort(5555);
     ObjectName jmxObjName = new ObjectName(JmxRemoteComponent.DEFAULT_JMX_OBJECT_NAME);
     MBeanServer mBeanServer = JmxHelper.findMBeanServer();
@@ -67,7 +74,7 @@ public class JmxRemoteComponentTest extends BaseCase {
     }
   }
 
-  @Override
+  @After
   public void tearDown() throws Exception {
     PortManager.release(unusedPort);
     ObjectName jmxObjName = new ObjectName(JmxRemoteComponent.DEFAULT_JMX_OBJECT_NAME);
@@ -77,6 +84,7 @@ public class JmxRemoteComponentTest extends BaseCase {
     }
   }
 
+  @Test
   public void testDefaultObjectName_Lifecycle() throws Exception {
     MBeanServer mBeanServer = JmxHelper.findMBeanServer();
     JmxRemoteComponent jmxr = new JmxRemoteComponent();
@@ -94,6 +102,7 @@ public class JmxRemoteComponentTest extends BaseCase {
     assertFalse(mBeanServer.isRegistered(jmxObjName));
   }
 
+  @Test
   public void testDefaultObjectName_MultipleInstance() throws Exception {
     MBeanServer mBeanServer = JmxHelper.findMBeanServer();
     JmxRemoteComponent jmxr = new JmxRemoteComponent();
@@ -112,7 +121,7 @@ public class JmxRemoteComponentTest extends BaseCase {
     }
   }
 
-
+  @Test
   public void testNoProperties() throws Exception {
     ObjectName jmxObjName = new ObjectName(JmxRemoteComponent.DEFAULT_JMX_OBJECT_NAME);
     MBeanServer mBeanServer = JmxHelper.findMBeanServer();
@@ -129,6 +138,7 @@ public class JmxRemoteComponentTest extends BaseCase {
     }
   }
 
+  @Test
   public void testNonDefaultObjectName_Lifecycle() throws Exception {
     ObjectName jmxObjName = new ObjectName(AdapterComponentMBean.JMX_DOMAIN_NAME + ":type=" + getName());
     MBeanServer mBeanServer = JmxHelper.findMBeanServer();
@@ -148,6 +158,7 @@ public class JmxRemoteComponentTest extends BaseCase {
     assertFalse(mBeanServer.isRegistered(jmxObjName));
   }
 
+  @Test
   public void testResolveEnvironment() throws Exception {
     MBeanServer mBeanServer = JmxHelper.findMBeanServer();
     ObjectName jmxObjName = new ObjectName(AdapterComponentMBean.JMX_DOMAIN_NAME + ":type=" + getName());
@@ -170,12 +181,14 @@ public class JmxRemoteComponentTest extends BaseCase {
     assertEquals("Blah blah", attr.get("plainProperty"));
   }
 
+  @Test
   public void testNoDecoding() throws Exception {
     PropertyResolver resolver = PropertyResolver.getDefaultInstance();
     resolver.init();
     assertEquals(DEFAULT_VALUE, resolver.resolve(DEFAULT_VALUE));
   }
 
+  @Test
   public void testSASL_Authentication() throws Exception {
     MBeanServer mBeanServer = JmxHelper.findMBeanServer();
     JmxRemoteComponent jmxr = new JmxRemoteComponent();
@@ -196,6 +209,7 @@ public class JmxRemoteComponentTest extends BaseCase {
     }
   }
 
+  @Test
   public void testSASL_Authentication_EncodedPassword() throws Exception {
     MBeanServer mBeanServer = JmxHelper.findMBeanServer();
     JmxRemoteComponent jmxr = new JmxRemoteComponent();
@@ -217,6 +231,7 @@ public class JmxRemoteComponentTest extends BaseCase {
     }
   }
 
+  @Test
   public void testSASL_Authentication_BadPassword() throws Exception {
     MBeanServer mBeanServer = JmxHelper.findMBeanServer();
     JmxRemoteComponent jmxr = new JmxRemoteComponent();

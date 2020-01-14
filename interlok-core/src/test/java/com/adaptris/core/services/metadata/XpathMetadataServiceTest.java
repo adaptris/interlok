@@ -16,10 +16,14 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -57,15 +61,12 @@ public class XpathMetadataServiceTest extends MetadataServiceExample {
       + "<!ENTITY LOCAL_ENTITY 'entity'>\n" + "<!ENTITY % StandardInfo SYSTEM \"../StandardInfo.dtd\">\n" + "%StandardInfo;\n"
       + "]>\n" + "<document>\n" + "</document>\n";
 
-  public XpathMetadataServiceTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testSetNamespaceContext() {
     XpathMetadataService obj = new XpathMetadataService();
     assertNull(obj.getNamespaceContext());
@@ -77,6 +78,7 @@ public class XpathMetadataServiceTest extends MetadataServiceExample {
     assertNull(obj.getNamespaceContext());
   }
 
+  @Test
   public void testDoService_NotXML() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("ABCDEFG");
     XpathMetadataService service = new XpathMetadataService().withMetadataLogger(new TruncateMetadata(20));
@@ -91,6 +93,7 @@ public class XpathMetadataServiceTest extends MetadataServiceExample {
     }
   }
 
+  @Test
   public void testDoService_UsingXpathQuery() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
     XpathMetadataService service = new XpathMetadataService();
@@ -101,6 +104,7 @@ public class XpathMetadataServiceTest extends MetadataServiceExample {
     assertEquals("partnerb", msg.getMetadataValue("destination"));
   }
 
+  @Test
   public void testDoService_UsingXpathQuery_WithNamespaceContext() throws CoreException {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_WITH_NAMESPACE);
     XpathMetadataService service = new XpathMetadataService();
@@ -115,6 +119,7 @@ public class XpathMetadataServiceTest extends MetadataServiceExample {
     assertEquals("2", msg.getMetadataValue("failureCount"));
   }
 
+  @Test
   public void testDoService_DisableDocType() throws CoreException {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_WITH_DOCTYPE);
     XpathMetadataService service = new XpathMetadataService();
@@ -131,6 +136,8 @@ public class XpathMetadataServiceTest extends MetadataServiceExample {
       assertTrue(expected.getMessage().contains("DOCTYPE is disallowed"));
     }
   }
+
+  @Test
   public void testSetXpathQueryList() {
     XpathMetadataService service = new XpathMetadataService();
     assertEquals(0, service.getXpathQueries().size());
@@ -149,6 +156,7 @@ public class XpathMetadataServiceTest extends MetadataServiceExample {
     assertEquals(list, service.getXpathQueries());
   }
 
+  @Test
   public void testAddXpathQuery() {
     XpathMetadataService service = new XpathMetadataService();
     ConfiguredXpathQuery query = new ConfiguredXpathQuery("failureCount", "count(/svrl:schematron-output/svrl:failed-assert)");
@@ -167,6 +175,7 @@ public class XpathMetadataServiceTest extends MetadataServiceExample {
 
   }
 
+  @Test
   public void testDoService_UsingXpathQuery_WithNamespaceContext_NotNamespaceAware() throws CoreException {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_WITH_NAMESPACE);
     XpathMetadataService service = new XpathMetadataService();

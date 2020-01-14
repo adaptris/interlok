@@ -16,20 +16,22 @@
 
 package com.adaptris.core.services.jmx;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.management.MBeanException;
 import javax.management.MBeanServerConnection;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceCase;
@@ -51,17 +53,17 @@ public class JmxOperationCallServiceTest extends ServiceCase {
   @Mock
   private JmxConnection mockConnection;
   
-  public JmxOperationCallServiceTest(String name) {
-    super(name);
+  public JmxOperationCallServiceTest() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
   }
-  
-  /*************************************************************************************
-   * JUNIT
-   *************************************************************************************/
-  
+
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+  @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
     
@@ -76,6 +78,7 @@ public class JmxOperationCallServiceTest extends ServiceCase {
     callService.start();
   }
   
+  @After
   public void tearDown() throws Exception {
     callService.stop();
     callService.close();
@@ -84,7 +87,8 @@ public class JmxOperationCallServiceTest extends ServiceCase {
   /*************************************************************************************
    * TESTS
    *************************************************************************************/
-  
+
+  @Test
   public void testPayloadReturn() throws Exception {
     String operationReturnValue = "NewPayloadValue";
     
@@ -96,7 +100,8 @@ public class JmxOperationCallServiceTest extends ServiceCase {
     
     assertEquals(operationReturnValue, message.getContent());
   }
-    
+
+  @Test
   public void testPayloadReturnWithParams() throws Exception {
     String operationReturnValue = "NewPayloadValue";
     when(mockInvoker.invoke((MBeanServerConnection) any(), anyString(), anyString(), any(Object[].class), any(String[].class)))
@@ -112,7 +117,8 @@ public class JmxOperationCallServiceTest extends ServiceCase {
     
     assertEquals(operationReturnValue, message.getContent());
   }
-  
+
+  @Test
   public void testNoReturn() throws Exception {
     String operationReturnValue = "NewPayloadValue";
     when(mockInvoker.invoke((MBeanServerConnection) any(), anyString(), anyString(), any(Object[].class), any(String[].class)))
@@ -123,7 +129,8 @@ public class JmxOperationCallServiceTest extends ServiceCase {
     
     assertEquals(originalPayload, message.getContent());
   }
-  
+
+  @Test
   public void testInvokerException() throws Exception {
     when(mockInvoker.invoke((MBeanServerConnection) any(), anyString(), anyString(), any(Object[].class), any(String[].class)))
       .thenThrow(new MBeanException(new Exception(), "Expected"));
@@ -136,7 +143,8 @@ public class JmxOperationCallServiceTest extends ServiceCase {
       //expected
     }
   }
-  
+
+  @Test
   public void testMetadataReturnWithObjectParams() throws Exception {
     String existingObjectMetadataKey = "ExistingObjectMetadataKey";
     String existingObjectMetadataValue = "ExistingObjectMetadataValue";

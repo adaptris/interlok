@@ -20,11 +20,11 @@ import static com.adaptris.core.http.jetty.HttpConsumerTest.JETTY_USER_REALM;
 import static com.adaptris.core.security.access.IdentityBuilderTest.PASSWORD;
 import static com.adaptris.core.security.access.IdentityBuilderTest.ROLE;
 import static com.adaptris.core.security.access.IdentityBuilderTest.USER;
-
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceException;
@@ -36,20 +36,12 @@ import com.adaptris.util.KeyValuePairSet;
 
 public class VerifyIdentityServiceTest extends SecurityServiceExample {
 
-  public VerifyIdentityServiceTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-
-  }
-
+  @Test
   public void testDefaultService() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata(USER, getName() + ThreadLocalRandom.current().nextInt());
@@ -65,6 +57,7 @@ public class VerifyIdentityServiceTest extends SecurityServiceExample {
     }
   }
 
+  @Test
   public void testWithJettyHashRealm() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata(USER, "user");
@@ -78,6 +71,7 @@ public class VerifyIdentityServiceTest extends SecurityServiceExample {
     execute(service, msg);
   }
 
+  @Test
   public void testMetadataVerification() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata(USER, "user");
@@ -95,6 +89,7 @@ public class VerifyIdentityServiceTest extends SecurityServiceExample {
     execute(service, msg);
   }
 
+  @Test
   public void testMetadataVerification_Fails() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata(USER, "user");

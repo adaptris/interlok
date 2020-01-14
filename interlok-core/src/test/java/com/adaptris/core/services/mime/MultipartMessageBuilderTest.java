@@ -15,7 +15,11 @@
  *******************************************************************************/
 package com.adaptris.core.services.mime;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.apache.commons.lang3.BooleanUtils;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreConstants;
@@ -45,6 +49,11 @@ public class MultipartMessageBuilderTest extends MimeServiceExample {
                 new RegexMetadataFilter().withIncludePatterns("Content-Disposition")));
   }
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+  @Test
   public void testService() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello World");
     assertFalse(msg.headersContainsKey(CoreConstants.MSG_MIME_ENCODED));
@@ -60,6 +69,7 @@ public class MultipartMessageBuilderTest extends MimeServiceExample {
         BooleanUtils.toBoolean(msg.getMetadataValue(CoreConstants.MSG_MIME_ENCODED)));
   }
 
+  @Test
   public void testService_WithContentId() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello World");
     msg.addMetadata("customContentId", new GuidGenerator().safeUUID());
@@ -72,6 +82,7 @@ public class MultipartMessageBuilderTest extends MimeServiceExample {
     assertTrue(payload.contains(msg.getMetadataValue("customContentId")));
   }
 
+  @Test
   public void testService_WithSubType() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello World");
     MultipartMessageBuilder service = new MultipartMessageBuilder()
@@ -82,6 +93,7 @@ public class MultipartMessageBuilderTest extends MimeServiceExample {
     assertTrue(payload.contains("multipart/form-data"));
   }
 
+  @Test
   public void testService_WithHeader() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello World");
     msg.addMetadata("X-Interlok-Mime", "yes");
@@ -96,6 +108,7 @@ public class MultipartMessageBuilderTest extends MimeServiceExample {
     assertTrue(payload.contains("X-Interlok-Mime"));
   }
 
+  @Test
   public void testService_Exception() throws Exception {
     AdaptrisMessage msg = new DefectiveMessageFactory(WhenToBreak.OUTPUT).newMessage("Hello World");
     MultipartMessageBuilder service =

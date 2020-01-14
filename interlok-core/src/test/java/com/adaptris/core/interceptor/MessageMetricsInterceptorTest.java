@@ -16,16 +16,17 @@
 
 package com.adaptris.core.interceptor;
 
-import static org.mockito.Matchers.any;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-
 import java.util.concurrent.TimeUnit;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
@@ -35,16 +36,14 @@ import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
-import junit.framework.TestCase;
-
-public class MessageMetricsInterceptorTest extends TestCase {
+public class MessageMetricsInterceptorTest {
 
   private MessageMetricsInterceptor metricsInterceptor;
   
   @Mock private StandaloneProducer mockStandaloneProducer;
   @Mock private AdaptrisMarshaller mockMarshaller;
 
-  @Override
+  @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
     
@@ -53,12 +52,13 @@ public class MessageMetricsInterceptorTest extends TestCase {
     metricsInterceptor.setTimesliceHistoryCount(2);
   }
 
-  @Override
+  @After
   public void tearDown() throws Exception {
     LifecycleHelper.stop(metricsInterceptor);
     LifecycleHelper.close(metricsInterceptor);
   }
 
+  @Test
   public void testInterceptor() throws Exception {
     LifecycleHelper.init(metricsInterceptor);
     LifecycleHelper.start(metricsInterceptor);
@@ -71,6 +71,7 @@ public class MessageMetricsInterceptorTest extends TestCase {
     assertEquals(1, ((MessageStatistic) metricsInterceptor.getStats().get(0)).getTotalMessageCount());
   }
 
+  @Test
   public void testInterceptor_WithException() throws Exception {
     LifecycleHelper.init(metricsInterceptor);
     LifecycleHelper.start(metricsInterceptor);
@@ -83,6 +84,7 @@ public class MessageMetricsInterceptorTest extends TestCase {
     assertEquals(1, ((MessageStatistic) metricsInterceptor.getStats().get(0)).getTotalMessageErrorCount());
   }
 
+  @Test
   public void testCreatesNewTimeSliceAfterTimeDelay() throws Exception {
     LifecycleHelper.init(metricsInterceptor);
     LifecycleHelper.start(metricsInterceptor);
@@ -106,7 +108,8 @@ public class MessageMetricsInterceptorTest extends TestCase {
     assertEquals(1, ((MessageStatistic) metricsInterceptor.getStats().get(0)).getTotalMessageCount());
     assertEquals(2, ((MessageStatistic) metricsInterceptor.getStats().get(1)).getTotalMessageCount());
   }
-  
+
+  @Test
   public void testNoProduceBeforeNewTimeSlice() throws Exception {
     ProducingStatisticManager producingStatisticManager = new ProducingStatisticManager();
     producingStatisticManager.setMarshaller(mockMarshaller);
@@ -130,7 +133,8 @@ public class MessageMetricsInterceptorTest extends TestCase {
     verify(mockMarshaller, times(0)).marshal(any());
     verify(mockStandaloneProducer, times(0)).produce(any());
   }
-  
+
+  @Test
   public void testProduceAfterNewTimeSlice() throws Exception {
     ProducingStatisticManager producingStatisticManager = new ProducingStatisticManager();
     producingStatisticManager.setMarshaller(mockMarshaller);
@@ -155,7 +159,8 @@ public class MessageMetricsInterceptorTest extends TestCase {
     verify(mockMarshaller).marshal(any());
     verify(mockStandaloneProducer).produce(any());
   }
-  
+
+  @Test
   public void testRestartProducerAfterProduceFailure() throws Exception {
     doThrow(new ProduceException("Expected."))
         .when(mockStandaloneProducer).produce(any());
@@ -186,6 +191,7 @@ public class MessageMetricsInterceptorTest extends TestCase {
     verify(mockStandaloneProducer).requestStop();
   }
 
+  @Test
   public void testDoesNotCreateMoreHistoryThanSpecified() throws Exception {
     LifecycleHelper.init(metricsInterceptor);
     LifecycleHelper.start(metricsInterceptor);
@@ -218,7 +224,7 @@ public class MessageMetricsInterceptorTest extends TestCase {
     assertEquals(3, ((MessageStatistic) metricsInterceptor.getStats().get(1)).getTotalMessageCount());
   }
 
-
+  @Test
   public void testMultiThreadedSingleMetricsInterceptorInstance() throws Exception {
     LifecycleHelper.init(metricsInterceptor);
     LifecycleHelper.start(metricsInterceptor);

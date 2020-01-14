@@ -16,11 +16,15 @@
 
 package com.adaptris.core.services.splitter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.stubs.DefectiveMessageFactory;
@@ -35,18 +39,11 @@ public class MetadataDocumentCopierTest extends SplitterCase {
 
   private static Log logR = LogFactory.getLog(MetadataDocumentCopierTest.class);
 
-  public MetadataDocumentCopierTest(java.lang.String testName) {
-    super(testName);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-  }
 
   @Override
   protected String createBaseFileName(Object object) {
@@ -74,6 +71,7 @@ public class MetadataDocumentCopierTest extends SplitterCase {
     return new MetadataDocumentCopier();
   }
 
+  @Test
   public void testConstructors() throws Exception {
     MetadataDocumentCopier splitter = new MetadataDocumentCopier(METADATA_KEY);
     assertEquals(METADATA_KEY, splitter.getMetadataKey());
@@ -81,6 +79,7 @@ public class MetadataDocumentCopierTest extends SplitterCase {
     assertNull(splitter.getMetadataKey());
   }
 
+  @Test
   public void testSetMetadataKey() throws Exception {
     MetadataDocumentCopier splitter = new MetadataDocumentCopier();
     assertNull(splitter.getMetadataKey());
@@ -98,6 +97,7 @@ public class MetadataDocumentCopierTest extends SplitterCase {
     }
   }
 
+  @Test
   public void testSetIndexMetadataKey() throws Exception {
     MetadataDocumentCopier splitter = new MetadataDocumentCopier();
     assertNull(splitter.getIndexMetadataKey());
@@ -109,6 +109,7 @@ public class MetadataDocumentCopierTest extends SplitterCase {
     assertEquals("", splitter.getIndexMetadataKey());
   }
 
+  @Test
   public void testSplit() throws Exception {
     final int expectedSplitCount = 10;
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(LINE);
@@ -127,6 +128,7 @@ public class MetadataDocumentCopierTest extends SplitterCase {
     }
   }
 
+  @Test
   public void testSplit_NoIndex() throws Exception {
     final int expectedSplitCount = 10;
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(LINE);
@@ -145,6 +147,7 @@ public class MetadataDocumentCopierTest extends SplitterCase {
     }
   }
 
+  @Test
   public void testSplit_EmptyMetadata() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(LINE);
     String obj = "ABCDEFG";
@@ -160,6 +163,7 @@ public class MetadataDocumentCopierTest extends SplitterCase {
     }
   }
 
+  @Test
   public void testSplitWithObjectMetadata() throws Exception {
     final int expectedSplitCount = 10;
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(LINE);
@@ -180,6 +184,7 @@ public class MetadataDocumentCopierTest extends SplitterCase {
     }
   }
 
+  @Test
   public void testService() throws Exception {
     final int expectedSplitCount = 3;
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(LINE);
@@ -191,6 +196,7 @@ public class MetadataDocumentCopierTest extends SplitterCase {
     assertEquals(expectedSplitCount, producer.getMessages().size());
   }
 
+  @Test
   public void testSplit_IOException() throws Exception {
     final int expectedSplitCount = 10;
     AdaptrisMessage msg = new DefectiveMessageFactory().newMessage(LINE);

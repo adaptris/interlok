@@ -23,11 +23,6 @@ package com.adaptris.core.fs;
  */
 public class TestInlineItemCache extends ExpiringCacheCase {
 
-
-  public TestInlineItemCache(String name) {
-    super(name);
-  }
-
   @Override
   protected InlineItemCache createCache() {
     return new InlineItemCache();

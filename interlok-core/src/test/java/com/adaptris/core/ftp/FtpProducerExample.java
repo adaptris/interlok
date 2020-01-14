@@ -26,8 +26,7 @@ public abstract class FtpProducerExample extends ProducerCase {
    */
   public static final String BASE_DIR_KEY = "FtpProducerExamples.baseDir";
 
-  public FtpProducerExample(String name) {
-    super(name);
+  public FtpProducerExample() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }

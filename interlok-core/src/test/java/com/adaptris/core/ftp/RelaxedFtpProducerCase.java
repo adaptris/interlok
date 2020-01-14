@@ -20,9 +20,6 @@ import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.StandaloneProducer;
 
 public abstract class RelaxedFtpProducerCase extends FtpProducerExample {
-  public RelaxedFtpProducerCase(String name) {
-    super(name);
-  }
 
   @Override
   protected Object retrieveObjectForSampleConfig() {

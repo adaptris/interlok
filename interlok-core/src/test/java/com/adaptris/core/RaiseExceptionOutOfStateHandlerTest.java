@@ -16,25 +16,31 @@
 
 package com.adaptris.core;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Before;
+import org.junit.Test;
 
-public class RaiseExceptionOutOfStateHandlerTest extends TestCase {
+public class RaiseExceptionOutOfStateHandlerTest {
   
   private DummyComponent component;
-  
+
+  @Before
   public void setUp() throws Exception {
     component = new DummyComponent();
   }
-  
-  public void tearDown() throws Exception {
-  }
 
+
+  @Test
   public void testExpectedStateOnInit() {
     RaiseExceptionOutOfStateHandler outOfStateHandler = new RaiseExceptionOutOfStateHandler();
     
     assertEquals(ConfiguredComponentState.STARTED, outOfStateHandler.getCorrectState());
   }
-  
+
+  @Test
   public void testIsInCorrectStateFromNew() throws OutOfStateException {
     RaiseExceptionOutOfStateHandler outOfStateHandler = new RaiseExceptionOutOfStateHandler();
     
@@ -50,7 +56,8 @@ public class RaiseExceptionOutOfStateHandlerTest extends TestCase {
     component.changeState(StartedState.getInstance());
     assertTrue(outOfStateHandler.isInCorrectState(component));
   }
-  
+
+  @Test
   public void testIsInCorrectStateModified() throws OutOfStateException {
     RaiseExceptionOutOfStateHandler outOfStateHandler = new RaiseExceptionOutOfStateHandler();
     outOfStateHandler.setCorrectState(ConfiguredComponentState.INITIALISED);
@@ -67,7 +74,8 @@ public class RaiseExceptionOutOfStateHandlerTest extends TestCase {
     component.changeState(InitialisedState.getInstance());
     assertTrue(outOfStateHandler.isInCorrectState(component));
   }
-  
+
+  @Test
   public void testHandleInitialised() {
     RaiseExceptionOutOfStateHandler outOfStateHandler = new RaiseExceptionOutOfStateHandler();
     outOfStateHandler.setCorrectState(ConfiguredComponentState.STARTED);
@@ -80,7 +88,8 @@ public class RaiseExceptionOutOfStateHandlerTest extends TestCase {
       //expected
     }
   }
-  
+
+  @Test
   public void testHandleStopped() {
     RaiseExceptionOutOfStateHandler outOfStateHandler = new RaiseExceptionOutOfStateHandler();
     outOfStateHandler.setCorrectState(ConfiguredComponentState.STARTED);
@@ -93,7 +102,8 @@ public class RaiseExceptionOutOfStateHandlerTest extends TestCase {
       //expected
     }
   }
-  
+
+  @Test
   public void testHandleClosed() {
     RaiseExceptionOutOfStateHandler outOfStateHandler = new RaiseExceptionOutOfStateHandler();
     outOfStateHandler.setCorrectState(ConfiguredComponentState.STARTED);
@@ -106,7 +116,8 @@ public class RaiseExceptionOutOfStateHandlerTest extends TestCase {
       //expected
     }
   }
-  
+
+  @Test
   public void testHandleStarted() throws Exception {
     RaiseExceptionOutOfStateHandler outOfStateHandler = new RaiseExceptionOutOfStateHandler();
     outOfStateHandler.setCorrectState(ConfiguredComponentState.STARTED);

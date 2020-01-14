@@ -15,10 +15,16 @@
 */
 
 package com.adaptris.core.lifecycle;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.ClosedState;
@@ -28,15 +34,12 @@ import com.adaptris.core.StartedState;
 import com.adaptris.core.stubs.MockConnection;
 
 public class FilteredSharedComponentStartTest extends BaseCase {
-
-  public FilteredSharedComponentStartTest(java.lang.String testName) {
-    super(testName);
-  }
-
   @Override
-  public void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testConstructors() throws Exception {
     FilteredSharedComponentStart starter = new FilteredSharedComponentStart();
     assertFalse(starter.threadedStart());
@@ -56,6 +59,7 @@ public class FilteredSharedComponentStartTest extends BaseCase {
 
   }
 
+  @Test
   public void testSetThreaded() throws Exception {
     FilteredSharedComponentStart starter = new FilteredSharedComponentStart();
     assertFalse(starter.threadedStart());
@@ -71,6 +75,7 @@ public class FilteredSharedComponentStartTest extends BaseCase {
 
   }
 
+  @Test
   public void testSetIncludes() throws Exception {
     FilteredSharedComponentStart starter = new FilteredSharedComponentStart();
     assertNotNull(starter.getIncludes());
@@ -97,6 +102,7 @@ public class FilteredSharedComponentStartTest extends BaseCase {
     assertEquals("xyz", starter.getIncludes().get(1));
   }
 
+  @Test
   public void testSetExcludes() throws Exception {
     FilteredSharedComponentStart starter = new FilteredSharedComponentStart();
     assertNotNull(starter.getExcludes());
@@ -123,6 +129,7 @@ public class FilteredSharedComponentStartTest extends BaseCase {
     assertEquals("xyz", starter.getExcludes().get(1));
   }
 
+  @Test
   public void testFilteredStart_Includes() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
@@ -163,6 +170,7 @@ public class FilteredSharedComponentStartTest extends BaseCase {
     }
   }
 
+  @Test
   public void testFilteredStart_Excludes() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
@@ -203,6 +211,7 @@ public class FilteredSharedComponentStartTest extends BaseCase {
     }
   }
 
+  @Test
   public void testNonBlockingStart() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
@@ -243,6 +252,7 @@ public class FilteredSharedComponentStartTest extends BaseCase {
     }
   }
 
+  @Test
   public void testNonBlockingStart_NoSharedConnection() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
@@ -256,6 +266,7 @@ public class FilteredSharedComponentStartTest extends BaseCase {
     }
   }
 
+  @Test
   public void testNonBlockingStart_WithException() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
@@ -335,6 +346,7 @@ public class FilteredSharedComponentStartTest extends BaseCase {
       super(uniqueId, sleepTime);
     }
 
+    @Override
     protected void sleepItOff() {
       super.sleepItOff();
       throw new RuntimeException();

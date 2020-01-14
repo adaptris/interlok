@@ -16,6 +16,11 @@
 
 package com.adaptris.core.services.conditional;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.MetadataElement;
@@ -28,12 +33,17 @@ import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.core.services.metadata.AddMetadataService;
 
 public class SwitchTest extends ConditionalServiceExample {
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
 
   @Override
   protected Switch retrieveObjectForSampleConfig() {
     return createForTests();
   }
 
+  @Test
   public void testService() throws Exception {
     Switch service = createForTests();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -43,6 +53,7 @@ public class SwitchTest extends ConditionalServiceExample {
     assertEquals("=2", msg.getMetadataValue("case"));
   }
 
+  @Test
   public void testService_NoMatch() throws Exception {
     Switch service = createForTests();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -51,6 +62,7 @@ public class SwitchTest extends ConditionalServiceExample {
     assertFalse(msg.headersContainsKey("case"));
   }
 
+  @Test
   public void testService_Failure() throws Exception {
     Switch service = createForTests();
     service.getCases().add(new Case().withCondition(new CaseDefault())

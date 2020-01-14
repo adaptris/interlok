@@ -18,7 +18,6 @@ package com.adaptris.core.interceptor;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.core.Channel;
 import com.adaptris.core.ExampleWorkflowCase;
 import com.adaptris.core.StandardWorkflow;
@@ -32,14 +31,12 @@ public class SlowMessageNotificationWorkflowTest extends ExampleWorkflowCase {
           + "'com.adaptris:type=Notifications,adapter=XXX,channel=YYY,workflow=ZZZ,id=SlowMessages_For_MyWorkflowName'\n"
           + "Check the Advanced Topics manual for more information" + "\n-->\n";
 
-  public SlowMessageNotificationWorkflowTest(java.lang.String testName) {
-    super(testName);
-  }
 
   @Override
-  protected void setUp() {
-
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
+
 
   @Override
   protected Object retrieveObjectForSampleConfig() {

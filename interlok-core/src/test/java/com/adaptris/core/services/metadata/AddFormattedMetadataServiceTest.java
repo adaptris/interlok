@@ -16,6 +16,10 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.MetadataElement;
@@ -29,10 +33,12 @@ public class AddFormattedMetadataServiceTest extends MetadataServiceExample {
   private MetadataElement m1;
   private MetadataElement m2;
 
-  public AddFormattedMetadataServiceTest(String name) {
-    super(name);
-  }
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+  @Test
   public void testService() throws Exception {
     AddFormattedMetadataService service = retrieveObjectForSampleConfig();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -43,6 +49,7 @@ public class AddFormattedMetadataServiceTest extends MetadataServiceExample {
     assertEquals("SELECT Hello FROM SOME TABLE WHERE ID = World", msg.getMetadataValue("destinationMetadataKey"));
   }
 
+  @Test
   public void testService_MissingMetadata() throws Exception {
     AddFormattedMetadataService service = retrieveObjectForSampleConfig();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -62,11 +69,8 @@ public class AddFormattedMetadataServiceTest extends MetadataServiceExample {
         .withMetadataKey("destinationMetadataKey").withFormatString("SELECT %s FROM SOME TABLE WHERE ID = %s");
   }
 
-  /**
-   * Test the default behaviour of the ElementKeyAndValueFormatter.
-   * 
-   * @throws Exception If there is a problem during the test.
-   */
+
+  @Test
   public void testElementFormatter() throws Exception {
     AddFormattedMetadataService service = retrieveObjectForSampleConfig();
     service.setFormatString("%s ; %s");

@@ -16,10 +16,11 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
-
+import org.junit.Test;
 import com.adaptris.core.util.LifecycleHelper;
 
 public abstract class ConsumerCase extends ExampleConfigCase {
@@ -30,14 +31,13 @@ public abstract class ConsumerCase extends ExampleConfigCase {
    */
   public static final String BASE_DIR_KEY = "ConsumerCase.baseDir";
 
-  public ConsumerCase(String name) {
-    super(name);
-
+  public ConsumerCase() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
   }
 
+  @Test
   public void testMessageEventGeneratorCreateName() throws Exception {
     Object input = retrieveObjectForCastorRoundTrip();
     if (input != null) {

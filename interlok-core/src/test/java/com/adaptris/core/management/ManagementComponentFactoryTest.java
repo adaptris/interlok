@@ -16,11 +16,11 @@
 
 package com.adaptris.core.management;
 
+import static org.junit.Assert.assertEquals;
 import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.junit.Test;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.PortManager;
 import com.adaptris.core.management.jetty.WebServerProperties.WebServerPropertiesEnum;
@@ -29,10 +29,12 @@ public class ManagementComponentFactoryTest extends BaseCase {
 
   protected transient Log logR = LogFactory.getLog(this.getClass());
 
-  public ManagementComponentFactoryTest(final String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testCreateJsr160Component() throws Exception {
     final BootstrapProperties p = new BootstrapProperties();
     final int port = PortManager.nextUnusedPort(5555);
@@ -48,6 +50,7 @@ public class ManagementComponentFactoryTest extends BaseCase {
     }
   }
 
+  @Test
   public void testCreateJettyComponent() throws Exception {
     final BootstrapProperties p = new BootstrapProperties();
     final int port = PortManager.nextUnusedPort(5555);
@@ -63,6 +66,7 @@ public class ManagementComponentFactoryTest extends BaseCase {
     }
   }
 
+  @Test
   public void testCreateMultipleComponents() throws Exception {
     final BootstrapProperties p = new BootstrapProperties();
     final int port = PortManager.nextUnusedPort(8080);

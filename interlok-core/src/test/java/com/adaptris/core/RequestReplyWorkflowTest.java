@@ -16,15 +16,18 @@
 
 package com.adaptris.core;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.JmsReplyToDestination;
 import com.adaptris.core.jms.PtpConsumer;
@@ -39,7 +42,6 @@ import com.adaptris.core.stubs.MockRequestReplyProducer;
 import com.adaptris.core.stubs.MockSkipProducerService;
 import com.adaptris.core.stubs.MockWorkflowInterceptor;
 import com.adaptris.util.TimeInterval;
-
 public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
 
   public static final String REQUEST_METADATA_VALUE = "RequestMetadataValue";
@@ -50,17 +52,12 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
   // private MockRequestReplyProducer producer;
   // private MockMessageProducer replyProducer;
 
-  public RequestReplyWorkflowTest(java.lang.String testName) {
-    super(testName);
-  }
 
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-  }
 
   private Channel createChannel() throws Exception {
     Channel channel = new MockChannel();
@@ -76,6 +73,7 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
     return channel;
   }
 
+  @Test
   public void testReplyProducer() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     RequestReplyWorkflow workflow = new RequestReplyWorkflow();
@@ -84,7 +82,7 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
     assertEquals(producer, workflow.getReplyProducer());
   }
 
-
+  @Test
   public void testReplyServiceCollection() throws Exception {
     ServiceList replyServices = new ServiceList();
     RequestReplyWorkflow workflow = new RequestReplyWorkflow();
@@ -93,6 +91,7 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
     assertEquals(replyServices, workflow.getReplyServiceCollection());
   }
 
+  @Test
   public void testSetReplyTimeout() throws Exception {
     TimeInterval defaultInterval = new TimeInterval(30L, TimeUnit.SECONDS);
     TimeInterval interval = new TimeInterval(60L, TimeUnit.SECONDS);
@@ -111,6 +110,7 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
 
   }
 
+  @Test
   public void testWorkflow() throws Exception {
     Channel channel = createChannel();
     RequestReplyWorkflow workflow = (RequestReplyWorkflow) channel.getWorkflowList().get(0);
@@ -129,6 +129,7 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testWorkflow_ReplyProducerFailure() throws Exception {
     Channel channel = new MockChannel();
     RequestReplyWorkflow workflow = new RequestReplyWorkflow();
@@ -167,6 +168,7 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testWorkflow_NullReply() throws Exception {
     Channel channel = new MockChannel();
     RequestReplyWorkflow workflow = new RequestReplyWorkflow();
@@ -202,6 +204,7 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testWorkflow_SkipProducer_HasNoEffect() throws Exception {
     Channel channel = createChannel();
     RequestReplyWorkflow workflow = (RequestReplyWorkflow) channel.getWorkflowList().get(0);
@@ -220,6 +223,7 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testWorkflow_HasInterceptor() throws Exception {
     Channel channel = createChannel();
     RequestReplyWorkflow workflow = (RequestReplyWorkflow) channel.getWorkflowList().get(0);
@@ -243,6 +247,7 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testWorkflow_HasObjectMetadata() throws Exception {
 
     Channel channel = createChannel();
@@ -266,6 +271,7 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testWorkflow_IgnoreReplyMetadata() throws Exception {
 
     Channel channel = createChannel();
@@ -286,6 +292,7 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testWorkflow_UseReplyMetadata() throws Exception {
 
     Channel channel = createChannel();

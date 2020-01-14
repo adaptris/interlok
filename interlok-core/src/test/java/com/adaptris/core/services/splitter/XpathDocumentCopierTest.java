@@ -16,11 +16,16 @@
 
 package com.adaptris.core.services.splitter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -36,19 +41,17 @@ public class XpathDocumentCopierTest extends SplitterCase {
   private MockMessageProducer producer;
   private BasicMessageSplitterService service;
 
-  public XpathDocumentCopierTest(java.lang.String testName) {
-    super(testName);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void setUp() throws Exception {
+
+  @Before
+  public void setUp() throws Exception {
     producer = new MockMessageProducer();
     service = createBasic(new XpathDocumentCopier(XPATH_DOCUMENT_COUNT));
     service.setProducer(producer);
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
   }
 
   @Override
@@ -77,6 +80,7 @@ public class XpathDocumentCopierTest extends SplitterCase {
     return new XpathDocumentCopier();
   }
 
+  @Test
   public void testConstructors() throws Exception {
     XpathDocumentCopier splitter = new XpathDocumentCopier(XPATH_DOCUMENT_COUNT);
     assertEquals(XPATH_DOCUMENT_COUNT, splitter.getXpath());
@@ -84,6 +88,7 @@ public class XpathDocumentCopierTest extends SplitterCase {
     assertNull(splitter.getXpath());
   }
 
+  @Test
   public void testSetters() throws Exception {
     XpathDocumentCopier splitter = new XpathDocumentCopier();
     assertNull(splitter.getXpath());
@@ -95,6 +100,7 @@ public class XpathDocumentCopierTest extends SplitterCase {
     assertEquals("", splitter.getXpath());
   }
 
+  @Test
   public void testSplit() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
     String obj = "ABCDEFG";
@@ -107,6 +113,7 @@ public class XpathDocumentCopierTest extends SplitterCase {
     }
   }
 
+  @Test
   public void testSplit_EmptyXPath() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
     String obj = "ABCDEFG";
@@ -116,6 +123,7 @@ public class XpathDocumentCopierTest extends SplitterCase {
     assertEquals(0, result.size());
   }
 
+  @Test
   public void testSplitWithObjectMetadata() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
     String obj = "ABCDEFG";
@@ -130,6 +138,7 @@ public class XpathDocumentCopierTest extends SplitterCase {
     }
   }
 
+  @Test
   public void testSplitThrowsException() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
     msg.setContent(XML_MESSAGE, msg.getContentEncoding());
@@ -143,6 +152,7 @@ public class XpathDocumentCopierTest extends SplitterCase {
     }
   }
 
+  @Test
   public void testSplit_DocTypeNotAllowed() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.setContent(XML_WITH_DOCTYPE, msg.getContentEncoding());
@@ -158,6 +168,7 @@ public class XpathDocumentCopierTest extends SplitterCase {
     }
   }
 
+  @Test
   public void testService() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
     msg.addMetadata("key", "value");

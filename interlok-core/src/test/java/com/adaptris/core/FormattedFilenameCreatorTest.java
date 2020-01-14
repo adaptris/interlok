@@ -16,14 +16,14 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import java.util.Date;
+import org.junit.Test;
 
-public class FormattedFilenameCreatorTest extends BaseCase {
+public class FormattedFilenameCreatorTest {
 
-  public FormattedFilenameCreatorTest(java.lang.String testName) {
-    super(testName);
-  }
-
+  @Test
   public void testSetFormat() {
     FormattedFilenameCreator creator = new FormattedFilenameCreator();
     try {
@@ -46,6 +46,7 @@ public class FormattedFilenameCreatorTest extends BaseCase {
     assertEquals("message", creator.getFilenameFormat());
   }
 
+  @Test
   public void testPlain() throws Exception {
     FormattedFilenameCreator creator = new FormattedFilenameCreator();
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("");
@@ -54,6 +55,7 @@ public class FormattedFilenameCreatorTest extends BaseCase {
     assertEquals(fileName, expectedName);
   }
 
+  @Test
   public void testWithTimestamp() throws Exception {
     FormattedFilenameCreator creator = new FormattedFilenameCreator();
     creator.setFilenameFormat("%1$s-%2$tF");
@@ -63,6 +65,7 @@ public class FormattedFilenameCreatorTest extends BaseCase {
     assertEquals(expectedName, fname);
   }
 
+  @Test
   public void testWithConstants() throws Exception {
     FormattedFilenameCreator creator = new FormattedFilenameCreator();
     creator.setFilenameFormat("message-%1$s-%2$tF");
@@ -72,6 +75,7 @@ public class FormattedFilenameCreatorTest extends BaseCase {
     assertEquals(expectedName, fname);
   }
 
+  @Test
   public void testWithoutUniqueid() throws Exception {
     FormattedFilenameCreator creator = new FormattedFilenameCreator();
     creator.setFilenameFormat("message-%2$tF");
@@ -81,6 +85,7 @@ public class FormattedFilenameCreatorTest extends BaseCase {
     assertEquals(expectedName, fname);
   }
 
+  @Test
   public void testReversedOrder() throws Exception {
     FormattedFilenameCreator creator = new FormattedFilenameCreator();
     creator.setFilenameFormat("%2$tF-%1$s");
@@ -90,12 +95,13 @@ public class FormattedFilenameCreatorTest extends BaseCase {
     assertEquals(expectedName, fname);
   }
 
+  @Test
   public void testXmlRoundTrip() throws Exception {
     FormattedFilenameCreator input = new FormattedFilenameCreator();
     AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
     String xml = m.marshal(input);
     FormattedFilenameCreator output = (FormattedFilenameCreator) m.unmarshal(xml);
-    assertRoundtripEquality(input, output);
+    BaseCase.assertRoundtripEquality(input, output);
   }
 
 }

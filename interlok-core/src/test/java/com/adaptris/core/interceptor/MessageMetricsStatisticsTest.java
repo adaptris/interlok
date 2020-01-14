@@ -17,12 +17,13 @@
 package com.adaptris.core.interceptor;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import java.util.List;
-
 import javax.management.JMX;
 import javax.management.ObjectName;
-
+import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.SerializableAdaptrisMessage;
 import com.adaptris.core.runtime.BaseComponentMBean;
@@ -31,10 +32,13 @@ import com.adaptris.interlok.management.MessageProcessor;
 
 public class MessageMetricsStatisticsTest extends StatisticsMBeanCase {
 
-  public MessageMetricsStatisticsTest(String name) {
-    super(name);
+
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testNoCachesExists() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -53,7 +57,7 @@ public class MessageMetricsStatisticsTest extends StatisticsMBeanCase {
     }
   }
 
-
+  @Test
   public void testGetMessageStatistics() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     String payload = "SomePayload";
@@ -87,7 +91,7 @@ public class MessageMetricsStatisticsTest extends StatisticsMBeanCase {
     }
   }
 
-
+  @Test
   public void testGetTotalStringStats() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -111,6 +115,7 @@ public class MessageMetricsStatisticsTest extends StatisticsMBeanCase {
   }
 
 
+  @Override
   protected SerializableAdaptrisMessage createMessageForInjection(String payload) {
     if (!isEmpty(payload)) {
       return new SerializableAdaptrisMessage(GUID.getUUID(), payload);

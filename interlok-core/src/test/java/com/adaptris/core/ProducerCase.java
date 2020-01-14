@@ -16,7 +16,9 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
 import java.util.List;
+import org.junit.Test;
 
 public abstract class ProducerCase extends ExampleConfigCase {
 
@@ -33,11 +35,6 @@ public abstract class ProducerCase extends ExampleConfigCase {
     }
   }
 
-  public ProducerCase(String name) {
-    this();
-    setName(name);
-  }
-
   @Override
   protected String createExampleXml(Object object) throws Exception {
     String result = getExampleCommentHeader(object);
@@ -50,6 +47,7 @@ public abstract class ProducerCase extends ExampleConfigCase {
     return result;
   }
 
+  @Test
   public void testMessageEventGeneratorCreateName() throws Exception {
     Object input = retrieveObjectForCastorRoundTrip();
     if (input != null) {

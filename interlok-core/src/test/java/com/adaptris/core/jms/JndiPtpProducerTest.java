@@ -17,7 +17,6 @@
 package com.adaptris.core.jms;
 
 import javax.naming.Context;
-
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
@@ -35,13 +34,9 @@ public class JndiPtpProducerTest extends JmsProducerCase {
 
   static final String DEFAULT_FILE_SUFFIX = "-JNDI";
 
-  public JndiPtpProducerTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   static JmsConnection createJndiVendorImpExample(JmsConnection c) {

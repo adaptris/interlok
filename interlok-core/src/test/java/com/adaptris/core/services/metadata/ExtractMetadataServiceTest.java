@@ -16,14 +16,21 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.junit.Test;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceException;
 
 public class ExtractMetadataServiceTest extends MetadataServiceExample {
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
 
   @Test
   public void testDoService() throws Exception {

@@ -23,10 +23,10 @@ import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_WORK_DIR_NAME;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.DESTINATION_URL;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.PAYLOAD;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.SLASH;
-
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 import org.mockftpserver.fake.FakeFtpServer;
 import org.mockftpserver.fake.filesystem.FileSystem;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ConfiguredProduceDestination;
@@ -36,20 +36,19 @@ import com.adaptris.core.MimeEncoder;
 import com.adaptris.core.ServiceCase;
 import com.adaptris.core.StandaloneProducer;
 
-
 public class RelaxedFtpProducerTest extends RelaxedFtpProducerCase {
 
   private static final String BASE_DIR_KEY = "FtpProducerExamples.baseDir";
 
-  public RelaxedFtpProducerTest(String name) {
-    super(name);
+  public RelaxedFtpProducerTest() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
   }
 
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
@@ -62,6 +61,7 @@ public class RelaxedFtpProducerTest extends RelaxedFtpProducerCase {
     return "ftp";
   }
 
+  @Test
   public void testSetFilenameCreator() throws Exception {
     RelaxedFtpProducer ftpProducer = new RelaxedFtpProducer();
     assertEquals(FormattedFilenameCreator.class, ftpProducer.filenameCreator().getClass());
@@ -70,6 +70,7 @@ public class RelaxedFtpProducerTest extends RelaxedFtpProducerCase {
     assertEquals(MetadataFileNameCreator.class, ftpProducer.filenameCreator().getClass());
   }
 
+  @Test
   public void testProduce() throws Exception {
     EmbeddedFtpServer helper = new EmbeddedFtpServer();
     FileSystem filesystem = helper.createFilesystem_DirsOnly();
@@ -88,6 +89,7 @@ public class RelaxedFtpProducerTest extends RelaxedFtpProducerCase {
     }
   }
 
+  @Test
   public void testProduce_NoDebug() throws Exception {
     EmbeddedFtpServer helper = new EmbeddedFtpServer();
     FileSystem filesystem = helper.createFilesystem_DirsOnly();
@@ -107,6 +109,7 @@ public class RelaxedFtpProducerTest extends RelaxedFtpProducerCase {
     }
   }
 
+  @Test
   public void testProduce_WithEncoder() throws Exception {
     EmbeddedFtpServer helper = new EmbeddedFtpServer();
     FileSystem filesystem = helper.createFilesystem_DirsOnly();

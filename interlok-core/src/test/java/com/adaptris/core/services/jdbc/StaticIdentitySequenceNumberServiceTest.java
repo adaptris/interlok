@@ -16,9 +16,12 @@
 
 package com.adaptris.core.services.jdbc;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ComponentLifecycle;
@@ -43,17 +46,23 @@ public class StaticIdentitySequenceNumberServiceTest extends SequenceNumberCase 
   private static final String NULL_INSERT_STATEMENT = "INSERT INTO SEQUENCES (ID, SEQ_NUMBER) VALUES ('abc', 2)";
   private static final String NULL_SELECT_STATEMENT = "SELECT SEQ_NUMBER from SEQUENCES where ID='abc'";
 
-  public StaticIdentitySequenceNumberServiceTest(String name) {
-    super(name);
+  public StaticIdentitySequenceNumberServiceTest() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
   }
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
+  @Override
   protected StaticIdentitySequenceNumberService createService() {
     return new StaticIdentitySequenceNumberService();
   }
 
+  @Override
   protected StaticIdentitySequenceNumberService createServiceForTests() {
     return createServiceForTests(true);
   }
@@ -70,6 +79,7 @@ public class StaticIdentitySequenceNumberServiceTest extends SequenceNumberCase 
     return service;
   }
 
+  @Test
   public void testService_NullIdentity_Overflows() throws Exception {
 
     try {
@@ -97,6 +107,7 @@ public class StaticIdentitySequenceNumberServiceTest extends SequenceNumberCase 
     }
   }
 
+  @Test
   public void testService_NullIdentity_Insert() throws Exception {
     try {
       createDatabase();
@@ -118,6 +129,7 @@ public class StaticIdentitySequenceNumberServiceTest extends SequenceNumberCase 
     }
   }
 
+  @Test
   public void testService_NullIdentity_SelectUpdate() throws Exception {
     try {
       StaticIdentitySequenceNumberService service = createServiceForTests();
@@ -141,6 +153,7 @@ public class StaticIdentitySequenceNumberServiceTest extends SequenceNumberCase 
     }
   }
 
+  @Test
   public void testService_NullIdentity_DefaultStatements() throws Exception {
     try {
       createDatabase();
@@ -158,6 +171,7 @@ public class StaticIdentitySequenceNumberServiceTest extends SequenceNumberCase 
     }
   }
 
+  @Test
   public void testService_PooledConnection() throws Exception {
     int maxServices = 5;
     final int iterations = 5;
@@ -194,7 +208,8 @@ public class StaticIdentitySequenceNumberServiceTest extends SequenceNumberCase 
       Thread.currentThread().setName(name);
     }
   }
-  
+
+  @Test
   public void testService_AdvancedPooledConnection() throws Exception {
     int maxServices = 5;
     final int iterations = 5;
@@ -252,7 +267,7 @@ public class StaticIdentitySequenceNumberServiceTest extends SequenceNumberCase 
     return createServiceForTests(true);
   }
 
-  @Override
+  @Test
   public void testBackReferences() throws Exception {
     this.testBackReferences(createServiceForTests());
   }

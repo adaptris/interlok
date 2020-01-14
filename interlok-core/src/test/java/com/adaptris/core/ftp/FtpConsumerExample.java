@@ -28,8 +28,7 @@ public abstract class FtpConsumerExample extends ConsumerCase {
    */
   public static final String BASE_DIR_KEY = "FtpConsumerExamples.baseDir";
 
-  public FtpConsumerExample(String name) {
-    super(name);
+  public FtpConsumerExample() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }

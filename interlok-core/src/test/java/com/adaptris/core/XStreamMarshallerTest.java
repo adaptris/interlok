@@ -15,11 +15,16 @@
 */
 
 package com.adaptris.core;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -39,10 +44,6 @@ public class XStreamMarshallerTest extends MarshallingBaseCase {
 
   private static final String XSTREAM_STANDARD_XML = "xstream-standard.xml";
 
-  public XStreamMarshallerTest(java.lang.String testName) {
-    super(testName);
-  }
-
   @Override
   protected XStreamMarshaller createMarshaller() throws Exception {
     return new XStreamMarshaller();
@@ -53,6 +54,7 @@ public class XStreamMarshallerTest extends MarshallingBaseCase {
     return "xstream-standalone.xml";
   }
 
+  @Test
   public void testXStreamImplicit() throws Exception {
     XStreamMarshaller xm = createMarshaller();
     XStreamImplicitWrapper wrapper = new XStreamImplicitWrapper();
@@ -74,6 +76,7 @@ public class XStreamMarshallerTest extends MarshallingBaseCase {
     assertRoundtripEquality(wrapper, roundTrip);
   }
 
+  @Test
   public void testXStreamCdata() throws Exception {
     XStreamMarshaller xm = createMarshaller();
     XStreamCDataWrapper wrapper = new XStreamCDataWrapper();

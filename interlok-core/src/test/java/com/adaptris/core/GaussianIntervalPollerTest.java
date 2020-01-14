@@ -1,23 +1,27 @@
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.util.TimeInterval;
 
 public class GaussianIntervalPollerTest extends BaseCase {
-
-
-  public GaussianIntervalPollerTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testSetConstructors() throws Exception {
     GaussianIntervalPoller p = new GaussianIntervalPoller();
     p = new GaussianIntervalPoller(new TimeInterval(0L, TimeUnit.SECONDS), new TimeInterval(10L, TimeUnit.SECONDS));
   }
 
+  @Test
   public void testInit_standardDeviation() throws Exception{
     GaussianIntervalPoller p = new GaussianIntervalPoller(new TimeInterval(0L, TimeUnit.SECONDS), new TimeInterval(0L, TimeUnit.SECONDS));
     try {
@@ -38,6 +42,8 @@ public class GaussianIntervalPollerTest extends BaseCase {
     p.setStandardDeviationInterval(new TimeInterval(10L, TimeUnit.SECONDS));
     p.init();
   }
+
+  @Test
   public void testInit_mean() throws Exception{
     GaussianIntervalPoller p = new GaussianIntervalPoller(new TimeInterval(-2L, TimeUnit.SECONDS), new TimeInterval(10L, TimeUnit.SECONDS));
     try {
@@ -53,6 +59,7 @@ public class GaussianIntervalPollerTest extends BaseCase {
     p.init();
   }
 
+  @Test
   public void testSetMeanInterval() throws Exception {
     TimeInterval defaultMeanInterval = new TimeInterval(0L, TimeUnit.SECONDS);
     TimeInterval meanInterval = new TimeInterval(60L, TimeUnit.SECONDS);
@@ -72,6 +79,7 @@ public class GaussianIntervalPollerTest extends BaseCase {
 
   }
 
+  @Test
   public void testSetStandardDeviationInterval() throws Exception {
     TimeInterval defaultStandardDeviationInterval = new TimeInterval(20L, TimeUnit.SECONDS);
     TimeInterval standardDeviationInterval = new TimeInterval(60L, TimeUnit.SECONDS);
@@ -91,6 +99,7 @@ public class GaussianIntervalPollerTest extends BaseCase {
 
   }
 
+  @Test
   public void testLifecycle() throws Exception {
     PollingTrigger consumer = new PollingTrigger();
     consumer.setPoller(new GaussianIntervalPoller(new TimeInterval(0L, TimeUnit.SECONDS), new TimeInterval(100L, TimeUnit.MILLISECONDS)));

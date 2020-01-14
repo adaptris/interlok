@@ -19,19 +19,13 @@ package com.adaptris.core.services.metadata;
 import static com.adaptris.core.services.metadata.UrlDecodeMetadataServiceTest.DECODED;
 import static com.adaptris.core.services.metadata.UrlDecodeMetadataServiceTest.ENCODED;
 import static com.adaptris.core.services.metadata.UrlDecodeMetadataServiceTest.SOURCE_METADATA_KEY;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 
 public class UrlEncodeMetadataServiceTest extends MetadataServiceExample {
-
-  public UrlEncodeMetadataServiceTest(java.lang.String testName) {
-    super(testName);
-  }
-
-  @Override
-  protected void setUp() throws Exception {
-  }
 
   private static AdaptrisMessage createMessage() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -39,6 +33,12 @@ public class UrlEncodeMetadataServiceTest extends MetadataServiceExample {
     return msg;
   }
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
+  @Test
   public void testService() throws Exception {
     UrlEncodeMetadataService service = new UrlEncodeMetadataService(SOURCE_METADATA_KEY);
     AdaptrisMessage msg = createMessage();

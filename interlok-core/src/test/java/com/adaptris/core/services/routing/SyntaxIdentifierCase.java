@@ -16,25 +16,26 @@
 
 package com.adaptris.core.services.routing;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
-
+import org.junit.Test;
 import com.adaptris.core.BaseCase;
 import com.adaptris.util.stream.StreamUtil;
 
 public abstract class SyntaxIdentifierCase extends BaseCase {
 
-  public SyntaxIdentifierCase(java.lang.String testName) {
-    super(testName);
-  }
 
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   public abstract SyntaxIdentifier createIdentifier();
 
+  @Test
   public void testSetPatterns() throws Exception {
     SyntaxIdentifier si = createIdentifier();
     si.addPattern("ABC");
@@ -59,6 +60,7 @@ public abstract class SyntaxIdentifierCase extends BaseCase {
     assertEquals("ABC", si.getPatterns().get(0));
   }
 
+  @Test
   public void testSetDestination() throws Exception {
     SyntaxIdentifier si = createIdentifier();
     si.setDestination("ABC");

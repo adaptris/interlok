@@ -15,26 +15,17 @@
 */
 
 package com.adaptris.core.services.jdbc;
-
-import org.junit.After;
-import org.junit.Before;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import org.junit.Test;
-
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.services.jdbc.StatementParameterImpl.QueryType;
 
 public class StringParameterTest extends BaseCase {
 
-  public StringParameterTest(String n) {
-    super(n);
-  }
-
-  @Before
-  public void setUp() throws Exception {
-  }
-
-  @After
-  public void tearDown() throws Exception {
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Test

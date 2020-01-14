@@ -16,8 +16,12 @@
 
 package com.adaptris.core.services;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
 import com.adaptris.core.ServiceException;
@@ -26,8 +30,9 @@ import com.adaptris.util.TimeInterval;
 
 public class WaitServiceTest extends GeneralServiceExample {
 
-  public WaitServiceTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
@@ -35,6 +40,7 @@ public class WaitServiceTest extends GeneralServiceExample {
     return new WaitService();
   }
 
+  @Test
   public void testSetWaitInterval() {
     WaitService srv = new WaitService();
     assertNull(srv.getWaitInterval());
@@ -50,7 +56,7 @@ public class WaitServiceTest extends GeneralServiceExample {
     assertEquals(20000, srv.waitMs());
   }
 
-
+  @Test
   public void testDoService() throws Exception {
     long now = System.currentTimeMillis();
     WaitService srv = new WaitService(new TimeInterval(10L, TimeUnit.MILLISECONDS));
@@ -58,6 +64,7 @@ public class WaitServiceTest extends GeneralServiceExample {
     assertTrue(now < System.currentTimeMillis());
   }
 
+  @Test
   public void testDoServiceRandomize() throws Exception {
     long now = System.nanoTime();
     WaitService srv = new WaitService(new TimeInterval(10L, TimeUnit.MILLISECONDS), true);
@@ -65,6 +72,7 @@ public class WaitServiceTest extends GeneralServiceExample {
     assertTrue(now < System.nanoTime());
   }
 
+  @Test
   public void testDoServiceWithInterruption_NoException() throws Exception {
     final WaitService srv =  LifecycleHelper.initAndStart(new WaitService(new TimeInterval(10L, TimeUnit.SECONDS)));
     Thread t = new Thread(new Runnable() {
@@ -82,6 +90,7 @@ public class WaitServiceTest extends GeneralServiceExample {
     t.interrupt();
   }
 
+  @Test
   public void testDoServiceWithInterruption_Exception() throws Exception {
     final WaitService srv = LifecycleHelper.initAndStart(new WaitService(new TimeInterval(10L, TimeUnit.SECONDS)));
     Thread t = new Thread(new Runnable() {

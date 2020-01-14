@@ -16,9 +16,10 @@
 
 package com.adaptris.core.services.aggregator;
 
+import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
 import java.util.List;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -27,11 +28,12 @@ import com.adaptris.core.services.conditional.conditions.ConditionImpl;
 import com.adaptris.core.services.splitter.SplitByMetadata;
 
 public class ReplaceFirstAggregatorTest extends AggregatorCase {
-
-  public ReplaceFirstAggregatorTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testJoinMessage() throws Exception {
     ReplaceWithFirstMessage aggr = createAggregatorForTests();
     aggr.setOverwriteMetadata(true);
@@ -49,6 +51,7 @@ public class ReplaceFirstAggregatorTest extends AggregatorCase {
     assertEquals("originalValue", original.getMetadataValue("originalKey"));
   }
 
+  @Test
   public void testJoinMessageWithFilter() throws Exception {
     ReplaceWithFirstMessage aggr = createAggregatorForTests();
     aggr.setOverwriteMetadata(true);
@@ -99,6 +102,7 @@ public class ReplaceFirstAggregatorTest extends AggregatorCase {
       return message.getContent().length() > 10;
     }
 
+    @Override
     public void close() {
       throw new RuntimeException();
     }

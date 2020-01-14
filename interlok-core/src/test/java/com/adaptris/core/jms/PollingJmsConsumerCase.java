@@ -15,19 +15,17 @@
 */
 
 package com.adaptris.core.jms;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.util.TimeInterval;
 
 public abstract class PollingJmsConsumerCase extends JmsConsumerCase {
 
-  public PollingJmsConsumerCase(String name) {
-    super(name);
-  }
-
   protected abstract JmsPollingConsumerImpl createConsumer();
 
+  @Test
   public void testSetReceiveWait() throws Exception {
     JmsPollingConsumerImpl consumer = createConsumer();
     assertNull(consumer.getReceiveTimeout());

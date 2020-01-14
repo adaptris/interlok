@@ -32,10 +32,4 @@ public abstract class SecurityServiceExample extends ServiceCase {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
   }
-
-  public SecurityServiceExample(String name) {
-    this();
-    setName(name);
-  }
-
 }

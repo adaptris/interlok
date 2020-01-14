@@ -16,6 +16,12 @@
 
 package com.adaptris.core.services.exception;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreConstants;
@@ -44,14 +50,13 @@ public class ExceptionReportServiceTest extends ExceptionServiceExample {
   private static String RAW_DATA = "This is Some Data";
   private static String XML_PAYLOAD = "<Root><OriginalNode>" + RAW_DATA + "</OriginalNode></Root>";
 
-  public ExceptionReportServiceTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+
+  @Test
   public void testPrepare() throws Exception {
     ExceptionReportService service = new ExceptionReportService();
     try {
@@ -63,6 +68,7 @@ public class ExceptionReportServiceTest extends ExceptionServiceExample {
     }
   }
 
+  @Test
   public void testNoObjectMetadata() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
     ExceptionReportService service = new ExceptionReportService(new ExceptionAsXml()
@@ -73,6 +79,7 @@ public class ExceptionReportServiceTest extends ExceptionServiceExample {
     assertEquals(RAW_DATA, xml.getSingleTextItem(XPATH_ORIGINAL_NODE));
   }
 
+  @Test
   public void testNonXml() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(RAW_DATA);
     msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));
@@ -87,6 +94,7 @@ public class ExceptionReportServiceTest extends ExceptionServiceExample {
     }
   }
 
+  @Test
   public void testNonXml_IgnoreXmlParseException() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(RAW_DATA);
     msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));
@@ -108,6 +116,7 @@ public class ExceptionReportServiceTest extends ExceptionServiceExample {
     assertEquals("UTF-8", msg.getContentEncoding());
   }
 
+  @Test
   public void testReplaceNode() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
     msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));
@@ -121,6 +130,7 @@ public class ExceptionReportServiceTest extends ExceptionServiceExample {
     assertEquals("UTF-8", msg.getContentEncoding());
   }
 
+  @Test
   public void testInsertNode() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
     msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("This is the exception"));
@@ -135,6 +145,7 @@ public class ExceptionReportServiceTest extends ExceptionServiceExample {
     assertEquals("UTF-8", msg.getContentEncoding());
   }
 
+  @Test
   public void testBug2220() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD, "UTF-8");
     msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("I had problems parsing <ABCDE>"));
@@ -149,6 +160,7 @@ public class ExceptionReportServiceTest extends ExceptionServiceExample {
     assertEquals("UTF-8", msg.getContentEncoding());
   }
 
+  @Test
   public void testBug2356() throws Exception {
     ServiceImp failingService = new ThrowExceptionService(new ConfiguredException("Fail"));
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);

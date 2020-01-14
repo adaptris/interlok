@@ -1,36 +1,32 @@
 /*
  * Copyright 2015 Adaptris Ltd.
  * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
-*/
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS"
+ * BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
+ */
 
 package com.adaptris.sftp.test;
 
+import static org.junit.Assert.fail;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Random;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.oro.io.GlobFilenameFilter;
+import org.junit.Assume;
+import org.junit.Test;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FtpCase;
 import com.adaptris.security.password.Password;
 import com.adaptris.sftp.SftpClient;
 
-/**
- * @author lchan
- * @author $Author: lchan $
- */
 public class TestSftp extends FtpCase {
 
   private static final String SFTP_GET_FILTER = "sftp.get.filter";
@@ -42,31 +38,30 @@ public class TestSftp extends FtpCase {
   private static final String SFTP_PASSWORD = "sftp.password";
   private static final String SFTP_USERNAME = "sftp.username";
 
-  public TestSftp(String testName) {
-    super(testName);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testListBadDirectory() throws Exception {
-    if (areTestsEnabled()) {
-      String oldName = Thread.currentThread().getName();
+    Assume.assumeTrue(areTestsEnabled());
+    String oldName = Thread.currentThread().getName();
+    try {
+      Thread.currentThread().setName("testListBadDirectory");
+      FileTransferClient client = connectClientImpl();
       try {
-        Thread.currentThread().setName("testListBadDirectory");
-        FileTransferClient client = connectClientImpl();
-        try {
-          Random r = new Random();
-          String dir = config.getProperty(SFTP_GET_REMOTEDIR) + "/"
-              + r.nextInt();
-          client.dir(dir);
-          fail("LS of  " + dir + " should not work");
-        }
-        catch (Exception e) {
-          client.disconnect();
-        }
+        Random r = new Random();
+        String dir = config.getProperty(SFTP_GET_REMOTEDIR) + "/" + r.nextInt();
+        client.dir(dir);
+        fail("LS of  " + dir + " should not work");
+      } catch (Exception e) {
+        client.disconnect();
       }
-      finally {
-        Thread.currentThread().setName(oldName);
-      }
+    } finally {
+      Thread.currentThread().setName(oldName);
     }
+
   }
 
   @Override

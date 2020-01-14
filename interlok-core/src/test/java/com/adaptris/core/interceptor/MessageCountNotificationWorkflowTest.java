@@ -18,7 +18,6 @@ package com.adaptris.core.interceptor;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.core.Channel;
 import com.adaptris.core.ExampleWorkflowCase;
 import com.adaptris.core.StandardWorkflow;
@@ -37,13 +36,9 @@ public class MessageCountNotificationWorkflowTest extends ExampleWorkflowCase {
           + "'com.adaptris:type=Notifications,adapter=XXX,channel=YYY,workflow=ZZZ,id=MessageCount_For_MyWorkflowName'\n"
           + "Check the Advanced Topics manual for more information" + "\n-->\n";
 
-  public MessageCountNotificationWorkflowTest(java.lang.String testName) {
-    super(testName);
-  }
-
   @Override
-  protected void setUp() {
-
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override

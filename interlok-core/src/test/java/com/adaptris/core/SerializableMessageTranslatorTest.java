@@ -16,27 +16,22 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.RandomAccessFile;
-
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
 import com.adaptris.core.lms.FileBackedMessage;
 import com.adaptris.core.lms.FileBackedMessageFactory;
 import com.adaptris.core.stubs.TempFileUtils;
 import com.adaptris.interlok.types.SerializableMessage;
 
-import junit.framework.TestCase;
-
-
-public class SerializableMessageTranslatorTest extends TestCase {
-  
-  public void setUp() throws Exception {
-    
-  }
-  
-  public void tearDown() throws Exception {
-    
-  }
-  
+public class SerializableMessageTranslatorTest {
+  @Rule
+  public TestName testName = new TestName();
+  @Test
   public void testMessageFactory() throws Exception {
     DefaultSerializableMessageTranslator translator = new DefaultSerializableMessageTranslator();
     assertEquals(DefaultMessageFactory.class, translator.currentMessageFactory().getClass());
@@ -44,6 +39,7 @@ public class SerializableMessageTranslatorTest extends TestCase {
     assertEquals(FileBackedMessageFactory.class, translator.currentMessageFactory().getClass());
   }
 
+  @Test
   public void testSerialize_FileBackedMessage_Small() throws Exception {
     FileBackedMessage adaptrisMessage = (FileBackedMessage) new FileBackedMessageFactory().newMessage("Some Payload");
     adaptrisMessage.addMetadata("MetaKey1", "MetaValue1");
@@ -56,6 +52,7 @@ public class SerializableMessageTranslatorTest extends TestCase {
     assertEquals("Some Payload", serialisableAdaptrisMessage.getContent());
   }
 
+  @Test
   public void testSerialize_FileBackedMessage_TooLarge() throws Exception {
     FileBackedMessage adaptrisMessage = (FileBackedMessage) new FileBackedMessageFactory().newMessage();
     File sourceFile = TempFileUtils.createTrackedFile(this);
@@ -74,6 +71,7 @@ public class SerializableMessageTranslatorTest extends TestCase {
     assertTrue(serialisableAdaptrisMessage.getContent().contains("Size=7 MB"));
   }
 
+  @Test
   public void testSerialize() throws Exception {
     AdaptrisMessage adaptrisMessage = DefaultMessageFactory.getDefaultInstance().newMessage("Some Payload");
     adaptrisMessage.setUniqueId("uuid");
@@ -87,23 +85,25 @@ public class SerializableMessageTranslatorTest extends TestCase {
     assertEquals("Some Payload", serialisableAdaptrisMessage.getContent());
     assertEquals("uuid", serialisableAdaptrisMessage.getUniqueId());
   }
-  
+
+  @Test
   public void testUnserialize() throws Exception {
     SerializableAdaptrisMessage serialisableAdaptrisMessage = new SerializableAdaptrisMessage();
     serialisableAdaptrisMessage.setContent("Some Payload");
     serialisableAdaptrisMessage.setUniqueId("uuid2");
     serialisableAdaptrisMessage.addMetadata("MetaKey3", "MetaValue3");
     serialisableAdaptrisMessage.addMetadata("MetaKey4", "MetaValue4");
-    serialisableAdaptrisMessage.setNextServiceId(getName());
+    serialisableAdaptrisMessage.setNextServiceId(testName.getMethodName());
     AdaptrisMessage adaptrisMessage = new DefaultSerializableMessageTranslator().translate(serialisableAdaptrisMessage);
     
     assertEquals("MetaValue3", adaptrisMessage.getMetadataValue("MetaKey3"));
     assertEquals("MetaValue4", adaptrisMessage.getMetadataValue("MetaKey4"));
     assertEquals("Some Payload", adaptrisMessage.getContent());
     assertEquals("uuid2", adaptrisMessage.getUniqueId());
-    assertEquals(getName(), adaptrisMessage.getNextServiceId());
+    assertEquals(testName.getMethodName(), adaptrisMessage.getNextServiceId());
   }
 
+  @Test
   public void testUnserialize_WithEncoding() throws Exception {
     SerializableAdaptrisMessage serialisableAdaptrisMessage = new SerializableAdaptrisMessage();
     serialisableAdaptrisMessage.setContent("Some Payload");
