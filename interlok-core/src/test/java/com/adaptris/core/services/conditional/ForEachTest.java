@@ -20,6 +20,8 @@ import org.mockito.MockitoAnnotations;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
@@ -37,7 +39,6 @@ public class ForEachTest extends ConditionalServiceExample
 	@Mock
 	private Service mock;
 
-	@Override
 	@Before
 	public void setUp() throws Exception
 	{
@@ -127,5 +128,11 @@ public class ForEachTest extends ConditionalServiceExample
 		then.setService(new LogMessageService());
 		forEach.setThen(then);
 		return forEach;
+	}
+
+	@Override
+	public boolean isAnnotatedForJunit4()
+	{
+		return true;
 	}
 }
