@@ -15,10 +15,16 @@
 */
 
 package com.adaptris.core.jdbc;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
+import org.junit.Test;
 import com.adaptris.core.ClosedState;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.JdbcUtil;
@@ -31,13 +37,14 @@ public class JdbcPooledConnectionTest extends DatabaseConnectionCase<JdbcPooledC
   
   private static final GuidGenerator GUID = new GuidGenerator();
 
-  public JdbcPooledConnectionTest(String arg0) {
-    super(arg0);
-  }
-
+  public JdbcPooledConnectionTest() {}
   @Override
   protected JdbcPooledConnection createConnection() {
     return new JdbcPooledConnection();
+  }
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
@@ -53,6 +60,7 @@ public class JdbcPooledConnectionTest extends DatabaseConnectionCase<JdbcPooledC
     return conn1;
   }
 
+  @Test
   public void testBrokenPool() throws Exception {
     JdbcPooledConnectionImpl con = configure(createConnection());
     con.setConnectUrl("jdbc:derby:memory:" + GUID.safeUUID() + ";create=true");
@@ -75,6 +83,7 @@ public class JdbcPooledConnectionTest extends DatabaseConnectionCase<JdbcPooledC
     }
   }
 
+  @Test
   public void testEquals() throws Exception {
     JdbcPooledConnectionImpl con = createConnection();
     String url = "jdbc:derby:memory:" + GUID.safeUUID() + ";create=true";
@@ -87,6 +96,7 @@ public class JdbcPooledConnectionTest extends DatabaseConnectionCase<JdbcPooledC
     assertTrue(con.equals(con2));
   }
 
+  @Test
   public void testPoolSize() throws Exception {
     JdbcPooledConnection con = createConnection();
     assertEquals(JdbcPooledConnection.DEFAULT_MAXIMUM_POOL_SIZE, con.maxPoolSize());
@@ -99,7 +109,7 @@ public class JdbcPooledConnectionTest extends DatabaseConnectionCase<JdbcPooledC
     assertEquals(10, con.minPoolSize());
   }
 
-
+  @Test
   public void testClose() throws Exception {
     JdbcPooledConnection con = configure(createConnection());
     con.setConnectUrl("jdbc:derby:memory:" + GUID.safeUUID() + ";create=true");
@@ -116,6 +126,7 @@ public class JdbcPooledConnectionTest extends DatabaseConnectionCase<JdbcPooledC
   }
 
   // INTERLOK-107
+  @Test
   public void testConnectionDataSource_Poolsize() throws Exception {
     String originalThread = Thread.currentThread().getName();
     Thread.currentThread().setName("testConnectionDataSource_Poolsize");    

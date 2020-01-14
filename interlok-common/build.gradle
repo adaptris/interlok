@@ -12,7 +12,7 @@ dependencies {
   compile ("commons-net:commons-net:3.6")
   compile ("commons-pool:commons-pool:1.6")
   compile ("org.apache.commons:commons-lang3:3.9")
-  compile ("org.apache.commons:commons-pool2:2.7.0")
+  compile ("org.apache.commons:commons-pool2:2.8.0")
 
   compile ("org.slf4j:slf4j-api:$slf4jVersion")
   compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.24.v20191120")
@@ -23,8 +23,7 @@ dependencies {
 
   javadoc project(':interlok-core-apt')
 
-  testCompile ("log4j:log4j:1.2.17")
-  testCompile ("junit:junit:4.12")
+  testCompile ("junit:junit:4.13")
   testCompile ("org.mockito:mockito-core:$mockitoVersion")
   testCompile ("org.mockito:mockito-inline:$mockitoVersion")
 }

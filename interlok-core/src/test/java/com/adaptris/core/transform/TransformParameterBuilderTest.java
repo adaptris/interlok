@@ -16,16 +16,17 @@
 
 package com.adaptris.core.transform;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.HashMap;
 import java.util.Map;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 
 public class TransformParameterBuilderTest extends TransformParameterCase {
-  public TransformParameterBuilderTest(String name) {
-    super(name);
-  }
-
+  @Test
   public void testConstructor() throws Exception {
     XmlTransformParameterBuilder p = new XmlTransformParameterBuilder();
     assertNotNull(p.getParameterBuilders());
@@ -46,6 +47,7 @@ public class TransformParameterBuilderTest extends TransformParameterCase {
 
   }
 
+  @Test
   public void testCreateParameters() throws Exception {
     XmlTransformParameterBuilder p = new XmlTransformParameterBuilder(new StringMetadataParameter(), new ObjectMetadataParameter(
         ".*"));

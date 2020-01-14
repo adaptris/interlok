@@ -16,8 +16,14 @@
 
 package com.adaptris.core.services.jdbc;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import java.util.List;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.XmlUtils;
@@ -26,21 +32,19 @@ import com.adaptris.util.text.xml.InsertNode;
 @SuppressWarnings("deprecation")
 public class MergeResultSetIntoPayloadTest extends JdbcQueryServiceCaseXmlResults {
 
-  public MergeResultSetIntoPayloadTest(String arg0) {
-    super(arg0);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
-  protected void setUp() throws Exception {
-
-  }
-
-  @Override
+  @Test
   public void testBug1762() throws Exception {
     // Because we are merging XML into XML, this is not a valid test.
   }
 
   @Override
+  @Test
   public void testSetEncoding() throws Exception {
     MergeResultSetIntoXmlPayload translator = new MergeResultSetIntoXmlPayload();
     assertNull(translator.getOutputMessageEncoding());
@@ -48,6 +52,7 @@ public class MergeResultSetIntoPayloadTest extends JdbcQueryServiceCaseXmlResult
     assertEquals("ISO-8859-1", translator.getOutputMessageEncoding());
   }
 
+  @Test
   public void testMetadataStatementParam() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -67,7 +72,7 @@ public class MergeResultSetIntoPayloadTest extends JdbcQueryServiceCaseXmlResult
     assertNotNull("/root/Results/Row", xu.getSingleNode("/root/Results/Row"));
   }
 
-
+  @Test
   public void testContainsRowCount() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -91,7 +96,7 @@ public class MergeResultSetIntoPayloadTest extends JdbcQueryServiceCaseXmlResult
     assertEquals("1", msg.getMetadataValue(getName()));
   }
 
-
+  @Test
   public void testXpathStatementParam() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -110,6 +115,7 @@ public class MergeResultSetIntoPayloadTest extends JdbcQueryServiceCaseXmlResult
     assertNotNull("/root/Results/Row", xu.getSingleNode("/root/Results/Row"));
   }
 
+  @Test
   public void testXpathStatementParam_NodeDoesNotExist() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -129,6 +135,7 @@ public class MergeResultSetIntoPayloadTest extends JdbcQueryServiceCaseXmlResult
     assertNotNull("/root/NonExistentNode/Results/Row doesn't exist", xu.getSingleNode("/root/NonExistentNode/Results/Row"));
   }
 
+  @Test
   public void testXpathStatementParamWithLowerCase() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);

@@ -16,10 +16,12 @@
 
 package com.adaptris.core.services.aggregator;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -29,7 +31,11 @@ import com.adaptris.core.stubs.DefectiveMessageFactory;
 import com.adaptris.core.stubs.DefectiveMessageFactory.WhenToBreak;
 
 public class AppendinglMessageAggregatorTest extends AggregatingServiceExample {
-
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+  @Test
   public void testJoinMessage() throws Exception {
     AppendingMessageAggregator aggr = createAggregatorForTests().withOverwriteMetadata(true);
     AdaptrisMessage original = AdaptrisMessageFactory.getDefaultInstance().newMessage("Goodbye");
@@ -43,6 +49,7 @@ public class AppendinglMessageAggregatorTest extends AggregatingServiceExample {
     assertEquals("newValue", original.getMetadataValue("originalKey"));
   }
 
+  @Test
   public void testJoin_WithException() {
     AppendingMessageAggregator aggr = createAggregatorForTests();
     AdaptrisMessage original = new DefectiveMessageFactory(EnumSet.of(WhenToBreak.INPUT, WhenToBreak.OUTPUT)).newMessage("Goodbye");

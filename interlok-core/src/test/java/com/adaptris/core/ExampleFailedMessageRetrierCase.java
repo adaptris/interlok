@@ -38,12 +38,6 @@ public abstract class ExampleFailedMessageRetrierCase extends ExampleConfigCase 
     }
   }
 
-  public ExampleFailedMessageRetrierCase(String name) {
-    this();
-    setName(name);
-  }
-
-
   @Override
   protected String createExampleXml(Object object) throws Exception {
     String result = getExampleCommentHeader(object);

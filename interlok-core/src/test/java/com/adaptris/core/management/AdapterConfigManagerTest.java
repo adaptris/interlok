@@ -16,8 +16,11 @@
 
 package com.adaptris.core.management;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import java.util.Properties;
-
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.management.config.XStreamConfigManager;
 import com.adaptris.core.runtime.AdapterRegistry;
@@ -27,24 +30,29 @@ public class AdapterConfigManagerTest extends BaseCase {
 
   private BootstrapProperties bootstrap;
 
-  public AdapterConfigManagerTest(String name) {
-    super(name);
+  public AdapterConfigManagerTest() {
   }
 
+  @Before
   public void setUp() throws Exception {
-    super.setUp();
     bootstrap = new JunitBootstrapProperties(new Properties());
   }
 
+  @Test
   public void testBootstrap_getConfigManager() throws Exception {
     assertNotNull(bootstrap.getConfigManager());
     assertEquals(XStreamConfigManager.class, bootstrap.getConfigManager().getClass());
   }
 
+  @Test
   public void testGetAdapterRegistryMBean() throws Exception {
     AdapterConfigManager configManager = bootstrap.getConfigManager();
     assertNotNull(configManager.getAdapterRegistry());
     assertEquals(AdapterRegistry.class, configManager.getAdapterRegistry().getClass());
   }
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
 }

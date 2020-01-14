@@ -15,9 +15,9 @@
 */
 
 package com.adaptris.util.text.xml;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
-
 import com.adaptris.core.BaseCase;
 import com.adaptris.util.KeyValuePair;
 
@@ -27,10 +27,10 @@ public class MappedResolverTest extends BaseCase {
   private static final String SYSTEM_ID = "http://www.eclipse.org/jetty/configure.dtd";
   private static final String KEY_MAPPED_URL = "resolver.mapped.url";
 
-  public MappedResolverTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
-
   @Test
   public void testEntityResolver_Mapping_Absolute() throws Exception {
     MappedResolver resolver = new MappedResolver();

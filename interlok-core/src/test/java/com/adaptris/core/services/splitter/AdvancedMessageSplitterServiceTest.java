@@ -19,9 +19,14 @@ package com.adaptris.core.services.splitter;
 import static com.adaptris.core.ServiceCase.execute;
 import static com.adaptris.core.services.splitter.MessageSplitterServiceImp.KEY_CURRENT_SPLIT_MESSAGE_COUNT;
 import static com.adaptris.core.services.splitter.SplitterCase.createAdvanced;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.Iterator;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -43,9 +48,6 @@ import com.adaptris.core.util.LifecycleHelper;
 
 public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServiceTest {
 
-  public AdvancedMessageSplitterServiceTest(String name) {
-    super(name);
-  }
 
   @Override
   public void testServiceSetters() {
@@ -83,10 +85,12 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     assertEquals(1, service.wrappedServices().length);
   }
 
+  @Test
   public void testRedmineIssue1556() throws Exception {
     testEventHandlerPassedToServiceCollection();
   }
 
+  @Test
   public void testEventHandlerPassedToServiceCollection() throws Exception {
     AdvancedMessageSplitterService service = createForTests();
     EventHandlerAwareService ehService = new EventHandlerAwareService();
@@ -99,6 +103,7 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     assertEquals(eh, ehService.eventHandler());
   }
 
+  @Test
   public void testSetSendEvents() throws Exception {
     AdvancedMessageSplitterService service = createForTests();
     assertNull(service.getSendEvents());
@@ -113,6 +118,7 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
 
   }
 
+  @Test
   public void testDoServiceWithFailures_NullEventHandler() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     AdaptrisMessage msg = createMessage(REGEXP_DATA);
@@ -129,6 +135,7 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     }
   }
 
+  @Test
   public void testDoServiceWithFailures_NullEventHandler_SendEvents() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     AdaptrisMessage msg = createMessage(REGEXP_DATA);
@@ -146,6 +153,7 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     }
   }
 
+  @Test
   public void testDoServiceWithFailures_SendEventsTrue() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     AdaptrisMessage msg = createMessage(REGEXP_DATA);
@@ -169,6 +177,7 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     assertEvents(ehp, 1, MessageLifecycleEvent.class);
   }
 
+  @Test
   public void testDoServiceWithFailures_SendEventsFalse() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     AdaptrisMessage msg = createMessage(REGEXP_DATA);
@@ -192,6 +201,7 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     assertEvents(ehp, 0, MessageLifecycleEvent.class);
   }
 
+  @Test
   public void testDoServiceWithEventHandler_Null() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     AdvancedMessageSplitterService service = createServiceImpl(new SimpleRegexpMessageSplitter("\\|"), producer);
@@ -207,6 +217,7 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     }
   }
 
+  @Test
   public void testDoServiceWithNullEventHandler_SendEventsTrue() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     AdvancedMessageSplitterService service = createServiceImpl(new SimpleRegexpMessageSplitter("\\|"), producer);
@@ -224,6 +235,7 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     }
   }
 
+  @Test
   public void testDoServiceWithEventHandler_SendEventsDefault() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     AdvancedMessageSplitterService service = createServiceImpl(new SimpleRegexpMessageSplitter("\\|"), producer);
@@ -247,6 +259,7 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     }
   }
 
+  @Test
   public void testDoServiceWithEventHandler_SendEventsTrue() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     AdvancedMessageSplitterService service = createServiceImpl(new SimpleRegexpMessageSplitter("\\|"), producer);
@@ -269,6 +282,7 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     }
   }
 
+  @Test
   public void testDoServiceWithEventHandlerSendEventsFalse() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     AdvancedMessageSplitterService service = createServiceImpl(new SimpleRegexpMessageSplitter("\\|"), producer);
@@ -291,6 +305,7 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     }
   }
 
+  @Test
   public void testDoServiceWithFailures() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     AdaptrisMessage msg = createMessage(REGEXP_DATA);
@@ -307,6 +322,7 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     }
   }
 
+  @Test
   public void testDoServiceWithFailuresIgnored() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     AdaptrisMessage msg = createMessage(REGEXP_DATA);

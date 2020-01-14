@@ -16,6 +16,11 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BranchingServiceCollection;
@@ -35,14 +40,17 @@ public class CheckUniqueMetadataValueServiceTest extends BranchingServiceExample
   private AdaptrisMessage msg4;
   private AdaptrisMessage msg5;
 
-  public CheckUniqueMetadataValueServiceTest(String name) {
-    super(name);
-
+  public CheckUniqueMetadataValueServiceTest() {
     storeFileUrl = PROPERTIES.getProperty(STORE_FILE_URL_KEY);
   }
 
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
+  @Before
+  public void setUp() throws Exception {
     if (checkFileExists(storeFileUrl)) {
       throw new Exception("file [" + storeFileUrl + "] should not exist prior to test");
     }
@@ -69,11 +77,12 @@ public class CheckUniqueMetadataValueServiceTest extends BranchingServiceExample
     msg5 = AdaptrisMessageFactory.getDefaultInstance().newMessage();
   }
 
-  @Override
-  protected void tearDown() {
+  @After
+  public void tearDown() {
     removeFile(storeFileUrl);
   }
 
+  @Test
   public void testSetters() {
     CheckUniqueMetadataValueService s = new CheckUniqueMetadataValueService();
     try {
@@ -141,6 +150,7 @@ public class CheckUniqueMetadataValueServiceTest extends BranchingServiceExample
     }
   }
 
+  @Test
   public void testInitWithDefaults() {
     CheckUniqueMetadataValueService s = new CheckUniqueMetadataValueService();
 
@@ -153,6 +163,7 @@ public class CheckUniqueMetadataValueServiceTest extends BranchingServiceExample
     }
   }
 
+  @Test
   public void testInitWithMetadataKey() {
     CheckUniqueMetadataValueService s = new CheckUniqueMetadataValueService();
 
@@ -166,6 +177,7 @@ public class CheckUniqueMetadataValueServiceTest extends BranchingServiceExample
     }
   }
 
+  @Test
   public void testInitWithStoreFileUrl() {
     CheckUniqueMetadataValueService s = new CheckUniqueMetadataValueService();
 
@@ -179,6 +191,7 @@ public class CheckUniqueMetadataValueServiceTest extends BranchingServiceExample
     }
   }
 
+  @Test
   public void testInitWithMetadataKeyAndStoreFile() throws Exception {
     CheckUniqueMetadataValueService s = new CheckUniqueMetadataValueService();
     try {
@@ -190,6 +203,7 @@ public class CheckUniqueMetadataValueServiceTest extends BranchingServiceExample
     }
   }
 
+  @Test
   public void testNullMetadataValue() {
     try {
       execute(service, msg5);
@@ -200,6 +214,7 @@ public class CheckUniqueMetadataValueServiceTest extends BranchingServiceExample
     }
   }
 
+  @Test
   public void testEmptyMetadataValue() {
     msg5.addMetadata("unique-id", "");
 
@@ -212,6 +227,7 @@ public class CheckUniqueMetadataValueServiceTest extends BranchingServiceExample
     }
   }
 
+  @Test
   public void testListSize() throws Exception {
     try {
       start(service);
@@ -241,6 +257,7 @@ public class CheckUniqueMetadataValueServiceTest extends BranchingServiceExample
     }
   }
 
+  @Test
   public void testWithDuplicate() throws Exception {
     try {
       start(service);
@@ -256,6 +273,7 @@ public class CheckUniqueMetadataValueServiceTest extends BranchingServiceExample
     }
   }
 
+  @Test
   public void testPeristentStore() throws Exception {
     try {
       start(service);

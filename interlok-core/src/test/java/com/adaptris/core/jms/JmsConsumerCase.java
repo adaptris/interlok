@@ -26,9 +26,7 @@ public abstract class JmsConsumerCase extends ConsumerCase {
    */
   public static final String BASE_DIR_KEY = "JmsConsumerExamples.baseDir";
 
-  public JmsConsumerCase(String name) {
-    super(name);
-
+  public JmsConsumerCase() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }

@@ -16,20 +16,22 @@
 
 package com.adaptris.core;
 
+import org.junit.Test;
 
 @SuppressWarnings("deprecation")
-public class DefaultAdapterStartUpEventTest extends BaseCase {
+public class DefaultAdapterStartUpEventTest {
 
-  public DefaultAdapterStartUpEventTest(java.lang.String testName) {
-    super(testName);
+  public DefaultAdapterStartUpEventTest() {
   }
 
+  @Test
   public void testSetAdapter() throws Exception {
     DefaultAdapterStartUpEvent evt = new DefaultAdapterStartUpEvent();
     Adapter adapter = new Adapter();
     evt.setAdapter(adapter);
   }
 
+  @Test
   public void testMarshalledHasNoAdapter() throws Exception {
     DefaultAdapterStartUpEvent event = new DefaultAdapterStartUpEvent();
     Adapter adapter = new Adapter();

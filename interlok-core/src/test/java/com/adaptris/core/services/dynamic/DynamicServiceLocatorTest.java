@@ -16,12 +16,19 @@
 
 package com.adaptris.core.services.dynamic;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ClosedState;
@@ -79,19 +86,21 @@ public class DynamicServiceLocatorTest extends DynamicServiceExample {
 
   private File tempDir;
 
-  public DynamicServiceLocatorTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void setUp() throws Exception {
+
+  @Before
+  public void setUp() throws Exception {
     tempDir = File.createTempFile("DSL", null);
     tempDir.delete();
     tempDir.mkdirs();
   }
 
-  @Override
-  protected void tearDown() throws Exception {
+  @After
+  public void tearDown() throws Exception {
     FileUtils.cleanDirectory(tempDir);
     FileUtils.deleteQuietly(tempDir);
   }
@@ -162,6 +171,7 @@ public class DynamicServiceLocatorTest extends DynamicServiceExample {
     return createLocator(createandStartDummyEventHandler());
   }
 
+  @Test
   public void testSetMatchingStrategy() throws Exception {
     DynamicServiceLocator service = new DynamicServiceLocator();
     try {
@@ -175,6 +185,7 @@ public class DynamicServiceLocatorTest extends DynamicServiceExample {
     assertNotNull(service.getMatchingStrategy());
   }
 
+  @Test
   public void testSetServiceStore() throws Exception {
     DynamicServiceLocator service = new DynamicServiceLocator();
     try {
@@ -188,6 +199,7 @@ public class DynamicServiceLocatorTest extends DynamicServiceExample {
     assertNotNull(service.getServiceStore());
   }
 
+  @Test
   public void testSetServiceNameProvider() throws Exception {
     DynamicServiceLocator service = new DynamicServiceLocator();
     try {
@@ -201,6 +213,7 @@ public class DynamicServiceLocatorTest extends DynamicServiceExample {
     assertNotNull(service.getServiceNameProvider());
   }
 
+  @Test
   public void testSetTradingRelationshipCreator() throws Exception {
     DynamicServiceLocator service = new DynamicServiceLocator();
     try {
@@ -214,6 +227,7 @@ public class DynamicServiceLocatorTest extends DynamicServiceExample {
     assertNotNull(service.getTradingRelationshipCreator());
   }
 
+  @Test
   public void testDoServiceWithWildcardRelationship() throws Exception {
     DynamicServiceLocator service = createLocator();
     service.setTradingRelationshipCreator(new ConfiguredTradingRelationshipCreator("*", DEFAULT_DEST, DEFAULT_TYPE));
@@ -230,6 +244,7 @@ public class DynamicServiceLocatorTest extends DynamicServiceExample {
     }
   }
 
+  @Test
   public void testInit() throws Exception {
     DynamicServiceLocator service = new DynamicServiceLocator();
     try {
@@ -256,6 +271,7 @@ public class DynamicServiceLocatorTest extends DynamicServiceExample {
     LifecycleHelper.init(service);
   }
 
+  @Test
   public void testServiceNotFoundNotOk() throws Exception {
     DynamicServiceLocator service = createLocator();
     service.setTreatNotFoundAsError(true);
@@ -273,6 +289,7 @@ public class DynamicServiceLocatorTest extends DynamicServiceExample {
     }
   }
 
+  @Test
   public void testServiceNotFoundIsOk() throws Exception {
     DynamicServiceLocator service = createLocator();
     service.setTreatNotFoundAsError(false);
@@ -280,6 +297,7 @@ public class DynamicServiceLocatorTest extends DynamicServiceExample {
     execute(service, AdaptrisMessageFactory.getDefaultInstance().newMessage());
   }
 
+  @Test
   public void testServicePrepareFails() throws Exception {
     writeServiceList(new DynamicFailingService(WhenToFail.ON_PREPARE),
         new TradingRelationship(DEFAULT_SRC, DEFAULT_DEST, DEFAULT_TYPE), tempDir);
@@ -297,6 +315,7 @@ public class DynamicServiceLocatorTest extends DynamicServiceExample {
     }
   }
 
+  @Test
   public void testServiceFailOnInit() throws Exception {
     DynamicFailingService dynamicFailingService = new DynamicFailingService(WhenToFail.ON_INIT);
     writeServiceList(dynamicFailingService,
@@ -323,6 +342,7 @@ public class DynamicServiceLocatorTest extends DynamicServiceExample {
 //    assertEquals(DynamicService.State.CLOSE, DynamicService.currentState(DynamicFailingService.class));
   }
 
+  @Test
   public void testServiceFailOnStart() throws Exception {
     writeServiceList(new DynamicFailingService(WhenToFail.ON_START), new TradingRelationship(DEFAULT_SRC, DEFAULT_DEST,
         DEFAULT_TYPE), tempDir);
@@ -345,6 +365,7 @@ public class DynamicServiceLocatorTest extends DynamicServiceExample {
     assertEquals(DynamicService.State.CLOSE, DynamicService.currentState(DynamicFailingService.class));
   }
 
+  @Test
   public void testDoSuccessfulService() throws Exception {
     writeServiceList(new DynamicService(), new TradingRelationship(DEFAULT_SRC, DEFAULT_DEST, DEFAULT_TYPE), tempDir);
 
@@ -355,6 +376,7 @@ public class DynamicServiceLocatorTest extends DynamicServiceExample {
     assertEquals(DynamicService.State.CLOSE, DynamicService.currentState(DynamicService.class));
   }
 
+  @Test
   public void testBug887WithFailingService() throws Exception {
     writeServiceList(new DynamicFailingService(), new TradingRelationship(DEFAULT_SRC, DEFAULT_DEST, DEFAULT_TYPE), tempDir);
     DynamicServiceLocator service = createLocator();
@@ -374,6 +396,7 @@ public class DynamicServiceLocatorTest extends DynamicServiceExample {
     assertEquals(DynamicService.State.CLOSE, DynamicService.currentState(DynamicFailingService.class));
   }
 
+  @Test
   public void testEventHandlerAwareNotServicelist() throws Exception {
     writeService(new DynamicEventHandlerAwareService(), new TradingRelationship(DEFAULT_SRC, DEFAULT_DEST, DEFAULT_TYPE),
         tempDir);
@@ -385,6 +408,7 @@ public class DynamicServiceLocatorTest extends DynamicServiceExample {
     assertEquals(eventHandler, DynamicEventHandlerAwareService.registeredEventHandler());
   }
 
+  @Test
   public void testNotEventHandlerAwareNotServicelist() throws Exception {
     writeService(new DynamicService(), new TradingRelationship(DEFAULT_SRC, DEFAULT_DEST, DEFAULT_TYPE), tempDir);
     EventHandler eventHandler = createandStartDummyEventHandler();

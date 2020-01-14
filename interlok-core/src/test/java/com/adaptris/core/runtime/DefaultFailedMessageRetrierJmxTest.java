@@ -18,17 +18,20 @@ package com.adaptris.core.runtime;
 
 import static com.adaptris.core.runtime.AdapterComponentMBean.ID_PREFIX;
 import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_FAILED_MESSAGE_RETRIER_TYPE;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.TimeUnit;
-
 import javax.management.JMX;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
-
+import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -48,20 +51,15 @@ import com.adaptris.util.stream.StreamUtil;
 
 public class DefaultFailedMessageRetrierJmxTest extends ComponentManagerCase {
 
-  public DefaultFailedMessageRetrierJmxTest(String name) {
-    super(name);
+  public DefaultFailedMessageRetrierJmxTest() {
   }
 
   @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
-  }
-
+  @Test
   public void testExistsInAdapterManager() throws Exception {
     Adapter adapter = createAdapter(getName());
     DefaultFailedMessageRetrier retrier = new DefaultFailedMessageRetrier();
@@ -71,6 +69,7 @@ public class DefaultFailedMessageRetrierJmxTest extends ComponentManagerCase {
     assertTrue(adapterManager.getChildRuntimeInfoComponents().contains(retrierObjName));
   }
 
+  @Test
   public void testMBean_GetParentId() throws Exception {
     Adapter adapter = createAdapter(getName());
     DefaultFailedMessageRetrier retrier = new DefaultFailedMessageRetrier();
@@ -90,6 +89,7 @@ public class DefaultFailedMessageRetrierJmxTest extends ComponentManagerCase {
 
   }
 
+  @Test
   public void testMBean_GetParentObjectName() throws Exception {
 
     Adapter adapter = createAdapter(getName());
@@ -109,6 +109,7 @@ public class DefaultFailedMessageRetrierJmxTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_Retry_SerializableMessage() throws Exception {
     Adapter adapter = createAdapter(getName());
     Channel channel = createChannel(getName());
@@ -140,6 +141,7 @@ public class DefaultFailedMessageRetrierJmxTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_Retry_SerializableMessage_WorkflowNotFound() throws Exception {
     Adapter adapter = createAdapter(getName());
     Channel c = createChannel(getName());
@@ -170,6 +172,7 @@ public class DefaultFailedMessageRetrierJmxTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_Retry_File() throws Exception {
     Adapter adapter = createAdapter(getName());
     Channel c = createChannel(getName());
@@ -202,6 +205,7 @@ public class DefaultFailedMessageRetrierJmxTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_Retry_File_WorkflowNotFound() throws Exception {
     Adapter adapter = createAdapter(getName());
     Channel c = createChannel(getName());
@@ -234,6 +238,7 @@ public class DefaultFailedMessageRetrierJmxTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_Retry_File_NotEncoded() throws Exception {
     Adapter adapter = createAdapter(getName());
     Channel c = createChannel(getName());
@@ -271,6 +276,7 @@ public class DefaultFailedMessageRetrierJmxTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_Retry_File_NotFoundException() throws Exception {
     Adapter adapter = createAdapter(getName());
     Channel c = createChannel(getName());
@@ -308,6 +314,7 @@ public class DefaultFailedMessageRetrierJmxTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_Retry_WorkflowNotStarted() throws Exception {
     Adapter adapter = createAdapter(getName());
     Channel channel = createChannel(getName());
@@ -341,6 +348,7 @@ public class DefaultFailedMessageRetrierJmxTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_RetryWhen_Retrier_Closed() throws Exception {
     Adapter adapter = createAdapter(getName());
     Channel channel = createChannel(getName());

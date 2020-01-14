@@ -32,10 +32,4 @@ public abstract class MetadataServiceExample extends ServiceCase {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
   }
-
-  public MetadataServiceExample(String name) {
-    this();
-    setName(name);
-  }
-
 }

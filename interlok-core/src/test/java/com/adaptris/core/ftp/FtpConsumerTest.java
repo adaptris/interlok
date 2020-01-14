@@ -26,18 +26,19 @@ import static com.adaptris.core.ftp.EmbeddedFtpServer.DESTINATION_URL_OVERRIDE;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.PAYLOAD;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.SERVER_ADDRESS;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.SLASH;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.oro.io.GlobFilenameFilter;
+import org.junit.Test;
 import org.mockftpserver.fake.FakeFtpServer;
 import org.mockftpserver.fake.filesystem.FileEntry;
 import org.mockftpserver.fake.filesystem.FileSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ConfiguredConsumeDestination;
@@ -58,10 +59,6 @@ public class FtpConsumerTest extends FtpConsumerCase {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
   
-  public FtpConsumerTest(String name) {
-    super(name);
-  }
-
   @Override
   protected FtpConnection createConnectionForExamples() {
     return FtpExampleHelper.ftpConnection();
@@ -77,6 +74,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     return super.createBaseFileName(object);
   }
 
+  @Test
   public void testFileFilterImp() throws Exception {
     FtpConsumer ftpConsumer = new FtpConsumer();
     assertNull(ftpConsumer.getFileFilterImp());
@@ -91,6 +89,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     assertEquals(RegexFileFilter.class.getCanonicalName(), ftpConsumer.fileFilterImp());
   }
 
+  @Test
   public void testWipSuffix() throws Exception {
     FtpConsumer ftpConsumer = new FtpConsumer();
     assertNull(ftpConsumer.getWipSuffix());
@@ -105,6 +104,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     assertEquals("_wip", ftpConsumer.wipSuffix());
   }
 
+  @Test
   public void testBasicConsume() throws Exception {
     int count = 1;
     EmbeddedFtpServer helper = new EmbeddedFtpServer();
@@ -129,6 +129,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
 
   }
 
+  @Test
   public void testBasicConsume_NoDebug() throws Exception {
     int count = 1;
     EmbeddedFtpServer helper = new EmbeddedFtpServer();
@@ -154,6 +155,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
 
   }
 
+  @Test
   public void testConsumeWithOverride() throws Exception {
     int count = 1;
     EmbeddedFtpServer helper = new EmbeddedFtpServer();
@@ -178,6 +180,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     }
   }
 
+  @Test
   public void testConsumeWithFilter() throws Exception {
     int count = 1;
     EmbeddedFtpServer helper = new EmbeddedFtpServer();
@@ -207,6 +210,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     }
   }
 
+  @Test
   public void testConsumeWithQuietPeriod() throws Exception {
 
     int count = 1;
@@ -232,6 +236,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     }
   }
 
+  @Test
   public void testConsumeWithNonMatchingFilter() throws Exception {
     int count = 1;
     EmbeddedFtpServer helper = new EmbeddedFtpServer();
@@ -271,6 +276,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     }
   }
 
+  @Test
   public void testActiveModeConsume() throws Exception {
 
     int count = 1;
@@ -296,6 +302,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     }
   }
 
+  @Test
   public void testPassiveModeConsume() throws Exception {
 
     int count = 1;
@@ -321,6 +328,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     }
   }
 
+  @Test
   public void testConsume_ForceRelativePath() throws Exception {
     int count = 1;
     EmbeddedFtpServer helper = new EmbeddedFtpServer();
@@ -346,6 +354,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     }
   }
 
+  @Test
   public void testConsumeWithQuietPeriodAndTimezone() throws Exception {
     int count = 1;
     EmbeddedFtpServer helper = new EmbeddedFtpServer();
@@ -390,6 +399,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     }
   }
 
+  @Test
   public void testConsume_WithProcDirectory() throws Exception {
 
     int count = 1;
@@ -422,6 +432,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     }
   }
 
+  @Test
   public void testConsume_WithProcDirectory_FileAlreadyExists() throws Exception {
     int count = 1;
     EmbeddedFtpServer helper = new EmbeddedFtpServer();
@@ -453,6 +464,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     }
   }
 
+  @Test
   public void testConsumeWithEncoder() throws Exception {
     int count = 1;
     EmbeddedFtpServer helper = new EmbeddedFtpServer();
@@ -485,6 +497,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     }
   }
 
+  @Test
   public void testConsume_IgnoresWipFiles() throws Exception {
 
     int count = 1;

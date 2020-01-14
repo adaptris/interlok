@@ -18,11 +18,12 @@ package com.adaptris.core.services.aggregator;
 
 import static com.adaptris.core.services.splitter.XpathSplitterTest.ENCODING_UTF8;
 import static com.adaptris.core.services.splitter.XpathSplitterTest.ENVELOPE_DOCUMENT;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -42,19 +43,13 @@ import com.adaptris.util.text.xml.XPath;
 @SuppressWarnings("deprecation")
 public class IgnoreOriginalXmlAggregatorTest extends XmlAggregatorCase {
 
-  public IgnoreOriginalXmlAggregatorTest(String name) {
-    super(name);
-  }
 
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-  }
-
-
+  @Test
   public void testSplitJoinService_WithExplicitDocumentEnoding() throws Exception {
     // This is a XML doc with 3 iterable elements...
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(SplitterCase.XML_MESSAGE);
@@ -75,6 +70,7 @@ public class IgnoreOriginalXmlAggregatorTest extends XmlAggregatorCase {
     assertEquals("UTF-8", msg.getContentEncoding());
   }
 
+  @Test
   public void testSplitJoinService_WithImplicitDocumentEnoding() throws Exception {
     // This is a XML doc with 3 iterable elements...
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(SplitterCase.XML_MESSAGE, "ISO-8859-1");
@@ -91,6 +87,7 @@ public class IgnoreOriginalXmlAggregatorTest extends XmlAggregatorCase {
     assertEquals("ISO-8859-1", msg.getContentEncoding());
   }
 
+  @Test
   public void testJoinMessage_NoTemplate() throws Exception {
     XmlDocumentAggregator aggr = new IgnoreOriginalXmlDocumentAggregator();
     aggr.setMergeImplementation(new InsertNode(SplitJoinServiceTest.XPATH_ENVELOPE));
@@ -109,6 +106,7 @@ public class IgnoreOriginalXmlAggregatorTest extends XmlAggregatorCase {
     }
   }
 
+  @Test
   public void testSplitJoinService_withFilter() throws Exception {
     // This is a XML doc with 3 iterable elements...
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(SplitterCase.XML_MESSAGE);
@@ -164,6 +162,7 @@ public class IgnoreOriginalXmlAggregatorTest extends XmlAggregatorCase {
       return numberOfCalls %2 == 0;
     }
 
+    @Override
     public void close() {
       throw new RuntimeException();
     }

@@ -16,13 +16,12 @@
 
 package com.adaptris.core.config;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
+import org.junit.Test;
 import org.mockito.Mockito;
-
 import com.adaptris.core.Adapter;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.MarshallingBaseCase;
@@ -36,14 +35,6 @@ public class PreProcessingXStreamMarshallerTest extends MarshallingBaseCase {
   private static final String XSTREAM_STANDARD_XML = "xstream-standard.xml";
   private static final String XSTREAM_BEAUTIFIED_XML = "xstream-beautified.xml";
 
-  public PreProcessingXStreamMarshallerTest(java.lang.String testName) {
-    super(testName);
-  }
-
-  public void setUp() throws Exception {
-    super.setUp();
-  }
-
 
   @Override
   protected XStreamMarshaller createMarshaller() throws Exception {
@@ -53,6 +44,7 @@ public class PreProcessingXStreamMarshallerTest extends MarshallingBaseCase {
     return marshaller;
   }
 
+  @Test
   public void testPreProcessorCalled() throws Exception {
     DefaultPreProcessorLoader mockLoader = Mockito.mock(DefaultPreProcessorLoader.class);
     DummyConfigurationPreProcessor mockPreProc = Mockito.mock(DummyConfigurationPreProcessor.class);

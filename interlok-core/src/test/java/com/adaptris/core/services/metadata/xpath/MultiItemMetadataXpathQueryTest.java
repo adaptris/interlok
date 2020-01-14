@@ -16,8 +16,10 @@
 
 package com.adaptris.core.services.metadata.xpath;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import org.w3c.dom.Document;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -27,10 +29,6 @@ import com.adaptris.util.text.xml.XPath;
 
 @SuppressWarnings("deprecation")
 public class MultiItemMetadataXpathQueryTest extends MetadataXpathQueryCase {
-
-  public MultiItemMetadataXpathQueryTest(String testName) {
-    super(testName);
-  }
 
   @Override
   protected MultiItemMetadataXpathQuery create() {
@@ -44,6 +42,7 @@ public class MultiItemMetadataXpathQueryTest extends MetadataXpathQueryCase {
     return query;
   }
 
+  @Test
   public void testSetSeparator() {
     MultiItemMetadataXpathQuery query = create();
     assertEquals("|", query.getSeparator());
@@ -61,6 +60,7 @@ public class MultiItemMetadataXpathQueryTest extends MetadataXpathQueryCase {
     assertEquals("", query.getSeparator());
   }
 
+  @Test
   public void testResolveXpath_EmptyResults_NotAllowed() throws Exception {
     MultiItemMetadataXpathQuery query = init(create());
     Document doc = XmlHelper.createDocument(XML);
@@ -75,6 +75,7 @@ public class MultiItemMetadataXpathQueryTest extends MetadataXpathQueryCase {
     }
   }
 
+  @Test
   public void testResolveXpath_EmptyResults_Allowed() throws Exception {
     MultiItemMetadataXpathQuery query = init(create());
 
@@ -87,6 +88,7 @@ public class MultiItemMetadataXpathQueryTest extends MetadataXpathQueryCase {
     assertEquals("", result.getValue());
   }
 
+  @Test
   public void testResolveXpath() throws Exception {
     MultiItemMetadataXpathQuery query = init(create());
     Document doc = XmlHelper.createDocument(XML);

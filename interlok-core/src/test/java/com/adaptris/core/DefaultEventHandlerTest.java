@@ -15,9 +15,11 @@
 */
 
 package com.adaptris.core;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.UUID;
-
+import org.junit.Test;
 import com.adaptris.core.event.AdapterCloseEvent;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.PtpProducer;
@@ -28,16 +30,9 @@ import com.adaptris.core.util.LifecycleHelper;
 
 public class DefaultEventHandlerTest extends ExampleEventHandlerCase<DefaultEventHandler> {
 
-  public DefaultEventHandlerTest(java.lang.String testName) {
-    super(testName);
-  }
-
   @Override
-  protected void setUp() throws CoreException {
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
@@ -49,7 +44,7 @@ public class DefaultEventHandlerTest extends ExampleEventHandlerCase<DefaultEven
 
   @Override
   protected DefaultEventHandler applyConfiguration(DefaultEventHandler eh) throws CoreException {
-    DefaultEventHandler eventHandler = (DefaultEventHandler) eh;
+    DefaultEventHandler eventHandler = eh;
     eventHandler.setUniqueId(UUID.randomUUID().toString());
     eventHandler.setConnection(new NullConnection());
     eventHandler.setProducer(new MockMessageProducer());
@@ -57,6 +52,7 @@ public class DefaultEventHandlerTest extends ExampleEventHandlerCase<DefaultEven
     return eventHandler;
   }
 
+  @Test
   public void testSetters() throws Exception {
     DefaultEventHandler eventHandler = newEventHandler("testSetters");
     try {
@@ -75,7 +71,7 @@ public class DefaultEventHandlerTest extends ExampleEventHandlerCase<DefaultEven
     }
   }
 
-
+  @Test
   public void testSendEventWithException() throws Exception {
     Event e = EventFactory.create(AdapterCloseEvent.class);
     DefaultEventHandler eh = applyConfiguration(newEventHandler("testSendEventWithException"));
@@ -91,6 +87,7 @@ public class DefaultEventHandlerTest extends ExampleEventHandlerCase<DefaultEven
     doAssertions(eh, 0, e.getClass());
   }
 
+  @Test
   public void testGettersWhenClosed() throws Exception {
     DefaultEventHandler input = applyConfiguration(newEventHandler("testGettersWhenClosed"));
     AdaptrisMessageProducer p1 = input.getProducer();
@@ -105,6 +102,7 @@ public class DefaultEventHandlerTest extends ExampleEventHandlerCase<DefaultEven
     assertRoundtripEquality(con1, con2);
   }
 
+  @Test
   public void testSettersWhenClosed() throws Exception {
     DefaultEventHandler input = applyConfiguration(newEventHandler("testSettersWhenClosed"));
     AdaptrisMessageProducer p1 = input.getProducer();
@@ -115,6 +113,7 @@ public class DefaultEventHandlerTest extends ExampleEventHandlerCase<DefaultEven
     input.setProducer(p1);
   }
 
+  @Test
   public void testSettersWhenInitialised() throws Exception {
     DefaultEventHandler input = applyConfiguration(newEventHandler("testSettersWhenInitialised"));
     AdaptrisMessageProducer p1 = input.getProducer();
@@ -134,6 +133,7 @@ public class DefaultEventHandlerTest extends ExampleEventHandlerCase<DefaultEven
     }
   }
 
+  @Test
  public void testSettersWhenStarted() throws Exception {
     DefaultEventHandler input = applyConfiguration(newEventHandler("testSettersWhenStarted"));
     AdaptrisMessageProducer p1 = input.getProducer();
@@ -153,6 +153,7 @@ public class DefaultEventHandlerTest extends ExampleEventHandlerCase<DefaultEven
     }
   }
 
+  @Test
   public void testSettersWhenStopped() throws Exception {
     DefaultEventHandler input = applyConfiguration(newEventHandler("testSettersWhenStopped"));
     AdaptrisMessageProducer p1 = input.getProducer();
@@ -173,6 +174,7 @@ public class DefaultEventHandlerTest extends ExampleEventHandlerCase<DefaultEven
     }
   }
 
+  @Test
   public void testBackReferences() throws Exception {
     DefaultEventHandler evh = new DefaultEventHandler();
     NullConnection conn = new NullConnection();

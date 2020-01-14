@@ -18,7 +18,11 @@ package com.adaptris.core.jms;
 
 import static com.adaptris.core.jms.JmsConfig.DEFAULT_PAYLOAD;
 import static com.adaptris.core.jms.JmsConfig.MESSAGE_TRANSLATOR_LIST;
-import static org.mockito.Matchers.any;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -34,6 +38,8 @@ import javax.jms.Session;
 import javax.jms.Topic;
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQSession;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import com.adaptris.core.AdaptrisMessage;
@@ -60,16 +66,15 @@ public class JmsProducerTest extends JmsProducerCase {
   @Mock private Session mockSession;
   @Mock private Message mockMessage;
 
-  @Override
+  @Before
   public void setUp() throws Exception {
-    super.setUp();
     MockitoAnnotations.initMocks(this);
   }
-  
-  public JmsProducerTest(String name) {
-    super(name);
-  }
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
   protected JmsConsumerImpl createConsumer(ConfiguredConsumeDestination dest) {
     return new PtpConsumer(dest);
   }
@@ -96,6 +101,7 @@ public class JmsProducerTest extends JmsProducerCase {
     return session.createTopic(name);
   }
 
+  @Test
   public void testTransactedCommit() throws Exception {
     when(mockSessionFactory.createProducerSession(any(), any()))
       .thenReturn(mockProducerSession);
@@ -111,7 +117,8 @@ public class JmsProducerTest extends JmsProducerCase {
     
     verify(mockSession).commit();
   }
-  
+
+  @Test
   public void testNonTransactedNoCommit() throws Exception {
     when(mockSessionFactory.createProducerSession(any(), any()))
       .thenReturn(mockProducerSession);
@@ -127,7 +134,8 @@ public class JmsProducerTest extends JmsProducerCase {
     
     verify(mockSession, times(0)).commit();
   }
-  
+
+  @Test
   public void testTransactedRollback() throws Exception {
     when(mockSessionFactory.createProducerSession(any(), any()))
       .thenReturn(mockProducerSession);
@@ -143,7 +151,8 @@ public class JmsProducerTest extends JmsProducerCase {
     
     verify(mockSession).rollback();
   }
-  
+
+  @Test
   public void testAttemptedTransactedRollback() throws Exception {
     when(mockSessionFactory.createProducerSession(any(), any()))
       .thenReturn(mockProducerSession);
@@ -161,7 +170,8 @@ public class JmsProducerTest extends JmsProducerCase {
     
     verify(mockSession).rollback();
   }
-  
+
+  @Test
   public void testSessionDeadOnRollback() throws Exception {
     when(mockSessionFactory.createProducerSession(any(), any()))
       .thenReturn(mockProducerSession);
@@ -177,7 +187,8 @@ public class JmsProducerTest extends JmsProducerCase {
     
     verify(mockSession, times(0)).rollback();
   }
-  
+
+  @Test
   public void testNotTransactedNoRollback() throws Exception {
     when(mockSessionFactory.createProducerSession(any(), any()))
       .thenReturn(mockProducerSession);
@@ -193,7 +204,8 @@ public class JmsProducerTest extends JmsProducerCase {
     
     verify(mockSession, times(0)).rollback();
   }
-  
+
+  @Test
   public void testNullMessageAck() throws Exception {
     when(mockSessionFactory.createProducerSession(any(), any()))
       .thenReturn(mockProducerSession);
@@ -209,7 +221,8 @@ public class JmsProducerTest extends JmsProducerCase {
     
     verify(mockMessage, times(0)).acknowledge();
   }
-  
+
+  @Test
   public void testMessageAckNotTransacted() throws Exception {
     when(mockSessionFactory.createProducerSession(any(), any()))
       .thenReturn(mockProducerSession);
@@ -225,7 +238,8 @@ public class JmsProducerTest extends JmsProducerCase {
     
     verify(mockMessage).acknowledge();
   }
-  
+
+  @Test
   public void testMessageAckTransacted() throws Exception {
     when(mockSessionFactory.createProducerSession(any(), any()))
       .thenReturn(mockProducerSession);
@@ -241,7 +255,8 @@ public class JmsProducerTest extends JmsProducerCase {
     
     verify(mockMessage, times(0)).acknowledge();
   }
-  
+
+  @Test
   public void testMessageAckTransactedAutoMode() throws Exception {
     when(mockSessionFactory.createProducerSession(any(), any()))
       .thenReturn(mockProducerSession);
@@ -258,7 +273,8 @@ public class JmsProducerTest extends JmsProducerCase {
     
     verify(mockMessage, times(0)).acknowledge();
   }
-  
+
+  @Test
   public void testMessageAckNonTransactedAutoMode() throws Exception {
     when(mockSessionFactory.createProducerSession(any(), any()))
       .thenReturn(mockProducerSession);
@@ -275,7 +291,8 @@ public class JmsProducerTest extends JmsProducerCase {
     
     verify(mockMessage, times(0)).acknowledge();
   }
-  
+
+  @Test
   public void testMessageAckNonTransactedClientMode() throws Exception {
     when(mockSessionFactory.createProducerSession(any(), any()))
       .thenReturn(mockProducerSession);
@@ -293,6 +310,7 @@ public class JmsProducerTest extends JmsProducerCase {
     verify(mockMessage).acknowledge();
   }
 
+  @Test
   public void testProduce_JmsReplyToDestination() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -323,7 +341,7 @@ public class JmsProducerTest extends JmsProducerCase {
     }
   }
 
-
+  @Test
   public void testProduce_CaptureOutgoingMessageDetails() throws Exception {
     String rfc6167 = "jms:queue:" + getName();
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
@@ -350,6 +368,7 @@ public class JmsProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testProduceAndConsume_DeliveryMode() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -375,6 +394,7 @@ public class JmsProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testProduceAndConsume_Priority() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -400,7 +420,7 @@ public class JmsProducerTest extends JmsProducerCase {
     }
   }
 
-
+  @Test
   public void testProduceAndConsume_TimeToLive() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -426,7 +446,7 @@ public class JmsProducerTest extends JmsProducerCase {
     }
   }
 
-
+  @Test
   public void testSetProducerSessionFactory() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
 
@@ -443,6 +463,7 @@ public class JmsProducerTest extends JmsProducerCase {
     assertEquals(psf, producer.getSessionFactory());
   }
 
+  @Test
   public void testDefaultSessionFactory() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -475,6 +496,7 @@ public class JmsProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testPerMessageSession() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -508,6 +530,7 @@ public class JmsProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testTimedInactivitySession() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -548,6 +571,7 @@ public class JmsProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testTimedInactivitySession_SessionStillValid() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -585,6 +609,7 @@ public class JmsProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testMessageCountSession() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
@@ -624,6 +649,7 @@ public class JmsProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testMessageCountSession_SessionStillValid() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -661,6 +687,7 @@ public class JmsProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testMessageSizeSession() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -702,6 +729,7 @@ public class JmsProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testMessageSizeSession_SessionStillValid() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -738,6 +766,7 @@ public class JmsProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testMetadataSession() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -786,6 +815,7 @@ public class JmsProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testMultipleProducersWithSession() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -821,6 +851,7 @@ public class JmsProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testMultipleRequestorWithSession() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());

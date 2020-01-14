@@ -72,7 +72,6 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   @Valid
   private List<Service> services;
   @MarshallingCDATA
-  @AdvancedConfig(rare = true)
   private String comments;
   
   private transient FifoMutexLock lock = new FifoMutexLock();

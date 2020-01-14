@@ -15,11 +15,12 @@
 */
 
 package com.adaptris.core.services.dynamic;
-
+import static org.junit.Assert.fail;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileCleaningTracker;
 import org.apache.commons.io.FileDeleteStrategy;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.DefaultMarshaller;
@@ -34,12 +35,14 @@ public abstract class MarshallServiceStoreCase extends BaseCase {
   private static FileCleaningTracker cleaner = new FileCleaningTracker();
   private Object markerObject = new Object();
 
-  public MarshallServiceStoreCase(String s) {
-    super(s);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   protected abstract MarshallServiceStore createServiceStore() throws Exception;
 
+  @Test
   public void testSetFilenamePrefix() throws Exception {
     LocalMarshallServiceStore store = new LocalMarshallServiceStore();
     try {
@@ -50,6 +53,7 @@ public abstract class MarshallServiceStoreCase extends BaseCase {
     }
   }
 
+  @Test
   public void testSetFilenameSuffix() throws Exception {
     LocalMarshallServiceStore store = new LocalMarshallServiceStore();
     try {

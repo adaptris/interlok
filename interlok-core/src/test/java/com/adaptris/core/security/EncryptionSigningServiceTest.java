@@ -19,9 +19,9 @@ package com.adaptris.core.security;
 /**
  */
 public class EncryptionSigningServiceTest extends EncryptionServiceCase {
-
-  public EncryptionSigningServiceTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   /**

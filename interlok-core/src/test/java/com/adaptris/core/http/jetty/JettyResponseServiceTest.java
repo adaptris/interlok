@@ -26,7 +26,10 @@ import static com.adaptris.core.http.jetty.StandardResponseProducerTest.URL_TO_P
 import static com.adaptris.core.http.jetty.StandardResponseProducerTest.createConnection;
 import static com.adaptris.core.http.jetty.StandardResponseProducerTest.createMessage;
 import static com.adaptris.core.http.jetty.StandardResponseProducerTest.createRequestor;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.Channel;
 import com.adaptris.core.PortManager;
@@ -39,13 +42,12 @@ import com.adaptris.core.stubs.MockMessageProducer;
 @SuppressWarnings("deprecation")
 public class JettyResponseServiceTest extends HttpServiceExample {
 
-  public JettyResponseServiceTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void setUp() throws Exception {}
-
+  @Test
   public void testDoService() throws Exception {
     JettyResponseService responder = new JettyResponseService(200, "text/plain");
     HttpConnection httpConnection = createConnection();
@@ -68,6 +70,7 @@ public class JettyResponseServiceTest extends HttpServiceExample {
     }
   }
 
+  @Test
   public void testResponseWithError() throws Exception {
     JettyResponseService responder = new JettyResponseService().withHttpStatus("500").withContentType("text/plain")
         .withResponseHeaderProvider(new NoOpResponseHeaderProvider());

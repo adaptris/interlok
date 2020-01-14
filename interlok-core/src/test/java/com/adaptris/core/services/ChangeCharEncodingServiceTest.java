@@ -16,17 +16,20 @@
 
 package com.adaptris.core.services;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
 
 public class ChangeCharEncodingServiceTest extends GeneralServiceExample {
 
-  public ChangeCharEncodingServiceTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
@@ -34,6 +37,7 @@ public class ChangeCharEncodingServiceTest extends GeneralServiceExample {
     return new ChangeCharEncodingService(StandardCharsets.ISO_8859_1.name());
   }
 
+  @Test
   public void testSetCharEncoding() {
     ChangeCharEncodingService srv = new ChangeCharEncodingService();
     assertNull(srv.getCharEncoding());
@@ -43,7 +47,7 @@ public class ChangeCharEncodingServiceTest extends GeneralServiceExample {
     assertEquals(null, srv.getCharEncoding());
   }
 
-
+  @Test
   public void testChangeCharset() throws Exception {
     ChangeCharEncodingService srv = new ChangeCharEncodingService();
     srv.setCharEncoding("iso-8859-1");

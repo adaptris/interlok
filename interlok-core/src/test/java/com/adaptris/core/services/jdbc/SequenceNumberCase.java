@@ -20,14 +20,18 @@ import static com.adaptris.core.services.jdbc.AbstractJdbcSequenceNumberService.
 import static com.adaptris.core.services.jdbc.AbstractJdbcSequenceNumberService.DEFAULT_RESET_STATEMENT;
 import static com.adaptris.core.services.jdbc.AbstractJdbcSequenceNumberService.DEFAULT_SELECT_STATEMENT;
 import static com.adaptris.core.services.jdbc.AbstractJdbcSequenceNumberService.DEFAULT_UPDATE_STATEMENT;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.jdbc.DatabaseConnection;
@@ -48,10 +52,7 @@ public abstract class SequenceNumberCase extends JdbcServiceCase {
       + "If you have a table called SEQUENCES with those two columns then you will not \n"
       + "have to change any SQL statements (i.e. they can be removed from your configuration)" + "\n-->\n";
 
-  public SequenceNumberCase(String name) {
-    super(name);
-  }
-
+  @Test
   public void testReplaceMetadata() {
     AbstractJdbcSequenceNumberService service = createService();
     assertNull(service.getAlwaysReplaceMetadata());
@@ -61,6 +62,7 @@ public abstract class SequenceNumberCase extends JdbcServiceCase {
     assertFalse(service.alwaysReplaceMetadata());
   }
 
+  @Test
   public void testInsertStatement() {
     AbstractJdbcSequenceNumberService service = createService();
     assertNull(service.getInsertStatement());
@@ -70,6 +72,7 @@ public abstract class SequenceNumberCase extends JdbcServiceCase {
     assertEquals("fred", service.insertStatement());
   }
 
+  @Test
   public void testSelectStatement() {
     AbstractJdbcSequenceNumberService service = createService();
     assertNull(service.getSelectStatement());
@@ -80,6 +83,7 @@ public abstract class SequenceNumberCase extends JdbcServiceCase {
 
   }
 
+  @Test
   public void testUpdateStatement() {
     AbstractJdbcSequenceNumberService service = createService();
     assertNull(service.getUpdateStatement());
@@ -90,6 +94,7 @@ public abstract class SequenceNumberCase extends JdbcServiceCase {
 
   }
 
+  @Test
   public void testResetStatement() {
     AbstractJdbcSequenceNumberService service = createService();
     assertNull(service.getResetStatement());
@@ -99,6 +104,7 @@ public abstract class SequenceNumberCase extends JdbcServiceCase {
     assertEquals("fred", service.resetStatement());
   }
 
+  @Test
   public void testMetadataKey() {
     AbstractJdbcSequenceNumberService service = createService();
     assertNull(service.getMetadataKey());
@@ -106,6 +112,7 @@ public abstract class SequenceNumberCase extends JdbcServiceCase {
     assertEquals("fred", service.getMetadataKey());
   }
 
+  @Test
   public void testNumberFormat() {
     AbstractJdbcSequenceNumberService service = createService();
     assertEquals("0", service.getNumberFormat());
@@ -113,6 +120,7 @@ public abstract class SequenceNumberCase extends JdbcServiceCase {
     assertEquals("000", service.getNumberFormat());
   }
 
+  @Test
   public void testInit() throws Exception {
     AbstractJdbcSequenceNumberService service = createService();
     try {
@@ -132,6 +140,7 @@ public abstract class SequenceNumberCase extends JdbcServiceCase {
     }
   }
 
+  @Test
   public void testSequenceNumberInsert() throws Exception {
     createDatabase();
     AdaptrisMessage msg = createMessageForTests();
@@ -143,6 +152,7 @@ public abstract class SequenceNumberCase extends JdbcServiceCase {
     assertEquals(2, getCurrentSequenceNumber(DEFAULT_ID));
   }
 
+  @Test
   public void testSequenceNumber_MetadataAlreadyExists_Override() throws Exception {
     createDatabase();
     populateDatabase(DEFAULT_ID, 15);
@@ -156,6 +166,7 @@ public abstract class SequenceNumberCase extends JdbcServiceCase {
     assertEquals(16, getCurrentSequenceNumber(DEFAULT_ID));
   }
 
+  @Test
   public void testSequenceNumber_MetadataAlreadyExists_NoOverride() throws Exception {
     createDatabase();
     populateDatabase(DEFAULT_ID, 15);
@@ -169,6 +180,7 @@ public abstract class SequenceNumberCase extends JdbcServiceCase {
     assertEquals(15, getCurrentSequenceNumber(DEFAULT_ID));
   }
 
+  @Test
   public void testSequenceNumberSelect() throws Exception {
     createDatabase();
     populateDatabase(DEFAULT_ID, 15);
@@ -180,6 +192,7 @@ public abstract class SequenceNumberCase extends JdbcServiceCase {
     assertEquals(16, getCurrentSequenceNumber(DEFAULT_ID));
   }
 
+  @Test
   public void testSequenceNumberInsertNoAutoCommit() throws Exception {
     createDatabase();
     populateDatabase(DEFAULT_ID, 15);
@@ -192,6 +205,7 @@ public abstract class SequenceNumberCase extends JdbcServiceCase {
     assertEquals(16, getCurrentSequenceNumber(DEFAULT_ID));
   }
 
+  @Test
   public void testSequenceNumberSelectNoAutoCommit() throws Exception {
     createDatabase();
     populateDatabase(DEFAULT_ID, 15);
@@ -204,6 +218,7 @@ public abstract class SequenceNumberCase extends JdbcServiceCase {
     assertEquals(16, getCurrentSequenceNumber(DEFAULT_ID));
   }
 
+  @Test
   public void testSequenceNumberExceedsNumberFormat_ResetToOne() throws Exception {
     createDatabase();
     populateDatabase(DEFAULT_ID, 10000);
@@ -217,6 +232,7 @@ public abstract class SequenceNumberCase extends JdbcServiceCase {
     assertEquals(2, getCurrentSequenceNumber(DEFAULT_ID));
   }
 
+  @Test
   public void testSequenceNumberExceedsNumberFormat_Continue() throws Exception {
     createDatabase();
     populateDatabase(DEFAULT_ID, 10000);
@@ -230,6 +246,7 @@ public abstract class SequenceNumberCase extends JdbcServiceCase {
     assertEquals(10001, getCurrentSequenceNumber(DEFAULT_ID));
   }
 
+  @Test
   public void testSequenceNumberExceedsNumberFormat_BadConfig() throws Exception {
     createDatabase();
     populateDatabase(DEFAULT_ID, 10000);
@@ -243,6 +260,7 @@ public abstract class SequenceNumberCase extends JdbcServiceCase {
     assertEquals(10001, getCurrentSequenceNumber(DEFAULT_ID));
   }
 
+  @Test
   public void testAutoCreateDatabase_WithTimeout() throws Exception {
     Connection c = createConnection();
     dropDatabase(c);
@@ -257,6 +275,7 @@ public abstract class SequenceNumberCase extends JdbcServiceCase {
     assertEquals(2, getCurrentSequenceNumber(DEFAULT_ID));
   }
 
+  @Test
   public void testAutoCreateDatabase() throws Exception {
     Connection c = createConnection();
     dropDatabase(c);
@@ -270,6 +289,7 @@ public abstract class SequenceNumberCase extends JdbcServiceCase {
     assertEquals(2, getCurrentSequenceNumber(DEFAULT_ID));
   }
 
+  @Test
   public void testAutoCreateDatabase_DatabaseExists() throws Exception {
     createDatabase();
     AbstractJdbcSequenceNumberService service = createServiceForTests();
@@ -281,6 +301,7 @@ public abstract class SequenceNumberCase extends JdbcServiceCase {
     assertEquals(2, getCurrentSequenceNumber(DEFAULT_ID));
   }
 
+  @Test
   public void testSequenceNumber_ExceedsMaxConfigured_ResetToOne() throws Exception {
     createDatabase();
     populateDatabase(DEFAULT_ID, 10000);
@@ -295,6 +316,7 @@ public abstract class SequenceNumberCase extends JdbcServiceCase {
     assertEquals(2, getCurrentSequenceNumber(DEFAULT_ID));
   }
 
+  @Test
   public void testSequenceNumber_MaxConfigured_ResetToOne() throws Exception {
     createDatabase();
     populateDatabase(DEFAULT_ID, 10000);

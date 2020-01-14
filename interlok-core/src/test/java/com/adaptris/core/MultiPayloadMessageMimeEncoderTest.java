@@ -16,16 +16,20 @@
 
 package com.adaptris.core;
 
-import junit.framework.TestCase;
-import org.junit.Before;
-import org.junit.Test;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 import java.security.MessageDigest;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
 
-public class MultiPayloadMessageMimeEncoderTest extends TestCase {
+public class MultiPayloadMessageMimeEncoderTest {
 
   private static final String ENCODING = "UTF-8";
   private static final String METADATA_VALUE = "value";
@@ -37,13 +41,12 @@ public class MultiPayloadMessageMimeEncoderTest extends TestCase {
   private MimeEncoderImpl mimeEncoder;
   private MultiPayloadMessageFactory messageFactory;
 
-  public MultiPayloadMessageMimeEncoderTest(String name) {
-    super(name);
-  }
 
-  @Override
+  @Rule
+  public TestName testName = new TestName();
+
   @Before
-  protected void setUp() throws Exception {
+  public void setUp() throws Exception {
     messageFactory = new MultiPayloadMessageFactory();
     mimeEncoder = new MultiPayloadMessageMimeEncoder();
     mimeEncoder.registerMessageFactory(messageFactory);
@@ -117,7 +120,7 @@ public class MultiPayloadMessageMimeEncoderTest extends TestCase {
   public void testRoundTripWithException() throws Exception {
     AdaptrisMessage message = messageFactory.newMessage(PAYLOAD_ID[0], STANDARD_PAYLOAD[0], ENCODING);
     message.addMetadata(METADATA_KEY, METADATA_VALUE);
-    message.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception(getName()));
+    message.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception(testName.getMethodName()));
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     mimeEncoder.writeMessage(message, out);
     AdaptrisMessage result = mimeEncoder.readMessage(new ByteArrayInputStream(out.toByteArray()));

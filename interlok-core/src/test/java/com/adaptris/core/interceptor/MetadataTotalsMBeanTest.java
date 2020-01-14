@@ -17,12 +17,12 @@
 package com.adaptris.core.interceptor;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 import java.util.List;
-
 import javax.management.JMX;
 import javax.management.ObjectName;
-
+import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.SerializableAdaptrisMessage;
@@ -35,10 +35,9 @@ public class MetadataTotalsMBeanTest extends MetadataStatisticsMBeanCase {
   private static final String METADATA_KEY1 = "key1";
   private static final String METADATA_KEY2 = "key2";
 
-  public MetadataTotalsMBeanTest(String name) {
-    super(name);
-  }
 
+
+  @Test
   public void testGetMetadataStatistics() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     MetadataCountInterceptor interceptor = createInterceptor();
@@ -71,6 +70,7 @@ public class MetadataTotalsMBeanTest extends MetadataStatisticsMBeanCase {
     }
   }
 
+  @Override
   protected SerializableAdaptrisMessage createMessageForInjection(String payload) {
     SerializableAdaptrisMessage msg = null;
     if (!isEmpty(payload)) {

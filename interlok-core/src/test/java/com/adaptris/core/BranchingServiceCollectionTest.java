@@ -16,20 +16,23 @@
 
 package com.adaptris.core;
 
-import static org.mockito.Matchers.any;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
-
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import com.adaptris.core.services.metadata.AddMetadataService;
 import com.adaptris.core.stubs.EventHandlerAwareService;
 import com.adaptris.core.stubs.ExampleBranchingService;
@@ -51,15 +54,18 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
   @Mock
   private OutOfStateHandler mockOutOfStateHandler;
 
-  public BranchingServiceCollectionTest(String name) {
-    super(name);
+  public BranchingServiceCollectionTest() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
   }
 
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+  @Before
+  public void setUp() throws Exception {
     branchService = new TestBranchingService();
     branchService.setUniqueId(FIRST_SERVICE_ID);
 
@@ -88,6 +94,7 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
     assertEquals(eh, s.retrieveEventHandler());
   }
 
+  @Test
   public void testSetFirstServiceId() throws Exception {
     BranchingServiceCollection services = createServiceCollection();
     services.setFirstServiceId(FIRST_SERVICE_ID);
@@ -101,6 +108,7 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
     assertEquals(FIRST_SERVICE_ID, services.getFirstServiceId());
   }
 
+  @Test
   public void testAddServiceWithDuplicates() throws Exception {
     BranchingServiceCollection services = createServiceCollection();
     String uniqueId = UUID.randomUUID().toString();
@@ -114,6 +122,7 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
     }
   }
 
+  @Test
   public void testAddServiceNoUniqueId() throws Exception {
     BranchingServiceCollection services = createServiceCollection();
     try {
@@ -125,6 +134,7 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
     }
   }
 
+  @Test
   public void testAddAllWithDuplicates() throws Exception {
     BranchingServiceCollection services = createServiceCollection();
     ServiceList sl = new ServiceList();
@@ -148,7 +158,7 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
     }
   }
 
-
+  @Test
   public void testAddAllWithNoUniqueId() throws Exception {
     BranchingServiceCollection services = createServiceCollection();
     ServiceList sl = new ServiceList();
@@ -169,6 +179,7 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
     }
   }
 
+  @Test
   public void testInit() {
     BranchingServiceCollection services = createServiceCollection();
     try {
@@ -187,6 +198,7 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
     }
   }
 
+  @Test
   public void testSetList() throws Exception {
     BranchingServiceCollection services = createServiceCollection();
     services.setServices(Arrays.asList(new Service[]
@@ -222,6 +234,7 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
     }
   }
 
+  @Test
   public void testDoService() throws Exception {
     BranchingServiceCollection services = createServiceCollection();
     branchService.changeState(StartedState.getInstance());
@@ -246,8 +259,8 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
     assertTrue(msg2.getMetadataValue("service-id").equals(BRANCH_HIGH));
     assertEquals(2, msg.getMessageLifecycleEvent().getMleMarkers().size());
   }
-  
 
+  @Test
   public void testDoService_Legacy() throws Exception {
     BranchingServiceCollection services = createServiceCollection();
     branchService.changeState(StartedState.getInstance());
@@ -273,7 +286,7 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
     assertEquals(2, msg.getMessageLifecycleEvent().getMleMarkers().size());
   }
 
-
+  @Test
   public void testDoServiceOutOfState() throws Exception {
     BranchingServiceCollection services = createServiceCollection();
     services.addService(branchService);
@@ -295,6 +308,7 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
     }
   }
 
+  @Test
   public void testDoServiceBadServiceId() throws Exception {
     BranchingServiceCollection services = createServiceCollection();
     services.addService(branchService);
@@ -312,7 +326,8 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
     }
 
   }
-  
+
+  @Test
   public void testDoServiceFailsNoRestart() throws Exception {
     doThrow(new ServiceException("Expected")).when(mockFailingService).doService(any(AdaptrisMessage.class));
     when(mockFailingService.getUniqueId()).thenReturn(FIRST_SERVICE_ID);
@@ -339,7 +354,8 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
       verify(mockFailingService, never()).requestStart();
     }
   }
-  
+
+  @Test
   public void testDoServiceFailsWithServiceRestart() throws Exception {
     doThrow(new ServiceException("Expected")).when(mockFailingService).doService(any(AdaptrisMessage.class));
     when(mockFailingService.getUniqueId()).thenReturn(FIRST_SERVICE_ID);

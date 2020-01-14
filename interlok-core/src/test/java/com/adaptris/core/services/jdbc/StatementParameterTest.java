@@ -16,6 +16,9 @@
 
 package com.adaptris.core.services.jdbc;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -40,13 +43,8 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.xml.namespace.NamespaceContext;
-
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BaseCase;
@@ -64,18 +62,9 @@ public class StatementParameterTest extends BaseCase {
 
   private static final String STRING_VALUE = "ABCDEFG";
 
-  public StatementParameterTest(String n) {
-    super(n);
-  }
-
-  @Before
-  public void setUp() throws Exception {
-
-  }
-
-  @After
-  public void tearDown() throws Exception {
-
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Test

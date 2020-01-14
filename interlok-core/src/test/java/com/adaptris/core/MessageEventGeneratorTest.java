@@ -15,14 +15,18 @@
 */
 
 package com.adaptris.core;
+import static org.junit.Assert.assertNull;
+import org.junit.Test;
 
 @SuppressWarnings("deprecation")
 public class MessageEventGeneratorTest extends BaseCase {
 
-  public MessageEventGeneratorTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testNullConfirmationId() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance()
         .newMessage();
@@ -41,6 +45,7 @@ public class MessageEventGeneratorTest extends BaseCase {
     assertNull(mle.getConfirmationId());
   }
 
+  @Test
   public void testNullConfirmationIdNoKey() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance()
         .newMessage();
@@ -59,6 +64,7 @@ public class MessageEventGeneratorTest extends BaseCase {
     assertNull(mle.getConfirmationId());
   }
 
+  @Test
   public void testXmlRoundTrip() throws Exception {
 
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();

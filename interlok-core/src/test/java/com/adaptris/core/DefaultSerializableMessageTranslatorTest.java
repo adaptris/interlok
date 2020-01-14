@@ -16,20 +16,14 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 import com.adaptris.interlok.types.SerializableMessage;
 
-import junit.framework.TestCase;
+public class DefaultSerializableMessageTranslatorTest {
 
-public class DefaultSerializableMessageTranslatorTest extends TestCase {
-  
-  public void setUp() throws Exception {
-    
-  }
 
-  public void tearDown() throws Exception {
-    
-  }
-  
+  @Test
   public void testMetadataTranslated() throws Exception {
     AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage();
     message.addMetadata("key1", "value1");
@@ -43,7 +37,8 @@ public class DefaultSerializableMessageTranslatorTest extends TestCase {
     assertEquals("value2", translated.getMessageHeaders().get("key2"));
     assertEquals("value3", translated.getMessageHeaders().get("key3"));
   }
-  
+
+  @Test
   public void testPayloadTranslated() throws Exception {
     AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage("SomePayload");
     
@@ -52,7 +47,8 @@ public class DefaultSerializableMessageTranslatorTest extends TestCase {
     
     assertEquals("SomePayload", translated.getContent());
   }
-  
+
+  @Test
   public void testUniqueId() throws Exception {
     AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage("SomePayload");
     
@@ -61,7 +57,8 @@ public class DefaultSerializableMessageTranslatorTest extends TestCase {
     
     assertEquals(message.getUniqueId(), translated.getUniqueId());
   }
-  
+
+  @Test
   public void testCharEncoding() throws Exception {
     AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage("SomePayload");
     message.setContentEncoding("UTF-8");
@@ -71,7 +68,8 @@ public class DefaultSerializableMessageTranslatorTest extends TestCase {
     
     assertEquals(message.getContentEncoding(), translated.getContentEncoding());
   }
-  
+
+  @Test
   public void testExceptionMessage() throws Exception {
     AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage();
     message.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception("An Error Happened"));

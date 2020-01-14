@@ -16,8 +16,12 @@
 
 package com.adaptris.core.services.splitter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.List;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -31,20 +35,17 @@ public class SimpleRegexpMessageSplitterTest extends SplitterCase {
 
   private static final String MULTILINE_INPUT = "ABC\nDEF\nGHI\nEND\nABC\nDEF\nGHI\nEND\n";
 
-  public SimpleRegexpMessageSplitterTest(String arg0) {
-    super(arg0);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
   protected SimpleRegexpMessageSplitter createSplitterForTests() {
     return new SimpleRegexpMessageSplitter();
   }
+
+  @Test
   public void testSplit() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(SIMPLE_MSG);
     SimpleRegexpMessageSplitter splitter = new SimpleRegexpMessageSplitter("\n");
@@ -52,6 +53,7 @@ public class SimpleRegexpMessageSplitterTest extends SplitterCase {
     assertEquals(4, result.size());
   }
 
+  @Test
   public void testSplitMultiline() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(MULTILINE_INPUT);
     SimpleRegexpMessageSplitter splitter = new SimpleRegexpMessageSplitter("(?m)^END.*$");
@@ -59,6 +61,7 @@ public class SimpleRegexpMessageSplitterTest extends SplitterCase {
     assertEquals(2, result.size());
   }
 
+  @Test
   public void testInvalidPattern() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(SIMPLE_MSG);
     SimpleRegexpMessageSplitter splitter = new SimpleRegexpMessageSplitter("[");
@@ -71,6 +74,7 @@ public class SimpleRegexpMessageSplitterTest extends SplitterCase {
     }
   }
 
+  @Test
   public void testSplitByGroupNoMatch() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(GROUPED_CSV);
     SimpleRegexpMessageSplitter splitter = new SimpleRegexpMessageSplitter();
@@ -86,6 +90,7 @@ public class SimpleRegexpMessageSplitterTest extends SplitterCase {
     }
   }
 
+  @Test
   public void testSplitByGroupPreserveFirst() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(GROUPED_CSV);
     SimpleRegexpMessageSplitter splitter = new SimpleRegexpMessageSplitter();
@@ -98,6 +103,7 @@ public class SimpleRegexpMessageSplitterTest extends SplitterCase {
     assertEquals(4, result.size());
   }
 
+  @Test
   public void testSplitByGroupIgnoreFirst() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(GROUPED_CSV);
     SimpleRegexpMessageSplitter splitter = new SimpleRegexpMessageSplitter();
@@ -109,6 +115,7 @@ public class SimpleRegexpMessageSplitterTest extends SplitterCase {
     assertEquals(3, result.size());
   }
 
+  @Test
   public void testSplitMessage() throws Exception {
     Object obj = "ABCDEFG";
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(SIMPLE_MSG);
@@ -121,6 +128,7 @@ public class SimpleRegexpMessageSplitterTest extends SplitterCase {
     }
   }
 
+  @Test
   public void testSplitMessageWithObjectMetadata() throws Exception {
     Object obj = "ABCDEFG";
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(SIMPLE_MSG);

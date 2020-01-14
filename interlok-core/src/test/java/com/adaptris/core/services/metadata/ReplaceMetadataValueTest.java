@@ -16,6 +16,9 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CloneMessageServiceList;
@@ -47,17 +50,6 @@ public class ReplaceMetadataValueTest extends MetadataServiceExample {
   private static final String MATCHING_METADATA_KEY2 = "matchingMetadataKey2";
   private static final String NON_MATCHING_KEY = "nonMatchingMetadataKey";
 
-  public ReplaceMetadataValueTest(String name) {
-    super(name);
-  }
-
-  @Override
-  protected void setUp() throws Exception {
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-  }
 
   private AdaptrisMessage createMessage() throws Exception {
     AdaptrisMessage m = AdaptrisMessageFactory.getDefaultInstance().newMessage("");
@@ -67,6 +59,12 @@ public class ReplaceMetadataValueTest extends MetadataServiceExample {
     return m;
   }
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
+  @Test
   public void testInit() throws Exception {
     ReplaceMetadataValue service = new ReplaceMetadataValue();
     try {
@@ -94,6 +92,7 @@ public class ReplaceMetadataValueTest extends MetadataServiceExample {
     }
   }
 
+  @Test
   public void testReplaceFirstRaw() throws Exception {
     AdaptrisMessage m = createMessage();
     ReplaceMetadataValue service = new ReplaceMetadataValue(MATCHING_METADATA_KEY, SEARCH_VALUE_RAW, false, REPLACEMENT_VALUE_RAW);
@@ -103,6 +102,7 @@ public class ReplaceMetadataValueTest extends MetadataServiceExample {
     assertEquals(VALUE, m.getMetadataValue(NON_MATCHING_KEY));
   }
 
+  @Test
   public void testReplaceAllRaw() throws Exception {
     AdaptrisMessage m = createMessage();
     ReplaceMetadataValue service = new ReplaceMetadataValue(MATCHING_METADATA_KEY, SEARCH_VALUE_RAW, true, REPLACEMENT_VALUE_RAW);
@@ -112,6 +112,7 @@ public class ReplaceMetadataValueTest extends MetadataServiceExample {
     assertEquals(VALUE, m.getMetadataValue(NON_MATCHING_KEY));
   }
 
+  @Test
   public void testReplaceAllRaw_Resolved() throws Exception {
     AdaptrisMessage m = createMessage();
     m.addMetadata("ResolvedKey", REPLACEMENT_VALUE_RAW);
@@ -122,6 +123,7 @@ public class ReplaceMetadataValueTest extends MetadataServiceExample {
     assertEquals(VALUE, m.getMetadataValue(NON_MATCHING_KEY));
   }
 
+  @Test
   public void testReplaceRegexp() throws Exception {
     AdaptrisMessage m = createMessage();
     ReplaceMetadataValue service = new ReplaceMetadataValue(MATCHING_METADATA_KEY, SEARCH_VALUE_REGEXP, true,
@@ -132,6 +134,7 @@ public class ReplaceMetadataValueTest extends MetadataServiceExample {
     assertEquals(VALUE, m.getMetadataValue(NON_MATCHING_KEY));
   }
 
+  @Test
   public void testReplaceRegexpMatchGroup() throws Exception {
     AdaptrisMessage m = createMessage();
     log.warn(m);
@@ -143,6 +146,7 @@ public class ReplaceMetadataValueTest extends MetadataServiceExample {
     assertEquals(VALUE, m.getMetadataValue(NON_MATCHING_KEY));
   }
 
+  @Test
   public void testReplaceRegexpMatchGroup_JavaRegxp() throws Exception {
     AdaptrisMessage m = createMessage();
     log.warn(m);
@@ -154,6 +158,7 @@ public class ReplaceMetadataValueTest extends MetadataServiceExample {
     assertEquals(VALUE, m.getMetadataValue(NON_MATCHING_KEY));
   }
 
+  @Test
   public void testReplaceRegexpMatchGroupNoMatch() throws Exception {
     AdaptrisMessage m = createMessage();
     ReplaceMetadataValue service = new ReplaceMetadataValue(MATCHING_METADATA_KEY, "ABCDEFG", true,
@@ -164,6 +169,7 @@ public class ReplaceMetadataValueTest extends MetadataServiceExample {
     assertEquals(VALUE, m.getMetadataValue(NON_MATCHING_KEY));
   }
 
+  @Test
   public void testReplaceSearchValueNoMatch() throws Exception {
     AdaptrisMessage m = createMessage();
     ReplaceMetadataValue service = new ReplaceMetadataValue(MATCHING_METADATA_KEY, "ABCDEFG", true, REPLACEMENT_VALUE_RAW);
@@ -174,6 +180,7 @@ public class ReplaceMetadataValueTest extends MetadataServiceExample {
   }
 
   // This is Interlok-2129
+  @Test
   public void testReplaceValue_InsideClonedService() throws Exception {
     AdaptrisMessage m = createMessage();
     ReplaceMetadataValue nested = new ReplaceMetadataValue(MATCHING_METADATA_KEY, SEARCH_VALUE_REGEXP_MATCH_GROUP, false,

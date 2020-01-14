@@ -22,19 +22,22 @@ import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_MSG_INITIALI
 import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_MSG_STARTED;
 import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_MSG_STOPPED;
 import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_TYPE_WORKFLOW_LIFECYCLE;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.JMX;
 import javax.management.MalformedObjectNameException;
 import javax.management.Notification;
 import javax.management.ObjectName;
-
+import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.Channel;
@@ -71,11 +74,15 @@ public class WorkflowManagerTest extends ComponentManagerCase {
   
   private static final long TIMEOUT_MILLIS = 60000;
 
-  public WorkflowManagerTest(String name) {
-    super(name);
+  public WorkflowManagerTest() {
   }
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
 
+  @Test
   public void testJettyInterceptor_AutoAdded() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -91,6 +98,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     assertEquals(JettyPoolingWorkflowInterceptor.class, workflow.getInterceptors().get(2).getClass());
   }
 
+  @Test
   public void testJettyInterceptor_AlreadyHasInterceptor() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -110,6 +118,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     assertEquals(InFlightWorkflowInterceptor.class, workflow.getInterceptors().get(2).getClass());
   }
 
+  @Test
   public void testJettyInterceptor_NotAddedTo_StandardWorkflow() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -124,6 +133,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     assertEquals(InFlightWorkflowInterceptor.class, workflow.getInterceptors().get(1).getClass());
   }
 
+  @Test
   public void testMessageCounter_Enabled() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -137,6 +147,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     assertEquals(InFlightWorkflowInterceptor.class, workflow.getInterceptors().get(1).getClass());
   }
 
+  @Test
   public void testMessageCounter_Enabled_AlreadyHasMessageCounter() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -152,6 +163,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     assertEquals(InFlightWorkflowInterceptor.class, workflow.getInterceptors().get(1).getClass());
   }
 
+  @Test
   public void testMessageCounter_Disabled() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -164,6 +176,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     assertEquals(0, workflow.getInterceptors().size());
   }
 
+  @Test
   public void testConstructor_WithInterceptor_RuntimeInfoFactoryRegistered() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -178,6 +191,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
 
   }
 
+  @Test
   public void testConstructor_WithInterceptor_NoRuntimeInfoFactoryRegistration() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -191,6 +205,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     assertEquals(0, workflowManager.getChildRuntimeInfoComponents().size());
   }
 
+  @Test
   public void testAddChildRuntimeComponent() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -214,6 +229,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     assertEquals(1, workflowManager.getChildRuntimeInfoComponents().size());
   }
 
+  @Test
   public void testRemoveChildRuntimeComponent() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -239,6 +255,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
 
   }
 
+  @Test
   public void testEqualityHashCode() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     AdapterManager am1 = new AdapterManager(createAdapter(adapterName));
@@ -263,6 +280,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     assertEquals(wm1.hashCode(), wm1.hashCode());
   }
 
+  @Test
   public void testGetConfiguration() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -280,6 +298,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     assertRoundtripEquality(adapter, marshalledAdapter);
   }
 
+  @Test
   public void testGetParent() throws Exception {
 
     String adapterName = this.getClass().getSimpleName() + "." + getName();
@@ -297,6 +316,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     assertFalse(channelManager_2 == workflowManager.getParent());
   }
 
+  @Test
   public void testGetParentId() throws Exception {
 
     String adapterName = this.getClass().getSimpleName() + "." + getName();
@@ -312,6 +332,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     assertEquals("c1", workflowManager.getParentId());
   }
 
+  @Test
   public void testGetParentObjectName() throws Exception {
 
     String adapterName = this.getClass().getSimpleName() + "." + getName();
@@ -327,6 +348,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     assertEquals(channelManager.createObjectName(), workflowManager.getParentObjectName());
   }
 
+  @Test
   public void testProxyEquality() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -352,6 +374,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testGetState() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -376,6 +399,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testClose() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -403,6 +427,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testStop() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -430,6 +455,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testStart() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -459,6 +485,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testInitialise() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -489,6 +516,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
 
   }
 
+  @Test
   public void testRestart() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -519,6 +547,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
 
   }
 
+  @Test
   public void testLastStartTime() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -545,6 +574,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testLastStopTime() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -573,6 +603,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testChannelClosed_InitWorkflow() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -606,6 +637,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testChannelClosed_StartWorkflow() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -640,6 +672,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testChannelClosed_StopWorkflow() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -674,6 +707,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testChannelClosed_CloseWorkflow() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -702,6 +736,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testChannelInitialised_InitWorkflow() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -731,6 +766,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testChannelInitialised_StartWorkflow() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -766,6 +802,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testChannelInitialised_StopWorkflow() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -801,6 +838,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testChannelInitialised_CloseWorkflow() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -830,6 +868,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testChannelStarted_InitWorkflow() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -858,6 +897,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testChannelStarted_StartWorkflow() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -885,6 +925,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testChannelStarted_StopWorkflow() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -913,6 +954,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
 
   }
 
+  @Test
   public void testChannelStarted_CloseWorkflow() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -940,6 +982,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testChannelStopped_InitWorkflow() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -975,6 +1018,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
 
   }
 
+  @Test
   public void testChannelStopped_StartWorkflow() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1010,6 +1054,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
 
   }
 
+  @Test
   public void testChannelStopped_StopWorkflow() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1039,6 +1084,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
 
   }
 
+  @Test
   public void testChannelStopped_CloseWorkflow() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1067,6 +1113,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testInjectMessage() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -1106,6 +1153,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testInjectWithReply() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -1114,7 +1162,8 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Channel channel = createChannel("c1");
     ChannelManager channelManager = new ChannelManager(channel, adapterManager);
     StandardWorkflow workflow = createWorkflow("w1");
-    workflow.getServiceCollection().add(new AddMetadataService(Arrays.asList(new MetadataElement(getName(), getName()))));
+    workflow.getServiceCollection()
+        .add(new AddMetadataService(Arrays.asList(new MetadataElement(getName(), getName()))));
 
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
     adapterManager.createObjectName();
@@ -1146,7 +1195,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     }
   }
 
-
+  @Test
   public void testProcessAsync() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -1186,6 +1235,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testProcess() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -1194,7 +1244,8 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Channel channel = createChannel("c1");
     ChannelManager channelManager = new ChannelManager(channel, adapterManager);
     StandardWorkflow workflow = createWorkflow("w1");
-    workflow.getServiceCollection().add(new AddMetadataService(Arrays.asList(new MetadataElement(getName(), getName()))));
+    workflow.getServiceCollection()
+        .add(new AddMetadataService(Arrays.asList(new MetadataElement(getName(), getName()))));
 
     WorkflowManager realWorkflowManager = new WorkflowManager(workflow, channelManager);
     adapterManager.createObjectName();
@@ -1228,7 +1279,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     }
   }
 
-
+  @Test
   public void testMBean_NotificationOnInit() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1264,6 +1315,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_NotificationOnStart() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1298,6 +1350,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_NotificationOnStop() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1331,6 +1384,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_NotificationOnClose() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1364,7 +1418,8 @@ public class WorkflowManagerTest extends ComponentManagerCase {
       adapterManager.unregisterMBean();
     }
   }
-  
+
+  @Test
   public void testMBean_NotificationOnRestart() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1400,6 +1455,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testWorkflowManager_HasRetryMonitor() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1416,7 +1472,8 @@ public class WorkflowManagerTest extends ComponentManagerCase {
       adapterManager.registerMBean();
       adapterManager.requestStart();
       ObjectName handlerObjectName = ObjectName
-          .getInstance(JMX_RETRY_MONITOR_TYPE + realWorkflowManager.createObjectHierarchyString() + ID_PREFIX + getName());
+          .getInstance(
+              JMX_RETRY_MONITOR_TYPE + realWorkflowManager.createObjectHierarchyString() + ID_PREFIX + getName());
 
       WorkflowManagerMBean workflowManagerProxy = JMX.newMBeanProxy(mBeanServer, workflowObj, WorkflowManagerMBean.class);
       assertTrue(workflowManagerProxy.getChildRuntimeInfoComponents().contains(handlerObjectName));
