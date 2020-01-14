@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -48,6 +49,7 @@ import com.adaptris.util.text.xml.XPath;
 import com.adaptris.util.text.xml.XmlTransformerFactory;
 import com.adaptris.util.text.xml.XsltTransformerFactory;
 import net.sf.saxon.serialize.MessageWarner;
+import net.sf.saxon.trans.UncheckedXPathException;
 
 @SuppressWarnings("deprecation")
 public class XmlTransformServiceTest extends TransformServiceExample {
@@ -537,8 +539,8 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     try {
       execute(service, m1);
       fail("Exception expected but none thrown");
-    } catch (ServiceException e) {
-      assertTrue(e.getCause() instanceof TransformerException);
+    } catch (ServiceException expected) {
+      assertExceptionCause(expected,  TransformerException.class, UncheckedXPathException.class);
     }
   }
 
@@ -730,8 +732,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
       execute(service, m1);
       fail();
     } catch (ServiceException expected) {
-      assertTrue(expected.getCause() instanceof TransformerException);
-      assertNotNull(((TransformerException) expected.getCause()).getLocator());
+      assertExceptionCause(expected, TransformerException.class, UncheckedXPathException.class);
     }
   }
 
@@ -745,6 +746,17 @@ public class XmlTransformServiceTest extends TransformServiceExample {
   private Document createDocument(byte[] bytes) throws Exception {
     ByteArrayInputStream in = new ByteArrayInputStream(bytes);
     return newDocumentBuilder().parse(new InputSource(in));
+  }
+  
+  // INTERLOK-3101, Saxon-9.9.1-4 onwards throws a different Exception.
+  private void assertExceptionCause(Exception e, Class...classes) {
+    assertNotNull(e.getCause());
+    List<Class> validClasses = Arrays.asList(classes);
+    Throwable t = e.getCause();
+    boolean matches  = validClasses.stream().anyMatch((clazz) -> {
+      return t.getClass().isAssignableFrom(clazz);
+    }); 
+    assertTrue("Exception cause is expected", matches);
   }
 
 }
