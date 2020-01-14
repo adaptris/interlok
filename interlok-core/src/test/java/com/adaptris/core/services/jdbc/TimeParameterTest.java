@@ -15,13 +15,13 @@
 */
 
 package com.adaptris.core.services.jdbc;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.text.SimpleDateFormat;
-
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.services.jdbc.StatementParameterImpl.QueryType;
 
@@ -31,19 +31,15 @@ public class TimeParameterTest extends BaseCase {
   private String timeString;
   private java.sql.Time time;
 
-  public TimeParameterTest(String n) {
-    super(n);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
-
   @Before
   public void setUp() throws Exception {
     SimpleDateFormat sdf = new SimpleDateFormat(TIME_FORMAT);
     timeString = sdf.format(new java.util.Date());
     time = new java.sql.Time(sdf.parse(timeString).getTime());
-  }
-
-  @After
-  public void tearDown() throws Exception {
   }
 
   @Test

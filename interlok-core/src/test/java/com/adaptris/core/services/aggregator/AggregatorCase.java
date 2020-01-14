@@ -16,26 +16,17 @@
 
 package com.adaptris.core.services.aggregator;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import java.util.List;
-
+import org.junit.Test;
 import com.adaptris.core.Service;
 
 public abstract class AggregatorCase extends AggregatingServiceExample {
 
   private static final String XPATH_ENVELOPE = "/envelope";
 
-  public AggregatorCase(String name) {
-    super(name);
-  }
-
-  @Override
-  protected void setUp() throws Exception {
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-  }
-
+  @Test
   public void testSetOverwriteMetadata() throws Exception {
     MessageAggregatorImpl impl = createAggregatorForTests();
     assertNull(impl.getOverwriteMetadata());
@@ -55,5 +46,6 @@ public abstract class AggregatorCase extends AggregatingServiceExample {
     return null;
   }
 
+  @Override
   protected abstract List<Service> retrieveObjectsForSampleConfig();
 }

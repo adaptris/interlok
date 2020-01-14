@@ -16,11 +16,14 @@
 
 package com.adaptris.core.services.splitter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.stubs.MockMessageProducer;
@@ -33,16 +36,9 @@ public class SplitByMetadataTest extends SplitterCase {
   private static final String SPLIT_METADATA_KEY = "key";
   private static Log logR = LogFactory.getLog(SplitByMetadataTest.class);
 
-  public SplitByMetadataTest(java.lang.String testName) {
-    super(testName);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
@@ -50,6 +46,7 @@ public class SplitByMetadataTest extends SplitterCase {
     return new SplitByMetadata();
   }
 
+  @Test
   public void testSplit() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
     Object obj = "ABCDEFG";
@@ -89,6 +86,7 @@ public class SplitByMetadataTest extends SplitterCase {
   
   }
 
+  @Test
   public void testSplitWithObjectMetadata() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
     Object obj = "ABCDEFG";
@@ -104,6 +102,7 @@ public class SplitByMetadataTest extends SplitterCase {
     }
   }
 
+  @Test
   public void testDoServiceWithSplitByMetadata() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
     MockMessageProducer producer = new MockMessageProducer();
@@ -117,6 +116,7 @@ public class SplitByMetadataTest extends SplitterCase {
     }
   }
 
+  @Test
   public void testSplitWithNoMetadata() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
     MockMessageProducer producer = new MockMessageProducer();

@@ -16,21 +16,15 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.fail;
 import java.util.UUID;
-
+import org.junit.Test;
 import com.adaptris.core.fs.FsConsumer;
 import com.adaptris.core.stubs.StubEventHandler;
 
 public class DefaultFailedMessageRetrierTest extends FailedMessageRetrierCase {
 
-  public DefaultFailedMessageRetrierTest(java.lang.String testName) {
-    super(testName);
-  }
-
-  @Override
-  protected void setUp() throws Exception {
-  }
-
+  @Test
   public void testDuplicateWorkflows() throws Exception {
     DefaultFailedMessageRetrier dfmr = new DefaultFailedMessageRetrier();
     try {

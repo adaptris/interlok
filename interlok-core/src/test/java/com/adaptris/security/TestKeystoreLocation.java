@@ -31,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.security.keystore.KeystoreFactory;
 import com.adaptris.security.keystore.KeystoreLocation;
-import junit.framework.TestCase;
 
 /**
  * Test Keystore Functionality.
@@ -42,7 +41,6 @@ public class TestKeystoreLocation {
   private Config config;
   private Logger logR = LoggerFactory.getLogger(this.getClass());
 
-  /** @see TestCase */
   public TestKeystoreLocation() {
   }
 

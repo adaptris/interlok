@@ -26,8 +26,7 @@ public abstract class SequenceNumberServiceExample extends ServiceCase {
    */
   public static final String BASE_DIR_KEY = "SequenceNumberServiceExamples.baseDir";
 
-  public SequenceNumberServiceExample(String name) {
-    super(name);
+  public SequenceNumberServiceExample() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }

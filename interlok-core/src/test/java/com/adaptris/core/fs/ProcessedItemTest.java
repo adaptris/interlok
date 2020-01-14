@@ -15,29 +15,25 @@
 */
 
 package com.adaptris.core.fs;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+import org.junit.Test;
 import com.adaptris.core.BaseCase;
 
 public class ProcessedItemTest extends BaseCase {
 
-  public ProcessedItemTest(java.lang.String testName) {
-    super(testName);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
-  }
-
+  @Test
   public void testAddRemoveProcessedItem() {
     ProcessedItemList list = new ProcessedItemList();
     list.addProcessedItem(new ProcessedItem("ABC", 0, 0));
@@ -47,6 +43,7 @@ public class ProcessedItemTest extends BaseCase {
     assertEquals(0, list.getProcessedItems().size());
   }
 
+  @Test
   public void testGetSet() {
     ProcessedItemList pil = new ProcessedItemList();
     List<ProcessedItem> list = new ArrayList(Arrays.asList(new ProcessedItem[] {
@@ -58,6 +55,7 @@ public class ProcessedItemTest extends BaseCase {
     assertEquals(list, pil.getProcessedItems());
   }
 
+  @Test
   public void testItemEquality() {
     ProcessedItem item = new ProcessedItem("ABC", 0, 0);
     ProcessedItem item2 = new ProcessedItem("ABC", 1, 1);
@@ -70,6 +68,7 @@ public class ProcessedItemTest extends BaseCase {
     assertFalse(item.equals(null));
   }
 
+  @Test
   public void testItemAbsolutePath() {
     ProcessedItem item = new ProcessedItem();
     try {
@@ -86,12 +85,14 @@ public class ProcessedItemTest extends BaseCase {
     assertEquals("/ABC", item.getAbsolutePath());
   }
 
+  @Test
   public void testModifiedTime() {
     ProcessedItem item = new ProcessedItem();
     item.setLastModified(-1);
     assertEquals(-1, item.getLastModified());
   }
 
+  @Test
   public void testItemFilesize() {
     ProcessedItem item = new ProcessedItem();
     item.setFilesize(-1);

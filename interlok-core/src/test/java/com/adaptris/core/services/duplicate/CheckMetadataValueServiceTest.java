@@ -16,8 +16,13 @@
 
 package com.adaptris.core.services.duplicate;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.File;
 import org.apache.commons.io.FileUtils;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BranchingServiceCollection;
@@ -48,20 +53,19 @@ public class CheckMetadataValueServiceTest extends BranchingServiceExample {
    */
   private static final String DEFAULT_SERVICE_ID_DUPLICATE = "002";
 
-  public CheckMetadataValueServiceTest(String name) {
-    super(name);
-  }
 
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
+  @Before
+  public void setUp() throws Exception {
     File f = FsHelper.toFile(PROPERTIES.getProperty(STORE_FILE_URL));
     FileUtils.deleteQuietly(f);
   }
 
-  @Override
-  protected void tearDown() {
-  }
-
+  @Test
   public void testInit() throws Exception {
     CheckMetadataValueService newService = new CheckMetadataValueService();
     assertTrue(newService.isBranching());
@@ -117,6 +121,7 @@ public class CheckMetadataValueServiceTest extends BranchingServiceExample {
     }
   }
 
+  @Test
   public void testService() throws Exception {
     seedStore("123", "123", "456");
     CheckMetadataValueService service = createChecker();

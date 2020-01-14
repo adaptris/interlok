@@ -16,28 +16,32 @@
 
 package com.adaptris.core.jdbc;
 
+import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.services.jdbc.ConfiguredSQLStatement;
 import com.adaptris.core.services.jdbc.MetadataSQLStatement;
 
-import junit.framework.TestCase;
-
-public class JdbcStatementCreatorTest extends TestCase {
+public class JdbcStatementCreatorTest {
   
   private AdaptrisMessage message;
   
+  @Before
   public void setUp() throws Exception {    
     message = DefaultMessageFactory.getDefaultInstance().newMessage();
   }
-  
+
+  @Test
   public void testConfiguredStatementCreator() throws Exception {
     ConfiguredSQLStatement cs = new ConfiguredSQLStatement();
     cs.setStatement("some statement");
     
     assertEquals("some statement", cs.createStatement(message));
   }
-  
+
+  @Test
   public void testMetadataStatementCreator() throws Exception {
     MetadataSQLStatement ms = new MetadataSQLStatement();
     ms.setMetadataKey("someKey");

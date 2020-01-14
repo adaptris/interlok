@@ -15,23 +15,28 @@
 */
 
 package com.adaptris.core;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.IllegalFormatConversionException;
 import java.util.List;
 import java.util.Set;
-
+import org.junit.Test;
 import com.adaptris.core.metadata.ElementFormatter;
 import com.adaptris.core.metadata.ElementKeyAndValueFormatter;
 
 public class FormattedMetadataDestinationTest extends ExampleProduceDestinationCase {
 
-  public FormattedMetadataDestinationTest(java.lang.String testName) {
-    super(testName);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testAddMetadataKey() {
     FormattedMetadataDestination dest = new FormattedMetadataDestination();
     dest.addMetadataKey("key1");
@@ -40,6 +45,7 @@ public class FormattedMetadataDestinationTest extends ExampleProduceDestinationC
     assertTrue(dest.getMetadataKeys().contains("key3"));
   }
 
+  @Test
   public void testGetMetadataKeys() {
     FormattedMetadataDestination dest = new FormattedMetadataDestination();
     dest.addMetadataKey("key1");
@@ -51,6 +57,7 @@ public class FormattedMetadataDestinationTest extends ExampleProduceDestinationC
     assertTrue(dest.getMetadataKeys().equals(keys));
   }
 
+  @Test
   public void testSetMetadataKeys() {
     FormattedMetadataDestination dest = new FormattedMetadataDestination();
     dest.addMetadataKey("key1");
@@ -69,6 +76,7 @@ public class FormattedMetadataDestinationTest extends ExampleProduceDestinationC
     }
   }
 
+  @Test
   public void testAddObjectMetadataKey() {
     FormattedMetadataDestination dest = new FormattedMetadataDestination();
     dest.addObjectMetadataKey("key1");
@@ -77,6 +85,7 @@ public class FormattedMetadataDestinationTest extends ExampleProduceDestinationC
     assertTrue(dest.getObjectMetadataKeys().contains("key3"));
   }
 
+  @Test
   public void testGetObjectMetadataKeys() {
     FormattedMetadataDestination dest = new FormattedMetadataDestination();
     dest.addObjectMetadataKey("key1");
@@ -88,6 +97,7 @@ public class FormattedMetadataDestinationTest extends ExampleProduceDestinationC
     assertTrue(dest.getObjectMetadataKeys().equals(keys));
   }
 
+  @Test
   public void testSetObjectMetadataKeys() {
     FormattedMetadataDestination dest = new FormattedMetadataDestination();
     List<String> keys = new ArrayList<>();
@@ -104,6 +114,7 @@ public class FormattedMetadataDestinationTest extends ExampleProduceDestinationC
     }
   }
 
+  @Test
   public void testSetDestinationTemplate() {
     FormattedMetadataDestination dest = new FormattedMetadataDestination();
     assertEquals("", dest.getDestinationTemplate());
@@ -118,12 +129,14 @@ public class FormattedMetadataDestinationTest extends ExampleProduceDestinationC
     assertEquals("Hello World", dest.getDestinationTemplate());
   }
 
+  @Test
   public void testGetDestination_NoConfig() throws CoreException {
     FormattedMetadataDestination dest = new FormattedMetadataDestination();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("payload");
     assertNull(dest.getDestination(msg));
   }
 
+  @Test
   public void testGetDestination_Metadata() throws CoreException {
     FormattedMetadataDestination dest = new FormattedMetadataDestination();
     dest.addMetadataKey("key1");
@@ -138,6 +151,7 @@ public class FormattedMetadataDestinationTest extends ExampleProduceDestinationC
     assertTrue("/val1/val2".equals(dest.getDestination(msg)));
   }
 
+  @Test
   public void testGetDestination_Metadata_Null() throws CoreException {
     FormattedMetadataDestination dest = new FormattedMetadataDestination();
     dest.addMetadataKey("key1");
@@ -151,6 +165,7 @@ public class FormattedMetadataDestinationTest extends ExampleProduceDestinationC
     assertTrue("/val1/".equals(dest.getDestination(msg)));
   }
 
+  @Test
   public void testGetDestination_ObjectMetadata() throws CoreException {
     FormattedMetadataDestination dest = new FormattedMetadataDestination();
     dest.setDestinationTemplate("%1$tF");
@@ -162,6 +177,7 @@ public class FormattedMetadataDestinationTest extends ExampleProduceDestinationC
     assertEquals(expectedDate, dest.getDestination(msg));
   }
 
+  @Test
   public void testGetDestination_ObjectMetadata_Null() throws CoreException {
     FormattedMetadataDestination dest = new FormattedMetadataDestination();
     dest.addObjectMetadataKey("timestamp");
@@ -169,6 +185,7 @@ public class FormattedMetadataDestinationTest extends ExampleProduceDestinationC
     assertNull(dest.getDestination(msg));
   }
 
+  @Test
   public void testGetDestination_MetadataAndObjectMetadata() throws CoreException {
     FormattedMetadataDestination dest = new FormattedMetadataDestination();
     Date d = new Date();
@@ -186,6 +203,7 @@ public class FormattedMetadataDestinationTest extends ExampleProduceDestinationC
 
   }
 
+  @Test
   public void testGetDestination_BadFormat() throws Exception {
     // Here we pass in just normal metadata, but we have an error, whereby we reference the $tF to format
     // a String.
@@ -207,11 +225,7 @@ public class FormattedMetadataDestinationTest extends ExampleProduceDestinationC
     }
   }
 
-  /**
-   * Test the default behaviour of the ElementKeyAndValueFormatter.
-   * 
-   * @throws Exception If there is a problem during the test.
-   */
+  @Test
   public void testElementFormatter() throws Exception {
     FormattedMetadataDestination dest = new FormattedMetadataDestination();
     dest.addMetadataKey("key1");
@@ -224,11 +238,7 @@ public class FormattedMetadataDestinationTest extends ExampleProduceDestinationC
     assertEquals("key1=val1", dest.getDestination(msg));
   }
   
-  /**
-   * Test the non-default behaviour of the ElementKeyAndValueFormatter (change the separator).
-   * 
-   * @throws Exception If there is a problem during the test.
-   */
+  @Test
   public void testElementFormatterSeparator() throws Exception {
     FormattedMetadataDestination dest = new FormattedMetadataDestination();
     dest.addMetadataKey("key1");

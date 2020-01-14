@@ -22,16 +22,17 @@ public class RelaxedFtpsProducerTest extends RelaxedFtpProducerCase {
 
   private static final String BASE_DIR_KEY = "FtpsProducerExamples.baseDir";
 
-  public RelaxedFtpsProducerTest(String name) {
-    super(name);
+  public RelaxedFtpsProducerTest() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
   }
 
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
+
 
   @Override
   protected FtpSslConnection createConnectionForExamples() {

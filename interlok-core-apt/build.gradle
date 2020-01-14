@@ -4,9 +4,6 @@ ext {
 
 dependencies {
   compile ("com.thoughtworks.xstream:xstream:$xstreamVersion") {  transitive= false }
-  compile ("org.apache.velocity:velocity:1.7") { transitive= false}
-  compile ("commons-lang:commons-lang:2.6")
-  compile ("commons-collections:commons-collections:3.2.2")
   compile ("javax.validation:validation-api:2.0.1.Final")
   compile files("${System.getProperty('java.home')}/../lib/tools.jar")
 

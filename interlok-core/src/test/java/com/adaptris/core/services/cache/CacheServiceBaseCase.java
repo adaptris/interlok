@@ -1,9 +1,12 @@
 package com.adaptris.core.services.cache;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -15,7 +18,6 @@ import com.adaptris.core.cache.NullCacheImplementation;
 import com.adaptris.core.cache.RetryingCacheProxy;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
-
 import net.jodah.expiringmap.ExpirationPolicy;
 
 public abstract class CacheServiceBaseCase extends CacheServiceExample {
@@ -73,7 +75,7 @@ public abstract class CacheServiceBaseCase extends CacheServiceExample {
 
   protected abstract CacheServiceBase createService();
 
-
+  @Test
   public void testPrepare() throws Exception {
     CacheServiceBase service = createService();
     try {
@@ -88,6 +90,7 @@ public abstract class CacheServiceBaseCase extends CacheServiceExample {
     LifecycleHelper.prepare(service);
   }
 
+  @Test
   public void testRetrieveCache_Connection() throws Exception {
     CacheServiceBase service = createService();
     try {

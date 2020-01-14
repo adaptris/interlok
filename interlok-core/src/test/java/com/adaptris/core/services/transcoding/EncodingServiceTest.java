@@ -1,5 +1,10 @@
 package com.adaptris.core.services.transcoding;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -11,10 +16,12 @@ import com.adaptris.core.util.LifecycleHelper;
 
 public class EncodingServiceTest extends TranscodingServiceCase {
 
-  public EncodingServiceTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testInit() throws Exception {
     EncodingService service = new EncodingService();
     try {
@@ -29,6 +36,7 @@ public class EncodingServiceTest extends TranscodingServiceCase {
     LifecycleHelper.init(service);
   }
 
+  @Test
   public void testSetEncoder() throws Exception {
     EncodingService s = new EncodingService();
     assertNull(s.getEncoder());
@@ -40,6 +48,7 @@ public class EncodingServiceTest extends TranscodingServiceCase {
     assertEquals(me, s.getEncoder());
   }
 
+  @Test
   public void testSetMessageFactory() throws Exception {
     EncodingService s = new EncodingService();
     assertNull(s.getMessageFactory());
@@ -60,6 +69,7 @@ public class EncodingServiceTest extends TranscodingServiceCase {
   }
 
 
+  @Test
   public void testMockEncoder() throws Exception {
     EncodingService service = new EncodingService(new MockEncoder());
     AdaptrisMessage msg = createSimpleMessage();
@@ -67,6 +77,7 @@ public class EncodingServiceTest extends TranscodingServiceCase {
     assertEquals(TEST_PAYLOAD, new String(msg.getPayload()));
   }
 
+  @Test
   public void testMimeEncoder() throws Exception {
     EncodingService service = new EncodingService(new MimeEncoder());
     AdaptrisMessage msg = createSimpleMessage();

@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertNotSame;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 
@@ -23,16 +25,10 @@ public class Base64MetadataEncodeTest extends MetadataServiceExample {
 
   private static final String METADATA_KEY = "key";
   private static final String METADATA_VALUE = "Hello World";
-  
-  public Base64MetadataEncodeTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
-
 
   private AdaptrisMessage createMessage(String encoding) throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("asdfghjk", encoding);
@@ -41,7 +37,7 @@ public class Base64MetadataEncodeTest extends MetadataServiceExample {
     return msg;
   }
 
-
+  @Test
   public void testService() throws Exception {
     Base64EncodeMetadataService service = new Base64EncodeMetadataService(METADATA_KEY);
     AdaptrisMessage msg = createMessage(null);
@@ -49,6 +45,7 @@ public class Base64MetadataEncodeTest extends MetadataServiceExample {
     assertNotSame(METADATA_VALUE, msg.getMetadataValue(METADATA_KEY));
   }
 
+  @Test
   public void testService_Encoding() throws Exception {
     Base64EncodeMetadataService service = new Base64EncodeMetadataService(METADATA_KEY);
     AdaptrisMessage msg = createMessage("UTF-8");

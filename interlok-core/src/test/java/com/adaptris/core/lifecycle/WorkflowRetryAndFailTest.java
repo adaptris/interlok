@@ -15,9 +15,9 @@
 */
 
 package com.adaptris.core.lifecycle;
-
+import static org.junit.Assert.assertEquals;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.core.Channel;
 import com.adaptris.core.ClosedState;
 import com.adaptris.core.CoreException;
@@ -27,14 +27,6 @@ import com.adaptris.util.TimeInterval;
 
 public class WorkflowRetryAndFailTest extends WorkflowRetryAndContinueTest {
 
-  public WorkflowRetryAndFailTest(java.lang.String testName) {
-    super(testName);
-  }
-
-  @Override
-  public void setUp() throws Exception {
-    super.setUp();
-  }
 
   @Override
   protected WorkflowRetryAndFail createStrategy() {
@@ -42,6 +34,7 @@ public class WorkflowRetryAndFailTest extends WorkflowRetryAndContinueTest {
   }
 
   @Override
+  @Test
   public void testFailedInitialise_ExceedsMax() throws Exception {
     WorkflowList wfl = new WorkflowList();
     WorkflowRetryAndFail strategy = new WorkflowRetryAndFail(2, new TimeInterval(10L, TimeUnit.MILLISECONDS.name()));
@@ -62,6 +55,7 @@ public class WorkflowRetryAndFailTest extends WorkflowRetryAndContinueTest {
 
 
   @Override
+  @Test
   public void testFailedStart_ExceedsMax() throws Exception {
     WorkflowList wfl = new WorkflowList();
     WorkflowRetryAndFail strategy = new WorkflowRetryAndFail(2, new TimeInterval(10L, TimeUnit.MILLISECONDS.name()));

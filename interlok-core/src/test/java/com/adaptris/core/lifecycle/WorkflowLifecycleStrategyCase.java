@@ -17,7 +17,8 @@
 package com.adaptris.core.lifecycle;
 
 import org.apache.log4j.Logger;
-
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.Channel;
 import com.adaptris.core.ConfiguredConsumeDestination;
@@ -36,27 +37,31 @@ public abstract class WorkflowLifecycleStrategyCase extends BaseCase {
   protected IdGenerator idGenerator;
   protected Logger log = Logger.getLogger(this.getClass());
 
-  public WorkflowLifecycleStrategyCase(java.lang.String testName) {
-    super(testName);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
+  @Before
   public void setUp() throws Exception {
     idGenerator = new PlainIdGenerator();
   }
 
+  @Test
   public void testInitNoStrategy() throws Exception {
     WorkflowList wfl = new WorkflowList();
     wfl.add(createWorkflow(idGenerator.create(wfl)));
     createChannel(wfl).requestInit();
   }
 
+  @Test
   public void testStartNoStrategy() throws Exception {
     WorkflowList wfl = new WorkflowList();
     wfl.add(createWorkflow(idGenerator.create(wfl)));
     createChannel(wfl).requestStart();
   }
 
+  @Test
   public void testStopNoStrategy() throws Exception {
     WorkflowList wfl = new WorkflowList();
     wfl.add(createWorkflow(idGenerator.create(wfl)));
@@ -65,6 +70,7 @@ public abstract class WorkflowLifecycleStrategyCase extends BaseCase {
     c.requestStop();
   }
 
+  @Test
   public void testCloseNoStrategy() throws Exception {
     WorkflowList wfl = new WorkflowList();
     wfl.add(createWorkflow(idGenerator.create(wfl)));
@@ -73,6 +79,7 @@ public abstract class WorkflowLifecycleStrategyCase extends BaseCase {
     c.requestClose();
   }
 
+  @Test
   public void testInit() throws Exception {
     WorkflowList wfl = new WorkflowList();
     wfl.add(createWorkflow(idGenerator.create(wfl)));
@@ -80,6 +87,7 @@ public abstract class WorkflowLifecycleStrategyCase extends BaseCase {
     createChannel(wfl).requestInit();
   }
 
+  @Test
   public void testStart() throws Exception {
     WorkflowList wfl = new WorkflowList();
     wfl.add(createWorkflow(idGenerator.create(wfl)));
@@ -88,6 +96,7 @@ public abstract class WorkflowLifecycleStrategyCase extends BaseCase {
 
   }
 
+  @Test
   public void testStop() throws Exception {
     WorkflowList wfl = new WorkflowList();
     wfl.add(createWorkflow(idGenerator.create(wfl)));
@@ -97,6 +106,7 @@ public abstract class WorkflowLifecycleStrategyCase extends BaseCase {
     c.requestStop();
   }
 
+  @Test
   public void testClose() throws Exception {
     WorkflowList wfl = new WorkflowList();
     wfl.add(createWorkflow(idGenerator.create(wfl)));

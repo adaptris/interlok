@@ -17,7 +17,6 @@
 package com.adaptris.core;
 
 import java.util.Arrays;
-
 import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.core.stubs.StubEventHandler;
 
@@ -42,12 +41,6 @@ public abstract class ExampleErrorHandlerCase extends ExampleConfigCase {
     }
   }
 
-  public ExampleErrorHandlerCase(String name) {
-    this();
-    setName(name);
-  }
-
-
   @Override
   protected String createExampleXml(Object object) throws Exception {
     String result = getExampleCommentHeader(object);
@@ -58,6 +51,7 @@ public abstract class ExampleErrorHandlerCase extends ExampleConfigCase {
     return result;
   }
 
+  @Override
   protected Object retrieveObjectForSampleConfig() {
     Adapter result = new Adapter();
     result.setUniqueId("dummy-adapter");

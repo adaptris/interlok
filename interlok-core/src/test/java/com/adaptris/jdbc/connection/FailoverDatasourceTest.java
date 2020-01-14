@@ -22,10 +22,9 @@ import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_DRIVER;
 import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_TEST_STATEMENT;
 import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_URL_ROOT;
 import static com.adaptris.jdbc.connection.FailoverConnectionTest.createTables;
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertNull;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLClientInfoException;
@@ -33,10 +32,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 import java.util.concurrent.Executors;
-
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.junit.Test;
-
 import com.adaptris.core.util.JdbcUtil;
 
 public class FailoverDatasourceTest extends FailoverDataSource {
@@ -536,6 +533,7 @@ public class FailoverDatasourceTest extends FailoverDataSource {
       super.passivateObject(arg0);
     }
 
+    @Override
     public Object makeObject() throws Exception {
       if (throwOnMake) {
         throw new Exception("I'm useless you know");

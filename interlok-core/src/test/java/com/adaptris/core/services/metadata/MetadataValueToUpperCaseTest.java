@@ -16,14 +16,17 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 
 public class MetadataValueToUpperCaseTest extends MetadataServiceExample {
-
-  public MetadataValueToUpperCaseTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
+
 
   private AdaptrisMessage createMessage() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("asdfghjk");
@@ -32,6 +35,7 @@ public class MetadataValueToUpperCaseTest extends MetadataServiceExample {
     return msg;
   }
 
+  @Test
   public void testToUpperCase() throws Exception {
     MetadataValueToUpperCase service = new MetadataValueToUpperCase();
     service.setMetadataKeyRegexp("key");

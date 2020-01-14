@@ -33,13 +33,9 @@ public class JndiExtraConfigPtpProducerTest extends JmsProducerCase {
       + "\nafter it has been retrieved from JNDI, by using an ExtraFactoryConfiguration"
       + "\nimplementation. Check the javadocs for more details." + "\n-->\n";
 
-  public JndiExtraConfigPtpProducerTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   static JmsConnection createJndiVendorImpExample(JmsConnection c) {

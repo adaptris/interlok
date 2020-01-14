@@ -16,9 +16,10 @@
 
 package com.adaptris.core.services.aggregator;
 
+import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
 import java.util.List;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Service;
@@ -26,10 +27,12 @@ import com.adaptris.core.services.splitter.XpathDocumentCopier;
 
 public class NullMessageAggregatorTest extends AggregatingServiceExample {
 
-  public NullMessageAggregatorTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testJoinMessage() throws Exception {
     NullMessageAggregator aggr = createAggregatorForTests();
     AdaptrisMessage original = AdaptrisMessageFactory.getDefaultInstance().newMessage("Goodbye");

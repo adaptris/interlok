@@ -15,6 +15,10 @@
 */
 
 package com.adaptris.core;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 
 @SuppressWarnings("deprecation")
 public class MetadataTradingRelationshipCreatorTest extends BaseCase {
@@ -22,10 +26,12 @@ public class MetadataTradingRelationshipCreatorTest extends BaseCase {
   private static final String DEST = "dest";
   private static final String SRC = "src";
 
-  public MetadataTradingRelationshipCreatorTest(String arg0) {
-    super(arg0);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testSetDestinationKey() throws Exception {
     MetadataTradingRelationshipCreator creator = new MetadataTradingRelationshipCreator();
     try {
@@ -49,6 +55,7 @@ public class MetadataTradingRelationshipCreatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testSetSourceKey() throws Exception {
     MetadataTradingRelationshipCreator creator = new MetadataTradingRelationshipCreator();
     try {
@@ -72,6 +79,7 @@ public class MetadataTradingRelationshipCreatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testSetTypeKey() throws Exception {
     MetadataTradingRelationshipCreator creator = new MetadataTradingRelationshipCreator();
     try {
@@ -95,6 +103,7 @@ public class MetadataTradingRelationshipCreatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testCreateFailsDueToConfig() throws Exception {
     MetadataTradingRelationshipCreator creator = new MetadataTradingRelationshipCreator();
     try {
@@ -106,6 +115,7 @@ public class MetadataTradingRelationshipCreatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testMissingOrEmptySourceMetadata() throws Exception {
     MetadataTradingRelationshipCreator creator = new MetadataTradingRelationshipCreator(SRC, DEST, TYPE);
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("");
@@ -126,6 +136,7 @@ public class MetadataTradingRelationshipCreatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testMissingOrEmptyDestinationMetadata() throws Exception {
     MetadataTradingRelationshipCreator creator = new MetadataTradingRelationshipCreator(SRC, DEST, TYPE);
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("");
@@ -146,6 +157,7 @@ public class MetadataTradingRelationshipCreatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testMissingOrEmptyTypeMetadata() throws Exception {
     MetadataTradingRelationshipCreator creator = new MetadataTradingRelationshipCreator(SRC, DEST, TYPE);
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("");
@@ -166,6 +178,7 @@ public class MetadataTradingRelationshipCreatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testNormal() throws Exception {
     MetadataTradingRelationshipCreator creator = new MetadataTradingRelationshipCreator(SRC, DEST, TYPE);
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("");
@@ -180,7 +193,7 @@ public class MetadataTradingRelationshipCreatorTest extends BaseCase {
     assertEquals(new TradingRelationship(SRC, DEST, TYPE).toString(), new TradingRelationship(SRC, DEST, TYPE), rel);
   }
 
-
+  @Test
   public void testXmlRoundtrip() throws Exception {
     MetadataTradingRelationshipCreator input = new MetadataTradingRelationshipCreator(SRC, DEST, TYPE);
 

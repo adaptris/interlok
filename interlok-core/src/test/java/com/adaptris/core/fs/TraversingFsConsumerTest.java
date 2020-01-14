@@ -16,15 +16,16 @@
 
 package com.adaptris.core.fs;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.io.FileUtils;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.CoreConstants;
@@ -43,16 +44,9 @@ public class TraversingFsConsumerTest extends FsConsumerCase {
    */
   public static final String EXAMPLE_BASEDIR = "TraversingFsConsumerExample.baseDir";
 
-  public TraversingFsConsumerTest(java.lang.String testName) {
-    super(testName);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
@@ -62,6 +56,7 @@ public class TraversingFsConsumerTest extends FsConsumerCase {
     }
   }
 
+  @Test
   public void testConsume() throws Exception {
     String subDir = new GuidGenerator().safeUUID();
     MockMessageListener stub = new MockMessageListener(10);
@@ -85,6 +80,7 @@ public class TraversingFsConsumerTest extends FsConsumerCase {
     }
   }
 
+  @Test
   public void testConsume_WithFilter() throws Exception {
     String subDir = new GuidGenerator().safeUUID();
     MockMessageListener stub = new MockMessageListener(10);

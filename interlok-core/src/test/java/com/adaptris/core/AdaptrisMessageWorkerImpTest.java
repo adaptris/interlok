@@ -16,26 +16,23 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 import com.adaptris.core.stubs.MockMessageProducer;
 
 
 @SuppressWarnings("deprecation")
 public class AdaptrisMessageWorkerImpTest extends BaseCase {
 
-  public AdaptrisMessageWorkerImpTest(String name) {
-    super(name);
+  public AdaptrisMessageWorkerImpTest() {
+    super();
   }
 
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
-  }
-
+  @Test
   public void testHandleConnectionException() throws Exception {
     MockMessageProducer worker = new MockMessageProducer();
     NullConnection conn = new NullConnection();
@@ -54,6 +51,7 @@ public class AdaptrisMessageWorkerImpTest extends BaseCase {
     }
   }
 
+  @Test
   public void testIsTrackingEndpoint() throws Exception {
     MockMessageProducer worker = new MockMessageProducer();
     assertFalse(worker.isTrackingEndpoint());
@@ -64,11 +62,13 @@ public class AdaptrisMessageWorkerImpTest extends BaseCase {
     assertTrue(worker.isTrackingEndpoint());
   }
 
+  @Test
   public void testCreateName() throws Exception {
     MockMessageProducer worker = new MockMessageProducer();
     assertEquals(MockMessageProducer.class.getName(), worker.createName());
   }
 
+  @Test
   public void testToString() throws Exception {
     MockMessageProducer worker = new MockMessageProducer();
     worker.setEncoder(new MimeEncoder());
@@ -77,6 +77,7 @@ public class AdaptrisMessageWorkerImpTest extends BaseCase {
     assertNotNull(worker.toString());
   }
 
+  @Test
   public void testEncodeDecodeWithEncoder() throws Exception {
     MockMessageProducer worker = new MockMessageProducer();
     MimeEncoder encoder = new MimeEncoder();
@@ -93,6 +94,7 @@ public class AdaptrisMessageWorkerImpTest extends BaseCase {
     assertEquals("data", msg2.getMetadataValue("key"));
   }
 
+  @Test
   public void testEncodeDecodeWithoutEncoder() throws Exception {
     MockMessageProducer worker = new MockMessageProducer();
     AdaptrisMessageFactory fact = new DefaultMessageFactory();
@@ -107,4 +109,8 @@ public class AdaptrisMessageWorkerImpTest extends BaseCase {
     assertFalse(msg2.containsKey("key"));
   }
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
 }

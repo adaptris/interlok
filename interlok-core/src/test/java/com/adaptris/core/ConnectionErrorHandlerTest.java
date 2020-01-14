@@ -15,7 +15,9 @@
 */
 
 package com.adaptris.core;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.core.stubs.MockMessageListener;
@@ -24,26 +26,23 @@ import com.adaptris.core.stubs.StateManagedStandaloneConsumer;
 
 public class ConnectionErrorHandlerTest extends BaseCase {
 
-  public ConnectionErrorHandlerTest(java.lang.String testName) {
-    super(testName);
-  }
-
-  @Override
-  protected void setUp() throws Exception {
+  public ConnectionErrorHandlerTest() {
 
   }
 
   @Override
-  protected void tearDown() throws Exception {
-
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testAllowedInConjunctionWith() throws Exception {
     ChannelCloseErrorHandler a = new ChannelCloseErrorHandler();
     ChannelCloseErrorHandler b = new ChannelCloseErrorHandler();
     assertTrue(a.allowedInConjunctionWith(b));
   }
 
+  @Test
   public void testAdaptrisComponentConnectionErrorHandler() throws Exception {
     MockStandaloneConsumer c = new MockStandaloneConsumer(new TriggeredFailingConnection(), new MockMessageConsumer(
         new MockMessageListener()));
@@ -57,6 +56,7 @@ public class ConnectionErrorHandlerTest extends BaseCase {
     stop(c);
   }
 
+  @Test
   public void testStateManagedComponentConnectionErrorHandler() throws Exception {
     MockStandaloneConsumer c = new StateManagedStandaloneConsumer(new TriggeredFailingConnection(), new MockMessageConsumer(
         new MockMessageListener()));
@@ -69,6 +69,7 @@ public class ConnectionErrorHandlerTest extends BaseCase {
     stop(c);
   }
 
+  @Test
   public void testChannelConnectionErrorHandler() throws Exception {
     MockChannel c = new MockChannel();
     TriggeredFailingConnection con = new TriggeredFailingConnection();
@@ -82,6 +83,7 @@ public class ConnectionErrorHandlerTest extends BaseCase {
     stop(c);
   }
 
+  @Test
   public void testChannelClosed_ConnectionErrorHandler() throws Exception {
     MockChannel started = new MockChannel();
     MockChannel neverStarted = new MockChannel();
@@ -102,6 +104,7 @@ public class ConnectionErrorHandlerTest extends BaseCase {
     stop(started);
   }
 
+  @Test
   public void testChannelStopped_ConnectionErrorHandler() throws Exception {
     MockChannel started = new MockChannel();
     MockChannel stopped = new MockChannel();
@@ -125,6 +128,7 @@ public class ConnectionErrorHandlerTest extends BaseCase {
     stop(started);
   }
 
+  @Test
   public void testChannelInitialised_ConnectionErrorHandler() throws Exception {
     MockChannel started = new MockChannel();
     MockChannel initOnly = new MockChannel();
@@ -147,6 +151,7 @@ public class ConnectionErrorHandlerTest extends BaseCase {
     stop(started);
   }
 
+  @Test
   public void testAdaptrisComponentNullConnectionErrorHandler() throws Exception {
     MockStandaloneConsumer c = new MockStandaloneConsumer(new TriggeredFailingConnection(new NullConnectionErrorHandler()),
         new MockMessageConsumer(
@@ -161,6 +166,7 @@ public class ConnectionErrorHandlerTest extends BaseCase {
     stop(c);
   }
 
+  @Test
   public void testStateManagedComponentNullConnectionErrorHandler() throws Exception {
     MockStandaloneConsumer c = new StateManagedStandaloneConsumer(new TriggeredFailingConnection(new NullConnectionErrorHandler()),
         new MockMessageConsumer(
@@ -174,6 +180,7 @@ public class ConnectionErrorHandlerTest extends BaseCase {
     stop(c);
   }
 
+  @Test
   public void testChannelNullConnectionErrorHandler() throws Exception {
     MockChannel c = new MockChannel();
     TriggeredFailingConnection con = new TriggeredFailingConnection(new NullConnectionErrorHandler());
@@ -187,6 +194,7 @@ public class ConnectionErrorHandlerTest extends BaseCase {
     stop(c);
   }
 
+  @Test
   public void testChannelChannelCloseConnectionErrorHandler() throws Exception {
     MockChannel c = new MockChannel();
     TriggeredFailingConnection con = new TriggeredFailingConnection(new ChannelCloseErrorHandler());

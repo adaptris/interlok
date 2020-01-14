@@ -16,9 +16,10 @@
 
 package com.adaptris.core.services;
 
+import static org.junit.Assert.assertEquals;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
@@ -32,20 +33,19 @@ public class Utf8BomRemoverTest extends GeneralServiceExample {
 
   private static final String PAYLOAD = "Pack my box with five dozen liquor jugs";
 
-  public Utf8BomRemoverTest(java.lang.String testName) {
-    super(testName);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testServiceWithBom() throws Exception {
     AdaptrisMessage msg = create(true);
       execute(new Utf8BomRemover(), msg);
     assertEquals(PAYLOAD, msg.getContent());
   }
 
+  @Test
   public void testServiceWithoutBom() throws Exception {
     AdaptrisMessage msg = create(false);
     execute(new Utf8BomRemover(), msg);

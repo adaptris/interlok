@@ -16,8 +16,11 @@
 
 package com.adaptris.core.services;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 import java.security.MessageDigest;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
@@ -28,14 +31,12 @@ public class GzipServiceTest extends GeneralServiceExample {
 
   public static final String LINE = "The quick brown fox jumps over the lazy dog";
 
-  public GzipServiceTest(java.lang.String testName) {
-    super(testName);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testZipService() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(LINE, "UTF-8");
     execute(new GzipService(), msg);
@@ -45,6 +46,7 @@ public class GzipServiceTest extends GeneralServiceExample {
         .getContent());
   }
 
+  @Test
   public void testZipServiceFailure() throws Exception {
     AdaptrisMessage msg = new DefectiveMessageFactory().newMessage(LINE, "UTF-8");
     try {

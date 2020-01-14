@@ -16,6 +16,9 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 
@@ -28,16 +31,16 @@ public class MetadataKeyToUpperCaseTest extends MetadataKeyCaseChanger {
   private static final String KEY_MATCH = "^" + KEY_START_KEY + "$";
   private static final String KEY_RESULT_KEY = KEY_START_KEY.toUpperCase();
   private static final String KEY_UNMATCHED = "yetAnotherKey";
-
-  public MetadataKeyToUpperCaseTest(String name) {
-    super(name);
-  }
-
   @Override
   protected void addMetadata(AdaptrisMessage msg) {
     msg.addMetadata(KEY_START_KEY, METADATA_VALUE);
     msg.addMetadata(KEY_UNMATCHED, HELLO_WORLD);
 
+  }
+
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override

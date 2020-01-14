@@ -16,16 +16,17 @@
 
 package com.adaptris.core.services;
 
-import static org.mockito.Matchers.any;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.DefaultMessageFactory;
@@ -44,14 +45,12 @@ public class RetryingServiceWrapperTest extends GeneralServiceExample {
   private RetryingServiceWrapper retryingServiceWrapper;
   private Service wrappedService;
   
-  public RetryingServiceWrapperTest() {
-    this(null);
-  }
-
-  public RetryingServiceWrapperTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
   
+  @Before
   public void setUp() throws Exception {
     retryingServiceWrapper = new RetryingServiceWrapper();
     
@@ -190,6 +189,7 @@ public class RetryingServiceWrapperTest extends GeneralServiceExample {
     
     // without a call to close(), this should run forever...
     new Thread("RetryingServiceWrapper thread") {
+      @Override
       public void run() {
         try {
           retryingServiceWrapper.doService(DefaultMessageFactory.getDefaultInstance().newMessage());
@@ -205,6 +205,7 @@ public class RetryingServiceWrapperTest extends GeneralServiceExample {
     // if this test ends, then we know we're good.
   }
 
+  @Override
   protected Object retrieveObjectForSampleConfig() {
     JmsConnection connection = new JmsConnection();
     connection.setVendorImplementation(new StandardJndiImplementation("MyConnectionFactory"));
@@ -223,6 +224,7 @@ public class RetryingServiceWrapperTest extends GeneralServiceExample {
     return service;
   }
   
+  @Override
   protected boolean doStateTests() {
     return false;
   }

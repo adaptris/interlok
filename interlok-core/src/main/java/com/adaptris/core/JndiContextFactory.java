@@ -18,14 +18,11 @@ package com.adaptris.core;
 
 import java.util.Hashtable;
 import java.util.Map;
-
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.management.SystemPropertiesUtil;
 import com.adaptris.naming.adapter.NamingContext;
 
@@ -45,16 +42,17 @@ public class JndiContextFactory implements InitialContextFactory {
     myEnvironment = environment;
   }
 
+  @Override
   public Context getInitialContext(Hashtable environment) throws NamingException {
     if(initialContext == null) {
-      initialContext = new NamingContext(addAdapterSchemePackage(merge(environment)));
+      initialContext = new NamingContext(addAdapterSchemePackage(merge(myEnvironment, environment)));
     }
     return initialContext;
   }
 
-  private Hashtable merge(Hashtable environment) {
+  protected static Hashtable merge(Hashtable<?, ?> defaultEnv, Hashtable environment) {
     Hashtable result = (Hashtable) environment.clone();
-    for (Map.Entry e : myEnvironment.entrySet()) {
+    for (Map.Entry e : defaultEnv.entrySet()) {
       if (!environment.containsKey(e.getKey())) {
         result.put(e.getKey(), e.getValue());
       }
@@ -62,7 +60,7 @@ public class JndiContextFactory implements InitialContextFactory {
     return result;
   }
   
-  private static Hashtable<String, Object> addAdapterSchemePackage(Hashtable<String, Object> hashtable) {
+  protected static Hashtable<String, Object> addAdapterSchemePackage(Hashtable<String, Object> hashtable) {
     String property = (String) hashtable.get(Context.URL_PKG_PREFIXES);
     if(property == null)
       hashtable.put(Context.URL_PKG_PREFIXES, SystemPropertiesUtil.NAMING_PACKAGE);

@@ -29,13 +29,13 @@ import static com.adaptris.core.ftp.EmbeddedFtpServer.PAYLOAD;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.PAYLOAD_ALTERNATE;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.SERVER_ADDRESS;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.SLASH;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import org.mockftpserver.fake.FakeFtpServer;
 import org.mockftpserver.fake.filesystem.FileEntry;
 import org.mockftpserver.fake.filesystem.FileSystem;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ConfiguredProduceDestination;
@@ -55,11 +55,14 @@ public class FtpProducerTest extends FtpProducerCase {
   private static final TimeInterval DEFAULT_TIMEOUT = new TimeInterval(100L, TimeUnit.MILLISECONDS);
   private static final String BASE_DIR_KEY = "FtpProducerExamples.baseDir";
 
-  public FtpProducerTest(String name) {
-    super(name);
+  public FtpProducerTest() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
+  }
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
@@ -73,6 +76,7 @@ public class FtpProducerTest extends FtpProducerCase {
     return "ftp";
   }
 
+  @Test
   public void testInit_NoBuildDir() throws Exception {
     FtpProducer ftpProducer = new FtpProducer();
     ftpProducer.setBuildDirectory(null);
@@ -84,6 +88,7 @@ public class FtpProducerTest extends FtpProducerCase {
     }
   }
 
+  @Test
   public void testInit_NoDestDir() throws Exception {
     FtpProducer ftpProducer = new FtpProducer();
     ftpProducer.setDestDirectory(null);
@@ -95,6 +100,7 @@ public class FtpProducerTest extends FtpProducerCase {
     }
   }
 
+  @Test
   public void testInit() throws Exception {
     FtpProducer ftpProducer = new FtpProducer();
     ftpProducer.setBuildDirectory("buildDir");
@@ -115,7 +121,7 @@ public class FtpProducerTest extends FtpProducerCase {
     ftpProducer.close();
   }
 
-
+  @Test
   public void testSetFilenameCreator() throws Exception {
     FtpProducer ftpProducer = new FtpProducer();
     assertEquals(FormattedFilenameCreator.class, ftpProducer.filenameCreatorToUse().getClass());
@@ -124,6 +130,7 @@ public class FtpProducerTest extends FtpProducerCase {
     assertEquals(MetadataFileNameCreator.class, ftpProducer.filenameCreatorToUse().getClass());
   }
 
+  @Test
   public void testProduce() throws Exception {
     EmbeddedFtpServer helper = new EmbeddedFtpServer();
     FileSystem filesystem = helper.createFilesystem_DirsOnly();
@@ -142,6 +149,7 @@ public class FtpProducerTest extends FtpProducerCase {
 
   }
 
+  @Test
   public void testProduce_WithEncoder() throws Exception {
     EmbeddedFtpServer helper = new EmbeddedFtpServer();
     FileSystem filesystem = helper.createFilesystem_DirsOnly();
@@ -161,6 +169,7 @@ public class FtpProducerTest extends FtpProducerCase {
 
   }
 
+  @Test
   public void testProduce_NoDebug() throws Exception {
     EmbeddedFtpServer helper = new EmbeddedFtpServer();
     FileSystem filesystem = helper.createFilesystem_DirsOnly();
@@ -180,6 +189,7 @@ public class FtpProducerTest extends FtpProducerCase {
 
   }
 
+  @Test
   public void testProduce_NoBuildDirectory() throws Exception {
     EmbeddedFtpServer helper = new EmbeddedFtpServer();
     FileSystem filesystem = helper.createFilesystem_DirsOnly(DEFAULT_WORK_DIR_NAME, DEFAULT_PROC_DIR_NAME);
@@ -202,7 +212,8 @@ public class FtpProducerTest extends FtpProducerCase {
       server.stop();
     }
   }
-  
+
+  @Test
   public void testProduce_NoTargetDirectory() throws Exception {
     EmbeddedFtpServer helper = new EmbeddedFtpServer();
     FileSystem filesystem = helper.createFilesystem_DirsOnly(DEFAULT_BUILD_DIR_NAME);
@@ -225,7 +236,8 @@ public class FtpProducerTest extends FtpProducerCase {
       server.stop();
     }
   }
-  
+
+  @Test
   public void testBasicRequestReply() throws Exception {
     EmbeddedFtpServer helper = new EmbeddedFtpServer();
     FileSystem filesystem = helper.createFilesystem_DirsOnly();
@@ -250,6 +262,7 @@ public class FtpProducerTest extends FtpProducerCase {
     }
   }
 
+  @Test
   public void testBasicRequestReply_NoDebug() throws Exception {
     EmbeddedFtpServer helper = new EmbeddedFtpServer();
     FileSystem filesystem = helper.createFilesystem_DirsOnly();
@@ -275,6 +288,7 @@ public class FtpProducerTest extends FtpProducerCase {
     }
   }
 
+  @Test
   public void testRequestReply_NoReplyDirectory() throws Exception {
     EmbeddedFtpServer helper = new EmbeddedFtpServer();
     FileSystem filesystem = helper.createFilesystem_DirsOnly();
@@ -301,6 +315,7 @@ public class FtpProducerTest extends FtpProducerCase {
     }
   }
 
+  @Test
   public void testRequestReply_ReplyEncoderEnabled() throws Exception {
     EmbeddedFtpServer helper = new EmbeddedFtpServer();
     FileSystem filesystem = helper.createFilesystem_DirsOnly();
@@ -330,6 +345,7 @@ public class FtpProducerTest extends FtpProducerCase {
     }
   }
 
+  @Test
   public void testRequestReply_ReplyEncoderDefault() throws Exception {
     EmbeddedFtpServer helper = new EmbeddedFtpServer();
     FileSystem filesystem = helper.createFilesystem_DirsOnly();
@@ -358,6 +374,7 @@ public class FtpProducerTest extends FtpProducerCase {
     }
   }
 
+  @Test
   public void testRequestReply_ReplyEncoderDisabled() throws Exception {
 
     EmbeddedFtpServer helper = new EmbeddedFtpServer();
@@ -385,6 +402,7 @@ public class FtpProducerTest extends FtpProducerCase {
     }
   }
 
+  @Test
   public void testRequestReply_ReplyToNameSet() throws Exception {
 
     EmbeddedFtpServer helper = new EmbeddedFtpServer();
@@ -412,6 +430,7 @@ public class FtpProducerTest extends FtpProducerCase {
     }
   }
 
+  @Test
   public void testRequestReply_ReplyProcDirectory() throws Exception {
 
     EmbeddedFtpServer helper = new EmbeddedFtpServer();

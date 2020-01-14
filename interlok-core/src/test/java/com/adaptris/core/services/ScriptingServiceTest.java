@@ -16,12 +16,15 @@
 
 package com.adaptris.core.services;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-
 import org.apache.commons.io.IOUtils;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
@@ -38,9 +41,11 @@ public class ScriptingServiceTest extends GeneralServiceExample {
   private static final String MY_METADATA_VALUE = "MyMetadataValue";
   private static final String MY_METADATA_KEY = "MyMetadataKey";
 
-  public ScriptingServiceTest(java.lang.String testName) {
-    super(testName);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
+
 
   private File writeScript(boolean working) throws IOException {
     FileWriter fw = null;
@@ -66,6 +71,8 @@ public class ScriptingServiceTest extends GeneralServiceExample {
       throw new Exception("failed to delete file");
     }
   }
+
+  @Test
   public void testService() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata(MY_METADATA_KEY, MY_METADATA_VALUE);
@@ -79,6 +86,7 @@ public class ScriptingServiceTest extends GeneralServiceExample {
     delete(script);
   }
 
+  @Test
   public void testInit() throws Exception {
     ScriptingService service = new ScriptingService();
     try {
@@ -104,6 +112,7 @@ public class ScriptingServiceTest extends GeneralServiceExample {
     delete(script);
   }
 
+  @Test
   public void testDoServiceWithFailingScript() throws Exception {
     ScriptingService service = createService();
     File script = writeScript(false);

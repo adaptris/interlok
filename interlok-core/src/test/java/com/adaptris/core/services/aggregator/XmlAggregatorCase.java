@@ -16,8 +16,11 @@
 
 package com.adaptris.core.services.aggregator;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import java.util.Arrays;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -27,18 +30,7 @@ import com.adaptris.util.text.xml.InsertNode;
 
 public abstract class XmlAggregatorCase extends AggregatorCase {
 
-  public XmlAggregatorCase(String name) {
-    super(name);
-  }
-
-  @Override
-  protected void setUp() throws Exception {
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-  }
-
+  @Test
   public void testSetDocumentEncoding() throws Exception {
     XmlDocumentAggregator aggr = createAggregatorForTests();
     assertNull(aggr.getDocumentEncoding());
@@ -46,6 +38,7 @@ public abstract class XmlAggregatorCase extends AggregatorCase {
     assertEquals("ISO-8859-1", aggr.getDocumentEncoding());
   }
 
+  @Test
   public void testSetDocumentMerge() throws Exception {
     XmlDocumentAggregator aggr = createAggregatorForTests();
     assertNull(aggr.getMergeImplementation());
@@ -62,6 +55,7 @@ public abstract class XmlAggregatorCase extends AggregatorCase {
     assertEquals(inserter, aggr.getMergeImplementation());
   }
 
+  @Test
   public void testJoinMessage_NoOverwriteMetadata() throws Exception {
     XmlDocumentAggregator aggr = createAggregatorForTests();
     aggr.setMergeImplementation(new InsertNode(SplitJoinServiceTest.XPATH_ENVELOPE));
@@ -78,6 +72,7 @@ public abstract class XmlAggregatorCase extends AggregatorCase {
     assertEquals("originalValue", original.getMetadataValue("originalKey"));
   }
 
+  @Test
   public void testJoinMessage_OverwriteMetadata() throws Exception {
     XmlDocumentAggregator aggr = createAggregatorForTests();
     aggr.setMergeImplementation(new InsertNode(SplitJoinServiceTest.XPATH_ENVELOPE));
@@ -94,6 +89,7 @@ public abstract class XmlAggregatorCase extends AggregatorCase {
     assertEquals("newValue", original.getMetadataValue("originalKey"));
   }
 
+  @Test
   public void testJoinMessage_Fails() throws Exception {
     XmlDocumentAggregator aggr = createAggregatorForTests();
     aggr.setMergeImplementation(new InsertNode(SplitJoinServiceTest.XPATH_ENVELOPE));

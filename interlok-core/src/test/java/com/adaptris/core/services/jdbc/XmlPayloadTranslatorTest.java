@@ -16,12 +16,17 @@
 
 package com.adaptris.core.services.jdbc;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.List;
-
+import org.junit.Test;
 import org.w3c.dom.Document;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.services.jdbc.StyledResultTranslatorImp.ColumnStyle;
 import com.adaptris.core.services.jdbc.types.IntegerColumnTranslator;
@@ -35,15 +40,12 @@ import com.adaptris.util.text.xml.XPath;
 @SuppressWarnings("deprecation")
 public class XmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlResults {
 
-  public XmlPayloadTranslatorTest(String arg0) {
-    super(arg0);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testMetadataStatementParam() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -62,6 +64,7 @@ public class XmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlResults {
     assertNotNull("/Results/Row", xu.getSingleNode("/Results/Row"));
   }
 
+  @Test
   public void testXpathStatementParam() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -91,6 +94,7 @@ public class XmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlResults {
         xp.selectSingleTextItem(xmlDoc, "/Results/Row/INSERTED_ON"));
   }
 
+  @Test
   public void testService_XpathParam_WithTranslators() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -118,6 +122,7 @@ public class XmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlResults {
   }
 
   // This should effectively give the same results as testService_WithTranslators...
+  @Test
   public void testService_XpathParam_WithAutoConvert() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -145,6 +150,7 @@ public class XmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlResults {
         xp.selectSingleTextItem(xmlDoc, "/Results/Row/INSERTED_ON"));
   }
 
+  @Test
   public void testPreserveOriginal() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -163,6 +169,7 @@ public class XmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlResults {
     assertNotNull("/Results/Row", xu.getSingleNode("/Results/Row"));
   }
 
+  @Test
   public void testContainsRowCount() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);

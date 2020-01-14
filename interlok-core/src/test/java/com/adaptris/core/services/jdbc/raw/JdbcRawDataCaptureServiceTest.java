@@ -15,7 +15,9 @@
  */
 
 package com.adaptris.core.services.jdbc.raw;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -27,7 +29,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ComponentLifecycle;
@@ -58,10 +60,10 @@ public class JdbcRawDataCaptureServiceTest extends JdbcServiceExample {
   protected static final String JDBC_CAPTURE_SERVICE_DRIVER = "jdbc.captureservice.driver";
   protected static final String JDBC_CAPTURE_SERVICE_URL = "jdbc.captureservice.url";
 
-  public JdbcRawDataCaptureServiceTest(String arg0) {
-    super(arg0);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
-
   @Override
   protected JdbcRawDataCaptureService retrieveObjectForSampleConfig() {
     JdbcRawDataCaptureService service = createService();
@@ -78,6 +80,7 @@ public class JdbcRawDataCaptureServiceTest extends JdbcServiceExample {
     return createService(true);
   }
 
+  @Test
   public void testService() throws Exception {
     createDatabase();
     JdbcRawDataCaptureService service = createService();
@@ -88,6 +91,7 @@ public class JdbcRawDataCaptureServiceTest extends JdbcServiceExample {
     assertEquals("1", msg.getMetadataValue("rowsUpdatedKey"));
   }
 
+  @Test
   public void testService_Resolveable() throws Exception {
     createDatabase();
     JdbcRawDataCaptureService service = createResolveableStatement(true);
@@ -125,6 +129,7 @@ public class JdbcRawDataCaptureServiceTest extends JdbcServiceExample {
     }
   }
 
+  @Test
   public void testService_PooledConnection() throws Exception {
     int maxServices = 5;
     final int iterations = 5;
@@ -162,6 +167,7 @@ public class JdbcRawDataCaptureServiceTest extends JdbcServiceExample {
     }
   }
 
+  @Test
   public void testService_AdvancedPooledConnection() throws Exception {
     int maxServices = 5;
     final int iterations = 5;
@@ -199,6 +205,7 @@ public class JdbcRawDataCaptureServiceTest extends JdbcServiceExample {
     }
   }
 
+  @Test
   public void testServiceWithUniqueId() throws Exception {
     createDatabase();
     JdbcRawDataCaptureService service = createService();
@@ -229,6 +236,7 @@ public class JdbcRawDataCaptureServiceTest extends JdbcServiceExample {
     }
   }
 
+  @Test
   public void testServiceWithNamedParameters() throws Exception {
     createDatabase();
     JdbcRawDataCaptureService service = createServiceNamedParameters(true);
@@ -237,7 +245,7 @@ public class JdbcRawDataCaptureServiceTest extends JdbcServiceExample {
     doBasicCaptureAsserts(1);
   }
 
-  @Override
+  @Test
   public void testBackReferences() throws Exception {
     this.testBackReferences(new JdbcRawDataCaptureService("INSERT INTO MYTABLE ('ABC');"));
   }

@@ -26,9 +26,7 @@ public abstract class HttpProducerExample extends ProducerCase {
    */
   public static final String BASE_DIR_KEY = "HttpProducerExamples.baseDir";
 
-  public HttpProducerExample(String name) {
-    super(name);
-
+  public HttpProducerExample() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }

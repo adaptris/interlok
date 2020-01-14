@@ -16,6 +16,11 @@
 
 package com.adaptris.core.services;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BranchingServiceCollection;
@@ -33,19 +38,18 @@ public class BranchingServiceEnablerTest extends BranchingServiceExample {
 
   private static final String OTHER = "other";
 
-  public BranchingServiceEnablerTest(java.lang.String testName) {
-    super(testName);
-  }
 
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
-
+  @Test
   public void testIsBranching() throws Exception {
     BranchingServiceEnabler s = wrap(new NullService());
     assertTrue(s.isBranching());
   }
 
+  @Test
   public void testServiceSuccess() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("ABC");
     BranchingServiceEnabler s = wrap(new NullService());
@@ -53,6 +57,7 @@ public class BranchingServiceEnablerTest extends BranchingServiceExample {
     assertEquals(SUCCESS, msg.getNextServiceId());
   }
 
+  @Test
   public void testServiceFail() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("ABC");
     BranchingServiceEnabler s = wrap(new AlwaysFailService());
@@ -60,6 +65,7 @@ public class BranchingServiceEnablerTest extends BranchingServiceExample {
     assertEquals(FAIL, msg.getNextServiceId());
   }
 
+  @Test
   public void testService_WrapBranching() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("ABC");
     BranchingServiceEnabler s = wrap(new TestBranchingService());
@@ -67,6 +73,7 @@ public class BranchingServiceEnablerTest extends BranchingServiceExample {
     assertEquals("001", msg.getNextServiceId());
   }
 
+  @Test
   public void testTryInit() throws Exception {
     BranchingServiceEnabler service = new BranchingServiceEnabler();
     try {

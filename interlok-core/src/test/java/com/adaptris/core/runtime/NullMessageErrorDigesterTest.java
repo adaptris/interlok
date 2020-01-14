@@ -16,9 +16,10 @@
 
 package com.adaptris.core.runtime;
 
+import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BaseCase;
@@ -26,19 +27,12 @@ import com.adaptris.core.Workflow;
 import com.adaptris.core.util.LifecycleHelper;
 
 public class NullMessageErrorDigesterTest extends BaseCase {
-
-  public NullMessageErrorDigesterTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-  }
-
+  @Test
   public void testLifecycle() throws Exception {
     MessageErrorDigester digester = createDigester();
     LifecycleHelper.init(digester);
@@ -47,7 +41,7 @@ public class NullMessageErrorDigesterTest extends BaseCase {
     LifecycleHelper.close(digester);
   }
 
-
+  @Test
   public void testDigest() throws Exception {
     MessageErrorDigester digester = createDigester();
     try {

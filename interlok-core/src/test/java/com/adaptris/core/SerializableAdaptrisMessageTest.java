@@ -16,22 +16,26 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
 import com.adaptris.core.stubs.StubSerializableMessage;
 import com.adaptris.interlok.types.SerializableMessage;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
-import junit.framework.TestCase;
-
 /**
  * <p>
  * <code>SerializableAdaptrisMessageTest</code>
  */
-public class SerializableAdaptrisMessageTest extends TestCase {
+public class SerializableAdaptrisMessageTest {
 
   private static final String VALUE3 = "Value3";
   private static final String VALUE2 = "Value2";
@@ -40,33 +44,27 @@ public class SerializableAdaptrisMessageTest extends TestCase {
   private static final String KEY3 = "Key3";
   private static final String KEY2 = "Key2";
   private static final String KEY1 = "Key1";
-
-  public void setUp() throws Exception {
-    
-  }
-  
-  public void tearDown() throws Exception {
-    
-  }
-  
+  @Rule
+  public TestName testName = new TestName();
+  @Test
   public void testConstructors() throws Exception {
-    SerializableAdaptrisMessage message = new SerializableAdaptrisMessage(getName());
-    assertEquals(getName(), message.getUniqueId());
+    SerializableAdaptrisMessage message = new SerializableAdaptrisMessage(testName.getMethodName());
+    assertEquals(testName.getMethodName(), message.getUniqueId());
     assertEquals(0, message.getMetadata().size());
     assertNull(message.getContent());
     assertEquals("", message.getNextServiceId());
 
-    message = new SerializableAdaptrisMessage(getName(), "my payload");
-    assertEquals(getName(), message.getUniqueId());
+    message = new SerializableAdaptrisMessage(testName.getMethodName(), "my payload");
+    assertEquals(testName.getMethodName(), message.getUniqueId());
     assertEquals(0, message.getMetadata().size());
     assertEquals("my payload", message.getContent());
     assertEquals("", message.getNextServiceId());
 
     SerializableMessage stub = new StubSerializableMessage();
-    stub.setUniqueId(getName());
+    stub.setUniqueId(testName.getMethodName());
     stub.setContent("my payload");
     message = new SerializableAdaptrisMessage(stub);
-    assertEquals(getName(), message.getUniqueId());
+    assertEquals(testName.getMethodName(), message.getUniqueId());
     assertEquals(0, message.getMetadata().size());
     assertEquals("my payload", message.getContent());
     assertEquals("", message.getNextServiceId());
@@ -74,6 +72,7 @@ public class SerializableAdaptrisMessageTest extends TestCase {
 
   }
 
+  @Test
   public void testSetMetadata() throws Exception {
     SerializableAdaptrisMessage message = new SerializableAdaptrisMessage();
     KeyValuePairSet kvps = new KeyValuePairSet();
@@ -91,6 +90,7 @@ public class SerializableAdaptrisMessageTest extends TestCase {
 
   }
 
+  @Test
   public void testSetMetadata_MetadataElementSet() throws Exception {
     SerializableAdaptrisMessage message = new SerializableAdaptrisMessage();
     HashSet<MetadataElement> set = new HashSet<>();
@@ -112,7 +112,7 @@ public class SerializableAdaptrisMessageTest extends TestCase {
     assertFalse(message.getMessageHeaders().containsKey(KEY4));
   }
 
-
+  @Test
   public void testAddMetadata() throws Exception {
     SerializableAdaptrisMessage message = new SerializableAdaptrisMessage();
     message.addMetadata(KEY1, VALUE1);
@@ -124,7 +124,7 @@ public class SerializableAdaptrisMessageTest extends TestCase {
     assertFalse(message.getMessageHeaders().containsKey(KEY4));
   }
 
-
+  @Test
   public void testRemoveMetadata() throws Exception {
     SerializableAdaptrisMessage message = new SerializableAdaptrisMessage();
     message.addMetadata(KEY1, VALUE1);
@@ -137,6 +137,7 @@ public class SerializableAdaptrisMessageTest extends TestCase {
     assertTrue(message.getMessageHeaders().containsKey(KEY3));
   }
 
+  @Test
   public void testGetMetadataValue() throws Exception {
     SerializableAdaptrisMessage message = new SerializableAdaptrisMessage();
     message.addMetadata(KEY1, VALUE1);
@@ -146,7 +147,7 @@ public class SerializableAdaptrisMessageTest extends TestCase {
     assertNull(message.getMetadataValue(null));
   }
 
-
+  @Test
   public void testSerializePayload() throws Exception {
     SerializableAdaptrisMessage message = new SerializableAdaptrisMessage();
     message.setContent("SomePayload");
@@ -155,7 +156,8 @@ public class SerializableAdaptrisMessageTest extends TestCase {
     
     assertTrue(message.getContent().equals(unmarshalledMessage.getContent()));
   }
-  
+
+  @Test
   public void testSerializeID() throws Exception {
     SerializableAdaptrisMessage message = new SerializableAdaptrisMessage();
     message.setUniqueId("MyUniqueID");
@@ -164,7 +166,8 @@ public class SerializableAdaptrisMessageTest extends TestCase {
     
     assertTrue(message.getUniqueId().equals(unmarshalledMessage.getUniqueId()));
   }
-  
+
+  @Test
   public void testSerializeMetadata() throws Exception {
     SerializableAdaptrisMessage message = new SerializableAdaptrisMessage();
     message.addMetadata(KEY1, VALUE1);
@@ -175,7 +178,8 @@ public class SerializableAdaptrisMessageTest extends TestCase {
     
     assertTrue(message.getMetadata().equals(unmarshalledMessage.getMetadata()));
   }
-  
+
+  @Test
   public void testSerializeAll() throws Exception {
     SerializableAdaptrisMessage message = new SerializableAdaptrisMessage();
     message.setUniqueId("MyUniqueID");
@@ -192,7 +196,8 @@ public class SerializableAdaptrisMessageTest extends TestCase {
     assertTrue(message.getMetadata().equals(unmarshalledMessage.getMetadata()));
     assertTrue(message.getContentEncoding().equals(unmarshalledMessage.getContentEncoding()));
   }
-  
+
+  @Test
   public void testMessageHeaders() throws Exception {
     SerializableAdaptrisMessage message = new SerializableAdaptrisMessage();
     message.addMetadata(KEY1, VALUE1);
@@ -204,6 +209,7 @@ public class SerializableAdaptrisMessageTest extends TestCase {
     assertFalse(message.getMessageHeaders().containsKey(KEY4));
   }
 
+  @Test
   public void testAddMessageHeader() throws Exception {
     SerializableAdaptrisMessage message = new SerializableAdaptrisMessage();
     message.addMessageHeader(KEY1, VALUE1);
@@ -215,20 +221,21 @@ public class SerializableAdaptrisMessageTest extends TestCase {
     assertFalse(message.containsKey(KEY4));
   }
 
+  @Test
   public void testRemoveMessageHeader() throws Exception {
     SerializableAdaptrisMessage message = new SerializableAdaptrisMessage();
     message.addMessageHeader(KEY1, VALUE1);
     message.addMessageHeader(KEY2, VALUE2);
     message.addMessageHeader(KEY3, VALUE3);
     message.removeMessageHeader(KEY3);
-    message.removeMessageHeader(getName());
+    message.removeMessageHeader(testName.getMethodName());
     assertEquals(2, message.getMessageHeaders().size());
     assertTrue(message.containsKey(KEY1));
     assertTrue(message.containsKey(KEY2));
     assertFalse(message.containsKey(KEY3));
   }
 
-
+  @Test
   public void testSetMessageHeaders() throws Exception {
     SerializableAdaptrisMessage message = new SerializableAdaptrisMessage();
     Map<String, String> p = new HashMap<>();
@@ -242,6 +249,7 @@ public class SerializableAdaptrisMessageTest extends TestCase {
     assertFalse(message.containsKey(KEY4));
   }
 
+  @Test
   public void testEquals() throws Exception {
     SerializableAdaptrisMessage message = new SerializableAdaptrisMessage();
     message.setUniqueId("MyUniqueID");

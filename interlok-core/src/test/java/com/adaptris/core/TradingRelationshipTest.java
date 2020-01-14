@@ -15,16 +15,16 @@
 */
 
 package com.adaptris.core;
-
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 
 @SuppressWarnings("deprecation")
-public class TradingRelationshipTest extends TestCase {
+public class TradingRelationshipTest {
 
-  public TradingRelationshipTest(String name) {
-    super(name);
-  }
-
+  @Test
   public void testEqual() {
     TradingRelationship tr1 = new TradingRelationship();
     TradingRelationship tr2 = new TradingRelationship();
@@ -33,6 +33,7 @@ public class TradingRelationshipTest extends TestCase {
     assertFalse(tr1.equals(new Object()));
   }
 
+  @Test
   public void testSetDestination() {
     TradingRelationship tr1 = new TradingRelationship();
     try {
@@ -46,6 +47,7 @@ public class TradingRelationshipTest extends TestCase {
     assertEquals("FRED", tr1.getDestination());
   }
 
+  @Test
   public void testSetSource() {
     TradingRelationship tr1 = new TradingRelationship();
     try {
@@ -59,7 +61,7 @@ public class TradingRelationshipTest extends TestCase {
     assertEquals("FRED", tr1.getSource());
   }
 
-
+  @Test
   public void testSetType() {
     TradingRelationship tr1 = new TradingRelationship();
     try {
@@ -73,6 +75,7 @@ public class TradingRelationshipTest extends TestCase {
     assertEquals("FRED", tr1.getType());
   }
 
+  @Test
   public void testEqualModified() {
     TradingRelationship tr1 = new TradingRelationship();
     TradingRelationship tr2 = new TradingRelationship();
@@ -83,6 +86,7 @@ public class TradingRelationshipTest extends TestCase {
     assertEquals(tr1, tr2);
   }
 
+  @Test
   public void testNotEqualSource() {
     TradingRelationship tr1 = new TradingRelationship();
     TradingRelationship tr2 = new TradingRelationship();
@@ -91,6 +95,7 @@ public class TradingRelationshipTest extends TestCase {
     assertTrue(!tr1.equals(tr2));
   }
 
+  @Test
   public void testNotEqualDestination() {
     TradingRelationship tr1 = new TradingRelationship();
     TradingRelationship tr2 = new TradingRelationship();
@@ -99,6 +104,7 @@ public class TradingRelationshipTest extends TestCase {
     assertTrue(!tr1.equals(tr2));
   }
 
+  @Test
   public void testNotEqualType() {
     TradingRelationship tr1 = new TradingRelationship();
     TradingRelationship tr2 = new TradingRelationship();
@@ -107,6 +113,7 @@ public class TradingRelationshipTest extends TestCase {
     assertTrue(!tr1.equals(tr2));
   }
 
+  @Test
   public void testClone() throws Exception {
     TradingRelationship tr1 = new TradingRelationship();
     TradingRelationship tr2 = (TradingRelationship) tr1.clone();
@@ -115,6 +122,7 @@ public class TradingRelationshipTest extends TestCase {
     assertTrue(tr1 != tr2); // memory
   }
 
+  @Test
   public void testHasWildcardsWithWildcards() {
     TradingRelationship tr1 = new TradingRelationship("s", "d", "t");
     assertTrue(tr1.hasWildCards() == false);

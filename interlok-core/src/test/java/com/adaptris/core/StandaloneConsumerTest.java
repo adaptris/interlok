@@ -15,9 +15,13 @@
 */
 
 package com.adaptris.core;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.core.stubs.MockMessageListener;
@@ -27,10 +31,12 @@ import com.adaptris.util.TimeInterval;
 
 public class StandaloneConsumerTest extends BaseCase {
 
-  public StandaloneConsumerTest(String arg0) {
-    super(arg0);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testSetAdaptrisMessageListener() throws Exception {
     MockMessageProducer prod = new MockMessageProducer();
 
@@ -69,6 +75,7 @@ public class StandaloneConsumerTest extends BaseCase {
     stop(channel);
   }
 
+  @Test
   public void testPollingConsumerLifecycle() throws Exception {
     AdaptrisPollingConsumer consumer1 = new AdaptrisPollingConsumer() {
 
@@ -88,6 +95,7 @@ public class StandaloneConsumerTest extends BaseCase {
     LifecycleHelper.stopAndClose(sc);
   }
 
+  @Test
   public void testPollingConsumerContinueProcessing() throws Exception {
     AdaptrisPollingConsumer consumer = new AdaptrisPollingConsumer() {
 
@@ -123,6 +131,7 @@ public class StandaloneConsumerTest extends BaseCase {
 
   }
 
+  @Test
   public void testXmlRoundTrip() throws Exception {
     StandaloneConsumer input = new StandaloneConsumer();
     // input.setEncoder(new MimeEncoder());
@@ -133,6 +142,7 @@ public class StandaloneConsumerTest extends BaseCase {
     assertRoundtripEquality(input, output);
   }
 
+  @Test
   public void testSetConsumer() throws Exception {
     NullMessageConsumer c = new NullMessageConsumer();
     c.setUniqueId("abc");
@@ -148,6 +158,7 @@ public class StandaloneConsumerTest extends BaseCase {
     assertEquals(c, sc.getConsumer());
   }
 
+  @Test
   public void testSetConnection() throws Exception {
     NullConnection c = new NullConnection();
     StandaloneConsumer sc = new StandaloneConsumer(c);
@@ -162,6 +173,7 @@ public class StandaloneConsumerTest extends BaseCase {
     assertEquals(c, sc.getConnection());
   }
 
+  @Test
   public void testMessageEventGeneratorQualifier() throws Exception {
     NullMessageConsumer c = new NullMessageConsumer();
     c.setUniqueId("abc");
@@ -171,6 +183,7 @@ public class StandaloneConsumerTest extends BaseCase {
     assertEquals("", sc.createQualifier());
   }
 
+  @Test
   public void testMessageEventGeneratorCreateName() throws Exception {
     NullMessageConsumer c = new NullMessageConsumer();
     StandaloneConsumer sc = new StandaloneConsumer(c);
@@ -178,6 +191,7 @@ public class StandaloneConsumerTest extends BaseCase {
     assertEquals(sc.getConsumer().createName(), sc.createName());
   }
 
+  @Test
   public void testBackReferences() throws Exception {
     StandaloneConsumer consumer = new StandaloneConsumer();
     NullConnection conn = new NullConnection();

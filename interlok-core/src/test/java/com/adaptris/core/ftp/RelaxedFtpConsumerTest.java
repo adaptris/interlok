@@ -16,27 +16,29 @@
 
 package com.adaptris.core.ftp;
 
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Matchers.matches;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.anyObject;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.ArgumentMatchers.matches;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
-
 import java.io.FileFilter;
 import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.oro.io.GlobFilenameFilter;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FixedIntervalPoller;
@@ -66,11 +68,7 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
   private GregorianCalendar calendarNow;
   private GregorianCalendar calendarOneYearAgo;
   
-  public RelaxedFtpConsumerTest(String name) {
-    super(name);
-  }
-  
-  @Override
+  @Before
   public void setUp() throws Exception {
     consumer = new RelaxedFtpConsumer();
     
@@ -97,7 +95,7 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
     calendarOneYearAgo.add(Calendar.DAY_OF_YEAR, -1);
   }
   
-  @Override
+  @After
   public void tearDown() throws Exception {
     LifecycleHelper.stop(consumer);
     LifecycleHelper.close(consumer);
@@ -110,7 +108,8 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
    * 
    * 
    ***********************************************************************************************/
-  
+
+  @Test
   public void testSingleFileConsume() throws Exception {
     this.setFilesToConsume(
         new String[] { "/MySingleFile.txt" }, 
@@ -125,7 +124,8 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
     
     assertEquals(1, messageListener.getMessages().size());
   }
-  
+
+  @Test
   public void testSingleFileWithWindozeWorkAroundConsume() throws Exception {
     this.setFilesToConsume(
         new String[] { "\\MySingleFile.txt" }, 
@@ -142,7 +142,8 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
     
     assertEquals(1, messageListener.getMessages().size());
   }
-  
+
+  @Test
   public void testSingleFileWithEncoderConsume() throws Exception {
     String payload = "My file payload";
     String oldname = Thread.currentThread().getName();
@@ -172,7 +173,8 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
       Thread.currentThread().setName(oldname);
     }
   }
-  
+
+  @Test
   public void testMultipleFileConsume() throws Exception {
     this.setFilesToConsume(
         new String[] { "/MySingleFile.txt" , "/MySingleFile2.txt", "/MySingleFile3.txt" }, 
@@ -187,7 +189,8 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
     
     assertEquals(3, messageListener.getMessages().size());
   }
-  
+
+  @Test
   public void testSingleFileConsumeNotOldEnough() throws Exception {
     this.setFilesToConsume(
         new String[] { "/MySingleFile.txt" }, 
@@ -204,7 +207,8 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
     
     assertEquals(0, messageListener.getMessages().size());
   }
-  
+
+  @Test
   public void testSingleFileConsumeDeleteFails() throws Exception {
     this.setFilesToConsume(
         new String[] { "/MySingleFile.txt" }, 
@@ -221,7 +225,8 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
     
     assertEquals(1, messageListener.getMessages().size());
   }
-  
+
+  @Test
   public void testSingleFileConsumeDeleteFailsWithExceptionOnFail() throws Exception {
     this.setFilesToConsume(
         new String[] { "/MySingleFile.txt" }, 
@@ -239,7 +244,8 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
     
     assertEquals(1, messageListener.getMessages().size());
   }
-  
+
+  @Test
   public void testIncorrectPathConsume() throws Exception {
     when(mockFtpConnection.connect(consumeDestination.getDestination()))
         .thenThrow(new FileTransferException("testIncorrectPathConsume"));
@@ -255,7 +261,8 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
     this.waitForConsumer(1, 1000);
     assertEquals(0, messageListener.getMessages().size());
   }
-  
+
+  @Test
   public void testDirFailsIncorrectPathConsume() throws Exception {
     this.setFilesToConsume(
         new String[] { "/MySingleFile.txt" }, 
@@ -273,6 +280,7 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
     assertEquals(0, messageListener.getMessages().size());
   }
 
+  @Test
   public void testSingleFileWithFilterConsume() throws Exception {
     when(mockFtpConnection.additionalDebug()).thenReturn(true); // just for coverage
     
@@ -292,7 +300,8 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
     
     assertEquals(1, messageListener.getMessages().size());
   }
-  
+
+  @Test
   public void testWithIncorrectFilterConsume() throws Exception {
     consumer.setDestination(new ConfiguredConsumeDestination("myDestination", "myFilter"));
     consumer.setFileFilterImp("xxx");

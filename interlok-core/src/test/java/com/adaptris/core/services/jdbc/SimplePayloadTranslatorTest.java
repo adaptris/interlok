@@ -16,8 +16,9 @@
 
 package com.adaptris.core.services.jdbc;
 
+import static org.junit.Assert.assertEquals;
 import java.util.List;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.services.jdbc.types.StringColumnTranslator;
 
@@ -28,16 +29,13 @@ public class SimplePayloadTranslatorTest extends JdbcQueryServiceCase {
   private static final String DATE_QUERY_SQL = "SELECT adapter_version, message_translator_type, inserted_on, counter"
       + " FROM adapter_type_version " + " WHERE inserted_on > ?";
 
-  public SimplePayloadTranslatorTest(String arg0) {
-    super(arg0);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   // "SELECT adapter_version, message_translator_type, inserted_on, counter FROM adapter_type_version "
+  @Test
   public void testService_NamedColumn() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -55,6 +53,7 @@ public class SimplePayloadTranslatorTest extends JdbcQueryServiceCase {
   }
 
   // "SELECT adapter_version, message_translator_type, inserted_on, counter FROM adapter_type_version "
+  @Test
   public void testService_NoResultSet() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -72,6 +71,7 @@ public class SimplePayloadTranslatorTest extends JdbcQueryServiceCase {
     assertEquals("", msg.getContent());
   }
 
+  @Test
   public void testService_NoColumn() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -87,6 +87,7 @@ public class SimplePayloadTranslatorTest extends JdbcQueryServiceCase {
     assertEquals(msg.getContent(), entry.getVersion());
   }
 
+  @Test
   public void testService_NamedColumn_ColumnTranslator() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);

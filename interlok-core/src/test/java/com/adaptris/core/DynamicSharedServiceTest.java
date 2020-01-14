@@ -16,30 +16,38 @@
 package com.adaptris.core;
 
 import static com.adaptris.core.SharedServiceTest.createAdapterForSharedService;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import java.util.concurrent.TimeUnit;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
 public class DynamicSharedServiceTest extends ServiceCase {
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
 
   @Override
   protected Object retrieveObjectForSampleConfig() {
     return new DynamicSharedService("example-shared-service");
   }
 
+  @Override
   protected String getExampleCommentHeader(Object object) {
     return super.getExampleCommentHeader(object)
         + "<!--\n\n  Note that you need to have configured a shared-component with the name 'example-shared-service'\n\n-->\n";
   }
 
+  @Override
   protected String createBaseFileName(Object object) {
     return DynamicSharedService.class.getName();
   }

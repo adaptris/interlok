@@ -16,16 +16,21 @@
 
 package com.adaptris.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import org.junit.Test;
 
-import junit.framework.TestCase;
-
-public abstract class KeyValuePairCollectionCase extends TestCase {
+public abstract class KeyValuePairCollectionCase {
 
   protected static final String KEY = "key";
   protected static final String VALUE = "value";
@@ -40,22 +45,10 @@ public abstract class KeyValuePairCollectionCase extends TestCase {
   protected static final String VALUE3 = "value3";
   protected static final String VALUE4 = "value4";
 
-  public KeyValuePairCollectionCase(java.lang.String testName) {
-    super(testName);
-  }
-
-  @Override
-  public void setUp() throws Exception {
-    super.setUp();
-  }
-
-  @Override
-  public void tearDown() throws Exception {
-    super.tearDown();
-  }
 
   protected abstract KeyValuePairBag createBag();
 
+  @Test
   public void testGetKeyValuePair() {
     KeyValuePairBag set = createWithEntries(3);
 
@@ -63,12 +56,14 @@ public abstract class KeyValuePairCollectionCase extends TestCase {
     assertTrue(new KeyValuePair(KEY1, VALUE1).equals(set.getKeyValuePair(KEY1)));
   }
 
+  @Test
   public void testGetValue() {
     KeyValuePairBag set = createWithEntries(3);
 
     assertTrue(VALUE1.equals(set.getValue(KEY1)));
   }
 
+  @Test
   public void testGetValueIgnoringKeyCase() {
     KeyValuePairBag set = createWithEntries(3);
 
@@ -77,6 +72,7 @@ public abstract class KeyValuePairCollectionCase extends TestCase {
     assertEquals(4, set.size());
   }
 
+  @Test
   public void testNullOperations() {
     KeyValuePairBag set = createWithEntries(3);
 
@@ -92,6 +88,7 @@ public abstract class KeyValuePairCollectionCase extends TestCase {
     assertEquals(3, set.size());
   }
 
+  @Test
   public void testRemoveWithKeyValuePair() {
     KeyValuePairBag set = createWithEntries(3);
 
@@ -99,6 +96,7 @@ public abstract class KeyValuePairCollectionCase extends TestCase {
     assertEquals(2, set.size());
   }
 
+  @Test
   public void testRemoveByKey() {
     KeyValuePairBag set = createWithEntries(3);
 
@@ -107,6 +105,7 @@ public abstract class KeyValuePairCollectionCase extends TestCase {
     assertNull(set.getValue(KEY1));
   }
 
+  @Test
   public void testGetNonExistent() {
     KeyValuePairBag set = createWithEntries(3);
 
@@ -115,6 +114,7 @@ public abstract class KeyValuePairCollectionCase extends TestCase {
     assertNull(set.getValueIgnoringKeyCase("ABCDEFG"));
   }
 
+  @Test
   public void testIterator() {
     KeyValuePairBag set = createWithEntries(3);
 
@@ -128,6 +128,7 @@ public abstract class KeyValuePairCollectionCase extends TestCase {
     assertEquals(3, count);
   }
 
+  @Test
   public void testGetKeyValuePairs() {
     KeyValuePairBag set = createWithEntries(3);
     Collection<KeyValuePair> col = set.getKeyValuePairs();
@@ -135,6 +136,7 @@ public abstract class KeyValuePairCollectionCase extends TestCase {
     assertEquals(3, col.size());
   }
 
+  @Test
   public void testSetKeyValuePairs() {
     KeyValuePairBag set = createBag();
     Collection<KeyValuePair> col = Arrays.asList(new KeyValuePair[]
@@ -148,6 +150,7 @@ public abstract class KeyValuePairCollectionCase extends TestCase {
     assertTrue(new KeyValuePair(KEY1, VALUE1).equals(set.getKeyValuePair(KEY1)));
   }
 
+  @Test
   public void testAsProperties() {
     KeyValuePairBag set = createWithEntries(3);
 
@@ -158,6 +161,7 @@ public abstract class KeyValuePairCollectionCase extends TestCase {
     assertEquals(set.toString(), p.toString());
   }
 
+  @Test
   public void testEquals() {
     KeyValuePairBag set = createWithEntries(3);
     KeyValuePairBag set2 = createWithEntries(3);
@@ -177,17 +181,20 @@ public abstract class KeyValuePairCollectionCase extends TestCase {
     assertFalse(set.equals(set3));
   }
 
+  @Test
   public void testSize() {
     KeyValuePairBag bag1 = createWithEntries(3);
     assertEquals(3, bag1.size());
   }
 
+  @Test
   public void testClear() {
     KeyValuePairBag bag1 = createWithEntries(3);
     bag1.clear();
     assertEquals(0, bag1.size());
   }
 
+  @Test
   public void testAddAll() {
     KeyValuePairBag bag1 = createWithEntries(3);
     KeyValuePairBag bag2 = createBag();
@@ -196,6 +203,7 @@ public abstract class KeyValuePairCollectionCase extends TestCase {
     assertEquals(4, bag1.size());
   }
 
+  @Test
   public void testAddAll_Properties() {
     Properties p = KeyValuePairBag.asProperties(createWithEntries(3));
     KeyValuePairBag bag2 = createBag();
@@ -204,6 +212,7 @@ public abstract class KeyValuePairCollectionCase extends TestCase {
     assertEquals(4, bag2.size());
   }
 
+  @Test
   public void testAddAll_Map() {
     Map<String, String> p = toMap(createWithEntries(3));
     KeyValuePairBag bag2 = createBag();
@@ -212,12 +221,13 @@ public abstract class KeyValuePairCollectionCase extends TestCase {
     assertEquals(4, bag2.size());
   }
 
-
+  @Test
   public void testContains() {
     KeyValuePairBag bag1 = createWithEntries(5);
     assertTrue(bag1.contains(new KeyValuePair(KEY1, VALUE1)));
   }
 
+  @Test
   public void testContainsAll() {
     KeyValuePairBag bag1 = createWithEntries(5);
     KeyValuePairBag bag2 = createBag();
@@ -226,18 +236,21 @@ public abstract class KeyValuePairCollectionCase extends TestCase {
     assertTrue(bag1.containsAll(bag2));
   }
 
+  @Test
   public void testIsEmpty() {
     KeyValuePairBag bag1 = createWithEntries(4);
     bag1.clear();
     assertTrue(bag1.isEmpty());
   }
 
+  @Test
   public void testRemove() {
     KeyValuePairBag bag1 = createWithEntries(3);
     bag1.remove(new KeyValuePair(KEY1, VALUE1));
     assertEquals(2, bag1.size());
   }
 
+  @Test
   public void testRemoveAllSmaller() {
     KeyValuePairBag bag1 = createWithEntries(3);
     bag1.add(new KeyValuePair(KEY + 10, VALUE + 10));
@@ -247,6 +260,7 @@ public abstract class KeyValuePairCollectionCase extends TestCase {
     assertEquals(3, bag2.size());
   }
 
+  @Test
   public void testRemoveAllLarger() {
     KeyValuePairBag bag1 = createWithEntries(3);
     bag1.add(new KeyValuePair(KEY + 10, VALUE + 10));
@@ -256,6 +270,7 @@ public abstract class KeyValuePairCollectionCase extends TestCase {
     assertEquals(5, bag2.size());
   }
 
+  @Test
   public void testRetainAll() {
     KeyValuePairBag bag1 = createWithEntries(3);
     KeyValuePairBag bag2 = createBag();
@@ -265,11 +280,13 @@ public abstract class KeyValuePairCollectionCase extends TestCase {
     assertEquals(2, bag1.size());
   }
 
+  @Test
   public void testToArray() {
     KeyValuePairBag bag1 = createWithEntries(3);
     assertEquals(3, bag1.toArray().length);
   }
 
+  @Test
   public void testToArrayWithRuntimeType() {
     KeyValuePairBag bag1 = createWithEntries(3);
     try {

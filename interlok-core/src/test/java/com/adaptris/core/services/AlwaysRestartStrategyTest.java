@@ -16,34 +16,37 @@
 
 package com.adaptris.core.services;
 
+import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMessageFactory;
 
-import junit.framework.TestCase;
-
-public class AlwaysRestartStrategyTest extends TestCase {
+public class AlwaysRestartStrategyTest {
   
   private RestartStrategy restartStrategy;
   private AdaptrisMessageFactory messageFactory;
-  
+
+  @Before
   public void setUp() throws Exception {
     restartStrategy = new AlwaysRestartStrategy();
     messageFactory = DefaultMessageFactory.getDefaultInstance();
   }
-  
-  public void tearDown() throws Exception {
-  }
-  
+
+
+  @Test
   public void testNoMessage() throws Exception {
     assertTrue(restartStrategy.requiresRestart());
   }
-  
+
+  @Test
   public void testSingleMessage() throws Exception {
     restartStrategy.messageProcessed(messageFactory.newMessage());
     
     assertTrue(restartStrategy.requiresRestart());
   }
-  
+
+  @Test
   public void testMultipleMessages() throws Exception {
     assertTrue(restartStrategy.requiresRestart());
     restartStrategy.messageProcessed(messageFactory.newMessage());
