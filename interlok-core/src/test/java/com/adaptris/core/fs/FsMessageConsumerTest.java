@@ -16,6 +16,11 @@
 
 package com.adaptris.core.fs;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -23,10 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.oro.io.Perl5FilenameFilter;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.CoreConstants;
@@ -49,16 +53,9 @@ public class FsMessageConsumerTest extends FsConsumerCase {
    */
   public static final String EXAMPLE_BASEDIR = "FsConsumerExample.baseDir";
 
-  public FsMessageConsumerTest(java.lang.String testName) {
-    super(testName);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
@@ -68,6 +65,7 @@ public class FsMessageConsumerTest extends FsConsumerCase {
     }
   }
 
+  @Test
   public void testSetWipSuffix() throws Exception {
     FsConsumer consumer = createConsumer();
 
@@ -90,6 +88,7 @@ public class FsMessageConsumerTest extends FsConsumerCase {
     }
   }
 
+  @Test
   public void testConsume() throws Exception {
     String subDir = new GuidGenerator().safeUUID();
     MockMessageListener stub = new MockMessageListener(10);
@@ -113,7 +112,8 @@ public class FsMessageConsumerTest extends FsConsumerCase {
       FileUtils.deleteQuietly(new File(parentDir, subDir));
     }
   }
-  
+
+  @Test
   public void testConsumeImmediateEventPoller() throws Exception {
     String subDir = new GuidGenerator().safeUUID();
     MockMessageListener stub = new MockMessageListener(10);
@@ -140,6 +140,7 @@ public class FsMessageConsumerTest extends FsConsumerCase {
     }
   }
 
+  @Test
   public void testConsumeWithAlphabeticSort() throws Exception {
     String subDir = new GuidGenerator().safeUUID();
     MockMessageListener stub = new MockMessageListener(10);
@@ -170,6 +171,7 @@ public class FsMessageConsumerTest extends FsConsumerCase {
     }
   }
 
+  @Test
   public void testConsumeWithLastModifiedSort() throws Exception {
     String subDir = new GuidGenerator().safeUUID();
     MockMessageListener stub = new MockMessageListener(10);
@@ -199,6 +201,7 @@ public class FsMessageConsumerTest extends FsConsumerCase {
     }
   }
 
+  @Test
   public void testBug2233_ResetWipFilesOnNonExistentDirectory() throws Exception {
     String subDir = new GuidGenerator().safeUUID();
     MockMessageListener stub = new MockMessageListener(10);
@@ -213,6 +216,7 @@ public class FsMessageConsumerTest extends FsConsumerCase {
     LifecycleHelper.close(sc);
   }
 
+  @Test
   public void testBug2233_ResetWipFilesOnInvalidDirectory() throws Exception {
     String subDir = new GuidGenerator().safeUUID();
     MockMessageListener stub = new MockMessageListener(10);
@@ -236,6 +240,7 @@ public class FsMessageConsumerTest extends FsConsumerCase {
     }
   }
 
+  @Test
   public void testBug2100_OriginalNameContainsWip() throws Exception {
     String subDir = new GuidGenerator().safeUUID();
     MockMessageListener stub = new MockMessageListener(10);
@@ -264,6 +269,7 @@ public class FsMessageConsumerTest extends FsConsumerCase {
     }
   }
 
+  @Test
   public void testBug1675ConsumeWithSpacesInDir() throws Exception {
     String uniqueName = new GuidGenerator().safeUUID();
 
@@ -294,6 +300,7 @@ public class FsMessageConsumerTest extends FsConsumerCase {
     }
   }
 
+  @Test
   public void testConsumeWithFilter() throws Exception {
     String subDir = new GuidGenerator().safeUUID();
     MockMessageListener stub = new MockMessageListener(10);
@@ -325,6 +332,7 @@ public class FsMessageConsumerTest extends FsConsumerCase {
     }
   }
 
+  @Test
   public void testConsumeWithQuietPeriod() throws Exception {
     String subDir = new GuidGenerator().safeUUID();
     MockMessageListener stub = new MockMessageListener(10);
@@ -351,6 +359,7 @@ public class FsMessageConsumerTest extends FsConsumerCase {
     }
   }
 
+  @Test
   public void testConsumeWithResetWipFile() throws Exception {
     String subDir = new GuidGenerator().safeUUID();
     MockMessageListener stub = new MockMessageListener(10);
@@ -376,6 +385,7 @@ public class FsMessageConsumerTest extends FsConsumerCase {
     }
   }
 
+  @Test
   public void testConsumeIgnoresWip() throws Exception {
     String subDir = new GuidGenerator().safeUUID();
     MockMessageListener stub = new MockMessageListener();
@@ -405,6 +415,7 @@ public class FsMessageConsumerTest extends FsConsumerCase {
     }
   }
 
+  @Test
   public void testConsumeFailInitialRename() throws Exception {
     String subDir = new GuidGenerator().safeUUID();
     MockMessageListener stub = new MockMessageListener(10);
@@ -433,6 +444,7 @@ public class FsMessageConsumerTest extends FsConsumerCase {
     }
   }
 
+  @Test
   public void testRedmine481_SubDirInConsumeDirectory() throws Exception {
     String consumeDir = new GuidGenerator().safeUUID();
     File parentDir = FsHelper.createFileReference(FsHelper.createUrlFromString(PROPERTIES.getProperty(BASE_KEY), true));

@@ -15,12 +15,15 @@
 */
 
 package com.adaptris.core;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import org.junit.Test;
 import com.adaptris.core.fs.FsProducer;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
@@ -40,12 +43,9 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
 
   private static final TimeInterval DEFAULT_RETRY_INTERVAL = new TimeInterval(100L, TimeUnit.MILLISECONDS);
 
-  public RetryMessageErrorHandlerTest(java.lang.String testName) {
-    super(testName);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   private RetryMessageErrorHandler createMessageErrorHandler(AdaptrisMessageProducer p) throws Exception {
@@ -84,10 +84,7 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
     return result;
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-  }
-
+  @Test
   public void testAdapter_HasEventHandler() throws Exception {
     EventHandlerAwareService srv = new EventHandlerAwareService();
     RetryMessageErrorHandler meh = new RetryMessageErrorHandler(srv);
@@ -103,6 +100,7 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
     }
   }
 
+  @Test
   public void testChannel_HasEventHandler() throws Exception {
     EventHandlerAwareService srv = new EventHandlerAwareService();
     RetryMessageErrorHandler meh = new RetryMessageErrorHandler(srv);
@@ -120,6 +118,7 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
     }
   }
 
+  @Test
   public void testWorkflow_HasEventHandler() throws Exception {
     EventHandlerAwareService srv = new EventHandlerAwareService();
     RetryMessageErrorHandler meh = new RetryMessageErrorHandler(srv);
@@ -139,6 +138,7 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
     }
   }
 
+  @Test
   public void testMultipleErrorHandlers_AlwaysHandle_True() throws Exception {
     MockMessageProducer aep = new MockMessageProducer();
     MockMessageProducer wep = new MockMessageProducer();
@@ -168,6 +168,7 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
     }
   }
 
+  @Test
   public void testMultipleErrorHandlers_AlwaysHandle_False() throws Exception {
     MockMessageProducer aep = new MockMessageProducer();
     MockMessageProducer wep = new MockMessageProducer();
@@ -194,6 +195,7 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
     }
   }
 
+  @Test
   public void testSetRetryInterval() throws Exception {
     RetryMessageErrorHandler meh = new RetryMessageErrorHandler();
     TimeInterval defaultInterval = new TimeInterval(10L, TimeUnit.MINUTES);
@@ -210,6 +212,7 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
     assertEquals(defaultInterval.toMilliseconds(), meh.retryIntervalMs());
   }
 
+  @Test
   public void testSetRetryLimit() throws Exception {
     RetryMessageErrorHandler meh = new RetryMessageErrorHandler();
     assertNull(meh.getRetryLimit());
@@ -225,6 +228,7 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
 
   }
 
+  @Test
   public void testRetryLimit2() throws Exception {
     String name = renameThread("testRetryLimit2");
     try {
@@ -247,6 +251,7 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
     }
   }
 
+  @Test
   public void testRetryForeverWithStop() throws Exception {
     String name = renameThread("testRetryForeverWithStop");
     try {
@@ -268,6 +273,7 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
     }
   }
 
+  @Test
   public void testRetryWithStoppedTimer() throws Exception {
     String name = renameThread(getName());
     Channel channel = null;
@@ -296,6 +302,7 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
     }
   }
 
+  @Test
   public void testRetryWithServiceList() throws Exception {
     String name = renameThread("testRetryWithServiceList");
     try {
@@ -323,6 +330,7 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
     }
   }
 
+  @Test
   public void testBug817() throws Exception {
     String name = renameThread("testBug817");
     try {
@@ -352,6 +360,7 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
     }
   }
 
+  @Test
   public void testRetryWithSuccess() throws Exception {
     String name = renameThread("testRetryWithSuccess");
     try {
@@ -376,6 +385,7 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
     }
   }
 
+  @Test
   public void testBug854() throws Exception {
     String name = renameThread("testBug854");
     try {
@@ -411,6 +421,7 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
     }
   }
 
+  @Test
   public void testFailMessage() throws Exception {
     MockMessageProducer failProducer = new MockMessageProducer();
     RetryMessageErrorHandler meh = createMessageErrorHandler(failProducer);
@@ -427,7 +438,7 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
     }
   }
 
-
+  @Test
   public void testFilterStarted() throws Exception {
     Map<String, Workflow> workflows = new HashMap<>();
     StandardWorkflow started = new StandardWorkflow();
@@ -441,6 +452,7 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
     }
   }
 
+  @Test
   public void testHandleProcessingException_NoWorkflow() throws Exception {
     String name = renameThread("testRetryWithSuccess");
     try {

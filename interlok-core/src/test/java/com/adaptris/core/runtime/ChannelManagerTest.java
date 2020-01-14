@@ -24,19 +24,23 @@ import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_MSG_STARTED;
 import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_MSG_STOPPED;
 import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_TYPE_CHANNEL_CONFIG;
 import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_TYPE_CHANNEL_LIFECYCLE;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
-
 import javax.management.JMX;
 import javax.management.MalformedObjectNameException;
 import javax.management.Notification;
 import javax.management.NotificationFilterSupport;
 import javax.management.ObjectName;
-
+import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.Channel;
 import com.adaptris.core.ClosedState;
@@ -60,10 +64,10 @@ import com.adaptris.interlok.types.SerializableMessage;
 @SuppressWarnings("deprecation")
 public class ChannelManagerTest extends ComponentManagerCase {
 
-  public ChannelManagerTest(String name) {
-    super(name);
+  public ChannelManagerTest() {
   }
 
+  @Test
   public void testEqualityHashCode() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     AdapterManager am1 = new AdapterManager(createAdapter(adapterName));
@@ -85,6 +89,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     assertNotSame(cm1.hashCode(), cm3.hashCode());
   }
 
+  @Test
   public void testGetConfiguration() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 0, 0);
@@ -95,6 +100,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     assertRoundtripEquality(channel, marshalledCopy);
   }
 
+  @Test
   public void testGetParent() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -114,6 +120,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testGetParentObjectName() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -131,6 +138,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testGetParentId() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -148,6 +156,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testProxyEquality() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -171,6 +180,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testGetState() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -195,6 +205,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testClose() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -222,6 +233,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testStop() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -248,6 +260,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testStart() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -276,6 +289,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testInitialise() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -305,6 +319,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testRestart() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -333,6 +348,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testLastStartTime() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -360,6 +376,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testLastStopTime() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -389,6 +406,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testGetChildren() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -411,6 +429,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testAddChild() throws Exception {
 
     String adapterName = this.getClass().getSimpleName() + "." + getName();
@@ -445,6 +464,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     assertEquals(2, channelManager.getChildren().size());
   }
 
+  @Test
   public void testRemoveChild() throws Exception {
 
     String adapterName = this.getClass().getSimpleName() + "." + getName();
@@ -472,6 +492,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     assertEquals(1, channelManager.getChildren().size());
   }
 
+  @Test
   public void testAddChildren() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -509,6 +530,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     // assertEquals(2, channelManager.getChildren().size());
   }
 
+  @Test
   public void testRemoveChildren() throws Exception {
 
     String adapterName = this.getClass().getSimpleName() + "." + getName();
@@ -533,6 +555,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     assertEquals(0, channel.getWorkflowList().size());
   }
 
+  @Test
   public void testChannelManager_HasRetryMonitor() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -563,6 +586,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testAdapterClosed_InitChannel() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -595,6 +619,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testAdapterClosed_StartChannel() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -627,6 +652,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testAdapterClosed_StopChannel() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -659,6 +685,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testAdapterClosed_CloseChannel() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -686,6 +713,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testAdapterInitialised_InitChannel() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -713,6 +741,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testAdapterInitialised_StartChannel() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -747,6 +776,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testAdapterInitialised_StopChannel() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -780,6 +810,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testAdapterInitialised_CloseChannel() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -806,6 +837,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testAdapterStarted_InitChannel() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -832,6 +864,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testAdapterStarted_StartChannel() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -858,6 +891,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testAdapterStarted_StopChannel() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -885,6 +919,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testAdapterStarted_CloseChannel() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -911,6 +946,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testAddChildRuntimeComponent() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -922,6 +958,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     assertEquals(1, channelManager.getAllDescendants().size());
   }
 
+  @Test
   public void testRemoveChildRuntimeComponent() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -937,6 +974,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     assertEquals(1, channelManager.getAllDescendants().size());
   }
 
+  @Test
   public void testAdapterStopped_InitChannel() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -971,6 +1009,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testAdapterStopped_StartChannel() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -1005,6 +1044,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testAdapterStopped_StopChannel() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -1032,6 +1072,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testAdapterStopped_CloseChannel() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -1059,6 +1100,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_AddWorkflow() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1094,6 +1136,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_AddWorkflow_InvalidState() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1125,6 +1168,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_AddWorkflow_NoUniqueId() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1155,6 +1199,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_RemoveWorkflow() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1199,6 +1244,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
 
   }
 
+  @Test
   public void testMBean_RemoveWorkflow_AddWorkflow() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1235,6 +1281,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
 
   }
 
+  @Test
   public void testMBean_RemoveWorkflow_NotFound() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1280,6 +1327,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
 
   }
 
+  @Test
   public void testMBean_NotificationOnInit() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -1316,6 +1364,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_NotificationOnStart() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -1352,6 +1401,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_NotificationOnStop() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -1389,6 +1439,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_NotificationOnClose() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -1427,6 +1478,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_NotificationOnRestart() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -1466,6 +1518,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_NotificationOnAddWorkflow() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -1502,6 +1555,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_NotificationOnRemoveWorkflow() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -1543,6 +1597,10 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
   private class FailingChannelManager extends ChannelManager {
     public FailingChannelManager(Channel c, AdapterManager owner) throws MalformedObjectNameException, CoreException {
       super(c, owner);

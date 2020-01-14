@@ -19,7 +19,10 @@ package com.adaptris.core.security;
 import static com.adaptris.core.security.EncryptionServiceCase.applyConfigForSamples;
 import static com.adaptris.core.security.JunitSecurityHelper.SECURITY_ALIAS;
 import static com.adaptris.core.security.JunitSecurityHelper.SECURITY_PASSWORD;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreConstants;
@@ -27,16 +30,12 @@ import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.keystore.ConfiguredUrl;
 
 public class DecryptionServiceTest extends SecurityServiceCase {
-
-  public DecryptionServiceTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testFailedDecryption() throws Exception {
     String url = createKeystore();
     EncryptionSigningService input = new EncryptionSigningService();
@@ -55,6 +54,7 @@ public class DecryptionServiceTest extends SecurityServiceCase {
     }
   }
 
+  @Test
   public void testFailedDecryptionWithBranch() throws Exception {
     String url = createKeystore();
     EncryptionSigningService input = new EncryptionSigningService();
@@ -74,6 +74,7 @@ public class DecryptionServiceTest extends SecurityServiceCase {
 
   }
 
+  @Test
   public void testSuccessfulDecryptionWithBranch() throws Exception {
     String url = createKeystore();
     EncryptionSigningService input = new EncryptionSigningService();

@@ -16,8 +16,10 @@
 
 package com.adaptris.core.services.metadata.xpath;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import org.w3c.dom.Document;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -28,9 +30,6 @@ import com.adaptris.util.text.xml.XPath;
 @SuppressWarnings("deprecation")
 public class MetadataXpathQueryTest extends MetadataXpathQueryCase {
 
-  public MetadataXpathQueryTest(String testName) {
-    super(testName);
-  }
 
   @Override
   protected MetadataXpathQuery create() {
@@ -44,6 +43,7 @@ public class MetadataXpathQueryTest extends MetadataXpathQueryCase {
     return query;
   }
 
+  @Test
   public void testResolveXpath_EmptyResults_NotAllowed() throws Exception {
     MetadataXpathQuery query = init(create());
     Document doc = XmlHelper.createDocument(XML);
@@ -58,6 +58,7 @@ public class MetadataXpathQueryTest extends MetadataXpathQueryCase {
     }
   }
 
+  @Test
   public void testResolveXpath_EmptyResults_Allowed() throws Exception {
     MetadataXpathQuery query = init(create());
     query.setAllowEmptyResults(Boolean.TRUE);
@@ -69,6 +70,7 @@ public class MetadataXpathQueryTest extends MetadataXpathQueryCase {
     assertEquals("", result.getValue());
   }
 
+  @Test
   public void testResolveXpath_Attribute() throws Exception {
     MetadataXpathQuery query = init(create());
 
@@ -78,6 +80,7 @@ public class MetadataXpathQueryTest extends MetadataXpathQueryCase {
     MetadataElement result = query.resolveXpath(doc, new XPath(), query.createXpathQuery(msg));
   }
 
+  @Test
   public void testResolveXpath_function() throws Exception {
     MetadataXpathQuery query = init(create());
 
@@ -99,6 +102,7 @@ public class MetadataXpathQueryTest extends MetadataXpathQueryCase {
   // assertEquals("2", result.getValue());
   // }
 
+  @Test
   public void testResolveXpath_NamespaceWithNamespaceContext() throws Exception {
     MetadataXpathQuery query = init(create());
 

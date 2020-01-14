@@ -15,9 +15,10 @@
 */
 
 package com.adaptris.core.lifecycle;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.core.Channel;
 import com.adaptris.core.ClosedState;
 import com.adaptris.core.CoreException;
@@ -29,20 +30,12 @@ import com.adaptris.util.TimeInterval;
 
 public class WorkflowRetryAndContinueTest extends WorkflowLifecycleStrategyCase {
 
-  public WorkflowRetryAndContinueTest(java.lang.String testName) {
-    super(testName);
-  }
-
-  @Override
-  public void setUp() throws Exception {
-    super.setUp();
-  }
-
   @Override
   protected WorkflowRetryAndContinue createStrategy() {
     return new WorkflowRetryAndContinue();
   }
 
+  @Test
   public void testSetMaxRetries() {
     WorkflowRetryAndContinue strategy = createStrategy();
     assertNull(strategy.getMaxRetries());
@@ -54,6 +47,7 @@ public class WorkflowRetryAndContinueTest extends WorkflowLifecycleStrategyCase 
     assertEquals(WorkflowRetryAndFail.DEFAULT_MAX_RETRIES, strategy.maxRetries());
   }
 
+  @Test
   public void testSetTimeInterval() {
     WorkflowRetryAndContinue strategy = createStrategy();
     assertNull(strategy.getWaitBetweenRetries());
@@ -64,6 +58,7 @@ public class WorkflowRetryAndContinueTest extends WorkflowLifecycleStrategyCase 
     assertEquals(TimeUnit.NANOSECONDS.toMillis(10000L), strategy.waitInterval());
   }
 
+  @Test
   public void testFailedInitialise_Retries() throws Exception {
     WorkflowList wfl = new WorkflowList();
     WorkflowRetryAndContinue strategy = createStrategy();
@@ -79,6 +74,7 @@ public class WorkflowRetryAndContinueTest extends WorkflowLifecycleStrategyCase 
 
   }
 
+  @Test
   public void testFailedInitialise_Retries_Infinite() throws Exception {
     WorkflowList wfl = new WorkflowList();
     WorkflowRetryAndContinue strategy = createStrategy();
@@ -94,6 +90,7 @@ public class WorkflowRetryAndContinueTest extends WorkflowLifecycleStrategyCase 
 
   }
 
+  @Test
   public void testFailedInitialise_ExceedsMax() throws Exception {
     WorkflowList wfl = new WorkflowList();
     WorkflowRetryAndContinue strategy = createStrategy();
@@ -107,6 +104,7 @@ public class WorkflowRetryAndContinueTest extends WorkflowLifecycleStrategyCase 
     assertEquals(ClosedState.getInstance(), workflow.retrieveComponentState());
   }
 
+  @Test
   public void testFailedStart_Retries() throws Exception {
     WorkflowList wfl = new WorkflowList();
     WorkflowRetryAndContinue strategy = createStrategy();
@@ -122,6 +120,7 @@ public class WorkflowRetryAndContinueTest extends WorkflowLifecycleStrategyCase 
 
   }
 
+  @Test
   public void testFailedStart_Retries_Infinite() throws Exception {
     WorkflowList wfl = new WorkflowList();
     WorkflowRetryAndContinue strategy = createStrategy();
@@ -137,6 +136,7 @@ public class WorkflowRetryAndContinueTest extends WorkflowLifecycleStrategyCase 
 
   }
 
+  @Test
   public void testFailedStart_ExceedsMax() throws Exception {
     WorkflowList wfl = new WorkflowList();
     WorkflowRetryAndContinue strategy = createStrategy();

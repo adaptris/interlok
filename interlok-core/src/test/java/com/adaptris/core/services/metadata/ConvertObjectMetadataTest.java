@@ -16,6 +16,10 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.util.LifecycleHelper;
@@ -23,14 +27,12 @@ import com.adaptris.core.util.LifecycleHelper;
 @SuppressWarnings("deprecation")
 public class ConvertObjectMetadataTest extends MetadataServiceExample {
 
-  public ConvertObjectMetadataTest(String name) {
-    super(name);
-  }
-
   @Override
-  public void setUp() {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testDoService() throws Exception {
     ConvertObjectMetadataService service = new ConvertObjectMetadataService("java.jms.Message.*");
     Object o1 = "java.jms.Message.JMSCorrelationID";
@@ -43,6 +45,7 @@ public class ConvertObjectMetadataTest extends MetadataServiceExample {
     assertEquals(o1.toString(), msg.getMetadataValue(o1.toString()));
   }
 
+  @Test
   public void testInit_NoRegexp() throws Exception {
     ConvertObjectMetadataService service = new ConvertObjectMetadataService();
     try {

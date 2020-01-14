@@ -31,10 +31,4 @@ public abstract class GeneralServiceExample extends ServiceCase {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
   }
-
-  public GeneralServiceExample(String name) {
-    this();
-    setName(name);
-  }
-
 }

@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services;
 
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.exception.ExceptionServiceExample;
@@ -23,14 +25,12 @@ import com.adaptris.core.services.exception.ExceptionServiceExample;
 @SuppressWarnings("deprecation")
 public class AlwaysFailServiceTest extends ExceptionServiceExample {
 
-  public AlwaysFailServiceTest(java.lang.String testName) {
-    super(testName);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testService() throws Exception {
     try {
       execute(new AlwaysFailService(), AdaptrisMessageFactory.getDefaultInstance().newMessage());

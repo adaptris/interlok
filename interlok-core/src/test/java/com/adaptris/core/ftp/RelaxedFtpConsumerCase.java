@@ -19,7 +19,6 @@ package com.adaptris.core.ftp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.Poller;
@@ -28,12 +27,9 @@ import com.adaptris.core.StandaloneConsumer;
 
 public abstract class RelaxedFtpConsumerCase extends FtpConsumerExample {
 
-  public RelaxedFtpConsumerCase(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override

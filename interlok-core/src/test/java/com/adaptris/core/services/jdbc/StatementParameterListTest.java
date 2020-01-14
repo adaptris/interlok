@@ -15,10 +15,14 @@
 */
 
 package com.adaptris.core.services.jdbc;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.ListIterator;
-
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.services.jdbc.StatementParameterImpl.QueryType;
 import com.adaptris.util.IdGenerator;
@@ -27,15 +31,18 @@ import com.adaptris.util.PlainIdGenerator;
 public class StatementParameterListTest extends BaseCase {
   private IdGenerator id;
 
-  public StatementParameterListTest(String n) {
-    super(n);
-  }
 
   @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
+  @Before
   public void setUp() throws Exception {
     id = new PlainIdGenerator();
   }
 
+  @Test
   public void testClear() throws Exception {
     StatementParameterList list = addEntries(new StatementParameterList(), 2);
     assertEquals(2, list.size());
@@ -44,6 +51,7 @@ public class StatementParameterListTest extends BaseCase {
     assertEquals(0, list.getParameters().size());
   }
 
+  @Test
   public void testRemoveThenAddAgain() throws Exception {
     StatementParameterList list = new StatementParameterList();
     StringStatementParameter sp1 = new StringStatementParameter(id.create(new Object()), QueryType.constant, null, null);
@@ -55,16 +63,19 @@ public class StatementParameterListTest extends BaseCase {
     assertEquals(1, list.size());
   }
 
+  @Test
   public void testRemoveNull() throws Exception {
     StatementParameterList list = new StatementParameterList();
     assertFalse(list.remove(null));
   }
 
+  @Test
   public void testRemovePlainObject() throws Exception {
     StatementParameterList list = new StatementParameterList();
     assertFalse(list.remove(new Object()));
   }
 
+  @Test
   public void testRemoveByPosition() throws Exception {
     StatementParameterList list = addEntries(new StatementParameterList(), 2);
     assertEquals(2, list.size());
@@ -72,6 +83,7 @@ public class StatementParameterListTest extends BaseCase {
     assertEquals(1, list.size());
   }
 
+  @Test
   public void testSetParameters() {
     StatementParameterList list = new StatementParameterList();
     list.setParameters(Arrays.asList(new JdbcStatementParameter[]
@@ -82,6 +94,7 @@ public class StatementParameterListTest extends BaseCase {
     assertEquals(2, list.size());
   }
 
+  @Test
   public void testAddAll() {
     StatementParameterList list = addEntries(new StatementParameterList(), 2);
     assertEquals(2, list.size());
@@ -89,6 +102,7 @@ public class StatementParameterListTest extends BaseCase {
     assertEquals(4, list.size());
   }
 
+  @Test
   public void testAddAllAtPosition() {
     StatementParameterList list = new StatementParameterList();
     StringStatementParameter sp1 = new StringStatementParameter(id.create(new Object()), QueryType.constant, null, null);
@@ -105,6 +119,7 @@ public class StatementParameterListTest extends BaseCase {
     assertEquals(sp1, list2.get(1));
   }
 
+  @Test
   public void testCollectionConstructor() {
     StatementParameterList list = new StatementParameterList();
     StringStatementParameter sp1 = new StringStatementParameter(id.create(new Object()), QueryType.constant, null, null);
@@ -118,6 +133,7 @@ public class StatementParameterListTest extends BaseCase {
     assertTrue(list2.contains(sp2));
   }
 
+  @Test
   public void testGetByName() {
     StatementParameterList list = new StatementParameterList();
     StringStatementParameter sp1 = new StringStatementParameter(id.create(new Object()), QueryType.constant, null, id.create(new Object()));
@@ -128,6 +144,7 @@ public class StatementParameterListTest extends BaseCase {
     assertEquals(sp2, list.getParameterByName(sp2.getName()));
   }
 
+  @Test
   public void testAddAtPosition() {
     StatementParameterList list = addEntries(new StatementParameterList(), 2);
     StringStatementParameter sp1 = new StringStatementParameter(id.create(new Object()), QueryType.constant, null, null);
@@ -138,7 +155,7 @@ public class StatementParameterListTest extends BaseCase {
     assertEquals(sp1, list.get(1));
   }
 
-
+  @Test
   public void testGetByInt() {
     StatementParameterList list = new StatementParameterList();
     StringStatementParameter sp1 = new StringStatementParameter(id.create(new Object()), QueryType.constant, null, null);
@@ -149,6 +166,7 @@ public class StatementParameterListTest extends BaseCase {
     assertEquals(sp2, list.get(1));
   }
 
+  @Test
   public void testSetByInt() {
     StatementParameterList list = addEntries(new StatementParameterList(), 2);
 
@@ -158,12 +176,14 @@ public class StatementParameterListTest extends BaseCase {
     assertEquals(2, list.size());
   }
 
+  @Test
   public void testGetParameters() {
     StatementParameterList list = addEntries(new StatementParameterList(), 2);
     assertNotNull(list.getParameters());
     assertEquals(2, list.getParameters().size());
   }
 
+  @Test
   public void testIndexOf() {
     StatementParameterList list = addEntries(new StatementParameterList(), 2);
     StringStatementParameter toAdd = new StringStatementParameter(id.create(new Object()), QueryType.constant, null, null);
@@ -172,12 +192,14 @@ public class StatementParameterListTest extends BaseCase {
     assertEquals(2, list.indexOf(toAdd));
   }
 
+  @Test
   public void testIterator() {
     StatementParameterList list = addEntries(new StatementParameterList(), 2);
     assertNotNull(list.iterator());
     assertTrue(list.iterator().hasNext());
   }
 
+  @Test
   public void testLastIndexOf() {
     StatementParameterList list = addEntries(new StatementParameterList(), 2);
     StringStatementParameter toAdd = new StringStatementParameter(id.create(new Object()), QueryType.constant, null, null);
@@ -185,12 +207,14 @@ public class StatementParameterListTest extends BaseCase {
     assertEquals(2, list.lastIndexOf(toAdd));
   }
 
+  @Test
   public void testListIterator() {
     StatementParameterList list = addEntries(new StatementParameterList(), 4);
     assertNotNull(list.listIterator());
     assertNotNull(list.listIterator(1));
   }
 
+  @Test
   public void testListIterator_hasNextPrevious() {
     StatementParameterList list = addEntries(new StatementParameterList(), 5);
     int count = 0;
@@ -221,6 +245,7 @@ public class StatementParameterListTest extends BaseCase {
     }
   }
 
+  @Test
   public void testSubList() {
     StatementParameterList list = addEntries(new StatementParameterList(), 4);
     assertNotNull(list.subList(0, 2));

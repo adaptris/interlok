@@ -16,6 +16,11 @@
 
 package com.adaptris.core.jdbc;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.MetadataElement;
@@ -28,6 +33,7 @@ public class JdbcMetadataParameterTest extends NullableParameterCase {
   private AdaptrisMessage message;
   private MetadataElement metadata;
   
+  @Before
   public void setUp() throws Exception {
     metadata = new MetadataElement(METADATA_KEY, METADATA_VALUE);
     
@@ -40,6 +46,7 @@ public class JdbcMetadataParameterTest extends NullableParameterCase {
     return new JdbcMetadataParameter();
   }
 
+  @Test
   public void testNoMetadataKeyForInputParam() throws Exception {
     message.removeMetadata(metadata);
     
@@ -51,6 +58,7 @@ public class JdbcMetadataParameterTest extends NullableParameterCase {
     }
   }
 
+  @Test
   public void testNoMetadataKeyForOutputParam() throws Exception {
     message.removeMetadata(metadata);
     
@@ -61,7 +69,8 @@ public class JdbcMetadataParameterTest extends NullableParameterCase {
       // expected, pass
     }
   }
-  
+
+  @Test
   public void testMetadataDoesNotExistInputParam() throws Exception {
     JdbcMetadataParameter param = new JdbcMetadataParameter();
     param.setMetadataKey("DOES_NOT_EXIST_KEY");
@@ -71,14 +80,16 @@ public class JdbcMetadataParameterTest extends NullableParameterCase {
       // expected, pass
     }
   }
-  
+
+  @Test
   public void testMetadataDoesNotExistOutputParam() throws Exception {
     JdbcMetadataParameter param = new JdbcMetadataParameter();
     param.setMetadataKey("DOES_NOT_EXIST_KEY");
     param.applyOutputParam("BLAH", message);
     // expected, pass
   }
-  
+
+  @Test
   public void testMetadataAlreadyExistsOutputParam() throws Exception {
     assertEquals(message.getMetadataValue(METADATA_KEY), METADATA_VALUE);
     
@@ -89,15 +100,17 @@ public class JdbcMetadataParameterTest extends NullableParameterCase {
     
     assertEquals(message.getMetadataValue(METADATA_KEY), "NEW_PARAM_METADATA_VALUE");
   }
-  
+
+  @Test
   public void testMetadataAppliedInputParam() throws Exception {
     JdbcMetadataParameter param = new JdbcMetadataParameter();
     param.setMetadataKey(METADATA_KEY);
     Object appliedInputParam = param.applyInputParam(message);
     
-    assertEquals((String) appliedInputParam, METADATA_VALUE);
+    assertEquals(appliedInputParam, METADATA_VALUE);
   }
-  
+
+  @Test
   public void testMetadataAppliedOutputParam() throws Exception {
     message.removeMetadata(metadata);
     assertFalse(message.containsKey(METADATA_KEY));

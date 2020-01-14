@@ -17,14 +17,14 @@
 package com.adaptris.core.jms;
 
 import static com.adaptris.core.jms.FailoverPtpProducerTest.createFailoverConfigExample;
-
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.StandaloneProducer;
 
 public class FailoverPasProducerTest extends FailoverJmsProducerCase {
 
-  public FailoverPasProducerTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override

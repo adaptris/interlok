@@ -18,10 +18,8 @@ package com.adaptris.core.ftp;
 
 import static com.adaptris.core.ftp.SftpExampleHelper.createConnectionsForExamples;
 import static com.adaptris.core.ftp.SftpExampleHelper.getConfigSimpleName;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.FormattedFilenameCreator;
 import com.adaptris.core.StandaloneProducer;
@@ -30,11 +28,14 @@ public class SftpProducerTest extends FtpProducerCase {
 
   private static final String BASE_DIR_KEY = "SftpProducerExamples.baseDir";
 
-  public SftpProducerTest(String name) {
-    super(name);
+  public SftpProducerTest() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
+  }
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override

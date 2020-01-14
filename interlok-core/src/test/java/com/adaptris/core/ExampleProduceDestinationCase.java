@@ -37,12 +37,6 @@ public abstract class ExampleProduceDestinationCase extends ExampleConfigCase {
     }
   }
 
-  public ExampleProduceDestinationCase(String name) {
-    this();
-    setName(name);
-  }
-
-
   @Override
   protected String createExampleXml(Object object) throws Exception {
     String result = getExampleCommentHeader(object);

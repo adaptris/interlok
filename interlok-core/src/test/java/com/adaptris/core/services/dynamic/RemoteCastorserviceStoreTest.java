@@ -15,23 +15,24 @@
 */
 
 package com.adaptris.core.services.dynamic;
-
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.File;
+import org.junit.Test;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceList;
 
 @SuppressWarnings("deprecation")
 public class RemoteCastorserviceStoreTest extends MarshallServiceStoreCase {
 
-  public RemoteCastorserviceStoreTest(String s) {
-    super(s);
-  }
 
   @Override
   protected RemoteMarshallServiceStore createServiceStore() throws Exception {
     return new RemoteMarshallServiceStore();
   }
 
+  @Test
   public void testSetBaseUrl() throws Exception {
     RemoteMarshallServiceStore store = createServiceStore();
     try {
@@ -50,6 +51,7 @@ public class RemoteCastorserviceStoreTest extends MarshallServiceStoreCase {
     }
   }
 
+  @Test
   public void testValidate() throws Exception {
     RemoteMarshallServiceStore store = createServiceStore();
 
@@ -63,6 +65,7 @@ public class RemoteCastorserviceStoreTest extends MarshallServiceStoreCase {
     store.validate();
   }
 
+  @Test
   public void testObtainFileNotFound() throws Exception {
     File tmpDir = createAndTrackTempDir();
     RemoteMarshallServiceStore store = createServiceStore();
@@ -71,6 +74,7 @@ public class RemoteCastorserviceStoreTest extends MarshallServiceStoreCase {
     markForDeath(tmpDir);
   }
 
+  @Test
   public void testSuccessfulObtain() throws Exception {
     File tmpDir = writeOutTheService("service");
 
@@ -82,6 +86,7 @@ public class RemoteCastorserviceStoreTest extends MarshallServiceStoreCase {
     assertTrue(service.getServices().size() == 1);
   }
 
+  @Test
   public void testSuccessfulObtainPrefixSuffix() throws Exception {
     File tmpDir = writeOutTheService("prefix-service.suffix");
 

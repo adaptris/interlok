@@ -16,9 +16,10 @@
 
 package com.adaptris.core.services;
 
+import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
@@ -27,14 +28,12 @@ public class Base64ServiceTest extends GeneralServiceExample {
 
   public static final String LINE = "The quick brown fox jumps over the lazy dog";
 
-  public Base64ServiceTest(java.lang.String testName) {
-    super(testName);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testBase64Service() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(
         LINE.getBytes());

@@ -19,6 +19,12 @@ package com.adaptris.core;
 import static com.adaptris.core.PoolingWorkflow.DEFAULT_MAX_IDLE;
 import static com.adaptris.core.PoolingWorkflow.DEFAULT_MAX_POOLSIZE;
 import static com.adaptris.core.PoolingWorkflow.DEFAULT_MIN_IDLE;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,6 +35,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import org.junit.Test;
 import com.adaptris.core.services.WaitService;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
@@ -49,19 +56,13 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
    */
   private static final String COUNT = "Count";
 
-  public PoolingWorkflowTest(java.lang.String testName) {
-    super(testName);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-  }
 
+  @Test
   public void testSingleMessage() throws Exception {
     MockChannel channel = createChannel();
     PoolingWorkflow wf = (PoolingWorkflow) channel.getWorkflowList().get(0);
@@ -77,6 +78,7 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testOnMessage_SkipProducer() throws Exception {
     StaticMockMessageProducer serviceProducer = new StaticMockMessageProducer();
     serviceProducer.getMessages().clear();
@@ -98,6 +100,7 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testWorkflowWithInterceptor() throws Exception {
     MockChannel channel = createChannel();
     PoolingWorkflow wf = (PoolingWorkflow) channel.getWorkflowList().get(0);
@@ -116,6 +119,7 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testSetPoolSize() throws Exception {
     PoolingWorkflow workflow = new PoolingWorkflow();
     workflow.setPoolSize(20);
@@ -127,6 +131,7 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
 
   }
 
+  @Test
   public void testSetShutdownWaitTime() throws Exception {
     PoolingWorkflow workflow = new PoolingWorkflow();
     TimeInterval defaultInterval = new TimeInterval(60L, TimeUnit.SECONDS.name());
@@ -145,6 +150,7 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
 
   }
 
+  @Test
   public void testSetThreadLifetime() throws Exception {
     PoolingWorkflow workflow = new PoolingWorkflow();
     TimeInterval defaultInterval = new TimeInterval(60L, TimeUnit.SECONDS.name());
@@ -164,6 +170,7 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
 
   }
 
+  @Test
   public void testInitWaitTime() throws Exception {
     PoolingWorkflow workflow = new PoolingWorkflow();
     TimeInterval defaultInterval = new TimeInterval(60L, TimeUnit.SECONDS.name());
@@ -183,6 +190,7 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
 
   }
 
+  @Test
   public void testSetMaxIdle() throws Exception {
     PoolingWorkflow workflow = new PoolingWorkflow();
     workflow.setPoolSize(20);
@@ -194,6 +202,7 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     assertEquals(DEFAULT_MAX_IDLE, workflow.maxIdle());
   }
 
+  @Test
   public void testSetMinIdle() throws Exception {
     PoolingWorkflow workflow = new PoolingWorkflow();
     workflow.setPoolSize(20);
@@ -205,6 +214,7 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     assertEquals(DEFAULT_MIN_IDLE, workflow.minIdle());
   }
 
+  @Test
   public void testSetThreadPriority() throws Exception {
     PoolingWorkflow workflow = new PoolingWorkflow();
     assertNull(workflow.getThreadPriority());
@@ -227,6 +237,7 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     assertEquals(Thread.NORM_PRIORITY, workflow.threadPriority());
   }
 
+  @Test
   public void testLessThanPoolSize() throws Exception {
     MockChannel channel = createChannel();
     PoolingWorkflow wf = (PoolingWorkflow) channel.getWorkflowList().get(0);
@@ -247,6 +258,7 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testMaxIdle_CannotExceed_Poolsize() throws Exception {
     MockChannel channel = createChannel();
     PoolingWorkflow wf = (PoolingWorkflow) channel.getWorkflowList().get(0);
@@ -259,6 +271,7 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     LifecycleHelper.close(channel);
   }
 
+  @Test
   public void testMinIdle_Changes_MaxIdle() throws Exception {
     MockChannel channel = createChannel();
     PoolingWorkflow wf = (PoolingWorkflow) channel.getWorkflowList().get(0);
@@ -271,6 +284,7 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     LifecycleHelper.close(channel);
   }
 
+  @Test
   public void testMinIdle_Cannot_Poolsize() throws Exception {
     MockChannel channel = createChannel();
     PoolingWorkflow wf = (PoolingWorkflow) channel.getWorkflowList().get(0);
@@ -283,6 +297,7 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     LifecycleHelper.close(channel);
   }
 
+  @Test
   public void testFixedPoolsizeAfterProcessing() throws Exception {
     MockChannel channel = createChannel();
     PoolingWorkflow wf = (PoolingWorkflow) channel.getWorkflowList().get(0);
@@ -305,6 +320,7 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testFixedPoolsizeOnStart() throws Exception {
     MockChannel channel = createChannel();
     PoolingWorkflow wf = (PoolingWorkflow) channel.getWorkflowList().get(0);
@@ -322,6 +338,7 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testGreaterThanPoolSize() throws Exception {
     MockChannel channel = createChannel();
     PoolingWorkflow wf = (PoolingWorkflow) channel.getWorkflowList().get(0);
@@ -342,6 +359,7 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testHandleServiceException() throws Exception {
     MockChannel channel = createChannel();
     PoolingWorkflow wf = (PoolingWorkflow) channel.getWorkflowList().get(0);
@@ -370,6 +388,7 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testHandleProduceException() throws Exception {
     MockChannel channel = createChannel();
     PoolingWorkflow wf = (PoolingWorkflow) channel.getWorkflowList().get(0);
@@ -402,6 +421,7 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testRedmine1681() throws Exception {
     MockChannel channel = createChannel();
     PoolingWorkflow wf = (PoolingWorkflow) channel.getWorkflowList().get(0);
@@ -425,6 +445,7 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testHandleRuntimeException() throws Exception {
     MockChannel channel = createChannel();
     PoolingWorkflow wf = (PoolingWorkflow) channel.getWorkflowList().get(0);
@@ -457,6 +478,7 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testHandleChannelUnavailable() throws Exception {
     final MockChannel channel = createChannel();
     PoolingWorkflow wf = (PoolingWorkflow) channel.getWorkflowList().get(0);
@@ -484,6 +506,7 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testHandleChannelUnavailableForever() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     final MockChannel channel = createChannel();
@@ -509,8 +532,7 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
-
-
+  @Test
   public void testOnMessage_WithConsumeLocation() throws Exception {
     MockChannel channel = createChannel();
     PoolingWorkflow wf = (PoolingWorkflow) channel.getWorkflowList().get(0);
@@ -532,6 +554,7 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testOnMessage_WithConsumeLocation_NoMatch() throws Exception {
     MockChannel channel = createChannel();
     PoolingWorkflow wf = (PoolingWorkflow) channel.getWorkflowList().get(0);

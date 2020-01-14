@@ -16,9 +16,12 @@
 
 package com.adaptris.core.services.exception;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreConstants;
@@ -59,14 +62,12 @@ public class ThrowExceptionServiceTest extends ExceptionServiceExample {
     abstract ExceptionGenerator create();
   }
 
-  public ThrowExceptionServiceTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testDefault() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     ThrowExceptionService service = new ThrowExceptionService();
@@ -79,6 +80,7 @@ public class ThrowExceptionServiceTest extends ExceptionServiceExample {
     }
   }
 
+  @Test
   public void testDefaultExceptionFromMetadata() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     ThrowExceptionService service = new ThrowExceptionService(new ExceptionFromMetadata());
@@ -91,6 +93,7 @@ public class ThrowExceptionServiceTest extends ExceptionServiceExample {
     }
   }
 
+  @Test
   public void testPossibleExceptionFromMetadata_NoMetadataKey() throws Exception {
     ThrowExceptionService service = new ThrowExceptionService(new PossibleExceptionFromMetadata(METADATA_KEY));
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -109,6 +112,7 @@ public class ThrowExceptionServiceTest extends ExceptionServiceExample {
     }
   }
 
+  @Test
   public void testPossibleExceptionFromMetadata_HasMetadataKey() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata(METADATA_KEY, METADATA_VALUE);
@@ -129,6 +133,7 @@ public class ThrowExceptionServiceTest extends ExceptionServiceExample {
     }
   }
 
+  @Test
   public void testExceptionFromMetadataConfiguredMessage() throws Exception {
     ThrowExceptionService service = new ThrowExceptionService(new ExceptionFromMetadata(CONFIGURED));
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -141,6 +146,7 @@ public class ThrowExceptionServiceTest extends ExceptionServiceExample {
     }
   }
 
+  @Test
   public void testExceptionFromMetadataNoConfiguredMessage() throws Exception {
     ExceptionFromMetadata em = new ExceptionFromMetadata();
     em.setExceptionMessageMetadataKey(METADATA_KEY);
@@ -156,6 +162,7 @@ public class ThrowExceptionServiceTest extends ExceptionServiceExample {
     }
   }
 
+  @Test
   public void testExceptionFromMetadataMetadataOverride() throws Exception {
     ThrowExceptionService service = new ThrowExceptionService(new ExceptionFromMetadata(CONFIGURED, METADATA_KEY));
 
@@ -170,6 +177,7 @@ public class ThrowExceptionServiceTest extends ExceptionServiceExample {
     }
   }
 
+  @Test
   public void testExceptionFromMetadataNoOverride() throws Exception {
     ThrowExceptionService service = new ThrowExceptionService(new ExceptionFromMetadata(CONFIGURED, METADATA_KEY));
 
@@ -183,6 +191,7 @@ public class ThrowExceptionServiceTest extends ExceptionServiceExample {
     }
   }
 
+  @Test
   public void testExceptionFromMetadataNoOverrideFromMetadata() throws Exception {
     ThrowExceptionService service = new ThrowExceptionService(new ExceptionFromMetadata(CONFIGURED, METADATA_KEY));
 
@@ -197,6 +206,7 @@ public class ThrowExceptionServiceTest extends ExceptionServiceExample {
     }
   }
 
+  @Test
   public void testExceptionFromConfiguredException() throws Exception {
     ThrowExceptionService service = new ThrowExceptionService(new ConfiguredException(CONFIGURED));
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -209,6 +219,7 @@ public class ThrowExceptionServiceTest extends ExceptionServiceExample {
     }
   }
 
+  @Test
   public void testLastKnownExceptionNoAvailableException() throws Exception {
     ThrowExceptionService service = new ThrowExceptionService(new LastKnownException());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -217,6 +228,7 @@ public class ThrowExceptionServiceTest extends ExceptionServiceExample {
     execute(service, msg);
   }
 
+  @Test
   public void testLastKnownExceptionAvailableException() throws Exception {
     ThrowExceptionService service = new ThrowExceptionService(new LastKnownException());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -230,6 +242,7 @@ public class ThrowExceptionServiceTest extends ExceptionServiceExample {
     }
   }
 
+  @Test
   public void testLastKnownExceptionNonServiceException() throws Exception {
     ThrowExceptionService service = new ThrowExceptionService(new LastKnownException());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();

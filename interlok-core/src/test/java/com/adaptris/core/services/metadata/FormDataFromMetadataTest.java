@@ -16,6 +16,10 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceException;
@@ -25,6 +29,10 @@ import com.adaptris.core.stubs.DefectiveMessageFactory.WhenToBreak;
 
 public class FormDataFromMetadataTest extends MetadataServiceExample {
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
 
   private FormDataFromMetadata createService() {
     FormDataFromMetadata svc = new FormDataFromMetadata();
@@ -32,7 +40,7 @@ public class FormDataFromMetadataTest extends MetadataServiceExample {
     return svc;
   }
 
-
+  @Test
   public void testService_SimpleQueryString() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata("param1", "one");
@@ -44,13 +52,14 @@ public class FormDataFromMetadataTest extends MetadataServiceExample {
     assertTrue(msg.getContent().contains("param3=three"));
   }
 
-
+  @Test
   public void testService_NoOutput() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello World");
     execute(createService(), msg);
     assertEquals("", msg.getContent());
   }
 
+  @Test
   public void testService_ComplexQueryString() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata("param1", "this is a field");
@@ -60,6 +69,7 @@ public class FormDataFromMetadataTest extends MetadataServiceExample {
     assertTrue(msg.getContent().contains("param3=was+it+clear+%28already%29%3F"));
   }
 
+  @Test
   public void testService_Failure() throws Exception {
     AdaptrisMessage msg = new DefectiveMessageFactory(WhenToBreak.METADATA_GET).newMessage();
     msg.addMetadata("param1", "this is a field");

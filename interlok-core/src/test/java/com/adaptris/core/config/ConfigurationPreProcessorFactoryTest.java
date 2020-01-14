@@ -16,21 +16,19 @@
 
 package com.adaptris.core.config;
 
-import static org.mockito.Matchers.anyString;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-
 import java.util.Properties;
-
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import com.adaptris.core.config.DefaultPreProcessorLoader.PropertyLoader;
 import com.adaptris.core.stubs.JunitBootstrapProperties;
 import com.adaptris.util.KeyValuePairSet;
 
-import junit.framework.TestCase;
-
-public class ConfigurationPreProcessorFactoryTest extends TestCase {
+public class ConfigurationPreProcessorFactoryTest {
   
   private DefaultPreProcessorLoader preProcessorFactory;
   
@@ -39,10 +37,8 @@ public class ConfigurationPreProcessorFactoryTest extends TestCase {
   
   private Properties sampleProperties;
   
-  public void tearDown() throws Exception {
-    
-  }
   
+  @Before
   public void setUp() throws Exception {
     preProcessorFactory = new DefaultPreProcessorLoader();
     sampleProperties = new Properties();
@@ -50,13 +46,15 @@ public class ConfigurationPreProcessorFactoryTest extends TestCase {
     sampleProperties.put("class", DummyConfigurationPreProcessor.class.getCanonicalName());
     MockitoAnnotations.initMocks(this);
   }
-  
+
+  @Test
   public void testNoConfiguredPreProcessors() throws Exception {
     ConfigPreProcessors loaded = preProcessorFactory.load(new JunitBootstrapProperties(new Properties()));
     
     assertEquals(0, loaded.size());
   }
-  
+
+  @Test
   public void testBootstrapProperties_EmptyConfiguredPreProcessors() throws Exception {
     Properties props = new Properties();
     props.put("preProcessors", "");
@@ -65,7 +63,8 @@ public class ConfigurationPreProcessorFactoryTest extends TestCase {
     
     assertEquals(0, loaded.size());
   }
-  
+
+  @Test
   public void testBootstrapProperties_SingleConfiguredPreProcessors() throws Exception {
     //Bypass the searching for meta-inf property files
     when(mockPropertyLoader.loadPropertyFile(anyString())).thenReturn(sampleProperties);
@@ -79,8 +78,8 @@ public class ConfigurationPreProcessorFactoryTest extends TestCase {
     assertEquals(1, loaded.size());
     assertEquals(DummyConfigurationPreProcessor.class.getCanonicalName(), loaded.toArray()[0].getClass().getName());
   }
-  
-  
+
+  @Test
   public void testBootstrapProperties_MisConfiguredPreProcessorNoClassName() throws Exception {
     when(mockPropertyLoader.loadPropertyFile(anyString())).thenReturn(new Properties());
     preProcessorFactory.setPropertyLoader(mockPropertyLoader);
@@ -89,7 +88,8 @@ public class ConfigurationPreProcessorFactoryTest extends TestCase {
     props.put("preProcessors", "testPreProcessor");
     assertEquals(0, preProcessorFactory.load(new JunitBootstrapProperties(props)).size());
   }
-  
+
+  @Test
   public void testBootstrapProperties_MultipleExternalPropertyFilesOnly1Configured()
       throws Exception {
     Properties sampleProperties2 = new Properties();
@@ -107,7 +107,8 @@ public class ConfigurationPreProcessorFactoryTest extends TestCase {
     assertEquals(1, processorsList.size());
     assertEquals(DummyConfigurationPreProcessor.class.getCanonicalName(), processorsList.toArray()[0].getClass().getName());
   }
-  
+
+  @Test
   public void testBootstrapProperties_MultipleExternalPropertyFiles2Configured() throws Exception {
     Properties sampleProperties2 = new Properties();
     sampleProperties2.put("name", "testPreProcessor2");
@@ -126,6 +127,7 @@ public class ConfigurationPreProcessorFactoryTest extends TestCase {
     assertEquals(DummyConfigurationPreProcessor2.class.getCanonicalName(), processorsList.toArray()[1].getClass().getName());
   }
 
+  @Test
   public void testKeyValuePairSet_MisConfiguredPreProcessorNoClassName() throws Exception {
     when(mockPropertyLoader.loadPropertyFile(anyString())).thenReturn(new Properties());
     preProcessorFactory.setPropertyLoader(mockPropertyLoader);
@@ -133,6 +135,7 @@ public class ConfigurationPreProcessorFactoryTest extends TestCase {
         preProcessorFactory.load("testPreProcessor", new KeyValuePairSet()).size());
   }
 
+  @Test
   public void testKeyValuePairSet_NoValues() throws Exception {
     when(mockPropertyLoader.loadPropertyFile(anyString())).thenReturn(new Properties());
     preProcessorFactory.setPropertyLoader(mockPropertyLoader);

@@ -16,6 +16,11 @@
 
 package com.adaptris.core.http.client.net;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.BranchingServiceCollection;
 import com.adaptris.core.Channel;
@@ -35,20 +40,18 @@ import com.adaptris.core.stubs.MockMessageProducer;
 public class BranchingHttpRequestServiceTest extends HttpServiceExample {
   private static final String TEXT = "ABCDEFG";
 
-  public BranchingHttpRequestServiceTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
-
+  @Test
   public void testIsBranching() throws Exception {
     BranchingHttpRequestService service = new BranchingHttpRequestService();
     assertTrue(service.isBranching());
     assertNull(service.getDefaultServiceId());
   }
 
+  @Test
   public void testService_Error() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock);
@@ -68,6 +71,7 @@ public class BranchingHttpRequestServiceTest extends HttpServiceExample {
     }
   }
 
+  @Test
   public void testService_DefaultServiceId() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock);
@@ -91,6 +95,7 @@ public class BranchingHttpRequestServiceTest extends HttpServiceExample {
     assertEquals("DefaultServiceId", msg.getNextServiceId());
   }
 
+  @Test
   public void testService_ExactMatch() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock, getName());
@@ -114,6 +119,7 @@ public class BranchingHttpRequestServiceTest extends HttpServiceExample {
     assertEquals("200 OK", msg.getNextServiceId());
   }
 
+  @Test
   public void testService_ExactMatch_WithError() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock, "This is the reply body", HttpStatus.INTERNAL_ERROR_500);
@@ -137,6 +143,7 @@ public class BranchingHttpRequestServiceTest extends HttpServiceExample {
     assertEquals("500 Server Error", msg.getNextServiceId());
   }
 
+  @Test
   public void testService_RangeMatch() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock);

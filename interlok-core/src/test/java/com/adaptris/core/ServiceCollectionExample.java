@@ -25,8 +25,7 @@ public abstract class ServiceCollectionExample extends ServiceCase {
    */
   public static final String BASE_DIR_KEY = "ServiceCollectionExamples.baseDir";
 
-  public ServiceCollectionExample(String name) {
-    super(name);
+  public ServiceCollectionExample() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }

@@ -22,8 +22,7 @@ public class RelaxedFtpsConsumerTest extends RelaxedFtpConsumerCase {
 
   private static final String BASE_DIR_KEY = "FtpsConsumerExamples.baseDir";
 
-  public RelaxedFtpsConsumerTest(String name) {
-    super(name);
+  public RelaxedFtpsConsumerTest() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }

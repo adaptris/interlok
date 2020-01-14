@@ -1,7 +1,10 @@
 name: Java CI
 
-on: [push]
-
+on:
+  push:
+    branches:
+      - develop
+      
 jobs:
   build:
 
@@ -16,7 +19,6 @@ jobs:
         java-version: 1.8
     - name: Setup Ubuntu
       run: |
-        sudo apt-get -y update
         sudo apt-get -y install haveged
         sudo systemctl enable haveged
         sudo systemctl restart haveged

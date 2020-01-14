@@ -17,9 +17,7 @@
 package com.adaptris.core.jms;
 
 import static com.adaptris.core.jms.BasicPtpConsumerActiveErorHandlerTest.DEFAULT_XML_COMMENT;
-
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
@@ -27,16 +25,10 @@ import com.adaptris.util.TimeInterval;
 
 public class BasicPtpProducerActiveErrorHandlerTest extends JmsProducerCase {
   static final String DEFAULT_FILE_SUFFIX = "-JNDI";
-
-  public BasicPtpProducerActiveErrorHandlerTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
-
 
   @Override
   protected Object retrieveObjectForSampleConfig() {

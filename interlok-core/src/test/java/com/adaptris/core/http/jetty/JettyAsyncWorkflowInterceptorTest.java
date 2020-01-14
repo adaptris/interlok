@@ -19,9 +19,12 @@ import static com.adaptris.core.http.jetty.HttpConsumerTest.JETTY_HTTP_PORT;
 import static com.adaptris.core.http.jetty.HttpConsumerTest.URL_TO_POST_TO;
 import static com.adaptris.core.http.jetty.HttpConsumerTest.XML_PAYLOAD;
 import static com.adaptris.core.http.jetty.JettyHelper.createConnection;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
@@ -51,17 +54,12 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
       + "it arrives."
       + "\n-->\n";
 
-  public JettyAsyncWorkflowInterceptorTest(String testName) {
-    super(testName);
-  }
-
   @Override
-  protected void setUp() {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  protected void tearDown() {
-  }
-
+  @Test
   public void testLifecycle() throws Exception {
     JettyAsyncWorkflowInterceptor interceptor = new JettyAsyncWorkflowInterceptor();
     try {
@@ -78,6 +76,7 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testInterceptor_Cache() throws Exception {
     JettyAsyncWorkflowInterceptor requestor = new JettyAsyncWorkflowInterceptor()
         .withMode(JettyAsyncWorkflowInterceptor.Mode.REQUEST);
@@ -100,6 +99,7 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testInterceptor_WithShortcut() throws Exception {
     HttpConnection connection = createConnection(Integer.parseInt(PROPERTIES.getProperty(JETTY_HTTP_PORT)));
     JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO, getName());
@@ -129,6 +129,7 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testAcrossMultipleWorkflows() throws Exception {
     HttpConnection connection = createConnection(Integer.parseInt(PROPERTIES.getProperty(JETTY_HTTP_PORT)));
     JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO, getName());
@@ -165,6 +166,7 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testAcrossMultipleWorkflows_WithCacheKey() throws Exception {
     HttpConnection connection = createConnection(Integer.parseInt(PROPERTIES.getProperty(JETTY_HTTP_PORT)));
     JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO, getName());

@@ -22,12 +22,9 @@ import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 
 public class PtpConsumerTest extends JmsConsumerCase {
 
-  public PtpConsumerTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   /**

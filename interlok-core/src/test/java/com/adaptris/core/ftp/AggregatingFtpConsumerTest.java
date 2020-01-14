@@ -16,25 +16,22 @@
 
 package com.adaptris.core.ftp;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import org.apache.commons.io.filefilter.RegexFileFilter;
-
+import org.junit.Test;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.MimeEncoder;
 
 public class AggregatingFtpConsumerTest extends BaseCase {
 
-  public AggregatingFtpConsumerTest(String name) {
-    super(name);
+  public AggregatingFtpConsumerTest() {
   }
 
-  public void setUp() throws Exception {
-    super.setUp();
-  }
-
-  public void tearDown() throws Exception {
-    super.tearDown();
-  }
-
+  @Test
   public void testDeleteAggregatedFiles() throws Exception {
     AggregatingFtpConsumer consumer = new AggregatingFtpConsumer();
     assertTrue(consumer.deleteAggregatedFiles());
@@ -44,20 +41,27 @@ public class AggregatingFtpConsumerTest extends BaseCase {
     assertFalse(consumer.deleteAggregatedFiles());
   }
 
+  @Test
   public void testFileFilterImp() throws Exception {
     AggregatingFtpConsumer consumer = new AggregatingFtpConsumer();
     assertEquals(RegexFileFilter.class.getCanonicalName(), consumer.fileFilterImp());
     assertNull(consumer.getFileFilterImp());
-    consumer.setFileFilterImp(getName());
+    consumer.setFileFilterImp("testFileFilterImp");
     assertNotNull(consumer.getFileFilterImp());
-    assertEquals(getName(), consumer.fileFilterImp());
+    assertEquals("testFileFilterImp", consumer.fileFilterImp());
   }
 
+  @Test
   public void testEncoder() throws Exception {
     AggregatingFtpConsumer consumer = new AggregatingFtpConsumer();
     assertNull(consumer.getEncoder());
     consumer.setEncoder(new MimeEncoder());
     assertNotNull(consumer.getEncoder());
     assertEquals(MimeEncoder.class, consumer.getEncoder().getClass());
+  }
+
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 }

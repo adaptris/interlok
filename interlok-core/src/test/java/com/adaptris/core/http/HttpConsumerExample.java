@@ -26,9 +26,7 @@ public abstract class HttpConsumerExample extends ConsumerCase {
    */
   public static final String BASE_DIR_KEY = "HttpConsumerExamples.baseDir";
 
-  public HttpConsumerExample(String name) {
-    super(name);
-
+  public HttpConsumerExample() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }

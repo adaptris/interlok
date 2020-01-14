@@ -16,9 +16,12 @@
 
 package com.adaptris.core.services.metadata.xpath;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -28,9 +31,6 @@ import com.adaptris.util.text.xml.XPath;
 @SuppressWarnings("deprecation")
 public class MetadataXpathNodeQueryTest extends MetadataXpathQueryCase {
 
-  public MetadataXpathNodeQueryTest(String testName) {
-    super(testName);
-  }
 
   @Override
   protected MetadataXpathNodeQuery create() {
@@ -44,6 +44,7 @@ public class MetadataXpathNodeQueryTest extends MetadataXpathQueryCase {
     return query;
   }
 
+  @Test
   public void testResolveXpath_EmptyResults_NotAllowed() throws Exception {
     MetadataXpathNodeQuery query = init(create());
     Document doc = XmlHelper.createDocument(XML);
@@ -58,6 +59,7 @@ public class MetadataXpathNodeQueryTest extends MetadataXpathQueryCase {
     }
   }
 
+  @Test
   public void testResolveXpath_EmptyResults_Allowed() throws Exception {
     MetadataXpathNodeQuery query = init(create());
     query.setAllowEmptyResults(Boolean.TRUE);
@@ -69,6 +71,7 @@ public class MetadataXpathNodeQueryTest extends MetadataXpathQueryCase {
     assertNull(result);
   }
 
+  @Test
   public void testResolveXpath_Attribute() throws Exception {
     MetadataXpathNodeQuery query = init(create());
 
@@ -78,6 +81,7 @@ public class MetadataXpathNodeQueryTest extends MetadataXpathQueryCase {
     Node result = query.resolveXpath(doc, new XPath(), query.createXpathQuery(msg));
   }
 
+  @Test
   public void testResolveXpath_NamespaceWithNamespaceContext() throws Exception {
     MetadataXpathNodeQuery query = init(create());
 

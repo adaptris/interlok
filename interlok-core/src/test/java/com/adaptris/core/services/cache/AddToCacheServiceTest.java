@@ -1,11 +1,15 @@
 package com.adaptris.core.services.cache;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.Collection;
-
 import javax.jms.JMSException;
 import javax.jms.Queue;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
@@ -21,13 +25,20 @@ public class AddToCacheServiceTest extends CacheServiceBaseCase {
   private static final String SRC_KEY = "srcKey";
   private static final String SRC_VALUE = "srcValue";
 
+
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
+  @Test
   public void testEnforceSerializable() throws Exception {
     AddToCacheService service = createService();
     assertNull(service.getEnforceSerializable());
     assertFalse(service.enforceSerializable());
 
     service.setEnforceSerializable(Boolean.TRUE);
-    assertEquals(true, (boolean)service.enforceSerializable());
+    assertEquals(true, service.enforceSerializable());
     assertTrue(service.getEnforceSerializable());
 
     service.setEnforceSerializable(null);
@@ -35,6 +46,7 @@ public class AddToCacheServiceTest extends CacheServiceBaseCase {
     assertFalse(service.enforceSerializable());
   }
 
+  @Test
   public void testDoService() throws Exception {
     AdaptrisMessage msg = createMessage("Hello World", Arrays.asList(new MetadataElement[]
     {
@@ -57,6 +69,7 @@ public class AddToCacheServiceTest extends CacheServiceBaseCase {
     }
   }
 
+  @Test
   public void testDoService_EnforceSerializable_NotSerializable() throws Exception {
     AdaptrisMessage msg = createMessage("Hello World", Arrays.asList(new MetadataElement[]
     {
@@ -81,6 +94,7 @@ public class AddToCacheServiceTest extends CacheServiceBaseCase {
     }
   }
 
+  @Test
   public void testDoService_EnforceSerializable_Serializable() throws Exception {
     AdaptrisMessage msg = createMessage("Hello World", Arrays.asList(new MetadataElement[]
     {
@@ -105,6 +119,7 @@ public class AddToCacheServiceTest extends CacheServiceBaseCase {
     }
   }
 
+  @Test
   public void testDoService_NoErrorOnEmpty_NoKeyValue() throws Exception {
     AdaptrisMessage msg = createMessage("Hello World", Arrays.asList(new MetadataElement[]
     {
@@ -128,6 +143,7 @@ public class AddToCacheServiceTest extends CacheServiceBaseCase {
     }
   }
 
+  @Test
   public void testDoService_NoErrorOnEmpty_NoValue() throws Exception {
     AdaptrisMessage msg = createMessage("Hello World", Arrays.asList(new MetadataElement[]
     {
@@ -151,6 +167,7 @@ public class AddToCacheServiceTest extends CacheServiceBaseCase {
     }
   }
 
+  @Test
   public void testDoService_NoErrorOnEmpty_NeitherKeyOrValue() throws Exception {
     AdaptrisMessage msg = createMessage("Hello World", Arrays.asList(new MetadataElement[]
     {
@@ -176,6 +193,7 @@ public class AddToCacheServiceTest extends CacheServiceBaseCase {
     }
   }
 
+  @Test
   public void testDoService_ErrorOnEmpty() throws Exception {
     AdaptrisMessage msg = createMessage("Hello World", Arrays.asList(new MetadataElement[]
     {

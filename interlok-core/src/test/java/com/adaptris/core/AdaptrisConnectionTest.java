@@ -16,11 +16,13 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
+import org.junit.Test;
 import com.adaptris.core.stubs.MockConnection;
 import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.core.stubs.MockMessageProducer;
@@ -32,14 +34,10 @@ public class AdaptrisConnectionTest extends BaseCase {
   private static final String START = "start";
   private static final String INIT = "init";
 
-  public AdaptrisConnectionTest(java.lang.String testName) {
-    super(testName);
+  public AdaptrisConnectionTest() {
   }
 
-  @Override
-  protected void setUp() throws Exception {
-  }
-
+  @Test
   public void testConnectionErrorHandler() throws Exception {
     MockConnection mc = new MockConnection();
     assertNull(mc.getConnectionErrorHandler());
@@ -48,6 +46,7 @@ public class AdaptrisConnectionTest extends BaseCase {
     assertEquals(nc, mc.getConnectionErrorHandler());
   }
 
+  @Test
   public void testAddMessageConsumer() throws Exception {
     MockConnection mc = new MockConnection();
     List<MockMessageConsumer> consumers = createConsumers();
@@ -61,6 +60,7 @@ public class AdaptrisConnectionTest extends BaseCase {
     assertEquals(mc.retrieveMessageConsumers().size(), consumers.size());
   }
 
+  @Test
   public void testAddMessageProducers() throws Exception {
     MockConnection mc = new MockConnection();
     List<MockMessageProducer> producers = createProducers();
@@ -74,6 +74,7 @@ public class AdaptrisConnectionTest extends BaseCase {
     assertEquals(mc.retrieveMessageProducers().size(), producers.size());
   }
 
+  @Test
   public void testCloseWithWorkerLifecycle() throws Exception {
     MockConnection mc = new MockConnection();
     List<MockMessageConsumer> consumers = createConsumers();
@@ -101,6 +102,7 @@ public class AdaptrisConnectionTest extends BaseCase {
     assertState(consumers, ClosedState.getInstance());
   }
 
+  @Test
   public void testCloseWithoutWorkferLifecycle() throws Exception {
     MockConnection mc = new MockConnection();
     List<MockMessageConsumer> consumers = createConsumers();
@@ -130,6 +132,7 @@ public class AdaptrisConnectionTest extends BaseCase {
     invoke(consumers, CLOSE);
   }
 
+  @Test
   public void testCloneForTesting() throws Exception {
     MockConnection mc = new MockConnection();
     assertEquals(MockConnection.class, mc.cloneForTesting().getClass());
@@ -175,4 +178,10 @@ public class AdaptrisConnectionTest extends BaseCase {
     }
     return;
   }
+
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
 }

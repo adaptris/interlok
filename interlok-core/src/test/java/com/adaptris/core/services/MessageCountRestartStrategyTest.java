@@ -16,35 +16,38 @@
 
 package com.adaptris.core.services;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMessageFactory;
 
-import junit.framework.TestCase;
-
-public class MessageCountRestartStrategyTest extends TestCase {
+public class MessageCountRestartStrategyTest {
   
   private MessageCountRestartStrategy restartStrategy;
   private AdaptrisMessageFactory messageFactory;
-  
+
+  @Before
   public void setUp() throws Exception {
     restartStrategy = new MessageCountRestartStrategy();
     messageFactory = DefaultMessageFactory.getDefaultInstance();
   }
-  
-  public void tearDown() throws Exception {
-  }
 
+  @Test
   public void testNoMessage() throws Exception {
     assertFalse(restartStrategy.requiresRestart());
   }
-  
+
+  @Test
   public void testSingleMessage() throws Exception {
     restartStrategy.setMaxMessagesCount(1);
     restartStrategy.messageProcessed(messageFactory.newMessage());
     
     assertTrue(restartStrategy.requiresRestart());
   }
-  
+
+  @Test
   public void testMultipleMessagesNotExceedMax() throws Exception {
     restartStrategy.setMaxMessagesCount(5);
     assertFalse(restartStrategy.requiresRestart());
@@ -58,7 +61,8 @@ public class MessageCountRestartStrategyTest extends TestCase {
     restartStrategy.messageProcessed(messageFactory.newMessage());
     assertFalse(restartStrategy.requiresRestart());
   }
-  
+
+  @Test
   public void testMultipleMessagesExceedsMax() throws Exception {
     restartStrategy.setMaxMessagesCount(5);
     assertFalse(restartStrategy.requiresRestart());
@@ -74,7 +78,8 @@ public class MessageCountRestartStrategyTest extends TestCase {
     restartStrategy.messageProcessed(messageFactory.newMessage());
     assertTrue(restartStrategy.requiresRestart());
   }
-  
+
+  @Test
   public void testMultipleRoundsOfExceedsMax() throws Exception {
     restartStrategy.setMaxMessagesCount(5);
     assertFalse(restartStrategy.requiresRestart());

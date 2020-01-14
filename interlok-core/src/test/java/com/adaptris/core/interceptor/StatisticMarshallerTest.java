@@ -1,22 +1,22 @@
 package com.adaptris.core.interceptor;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import java.io.StringWriter;
 import java.io.Writer;
+import org.junit.Before;
+import org.junit.Test;
 
-import junit.framework.TestCase;
-
-public class StatisticMarshallerTest extends TestCase {
+public class StatisticMarshallerTest {
   
   private StatisticMarshaller statisticMarshaller;
   
+  @Before
   public void setUp() throws Exception {
     statisticMarshaller = new StatisticMarshaller();
   }
   
-  public void tearDown() throws Exception {
-    
-  }
-  
+  @Test
   public void testMarshallMessageStats() throws Exception {
     MessageStatistic statistic = new MessageStatistic();
     statistic.setStartMillis(System.currentTimeMillis());
@@ -33,7 +33,8 @@ public class StatisticMarshallerTest extends TestCase {
     assertEquals(statistic.getTotalMessageErrorCount(), serializableStat.getTotalMessageErrorCount());
     assertEquals(statistic.getTotalMessageSize(), serializableStat.getTotalMessageSize());
   }
-  
+
+  @Test
   public void testMarshallMetadataStats() throws Exception {
     MetadataStatistic statistic = new MetadataStatistic();
     statistic.setStartMillis(System.currentTimeMillis());
@@ -46,7 +47,8 @@ public class StatisticMarshallerTest extends TestCase {
     assertEquals(statistic.getEndMillis(), serializableStat.getEndMillis());
     assertEquals(serializableStat.getMetadataStatistics().get("myKey"), "1");
   }
-  
+
+  @Test
   public void testMarshallMetadataStatsWithWriter() throws Exception {
     MetadataStatistic statistic = new MetadataStatistic();
     statistic.setStartMillis(System.currentTimeMillis());
@@ -62,6 +64,7 @@ public class StatisticMarshallerTest extends TestCase {
     assertEquals(serializableStat.getMetadataStatistics().get("myKey"), "1");
   }
 
+  @Test
   public void testMarshallWrongObjectNoError() throws Exception {
     assertNull(statisticMarshaller.marshal(new Object()));
   }

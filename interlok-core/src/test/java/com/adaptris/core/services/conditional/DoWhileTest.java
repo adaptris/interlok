@@ -16,17 +16,16 @@
 
 package com.adaptris.core.services.conditional;
 
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
@@ -50,8 +49,11 @@ public class DoWhileTest extends ConditionalServiceExample {
   @Mock private Service mockService;
   
   @Mock private Condition mockCondition;
-  
+
   @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
@@ -67,7 +69,6 @@ public class DoWhileTest extends ConditionalServiceExample {
 
   }
   
-  @Override
   @After
   public void tearDown() throws Exception {
     LifecycleHelper.stopAndClose(doWhile);

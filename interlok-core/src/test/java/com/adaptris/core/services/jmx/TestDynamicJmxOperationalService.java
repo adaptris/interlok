@@ -16,20 +16,21 @@
 
 package com.adaptris.core.services.jmx;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-
 import java.util.ArrayList;
 import java.util.Properties;
-
 import javax.management.MBeanException;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
-
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -57,17 +58,23 @@ public class TestDynamicJmxOperationalService extends ServiceCase {
   @Mock
   private JmxOperationInvoker<Object> mockInvoker;
   
-  public TestDynamicJmxOperationalService(String name) {
-    super(name);
+  public TestDynamicJmxOperationalService() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
   }
-  
+
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
+  @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
   }
 
+  @Test
   public void testMaxCache() throws Exception {
     DynamicJmxOperationService service = new DynamicJmxOperationService();
     assertNull(service.getMaxJmxConnectionCache());
@@ -77,6 +84,7 @@ public class TestDynamicJmxOperationalService extends ServiceCase {
     assertEquals(10, service.maxCache());
   }
 
+  @Test
   public void testLifecycle() throws Exception {
     DynamicJmxOperationService service = new DynamicJmxOperationService();
     try {
@@ -93,6 +101,7 @@ public class TestDynamicJmxOperationalService extends ServiceCase {
     LifecycleHelper.init(service);
   }
 
+  @Test
   public void testService() throws Exception {
     ObjectName objName = ObjectName.getInstance("com.adaptris.junit:testname=" + this.getName());
     HelloWorld hb = new HelloWorld(objName);
@@ -108,6 +117,7 @@ public class TestDynamicJmxOperationalService extends ServiceCase {
     }
   }
 
+  @Test
   public void testService_Mocked() throws Exception {
     String operationReturnValue = "NewPayloadValue";
     when(mockInvoker.invoke((MBeanServerConnection) any(), anyString(), anyString(), any(Object[].class), any(String[].class)))
@@ -121,6 +131,7 @@ public class TestDynamicJmxOperationalService extends ServiceCase {
     assertEquals(PAYLOAD, msg.getContent());
   }
 
+  @Test
   public void testService_Mocked_ReturnValue() throws Exception {
     String operationReturnValue = "NewPayloadValue";
     when(mockInvoker.invoke((MBeanServerConnection) any(), anyString(), anyString(), any(Object[].class), any(String[].class)))
@@ -135,6 +146,7 @@ public class TestDynamicJmxOperationalService extends ServiceCase {
 
   }
 
+  @Test
   public void testService_Mocked_Cache() throws Exception {
     JmxComponentWrapper jmx1 = new JmxComponentWrapper().start();
     JmxComponentWrapper jmx2 = new JmxComponentWrapper().start();
@@ -174,6 +186,7 @@ public class TestDynamicJmxOperationalService extends ServiceCase {
 
   }
 
+  @Test
   public void testService_Mocked_InvokerException() throws Exception {
     when(mockInvoker.invoke((MBeanServerConnection) any(), anyString(), anyString(), any(Object[].class), any(String[].class)))
       .thenThrow(new MBeanException(new Exception(), "Expected"));

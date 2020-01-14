@@ -16,12 +16,19 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.UUID;
+import org.junit.Test;
 import com.adaptris.core.services.WaitService;
 import com.adaptris.core.stubs.ConfigCommentHelper;
 import com.adaptris.core.stubs.EventHandlerAwareService;
@@ -29,18 +36,17 @@ import com.adaptris.core.util.LifecycleHelper;
 
 public abstract class ServiceCollectionCase extends ServiceCollectionExample {
 
-  public ServiceCollectionCase(String name) {
-    super(name);
-  }
 
   public abstract ServiceCollectionImp createServiceCollection();
 
   public abstract ServiceCollectionImp createServiceCollection(Collection<Service> services);
 
+  @Test
   public void testComments() throws Exception {
     ConfigCommentHelper.testComments(createServiceCollection());
   }
 
+  @Test
   public void testCollectionConstructor() {
     ServiceCollectionImp sc = createServiceCollection();
     sc.addService(new NullService(UUID.randomUUID().toString()));
@@ -49,6 +55,7 @@ public abstract class ServiceCollectionCase extends ServiceCollectionExample {
     assertEquals(sc.size(), sc2.size());
   }
 
+  @Test
   public void testAdd() throws Exception {
     ServiceCollectionImp sc = createServiceCollection();
     assertTrue(sc.add(new NullService(UUID.randomUUID().toString())));
@@ -89,11 +96,13 @@ public abstract class ServiceCollectionCase extends ServiceCollectionExample {
     assertTrue(meg.isTrackingEndpoint());
   }
 
+  @Test
   public void testCreateName() {
     ServiceCollectionImp sc = createServiceCollection();
     assertEquals(sc.getClass().getName(), sc.createName());
   }
 
+  @Test
   public void testContinueOnFail() throws Exception {
     ServiceCollectionImp sc = createServiceCollection();
     assertNull(sc.getContinueOnFail());
@@ -106,6 +115,7 @@ public abstract class ServiceCollectionCase extends ServiceCollectionExample {
     assertEquals(Boolean.FALSE, sc.getContinueOnFail());
   }
 
+  @Test
   public void testInitWithEventHandlerAware() throws Exception {
     EventHandlerAwareService s = new EventHandlerAwareService(UUID.randomUUID().toString());
     ServiceCollectionImp sc = createServiceCollection();
@@ -118,6 +128,7 @@ public abstract class ServiceCollectionCase extends ServiceCollectionExample {
     assertEquals(eh, s.retrieveEventHandler());
   }
 
+  @Test
   public void testAddService() throws Exception {
     ServiceCollectionImp sc = createServiceCollection();
     sc.addService(new NullService(UUID.randomUUID().toString()));
@@ -131,12 +142,14 @@ public abstract class ServiceCollectionCase extends ServiceCollectionExample {
     assertEquals(1, sc.size());
   }
 
+  @Test
   public void testSize() throws Exception {
     ServiceCollectionImp sc = createServiceCollection();
     sc.add(new NullService(UUID.randomUUID().toString()));
     assertEquals(1, sc.size());
   }
 
+  @Test
   public void testIterator() throws Exception {
     ServiceCollectionImp sc = createServiceCollection();
     sc.addAll(Arrays.asList(new Service[]
@@ -169,6 +182,7 @@ public abstract class ServiceCollectionCase extends ServiceCollectionExample {
 
   }
 
+  @Test
   public void testSetServices() throws Exception {
     ServiceCollectionImp sc = createServiceCollection();
     List<Service> services = Arrays.asList(new Service[]
@@ -190,6 +204,7 @@ public abstract class ServiceCollectionCase extends ServiceCollectionExample {
     assertEquals(services, sc.getServices());
   }
 
+  @Test
   public void testAddAtPosition() throws Exception {
     ServiceCollectionImp sc = createServiceCollection();
     sc.addService(new NullService(UUID.randomUUID().toString()));
@@ -199,6 +214,7 @@ public abstract class ServiceCollectionCase extends ServiceCollectionExample {
     assertEquals(WaitService.class, sc.get(1).getClass());
   }
 
+  @Test
   public void testAddAllAtPosition() throws Exception {
     ServiceCollectionImp sc = createServiceCollection();
     sc.addService(new NullService(UUID.randomUUID().toString()));
@@ -212,6 +228,7 @@ public abstract class ServiceCollectionCase extends ServiceCollectionExample {
     assertEquals(WaitService.class, sc.get(2).getClass());
   }
 
+  @Test
   public void testGet() throws Exception {
     ServiceCollectionImp sc = createServiceCollection();
     sc.addService(new NullService(UUID.randomUUID().toString()));
@@ -220,6 +237,7 @@ public abstract class ServiceCollectionCase extends ServiceCollectionExample {
     assertEquals(WaitService.class, sc.get(1).getClass());
   }
 
+  @Test
   public void testIndexOf() throws Exception {
     ServiceCollectionImp sc = createServiceCollection();
     sc.addService(new NullService(UUID.randomUUID().toString()));
@@ -229,6 +247,7 @@ public abstract class ServiceCollectionCase extends ServiceCollectionExample {
     assertEquals(1, sc.indexOf(s));
   }
 
+  @Test
   public void testLastIndexOf() throws Exception {
     ServiceCollectionImp sc = createServiceCollection();
     sc.addService(new NullService(UUID.randomUUID().toString()));
@@ -238,6 +257,7 @@ public abstract class ServiceCollectionCase extends ServiceCollectionExample {
     assertEquals(2, sc.lastIndexOf(s));
   }
 
+  @Test
   public void testRemove() throws Exception {
     ServiceCollectionImp sc = createServiceCollection();
     sc.addService(new NullService(UUID.randomUUID().toString()));
@@ -251,6 +271,7 @@ public abstract class ServiceCollectionCase extends ServiceCollectionExample {
     assertFalse(sc.contains(wait));
   }
 
+  @Test
   public void testSetAtPosition() throws Exception {
     ServiceCollectionImp sc = createServiceCollection();
     sc.addService(new NullService(UUID.randomUUID().toString()));
@@ -264,6 +285,7 @@ public abstract class ServiceCollectionCase extends ServiceCollectionExample {
     assertFalse(sc.contains(wait));
   }
 
+  @Test
   public void testSubList() {
     ServiceCollectionImp list = createServiceCollection();
     list.add(new NullService(UUID.randomUUID().toString()));
@@ -274,6 +296,7 @@ public abstract class ServiceCollectionCase extends ServiceCollectionExample {
     assertEquals(2, list.subList(0, 2).size());
   }
 
+  @Test
   public void testClear() {
     ServiceCollectionImp list = createServiceCollection();
     list.add(new NullService(UUID.randomUUID().toString()));

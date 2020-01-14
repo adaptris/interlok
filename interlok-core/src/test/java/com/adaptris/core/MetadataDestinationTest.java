@@ -16,17 +16,22 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.junit.Test;
 
 public class MetadataDestinationTest extends ExampleProduceDestinationCase {
 
-  public MetadataDestinationTest(java.lang.String testName) {
-    super(testName);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testAddKey() {
     MetadataDestination dest = new MetadataDestination();
     dest.addKey("key1");
@@ -35,6 +40,7 @@ public class MetadataDestinationTest extends ExampleProduceDestinationCase {
     assertTrue(dest.getKeys().contains("key3"));
   }
 
+  @Test
   public void testGetKeys() {
     MetadataDestination dest = new MetadataDestination();
     dest.addKey("key1");
@@ -46,6 +52,7 @@ public class MetadataDestinationTest extends ExampleProduceDestinationCase {
     assertTrue(dest.getKeys().equals(keys));
   }
 
+  @Test
   public void testSetKeys() {
     MetadataDestination dest = new MetadataDestination();
     List keys = new ArrayList();
@@ -62,6 +69,7 @@ public class MetadataDestinationTest extends ExampleProduceDestinationCase {
     }
   }
 
+  @Test
   public void testGetDestination() throws CoreException {
     MetadataDestination dest = new MetadataDestination();
     dest.addKey("key1");

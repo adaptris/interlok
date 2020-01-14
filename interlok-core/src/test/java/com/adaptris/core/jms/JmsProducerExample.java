@@ -26,9 +26,7 @@ public abstract class JmsProducerExample extends ProducerCase {
    */
   public static final String BASE_DIR_KEY = "JmsProducerExamples.baseDir";
 
-  public JmsProducerExample(String name) {
-    super(name);
-
+  public JmsProducerExample() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }

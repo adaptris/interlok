@@ -16,8 +16,12 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.security.MessageDigest;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -35,14 +39,12 @@ public class PayloadHashingServiceTest extends MetadataServiceExample {
   private static final String SHA256 = "SHA256";
   private static final String PAYLOAD = "Glib jocks quiz nymph to vex dwarf";
 
-  public PayloadHashingServiceTest(String name) {
-    super(name);
-  }
-
   @Override
-  public void setUp() {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testInit() throws Exception {
     PayloadHashingService service = new PayloadHashingService();
     try {
@@ -56,6 +58,7 @@ public class PayloadHashingServiceTest extends MetadataServiceExample {
     LifecycleHelper.init(service);
   }
 
+  @Test
   public void testService() throws Exception {
     PayloadHashingService service = new PayloadHashingService(SHA256, METADATA_KEY);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD);
@@ -66,6 +69,7 @@ public class PayloadHashingServiceTest extends MetadataServiceExample {
     assertEquals(createHash(new Base64ByteTranslator()), msg.getMetadataValue(METADATA_KEY));
   }
 
+  @Test
   public void testServiceException() throws Exception {
     PayloadHashingService service = new PayloadHashingService(SHA256, METADATA_KEY);
     AdaptrisMessage msg = new DefectiveMessageFactory().newMessage(PAYLOAD);
@@ -78,6 +82,7 @@ public class PayloadHashingServiceTest extends MetadataServiceExample {
     }
   }
 
+  @Test
   public void testService_WithByteTranslator() throws Exception {
     PayloadHashingService service = new PayloadHashingService(SHA256, METADATA_KEY);
     service.setByteTranslator(new HexStringByteTranslator());

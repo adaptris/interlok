@@ -18,10 +18,10 @@ package com.adaptris.core.services.aggregator;
 
 import static com.adaptris.core.services.splitter.XpathSplitterTest.ENCODING_UTF8;
 import static com.adaptris.core.services.splitter.XpathSplitterTest.ENVELOPE_DOCUMENT;
-
+import static org.junit.Assert.assertEquals;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.NullService;
@@ -38,18 +38,13 @@ import com.adaptris.util.text.xml.XPath;
 @SuppressWarnings("deprecation")
 public class XmlAggregatorTest extends XmlAggregatorCase {
 
-  public XmlAggregatorTest(String name) {
-    super(name);
-  }
 
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-  }
-
+  @Test
   public void testSplitJoinService_WithExplicitDocumentEnoding() throws Exception {
     // This is a XML doc with 3 iterable elements...
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(SplitterCase.XML_MESSAGE);
@@ -69,6 +64,7 @@ public class XmlAggregatorTest extends XmlAggregatorCase {
     assertEquals("UTF-8", msg.getContentEncoding());
   }
 
+  @Test
   public void testSplitJoinService_WithImplicitDocumentEnoding() throws Exception {
     // This is a XML doc with 3 iterable elements...
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(SplitterCase.XML_MESSAGE, "ISO-8859-1");

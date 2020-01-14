@@ -16,6 +16,10 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.event.AdapterCloseEvent;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.util.KeyValuePair;
@@ -30,15 +34,17 @@ public class MarshalledClassDestinationTest extends ExampleProduceDestinationCas
 
   private AdaptrisMarshaller marshaller;
 
-  public MarshalledClassDestinationTest(java.lang.String testName) {
-    super(testName);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     marshaller = DefaultMarshaller.getDefaultMarshaller();
   }
 
+  @Test
   public void testGetDestination() throws Exception {
     AdaptrisMessage msg = createMessage(new Adapter());
     ProduceDestination d = createDestination();
@@ -46,6 +52,7 @@ public class MarshalledClassDestinationTest extends ExampleProduceDestinationCas
     assertEquals(ADAPTER_DESTINATION, s);
   }
 
+  @Test
   public void testGetDestination_ExplicitMarshaller() throws Exception {
     MarshalledClassDestination d = createDestination();
     d.setMarshaller(DefaultMarshaller.getDefaultMarshaller());
@@ -54,6 +61,7 @@ public class MarshalledClassDestinationTest extends ExampleProduceDestinationCas
     assertEquals(ADAPTER_DESTINATION, s);
   }
 
+  @Test
   public void testBadPayload() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("ABCDE");
     ProduceDestination d = createDestination();
@@ -61,6 +69,7 @@ public class MarshalledClassDestinationTest extends ExampleProduceDestinationCas
     assertEquals(DEFAULT_DESTINATION, s);
   }
 
+  @Test
   public void testNoDefaultDestination() throws Exception {
     AdaptrisMessage msg = createMessage(new MockChannel());
     ProduceDestination d = createDestination();
@@ -74,6 +83,7 @@ public class MarshalledClassDestinationTest extends ExampleProduceDestinationCas
     }
   }
 
+  @Test
   public void testDefaultDestination() throws Exception {
     AdaptrisMessage msg = createMessage(EventFactory.create(AdapterCloseEvent.class));
     ProduceDestination d = createDestination();

@@ -1,7 +1,10 @@
 package com.adaptris.core.services.cache;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.cache.Cache;
@@ -9,6 +12,7 @@ import com.adaptris.core.cache.Cache;
 public class RemoveFromCacheServiceTest extends RetrieveFromCacheServiceTest {
 
   @Override
+  @Test
   public void testDoService() throws Exception {
     AdaptrisMessage msg = createMessage("Hello World", Arrays.asList(new MetadataElement[]
     {

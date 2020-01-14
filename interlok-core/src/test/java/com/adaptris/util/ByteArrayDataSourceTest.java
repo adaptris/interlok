@@ -16,37 +16,22 @@
 
 package com.adaptris.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import java.io.ByteArrayOutputStream;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.junit.Test;
 import com.adaptris.util.text.mime.ByteArrayDataSource;
 
-import junit.framework.TestCase;
-
-public class ByteArrayDataSourceTest extends TestCase {
+public class ByteArrayDataSourceTest {
 
   private static final String EXAMPLE_XML = "<document>" + "<root>"
       + "<data>abcdefg</data>" + "</root>" + "</document>";
 
-  private transient Log logR;
+  private transient Log logR = LogFactory.getLog(this.getClass());;
 
-  public ByteArrayDataSourceTest(String name) {
-    super(name);
-  }
-
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-    logR = LogFactory.getLog(this.getClass());
-
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-  }
-
+  @Test
   public void testInputStream() throws Exception {
     ByteArrayDataSource bads = new ByteArrayDataSource(EXAMPLE_XML.getBytes(),
         "text/xml", "name");
@@ -56,18 +41,21 @@ public class ByteArrayDataSourceTest extends TestCase {
     assertEquals("XML", out.toString(), EXAMPLE_XML);
   }
 
+  @Test
   public void testContentType() throws Exception {
     ByteArrayDataSource bads = new ByteArrayDataSource(EXAMPLE_XML.getBytes(),
         "text/xml", "name");
     assertEquals("content type", "text/xml", bads.getContentType());
   }
 
+  @Test
   public void testName() throws Exception {
     ByteArrayDataSource bads = new ByteArrayDataSource(EXAMPLE_XML.getBytes(),
         "text/xml", "name");
     assertEquals("name", "name", bads.getName());
   }
 
+  @Test
   public void testOutputStream() throws Exception {
     ByteArrayDataSource bads = new ByteArrayDataSource(EXAMPLE_XML.getBytes(),
         "text/xml", "name");

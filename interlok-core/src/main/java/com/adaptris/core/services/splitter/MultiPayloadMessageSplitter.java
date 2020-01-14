@@ -1,5 +1,6 @@
 package com.adaptris.core.services.splitter;
 
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.MultiPayloadAdaptrisMessage;
@@ -15,8 +16,28 @@ import java.util.List;
  * and return a list of standard Adaptris messages. This will copy all
  * additional metadata; all split messages will have identical metadata
  * to the original.
+ *
+ * <pre>{@code
+ * <split-join-service>
+ *   <unique-id>split-join-id</unique-id>
+ *   <service class="shared-service">
+ *     <lookup-name>for-each-service-list-id</lookup-name>
+ *     <unique-id>for-each-service-list-id</unique-id>
+ *   </service>
+ *   <splitter class="multi-payload-splitter"/>
+ *   <aggregator class="multi-payload-aggregator">
+ *     <replace-original-message>false</replace-original-message>
+ *   </aggregator>
+ * </split-join-service>
+ * }</pre>
+ *
+ * @author amanderson
+ * @config multi-payload-splitter
+ * @see MultiPayloadAdaptrisMessage
+ * @since 3.10
  */
 @XStreamAlias("multi-payload-splitter")
+@ComponentProfile(summary = "Split a multi-payload message so that each payload can be serviced independently", tag = "multi-payload,splitter", since="3.10")
 public class MultiPayloadMessageSplitter extends MessageSplitterImp
 {
 	private static final transient Logger log = LoggerFactory.getLogger(MultiPayloadMessageSplitter.class.getName());

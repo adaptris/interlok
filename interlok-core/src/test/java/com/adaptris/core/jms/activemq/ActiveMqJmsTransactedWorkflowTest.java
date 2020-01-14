@@ -21,7 +21,7 @@ import static com.adaptris.core.BaseCase.stop;
 import static com.adaptris.core.BaseCase.waitForMessages;
 import static com.adaptris.core.jms.JmsConfig.DEFAULT_PAYLOAD;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createSafeUniqueId;
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

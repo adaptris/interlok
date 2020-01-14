@@ -16,16 +16,18 @@
 
 package com.adaptris.core.services;
 
+import static org.junit.Assert.assertNull;
+import org.junit.Test;
 import org.slf4j.MDC;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
 
 public class RemoveLoggingContextTest extends GeneralServiceExample {
 
-  public RemoveLoggingContextTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
@@ -33,7 +35,7 @@ public class RemoveLoggingContextTest extends GeneralServiceExample {
     return new RemoveLoggingContext("contextKey");
   }
 
-
+  @Test
   public void testDefaultRemove() throws Exception {
     RemoveLoggingContext srv = new RemoveLoggingContext("contextKey");
     MDC.put("contextKey", "contextValue");
@@ -42,6 +44,7 @@ public class RemoveLoggingContextTest extends GeneralServiceExample {
     assertNull(MDC.get("contextKey"));
   }
 
+  @Test
   public void testLoggingContextFromMetadata() throws Exception {
     RemoveLoggingContext srv = new RemoveLoggingContext("%message{myContextKey}");
     MDC.put("contextKey", "contextValue");

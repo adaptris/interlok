@@ -16,18 +16,20 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.fail;
 import java.util.Arrays;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceException;
 
 public class ValidateMetadataServiceTest extends MetadataServiceExample {
-
-  public ValidateMetadataServiceTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testSetters() throws Exception {
     ValidateMetadataService service = new ValidateMetadataService();
     try {
@@ -46,6 +48,7 @@ public class ValidateMetadataServiceTest extends MetadataServiceExample {
     }
   }
 
+  @Test
   public void testNoRequirements() throws Exception {
     ValidateMetadataService service = new ValidateMetadataService();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("asdfghjk");
@@ -58,6 +61,7 @@ public class ValidateMetadataServiceTest extends MetadataServiceExample {
     }
   }
 
+  @Test
   public void testOneRequirementMet() throws Exception {
     ValidateMetadataService service = new ValidateMetadataService(Arrays.asList(new String[]
     {
@@ -74,6 +78,7 @@ public class ValidateMetadataServiceTest extends MetadataServiceExample {
     }
   }
 
+  @Test
   public void testOneRequirementEmpty() throws Exception {
     ValidateMetadataService service = new ValidateMetadataService(Arrays.asList(new String[]
     {
@@ -91,6 +96,7 @@ public class ValidateMetadataServiceTest extends MetadataServiceExample {
     }
   }
 
+  @Test
   public void testOneRequirementNotPresent() throws Exception {
     ValidateMetadataService service = new ValidateMetadataService(Arrays.asList(new String[]
     {
@@ -107,6 +113,7 @@ public class ValidateMetadataServiceTest extends MetadataServiceExample {
     }
   }
 
+  @Test
   public void testtwoRequirementsNonePresent() throws Exception {
     ValidateMetadataService service = new ValidateMetadataService(Arrays.asList(new String[]
     {
@@ -123,6 +130,7 @@ public class ValidateMetadataServiceTest extends MetadataServiceExample {
     }
   }
 
+  @Test
   public void testtwoRequirementsOnePresent() throws Exception {
     ValidateMetadataService service = new ValidateMetadataService(Arrays.asList(new String[]
     {
@@ -141,6 +149,7 @@ public class ValidateMetadataServiceTest extends MetadataServiceExample {
     }
   }
 
+  @Test
   public void testtwoRequirementsTwoPresent() throws Exception {
     ValidateMetadataService service = new ValidateMetadataService(Arrays.asList(new String[]
     {

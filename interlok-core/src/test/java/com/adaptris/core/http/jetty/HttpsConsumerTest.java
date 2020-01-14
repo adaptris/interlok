@@ -19,7 +19,11 @@ package com.adaptris.core.http.jetty;
 import static com.adaptris.core.security.JunitSecurityHelper.KEYSTORE_PATH;
 import static com.adaptris.core.security.JunitSecurityHelper.KEYSTORE_TYPE;
 import static com.adaptris.core.security.JunitSecurityHelper.SECURITY_PASSWORD;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import java.net.InetAddress;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
@@ -47,16 +51,12 @@ public class HttpsConsumerTest extends HttpConsumerTest {
   private static final String URL_TO_POST_TO = "/url/to/post/to";
   private static final String XML_PAYLOAD = "<root><document>value</document></root>";
 
-  public HttpsConsumerTest(String name) {
-    super(name);
-  }
-
-  @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void doKeyStore() throws Exception {
     createKeystore();
-    super.setUp();
   }
 
+  @Test
   public void testTLS_ConsumeWorkflow() throws Exception {
     String oldName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
@@ -82,6 +82,7 @@ public class HttpsConsumerTest extends HttpConsumerTest {
     }
   }
 
+  @Test
   public void testTLS_ConsumeWorkflow_ClientUsesSSL() throws Exception {
     String oldName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
