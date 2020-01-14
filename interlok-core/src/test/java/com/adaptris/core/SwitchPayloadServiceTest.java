@@ -1,9 +1,9 @@
 package com.adaptris.core;
 
 import static org.junit.Assert.assertArrayEquals;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import java.nio.charset.Charset;
-
 import org.junit.Test;
 
 public class SwitchPayloadServiceTest extends ServiceCase {
@@ -16,6 +16,11 @@ public class SwitchPayloadServiceTest extends ServiceCase {
       .getBytes(Charset.forName(ENCODING));
 
   private static final String[] ID = { "bacon", "cupcake" };
+
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
 
   @Test
   public void testService() throws Exception {

@@ -16,18 +16,20 @@
 
 package com.adaptris.core.transform;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.HashMap;
 import java.util.Map;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 
 
 public class StringMetadataParameterTest extends TransformParameterCase {
-  public StringMetadataParameterTest(String name) {
-    super(name);
-  }
 
+  @Test
   public void testConstructor() throws Exception {
     StringMetadataParameter p = new StringMetadataParameter();
     assertNotNull(p.getMetadataFilter());
@@ -56,6 +58,7 @@ public class StringMetadataParameterTest extends TransformParameterCase {
 
   }
 
+  @Test
   public void testCreateParameters() throws Exception {
     StringMetadataParameter p = new StringMetadataParameter();
     AdaptrisMessage msg = createMessage();
@@ -72,6 +75,7 @@ public class StringMetadataParameterTest extends TransformParameterCase {
     assertEquals(METADATA_VALUE, map.get(KEY_STRING_METADATA));
   }
 
+  @Test
   public void testCreateParameters_UnmatchedRegexp() throws Exception {
     StringMetadataParameter p = new StringMetadataParameter(new String[]
     {

@@ -16,20 +16,23 @@
 
 package com.adaptris.core.jdbc;
 
+import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 
-import junit.framework.TestCase;
-
-public class JdbcConstantParameterTest extends TestCase {
+public class JdbcConstantParameterTest {
   
   private static final String CONSTANT_VALUE = "999";
   private AdaptrisMessage message;
   
+  @Before
   public void setUp() throws Exception {    
     message = DefaultMessageFactory.getDefaultInstance().newMessage();
   }
-  
+
+  @Test
   public void testNoConstantSetInputParam() throws Exception {
     JdbcConstantParameter parameter = new JdbcConstantParameter();
     
@@ -39,7 +42,8 @@ public class JdbcConstantParameterTest extends TestCase {
       // expected , pass
     }
   }
-  
+
+  @Test
   public void testOutputParam() throws Exception {
     JdbcConstantParameter parameter = new JdbcConstantParameter();
     
@@ -50,6 +54,7 @@ public class JdbcConstantParameterTest extends TestCase {
     }
   }
 
+  @Test
   public void testConstantInputParam() throws Exception {
     JdbcConstantParameter parameter = new JdbcConstantParameter();
     parameter.setConstant(CONSTANT_VALUE);

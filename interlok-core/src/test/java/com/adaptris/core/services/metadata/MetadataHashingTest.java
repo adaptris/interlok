@@ -16,6 +16,10 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -28,16 +32,11 @@ public class MetadataHashingTest extends MetadataServiceExample {
   private static final String METADATA_KEY = "key";
   private static final String METADATA_VALUE = "2104913203";
   private static final String METADATA_HASH_MD5 = "fff9f3d8d4ec2726e0b2422116b20dd2";
-  
-  public MetadataHashingTest(String name) {
-    super(name);
-  }
 
   @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
-
 
   private AdaptrisMessage createMessage(String encoding) throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("asdfghjk", encoding);
@@ -46,6 +45,7 @@ public class MetadataHashingTest extends MetadataServiceExample {
     return msg;
   }
 
+  @Test
   public void testSetHashAlgorithm() throws Exception {
     MetadataHashingService service = new MetadataHashingService();
     assertEquals("SHA1", service.getHashAlgorithm());
@@ -70,6 +70,7 @@ public class MetadataHashingTest extends MetadataServiceExample {
     }
   }
 
+  @Test
   public void testSetByteTranslator() throws Exception {
     MetadataHashingService service = new MetadataHashingService();
     assertEquals(Base64ByteTranslator.class, service.getByteTranslator().getClass());
@@ -86,6 +87,7 @@ public class MetadataHashingTest extends MetadataServiceExample {
     }
   }
 
+  @Test
   public void testService() throws Exception {
     MetadataHashingService service = new MetadataHashingService(METADATA_KEY);
     AdaptrisMessage msg = createMessage(null);
@@ -93,6 +95,7 @@ public class MetadataHashingTest extends MetadataServiceExample {
     assertNotSame(METADATA_VALUE, msg.getMetadataValue(METADATA_KEY));
   }
 
+  @Test
   public void testService_KnownHash() throws Exception {
     MetadataHashingService service = new MetadataHashingService(METADATA_KEY, "MD5", new HexStringByteTranslator());
     AdaptrisMessage msg = createMessage(null);
@@ -100,6 +103,7 @@ public class MetadataHashingTest extends MetadataServiceExample {
     assertEquals(METADATA_HASH_MD5, msg.getMetadataValue(METADATA_KEY));
   }
 
+  @Test
   public void testService_Encoding() throws Exception {
     MetadataHashingService service = new MetadataHashingService(METADATA_KEY, "MD5", new HexStringByteTranslator());
     AdaptrisMessage msg = createMessage("UTF-8");

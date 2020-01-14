@@ -16,8 +16,10 @@
 
 package com.adaptris.core.fs;
 
+import static org.junit.Assert.assertTrue;
 import java.io.File;
-
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.BaseCase;
 
 public class SizeBasedFilterTest extends BaseCase {
@@ -25,15 +27,17 @@ public class SizeBasedFilterTest extends BaseCase {
   private static final int DIFF = 2;
   private File file;
 
-  public SizeBasedFilterTest(java.lang.String testName) {
-    super(testName);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     file = new File(PROPERTIES.getProperty("fs.SizeBasedFilter"));
   }
 
+  @Test
   public void testSizeLessThanFileIsSmaller() throws Exception {
     SizeBasedFileFilter filter = new SizeLessThan(String.valueOf(file.length() + DIFF));
     assertTrue("filter.accept() should be true", filter.accept(file));
@@ -41,6 +45,7 @@ public class SizeBasedFilterTest extends BaseCase {
     assertTrue("filter.accept() should be true", filter.accept(file));
   }
 
+  @Test
   public void testSizeLessThanFileIsLarger() throws Exception {
     SizeBasedFileFilter filter = new SizeLessThan(String.valueOf(file.length() - DIFF));
     assertTrue("filter.accept() should be false", !filter.accept(file));
@@ -48,6 +53,7 @@ public class SizeBasedFilterTest extends BaseCase {
     assertTrue("filter.accept() should be false", !filter.accept(file));
   }
 
+  @Test
   public void testSizeLessThanFileIsExact() throws Exception {
     SizeBasedFileFilter filter = new SizeLessThan(String.valueOf(file.length()));
     assertTrue("filter.accept() should be false", !filter.accept(file));
@@ -55,6 +61,7 @@ public class SizeBasedFilterTest extends BaseCase {
     assertTrue("filter.accept() should be false", !filter.accept(file));
   }
 
+  @Test
   public void testSizeLessThanOrEqualFileIsSmaller() throws Exception {
     SizeBasedFileFilter filter = new SizeLessThanOrEqual(String.valueOf(file.length() + DIFF));
     assertTrue("filter.accept() should be true", filter.accept(file));
@@ -62,6 +69,7 @@ public class SizeBasedFilterTest extends BaseCase {
     assertTrue("filter.accept() should be true", filter.accept(file));
   }
 
+  @Test
   public void testSizeLessThanOrEqualFileIsLarger() throws Exception {
     SizeBasedFileFilter filter = new SizeLessThanOrEqual(String.valueOf(file.length() - DIFF));
     assertTrue("filter.accept() should be false", !filter.accept(file));
@@ -69,6 +77,7 @@ public class SizeBasedFilterTest extends BaseCase {
     assertTrue("filter.accept() should be false", !filter.accept(file));
   }
 
+  @Test
   public void testSizeLessThanOrEqualFileIsExact() throws Exception {
     SizeBasedFileFilter filter = new SizeLessThanOrEqual(String.valueOf(file.length()));
     assertTrue("filter.accept() should be true", filter.accept(file));
@@ -76,6 +85,7 @@ public class SizeBasedFilterTest extends BaseCase {
     assertTrue("filter.accept() should be true", filter.accept(file));
   }
 
+  @Test
   public void testSizeGreaterThanFileIsSmaller() throws Exception {
     SizeBasedFileFilter filter = new SizeGreaterThan(String.valueOf(file.length() + DIFF));
     assertTrue("filter.accept() should be false", !filter.accept(file));
@@ -83,6 +93,7 @@ public class SizeBasedFilterTest extends BaseCase {
     assertTrue("filter.accept() should be false", !filter.accept(file));
   }
 
+  @Test
   public void testSizeGreaterThanFileIsLarger() throws Exception {
     SizeBasedFileFilter filter = new SizeGreaterThan(String.valueOf(file.length() - DIFF));
     assertTrue("filter.accept() should be true", filter.accept(file));
@@ -90,6 +101,7 @@ public class SizeBasedFilterTest extends BaseCase {
     assertTrue("filter.accept() should be true", filter.accept(file));
   }
 
+  @Test
   public void testSizeGreaterThanFileIsExact() throws Exception {
     SizeBasedFileFilter filter = new SizeGreaterThan(String.valueOf(file.length()));
     assertTrue("filter.accept() should be false", !filter.accept(file));
@@ -97,6 +109,7 @@ public class SizeBasedFilterTest extends BaseCase {
     assertTrue("filter.accept() should be false", !filter.accept(file));
   }
 
+  @Test
   public void testSizeGreaterThanOrEqualFileIsSmaller() throws Exception {
     SizeBasedFileFilter filter = new SizeGreaterThanOrEqual(String.valueOf(file.length() + DIFF));
     assertTrue("filter.accept() should be false", !filter.accept(file));
@@ -104,6 +117,7 @@ public class SizeBasedFilterTest extends BaseCase {
     assertTrue("filter.accept() should be false", !filter.accept(file));
   }
 
+  @Test
   public void testSizeGreaterThanOrEqualFileIsLarger() throws Exception {
     SizeBasedFileFilter filter = new SizeGreaterThanOrEqual(String.valueOf(file.length() - DIFF));
     assertTrue("filter.accept() should be true", filter.accept(file));
@@ -111,6 +125,7 @@ public class SizeBasedFilterTest extends BaseCase {
     assertTrue("filter.accept() should be true", filter.accept(file));
   }
 
+  @Test
   public void testSizeGreaterThanOrEqualFileIsExact() throws Exception {
     SizeBasedFileFilter filter = new SizeGreaterThanOrEqual(String.valueOf(file.length()));
     assertTrue("filter.accept() should be true", filter.accept(file));

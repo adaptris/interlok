@@ -15,13 +15,16 @@
 */
 
 package com.adaptris.core.util;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Properties;
-
 import javax.naming.Context;
 import javax.naming.InitialContext;
-
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.CoreException;
@@ -39,20 +42,19 @@ import com.adaptris.util.KeyValuePairSet;
 @SuppressWarnings("deprecation")
 public class JndiHelperTest extends BaseCase {
   private Properties env = new Properties();
-  public JndiHelperTest(String s) {
-    super(s);
-  }
 
   @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
+
+  @Before
   public void setUp() throws Exception {
     env.put(Context.INITIAL_CONTEXT_FACTORY, JndiContextFactory.class.getName());
   }
 
-  @Override
-  public void tearDown() throws Exception {
-
-  }
-
+  @Test
   public void testBindCollection() throws Exception {
     NullConnection connection = new NullConnection();
     connection.setUniqueId(getName());
@@ -71,6 +73,7 @@ public class JndiHelperTest extends BaseCase {
     }
   }
 
+  @Test
   public void testBindCollection_Debug() throws Exception {
     NullConnection connection = new NullConnection();
     connection.setUniqueId(getName());
@@ -89,6 +92,7 @@ public class JndiHelperTest extends BaseCase {
     }
   }
 
+  @Test
   public void testBindCollection_WithContext() throws Exception {
     NullConnection connection = new NullConnection();
     connection.setUniqueId(getName());
@@ -107,6 +111,7 @@ public class JndiHelperTest extends BaseCase {
     }
   }
 
+  @Test
   public void testBindObject() throws Exception {
     NullConnection connection = new NullConnection();
     connection.setUniqueId(getName());
@@ -122,6 +127,7 @@ public class JndiHelperTest extends BaseCase {
     }
   }
 
+  @Test
   public void testBindObject_WithContext() throws Exception {
     NullConnection connection = new NullConnection();
     connection.setUniqueId(getName());
@@ -140,6 +146,7 @@ public class JndiHelperTest extends BaseCase {
     }
   }
 
+  @Test
   public void testBindObject_WithScheme() throws Exception {
     NullConnection connection = new NullConnection();
     connection.setUniqueId("adapter:" + getName());
@@ -155,6 +162,7 @@ public class JndiHelperTest extends BaseCase {
     }
   }
 
+  @Test
   public void testBindObject_WithLookupName() throws Exception {
     NullConnection connection = new NullConnection();
     connection.setUniqueId("SomethingElseEntirely");
@@ -171,6 +179,7 @@ public class JndiHelperTest extends BaseCase {
     }
   }
 
+  @Test
   public void testBindObject_AlreadyBound() throws Exception {
     NullConnection connection = new NullConnection();
     connection.setUniqueId(getName());
@@ -192,7 +201,8 @@ public class JndiHelperTest extends BaseCase {
     }
     JndiHelper.unbindQuietly(initialContext, connection, false);
   }
-  
+
+  @Test
   public void testBindTransactionManager_AlreadyBound() throws Exception {
     TransactionManager transactionManager = new DummyTransactionManager(getName(), null);
     InitialContext initialContext = new InitialContext(env);
@@ -213,7 +223,8 @@ public class JndiHelperTest extends BaseCase {
     }
     JndiHelper.unbindQuietly(initialContext, transactionManager, false);
   }
-  
+
+  @Test
   public void testBindNullTransactionManager() throws Exception {
     TransactionManager transactionManager = null;
     InitialContext initialContext = new InitialContext(env);
@@ -224,7 +235,8 @@ public class JndiHelperTest extends BaseCase {
       fail("Should not error, just ignore.");
     }
   }
-  
+
+  @Test
   public void testBindNullTransactionManager_Debug() throws Exception {
     TransactionManager transactionManager = null;
     InitialContext initialContext = new InitialContext(env);
@@ -235,7 +247,8 @@ public class JndiHelperTest extends BaseCase {
       fail("Should not error, just ignore.");
     }
   }
-  
+
+  @Test
   public void testUnbindNullTransactionManager() throws Exception {
     TransactionManager transactionManager = null;
     try {
@@ -245,7 +258,8 @@ public class JndiHelperTest extends BaseCase {
       fail("Should not error, just ignore.");
     }
   }
-  
+
+  @Test
   public void testUnbindNullTransactionManager_Debug() throws Exception {
     TransactionManager transactionManager = null;
     try {
@@ -255,7 +269,8 @@ public class JndiHelperTest extends BaseCase {
       fail("Should not error, just ignore.");
     }
   }
-  
+
+  @Test
   public void testUnbindUnboundTransactionManager() throws Exception {
     TransactionManager transactionManager = new DummyTransactionManager(getName(), null);
     try {
@@ -266,7 +281,8 @@ public class JndiHelperTest extends BaseCase {
       // not previously bound, so should error.
     }
   }
-  
+
+  @Test
   public void testUnbindUnboundTransactionManager_Debug() throws Exception {
     TransactionManager transactionManager = new DummyTransactionManager(getName(), null);
     try {
@@ -278,6 +294,7 @@ public class JndiHelperTest extends BaseCase {
     }
   }
 
+  @Test
   public void testBindJdbcConnection() throws Exception {
     JdbcPooledConnection connection = new JdbcPooledConnection();
     connection.setConnectUrl("jdbc:derby:memory:" + new GuidGenerator().safeUUID() + ";create=true");
@@ -307,6 +324,7 @@ public class JndiHelperTest extends BaseCase {
     }
   }
 
+  @Test
   public void testBindJdbcConnection_WithLookupName() throws Exception {
     JdbcPooledConnection connection = new JdbcPooledConnection();
     connection.setConnectUrl("jdbc:derby:memory:" + new GuidGenerator().safeUUID() + ";create=true");
@@ -328,7 +346,8 @@ public class JndiHelperTest extends BaseCase {
       JndiHelper.unbindQuietly(initialContext, connection, true);
     }
   }
-  
+
+  @Test
   public void testBindAdvancedJdbcConnection_WithLookupName() throws Exception {
     AdvancedJdbcPooledConnection connection = new AdvancedJdbcPooledConnection();
     connection.setConnectUrl("jdbc:derby:memory:" + new GuidGenerator().safeUUID() + ";create=true");
@@ -353,6 +372,7 @@ public class JndiHelperTest extends BaseCase {
     }
   }
 
+  @Test
   public void testUnbindCollection() throws Exception {
     NullConnection connection = new NullConnection();
     connection.setUniqueId(getName());
@@ -369,6 +389,7 @@ public class JndiHelperTest extends BaseCase {
     }
   }
 
+  @Test
   public void testUnbindCollection_Debug() throws Exception {
     NullConnection connection = new NullConnection();
     connection.setUniqueId(getName());
@@ -386,6 +407,7 @@ public class JndiHelperTest extends BaseCase {
     }
   }
 
+  @Test
   public void testUnbindCollection_WithContext() throws Exception {
     NullConnection connection = new NullConnection();
     connection.setUniqueId(getName());
@@ -403,6 +425,7 @@ public class JndiHelperTest extends BaseCase {
     }
   }
 
+  @Test
   public void testUnbindObject() throws Exception {
     NullConnection connection = new NullConnection();
     connection.setUniqueId(getName());
@@ -411,6 +434,7 @@ public class JndiHelperTest extends BaseCase {
     JndiHelper.unbind(connection, false);
   }
 
+  @Test
   public void testUnbindObject_WithContext() throws Exception {
     NullConnection connection = new NullConnection();
     connection.setUniqueId(getName());
@@ -421,6 +445,7 @@ public class JndiHelperTest extends BaseCase {
     JndiHelper.unbind(initialContext, connection, false);
   }
 
+  @Test
   public void testUnbindJdbcConnection() throws Exception {
     JdbcPooledConnection connection = new JdbcPooledConnection();
     connection.setConnectUrl("jdbc:derby:memory:" + new GuidGenerator().safeUUID() + ";create=true");

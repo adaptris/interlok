@@ -24,7 +24,12 @@ import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_MSG_STARTED;
 import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_MSG_STOPPED;
 import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_TYPE_ADAPTER_CONFIG;
 import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_TYPE_ADAPTER_LIFECYCLE;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,7 +40,6 @@ import java.util.UUID;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
 import javax.management.JMX;
 import javax.management.MalformedObjectNameException;
 import javax.management.Notification;
@@ -43,7 +47,8 @@ import javax.management.NotificationFilterSupport;
 import javax.management.ObjectName;
 import javax.naming.Context;
 import javax.naming.InitialContext;
-
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.Channel;
@@ -80,16 +85,16 @@ public class AdapterManagerTest extends ComponentManagerCase {
   private Properties env = new Properties();
   private InitialContext initialContext = null;
 
-  public AdapterManagerTest(String name) {
-    super(name);
+  public AdapterManagerTest() {
   }
 
-  public void setUp() throws Exception {
-    super.setUp();
+  @Before
+  public void beforeMyTests() throws Exception {
     env.put(Context.INITIAL_CONTEXT_FACTORY, JndiContextFactory.class.getName());
     initialContext = new InitialContext(env);
   }
 
+  @Test
   public void testWrappedComponentClassName() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -97,6 +102,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     assertEquals(Adapter.class.getCanonicalName(), am1.getWrappedComponentClassname());
   }
 
+  @Test
   public void testEqualityHashCode() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -115,6 +121,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     assertNotSame(am1.hashCode(), am3.hashCode());
   }
 
+  @Test
   public void testGetConfiguration() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -123,6 +130,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     assertRoundtripEquality(adapter, marshalledAdapter);
   }
 
+  @Test
   public void testRegisterMBean() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -158,6 +166,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testProxyEquality() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -174,6 +183,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testGetState() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -188,6 +198,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testInitialise() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -204,11 +215,13 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testInitialise_WithTimeout() throws Exception {
     TimeInterval standardTimeout = new TimeInterval(2L, TimeUnit.SECONDS);
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
-    MockConnection conn = new MockConnection(getName(), new TimeInterval(250L, TimeUnit.MILLISECONDS).toMilliseconds());
+    MockConnection conn =
+        new MockConnection(getName(), new TimeInterval(250L, TimeUnit.MILLISECONDS).toMilliseconds());
     adapter.getSharedComponents().addConnection(conn);
     AdapterManager adapterManager = new AdapterManager(adapter);
 
@@ -241,6 +254,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testInitialise_WithTimeout_InitFailure() throws Exception {
     TimeInterval standardTimeout = new TimeInterval(2L, TimeUnit.SECONDS);
     String adapterName = this.getClass().getSimpleName() + "." + getName();
@@ -270,6 +284,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testStart() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -287,11 +302,13 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testStart_WithTimeout() throws Exception {
     TimeInterval standardTimeout = new TimeInterval(3L, TimeUnit.SECONDS);
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
-    MockConnection conn = new MockConnection(getName(), new TimeInterval(100L, TimeUnit.MILLISECONDS).toMilliseconds());
+    MockConnection conn =
+        new MockConnection(getName(), new TimeInterval(100L, TimeUnit.MILLISECONDS).toMilliseconds());
     adapter.getSharedComponents().addConnection(conn);
     AdapterManager adapterManager = new AdapterManager(adapter);
 
@@ -317,6 +334,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testStart_WithTimeout_StartFailure() throws Exception {
     TimeInterval standardTimeout = new TimeInterval(3L, TimeUnit.SECONDS);
     String adapterName = this.getClass().getSimpleName() + "." + getName();
@@ -345,6 +363,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testStop() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -362,11 +381,13 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testStop_WithTimeout() throws Exception {
     TimeInterval standardTimeout = new TimeInterval(2L, TimeUnit.SECONDS);
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
-    MockConnection conn = new MockConnection(getName(), new TimeInterval(250L, TimeUnit.MILLISECONDS).toMilliseconds());
+    MockConnection conn =
+        new MockConnection(getName(), new TimeInterval(250L, TimeUnit.MILLISECONDS).toMilliseconds());
     adapter.getSharedComponents().addConnection(conn);
     AdapterManager adapterManager = new AdapterManager(adapter);
 
@@ -393,6 +414,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testForceClose_ErrorOnInit_RequestInit() throws Exception {
     final TimeInterval waitTime = new TimeInterval(5L, TimeUnit.SECONDS);
 
@@ -447,6 +469,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testForceClose_ErrorOnInit_RequestStart() throws Exception {
     final TimeInterval waitTime = new TimeInterval(5L, TimeUnit.SECONDS);
 
@@ -521,6 +544,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testForceClose_ErrorOnStart_RequestStart() throws Exception {
     final TimeInterval waitTime = new TimeInterval(5L, TimeUnit.SECONDS);
 
@@ -576,6 +600,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testClose() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -593,11 +618,13 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testClose_WithTimeout() throws Exception {
     TimeInterval standardTimeout = new TimeInterval(2L, TimeUnit.SECONDS);
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
-    MockConnection conn = new MockConnection(getName(), new TimeInterval(100L, TimeUnit.MILLISECONDS).toMilliseconds());
+    MockConnection conn =
+        new MockConnection(getName(), new TimeInterval(100L, TimeUnit.MILLISECONDS).toMilliseconds());
     adapter.getSharedComponents().addConnection(conn);
     AdapterManager adapterManager = new AdapterManager(adapter);
 
@@ -624,6 +651,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testRestart() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -640,11 +668,13 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testRestart_WithTimeout() throws Exception {
     TimeInterval standardTimeout = new TimeInterval(3L, TimeUnit.SECONDS);
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
-    MockConnection conn = new MockConnection(getName(), new TimeInterval(100L, TimeUnit.MILLISECONDS).toMilliseconds());
+    MockConnection conn =
+        new MockConnection(getName(), new TimeInterval(100L, TimeUnit.MILLISECONDS).toMilliseconds());
     adapter.getSharedComponents().addConnection(conn);
     AdapterManager adapterManager = new AdapterManager(adapter);
 
@@ -672,6 +702,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testLastStopTime() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -691,6 +722,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testLastStartTime() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -708,6 +740,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testGetChildren() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -722,6 +755,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testAddChild() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -753,6 +787,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     assertRoundtripEquality(adapter, marshalledAdapter);
   }
 
+  @Test
   public void testRemoveChild() throws Exception {
 
     String adapterName = this.getClass().getSimpleName() + "." + getName();
@@ -779,6 +814,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testAddChildren() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 0, 0);
@@ -813,6 +849,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     // assertEquals(2, adapterManager.getChildren().size());
   }
 
+  @Test
   public void testRemoveChildren() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -835,6 +872,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     assertEquals(0, adapter.getChannelList().size());
   }
 
+  @Test
   public void testAddChildRuntimeComponent() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -855,6 +893,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     assertEquals(2, adapterManager.getChildRuntimeInfoComponents().size());
   }
 
+  @Test
   public void testRemoveChildRuntimeComponent() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -876,6 +915,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     assertEquals(1, adapterManager.getChildRuntimeInfoComponents().size());
   }
 
+  @Test
   public void testMBean_ContainsSharedConnection() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -893,6 +933,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_GetConnectionIds() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -912,6 +953,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_AddSharedConnection() throws Exception {    
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -922,7 +964,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     try {
       adapterManager.registerMBean();
       AdapterManagerMBean amp = JMX.newMBeanProxy(mBeanServer, adapterObj, AdapterManagerMBean.class);
-      amp.addSharedConnection(m.marshal(new NullConnection(getName())));      
+      amp.addSharedConnection(m.marshal(new NullConnection(getName())));
       Adapter marshalledAdapter = (Adapter) m.unmarshal(amp.getConfiguration());
       assertEquals(1, marshalledAdapter.getSharedComponents().getConnections().size());
       assertEquals(getName(), marshalledAdapter.getSharedComponents().getConnections().get(0).getUniqueId());
@@ -931,6 +973,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_AddSharedConnection_AddChannel_StartAdapter() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -964,6 +1007,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_AddSharedConnection_NoUniqueID() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -986,6 +1030,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_AddAndBindSharedConnection_Duplicate() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1011,6 +1056,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_AddSharedConnection_Duplicate() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1031,10 +1077,11 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
-  // Tests the behaviour with WeakHashMap inside AdaptrisConnectionImp
-  // We use the AdapterManager to test this, because we marshal the channel to XML to add it
-  // to the channel so we aren't actually holding a reference to it for the test.
+  @Test
   public void testMBean_SharedConnection_GarbageCollectedReferences() throws Exception {
+    // Tests the behaviour with WeakHashMap inside AdaptrisConnectionImp
+    // We use the AdapterManager to test this, because we marshal the channel to XML to add it
+    // to the channel so we aren't actually holding a reference to it for the test.
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
     AdapterManager adapterManager = new AdapterManager(adapter);
@@ -1085,6 +1132,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_HasRetryMessageErrorHandler() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1101,7 +1149,8 @@ public class AdapterManagerTest extends ComponentManagerCase {
       adapterManager.requestStart();
       AdapterManagerMBean amp = JMX.newMBeanProxy(mBeanServer, adapterObj, AdapterManagerMBean.class);
       ObjectName handlerObjectName = ObjectName
-          .getInstance(JMX_RETRY_MONITOR_TYPE + adapterManager.createObjectHierarchyString() + ID_PREFIX + getName());
+          .getInstance(
+              JMX_RETRY_MONITOR_TYPE + adapterManager.createObjectHierarchyString() + ID_PREFIX + getName());
       assertTrue(amp.getChildRuntimeInfoComponents().contains(handlerObjectName));
       RetryMessageErrorHandlerMonitorMBean monitor = JMX.newMBeanProxy(mBeanServer, handlerObjectName,
           RetryMessageErrorHandlerMonitorMBean.class);
@@ -1111,6 +1160,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_AddAndBindSharedConnection() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1137,6 +1187,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_AddAndBindSharedConnection_AddChannel_StartChannel() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1170,6 +1221,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_Notification_AddAndBindSharedConnection() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1201,6 +1253,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_AddAndBindSharedConnection_IllegalState() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1227,6 +1280,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_NotificationOnAddSharedConnection() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1253,6 +1307,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_RemoveSharedConnection() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1271,6 +1326,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_RemoveSharedConnection_NotFound() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1290,6 +1346,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_NotificationOnRemoveSharedConnection() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1317,6 +1374,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_AddChannel() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1341,6 +1399,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_AddChannel_WhileStarted() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1364,6 +1423,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_AddChannel_NoUniqueID() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1388,6 +1448,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_SetMessageErrorHandler() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1412,6 +1473,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_SetFailedMessageRetrier() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1435,6 +1497,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_removeChannel() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1462,6 +1525,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_removeChannel_WhileStarted() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1494,6 +1558,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_removeChannelAddChannel() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1521,6 +1586,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_removeChannel_NotFound() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1543,6 +1609,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
 
   }
 
+  @Test
   public void testStart_WithErrorDigester() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -1561,6 +1628,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_getAdapterBuildVersion() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1580,6 +1648,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_getAdapterModuleVersion() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1602,6 +1671,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_getArtifactIdentifiers() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1623,6 +1693,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_NotificationOnInit() throws Exception {
 
     String adapterName = this.getClass().getSimpleName() + "." + getName();
@@ -1652,6 +1723,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_NotificationOnStart() throws Exception {
 
     String adapterName = this.getClass().getSimpleName() + "." + getName();
@@ -1681,6 +1753,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_NotificationOnStop() throws Exception {
 
     String adapterName = this.getClass().getSimpleName() + "." + getName();
@@ -1713,6 +1786,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_NotificationOnClose() throws Exception {
 
     String adapterName = this.getClass().getSimpleName() + "." + getName();
@@ -1744,6 +1818,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_NotificationOnRestart() throws Exception {
 
     String adapterName = this.getClass().getSimpleName() + "." + getName();
@@ -1778,6 +1853,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_NotificationOnAddChannel() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 1, 1);
@@ -1810,6 +1886,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_NotificationOnAddWorkflow() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1839,6 +1916,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_NotificationOnRemoveChannel() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1865,6 +1943,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_NotificationOnSetFailedMessageRetrier() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 1, 1);
@@ -1890,6 +1969,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_NotificationOnSetMessageErrorHandler() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 1, 1);
@@ -1915,6 +1995,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_AddSharedService() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1935,6 +2016,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_AddAndBindSharedService() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1961,6 +2043,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_RemoveSharedService() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -1981,6 +2064,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testMBean_RemoveSharedComponent() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
@@ -2005,6 +2089,10 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
   private class FailingAdapterManager extends AdapterManager {
 
     public FailingAdapterManager(Adapter owner) throws MalformedObjectNameException, CoreException {

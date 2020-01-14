@@ -1,0 +1,60 @@
+ext {
+  componentName='Interlok Client API/JMX'
+}
+
+dependencies {
+  compile project(':interlok-common')
+  compile project(':interlok-client')
+  compile ("org.slf4j:slf4j-api:$slf4jVersion")
+  testCompile ('junit:junit:4.13')
+  // testCompile ("com.adaptris:interlok-stubs:$interlokCoreVersion") { changing= true}
+  testCompile ("org.apache.logging.log4j:log4j-core:$log4j2Version")
+  testCompile ("org.apache.logging.log4j:log4j-1.2-api:$log4j2Version")
+  testCompile ("org.apache.logging.log4j:log4j-api:$log4j2Version")
+  testCompile ("org.mockito:mockito-core:$mockitoVersion")
+  testCompile ("org.mockito:mockito-inline:$mockitoVersion")
+  testCompile ("org.glassfish.external:opendmk_jmxremote_optional_jar:1.0-b01-ea")
+  testCompile ("org.glassfish.external:opendmk_jdmkrt_jar:1.0-b01-ea")
+
+  annotationProcessor project(':interlok-core-apt')
+  testAnnotationProcessor project(':interlok-core-apt')
+
+  javadoc project(':interlok-core-apt')
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      repository(url: mavenPublishUrl) {
+        authentication(userName: repoUsername, password: repoPassword)
+      }
+      configuration = configurations.mavenDeploy
+      pom.withXml {
+        asNode().appendNode("description", "JMX implementation of the Interlok Client API")
+        def properties = asNode().appendNode("properties")
+        properties.appendNode("target", "3.0.5+")
+        properties.appendNode("license", "false")
+        properties.appendNode("tags", "jmx")
+      }
+
+    }
+  }
+}
+
+publish.dependsOn uploadArchives

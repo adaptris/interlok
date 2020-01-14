@@ -16,24 +16,25 @@
 
 package com.adaptris.core.services;
 
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 import org.slf4j.MDC;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
 
 public class AddLoggingContextTest extends GeneralServiceExample {
 
-  public AddLoggingContextTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
-
-
   @Override
   protected AddLoggingContext retrieveObjectForSampleConfig() {
     return new AddLoggingContext("contextKey", "contextValue");
   }
 
+  @Test
   public void testDefaultLoggingContext() throws Exception {
     AddLoggingContext srv = new AddLoggingContext("contextKey", "contextValue");
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -41,6 +42,7 @@ public class AddLoggingContextTest extends GeneralServiceExample {
     assertEquals("contextValue", MDC.get("contextKey"));
   }
 
+  @Test
   public void testLoggingContext_Unique_ID() throws Exception {
     AddLoggingContext srv = new AddLoggingContext("contextKey", "$UNIQUE_ID$");
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -48,6 +50,7 @@ public class AddLoggingContextTest extends GeneralServiceExample {
     assertEquals(msg.getUniqueId(), MDC.get("contextKey"));
   }
 
+  @Test
   public void testLoggingContextFromMetadata() throws Exception {
     AddLoggingContext srv = new AddLoggingContext("%message{myContextKey}", "%message{myContextValue}");
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();

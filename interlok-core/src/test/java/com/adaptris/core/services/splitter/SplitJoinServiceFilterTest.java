@@ -1,5 +1,14 @@
 package com.adaptris.core.services.splitter;
 
+import static org.junit.Assert.assertEquals;
+import java.util.ArrayList;
+import java.util.Arrays;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
+import org.w3c.dom.NodeList;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullService;
@@ -7,7 +16,11 @@ import com.adaptris.core.Service;
 import com.adaptris.core.services.aggregator.IgnoreOriginalXmlDocumentAggregator;
 import com.adaptris.core.services.conditional.Condition;
 import com.adaptris.core.services.conditional.Operator;
-import com.adaptris.core.services.conditional.conditions.*;
+import com.adaptris.core.services.conditional.conditions.ConditionAnd;
+import com.adaptris.core.services.conditional.conditions.ConditionImpl;
+import com.adaptris.core.services.conditional.conditions.ConditionMetadata;
+import com.adaptris.core.services.conditional.conditions.ConditionNot;
+import com.adaptris.core.services.conditional.conditions.ConditionPayload;
 import com.adaptris.core.services.conditional.operator.Equals;
 import com.adaptris.core.services.conditional.operator.IsEmpty;
 import com.adaptris.core.services.metadata.XpathMetadataService;
@@ -17,17 +30,6 @@ import com.adaptris.core.stubs.MessageHelper;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.text.xml.InsertNode;
 import com.adaptris.util.text.xml.XPath;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
-import org.w3c.dom.NodeList;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 
 public class SplitJoinServiceFilterTest extends SplitterServiceExample {
@@ -42,13 +44,9 @@ public class SplitJoinServiceFilterTest extends SplitterServiceExample {
   @Rule
   public TestName testName = new TestName();
 
-  public SplitJoinServiceFilterTest(String testName) {
-    super(testName);
-  }
-
-
-  @Before
-  protected void setUp() throws Exception {
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
@@ -75,10 +73,6 @@ public class SplitJoinServiceFilterTest extends SplitterServiceExample {
     ConditionAnd andCondition = new ConditionAnd();
     andCondition.setConditions(Arrays.asList(payloadNotEmptyCondition, conditionMetadata));
     return andCondition;
-  }
-
-  @After
-  protected void tearDown() throws Exception {
   }
 
   protected SplitJoinService createServiceForTests(Condition aggregatorCondition, boolean retainExceptionMsgs) {
@@ -156,6 +150,7 @@ public class SplitJoinServiceFilterTest extends SplitterServiceExample {
       return true;
     }
 
+    @Override
     public void close() {
       throw new RuntimeException();
     }

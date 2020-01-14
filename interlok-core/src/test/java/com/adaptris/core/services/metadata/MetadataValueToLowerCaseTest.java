@@ -16,20 +16,17 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 
 public class MetadataValueToLowerCaseTest extends MetadataServiceExample {
 
-  public MetadataValueToLowerCaseTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
-
 
   private AdaptrisMessage createMessage() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("asdfghjk");
@@ -37,6 +34,8 @@ public class MetadataValueToLowerCaseTest extends MetadataServiceExample {
     msg.addMetadata("yetAnotherKey", "");
     return msg;
   }
+
+  @Test
   public void testToLowerCase() throws Exception {
     MetadataValueToLowerCase service = new MetadataValueToLowerCase();
     service.setMetadataKeyRegexp("key");

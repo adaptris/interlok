@@ -26,8 +26,7 @@ public abstract class DynamicServiceExample extends ServiceCase {
    */
   public static final String BASE_DIR_KEY = "DynamicServiceExamples.baseDir";
 
-  public DynamicServiceExample(String name) {
-    super(name);
+  public DynamicServiceExample() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }

@@ -20,11 +20,10 @@ package com.adaptris.core.security;
 /**
  */
 public class EncryptionOnlyServiceTest extends EncryptionServiceCase {
-
-  public EncryptionOnlyServiceTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
-
   /**
    * @see com.adaptris.core.security.EncryptionServiceCase#create()
    */

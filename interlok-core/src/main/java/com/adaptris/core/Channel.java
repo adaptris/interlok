@@ -71,7 +71,6 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
   @InputFieldDefault(value = "true")
   private Boolean autoStart;
   @MarshallingCDATA
-  @AdvancedConfig(rare = true)
   private String comments;
 
   private transient boolean available;

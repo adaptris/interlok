@@ -16,13 +16,11 @@
 
 package com.adaptris.core.ftp;
 
-
 public class FtpSslConsumerTest extends FtpConsumerCase {
 
   private static final String BASE_DIR_KEY = "FtpsConsumerExamples.baseDir";
 
-  public FtpSslConsumerTest(String name) {
-    super(name);
+  public FtpSslConsumerTest() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }

@@ -16,24 +16,14 @@
 
 package com.adaptris.core.services.jdbc;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-
 import com.adaptris.core.BaseCase;
 
 public class PayloadParameterTest extends BaseCase {
 
-  public PayloadParameterTest(String n) {
-    super(n);
-  }
-
-  @Before
-  public void setUp() throws Exception {
-  }
-
-  @After
-  public void tearDown() throws Exception {
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Test

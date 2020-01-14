@@ -1,7 +1,8 @@
 package com.adaptris.core.services.aggregator;
 
 import static com.adaptris.core.services.aggregator.ZipAggregator.DEFAULT_FILENAME_METADATA;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -23,10 +24,12 @@ import com.adaptris.core.stubs.DefectiveMessageFactory;
 public class ZipAggregatorTest extends AggregatingServiceExample {
 
 
-  public ZipAggregatorTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testJoinMessage() throws Exception {
     ZipAggregator aggr = new ZipAggregator();
     AdaptrisMessage original = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -50,6 +53,7 @@ public class ZipAggregatorTest extends AggregatingServiceExample {
     assertEquals(results.get("file2.xml"), "<document>world</document>");
   }
 
+  @Test
   public void testJoinMessageWithFilter() throws Exception {
     ZipAggregator aggr = new ZipAggregator();
     aggr.setFilterCondition(new MetadataFilenameCondition());
@@ -80,6 +84,7 @@ public class ZipAggregatorTest extends AggregatingServiceExample {
 
   }
 
+  @Test
   public void testGetFilenameMetadata() throws Exception {
     ZipAggregator z = new ZipAggregator();
     assertEquals(DEFAULT_FILENAME_METADATA, z.filenameMetadata());
@@ -153,6 +158,7 @@ public class ZipAggregatorTest extends AggregatingServiceExample {
       return true;
     }
 
+    @Override
     public void close() {
       throw new RuntimeException();
     }

@@ -16,16 +16,21 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -43,22 +48,22 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
   private static final String DEFAULT_METADATA_KEY = "sequence_number";
   private static final String KEY_BASEDIR = "SimpleSequenceNumberTest.basedir";
 
-  public SimpleSequenceNumberTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
+  @Before
   public void setUp() throws Exception {
-    super.setUp();
     new File(PROPERTIES.getProperty(KEY_BASEDIR)).mkdirs();
   }
 
-  @Override
+  @After
   public void tearDown() throws Exception {
-    super.tearDown();
     FileUtils.deleteQuietly(new File(PROPERTIES.getProperty(KEY_BASEDIR)));
   }
 
+  @Test
   public void testSetNumberFormat() throws Exception {
     SimpleSequenceNumberService service = new SimpleSequenceNumberService();
     assertEquals("0", service.getNumberFormat());
@@ -74,6 +79,7 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
     assertEquals("00", service.getNumberFormat());
   }
 
+  @Test
   public void testSetOverflowBehaviour() throws Exception {
     SimpleSequenceNumberService service = new SimpleSequenceNumberService();
     assertNull(service.getOverflowBehaviour());
@@ -83,6 +89,7 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
     assertEquals(OverflowBehaviour.Continue, service.getOverflowBehaviour());
   }
 
+  @Test
   public void testSetAlwaysReplaceMetadata() throws Exception {
     SimpleSequenceNumberService service = new SimpleSequenceNumberService();
     assertNull(service.getAlwaysReplaceMetadata());
@@ -92,6 +99,7 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
     assertEquals(Boolean.TRUE, service.getAlwaysReplaceMetadata());
   }
 
+  @Test
   public void testSetSequenceNumberFile() throws Exception {
     SimpleSequenceNumberService service = new SimpleSequenceNumberService();
     assertNull(service.getSequenceNumberFile());
@@ -107,6 +115,7 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
     assertEquals("00", service.getSequenceNumberFile());
   }
 
+  @Test
   public void testSetMetadataKey() throws Exception {
     SimpleSequenceNumberService service = new SimpleSequenceNumberService();
     assertNull(service.getMetadataKey());
@@ -122,6 +131,7 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
     assertEquals(DEFAULT_METADATA_KEY, service.getMetadataKey());
   }
 
+  @Test
   public void testSetMaximum() throws Exception {
     SimpleSequenceNumberService service = new SimpleSequenceNumberService();
     assertNull(service.getMaximumSequenceNumber());
@@ -131,6 +141,7 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
     assertEquals(new Long(12L), service.getMaximumSequenceNumber());
   }
 
+  @Test
   public void testInit() throws Exception {
     SimpleSequenceNumberService service = new SimpleSequenceNumberService();
     try {
@@ -150,6 +161,7 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
     LifecycleHelper.init(service);
   }
 
+  @Test
   public void testDoService_NonExistentFile() throws Exception {
     SimpleSequenceNumberService service = new SimpleSequenceNumberService();
     service.setMetadataKey(DEFAULT_METADATA_KEY);
@@ -162,6 +174,7 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
     assertEquals("1", msg.getMetadataValue(DEFAULT_METADATA_KEY));
   }
 
+  @Test
   public void testDoService_FileExists() throws Exception {
     SimpleSequenceNumberService service = new SimpleSequenceNumberService();
     service.setMetadataKey(DEFAULT_METADATA_KEY);
@@ -175,6 +188,7 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
     assertEquals("5", msg.getMetadataValue(DEFAULT_METADATA_KEY));
   }
 
+  @Test
   public void testDoService_FileIsDirectory() throws Exception {
     SimpleSequenceNumberService service = new SimpleSequenceNumberService();
     service.setMetadataKey(DEFAULT_METADATA_KEY);
@@ -191,6 +205,7 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
     }
   }
 
+  @Test
   public void testDoService_NoOverwriteNoMetadata() throws Exception {
     SimpleSequenceNumberService service = new SimpleSequenceNumberService();
     service.setMetadataKey(DEFAULT_METADATA_KEY);
@@ -204,6 +219,7 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
     assertEquals("1", msg.getMetadataValue(DEFAULT_METADATA_KEY));
   }
 
+  @Test
   public void testDoService_MetadataExistsNoOverwrite() throws Exception {
     SimpleSequenceNumberService service = new SimpleSequenceNumberService();
     service.setMetadataKey(DEFAULT_METADATA_KEY);
@@ -217,6 +233,7 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
     assertEquals("testDoService_MetadataExistsNoOverwrite", msg.getMetadataValue(DEFAULT_METADATA_KEY));
   }
 
+  @Test
   public void testDoService_MetadataExistsOverwrite() throws Exception {
     SimpleSequenceNumberService service = new SimpleSequenceNumberService();
     service.setMetadataKey(DEFAULT_METADATA_KEY);
@@ -231,6 +248,7 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
     assertEquals("1", msg.getMetadataValue(DEFAULT_METADATA_KEY));
   }
 
+  @Test
   public void testDoService_OverflowBehaviourContinue() throws Exception {
     SimpleSequenceNumberService service = new SimpleSequenceNumberService();
     service.setMetadataKey(DEFAULT_METADATA_KEY);
@@ -246,6 +264,7 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
     assertEquals("10", msg.getMetadataValue(DEFAULT_METADATA_KEY));
   }
 
+  @Test
   public void testDoService_OverflowBehaviourUndefinied() throws Exception {
     SimpleSequenceNumberService service = new SimpleSequenceNumberService();
     service.setMetadataKey(DEFAULT_METADATA_KEY);
@@ -261,6 +280,7 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
     assertEquals("10", msg.getMetadataValue(DEFAULT_METADATA_KEY));
   }
 
+  @Test
   public void testDoService_OverflowBehaviourResetToOne() throws Exception {
     SimpleSequenceNumberService service = new SimpleSequenceNumberService();
     service.setMetadataKey(DEFAULT_METADATA_KEY);
@@ -276,6 +296,7 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
     assertEquals("1", msg.getMetadataValue(DEFAULT_METADATA_KEY));
   }
 
+  @Test
   public void testDoService_NumberFormatting() throws Exception {
     SimpleSequenceNumberService service = new SimpleSequenceNumberService();
     service.setMetadataKey(DEFAULT_METADATA_KEY);
@@ -289,6 +310,7 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
     assertEquals("000000001", msg.getMetadataValue(DEFAULT_METADATA_KEY));
   }
 
+  @Test
   public void testDoService_MaximumAndSetNotHit() throws Exception {
     SimpleSequenceNumberService service = new SimpleSequenceNumberService();
     service.setMetadataKey(DEFAULT_METADATA_KEY);
@@ -303,6 +325,7 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
     assertEquals("10", msg.getMetadataValue(DEFAULT_METADATA_KEY));
   }
 
+  @Test
   public void testDoService_MaximumSetHit() throws Exception {
     SimpleSequenceNumberService service = new SimpleSequenceNumberService();
     service.setMetadataKey(DEFAULT_METADATA_KEY);
@@ -317,6 +340,7 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
     assertEquals("1", msg.getMetadataValue(DEFAULT_METADATA_KEY));
   }
 
+  @Test
   public void testDoService_MaximumSetHitPropertyExceededMax() throws Exception {
     SimpleSequenceNumberService service = new SimpleSequenceNumberService();
     service.setMetadataKey(DEFAULT_METADATA_KEY);
@@ -331,6 +355,7 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
     assertEquals("1", msg.getMetadataValue(DEFAULT_METADATA_KEY));
   }
 
+  @Test
   public void testDoService_MaximumAndNumberFormattingSetNotHit() throws Exception {
     SimpleSequenceNumberService service = new SimpleSequenceNumberService();
     service.setMetadataKey(DEFAULT_METADATA_KEY);
@@ -346,6 +371,7 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
     assertEquals("010", msg.getMetadataValue(DEFAULT_METADATA_KEY));
   }
 
+  @Test
   public void testDoService_MaximumAndNumberFormattingSetHit() throws Exception {
     SimpleSequenceNumberService service = new SimpleSequenceNumberService();
     service.setMetadataKey(DEFAULT_METADATA_KEY);
@@ -361,6 +387,7 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
     assertEquals("012", msg.getMetadataValue(DEFAULT_METADATA_KEY));
   }
 
+  @Test
   public void testDoService_MaximumAndNumberFormattingSetHitPropertyExceededMax() throws Exception {
     SimpleSequenceNumberService service = new SimpleSequenceNumberService();
     service.setMetadataKey(DEFAULT_METADATA_KEY);
@@ -376,6 +403,7 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
     assertEquals("001", msg.getMetadataValue(DEFAULT_METADATA_KEY));
   }
 
+  @Test
   public void testDoService_MaximumAndOverflowBehaviourResetToOne() throws Exception {
     SimpleSequenceNumberService service = new SimpleSequenceNumberService();
     service.setMetadataKey(DEFAULT_METADATA_KEY);

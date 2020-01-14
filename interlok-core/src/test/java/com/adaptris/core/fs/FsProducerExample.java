@@ -26,8 +26,7 @@ public abstract class FsProducerExample extends ProducerCase {
    */
   public static final String BASE_DIR_KEY = "FsProducerExamples.baseDir";
 
-  public FsProducerExample(String name) {
-    super(name);
+  public FsProducerExample() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }

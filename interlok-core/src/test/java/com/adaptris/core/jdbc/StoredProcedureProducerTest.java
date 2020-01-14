@@ -17,15 +17,18 @@
 package com.adaptris.core.jdbc;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
 import javax.xml.xpath.XPathExpressionException;
-
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ComponentLifecycle;
@@ -48,6 +51,7 @@ import com.adaptris.util.TimeInterval;
 import com.adaptris.util.XmlUtils;
 import com.adaptris.util.text.xml.XPath;
 
+@SuppressWarnings("unchecked")
 public class StoredProcedureProducerTest extends ProducerCase {
 
   /**
@@ -66,24 +70,23 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   private boolean testsEnabled = false;
 
-  public StoredProcedureProducerTest(String arg0) {
-    super(arg0);
+  public StoredProcedureProducerTest() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
   }
 
   @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+  @Before
   public void setUp() throws Exception {
     if (Boolean.parseBoolean(PROPERTIES.getProperty(JDBC_STOREDPROC_TESTS_ENABLED, "false"))) {
-      super.setUp();
       testsEnabled = true;
     }
   }
 
-  @Override
-  public void tearDown() throws Exception {
-  }
 
   private StandaloneProducer configureForTests(JdbcStoredProcedureProducer p, boolean addConnection) {
     if (PROPERTIES.getProperty(JDBC_VENDOR).equals("mysql")) p.setStatementCreator(new MysqlStatementCreator());
@@ -108,6 +111,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     return DefaultMessageFactory.getDefaultInstance().newMessage(txt);
   }
 
+  @Test
   public void testOneMetadataParamIn() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
@@ -131,6 +135,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
+  @Test
   public void testOneMetadataParamInOut() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
@@ -158,6 +163,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
+  @Test
   public void testMultipleExecutions() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
@@ -202,6 +208,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
+  @Test
   public void testConnectionInObjectMetadata() throws Exception {
     JdbcServiceList serviceList = new JdbcServiceList();
     try {
@@ -254,6 +261,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
+  @Test
   public void testOneConstantParamInOneMetadataOut() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
@@ -294,6 +302,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
+  @Test
   public void testOneXpathParamInOneMetadataOut() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
@@ -335,6 +344,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
+  @Test
   public void testOneConstantParamInOut() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
@@ -368,6 +378,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
+  @Test
   public void testOneConstantParamOut() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
@@ -400,7 +411,8 @@ public class StoredProcedureProducerTest extends ProducerCase {
       }
     }
   }
-  
+
+  @Test
   public void testOneMetadataParamOutAndOneResultSet() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
@@ -432,6 +444,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
+  @Test
   public void testOneXPathParamInOut() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
@@ -465,6 +478,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
+  @Test
   public void testOneXPathParamOut() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
@@ -498,6 +512,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
+  @Test
   public void testOneMetadataParamInButDoesntExist() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
@@ -531,6 +546,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
+  @Test
   public void testOneMetadataParamOut() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
@@ -561,6 +577,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
+  @Test
   public void testManyMetadataParametersOut() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
@@ -605,7 +622,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
-  @SuppressWarnings("unchecked")
+  @Test
   public void testOneObjectMetadataParamIn() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
@@ -642,7 +659,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
-  @SuppressWarnings("unchecked")
+  @Test
   public void testOneObjectMetadataParamInOut() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
@@ -678,6 +695,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
+  @Test
   public void testOneObjectMetadataParamInButDoesntExist() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
@@ -710,7 +728,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
-  @SuppressWarnings("unchecked")
+  @Test
   public void testOneObjectMetadataParamOut() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
@@ -747,7 +765,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
-  @SuppressWarnings("unchecked")
+  @Test
   public void testManyObjectMetadataParametersOut() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
@@ -799,6 +817,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
+  @Test
   public void testOneMetadataInOneOutOneInOut() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
@@ -853,6 +872,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
+  @Test
   public void testOneResultSetMetadataTranslator() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
@@ -874,6 +894,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
+  @Test
   public void testMultipleResultSetsMetadataTranslator() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
@@ -895,6 +916,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
+  @Test
   public void testOneResultSetFirstRowMetadataTranslator() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
@@ -916,6 +938,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
+  @Test
   public void testMultipleResultSetsFirstRowMetadataTranslator() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
@@ -937,6 +960,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
+  @Test
   public void testOneResultSetXmlTranslator() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
@@ -966,6 +990,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
+  @Test
   public void testMultiResultSetXmlTranslator() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
@@ -999,6 +1024,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
+  @Test
   public void testStringPayloadParamIn() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
@@ -1025,6 +1051,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
+  @Test
   public void testProduce_PooledConnection() throws Exception {
     int maxServices = 5;
     final int iterations = 5;
@@ -1072,7 +1099,8 @@ public class StoredProcedureProducerTest extends ProducerCase {
       }
     }
   }
-  
+
+  @Test
   public void testProduce_AdvancedPooledConnection() throws Exception {
     int maxServices = 5;
     final int iterations = 5;
@@ -1121,6 +1149,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
+  @Test
   public void testStringPayloadParamOut() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
@@ -1152,6 +1181,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
+  @Test
   public void testBytePayloadParamIn() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
@@ -1178,6 +1208,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
+  @Test
   public void testBytePayloadParamOut() throws Exception {
     if (testsEnabled) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();

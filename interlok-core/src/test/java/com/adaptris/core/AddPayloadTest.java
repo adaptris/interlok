@@ -1,7 +1,9 @@
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import org.junit.Test;
-
 import com.adaptris.core.common.ConstantDataInputParameter;
 
 public class AddPayloadTest extends ServiceCase {
@@ -16,6 +18,11 @@ public class AddPayloadTest extends ServiceCase {
       "Cupcake ipsum dolor sit. Amet jelly cupcake sweet roll I love lollipop." };
 
   private static final String[] ID = { "bacon-1", "bacon-2", "cupcake-1", "cupcake-2" };
+
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
 
   @Test
   public void testService() throws Exception {

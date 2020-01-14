@@ -16,6 +16,9 @@
 
 package com.adaptris.core.services.mime;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceException;
@@ -24,9 +27,9 @@ import com.adaptris.util.text.mime.BodyPartIterator;
 
 public class FlattenMimePartTest extends MimeServiceExample {
 
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
@@ -34,6 +37,7 @@ public class FlattenMimePartTest extends MimeServiceExample {
     return new FlattenMimeParts();
   }
 
+  @Test
   public void testFlatten_Nested() throws Exception {
     FlattenMimeParts service = new FlattenMimeParts();
     AdaptrisMessage msg = MimeJunitHelper.createNested();
@@ -42,6 +46,7 @@ public class FlattenMimePartTest extends MimeServiceExample {
     assertEquals(6, mime.size());
   }
 
+  @Test
   public void testFlatten_NotNested() throws Exception {
     FlattenMimeParts service = new FlattenMimeParts();
     AdaptrisMessage msg = MimeJunitHelper.create();
@@ -50,6 +55,7 @@ public class FlattenMimePartTest extends MimeServiceExample {
     assertEquals(3, mime.size());
   }
 
+  @Test
   public void testNotMime() throws Exception {
     FlattenMimeParts service = new FlattenMimeParts();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("ABCDEFG");

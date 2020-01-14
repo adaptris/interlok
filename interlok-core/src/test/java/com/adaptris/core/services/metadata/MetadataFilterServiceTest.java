@@ -16,8 +16,11 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.junit.Test;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.metadata.NoOpMetadataFilter;
@@ -36,14 +39,11 @@ public class MetadataFilterServiceTest extends MetadataServiceExample {
   private static final String DEF_VALUE = "123";
   private static final String REG_EXP = "JMS[^M]\\w+";
 
-  public MetadataFilterServiceTest(String name) {
-    super(name);
-  }
 
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
-
 
   @Test
   public void testSetFilter() {

@@ -20,6 +20,9 @@ import static com.adaptris.core.jms.JmsProducerCase.assertMessages;
 import static com.adaptris.core.jms.activemq.AdvancedActiveMqImplementationTest.createImpl;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.addBlobUrlRef;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
@@ -69,14 +72,9 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
       throw new RuntimeException(e);
     }
   }
-
-  public BasicActiveMqConsumerTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
@@ -105,6 +103,7 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
     return result;
   }
 
+  @Test
   public void testTopicProduceAndConsume() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -136,6 +135,7 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
 
   }
 
+  @Test
   public void testTopicProduceAndConsumeWithImplicitFallbackMessageTranslation() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -162,6 +162,7 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
     }
   }
 
+  @Test
   public void testTopicProduceAndConsumeWithExplicitFallbackMessageTranslation() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -198,11 +199,13 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
     return result;
   }
 
+  @Test
   public void testRedmine4902() throws Exception {
     testQueue_ProduceWhenConsumerStopped();
     testTopic_ProduceWhenConsumerStopped();
   }
 
+  @Test
   public void testQueue_ProduceWhenConsumerStopped() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -240,6 +243,7 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
     }
   }
 
+  @Test
   public void testTopic_ProduceWhenConsumerStopped() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -277,6 +281,7 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
     }
   }
 
+  @Test
   public void testQueueProduceAndConsume() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -304,6 +309,7 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
     }
   }
 
+  @Test
   public void testQueueProduceAndConsumeWithImplicitFallbackMessageTranslation() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -330,6 +336,7 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
     }
   }
 
+  @Test
   public void testQueueProduceAndConsumeWithExplicitFallbackMessageTranslation() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -357,6 +364,7 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
     }
   }
 
+  @Test
   public void testBlobProduceConsume() throws Exception {
     if (!ExternalResourcesHelper.isExternalServerAvailable()) {
       log.debug("Blob Server not available; skipping test");
@@ -389,6 +397,7 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
     }
   }
 
+  @Test
   public void testBlobProduceAndConsumeWithFileMessageFactory() throws Exception {
     if (!ExternalResourcesHelper.isExternalServerAvailable()) {
       log.debug("Blob Server not available; skipping test");
@@ -421,6 +430,7 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
     }
   }
 
+  @Test
   public void testStartWithDurableSubscribers_WithNonBlockingChannelStrategy() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -453,6 +463,7 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
     }
   }
 
+  @Test
   public void testBugzilla1363() throws Exception {
     testStartWithDurableSubscribers_WithNonBlockingChannelStrategy();
   }

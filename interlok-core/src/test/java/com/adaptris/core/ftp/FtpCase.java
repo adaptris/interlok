@@ -16,11 +16,17 @@
 
 package com.adaptris.core.ftp;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.oro.io.GlobFilenameFilter;
-
+import org.junit.After;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ConfiguredConsumeDestination;
@@ -44,16 +50,9 @@ public abstract class FtpCase extends FtpConsumerExample {
   public static final String DEFAULT_BUILD_DIR = "/build";
   protected static final String PAYLOAD = "Quick zephyrs blow, vexing daft Jim";
 
-  public FtpCase(String name) {
-    super(name);
-  }
 
-  @Override
-  protected void setUp() throws Exception {
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
+  @After
+  public void tearDown() throws Exception {
     if (areTestsEnabled()) {
 
       FileTransferClient client = connectRawClient();
@@ -63,6 +62,7 @@ public abstract class FtpCase extends FtpConsumerExample {
     }
   }
 
+  @Test
   public void testSetCacheMaxSize() throws Exception {
     FileTransferConnection connection = createConnection();
     assertNull(connection.getMaxClientCacheSize());
@@ -78,6 +78,7 @@ public abstract class FtpCase extends FtpConsumerExample {
     assertEquals(FileTransferConnection.DEFAULT_MAX_CACHE_SIZE, connection.maxClientCacheSize());
   }
 
+  @Test
   public void testBasicConsume() throws Exception {
     if (areTestsEnabled()) {
       MockMessageListener listener = new MockMessageListener();
@@ -103,6 +104,7 @@ public abstract class FtpCase extends FtpConsumerExample {
     }
   }
 
+  @Test
   public void testConsume_CachedConnection() throws Exception {
     if (areTestsEnabled()) {
       MockMessageListener listener = new MockMessageListener();
@@ -136,6 +138,7 @@ public abstract class FtpCase extends FtpConsumerExample {
     }
   }
 
+  @Test
   public void testConsume_WithEncoder() throws Exception {
     if (areTestsEnabled()) {
       MockMessageListener listener = new MockMessageListener();
@@ -171,6 +174,7 @@ public abstract class FtpCase extends FtpConsumerExample {
     }
   }
 
+  @Test
   public void testBasicConsumeWithOverride() throws Exception {
     if (areTestsEnabled()) {
 
@@ -206,6 +210,7 @@ public abstract class FtpCase extends FtpConsumerExample {
     }
   }
 
+  @Test
   public void testConsumeWithFilter() throws Exception {
     if (areTestsEnabled()) {
       MockMessageListener listener = new MockMessageListener();
@@ -245,6 +250,7 @@ public abstract class FtpCase extends FtpConsumerExample {
     }
   }
 
+  @Test
   public void testConsumeWithQuietPeriod() throws Exception {
     if (areTestsEnabled()) {
       MockMessageListener listener = new MockMessageListener();
@@ -278,6 +284,7 @@ public abstract class FtpCase extends FtpConsumerExample {
     }
   }
 
+  @Test
   public void testConsumeWithNonMatchingFilter() throws Exception {
     if (areTestsEnabled()) {
       MockMessageListener listener = new MockMessageListener();
@@ -310,6 +317,7 @@ public abstract class FtpCase extends FtpConsumerExample {
     }
   }
 
+  @Test
   public void testCachedConnection() throws Exception {
     if (!areTestsEnabled()) {
       return;
@@ -336,6 +344,7 @@ public abstract class FtpCase extends FtpConsumerExample {
     }
   }
 
+  @Test
   public void testCachedConnection_ExceedsMaxSize() throws Exception {
     if (!areTestsEnabled()) {
       return;
@@ -362,6 +371,7 @@ public abstract class FtpCase extends FtpConsumerExample {
     }
   }
 
+  @Test
   public void testCachedConnection_DisconnectedClient() throws Exception {
     if (!areTestsEnabled()) {
       return;

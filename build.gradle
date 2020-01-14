@@ -3,11 +3,12 @@ plugins {
   id 'nebula.optional-base' version '5.0.3' apply false
   id 'com.github.spotbugs' version '3.0.0' apply false
   id "org.sonarqube" version '2.8' apply false
+  id 'org.owasp.dependencycheck' version '5.2.4' apply false
 }
 
 ext {
-  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '3.9-SNAPSHOT'
-  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '3.9-SNAPSHOT'
+  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '3.10-SNAPSHOT'
+  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '3.10-SNAPSHOT'
   nexusBaseUrl = project.hasProperty('nexusBaseUrl') ? project.getProperty('nexusBaseUrl') : 'https://nexus.adaptris.net/nexus'
   mavenPublishUrl = project.hasProperty('mavenPublishUrl') ? project.getProperty('mavenPublishUrl') : nexusBaseUrl + '/content/repositories/snapshots'
   javadocsBaseUrl = nexusBaseUrl + "/content/sites/javadocs/com/adaptris"
@@ -20,10 +21,10 @@ ext {
   componentName='Interlok'
   organizationName = "Adaptris Ltd"
   organizationUrl = "http://interlok.adaptris.net"
-  slf4jVersion = '1.7.29'
-  log4j2Version = "2.12.1"
+  slf4jVersion = '1.7.30'
+  log4j2Version = "2.13.0"
   xstreamVersion = '1.4.11.1'
-  mockitoVersion = '3.2.0'
+  mockitoVersion = '3.2.4'
 }
 
 if (JavaVersion.current().isJava8Compatible()) {
@@ -69,6 +70,7 @@ subprojects { subproject ->
   apply plugin: 'nebula.optional-base'
   apply plugin: 'com.github.spotbugs'
   apply plugin: 'org.sonarqube'
+  apply plugin: 'org.owasp.dependencycheck'
   if (jacocoEnabled(subproject)) {
     apply plugin: "jacoco"
   }
@@ -174,6 +176,12 @@ subprojects { subproject ->
     }
     includeFilter = new File("$rootDir/gradle/spotbugs-filter.xml")
     excludeFilter = new File("$rootDir/gradle/spotbugs-exclude.xml")
+  }
+
+
+  dependencyCheck  {
+    suppressionFiles= [ "$rootDir/gradle/owasp-exclude.xml" ]
+    skipConfigurations = [ "antSql" ]
   }
 
 }

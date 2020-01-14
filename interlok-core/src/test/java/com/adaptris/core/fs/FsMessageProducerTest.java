@@ -16,12 +16,17 @@
 
 package com.adaptris.core.fs;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.io.FileUtils;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreConstants;
@@ -44,8 +49,9 @@ import com.adaptris.util.GuidGenerator;
 @SuppressWarnings("deprecation")
 public class FsMessageProducerTest extends FsProducerExample {
 
-  public FsMessageProducerTest(java.lang.String testName) {
-    super(testName);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   public static final String BASE_KEY = "FsMessageProducerTest.baseUrl";
@@ -179,21 +185,14 @@ public class FsMessageProducerTest extends FsProducerExample {
     public abstract boolean matches(FsWorker impl);
   }
 
-  @Override
-  protected void setUp() throws Exception {
-
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-  }
-
+  @Test
   public void testCreateName() throws Exception {
     String subdir = new GuidGenerator().safeUUID();
     FsProducer producer = createProducer(subdir);
     assertEquals(producer.getClass().getCanonicalName(), producer.createName());
   }
 
+  @Test
   public void testSetFilenameCreator() throws Exception {
     String subdir = new GuidGenerator().safeUUID();
     FsProducer producer = createProducer(subdir);
@@ -208,6 +207,7 @@ public class FsMessageProducerTest extends FsProducerExample {
     assertEquals(EmptyFileNameCreator.class, producer.getFilenameCreator().getClass());
   }
 
+  @Test
   public void testSetFsWorker() throws Exception {
     String subdir = new GuidGenerator().safeUUID();
     FsProducer producer = createProducer(subdir);
@@ -228,6 +228,7 @@ public class FsMessageProducerTest extends FsProducerExample {
 
   }
 
+  @Test
   public void testSetCreateDirs() throws Exception {
     FsProducer producer = new FsProducer();
     assertNull(producer.getCreateDirs());
@@ -241,6 +242,7 @@ public class FsMessageProducerTest extends FsProducerExample {
     assertFalse(producer.shouldCreateDirs());
   }
 
+  @Test
   public void testProduce() throws Exception {
     String subdir = new GuidGenerator().safeUUID();
     File parentDir = FsHelper.createFileReference(FsHelper.createUrlFromString(PROPERTIES.getProperty(BASE_KEY), true));
@@ -260,6 +262,7 @@ public class FsMessageProducerTest extends FsProducerExample {
     }
   }
 
+  @Test
   public void testProduceWithNoCreateDir() throws Exception {
     String subdir = new GuidGenerator().safeUUID();
     FsProducer fs = createProducer(subdir);
@@ -278,6 +281,7 @@ public class FsMessageProducerTest extends FsProducerExample {
     }
   }
 
+  @Test
   public void testProduceWithMetadataFilenameCreator() throws Exception {
     String subdir = new GuidGenerator().safeUUID();
     FsProducer fs = createProducer(subdir);
@@ -298,6 +302,7 @@ public class FsMessageProducerTest extends FsProducerExample {
     }
   }
 
+  @Test
   public void testProduceFileAlreadyExists_OverwriteIfExists() throws Exception {
     String subdir = new GuidGenerator().safeUUID();
     FsProducer fs = createProducer(subdir);
@@ -323,6 +328,7 @@ public class FsMessageProducerTest extends FsProducerExample {
     }
   }
 
+  @Test
   public void testProduceFileAlreadyExists_StandardWorker() throws Exception {
     String subdir = new GuidGenerator().safeUUID();
     FsProducer fs = createProducer(subdir);
@@ -350,6 +356,7 @@ public class FsMessageProducerTest extends FsProducerExample {
     }
   }
 
+  @Test
   public void testProduceFileAlreadyExists_NioWorker() throws Exception {
     String subdir = new GuidGenerator().safeUUID();
     FsProducer fs = createProducer(subdir);
@@ -377,6 +384,7 @@ public class FsMessageProducerTest extends FsProducerExample {
     }
   }
 
+  @Test
   public void testProduceFileAlreadyExists_AppendingFsWorker() throws Exception {
     String subdir = new GuidGenerator().safeUUID();
     FsProducer fs = createProducer(subdir);
@@ -404,6 +412,7 @@ public class FsMessageProducerTest extends FsProducerExample {
     }
   }
 
+  @Test
   public void testProduceWithOverride() throws Exception {
 
     String subdir = new GuidGenerator().safeUUID();
@@ -426,6 +435,7 @@ public class FsMessageProducerTest extends FsProducerExample {
     }
   }
 
+  @Test
   public void testProduceWithNullOverride() throws Exception {
     String subdir = new GuidGenerator().safeUUID();
     FsProducer producer = createProducer(subdir);
@@ -445,6 +455,7 @@ public class FsMessageProducerTest extends FsProducerExample {
     }
   }
 
+  @Test
   public void testProduceWithTempDir() throws Exception {
     String subdir = new GuidGenerator().safeUUID();
     String tmpDir = new GuidGenerator().safeUUID();
@@ -469,6 +480,7 @@ public class FsMessageProducerTest extends FsProducerExample {
     }
   }
 
+  @Test
   public void testProduceWithNoCreateDirAndTempDir() throws Exception {
     String subdir = new GuidGenerator().safeUUID();
     String tmpDir = new GuidGenerator().safeUUID();
@@ -492,6 +504,7 @@ public class FsMessageProducerTest extends FsProducerExample {
     }
   }
 
+  @Test
   public void testBug1675ProduceWithSpacesInDir() throws Exception {
     String subdir = "A%20Directory%20With%20Spaces";
     File parentDir = FsHelper.createFileReference(FsHelper.createUrlFromString(PROPERTIES.getProperty(BASE_KEY), true));
@@ -507,6 +520,7 @@ public class FsMessageProducerTest extends FsProducerExample {
     }
   }
 
+  @Test
   public void testSetDestination() throws Exception {
     String subDir = new GuidGenerator().safeUUID();
     FsProducer producer = createProducer(subDir);

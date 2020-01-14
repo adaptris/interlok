@@ -18,7 +18,7 @@ package com.adaptris.core.jms.activemq;
 
 import static com.adaptris.core.BaseCase.start;
 import static com.adaptris.core.BaseCase.stop;
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import java.util.concurrent.TimeUnit;
 import org.junit.Rule;

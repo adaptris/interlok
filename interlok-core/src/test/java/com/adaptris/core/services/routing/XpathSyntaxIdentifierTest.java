@@ -16,6 +16,9 @@
 
 package com.adaptris.core.services.routing;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 
@@ -32,25 +35,19 @@ public class XpathSyntaxIdentifierTest extends SyntaxIdentifierCase {
 
   private static final String NON_TEXT_NODE_INPUT = "XpathSyntaxIdentifierTest.non_text_node_input";
 
-  public XpathSyntaxIdentifierTest(java.lang.String testName) {
-    super(testName);
-  }
-
-  @Override
-  protected void setUp() throws Exception {
-  }
-
   @Override
   public XpathSyntaxIdentifier createIdentifier() {
     return new XpathSyntaxIdentifier();
   }
 
+  @Test
   public void testSingleMatchingRegexp() throws Exception {
     XpathSyntaxIdentifier ident = createIdentifier();
     ident.addPattern(MATCHING_1);
     assertTrue("Xpath matches", ident.isThisSyntax(readInput(INPUT_FILE)));
   }
 
+  @Test
   public void testSingleMatchingRegexp_WithDocumentBuilderFactory() throws Exception {
     XpathSyntaxIdentifier ident = createIdentifier();
     ident.setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder.newInstance());
@@ -58,6 +55,7 @@ public class XpathSyntaxIdentifierTest extends SyntaxIdentifierCase {
     assertTrue("Xpath matches", ident.isThisSyntax(readInput(INPUT_FILE)));
   }
 
+  @Test
   public void testMultipleMatchingRegexp() throws Exception {
     XpathSyntaxIdentifier ident = createIdentifier();
     ident.addPattern(MATCHING_1);
@@ -65,6 +63,7 @@ public class XpathSyntaxIdentifierTest extends SyntaxIdentifierCase {
     assertTrue("Xpath matches", ident.isThisSyntax(readInput(INPUT_FILE)));
   }
 
+  @Test
   public void testMatchingAndUnmatchedRegexp() throws Exception {
     XpathSyntaxIdentifier ident = createIdentifier();
     ident.addPattern(MATCHING_1);
@@ -72,22 +71,26 @@ public class XpathSyntaxIdentifierTest extends SyntaxIdentifierCase {
     assertTrue("Xpath does not match", !ident.isThisSyntax(readInput(INPUT_FILE)));
   }
 
+  @Test
   public void testSingleUnMatchingRegexp() throws Exception {
     XpathSyntaxIdentifier ident = createIdentifier();
     ident.addPattern(UNMATCHING_1);
     assertTrue("Xpath does not match", !ident.isThisSyntax(readInput(INPUT_FILE)));
   }
 
+  @Test
   public void testRedmineIssue1020() throws Exception {
     testNonTextNode();
   }
 
+  @Test
   public void testNonTextNode() throws Exception {
     XpathSyntaxIdentifier ident = createIdentifier();
     ident.addPattern(NON_TEXT_NODE);
     assertTrue("Xpath matches", ident.isThisSyntax(readInput(NON_TEXT_NODE_INPUT)));
   }
 
+  @Test
   public void testBadExpression() throws Exception {
     XpathSyntaxIdentifier ident = createIdentifier();
     ident.addPattern(BAD_EXPR);

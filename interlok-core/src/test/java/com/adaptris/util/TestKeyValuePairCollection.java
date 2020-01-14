@@ -16,17 +16,17 @@
 
 package com.adaptris.util;
 
+import static org.junit.Assert.assertEquals;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import org.junit.Test;
 
 
 public class TestKeyValuePairCollection extends KeyValuePairCollectionCase {
 
-  public TestKeyValuePairCollection(java.lang.String testName) {
-    super(testName);
-  }
 
+  @Test
   public void testAddTheSame() {
     KeyValuePairBag set = createBag();
     set.addKeyValuePair(new KeyValuePair(KEY1, VALUE1));
@@ -35,6 +35,7 @@ public class TestKeyValuePairCollection extends KeyValuePairCollectionCase {
     assertEquals(3, set.size());
   }
 
+  @Test
   public void testCollectionConstructor() {
     KeyValuePairCollection set = new KeyValuePairCollection();
     set.addKeyValuePair(new KeyValuePair(KEY1, VALUE1));
@@ -45,6 +46,7 @@ public class TestKeyValuePairCollection extends KeyValuePairCollectionCase {
     assertEquals(set.hashCode(), set2.hashCode());
   }
 
+  @Test
   public void testPropertiesConstructor() {
     Properties p = new Properties();
     p.setProperty(KEY1, VALUE1);
@@ -56,6 +58,7 @@ public class TestKeyValuePairCollection extends KeyValuePairCollectionCase {
     assertEquals(set.hashCode(), set2.hashCode());
   }
 
+  @Test
   public void testMapConstructor() {
     Map<String, String> p = new HashMap<>();
     p.put(KEY1, VALUE1);

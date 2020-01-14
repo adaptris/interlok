@@ -15,30 +15,15 @@
 */
 
 package com.adaptris.core.jdbc;
-
+import static org.junit.Assert.fail;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
 public class FailoverPasswordProtectedDatabaseConnectionTest extends PasswordProtectedDatabaseConnectionTest {
-
-  public FailoverPasswordProtectedDatabaseConnectionTest(String arg0) {
-    super(arg0);
-  }
-
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
-  }
 
 
   @Override

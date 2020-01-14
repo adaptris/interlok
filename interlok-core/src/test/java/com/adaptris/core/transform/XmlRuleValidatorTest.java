@@ -16,8 +16,12 @@
 
 package com.adaptris.core.transform;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.Arrays;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.DefaultMessageFactory;
@@ -103,14 +107,13 @@ public class XmlRuleValidatorTest extends BaseCase {
       + "  <PartnerIdentifier Type=\"GLN\">1234567890ABC</PartnerIdentifier>\n" +
       "</document>";
 
-  public XmlRuleValidatorTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+
+  @Test
   public void testSetNamespaceContext() {
     XmlRuleValidator obj = new XmlRuleValidator();
     assertNull(obj.getNamespaceContext());
@@ -122,6 +125,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     assertNull(obj.getNamespaceContext());
   }
 
+  @Test
   public void testContentValidationNonXmlMessage() throws Exception {
     XmlRuleValidator validator = new XmlRuleValidator();
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("ABCDEFG");
@@ -134,6 +138,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testContentValidation_XmlMessage_BadXpath() throws Exception {
     XmlRuleValidator validator = new XmlRuleValidator();
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(XML_FAMILY_TREE);
@@ -150,6 +155,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testRegexpContentValidation_DataDoesNotMatch() throws Exception {
     XmlRuleValidator validator = new XmlRuleValidator();
     validator.addValidationStage(new ValidationStage(XPATH_ITERATION_CHILDREN_OF_ZEUS, XPATH_CHILDREN_OF_HERA,
@@ -168,6 +174,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testRegexpContentValidation_DataMatches() throws Exception {
     XmlRuleValidator validator = new XmlRuleValidator();
     validator.addValidationStage(new ValidationStage(XPATH_ITERATION_CHILDREN_OF_ZEUS, XPATH_CHILDREN_OF_HERA,
@@ -187,6 +194,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testNotInListContentValidation_DataInList() throws Exception {
     XmlRuleValidator validator = new XmlRuleValidator();
     validator.addValidationStage(new ValidationStage(XPATH_ITERATION_CHILDREN_OF_ZEUS, XPATH_CHILDREN_OF_HERA,
@@ -202,6 +210,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testNotInListContentValidation_DataNotInList() throws Exception {
     XmlRuleValidator validator = new XmlRuleValidator();
     validator.addValidationStage(new ValidationStage(XPATH_ITERATION_CHILDREN_OF_ZEUS, XPATH_CHILDREN_OF_HERA,
@@ -216,6 +225,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testListContentValidation_DataInList() throws Exception {
     XmlRuleValidator validator = new XmlRuleValidator();
     validator.setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder.newInstance());
@@ -234,6 +244,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testListContentValidation_WithNamespace() throws Exception {
     XmlRuleValidator validator = new XmlRuleValidator();
     validator.setNamespaceContext(createNamespaceHolder());
@@ -251,6 +262,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testListContentValidation_DataNotInList() throws Exception {
     XmlRuleValidator validator = new XmlRuleValidator();
     validator.addValidationStage(new ValidationStage(XPATH_ITERATION_CHILDREN_OF_ZEUS, XPATH_CHILDREN_OF_DEMETER,
@@ -266,6 +278,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testListContentValidation_WithNamespaceDataNotInList() throws Exception {
     XmlRuleValidator validator = new XmlRuleValidator();
     validator.setNamespaceContext(createNamespaceHolder());
@@ -283,6 +296,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testIsNullContentValidation_DataNotNull() throws Exception {
     XmlRuleValidator validator = new XmlRuleValidator();
     validator.addValidationStage(new ValidationStage(XPATH_ITERATION_CHILDREN_OF_ZEUS, XPATH_CHILD_NAME,
@@ -297,6 +311,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testIsNullContentValidation_DataIsNull() throws Exception {
     XmlRuleValidator validator = new XmlRuleValidator();
     // Hades had no children; poor god.
@@ -313,6 +328,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testNotNullContentValidation_DataNotNull() throws Exception {
     XmlRuleValidator validator = new XmlRuleValidator();
     validator.addValidationStage(new ValidationStage(XPATH_ITERATION_CHILDREN_OF_ZEUS, XPATH_CHILD_NAME,
@@ -327,6 +343,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testNotNullContentValidation_DataIsNull() throws Exception {
     XmlRuleValidator validator = new XmlRuleValidator();
     // Hades had no children; poor god.
@@ -344,6 +361,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testMultipleContentValidation() throws Exception {
     XmlRuleValidator validator = new XmlRuleValidator();
 
@@ -366,7 +384,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     }
   }
 
-
+  @Test
   public void testRegexpContentValidation_ComplexRegexp() throws Exception {
     XmlRuleValidator validator = new XmlRuleValidator();
     validator.addValidationStage(new ValidationStage("//PartnerIdentifier[@Type='GLN']",

@@ -12,26 +12,29 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.fs;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import javax.management.JMX;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.oro.io.Perl5FilenameFilter;
-
+import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.Channel;
@@ -70,10 +73,10 @@ public abstract class FsConsumerCase extends ConsumerCase {
   public static final String BASE_KEY = "FsMessageConsumerTest.destinationName";
 
   private static final Poller[] POLLERS =
-  {
-      new FixedIntervalPoller(new TimeInterval(60L, TimeUnit.SECONDS)), new QuartzCronPoller("0 */5 * * * ?"),
-      new FsImmediateEventPoller()
-  };
+    {
+        new FixedIntervalPoller(new TimeInterval(60L, TimeUnit.SECONDS)), new QuartzCronPoller("0 */5 * * * ?"),
+        new FsImmediateEventPoller()
+    };
 
   private static final List<Poller> POLLER_LIST = Arrays.asList(POLLERS);
 
@@ -350,15 +353,14 @@ public abstract class FsConsumerCase extends ConsumerCase {
     public abstract String getXmlHeader();
   }
 
-  public FsConsumerCase(java.lang.String testName) {
-    super(testName);
+  public FsConsumerCase() {
     configureExampleConfigBaseDir();
   }
 
   /*
    * The reason for this is due to the possible number of combinations that are created as part of retrieveObjectsForSampleConfig...
    * At the current time it is 112 example-xml files for each consumer (a combination of poller-impl/file-filter/file-sort)... which
-   * is just going to be fscking insane for a normal example-xml directory.
+   * is just going to be insane for a normal example-xml directory.
    */
   protected abstract void configureExampleConfigBaseDir();
 
@@ -368,6 +370,7 @@ public abstract class FsConsumerCase extends ConsumerCase {
 
   protected abstract void assertMessages(List<AdaptrisMessage> list, int count, File[] remaining);
 
+  @Test
   public void testBasicInit() throws Exception {
     String subDir = new GuidGenerator().safeUUID();
     FsConsumerImpl consumer = createConsumer(subDir);
@@ -405,6 +408,7 @@ public abstract class FsConsumerCase extends ConsumerCase {
     }
   }
 
+  @Test
   public void testFileSorter() throws Exception {
     String subdir = new GuidGenerator().safeUUID();
     FsConsumerImpl consumer = createConsumer(subdir);
@@ -420,6 +424,7 @@ public abstract class FsConsumerCase extends ConsumerCase {
     }
   }
 
+  @Test
   public void testSetFileFilterImp() throws Exception {
 
     String subdir = new GuidGenerator().safeUUID();
@@ -468,6 +473,7 @@ public abstract class FsConsumerCase extends ConsumerCase {
     }
   }
 
+  @Test
   public void testSetDestination() {
     FsConsumerImpl consumer = createConsumer();
 
@@ -484,6 +490,7 @@ public abstract class FsConsumerCase extends ConsumerCase {
     }
   }
 
+  @Test
   public void testInitWithMkdirs() throws Exception {
     String subdir = new GuidGenerator().safeUUID();
     FsConsumerImpl fs = createConsumer(subdir);
@@ -497,6 +504,7 @@ public abstract class FsConsumerCase extends ConsumerCase {
     }
   }
 
+  @Test
   public void testSetCreateDirs() throws Exception {
     String subdir = new GuidGenerator().safeUUID();
     try {
@@ -514,6 +522,7 @@ public abstract class FsConsumerCase extends ConsumerCase {
     }
   }
 
+  @Test
   public void testSetLogAllExceptions() throws Exception {
     String subdir = new GuidGenerator().safeUUID();
     try {
@@ -531,6 +540,7 @@ public abstract class FsConsumerCase extends ConsumerCase {
     }
   }
 
+  @Test
   public void testInitWithoutMkdirs() throws Exception {
     String subdir = new GuidGenerator().safeUUID();
     FsConsumerImpl fs = createConsumer(subdir);
@@ -548,6 +558,7 @@ public abstract class FsConsumerCase extends ConsumerCase {
     }
   }
 
+  @Test
   public void testSetQuietPeriod() throws Exception {
     FsConsumerImpl fs = createConsumer();
     TimeInterval defaultInterval = new TimeInterval(0L, TimeUnit.SECONDS);
@@ -565,6 +576,7 @@ public abstract class FsConsumerCase extends ConsumerCase {
     assertEquals(defaultInterval.toMilliseconds(), fs.olderThanMs());
   }
 
+  @Test
   public void testFsMonitor() throws Exception {
     String subdir = new GuidGenerator().safeUUID();
 

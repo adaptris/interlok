@@ -16,12 +16,16 @@
 
 package com.adaptris.core.jms;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.Channel;
 import com.adaptris.core.CoreException;
@@ -36,10 +40,7 @@ public abstract class FailoverJmsProducerCase extends JmsProducerCase {
 
   private FailoverJmsConnection connection;
 
-  public FailoverJmsProducerCase(String name) {
-    super(name);
-  }
-
+  @Test
   public void testBug1012() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -79,6 +80,7 @@ public abstract class FailoverJmsProducerCase extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testNeverConnects() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -106,6 +108,7 @@ public abstract class FailoverJmsProducerCase extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testEventuallyConnects() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -143,6 +146,7 @@ public abstract class FailoverJmsProducerCase extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testConnectionEquals() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -166,6 +170,7 @@ public abstract class FailoverJmsProducerCase extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testDelegatedMethods() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());

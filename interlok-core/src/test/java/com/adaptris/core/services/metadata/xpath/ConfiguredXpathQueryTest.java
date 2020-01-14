@@ -16,8 +16,10 @@
 
 package com.adaptris.core.services.metadata.xpath;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import org.w3c.dom.Document;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -28,9 +30,6 @@ import com.adaptris.util.text.xml.XPath;
 @SuppressWarnings("deprecation")
 public class ConfiguredXpathQueryTest extends ConfiguredXpathQueryCase {
 
-  public ConfiguredXpathQueryTest(String testName) {
-    super(testName);
-  }
 
   @Override
   protected ConfiguredXpathQuery create() {
@@ -44,6 +43,7 @@ public class ConfiguredXpathQueryTest extends ConfiguredXpathQueryCase {
     return query;
   }
 
+  @Test
   public void testResolveXpath_EmptyResults_NotAllowed() throws Exception {
     ConfiguredXpathQuery query = init(create(), "//@MissingAttribute");
     Document doc = XmlHelper.createDocument(XML);
@@ -57,6 +57,7 @@ public class ConfiguredXpathQueryTest extends ConfiguredXpathQueryCase {
     }
   }
 
+  @Test
   public void testResolveXpath_EmptyResults_Allowed() throws Exception {
     ConfiguredXpathQuery query = init(create(), "//@MissingAttribute");
     query.setAllowEmptyResults(Boolean.TRUE);
@@ -66,6 +67,7 @@ public class ConfiguredXpathQueryTest extends ConfiguredXpathQueryCase {
     assertEquals("", result.getValue());
   }
 
+  @Test
   public void testResolveXpath_Attribute() throws Exception {
     ConfiguredXpathQuery query = init(create(), "//@att");
     Document doc = XmlHelper.createDocument(XML);
@@ -73,6 +75,7 @@ public class ConfiguredXpathQueryTest extends ConfiguredXpathQueryCase {
     MetadataElement result = query.resolveXpath(doc, new XPath(), query.createXpathQuery(msg));
   }
 
+  @Test
   public void testResolveXpath_function() throws Exception {
     ConfiguredXpathQuery query = init(create(), "count(/message)");
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
@@ -92,6 +95,7 @@ public class ConfiguredXpathQueryTest extends ConfiguredXpathQueryCase {
   // assertEquals("2", result.getValue());
   // }
 
+  @Test
   public void testResolveXpath_NamespaceWithNamespaceContext() throws Exception {
     ConfiguredXpathQuery query = init(create(), "count(/svrl:schematron-output/svrl:failed-assert)");
 

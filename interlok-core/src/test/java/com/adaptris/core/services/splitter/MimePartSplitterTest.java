@@ -17,12 +17,14 @@
 package com.adaptris.core.services.splitter;
 
 import static com.adaptris.core.services.mime.MimeJunitHelper.create;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 
 @SuppressWarnings("deprecation")
@@ -30,23 +32,18 @@ public class MimePartSplitterTest extends SplitterCase {
 
   private static Log logR = LogFactory.getLog(MimePartSplitterTest.class);
 
-  public MimePartSplitterTest(java.lang.String testName) {
-    super(testName);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void setUp() throws Exception {
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-  }
 
   @Override
   protected MimePartSplitter createSplitterForTests() {
     return new MimePartSplitter();
   }
 
+  @Test
   public void testSetters() throws Exception {
     MimePartSplitter m = new MimePartSplitter();
     assertFalse(m.preserveHeaders());
@@ -60,6 +57,7 @@ public class MimePartSplitterTest extends SplitterCase {
     assertEquals("fred", m.getHeaderPrefix());
   }
 
+  @Test
   public void testSplitMessage() throws Exception {
     Object obj = "ABCDEFG";
     AdaptrisMessage msg = create();
@@ -72,6 +70,7 @@ public class MimePartSplitterTest extends SplitterCase {
     }
   }
 
+  @Test
   public void testSplitMessageWithObjectMetadata() throws Exception {
     Object obj = "ABCDEFG";
     AdaptrisMessage msg = create();
@@ -86,6 +85,7 @@ public class MimePartSplitterTest extends SplitterCase {
     }
   }
 
+  @Test
   public void testSplitMessage_WithPreserveHeaders() throws Exception {
     AdaptrisMessage msg = create();
     MimePartSplitter m = new MimePartSplitter();

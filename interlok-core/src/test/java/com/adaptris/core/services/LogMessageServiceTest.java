@@ -16,8 +16,11 @@
 
 package com.adaptris.core.services;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import org.junit.Test;
-
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
 import com.adaptris.core.services.LoggingServiceImpl.LoggingLevel;
@@ -27,10 +30,10 @@ import com.adaptris.core.util.PayloadMessageLogger;
 @SuppressWarnings("deprecation")
 public class LogMessageServiceTest extends GeneralServiceExample {
 
-  public LogMessageServiceTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
-
   @Override
   protected Object retrieveObjectForSampleConfig() {
     return new LogMessageService(LoggingLevel.DEBUG);

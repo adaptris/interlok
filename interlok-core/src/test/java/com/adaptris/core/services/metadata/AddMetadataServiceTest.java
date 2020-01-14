@@ -16,8 +16,15 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.HashSet;
 import java.util.Set;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -29,11 +36,13 @@ public class AddMetadataServiceTest extends MetadataServiceExample {
   private MetadataElement m1;
   private MetadataElement m2;
 
-  public AddMetadataServiceTest(String name) {
-    super(name);
-  }
 
   @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
+  @Before
   public void setUp() {
     m1 = new MetadataElement("key1", "val1");
     m2 = new MetadataElement("key2", "val2");
@@ -43,6 +52,7 @@ public class AddMetadataServiceTest extends MetadataServiceExample {
     service.addMetadataElement(m2);
   }
 
+  @Test
   public void testAddMetadataElement() {
     AddMetadataService s = new AddMetadataService();
     MetadataElement me = new MetadataElement("key3", "val3");
@@ -58,6 +68,7 @@ public class AddMetadataServiceTest extends MetadataServiceExample {
     assertTrue(s.getMetadataElements().contains(m1));
   }
 
+  @Test
   public void testGetMetadataElements() {
     Set metadata = new HashSet();
     metadata.add(m1);
@@ -66,6 +77,7 @@ public class AddMetadataServiceTest extends MetadataServiceExample {
     assertTrue(service.getMetadataElements().equals(metadata));
   }
 
+  @Test
   public void testDoService() throws CoreException {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance()
         .newMessage();
@@ -78,6 +90,7 @@ public class AddMetadataServiceTest extends MetadataServiceExample {
     assertTrue(msg.getMetadataValue("key3") == null);
   }
 
+  @Test
   public void testDoService_NotSameObject() throws CoreException {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     MetadataElement element = new MetadataElement("mykey", "myvalue");
@@ -87,6 +100,7 @@ public class AddMetadataServiceTest extends MetadataServiceExample {
     assertFalse(element == msg.getMetadata("mykey"));
   }
 
+  @Test
   public void testDoService_NoOverwrite() throws CoreException {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     service.setOverwrite(false);
@@ -99,6 +113,7 @@ public class AddMetadataServiceTest extends MetadataServiceExample {
     assertTrue(msg.getMetadataValue("key3") == null);
   }
 
+  @Test
   public void testDoServiceWithReferencedKey() throws CoreException {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance()
         .newMessage();
@@ -114,6 +129,7 @@ public class AddMetadataServiceTest extends MetadataServiceExample {
     assertEquals("value666", msg.getMetadataValue("key666"));
   }
 
+  @Test
   public void testUniqueIdMetadata() throws CoreException {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance()
         .newMessage();
@@ -126,7 +142,7 @@ public class AddMetadataServiceTest extends MetadataServiceExample {
     assertEquals(msg.getUniqueId(), msg.getMetadataValue("key3"));
   }
 
-
+  @Test
   public void testFilesizeMetadata() throws CoreException {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance()
         .newMessage("The Quick Brown Fox Jumps Over The Lazy Dog");

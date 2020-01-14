@@ -40,6 +40,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
+ * Add a formatted metadata item to a Message.
+ * <p>
+ * Allows you to add a new metadata key using {@code String.format()} as the syntax.
+ * </p>
  * 
  * @config add-formatted-metadata-service
  */
@@ -105,6 +109,8 @@ public class AddFormattedMetadataService extends ServiceImp {
   }
 
   /**
+   * Set the format string that complies with {@link String#format(String, Object...)}.
+   * 
    * @param formatString the formatString to set
    */
   public void setFormatString(String formatString) {

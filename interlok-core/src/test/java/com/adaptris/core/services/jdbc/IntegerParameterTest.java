@@ -15,27 +15,14 @@
 */
 
 package com.adaptris.core.services.jdbc;
-
-import org.junit.After;
-import org.junit.Before;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import org.junit.Test;
-
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.services.jdbc.StatementParameterImpl.QueryType;
 
-public class IntegerParameterTest extends BaseCase {
-
-  public IntegerParameterTest(String n) {
-    super(n);
-  }
-
-  @Before
-  public void setUp() throws Exception {
-  }
-
-  @After
-  public void tearDown() throws Exception {
-  }
+public class IntegerParameterTest {
 
   @Test
   public void testConvert() throws Exception {
@@ -62,7 +49,7 @@ public class IntegerParameterTest extends BaseCase {
   public void testMakeCopy() throws Exception {
     IntegerStatementParameter sp = new IntegerStatementParameter("0", QueryType.constant, null, null);
     IntegerStatementParameter copy = sp.makeCopy();
-    assertRoundtripEquality(sp, copy);
+    BaseCase.assertRoundtripEquality(sp, copy);
   }
 
 }

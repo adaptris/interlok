@@ -15,20 +15,25 @@
 */
 
 package com.adaptris.core;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.fs.FsMessageProducerTest;
 import com.adaptris.core.fs.FsProducer;
 
 public class ProduceOnlyProducerImpTest extends BaseCase {
 
-  public ProduceOnlyProducerImpTest(java.lang.String testName) {
-    super(testName);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
+
 
   private ProduceOnlyProducerImp producer;
 
-  @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     String destinationString = "/tgt";
     String baseString = PROPERTIES.getProperty(FsMessageProducerTest.BASE_KEY);
     // create producer
@@ -38,6 +43,7 @@ public class ProduceOnlyProducerImpTest extends BaseCase {
     ((FsProducer) producer).setCreateDirs(true);
   }
 
+  @Test
   public void testRequestThrowsException() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance()
         .newMessage("dummy");

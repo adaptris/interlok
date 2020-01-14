@@ -16,6 +16,10 @@
 
 package com.adaptris.core.metadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.BaseCase;
@@ -25,10 +29,12 @@ import com.adaptris.core.MetadataCollection;
 
 public class MappedKeyMetadataFilterTest extends BaseCase {
 
-  public MappedKeyMetadataFilterTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testFilter() {
     MappedKeyMetadataFilter filterer = new MappedKeyMetadataFilter("^key(.*)$", "actual$1");
     AdaptrisMessage message = newMessage();
@@ -40,6 +46,7 @@ public class MappedKeyMetadataFilterTest extends BaseCase {
     assertTrue(resultingCollection.containsKey("actual1"));
   }
 
+  @Test
   public void testFilterNoReplacement() {
     MappedKeyMetadataFilter filterer = new MappedKeyMetadataFilter("key", "");
     AdaptrisMessage message = newMessage();
@@ -51,6 +58,7 @@ public class MappedKeyMetadataFilterTest extends BaseCase {
     assertTrue(resultingCollection.containsKey("1"));
   }
 
+  @Test
   public void testRoundTrip() throws Exception {
     MappedKeyMetadataFilter f1 = new MappedKeyMetadataFilter("^key(.*)$", "actual$1");
     AdaptrisMarshaller cm = DefaultMarshaller.getDefaultMarshaller();

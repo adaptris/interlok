@@ -16,8 +16,12 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.stubs.FailFirstMockMessageProducer;
 import com.adaptris.core.stubs.StaticCounterFailFirstMockMessageProducer;
 import com.adaptris.util.TimeInterval;
@@ -26,8 +30,13 @@ public class RetryOnceStandaloneProducerTest extends GeneralServiceExample {
 
   private RetryOnceStandaloneProducer service;
 
-  public RetryOnceStandaloneProducerTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
+  @Before
+  public void setUp() throws Exception {
     service = new RetryOnceStandaloneProducer();
     service.setWaitBeforeRetry(new TimeInterval(0L, TimeUnit.MILLISECONDS));
   }
@@ -37,6 +46,7 @@ public class RetryOnceStandaloneProducerTest extends GeneralServiceExample {
     return new RetryOnceStandaloneProducer(); // defaults are fine for example
   }
 
+  @Test
   public void testSetWait() throws Exception {
     TimeInterval defaultInterval = new TimeInterval(30L, TimeUnit.SECONDS);
     TimeInterval interval = new TimeInterval(60L, TimeUnit.SECONDS);
@@ -54,6 +64,7 @@ public class RetryOnceStandaloneProducerTest extends GeneralServiceExample {
     assertEquals(defaultInterval.toMilliseconds(), p.waitBeforeRetry());
   }
 
+  @Test
   public void testProducerIsSuccessfulFirstTimeAsService() {
     try {
       service.doService(AdaptrisMessageFactory.getDefaultInstance().newMessage());
@@ -63,6 +74,7 @@ public class RetryOnceStandaloneProducerTest extends GeneralServiceExample {
     }
   }
 
+  @Test
   public void testProducerFailsTwiceAsService() {
     FailFirstMockMessageProducer producer = new FailFirstMockMessageProducer();
     producer.setFailUntilCount(2);
@@ -78,6 +90,7 @@ public class RetryOnceStandaloneProducerTest extends GeneralServiceExample {
     }
   }
 
+  @Test
   public void testProducerFailsFirstTimeOnlyAsService() {
 	  StaticCounterFailFirstMockMessageProducer producer = new StaticCounterFailFirstMockMessageProducer();
 	  producer.setFailUntilCount(0);
@@ -92,6 +105,7 @@ public class RetryOnceStandaloneProducerTest extends GeneralServiceExample {
     }
   }
 
+  @Test
   public void testProducerIsSuccessfulFirstTimeAsProducer() {
     try {
       service.doService(AdaptrisMessageFactory.getDefaultInstance().newMessage());
@@ -101,6 +115,7 @@ public class RetryOnceStandaloneProducerTest extends GeneralServiceExample {
     }
   }
 
+  @Test
   public void testProducerFailsTwiceAsProducer() {
     FailFirstMockMessageProducer producer = new FailFirstMockMessageProducer();
     producer.setFailUntilCount(2);
@@ -116,6 +131,7 @@ public class RetryOnceStandaloneProducerTest extends GeneralServiceExample {
     }
   }
 
+  @Test
   public void testProducerFailsFirstTimeOnlyAsProducer() {
 	  StaticCounterFailFirstMockMessageProducer producer = new StaticCounterFailFirstMockMessageProducer();
 	  producer.setFailUntilCount(0);

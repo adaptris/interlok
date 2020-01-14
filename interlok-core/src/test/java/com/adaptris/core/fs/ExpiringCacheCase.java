@@ -15,22 +15,22 @@
 */
 
 package com.adaptris.core.fs;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.util.TimeInterval;
 
-/**
- * @author lchan
- * @author $Author: lchan $
- */
 public abstract class ExpiringCacheCase extends ItemCacheCase {
 
-  public ExpiringCacheCase(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testSetAgeBeforeEviction() throws Exception {
     InlineItemCache cache = createCache();
     TimeInterval defaultInterval = new TimeInterval(12L, TimeUnit.HOURS);
@@ -48,6 +48,7 @@ public abstract class ExpiringCacheCase extends ItemCacheCase {
 
   }
 
+  @Test
   public void testCacheExpiry() throws Exception {
     String oldName = Thread.currentThread().getName();
     InlineItemCache cache = null;

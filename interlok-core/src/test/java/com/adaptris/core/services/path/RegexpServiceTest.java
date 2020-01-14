@@ -16,8 +16,11 @@
 
 package com.adaptris.core.services.path;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 import java.util.List;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.MetadataElement;
@@ -47,13 +50,16 @@ public class RegexpServiceTest extends ServiceCase {
    */
   public static final String BASE_DIR_KEY = "RegexpServiceExamples.baseDir";
 
-  public RegexpServiceTest(String name) {
-    super(name);
+  public RegexpServiceTest() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
   }
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
   private RegexpService createService() {
     RegexpService s = new RegexpService();
     s.getExecutions()
@@ -61,20 +67,14 @@ public class RegexpServiceTest extends ServiceCase {
     return s;
   }
 
-  public void setUp() throws Exception {
-    super.setUp();
-  }
-
-  public void tearDown() throws Exception {
-    super.tearDown();
-  }
-
+  @Test
   public void testService() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD);
     execute(createService(), msg);
     assertEquals("UB3 5AN", msg.getMetadataValue(TARGET_METADATA_KEY));
   }
 
+  @Test
   public void testService_Exception() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(ALTERNATE_PAYLOAD);
     RegexpService s = new RegexpService();
@@ -87,13 +87,14 @@ public class RegexpServiceTest extends ServiceCase {
     }
   }
 
-
+  @Test
   public void testService_NoMatch() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(ALTERNATE_PAYLOAD);
     execute(createService(), msg);
     assertFalse(msg.containsKey(TARGET_METADATA_KEY));
   }
 
+  @Test
   public void testService_CachedPattern() throws Exception {
     RegexpService s = createService();
     start(s);
@@ -108,6 +109,7 @@ public class RegexpServiceTest extends ServiceCase {
     assertEquals("UB3 5AN", msg2.getMetadataValue(TARGET_METADATA_KEY));
   }
 
+  @Test
   public void testService_CachedPattern_Mismatch() throws Exception {
     RegexpService s = new RegexpService();
     List<Execution> executions = s.getExecutions();
