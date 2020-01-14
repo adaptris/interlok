@@ -13,6 +13,11 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 public class MultiPayloadMessageAggregatorTest extends AggregatorCase
 {
 	private static final String BACON = "Bacon ipsum dolor amet meatloaf filet mignon bresaola, swine hamburger jowl biltong corned beef shank. Shoulder spare ribs ground round pancetta tenderloin chislic biltong cupim sirloin shankle t-bone sausage bresaola tongue burgdoggen. Pastrami filet mignon spare ribs shankle meatball, kevin cupim frankfurter ground round porchetta chislic alcatra. Brisket biltong buffalo short ribs frankfurter corned beef cow spare ribs pork loin pork chop short loin kielbasa venison meatloaf. Porchetta brisket tail filet mignon, shankle fatback ham pork belly leberkas strip steak cow pig short ribs salami.";
@@ -23,13 +28,7 @@ public class MultiPayloadMessageAggregatorTest extends AggregatorCase
 	private MultiPayloadAdaptrisMessage message;
 	private List<AdaptrisMessage> messages;
 
-	public MultiPayloadMessageAggregatorTest(String name)
-	{
-		super (name);
-	}
-
 	@Before
-	@Override
 	public void setUp() throws Exception
 	{
 		aggregator = createAggregatorForTests();
@@ -86,5 +85,11 @@ public class MultiPayloadMessageAggregatorTest extends AggregatorCase
 	private MultiPayloadAdaptrisMessage createNewMessage()
 	{
 		return (MultiPayloadAdaptrisMessage)new MultiPayloadMessageFactory().newMessage("original", PIRATE, "UTF-8");
+	}
+
+	@Override
+	public boolean isAnnotatedForJunit4()
+	{
+		return true;
 	}
 }
