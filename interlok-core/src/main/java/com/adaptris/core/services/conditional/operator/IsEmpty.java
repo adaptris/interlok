@@ -1,13 +1,13 @@
 package com.adaptris.core.services.conditional.operator;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.services.conditional.Condition;
 import com.adaptris.core.services.conditional.Operator;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * <p>
