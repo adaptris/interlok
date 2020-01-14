@@ -33,6 +33,9 @@ jobs:
       with:
         path: ~/.gradle/caches
         key: ${{ runner.os }}-gradle-cache-${{ hashFiles('**/*.gradle') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-cache-${{ hashFiles('**/*.gradle') }}
+          ${{ runner.os }}-gradle-cache-          
     - name: Gradle Test
       run: |
         echo "default.jdbc.storedproc.tests.enabled=false" >> ./interlok-core/build.properties
