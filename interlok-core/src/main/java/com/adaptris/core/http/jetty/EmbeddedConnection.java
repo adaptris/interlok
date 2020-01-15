@@ -17,7 +17,6 @@
 package com.adaptris.core.http.jetty;
 
 import java.util.HashMap;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.validation.Valid;
 import org.eclipse.jetty.security.SecurityHandler;
@@ -26,7 +25,6 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisConnectionImp;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.management.webserver.JettyServerManager;
@@ -67,10 +65,6 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
 
   private static final TimeInterval DEFAULT_MAX_WAIT = new TimeInterval(10l, TimeUnit.MINUTES);
 
-  @AdvancedConfig
-  @Deprecated
-  @Removal(version = "3.10.0", message = "Has no meaning since you must configure a security-handler")
-  private Set<String> roles;
   @AdvancedConfig(rare = true)
   private TimeInterval maxStartupWait;
   @Valid
@@ -112,34 +106,11 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
   protected void prepareConnection() throws CoreException {
   }
 
-  /**
-   * 
-   * @deprecated since 3.9.1 Has had no meaning since {@link #setSecurityHandler(SecurityHandlerWrapper)} was introduced
-   */
-  @Deprecated
-  @Removal(version = "3.10.0", message = "Has no meaning since you must configure a security-handler")
-  public Set<String> getRoles() {
-    return roles;
-  }
-
-  /**
-   * Set any roles that are required to access the consumers.
-   *
-   * @param roles the roles.
-   * @deprecated since 3.9.1 Has had no meaning since {@link #setSecurityHandler(SecurityHandlerWrapper)} was introduced
-   */
-  @Deprecated
-  @Removal(version = "3.10.0", message = "Has no meaning since you must configure a security-handler")
-  public void setRoles(Set<String> roles) {
-    this.roles = roles;
-  }
-
   @Override
   public void addServlet(ServletWrapper wrapper) throws CoreException {
     try {
       JettyServerManager serverManager = (JettyServerManager) WebServerManagementUtil.getServerManager();
       HashMap<String, Object> additionalProperties = new HashMap<String, Object>();
-      additionalProperties.put(JettyServerManager.ROLES, getRoles());
       additionalProperties.put(JettyServerManager.CONTEXT_PATH, wrapper.getUrl());
       additionalProperties.put(JettyServerManager.SECURITY_CONSTRAINTS, getSecurityHandler());
       serverManager.addServlet(wrapper.getServletHolder(), additionalProperties);

@@ -19,7 +19,6 @@ package com.adaptris.filetransfer;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,16 +34,6 @@ public abstract class FileTransferClientImp implements FileTransferClient {
 
   public FileTransferClientImp() {
   }
-
-  /**
-   * @see FileTransferClient#dir(java.lang.String, java.io.FilenameFilter)
-   */
-  @Override
-  public String[] dir(String directory, FilenameFilter filter)
-      throws FileTransferException, IOException {
-    return dir(directory, new FilenameFilterProxy(filter));
-  }
-
 
   @Override
   public void setAdditionalDebug(boolean on) {

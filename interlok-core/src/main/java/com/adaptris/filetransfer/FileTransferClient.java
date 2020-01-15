@@ -21,12 +21,11 @@ import java.io.Closeable;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
-import com.adaptris.annotation.Removal;
+import com.adaptris.interlok.cloud.RemoteFile;
 
 /**
  * Common interface for all FTP client flavours.
@@ -224,28 +223,6 @@ public interface FileTransferClient extends Closeable {
    * @throws FileTransferException on FTP Specific exception error.
    */
   String[] dir(String directory, FileFilter filter)
-      throws FileTransferException, IOException;
-
-  /**
-   * List a directory's contents
-   *
-   * <p>
-   * Note that although we use a standard {@link FileFilter} interface here operating on
-   * {@link java.io.File}; it actually uses {@link RemoteFile} instead which overrides information
-   * that can be obtained from the remote server. Other standard {@link java.io.File} operations will
-   * not be supported, and may ultimately cause a runtime exception.
-   * </p>
-   * 
-   * @param directory the directory to list.
-   * @param filter the filefilter mask to use
-   * @return an array of strings containing the listing
-   * @throws IOException on comms error.
-   * @throws FileTransferException on FTP Specific exception error.
-   * @deprecated use {#link dir(String, FileFilter)} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.10.0", message = "Use dir(String, FileFilter) instead")
-  String[] dir(String directory, FilenameFilter filter)
       throws FileTransferException, IOException;
 
   /**

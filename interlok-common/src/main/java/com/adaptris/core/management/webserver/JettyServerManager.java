@@ -23,9 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.servlet.Servlet;
-
 import org.eclipse.jetty.security.SecurityHandler;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -42,8 +40,6 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.webapp.WebXmlConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.adaptris.annotation.Removal;
 
 /**
  * Implementation of the {@link ServerManager} interface for managing Jetty servers.
@@ -71,12 +67,7 @@ public class JettyServerManager implements ServerManager {
   private static final boolean THROW_UNAVAILABLE_ON_START = Boolean.getBoolean(SYS_PROP_THROW_UNAVAILABLE_EXCEPTION);
 
   public static final String CONTEXT_PATH = "contextPath";
-  /**
-   * @deprecated since 3.9.1 has no meaning and is ignored.
-   */
-  @Deprecated
-  @Removal(version = "3.10.0")
-  public static final String ROLES = "roles";
+
   public static final String SECURITY_CONSTRAINTS = "securityConstraints";
 
   /**
