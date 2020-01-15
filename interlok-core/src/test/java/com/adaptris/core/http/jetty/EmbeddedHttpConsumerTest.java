@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.jetty.util.security.Constraint;
@@ -142,7 +141,6 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
 
     MockMessageProducer mockProducer = new MockMessageProducer();
     EmbeddedConnection embedded = new EmbeddedConnection();
-    embedded.setRoles(new HashSet<String>());
     ConfigurableSecurityHandler csh = new ConfigurableSecurityHandler();
     HashLoginServiceFactory hsl =
         new HashLoginServiceFactory("InterlokJetty", PROPERTIES.getProperty(HttpConsumerTest.JETTY_USER_REALM));

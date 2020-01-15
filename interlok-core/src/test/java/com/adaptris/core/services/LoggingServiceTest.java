@@ -36,7 +36,7 @@ public class LoggingServiceTest extends GeneralServiceExample {
 
   @Test
   public void testLogging() throws Exception {
-    LoggingService s1 = new LoggingService(LoggingLevel.FATAL, "Metadata key set to [%message{the-metadata-key}]");
+    LoggingService s1 = new LoggingService(LoggingLevel.ERROR, "Metadata key set to [%message{the-metadata-key}]");
     LoggingService s2 = new LoggingService(LoggingLevel.DEBUG, "Metadata key set to [%message{the-metadata-key}]")
         .withLogCategory(this.getClass().getCanonicalName());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("hello");

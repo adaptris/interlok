@@ -29,12 +29,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.charset.Charset;
@@ -179,21 +178,6 @@ public class FtpClientTest {
       String[] files = client.dir(DEFAULT_WORK_DIR_CANONICAL, new NewerThan("-P30D"));
       assertEquals(10, files.length);
       files = client.dir(DEFAULT_WORK_DIR_CANONICAL, (FileFilter) null);
-      assertEquals(10, files.length);
-    } finally {
-      server.stop();
-    }
-  }
-
-  @Test
-  public void testListFilenameFilter() throws Exception {
-    EmbeddedFtpServer embedded = new EmbeddedFtpServer();
-    FakeFtpServer server = embedded.createAndStart(embedded.createFilesystem(10));
-    try (CommonsNetFtpClient client = create(server);) {
-      client.connect(DEFAULT_USERNAME, DEFAULT_PASSWORD);
-      String[] files = client.dir(DEFAULT_WORK_DIR_CANONICAL, (dir, name) -> true);
-      assertEquals(10, files.length);
-      files = client.dir(DEFAULT_WORK_DIR_CANONICAL, (FilenameFilter) null);
       assertEquals(10, files.length);
     } finally {
       server.stop();

@@ -137,37 +137,6 @@ public abstract class FtpCase extends BaseCase {
 
   }
 
-  @Test
-  public void testLsWithFilenameFilter() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
-    String oldName = Thread.currentThread().getName();
-    try {
-      Thread.currentThread().setName(getName());
-      FileTransferClient client = connectClientImpl();
-      String[] files = client.dir(getRemoteGetDirectory(), getRemoteGetFilenameFilter());
-      assertEquals("Should only be one file matching " + getRemoteGetFilterString(), 1, files.length);
-      client.disconnect();
-    } finally {
-      Thread.currentThread().setName(oldName);
-    }
-
-  }
-
-  @Test
-  public void testLsWithNullFilenameFilter() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
-    String oldName = Thread.currentThread().getName();
-    try {
-      Thread.currentThread().setName(getName());
-      FileTransferClient client = connectClientImpl();
-      String[] files = client.dir(getRemoteGetDirectory(), (FilenameFilter) null);
-      assertTrue(files.length > 1);
-      client.disconnect();
-    } finally {
-      Thread.currentThread().setName(oldName);
-    }
-
-  }
 
   @Test
   public void testCdThenLs() throws Exception {

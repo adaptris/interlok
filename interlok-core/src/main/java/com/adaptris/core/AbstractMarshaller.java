@@ -19,7 +19,6 @@ package com.adaptris.core;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -28,7 +27,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
 import java.net.URL;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.URLHelper;
@@ -123,7 +121,7 @@ public abstract class AbstractMarshaller implements AdaptrisMarshaller {
   @Override
   public Object unmarshal(URLString loc) throws CoreException {
     return invokeDeserialize(() -> {
-      try (InputStream in = connectToUrl(loc)) {
+      try (InputStream in = URLHelper.connect(loc)) {
         return unmarshal(in);
       }
     });
@@ -132,22 +130,6 @@ public abstract class AbstractMarshaller implements AdaptrisMarshaller {
   @Override
   public Object unmarshal(InputStream stream) throws CoreException {
     return this.unmarshal(new InputStreamReader(stream));
-  }
-
-  /**
-   * <p>
-   * Connect to the specified URL.
-   * </p>
-   *
-   * @param loc the URL location.
-   * @return an InputStream containing the contents of the URL specified.
-   * @throws IOException on error.
-   * @deprecated since 3.6.3; use {@link URLHelper#connect(URLString)} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.10.0", message = "deprecated since 3.6.3; use URLHelper instead")
-  protected InputStream connectToUrl(URLString loc) throws IOException {
-    return URLHelper.connect(loc);
   }
 
   /**

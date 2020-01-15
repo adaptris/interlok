@@ -101,13 +101,6 @@ public class LogMessageServiceTest extends GeneralServiceExample {
 
 
   @Test
-  public void testLoggingAtFatal() throws Exception {
-    LogMessageService srv = new LogMessageService();
-    srv.setLogLevel(LoggingLevel.FATAL);
-    execute(srv, AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello"));
-  }
-
-  @Test
   public void testLoggingAtError() throws Exception {
     LogMessageService srv = new LogMessageService();
     srv.setLogLevel(LoggingLevel.ERROR);
