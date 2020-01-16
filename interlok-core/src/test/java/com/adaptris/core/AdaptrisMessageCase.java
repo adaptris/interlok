@@ -618,6 +618,12 @@ public abstract class AdaptrisMessageCase {
     catch (UnresolvedMetadataException expected) {
       assertTrue(expected.getMessage().contains("does_not_exist"));
     }
+    try {
+      msg.resolve("%payload{invalid:type}");
+      fail();
+    } catch (Exception e) {
+      // expected
+    }
   }
 
   // INTERLOK-1949 - resolve() should work with MetadataResolver...

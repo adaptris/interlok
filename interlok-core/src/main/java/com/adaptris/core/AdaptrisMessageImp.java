@@ -84,7 +84,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   private transient Pattern dotAllResolver = Pattern.compile(RESOLVE_REGEXP, Pattern.DOTALL);
 
   private static final String RESOLVE_PREFIX_PAYLOAD = "%payload";
-  private static final String RESOLVE_PAYLOAD_REGEXP = "^.*%payload\\{(xpath|jsonpath):([\\w!\\$\"#&%'\\*\\+,\\-\\.:=\\(\\)\\[\\]\\/@\\|]+)\\}.*$";
+  private static final String RESOLVE_PAYLOAD_REGEXP = "^.*%payload\\{(\\w+):([\\w!\\$\"#&%'\\*\\+,\\-\\.:=\\(\\)\\[\\]\\/@\\|]+)\\}.*$";
   private transient Pattern normalPayloadResolver = Pattern.compile(RESOLVE_PAYLOAD_REGEXP);
   private transient Pattern dotAllPayloadResolver = Pattern.compile(RESOLVE_PAYLOAD_REGEXP, Pattern.DOTALL);
 
