@@ -19,13 +19,9 @@ import static com.adaptris.util.text.mime.PartIteratorCase.createMultipart;
 import static com.adaptris.util.text.mime.PartIteratorCase.generateByteArrayInput;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import java.util.List;
-
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,15 +34,6 @@ public class NullPartSelectorTest {
 
   @After
   public void tearDown() throws Exception {
-  }
-
-  @Test
-  @SuppressWarnings("deprecation")
-  public void testSelectMultiPartInput() throws Exception {
-    MultiPartInput input = new MultiPartInput(generateByteArrayInput(false), false);
-    NullPartSelector selector = new NullPartSelector();
-    MimeBodyPart part = selector.select(input);
-    assertNull(part);
   }
 
   @Test

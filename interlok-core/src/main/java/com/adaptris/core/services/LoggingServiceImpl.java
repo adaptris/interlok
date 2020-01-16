@@ -19,11 +19,9 @@ package com.adaptris.core.services;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MarkerFactory;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceImp;
 
@@ -33,22 +31,6 @@ import com.adaptris.core.ServiceImp;
 public abstract class LoggingServiceImpl extends ServiceImp {
 
   public static enum LoggingLevel {
-    /** Deprecated since 3.6.2 with no replacement */
-    @Deprecated
-    @Removal(version = "3.10.0")
-    FATAL {
-      @Override
-      void log(Logger logger, String s) {
-        logger.error(MarkerFactory.getMarker("FATAL"), s);
-      }
-
-      @Override
-      boolean isEnabled(Logger logger) {
-        // fatal is always enabled.
-        return true;
-      }
-
-    },
     ERROR {
       @Override
       void log(Logger logger, String s) {

@@ -75,13 +75,13 @@ dependencies {
   compile ("org.glassfish.external:opendmk_jdmkrt_jar:1.0-b01-ea")
   compile ("javax.xml.bind:jaxb-api:2.3.1")
   compile ("com.jcraft:jsch:0.1.55")
-  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.24.v20191120")
+  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.25.v20191220")
   compile ("javax.servlet:javax.servlet-api:4.0.1")
   compile ("net.sf.joost:joost:0.9.1")
   compile ("org.quartz-scheduler:quartz:2.3.2") {
     exclude group: "com.zaxxer", module: "HikariCP-java7"
   }
-  compile ("com.zaxxer:HikariCP:3.4.1")
+  compile ("com.zaxxer:HikariCP:3.4.2")
   compile ("net.sf.saxon:Saxon-HE:9.9.1-6")
   compile ("xerces:xercesImpl:2.12.0")
   compile ("com.mchange:c3p0:0.9.5.5")
@@ -99,6 +99,8 @@ dependencies {
   testCompile ("junit:junit:4.13")
   testCompile ("org.apache.activemq:artemis-jms-server:$artemisVersion")
   testCompile ("oro:oro:2.0.8")
+  
+  testCompile ("org.awaitility:awaitility:3.0.0")
 
   testCompile ("org.apache.activemq:activemq-broker:$activeMqVersion")
   testCompile ("org.apache.activemq:activemq-jaas:$activeMqVersion")

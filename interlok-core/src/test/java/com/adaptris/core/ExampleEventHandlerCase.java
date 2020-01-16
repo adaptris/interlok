@@ -158,20 +158,6 @@ public abstract class ExampleEventHandlerCase<T extends EventHandlerBase> extend
     }
   }
   
-  @Test
-  public void testSendEventWithDestination() throws Exception {
-    Event e = EventFactory.create(AdapterCloseEvent.class);
-    T eh = applyConfiguration(newEventHandler(getName()));
-    try {
-      eh.requestStart();
-      eh.send(e, new ConfiguredProduceDestination("destination"));
-      doAssertions(eh, 1, e.getClass());
-    }
-    finally {
-      eh.requestClose();
-
-    }
-  }
 
   @Test
   public void testSendMultipleEvent() throws Exception {

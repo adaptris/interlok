@@ -17,16 +17,11 @@
 package com.adaptris.util;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 import java.io.File;
 import java.io.Serializable;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import javax.mail.URLName;
-
-import com.adaptris.annotation.Removal;
 
 /**
  * A Simple URL parser, that can parse any given URL into it's constituent parts.
@@ -82,13 +77,6 @@ public class URLString implements Serializable {
    */
   private String host;
 
-  @Deprecated
-  @Removal(version = "3.10.0")
-  private InetAddress hostAddress; // still here because of serialization
-  @Deprecated
-  @Removal(version = "3.10.0")
-  private boolean hostAddressKnown = false; // still here because of serialization
-
   /**
    * The protocol port to connect to.
    */
@@ -103,10 +91,6 @@ public class URLString implements Serializable {
    * # reference.
    */
   private String ref;
-
-  @Deprecated
-  @Removal(version = "3.10.0")
-  private int hashCode = 0; // still here because of serialization
 
   protected URLString() {
 
