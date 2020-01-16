@@ -16,6 +16,7 @@
 
 package com.adaptris.core;
 
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.util.IdGenerator;
 import org.apache.commons.lang3.StringUtils;
 
@@ -45,8 +46,9 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  * @see MultiPayloadAdaptrisMessage
  * @see MultiPayloadMessageFactory
  * @see AdaptrisMessageImp
- * @since 3.9.x
+ * @since 3.9.3
  */
+@ComponentProfile(summary = "A multi-payload message implementation", tag = "multi-payload,message", since="3.9.3")
 public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implements MultiPayloadAdaptrisMessage {
   private static final String RESOLVE_PREFIX = "%payload_id";
   private static final String RESOLVE_REGEXP = "^.*" + RESOLVE_PREFIX + "\\{([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
@@ -58,16 +60,16 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
   @NotNull
   private String currentPayloadId = DEFAULT_PAYLOAD_ID;
 
-  protected MultiPayloadAdaptrisMessageImp(@NotNull String payloadId, IdGenerator guid, AdaptrisMessageFactory messageFactory) {
+  public MultiPayloadAdaptrisMessageImp(@NotNull String payloadId, IdGenerator guid, AdaptrisMessageFactory messageFactory) {
     this(payloadId, guid, messageFactory, new byte[0]);
   }
 
-  protected MultiPayloadAdaptrisMessageImp(@NotNull String payloadId, IdGenerator guid, AdaptrisMessageFactory messageFactory, byte[] payload) {
+  public MultiPayloadAdaptrisMessageImp(@NotNull String payloadId, IdGenerator guid, AdaptrisMessageFactory messageFactory, byte[] payload) {
     super(guid, messageFactory);
     addPayload(payloadId, payload);
   }
 
-  protected MultiPayloadAdaptrisMessageImp(@NotNull String payloadId, IdGenerator guid, AdaptrisMessageFactory messageFactory, String content, Charset encoding) {
+  public MultiPayloadAdaptrisMessageImp(@NotNull String payloadId, IdGenerator guid, AdaptrisMessageFactory messageFactory, String content, Charset encoding) {
     super(guid, messageFactory);
     addContent(payloadId, content, encoding != null ? encoding.toString() : null);
   }
