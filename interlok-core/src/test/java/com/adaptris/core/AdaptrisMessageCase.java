@@ -53,6 +53,7 @@ public abstract class AdaptrisMessageCase {
 
   protected static final String PAYLOAD = "Glib jocks quiz nymph to vex dwarf";
   protected static final String PAYLOAD2 = "Pack my box with five dozen liquor jugs";
+  protected static final String PAYLOAD3 = "<a><b>B</b><c><d>D</d></c></a>";
 
   protected static final String VAL2 = "val2";
   protected static final String KEY2 = "key2";
@@ -602,6 +603,9 @@ public abstract class AdaptrisMessageCase {
     assertEquals(VAL1, msg.resolve("%message{nestedKey}"));
     assertEquals(PAYLOAD.length(), Integer.parseInt(msg.resolve("%message{%size}")));
     assertEquals(msg.getUniqueId(), msg.resolve("%message{%uniqueId}"));
+
+    msg.setPayload(PAYLOAD3.getBytes());
+    assertEquals(String.format("%d,B,D", msg.getPayload().length), msg.resolve("%message{%size},%payload{xpath:/a/b/text()},%payload{xpath:/a/c/d/text()}"));
 
     assertEquals(String.format("%s_%s_%s", VAL1, VAL2, "val3"), msg.resolve("%message{key1}_%message{key2}_%message{key*3}"));
     assertEquals(String.format("%s_%s_%s", VAL1, VAL1, "val3"), msg.resolve("%message{key1}_%message{key1}_%message{key*3}"));

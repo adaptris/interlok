@@ -134,7 +134,7 @@ public class MultiPayloadMessageFactoryTest extends AdaptrisMessageFactoryImplCa
   }
 
   @Test
-  public void testMessageFactoryContentgMetadata() {
+  public void testMessageFactoryContentMetadata() {
     MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage) messageFactory.newMessage(CONTENT, METADATA);
     assertEquals(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, message.getCurrentPayloadId());
     assertEquals(1, message.getPayloadCount());
@@ -199,7 +199,8 @@ public class MultiPayloadMessageFactoryTest extends AdaptrisMessageFactoryImplCa
       MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage) messageFactory.newMessage("bacon", CONTENT,
           ENCODING, METADATA);
       message.addPayload("cake", PAYLOAD);
-      assertEquals(CONTENT, message.resolve("%payload_id{bacon}", true));
+      message.switchPayload("bacon");
+      assertEquals(CONTENT.length() + "," + CONTENT, message.resolve("%message{%size},%payload_id{bacon}", true));
       assertEquals(new String(PAYLOAD), message.resolve("%payload_id{cake}"));
       assertNull(message.resolve(null));
       assertEquals("VALUE", message.resolve("%message{KEY}"));
