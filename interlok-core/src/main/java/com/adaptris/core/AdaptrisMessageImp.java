@@ -44,6 +44,14 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.core.util.Args;
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.stream.StreamUtil;
+import org.w3c.dom.Document;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
 
 /**
  * <p>
@@ -74,7 +82,13 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   private transient Logger log = LoggerFactory.getLogger(AdaptrisMessage.class);
   private transient Pattern normalResolver = Pattern.compile(RESOLVE_REGEXP);
   private transient Pattern dotAllResolver = Pattern.compile(RESOLVE_REGEXP, Pattern.DOTALL);
-  
+
+  private static final String RESOLVE_PREFIX_PAYLOAD = "%payload";
+  private static final String RESOLVE_PAYLOAD_REGEXP = "^.*%payload\\{(xpath|jsonpath):(.+)\\}.*$";
+  private transient Pattern normalPayloadResolver = Pattern.compile(RESOLVE_PAYLOAD_REGEXP);
+  private transient Pattern dotAllPayloadResolver = Pattern.compile(RESOLVE_PAYLOAD_REGEXP, Pattern.DOTALL);
+
+
   private IdGenerator guidGenerator;
   // persistent fields
   private String uniqueId;
@@ -385,13 +399,17 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   @Override
   public String resolve(String s, boolean dotAll) {
+    if (s == null) {
+      return null;
+    }
+    // resolve any %payload{xpath:…}'s before any any %message{…}'s
+    if (s.contains(RESOLVE_PREFIX_PAYLOAD)) {
+      s = resolvePayload(s, dotAll ? dotAllPayloadResolver : normalPayloadResolver);
+    }
     return resolve(s, dotAll ? dotAllResolver : normalResolver);
   }
   
   private String resolve(String s, Pattern pattern) {
-    if (s == null) {
-      return null;
-    }
     String result = s;
     Matcher m = pattern.matcher(s);
     while (m.matches()) {
@@ -409,7 +427,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     }
     return result;
   }
-  
+
   private String internalResolve(String key) {
     String value = null;
     for (Resolvers r : Resolvers.values()) {
@@ -419,6 +437,52 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
       }
     }
     return value;
+  }
+
+  private String resolvePayload(String s, Pattern pattern) {
+    String result = s;
+    Matcher m = pattern.matcher(s);
+    while (m.matches()) {
+      String type = m.group(1);
+      String path = m.group(2);
+
+      String replaceWith = "";
+      switch (type) {
+        case "xpath":
+          replaceWith = resolvePayloadXPath(path);
+          break;
+
+        /* TODO add json path as a way to extract payload data */
+
+//        case "jsonpath":
+//          replaceWith = "REPLACE PATTERN WITH EXTRACTED JSONPATH DATA";
+//          break;
+
+        default:
+          throw new UnsupportedOperationException("Payload resolve type of " + type + " is not supported!");
+      }
+
+      log.info("{} {} found {}", type, path, replaceWith);
+
+      result = result.replace("%payload{" + type + ":" + path + "}", replaceWith);
+      m = pattern.matcher(result);
+    }
+    return result;
+  }
+
+  private String resolvePayloadXPath(String path) {
+    try {
+      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      factory.setNamespaceAware(true);
+
+      Document doc = factory.newDocumentBuilder().parse(this.getInputStream());
+      XPathExpression expr = XPathFactory.newInstance().newXPath().compile(path);
+
+      return (String)expr.evaluate(doc, XPathConstants.STRING);
+    } catch (Exception e) {
+      log.error("Could not use XPath {} to extract data from message payload", path, e);
+      return null;
+    }
   }
 
   private MleMarker getNextMleMarker(MessageEventGenerator meg, boolean successful) {

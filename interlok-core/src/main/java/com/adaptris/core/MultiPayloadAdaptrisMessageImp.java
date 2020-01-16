@@ -411,24 +411,22 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
     if (s == null) {
       return null;
     }
-    if (!s.contains(RESOLVE_PREFIX)) {
-      return super.resolve(s, dotAll);
-    } else {
-      Pattern pattern = dotAll ? normalPayloadResolver : dotAllPayloadResolver;
-      String result = s;
-      Matcher m = pattern.matcher(s);
-      while (m.matches()) {
-        String key = m.group(1);
-        if (!hasPayloadId(key)) {
-          throw new UnresolvedMetadataException("Could not resolve payload ID [" + key + "]");
-        }
-        String content = getContent(key);
-        String toReplace = RESOLVE_PREFIX + "{" + key + "}";
-        result = result.replace(toReplace, content);
-        m = pattern.matcher(result);
+    // resolve any %message{…}'s before trying to resolve any %payload_id{…}'s
+    s = super.resolve(s, dotAll);
+    Pattern pattern = dotAll ? normalPayloadResolver : dotAllPayloadResolver;
+    String result = s;
+    Matcher m = pattern.matcher(s);
+    while (m.matches()) {
+      String key = m.group(1);
+      if (!hasPayloadId(key)) {
+        throw new UnresolvedMetadataException("Could not resolve payload ID [" + key + "]");
       }
-      return result;
+      String content = getContent(key);
+      String toReplace = RESOLVE_PREFIX + "{" + key + "}";
+      result = result.replace(toReplace, content);
+      m = pattern.matcher(result);
     }
+    return result;
   }
 
   private class ByteFilterStream extends FilterOutputStream {
