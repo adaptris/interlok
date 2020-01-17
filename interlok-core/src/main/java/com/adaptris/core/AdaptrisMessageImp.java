@@ -16,17 +16,31 @@
 
 package com.adaptris.core;
 
-import static com.adaptris.core.metadata.MetadataResolver.resolveKey;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
+import com.adaptris.core.util.Args;
+import com.adaptris.util.IdGenerator;
+import com.adaptris.util.stream.StreamUtil;
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
+import net.minidev.json.JSONArray;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,23 +49,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.adaptris.core.util.Args;
-import com.adaptris.util.IdGenerator;
-import com.adaptris.util.stream.StreamUtil;
-import org.w3c.dom.Document;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
+import static com.adaptris.core.metadata.MetadataResolver.resolveKey;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
  * <p>
@@ -452,11 +451,9 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
           replaceWith = resolvePayloadXPath(path);
           break;
 
-        /* TODO add json path as a way to extract payload data */
-
-//        case "jsonpath":
-//          replaceWith = "REPLACE PATTERN WITH EXTRACTED JSONPATH DATA";
-//          break;
+        case "jsonpath":
+          replaceWith = resolvePayloadJsonPath(path);
+          break;
 
         default:
           /* throw an exception or just ignore and replace with an empty string? */
@@ -475,14 +472,62 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     try {
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
       factory.setNamespaceAware(true);
-
       Document doc = factory.newDocumentBuilder().parse(this.getInputStream());
       XPathExpression expr = XPathFactory.newInstance().newXPath().compile(path);
+      NodeList nodes = (NodeList)expr.evaluate(doc, XPathConstants.NODESET);
 
-      return (String)expr.evaluate(doc, XPathConstants.STRING);
+      Node n = nodes.item(0);
+      if (n.getNodeType() == Node.TEXT_NODE) {
+        return n.getTextContent();
+      }
+
+      doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+      for (int i = 0; i < nodes.getLength(); i++) {
+        doc.appendChild(doc.importNode(nodes.item(i), true));
+      }
+
+      Transformer transformer = TransformerFactory.newInstance().newTransformer();
+      transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+      StringWriter writer = new StringWriter();
+      transformer.transform(new DOMSource(doc), new StreamResult(writer));
+      return writer.getBuffer().toString();
+
     } catch (Exception e) {
       log.error("Could not use XPath {} to extract data from message payload", path, e);
-      return null;
+      return "";
+    }
+  }
+
+  private String resolvePayloadJsonPath(String path) {
+    try {
+      DocumentContext json = JsonPath.parse(this.getContent());
+
+      Object o = json.read(path);
+      if (o instanceof String) {
+        return (String)o;
+      }
+      else if (o instanceof JSONArray) {
+        return o.toString();
+      }
+
+      boolean c = false;
+      StringBuffer sb = new StringBuffer("{");
+      Map<?,?> m =  ((Map)o);
+      for (Object a : m.keySet()) {
+        if (c) {
+          sb.append(",");
+        } else {
+          c = true;
+        }
+        sb.append((String)a);
+        sb.append(":");
+        sb.append(m.get(a).toString());
+      }
+      return sb.append("}").toString();
+
+    } catch (Exception e) {
+      log.error("Could not use JSONPath {} to extract data from message payload", path, e);
+      return "";
     }
   }
 

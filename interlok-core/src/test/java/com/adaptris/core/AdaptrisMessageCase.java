@@ -16,13 +16,11 @@
 
 package com.adaptris.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import com.adaptris.core.stubs.MockEncoder;
+import com.adaptris.util.GuidGenerator;
+import com.adaptris.util.stream.StreamUtil;
+import org.apache.commons.io.IOUtils;
+import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -41,12 +39,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.io.IOUtils;
-import org.junit.Test;
-
-import com.adaptris.core.stubs.MockEncoder;
-import com.adaptris.util.GuidGenerator;
-import com.adaptris.util.stream.StreamUtil;
+import static org.junit.Assert.*;
 
 @SuppressWarnings("deprecation")
 public abstract class AdaptrisMessageCase {
@@ -54,6 +47,7 @@ public abstract class AdaptrisMessageCase {
   protected static final String PAYLOAD = "Glib jocks quiz nymph to vex dwarf";
   protected static final String PAYLOAD2 = "Pack my box with five dozen liquor jugs";
   protected static final String PAYLOAD3 = "<a><b>B</b><c><d>D</d></c></a>";
+  protected static final String PAYLOAD4 = "{ \"store\": { \"book\": [ { \"category\": \"reference\", \"author\": \"Nigel Rees\", \"title\": \"Sayings of the Century\", \"price\": 8.95 }, { \"category\": \"fiction\", \"author\": \"Evelyn Waugh\", \"title\": \"Sword of Honour\", \"price\": 12.99 }, { \"category\": \"fiction\", \"author\": \"Herman Melville\", \"title\": \"Moby Dick\", \"isbn\": \"0-553-21311-3\", \"price\": 8.99 }, { \"category\": \"fiction\", \"author\": \"J. R. R. Tolkien\", \"title\": \"The Lord of the Rings\", \"isbn\": \"0-395-19395-8\", \"price\": 22.99 } ], \"bicycle\": { \"color\": \"red\", \"price\": 19.95 } }, \"expensive\": 10 }";
 
   protected static final String VAL2 = "val2";
   protected static final String KEY2 = "key2";
@@ -605,7 +599,12 @@ public abstract class AdaptrisMessageCase {
     assertEquals(msg.getUniqueId(), msg.resolve("%message{%uniqueId}"));
 
     msg.setPayload(PAYLOAD3.getBytes());
-    assertEquals(String.format("%d,B,D", msg.getPayload().length), msg.resolve("%message{%size},%payload{xpath:/a/b/text()},%payload{xpath:/a/c/d/text()}"));
+    assertEquals(String.format("%d,B,<d>D</d>", msg.getPayload().length), msg.resolve("%message{%size},%payload{xpath:/a/b/text()},%payload{xpath:/a/c/node()}"));
+
+    msg.setPayload(PAYLOAD4.getBytes());
+    assertEquals(String.format("The Lord of the Rings", msg.getPayload().length), msg.resolve("%payload{jsonpath:$.store.book[3].title}"));
+    assertEquals(String.format("{category:fiction,author:Herman Melville,title:Moby Dick,isbn:0-553-21311-3,price:8.99}", msg.getPayload().length), msg.resolve("%payload{jsonpath:$['store']['book'][2]}"));
+    assertEquals(String.format("[\"Nigel Rees\",\"Evelyn Waugh\",\"Herman Melville\",\"J. R. R. Tolkien\"]", msg.getPayload().length), msg.resolve("%payload{jsonpath:$.store.book[*].author}"));
 
     assertEquals(String.format("%s_%s_%s", VAL1, VAL2, "val3"), msg.resolve("%message{key1}_%message{key2}_%message{key*3}"));
     assertEquals(String.format("%s_%s_%s", VAL1, VAL1, "val3"), msg.resolve("%message{key1}_%message{key1}_%message{key*3}"));
