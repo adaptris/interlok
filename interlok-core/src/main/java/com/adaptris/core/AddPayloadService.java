@@ -2,10 +2,9 @@ package com.adaptris.core;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -125,11 +124,12 @@ public class AddPayloadService extends ServiceImp {
       log.error("Could not extract new payload from source", e);
       throw new ServiceException(e);
     }
-    if (getNewPayloadEncoding() == null) {
-      setNewPayloadEncoding(message.getContentEncoding());
-    }
-    message.addContent(getNewPayloadId(), payload, getNewPayloadEncoding());
+    message.addContent(getNewPayloadId(), payload, newPayloadEncoding(msg));
     log.debug("Added message payload [" + getNewPayloadId() + "]");
+  }
+
+  private String newPayloadEncoding(AdaptrisMessage msg) {
+    return ObjectUtils.defaultIfNull(getNewPayloadEncoding(), msg.getContentEncoding());
   }
 
   /**
