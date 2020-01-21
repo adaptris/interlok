@@ -438,6 +438,16 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     return value;
   }
 
+  /**
+   * Resolve part of a payload; currently either XPath or JSONPath. The
+   * format for the regular expression is %payload{xpath:…} or
+   * %payload{jsonpath:…}
+   *
+   * @param target The user format string with either XPath or JSONPath
+   * @param pattern The regex used to match the expected %payload format
+   *
+   * @return The resolved payload part.
+   */
   private String resolvePayload(String target, Pattern pattern) {
     Matcher m = pattern.matcher(target);
     while (m.matches()) {
@@ -467,6 +477,13 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     return target;
   }
 
+  /**
+   * Resolve a particular XPath from the payload.
+   *
+   * @param path The XPath to search for.
+   *
+   * @return The part of the payload that matches the given path.
+   */
   private String resolvePayloadXPath(String path) {
     try {
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -474,17 +491,20 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
       Document doc = factory.newDocumentBuilder().parse(this.getInputStream());
       XPathExpression expr = XPathFactory.newInstance().newXPath().compile(path);
       NodeList nodes = (NodeList)expr.evaluate(doc, XPathConstants.NODESET);
-
+      /*
+       * If the resolved XPath is just text, return it as is.
+       */
       Node n = nodes.item(0);
       if (n.getNodeType() == Node.TEXT_NODE) {
         return n.getTextContent();
       }
-
+      /*
+       * Convert the matched node tree to a document that can be exported as raw XML.
+       */
       doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
       for (int i = 0; i < nodes.getLength(); i++) {
         doc.appendChild(doc.importNode(nodes.item(i), true));
       }
-
       Transformer transformer = TransformerFactory.newInstance().newTransformer();
       transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
       StringWriter writer = new StringWriter();
@@ -497,18 +517,31 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     }
   }
 
+  /**
+   * Resolve a particular JSONPath from the payload.
+   *
+   * @param path The JSONPath to search for.
+   *
+   * @return The part of the payload that matches the given path.
+   */
   private String resolvePayloadJsonPath(String path) {
     try {
       DocumentContext json = JsonPath.parse(this.getContent());
-
+      /*
+       * If the resolved JSONPath is just text, return it as is. Else,
+       * if it's an array just call toString() as this seems to work
+       * as expected.
+       */
       Object o = json.read(path);
       if (o instanceof String) {
         return (String)o;
-      }
-      else if (o instanceof JSONArray) {
+      } else if (o instanceof JSONArray) {
         return o.toString();
       }
-
+      /*
+       * Otherwise if the extracted JSON is an object it needs to be
+       * converted from a Java Map to raw JSON.
+       */
       boolean c = false;
       StringBuffer sb = new StringBuffer("{");
       Map<?,?> m =  ((Map)o);
