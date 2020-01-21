@@ -438,9 +438,8 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     return value;
   }
 
-  private String resolvePayload(String s, Pattern pattern) {
-    String result = s;
-    Matcher m = pattern.matcher(s);
+  private String resolvePayload(String target, Pattern pattern) {
+    Matcher m = pattern.matcher(target);
     while (m.matches()) {
       String type = m.group(1);
       String path = m.group(2);
@@ -462,10 +461,10 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
       log.info("{} {} found {}", type, path, replaceWith);
 
-      result = result.replace("%payload{" + type + ":" + path + "}", replaceWith);
-      m = pattern.matcher(result);
+      target = target.replace("%payload{" + type + ":" + path + "}", replaceWith != null ? replaceWith : "");
+      m = pattern.matcher(target);
     }
-    return result;
+    return target;
   }
 
   private String resolvePayloadXPath(String path) {
@@ -494,7 +493,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
     } catch (Exception e) {
       log.error("Could not use XPath {} to extract data from message payload", path, e);
-      return "";
+      return null;
     }
   }
 
@@ -527,7 +526,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
     } catch (Exception e) {
       log.error("Could not use JSONPath {} to extract data from message payload", path, e);
-      return "";
+      return null;
     }
   }
 
