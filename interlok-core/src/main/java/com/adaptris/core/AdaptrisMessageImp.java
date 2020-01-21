@@ -468,10 +468,8 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
           /* throw an exception or just ignore and replace with an empty string? */
           throw new UnsupportedOperationException("Payload resolve type of " + type + " is not supported!");
       }
-
       log.info("{} {} found {}", type, path, replaceWith);
-
-      target = target.replace("%payload{" + type + ":" + path + "}", replaceWith != null ? replaceWith : "");
+      target = target.replace("%payload{" + type + ":" + path + "}", replaceWith);
       m = pattern.matcher(target);
     }
     return target;
@@ -491,30 +489,16 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
       Document doc = factory.newDocumentBuilder().parse(this.getInputStream());
       XPathExpression expr = XPathFactory.newInstance().newXPath().compile(path);
       NodeList nodes = (NodeList)expr.evaluate(doc, XPathConstants.NODESET);
-      /*
-       * If the resolved XPath is just text, return it as is.
-       */
       Node n = nodes.item(0);
       if (n.getNodeType() == Node.TEXT_NODE) {
         return n.getTextContent();
       }
-      /*
-       * Convert the matched node tree to a document that can be exported as raw XML.
-       */
-      doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-      for (int i = 0; i < nodes.getLength(); i++) {
-        doc.appendChild(doc.importNode(nodes.item(i), true));
-      }
-      Transformer transformer = TransformerFactory.newInstance().newTransformer();
-      transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-      StringWriter writer = new StringWriter();
-      transformer.transform(new DOMSource(doc), new StreamResult(writer));
-      return writer.getBuffer().toString();
-
     } catch (Exception e) {
       log.error("Could not use XPath {} to extract data from message payload", path, e);
-      return null;
+      throw new UnresolvedPayloadException("Could not use XPath {} to extract data from message payload");
     }
+    log.error("XPath payload resolver can only resolve Text() nodes at this time");
+    throw new UnresolvedPayloadException("XPath payload resolver can only resolve Text() nodes at this time");
   }
 
   /**
@@ -527,40 +511,16 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   private String resolvePayloadJsonPath(String path) {
     try {
       DocumentContext json = JsonPath.parse(this.getContent());
-      /*
-       * If the resolved JSONPath is just text, return it as is. Else,
-       * if it's an array just call toString() as this seems to work
-       * as expected.
-       */
       Object o = json.read(path);
       if (o instanceof String) {
         return (String)o;
-      } else if (o instanceof JSONArray) {
-        return o.toString();
       }
-      /*
-       * Otherwise if the extracted JSON is an object it needs to be
-       * converted from a Java Map to raw JSON.
-       */
-      boolean c = false;
-      StringBuffer sb = new StringBuffer("{");
-      Map<?,?> m =  ((Map)o);
-      for (Object a : m.keySet()) {
-        if (c) {
-          sb.append(",");
-        } else {
-          c = true;
-        }
-        sb.append((String)a);
-        sb.append(":");
-        sb.append(m.get(a).toString());
-      }
-      return sb.append("}").toString();
-
     } catch (Exception e) {
       log.error("Could not use JSONPath {} to extract data from message payload", path, e);
-      return null;
+      throw new UnresolvedPayloadException("Could not use JSONPath {} to extract data from message payload");
     }
+    log.error("JSONPath payload resolver can only resolve text values nodes at this time");
+    throw new UnresolvedPayloadException("JSONPath payload resolver can only resolve text values nodes at this time");
   }
 
   private MleMarker getNextMleMarker(MessageEventGenerator meg, boolean successful) {

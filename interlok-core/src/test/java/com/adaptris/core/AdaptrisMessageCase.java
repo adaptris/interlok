@@ -599,12 +599,34 @@ public abstract class AdaptrisMessageCase {
     assertEquals(msg.getUniqueId(), msg.resolve("%message{%uniqueId}"));
 
     msg.setPayload(PAYLOAD3.getBytes());
-    assertEquals(String.format("%d,B,<d>D</d>", msg.getPayload().length), msg.resolve("%message{%size},%payload{xpath:/a/b/text()},%payload{xpath:/a/c/node()}"));
+    assertEquals(String.format("%d,B", msg.getPayload().length), msg.resolve("%message{%size},%payload{xpath:/a/b/text()}"));
+    try {
+      msg.resolve("%payload{xpath:/a/c/node()}");
+      fail();
+    } catch (Exception e) {
+      // expected
+    }
+    try {
+      msg.resolve("%payload{xpath:/invalid/cnode(-)}");
+      fail();
+    } catch (Exception e) {
+      // expected
+    }
 
     msg.setPayload(PAYLOAD4.getBytes());
     assertEquals(String.format("The Lord of the Rings", msg.getPayload().length), msg.resolve("%payload{jsonpath:$.store.book[3].title}"));
-    assertEquals(String.format("{category:fiction,author:Herman Melville,title:Moby Dick,isbn:0-553-21311-3,price:8.99}", msg.getPayload().length), msg.resolve("%payload{jsonpath:$['store']['book'][2]}"));
-    assertEquals(String.format("[\"Nigel Rees\",\"Evelyn Waugh\",\"Herman Melville\",\"J. R. R. Tolkien\"]", msg.getPayload().length), msg.resolve("%payload{jsonpath:$.store.book[*].author}"));
+    try {
+      msg.resolve("%payload{jsonpath:$['store']['book'][2]}");
+      fail();
+    } catch (Exception e) {
+      // expected
+    }
+    try {
+      msg.resolve("%payload{jsonpath:$['store'invalid][-]}");
+      fail();
+    } catch (Exception e) {
+      // expected
+    }
 
     assertEquals(String.format("%s_%s_%s", VAL1, VAL2, "val3"), msg.resolve("%message{key1}_%message{key2}_%message{key*3}"));
     assertEquals(String.format("%s_%s_%s", VAL1, VAL1, "val3"), msg.resolve("%message{key1}_%message{key1}_%message{key*3}"));
