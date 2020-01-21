@@ -605,7 +605,7 @@ public abstract class AdaptrisMessageCase {
     assertEquals(msg.getUniqueId(), msg.resolve("%message{%uniqueId}"));
 
     msg.setPayload(PAYLOAD3.getBytes());
-    assertEquals(String.format("%d,B", msg.getPayload().length), msg.resolve("%message{%size},%payload{xpath:/a/b/text()}"));
+    assertEquals(String.format("%d,B", msg.getPayload().length), msg.resolve("%message{%size},%payload{xpath:/a/b/text()}", true));
     try {
       msg.resolve("%payload{xpath:/a/c/node()}");
       fail();
@@ -620,7 +620,7 @@ public abstract class AdaptrisMessageCase {
     }
 
     msg.setPayload(PAYLOAD4.getBytes());
-    assertEquals(String.format("The Lord of the Rings", msg.getPayload().length), msg.resolve("%payload{jsonpath:$.store.book[3].title}"));
+    assertEquals(String.format("The Lord of the Rings", msg.getPayload().length), msg.resolve("%payload{jsonpath:$.store.book[3].title}", false));
     try {
       msg.resolve("%payload{jsonpath:$['store']['book'][2]}");
       fail();
