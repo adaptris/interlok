@@ -35,6 +35,7 @@ public class DoubleColumnTranslatorTest {
     translator = new DoubleColumnTranslator();
   }
 
+  @Test
   public void testFormattedFloat() throws Exception {
     translator.setFormat("%f");
     Float floatVal = new Float("123");
