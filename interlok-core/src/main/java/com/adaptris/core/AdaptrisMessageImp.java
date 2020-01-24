@@ -389,7 +389,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
       return null;
     }
     // see if there are any external resolvers before processing any %message{…}'s
-    s = ExternalResolver.resolve(s, this.getContent());
+    s = ExternalResolver.resolve(s, this);
     return resolve(s, dotAll ? dotAllResolver : normalResolver);
   }
   

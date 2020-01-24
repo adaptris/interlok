@@ -1,7 +1,17 @@
 package com.adaptris.core.resolver;
 
 import com.adaptris.interlok.resolver.ExternalResolver;
+import com.adaptris.interlok.types.InterlokMessage;
 import org.junit.Test;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.charset.Charset;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -19,6 +29,44 @@ public class FromPayloadUsingXPathTest
   static final String RESULT = "Cred typewriter seitan, narwhal quinoa master cleanse mlkshk freegan.";
 
   private FromPayloadUsingXPath resolver = new FromPayloadUsingXPath();
+  private InterlokMessage message = new InterlokMessage()
+  {
+    @Override public String getUniqueId() { return null; }
+    @Override public void setUniqueId(String uniqueId) { }
+    @Override public Map<String, String> getMessageHeaders() { return null; }
+    @Override public void setMessageHeaders(Map<String, String> metadata) { }
+    @Override public void addMessageHeader(String key, String value) { }
+    @Override public void removeMessageHeader(String key) { }
+    @Override public String getContentEncoding() { return null; }
+    @Override public void setContentEncoding(String payloadEncoding) { }
+    @Override public Reader getReader() { return null; }
+    @Override public Writer getWriter() { return null; }
+    @Override public Writer getWriter(String encoding) { return null; }
+    @Override public OutputStream getOutputStream() { return null; }
+    @Override public void addObjectHeader(Object key, Object object) { }
+    @Override public Map<Object, Object> getObjectHeaders() { return null; }
+    @Override public boolean headersContainsKey(String key) { return false; }
+    @Override public String resolve(String s, boolean multiline) { return null; }
+
+    private String payload = DATA;
+    private String encoding = "UTF-8";
+    @Override
+    public void setContent(String payload, String encoding)
+    {
+      this.payload = payload;
+      this.encoding = encoding;
+    }
+    @Override
+    public String getContent()
+    {
+      return payload;
+    }
+    @Override
+    public InputStream getInputStream()
+    {
+      return new ByteArrayInputStream(payload.getBytes(Charset.forName(encoding)));
+    }
+  };
 
   @Test
   public void testCanHandle()
@@ -30,7 +78,7 @@ public class FromPayloadUsingXPathTest
   @Test
   public void testResolveSuccess()
   {
-    assertEquals(RESULT, resolver.resolve(REGEX_GOOD, DATA));
+    assertEquals(RESULT, resolver.resolve(REGEX_GOOD, message));
   }
 
   @Test
@@ -52,7 +100,7 @@ public class FromPayloadUsingXPathTest
   {
     try
     {
-      assertEquals("", resolver.resolve(REGEX_MISS, DATA));
+      assertEquals("", resolver.resolve(REGEX_MISS, message));
     }
     catch (Exception e)
     {
@@ -65,7 +113,8 @@ public class FromPayloadUsingXPathTest
   {
     try
     {
-      resolver.resolve(REGEX_GOOD, RESULT);
+      message.setContent(RESULT, "UTF-8");
+      resolver.resolve(REGEX_GOOD, message);
       fail();
     }
     catch (Exception e)
@@ -77,10 +126,10 @@ public class FromPayloadUsingXPathTest
   @Test
   public void testResolveRegexInvalid()
   {
-    assertEquals(REGEX_BAD, resolver.resolve(REGEX_BAD, DATA));
+    assertEquals(REGEX_BAD, resolver.resolve(REGEX_BAD, message));
     try
     {
-      resolver.resolve(REGEX_POOR, DATA);
+      resolver.resolve(REGEX_POOR, message);
       fail();
     }
     catch (Exception e)
@@ -93,7 +142,7 @@ public class FromPayloadUsingXPathTest
   public void testExternalResolver()
   {
     assertNull(ExternalResolver.resolve(null, null));
-    assertEquals(FromPayloadUsingXPathTest.RESULT, ExternalResolver.resolve(FromPayloadUsingXPathTest.REGEX_GOOD, FromPayloadUsingXPathTest.DATA));
-    assertEquals(FromPayloadUsingXPathTest.REGEX_BAD, ExternalResolver.resolve(FromPayloadUsingXPathTest.REGEX_BAD, FromPayloadUsingXPathTest.DATA));
+    assertEquals(RESULT, ExternalResolver.resolve(REGEX_GOOD, message));
+    assertEquals(REGEX_BAD, ExternalResolver.resolve(REGEX_BAD, message));
   }
 }

@@ -15,6 +15,8 @@
 */
 package com.adaptris.interlok.resolver;
 
+import com.adaptris.interlok.types.InterlokMessage;
+
 import java.util.ServiceLoader;
 
 public class ExternalResolver {
@@ -34,7 +36,7 @@ public class ExternalResolver {
     return IMPL.tryResolve(lookupValue);
   }
 
-  public static String resolve(String value, String target) {
+  public static String resolve(String value, InterlokMessage target) {
     if (value == null) {
       return null;
     }
@@ -55,7 +57,7 @@ public class ExternalResolver {
     return result;
   }
 
-  private String tryResolve(String value, String target) {
+  private String tryResolve(String value, InterlokMessage target) {
     if (resolvers == null) {
       resolvers = ServiceLoader.load(Resolver.class);
     }
