@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Adaptris Ltd.
+ * Copyright 2017 Adaptris Ltd.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,31 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
+
 package com.adaptris.interlok.resolver;
 
-import com.adaptris.interlok.types.InterlokMessage;
+public class UnresolvableException extends RuntimeException {
 
-/**
- * Resolve a value from an external source.
- * 
- */
-public interface Resolver {
-  /**
-   * Attempt to resolve a value externally.
-   * 
-   * @return the resolved value
-   */
-  String resolve(String lookupValue);
+  private static final long serialVersionUID = 2020012101L;
 
-  /**
-   * Can this resolver handle this type of value.
-   * 
-   * @param value the value e.g. {@code %env{MY_ENV_VAR}}
-   * @return true or false.
-   */
-  boolean canHandle(String value);
-
-  default String resolve(String value, InterlokMessage target) {
-    return resolve(value);
+  public UnresolvableException() {
+    super();
   }
+
+  public UnresolvableException(Throwable t) {
+    super(t);
+  }
+
+  public UnresolvableException(String description) {
+    super(description);
+  }
+
 }

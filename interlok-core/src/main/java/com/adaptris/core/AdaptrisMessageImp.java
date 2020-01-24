@@ -16,8 +16,15 @@
 
 package com.adaptris.core;
 
-import static com.adaptris.core.metadata.MetadataResolver.resolveKey;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
+import com.adaptris.core.util.Args;
+import com.adaptris.interlok.resolver.ExternalResolver;
+import com.adaptris.util.IdGenerator;
+import com.adaptris.util.stream.StreamUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -35,15 +42,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.adaptris.core.util.Args;
-import com.adaptris.util.IdGenerator;
-import com.adaptris.util.stream.StreamUtil;
+import static com.adaptris.core.metadata.MetadataResolver.resolveKey;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
  * <p>
@@ -74,7 +74,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   private transient Logger log = LoggerFactory.getLogger(AdaptrisMessage.class);
   private transient Pattern normalResolver = Pattern.compile(RESOLVE_REGEXP);
   private transient Pattern dotAllResolver = Pattern.compile(RESOLVE_REGEXP, Pattern.DOTALL);
-  
+
   private IdGenerator guidGenerator;
   // persistent fields
   private String uniqueId;
@@ -385,13 +385,15 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   @Override
   public String resolve(String s, boolean dotAll) {
+    if (s == null) {
+      return null;
+    }
+    // see if there are any external resolvers before processing any %message{…}'s
+    s = ExternalResolver.resolve(s, this);
     return resolve(s, dotAll ? dotAllResolver : normalResolver);
   }
   
   private String resolve(String s, Pattern pattern) {
-    if (s == null) {
-      return null;
-    }
     String result = s;
     Matcher m = pattern.matcher(s);
     while (m.matches()) {
@@ -409,7 +411,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     }
     return result;
   }
-  
+
   private String internalResolve(String key) {
     String value = null;
     for (Resolvers r : Resolvers.values()) {

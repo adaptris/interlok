@@ -17,6 +17,7 @@
 package com.adaptris.core;
 
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.interlok.resolver.UnresolvableException;
 import com.adaptris.util.IdGenerator;
 import org.apache.commons.lang3.StringUtils;
 
@@ -50,10 +51,12 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  */
 @ComponentProfile(summary = "A multi-payload message implementation", tag = "multi-payload,message", since="3.9.3")
 public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implements MultiPayloadAdaptrisMessage {
-  private static final String RESOLVE_PREFIX = "%payload_id";
-  private static final String RESOLVE_REGEXP = "^.*" + RESOLVE_PREFIX + "\\{([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
+  private static final String RESOLVE_REGEXP = "^.*%payload_id\\{([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
+  private static final String RESOLVE_2_REGEX = "^.*%payload\\{id:([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
   private static final transient Pattern normalPayloadResolver = Pattern.compile(RESOLVE_REGEXP);
   private static final transient Pattern dotAllPayloadResolver = Pattern.compile(RESOLVE_REGEXP, Pattern.DOTALL);
+  private static final transient Pattern normalPayloadResolver2 = Pattern.compile(RESOLVE_2_REGEX);
+  private static final transient Pattern dotAllPayloadResolver2 = Pattern.compile(RESOLVE_2_REGEX, Pattern.DOTALL);
 
   private Map<String, Payload> payloads = new HashMap<>();
 
@@ -398,7 +401,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
    * values {@code %message{%uniqueId}} and {@code %message{%size}} should return
    * the message unique-id and message size respectively
    *
-   * @param s
+   * @param target
    *          The string to resolve.
    * @param dotAll
    *          Whether to resolve in {@link java.util.regex.Pattern#DOTALL} mode,
@@ -407,28 +410,29 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
    *         null (if none exists).
    */
   @Override
-  public String resolve(String s, boolean dotAll) {
-    if (s == null) {
+  public String resolve(String target, boolean dotAll) {
+    if (target == null) {
       return null;
     }
-    if (!s.contains(RESOLVE_PREFIX)) {
-      return super.resolve(s, dotAll);
-    } else {
-      Pattern pattern = dotAll ? normalPayloadResolver : dotAllPayloadResolver;
-      String result = s;
-      Matcher m = pattern.matcher(s);
-      while (m.matches()) {
-        String key = m.group(1);
-        if (!hasPayloadId(key)) {
-          throw new UnresolvedMetadataException("Could not resolve payload ID [" + key + "]");
-        }
-        String content = getContent(key);
-        String toReplace = RESOLVE_PREFIX + "{" + key + "}";
-        result = result.replace(toReplace, content);
-        m = pattern.matcher(result);
+    // resolve any %payload{id:…}'s or %payload_id{…}'s before attempting any %message{…}'s
+    Pattern pattern = dotAll ? normalPayloadResolver2 : dotAllPayloadResolver2;
+    target = resolve(target, pattern, false);
+    pattern = dotAll ? normalPayloadResolver : dotAllPayloadResolver;
+    target = resolve(target, pattern, true);
+    return super.resolve(target, dotAll);
+  }
+
+  private String resolve(String target, Pattern pattern, boolean defaultPattern) {
+    Matcher m = pattern.matcher(target);
+    while (m.matches()) {
+      String key = m.group(1);
+      if (!hasPayloadId(key)) {
+        throw new UnresolvableException("Could not resolve payload ID [" + key + "]");
       }
-      return result;
+      target = target.replace(String.format(defaultPattern ? "%%payload_id{%s}" : "%%payload{id:%s}", key), getContent(key));
+      m = pattern.matcher(target);
     }
+    return target;
   }
 
   private class ByteFilterStream extends FilterOutputStream {

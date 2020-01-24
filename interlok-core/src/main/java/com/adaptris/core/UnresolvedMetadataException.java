@@ -16,7 +16,10 @@
 
 package com.adaptris.core;
 
-public class UnresolvedMetadataException extends RuntimeException {
+import com.adaptris.interlok.resolver.UnresolvableException;
+
+public class UnresolvedMetadataException extends UnresolvableException
+{
 
   private static final long serialVersionUID = 2017072501L;
   
