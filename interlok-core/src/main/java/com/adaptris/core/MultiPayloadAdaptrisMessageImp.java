@@ -389,7 +389,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
   }
 
   /**
-   * Resolve against this message'target payloads or metadata.
+   * Resolve against this message's payloads or metadata.
    * <p>
    * This is a helper method that allows you to pass in {@code %payload_id{pl1}}
    * and get the payload associated with {@code pl1}, or {@code %message{key1}}
