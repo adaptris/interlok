@@ -24,6 +24,10 @@ public class UnresolvableException extends RuntimeException {
     super();
   }
 
+  public UnresolvableException(Throwable t) {
+    super(t);
+  }
+
   public UnresolvableException(String description) {
     super(description);
   }
