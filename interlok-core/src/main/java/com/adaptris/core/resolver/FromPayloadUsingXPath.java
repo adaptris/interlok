@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 public class FromPayloadUsingXPath extends ResolverImp
 {
   private static final String RESOLVE_PAYLOAD_REGEXP = "^.*%payload\\{xpath:([\\w!\\$\"#&%'\\*\\+,\\-\\.:=\\(\\)\\[\\]\\/@\\|]+)\\}.*$";
-  private static final transient Pattern PAYLOAD_RESOLVER = Pattern.compile(RESOLVE_PAYLOAD_REGEXP);
+  private static final transient Pattern PAYLOAD_RESOLVER = Pattern.compile(RESOLVE_PAYLOAD_REGEXP, Pattern.DOTALL);
 
   private final DocumentBuilderFactoryBuilder factoryBuilder;
   private final NamespaceContext namespaceContext;
