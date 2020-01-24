@@ -11,7 +11,7 @@ import static org.junit.Assert.fail;
 
 public class FromPayloadUsingXPathTest
 {
-	private static final String REGEX_POOR = "%payload{xpath:/text/para/node()}";
+	private static final String REGEX_POOR = "%payload{xpath:/something[0--]invalid}";
 	private static final String REGEX_MISS = "%payload{xpath:/text/para/quote/text()}";
 	static final String REGEX_BAD = "%payload{jsonpath:$['text']['para']['sent'][3]}";
 	static final String REGEX_GOOD = "%payload{xpath:/text/para/sent[3]/text()}";
@@ -48,12 +48,11 @@ public class FromPayloadUsingXPathTest
 	}
 
 	@Test
-	public void testResolveRegexWrongType()
+	public void testResolveRegexNotFound()
 	{
 		try
 		{
-			resolver.resolve(REGEX_POOR, DATA);
-			fail();
+			assertEquals("", resolver.resolve(REGEX_MISS, DATA));
 		}
 		catch (Exception e)
 		{
@@ -62,11 +61,11 @@ public class FromPayloadUsingXPathTest
 	}
 
 	@Test
-	public void testResolveRegexNotFound()
+	public void testNotXML()
 	{
 		try
 		{
-			resolver.resolve(REGEX_MISS, DATA);
+			resolver.resolve(REGEX_GOOD, RESULT);
 			fail();
 		}
 		catch (Exception e)
@@ -79,6 +78,15 @@ public class FromPayloadUsingXPathTest
 	public void testResolveRegexInvalid()
 	{
 		assertEquals(REGEX_BAD, resolver.resolve(REGEX_BAD, DATA));
+		try
+		{
+			resolver.resolve(REGEX_POOR, DATA);
+			fail();
+		}
+		catch (Exception e)
+		{
+			// expected
+		}
 	}
 
 	@Test
