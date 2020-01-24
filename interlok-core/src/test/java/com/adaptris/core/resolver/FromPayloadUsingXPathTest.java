@@ -1,9 +1,11 @@
-package com.adaptris.interlok.resolver;
+package com.adaptris.core.resolver;
 
+import com.adaptris.interlok.resolver.ExternalResolver;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -77,5 +79,13 @@ public class FromPayloadUsingXPathTest
 	public void testResolveRegexInvalid()
 	{
 		assertEquals(REGEX_BAD, resolver.resolve(REGEX_BAD, DATA));
+	}
+
+	@Test
+	public void testExternalResolver()
+	{
+		assertNull(ExternalResolver.resolve(null, null));
+		assertEquals(FromPayloadUsingXPathTest.RESULT, ExternalResolver.resolve(FromPayloadUsingXPathTest.REGEX_GOOD, FromPayloadUsingXPathTest.DATA));
+		assertEquals(FromPayloadUsingXPathTest.REGEX_BAD, ExternalResolver.resolve(FromPayloadUsingXPathTest.REGEX_BAD, FromPayloadUsingXPathTest.DATA));
 	}
 }

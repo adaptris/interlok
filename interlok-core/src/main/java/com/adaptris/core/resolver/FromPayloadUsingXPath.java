@@ -1,10 +1,15 @@
-package com.adaptris.interlok.resolver;
+package com.adaptris.core.resolver;
 
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
+import com.adaptris.interlok.resolver.ResolverImp;
+import com.adaptris.interlok.resolver.UnresolvableException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
@@ -16,6 +21,9 @@ public class FromPayloadUsingXPath extends ResolverImp
 {
 	private static final String RESOLVE_PAYLOAD_REGEXP = "^.*%payload\\{xpath:([\\w!\\$\"#&%'\\*\\+,\\-\\.:=\\(\\)\\[\\]\\/@\\|]+)\\}.*$";
 	private static final transient Pattern PAYLOAD_RESOLVER = Pattern.compile(RESOLVE_PAYLOAD_REGEXP);
+
+	private DocumentBuilderFactoryBuilder factoryBuilder = DocumentBuilderFactoryBuilder.newRestrictedInstance();
+	private DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
 	@Override
 	public String resolve(String value)
@@ -34,11 +42,23 @@ public class FromPayloadUsingXPath extends ResolverImp
 	@Override
 	public String resolve(String value, String target)
 	{
+		Document document;
+		try
+		{
+			DocumentBuilder builder = factoryBuilder.newDocumentBuilder(factory);
+			document = builder.parse(new ByteArrayInputStream(target.getBytes()));
+		}
+		catch (Exception e)
+		{
+			log.error("Could not parse XML document for resolve", e);
+			throw new UnresolvableException(e);
+		}
+
 		Matcher m = PAYLOAD_RESOLVER.matcher(value);
 		while (m.matches())
 		{
 			String path = m.group(1);
-			String replaceWith = extract(path, target);
+			String replaceWith = extract(path, document);
 			log.info("XPath {} found {}", path, replaceWith);
 			value = value.replace("%payload{xpath:" + path + "}", replaceWith);
 			m = PAYLOAD_RESOLVER.matcher(value);
@@ -46,15 +66,14 @@ public class FromPayloadUsingXPath extends ResolverImp
 		return value;
 	}
 
-	private String extract(String path, String target)
+	private String extract(String path, Document document)
 	{
 		try
 		{
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			factory.setNamespaceAware(true);
-			Document doc = factory.newDocumentBuilder().parse(new ByteArrayInputStream(target.getBytes()));
-			XPathExpression expr = XPathFactory.newInstance().newXPath().compile(path);
-			NodeList nodes = (NodeList)expr.evaluate(doc, XPathConstants.NODESET);
+			XPathFactory xPathFactory = XPathFactory.newInstance();
+			XPath xPath = xPathFactory.newXPath();
+			XPathExpression expr = xPath.compile(path);
+			NodeList nodes = (NodeList)expr.evaluate(document, XPathConstants.NODESET);
 			Node n = nodes.item(0);
 			if (n.getNodeType() == Node.TEXT_NODE)
 			{
