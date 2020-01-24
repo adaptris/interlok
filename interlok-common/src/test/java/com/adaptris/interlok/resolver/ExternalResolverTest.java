@@ -36,9 +36,13 @@ public class ExternalResolverTest {
   @Test
   public void testResolve() {
     assertNull(ExternalResolver.resolve(null));
+    assertNull(ExternalResolver.resolve(null, null));
     assertNotEquals("%env{PATH}", ExternalResolver.resolve("%env{PATH}"));
     assertNotEquals("%sysprop{java.version}", ExternalResolver.resolve("%sysprop{java.version}"));
+    assertNotEquals("%sysprop{java.version}", ExternalResolver.resolve("%sysprop{java.version}", null));
     assertEquals("hello", ExternalResolver.resolve("hello"));
     assertEquals("NOT_A_ENVVAR", ExternalResolver.resolve("%env{NOT_A_ENVVAR}"));
+    assertEquals(FromPayloadUsingXPathTest.RESULT, ExternalResolver.resolve(FromPayloadUsingXPathTest.REGEX_GOOD, FromPayloadUsingXPathTest.DATA));
+    assertEquals(FromPayloadUsingXPathTest.REGEX_BAD, ExternalResolver.resolve(FromPayloadUsingXPathTest.REGEX_BAD, FromPayloadUsingXPathTest.DATA));
   }
 }

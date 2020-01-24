@@ -34,6 +34,13 @@ public class ExternalResolver {
     return IMPL.tryResolve(lookupValue);
   }
 
+  public static String resolve(String value, String target) {
+    if (value == null) {
+      return null;
+    }
+    return IMPL.tryResolve(value, target);
+  }
+
   private String tryResolve(String lookupValue) {
     String result = lookupValue;
     if (resolvers == null) {
@@ -48,4 +55,15 @@ public class ExternalResolver {
     return result;
   }
 
+  private String tryResolve(String value, String target) {
+    if (resolvers == null) {
+      resolvers = ServiceLoader.load(Resolver.class);
+    }
+    for (Resolver resolver : resolvers) {
+      if (resolver.canHandle(value)) {
+        return resolver.resolve(value, target);
+      }
+    }
+    return value;
+  }
 }

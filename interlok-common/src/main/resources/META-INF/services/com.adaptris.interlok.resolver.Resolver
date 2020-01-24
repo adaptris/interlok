@@ -1,2 +1,3 @@
 com.adaptris.interlok.resolver.FromEnvironment
 com.adaptris.interlok.resolver.FromSystemProperties
+com.adaptris.interlok.resolver.FromPayloadUsingXPath

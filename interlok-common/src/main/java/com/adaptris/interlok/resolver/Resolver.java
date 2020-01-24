@@ -34,4 +34,8 @@ public interface Resolver {
    * @return true or false.
    */
   boolean canHandle(String value);
+
+  default String resolve(String value, String target) {
+    return resolve(value);
+  }
 }
