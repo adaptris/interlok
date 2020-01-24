@@ -14,17 +14,17 @@
  * limitations under the License.
 */
 
-package com.adaptris.core;
+package com.adaptris.interlok.resolver;
 
-public class UnresolvedPayloadException extends RuntimeException {
+public class UnresolvableException extends RuntimeException {
 
   private static final long serialVersionUID = 2020012101L;
 
-  public UnresolvedPayloadException() {
+  public UnresolvableException() {
     super();
   }
 
-  public UnresolvedPayloadException(String description) {
+  public UnresolvableException(String description) {
     super(description);
   }
 
