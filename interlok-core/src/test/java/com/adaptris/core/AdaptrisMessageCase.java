@@ -604,36 +604,6 @@ public abstract class AdaptrisMessageCase {
     assertEquals(PAYLOAD.length(), Integer.parseInt(msg.resolve("%message{%size}")));
     assertEquals(msg.getUniqueId(), msg.resolve("%message{%uniqueId}"));
 
-    msg.setPayload(PAYLOAD3.getBytes());
-    assertEquals(String.format("%d,B", msg.getPayload().length), msg.resolve("%message{%size},%payload{xpath:/a/b/text()}", true));
-    try {
-      msg.resolve("%payload{xpath:/a/c/node()}");
-      fail();
-    } catch (Exception e) {
-      // expected
-    }
-    try {
-      msg.resolve("%payload{xpath:/invalid/cnode(-)}");
-      fail();
-    } catch (Exception e) {
-      // expected
-    }
-
-    msg.setPayload(PAYLOAD4.getBytes());
-    assertEquals(String.format("The Lord of the Rings", msg.getPayload().length), msg.resolve("%payload{jsonpath:$.store.book[3].title}", false));
-    try {
-      msg.resolve("%payload{jsonpath:$['store']['book'][2]}");
-      fail();
-    } catch (Exception e) {
-      // expected
-    }
-    try {
-      msg.resolve("%payload{jsonpath:$['store'invalid][-]}");
-      fail();
-    } catch (Exception e) {
-      // expected
-    }
-
     assertEquals(String.format("%s_%s_%s", VAL1, VAL2, "val3"), msg.resolve("%message{key1}_%message{key2}_%message{key*3}"));
     assertEquals(String.format("%s_%s_%s", VAL1, VAL1, "val3"), msg.resolve("%message{key1}_%message{key1}_%message{key*3}"));
     assertEquals(String.format("SELECT * FROM TABLE where key1=%s and key2=%s", VAL1, VAL2),
@@ -644,12 +614,6 @@ public abstract class AdaptrisMessageCase {
     }
     catch (UnresolvedMetadataException expected) {
       assertTrue(expected.getMessage().contains("does_not_exist"));
-    }
-    try {
-      msg.resolve("%payload{invalid:type}");
-      fail();
-    } catch (Exception e) {
-      // expected
     }
   }
 

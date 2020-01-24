@@ -17,6 +17,8 @@
 package com.adaptris.core;
 
 import com.adaptris.core.util.Args;
+import com.adaptris.interlok.resolver.ExternalResolver;
+import com.adaptris.interlok.resolver.UnresolvableException;
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.stream.StreamUtil;
 import com.jayway.jsonpath.DocumentContext;
@@ -402,10 +404,8 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     if (s == null) {
       return null;
     }
-    // resolve any %payload{xpath:…}'s before any any %message{…}'s
-    if (s.contains(RESOLVE_PREFIX_PAYLOAD)) {
-      s = resolvePayload(s, dotAll ? dotAllPayloadResolver : normalPayloadResolver);
-    }
+    // see if there are any external resolvers before processing any %message{…}'s
+    s = ExternalResolver.resolve(s, this.getContent());
     return resolve(s, dotAll ? dotAllResolver : normalResolver);
   }
   
@@ -437,91 +437,6 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
       }
     }
     return value;
-  }
-
-  /**
-   * Resolve part of a payload; currently either XPath or JSONPath. The
-   * format for the regular expression is %payload{xpath:…} or
-   * %payload{jsonpath:…}
-   *
-   * @param target The user format string with either XPath or JSONPath
-   * @param pattern The regex used to match the expected %payload format
-   *
-   * @return The resolved payload part.
-   */
-  private String resolvePayload(String target, Pattern pattern) {
-    Matcher m = pattern.matcher(target);
-    while (m.matches()) {
-      String type = m.group(1);
-      String path = m.group(2);
-
-      String replaceWith = "";
-      switch (type) {
-        case "xpath":
-          replaceWith = resolvePayloadXPath(path);
-          break;
-
-        case "jsonpath":
-          replaceWith = resolvePayloadJsonPath(path);
-          break;
-
-        default:
-          /* throw an exception or just ignore and replace with an empty string? */
-          throw new UnsupportedOperationException("Payload resolve type of " + type + " is not supported!");
-      }
-      log.info("{} {} found {}", type, path, replaceWith);
-      target = target.replace("%payload{" + type + ":" + path + "}", replaceWith);
-      m = pattern.matcher(target);
-    }
-    return target;
-  }
-
-  /**
-   * Resolve a particular XPath from the payload.
-   *
-   * @param path The XPath to search for.
-   *
-   * @return The part of the payload that matches the given path.
-   */
-  private String resolvePayloadXPath(String path) {
-    try {
-      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-      factory.setNamespaceAware(true);
-      Document doc = factory.newDocumentBuilder().parse(this.getInputStream());
-      XPathExpression expr = XPathFactory.newInstance().newXPath().compile(path);
-      NodeList nodes = (NodeList)expr.evaluate(doc, XPathConstants.NODESET);
-      Node n = nodes.item(0);
-      if (n.getNodeType() == Node.TEXT_NODE) {
-        return n.getTextContent();
-      }
-    } catch (Exception e) {
-      log.error("Could not use XPath {} to extract data from message payload", path, e);
-      throw new UnresolvedPayloadException("Could not use XPath {} to extract data from message payload");
-    }
-    log.error("XPath payload resolver can only resolve Text() nodes at this time");
-    throw new UnresolvedPayloadException("XPath payload resolver can only resolve Text() nodes at this time");
-  }
-
-  /**
-   * Resolve a particular JSONPath from the payload.
-   *
-   * @param path The JSONPath to search for.
-   *
-   * @return The part of the payload that matches the given path.
-   */
-  private String resolvePayloadJsonPath(String path) {
-    try {
-      DocumentContext json = JsonPath.parse(this.getContent());
-      Object o = json.read(path);
-      if (o instanceof String) {
-        return (String)o;
-      }
-    } catch (Exception e) {
-      log.error("Could not use JSONPath {} to extract data from message payload", path, e);
-      throw new UnresolvedPayloadException("Could not use JSONPath {} to extract data from message payload");
-    }
-    log.error("JSONPath payload resolver can only resolve text values nodes at this time");
-    throw new UnresolvedPayloadException("JSONPath payload resolver can only resolve text values nodes at this time");
   }
 
   private MleMarker getNextMleMarker(MessageEventGenerator meg, boolean successful) {
