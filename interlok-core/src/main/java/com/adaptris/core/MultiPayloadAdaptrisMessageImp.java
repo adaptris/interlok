@@ -17,6 +17,7 @@
 package com.adaptris.core;
 
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.interlok.resolver.UnresolvableException;
 import com.adaptris.util.IdGenerator;
 import org.apache.commons.lang3.StringUtils;
 
@@ -426,7 +427,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
     while (m.matches()) {
       String key = m.group(1);
       if (!hasPayloadId(key)) {
-        throw new UnresolvedPayloadException("Could not resolve payload ID [" + key + "]");
+        throw new UnresolvableException("Could not resolve payload ID [" + key + "]");
       }
       target = target.replace(String.format(defaultPattern ? "%%payload_id{%s}" : "%%payload{id:%s}", key), getContent(key));
       m = pattern.matcher(target);
