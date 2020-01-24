@@ -17,7 +17,9 @@ package com.adaptris.interlok.resolver;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
@@ -36,10 +38,22 @@ public class ExternalResolverTest {
   @Test
   public void testResolve() {
     assertNull(ExternalResolver.resolve(null));
+    assertNull(ExternalResolver.resolve(null, null));
     assertNotEquals("%env{PATH}", ExternalResolver.resolve("%env{PATH}"));
     assertNotEquals("%sysprop{java.version}", ExternalResolver.resolve("%sysprop{java.version}"));
     assertNotEquals("%sysprop{java.version}", ExternalResolver.resolve("%sysprop{java.version}", null));
     assertEquals("hello", ExternalResolver.resolve("hello"));
     assertEquals("NOT_A_ENVVAR", ExternalResolver.resolve("%env{NOT_A_ENVVAR}"));
+    assertEquals("%payload{NOT_FOUND}", ExternalResolver.resolve("%payload{NOT_FOUND}"));
+  }
+
+  @Test
+  public void testUnresolvableException() {
+    Exception e = new UnresolvableException();
+    assertTrue(e instanceof UnresolvableException);
+    e = new UnresolvableException("Some message");
+    assertEquals("Some message", e.getMessage());
+    e = new UnresolvableException(new Exception());
+    assertNotNull(e.getCause());
   }
 }
