@@ -44,11 +44,11 @@ public class ExternalResolverTest {
     assertNotEquals("%sysprop{java.version}", ExternalResolver.resolve("%sysprop{java.version}", null));
     assertEquals("hello", ExternalResolver.resolve("hello"));
     assertEquals("NOT_A_ENVVAR", ExternalResolver.resolve("%env{NOT_A_ENVVAR}"));
-    assertEquals("%payload{NOT_FOUND}", ExternalResolver.resolve("%payload{NOT_FOUND}"));
   }
 
   @Test
-  public void testUnresolvableException() {
+  public void testResolveWithNullPayload() {
+    assertEquals("%payload{NOT_FOUND}", ExternalResolver.resolve("%payload{NOT_FOUND}", null));
     Exception e = new UnresolvableException();
     assertTrue(e instanceof UnresolvableException);
     e = new UnresolvableException("Some message");
