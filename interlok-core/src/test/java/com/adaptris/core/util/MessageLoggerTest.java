@@ -48,12 +48,14 @@ public class MessageLoggerTest {
   @Test
   public void testPayloadLoggerIncludeMetadata() {
     AdaptrisMessage msg = createMessage();
-    String s = new PayloadMessageLogger().toString(msg);
+    PayloadMessageLogger payloadMessageLogger = new PayloadMessageLogger();
+    String s = payloadMessageLogger.toString(msg);
     System.err.println("testPayloadLogger:: " + s);
     assertNotNull(s);
     assertTrue(s.contains("The quick brown fox jumps over the lazy dog"));
     assertFalse(s.contains("MessageLifecycleEvent"));
     assertTrue(s.contains("hello world"));
+    assertTrue(payloadMessageLogger.getIncludeMetadata());
   }
 
   @Test
@@ -67,6 +69,7 @@ public class MessageLoggerTest {
     assertFalse(s.contains("The quick brown fox jumps over the lazy dog"));
     assertFalse(s.contains("MessageLifecycleEvent"));
     assertTrue(s.contains("hello world"));
+    assertFalse(payloadMessageLogger.getIncludeMetadata());
   }
 
   @Test
