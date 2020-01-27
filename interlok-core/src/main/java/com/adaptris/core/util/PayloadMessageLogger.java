@@ -20,6 +20,7 @@ import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MessageLoggerImpl;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
@@ -32,20 +33,20 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 public class PayloadMessageLogger extends MessageLoggerImpl {
 
   @InputFieldDefault(value = "true")
-  private Boolean includeMetadata = true;
+  private Boolean includeMetadata;
 
   public void setIncludeMetadata(Boolean includeMetadata) {
     this.includeMetadata = Args.notNull(includeMetadata, "Include metadata cannot be null");
   }
 
   public Boolean getIncludeMetadata() {
-    return includeMetadata;
+    return BooleanUtils.toBooleanDefaultIfNull(includeMetadata, true);
   }
 
   @Override
   public String toString(AdaptrisMessage m) {
     ToStringBuilder builder = builder(m);
-    if (includeMetadata) {
+    if (this.getIncludeMetadata()) {
       builder.append(FIELD_METADATA, format(m.getMetadata()));
     }
     builder.append(FIELD_PAYLOAD, m.getPayloadForLogging());
