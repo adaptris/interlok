@@ -46,12 +46,25 @@ public class MessageLoggerTest {
 
 
   @Test
-  public void testPayloadLogger() {
+  public void testPayloadLoggerIncludeMetadata() {
     AdaptrisMessage msg = createMessage();
     String s = new PayloadMessageLogger().toString(msg);
     System.err.println("testPayloadLogger:: " + s);
     assertNotNull(s);
     assertTrue(s.contains("The quick brown fox jumps over the lazy dog"));
+    assertFalse(s.contains("MessageLifecycleEvent"));
+    assertTrue(s.contains("hello world"));
+  }
+
+  @Test
+  public void testPayloadLoggerWithoutMetadata() {
+    AdaptrisMessage msg = createMessage();
+    PayloadMessageLogger payloadMessageLogger = new PayloadMessageLogger();
+    payloadMessageLogger.setIncludeMetadata(false);
+    String s = payloadMessageLogger.toString(msg);
+    System.err.println("testPayloadLogger:: " + s);
+    assertNotNull(s);
+    assertFalse(s.contains("The quick brown fox jumps over the lazy dog"));
     assertFalse(s.contains("MessageLifecycleEvent"));
     assertTrue(s.contains("hello world"));
   }

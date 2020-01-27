@@ -16,9 +16,11 @@
 package com.adaptris.core.util;
 
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MessageLoggerImpl;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * MessageLogger implementation that that logs unique-id, metadata and payload.
@@ -29,9 +31,24 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Log metadata and payload", since = "3.8.4")
 public class PayloadMessageLogger extends MessageLoggerImpl {
 
+  @InputFieldDefault(value = "true")
+  private Boolean includeMetadata = true;
+
+  public void setIncludeMetadata(Boolean includeMetadata) {
+    this.includeMetadata = Args.notNull(includeMetadata, "Include metadata cannot be null");
+  }
+
+  public Boolean getIncludeMetadata() {
+    return includeMetadata;
+  }
+
   @Override
   public String toString(AdaptrisMessage m) {
-    return builder(m).append(FIELD_METADATA, format(m.getMetadata()))
-        .append(FIELD_PAYLOAD, m.getPayloadForLogging()).toString();
+    ToStringBuilder builder = builder(m);
+    if (includeMetadata) {
+      builder.append(FIELD_METADATA, format(m.getMetadata()));
+    }
+    builder.append(FIELD_PAYLOAD, m.getPayloadForLogging());
+    return builder.toString();
   }
 }
