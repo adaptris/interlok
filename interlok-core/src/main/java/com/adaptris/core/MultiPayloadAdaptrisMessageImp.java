@@ -255,6 +255,14 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
    * {@inheritDoc}.
    */
   @Override
+  public void setContent(String payloadId, String payloadString, String charEnc) {
+    addContent(payloadId, payloadString, charEnc);
+  }
+
+  /**
+   * {@inheritDoc}.
+   */
+  @Override
   public void addContent(@NotNull String payloadId, String payloadString) {
     addContent(payloadId, payloadString, null);
   }

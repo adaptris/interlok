@@ -141,6 +141,18 @@ public interface MultiPayloadAdaptrisMessage extends AdaptrisMessage {
   void addContent(@NotNull String id, String content, String encoding);
 
   /**
+   * Add a new payload to the message, with the given ID and content and encoding.
+   *
+   * @param id
+   *          The new payload ID.
+   * @param content
+   *          The payload content.
+   * @param encoding
+   *          The content encoding.
+   */
+  void setContent(@NotNull String id, String content, String encoding);
+
+  /**
    * Get the payload content for the given ID.
    *
    * @param id
