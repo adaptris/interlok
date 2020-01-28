@@ -131,10 +131,11 @@ public class CloneMessageServiceList extends ServiceListBase {
   }
 
   /**
-   * <p>
    * Specify the {@link com.adaptris.core.AdaptrisMessage} metadata keys that will be overridden in the original message.
+   * <p>
+   * Note that if you configure the deprecated {@link #setOverrideMetadata(Boolean)} flag, then the default behaviour is to
+   * use a {@link NoOpMetadataFilter} if no filter has been explicitly configured which preserves backwards compatibility.
    * </p>
-   *
    * @param mf the filter defaults to {@link RemoveAllMetadataFilter} if not specified (which will mean no metadata is preserved).
    * @see MetadataFilter
    */
