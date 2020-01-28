@@ -29,7 +29,6 @@ public class MultiPayloadStringInputParameterTest
 		assertEquals(PAYLOAD, parameter.extract(message));
 		assertEquals(PAYLOAD, parameter.extract(ID, message));
 		assertEquals(PAYLOAD, parameter.extract(null, message));
-		assertEquals(ID, parameter.getPayloadId());
 	}
 
 	@Test

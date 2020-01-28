@@ -29,7 +29,6 @@ public class MultiPayloadByteArrayInputParameterTest
 		assertArrayEquals(PAYLOAD, parameter.extract(message));
 		assertArrayEquals(PAYLOAD, parameter.extract(ID, message));
 		assertArrayEquals(PAYLOAD, parameter.extract(null, message));
-		assertEquals(ID, parameter.getPayloadId());
 	}
 
 	@Test

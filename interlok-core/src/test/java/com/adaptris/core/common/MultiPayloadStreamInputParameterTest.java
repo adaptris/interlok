@@ -49,7 +49,6 @@ public class MultiPayloadStreamInputParameterTest
 				assertEquals(b, stream.read());
 			}
 		}
-		assertEquals(ID, parameter.getPayloadId());
 	}
 
 	@Test

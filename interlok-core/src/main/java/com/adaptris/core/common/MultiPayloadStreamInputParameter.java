@@ -46,7 +46,7 @@ public class MultiPayloadStreamInputParameter extends PayloadStreamInputParamete
 	{
 		if (m instanceof MultiPayloadAdaptrisMessage)
 		{
-			return extract(payloadId, (MultiPayloadAdaptrisMessage)m);
+			return extract(getPayloadId(), (MultiPayloadAdaptrisMessage)m);
 		}
 		throw new InterlokException("Cannot extract payload from message type " + m.getClass().getName() + " as it does not support multiple payloads.");
 	}
