@@ -369,7 +369,8 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
    */
   @Override
   public InputStream getInputStream(@NotNull String payloadId) {
-    return new ByteArrayInputStream(getPayload(payloadId));
+    byte[] payload = getPayload(payloadId);
+    return payload != null ? new ByteArrayInputStream(payload) : new ByteArrayInputStream(new byte[0]);
   }
 
   /**
