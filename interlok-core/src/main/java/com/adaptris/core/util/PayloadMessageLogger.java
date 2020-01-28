@@ -36,20 +36,24 @@ public class PayloadMessageLogger extends MessageLoggerImpl {
   private Boolean includeMetadata;
 
   public void setIncludeMetadata(Boolean includeMetadata) {
-    this.includeMetadata = Args.notNull(includeMetadata, "Include metadata cannot be null");
+    this.includeMetadata = includeMetadata;
   }
 
   public Boolean getIncludeMetadata() {
-    return BooleanUtils.toBooleanDefaultIfNull(includeMetadata, true);
+    return includeMetadata;
   }
 
   @Override
   public String toString(AdaptrisMessage m) {
     ToStringBuilder builder = builder(m);
-    if (this.getIncludeMetadata()) {
+    if (includeMetadata()) {
       builder.append(FIELD_METADATA, format(m.getMetadata()));
     }
     builder.append(FIELD_PAYLOAD, m.getPayloadForLogging());
     return builder.toString();
+  }
+
+  private Boolean includeMetadata() {
+    return BooleanUtils.toBooleanDefaultIfNull(includeMetadata, true);
   }
 }

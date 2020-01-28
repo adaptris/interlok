@@ -2,6 +2,7 @@ package com.adaptris.core.util;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
@@ -55,7 +56,7 @@ public class MessageLoggerTest {
     assertTrue(s.contains("The quick brown fox jumps over the lazy dog"));
     assertFalse(s.contains("MessageLifecycleEvent"));
     assertTrue(s.contains("hello world"));
-    assertTrue(payloadMessageLogger.getIncludeMetadata());
+    assertNull(payloadMessageLogger.getIncludeMetadata());
   }
 
   @Test
