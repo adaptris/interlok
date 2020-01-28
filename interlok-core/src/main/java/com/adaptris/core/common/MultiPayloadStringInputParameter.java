@@ -15,19 +15,25 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * the payload of an {@link com.adaptris.core.MultiPayloadAdaptrisMessage}.
  *
  * @author andersonam
- * @config multi-payload-string-data-input-parameter
+ * @config multi-payload-string-input-parameter
  */
 @XStreamAlias("multi-payload-string-input-parameter")
 public class MultiPayloadStringInputParameter extends StringPayloadDataInputParameter implements MultiPayloadDataInputParameter<String>
 {
 	private String payloadId;
 
+	/**
+	 * {@inheritDoc}.
+	 */
 	@Override
 	public String getPayloadId()
 	{
 		return payloadId;
 	}
 
+	/**
+	 * {@inheritDoc}.
+	 */
 	@Override
 	public void setPayloadId(String payloadId)
 	{
@@ -48,12 +54,7 @@ public class MultiPayloadStringInputParameter extends StringPayloadDataInputPara
 	}
 
 	/**
-	 * Extract the message payload, for the given ID, as a string.
-	 *
-	 * @param id The payload ID to extract.
-	 * @param m The message to extract the payload from.
-	 *
-	 * @return The message payload.
+	 * {@inheritDoc}.
 	 */
 	@Override
 	public String extract(String id, MultiPayloadAdaptrisMessage m)

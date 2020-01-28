@@ -18,12 +18,18 @@ public class MultiPayloadByteArrayInputParameter implements MultiPayloadDataInpu
 {
 	private String payloadId;
 
+	/**
+	 * {@inheritDoc}.
+	 */
 	@Override
 	public String getPayloadId()
 	{
 		return payloadId;
 	}
 
+	/**
+	 * {@inheritDoc}.
+	 */
 	@Override
 	public void setPayloadId(String payloadId)
 	{
@@ -44,12 +50,7 @@ public class MultiPayloadByteArrayInputParameter implements MultiPayloadDataInpu
 	}
 
 	/**
-	 * Extract the message payload, for the given ID, as a byte[].
-	 *
-	 * @param id The payload ID to extract.
-	 * @param m The message to extract the payload from.
-	 *
-	 * @return The message payload.
+	 * {@inheritDoc}.
 	 */
 	@Override
 	public byte[] extract(String id, MultiPayloadAdaptrisMessage m)
