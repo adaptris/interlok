@@ -48,6 +48,7 @@ import com.adaptris.core.MimeEncoder;
 import com.adaptris.core.Poller;
 import com.adaptris.core.PollerImp;
 import com.adaptris.core.StandaloneConsumer;
+import com.adaptris.core.lms.FileBackedMessageFactory;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.ftp.ClientSettings;
 import com.adaptris.ftp.FtpDataMode;
@@ -567,6 +568,31 @@ public class FtpConsumerTest extends FtpConsumerCase {
   
   private FtpConsumer createForTests(MockMessageListener listener, ConsumeDestination dest) {
     return createForTests(listener, dest, new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)));
+  }
+
+
+  @Test
+  public void testBasicConsume_WithFileBackedMessage() throws Exception {
+    int count = 1;
+    EmbeddedFtpServer helper = new EmbeddedFtpServer();
+    MockMessageListener listener = new MockMessageListener();
+    FakeFtpServer server = helper.createAndStart(helper.createFilesystem(count));
+    StandaloneConsumer sc = null;
+    try {
+      FtpConsumer ftpConsumer = createForTests(listener, "testBasicConsume");
+      ftpConsumer.setMessageFactory(new FileBackedMessageFactory());
+      FtpConnection consumeConnection = create(server);
+      sc = new StandaloneConsumer(consumeConnection, ftpConsumer);
+      start(sc);
+      waitForMessages(listener, count);
+      helper.assertMessages(listener.getMessages(), count);
+    } catch (Exception e) {
+      throw e;
+    } finally {
+      stop(sc);
+      server.stop();
+    }
+
   }
 
 }

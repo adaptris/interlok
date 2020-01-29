@@ -43,6 +43,7 @@ import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.StandaloneConsumer;
+import com.adaptris.core.lms.FileBackedMessageFactory;
 import com.adaptris.core.stubs.MockEncoder;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.util.LifecycleHelper;
@@ -100,7 +101,7 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
     LifecycleHelper.stop(consumer);
     LifecycleHelper.close(consumer);
   }
-  
+
   /***********************************************************************************************
    * 
    * 
@@ -364,4 +365,19 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
   protected String getScheme() {
     return "ftp";
   }
+
+
+  @Test
+  public void testSingleFileConsume_FilebackedMessageFactory() throws Exception {
+    this.setFilesToConsume(new String[] {"/MySingleFile.txt"}, new String[] {"My file payload"},
+        new long[] {calendarOneYearAgo.getTimeInMillis()});
+    consumer.setMessageFactory(new FileBackedMessageFactory());
+    LifecycleHelper.init(consumer);
+    LifecycleHelper.start(consumer);
+
+    this.waitForConsumer(1, 3000);
+
+    assertEquals(1, messageListener.getMessages().size());
+  }
+
 }
