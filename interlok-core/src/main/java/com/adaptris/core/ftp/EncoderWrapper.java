@@ -18,10 +18,9 @@ package com.adaptris.core.ftp;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageEncoder;
 
@@ -70,10 +69,7 @@ class EncoderWrapper extends OutputStream {
 
   @Override
   public void write(byte b[], int off, int len) throws IOException {
-    if ((off | len | (b.length - (len + off)) | (off + len)) < 0) throw new IndexOutOfBoundsException();
-    for (int i = 0; i < len; i++) {
-      write(b[off + i]);
-    }
+    wrapped.write(b, off, len);
   }
 
   @Override
@@ -88,8 +84,9 @@ class EncoderWrapper extends OutputStream {
     }
   }
 
+  @SuppressWarnings("deprecation")
   public AdaptrisMessage build() throws Exception {
-    close();
+    IOUtils.closeQuietly(wrapped);
     AdaptrisMessage result = null;
     if (encoder == null) {
       result = wrappedMsg;

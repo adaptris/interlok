@@ -26,18 +26,16 @@ import static com.adaptris.core.ftp.EmbeddedFtpServer.DESTINATION_URL_OVERRIDE;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.PAYLOAD;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.SERVER_ADDRESS;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.SLASH;
-
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.oro.io.GlobFilenameFilter;
+import org.junit.Test;
 import org.mockftpserver.fake.FakeFtpServer;
 import org.mockftpserver.fake.filesystem.FileEntry;
 import org.mockftpserver.fake.filesystem.FileSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ConfiguredConsumeDestination;
@@ -47,6 +45,7 @@ import com.adaptris.core.MimeEncoder;
 import com.adaptris.core.Poller;
 import com.adaptris.core.PollerImp;
 import com.adaptris.core.StandaloneConsumer;
+import com.adaptris.core.lms.FileBackedMessageFactory;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.ftp.ClientSettings;
 import com.adaptris.ftp.FtpDataMode;
@@ -554,6 +553,31 @@ public class FtpConsumerTest extends FtpConsumerCase {
   
   private FtpConsumer createForTests(MockMessageListener listener, ConsumeDestination dest) {
     return createForTests(listener, dest, new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)));
+  }
+
+
+  @Test
+  public void testBasicConsume_WithFileBackedMessage() throws Exception {
+    int count = 1;
+    EmbeddedFtpServer helper = new EmbeddedFtpServer();
+    MockMessageListener listener = new MockMessageListener();
+    FakeFtpServer server = helper.createAndStart(helper.createFilesystem(count));
+    StandaloneConsumer sc = null;
+    try {
+      FtpConsumer ftpConsumer = createForTests(listener, "testBasicConsume");
+      ftpConsumer.setMessageFactory(new FileBackedMessageFactory());
+      FtpConnection consumeConnection = create(server);
+      sc = new StandaloneConsumer(consumeConnection, ftpConsumer);
+      start(sc);
+      waitForMessages(listener, count);
+      helper.assertMessages(listener.getMessages(), count);
+    } catch (Exception e) {
+      throw e;
+    } finally {
+      stop(sc);
+      server.stop();
+    }
+
   }
 
 }
