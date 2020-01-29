@@ -16,45 +16,45 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("multi-payload-byte-array-input-parameter")
 public class MultiPayloadByteArrayInputParameter implements MultiPayloadDataInputParameter<byte[]>
 {
-	private String payloadId;
+  private String payloadId;
 
-	/**
-	 * {@inheritDoc}.
-	 */
-	@Override
-	public String getPayloadId()
-	{
-		return payloadId;
-	}
+  /**
+   * {@inheritDoc}.
+   */
+  @Override
+  public String getPayloadId()
+  {
+    return payloadId;
+  }
 
-	/**
-	 * {@inheritDoc}.
-	 */
-	@Override
-	public void setPayloadId(String payloadId)
-	{
-		this.payloadId = payloadId;
-	}
+  /**
+   * {@inheritDoc}.
+   */
+  @Override
+  public void setPayloadId(String payloadId)
+  {
+    this.payloadId = payloadId;
+  }
 
-	/**
-	 * {@inheritDoc}.
-	 */
-	@Override
-	public byte[] extract(InterlokMessage m) throws InterlokException
-	{
-		if (m instanceof MultiPayloadAdaptrisMessage)
-		{
-			return extract(getPayloadId(), (MultiPayloadAdaptrisMessage)m);
-		}
-		throw new InterlokException("Cannot extract payload from message type " + m.getClass().getName() + " as it does not support multiple payloads.");
-	}
+  /**
+   * {@inheritDoc}.
+   */
+  @Override
+  public byte[] extract(InterlokMessage m) throws InterlokException
+  {
+    if (m instanceof MultiPayloadAdaptrisMessage)
+    {
+      return extract(getPayloadId(), (MultiPayloadAdaptrisMessage)m);
+    }
+    throw new InterlokException("Cannot extract payload from message type " + m.getClass().getName() + " as it does not support multiple payloads.");
+  }
 
-	/**
-	 * {@inheritDoc}.
-	 */
-	@Override
-	public byte[] extract(String id, MultiPayloadAdaptrisMessage m)
-	{
-		return m.getPayload(id != null ? id : m.getCurrentPayloadId());
-	}
+  /**
+   * {@inheritDoc}.
+   */
+  @Override
+  public byte[] extract(String id, MultiPayloadAdaptrisMessage m)
+  {
+    return m.getPayload(id != null ? id : m.getCurrentPayloadId());
+  }
 }

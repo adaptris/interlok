@@ -23,68 +23,68 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 @XStreamAlias("multi-payload-stream-output-parameter")
 public class MultiPayloadStreamOutputParameter extends PayloadStreamOutputParameter implements MultiPayloadDataOutputParameter<InputStreamWithEncoding>
 {
-	private String payloadId;
+  private String payloadId;
 
-	/**
-	 * {@inheritDoc}.
-	 */
-	@Override
-	public String getPayloadId()
-	{
-		return payloadId;
-	}
+  /**
+   * {@inheritDoc}.
+   */
+  @Override
+  public String getPayloadId()
+  {
+    return payloadId;
+  }
 
-	/**
-	 * {@inheritDoc}.
-	 */
-	@Override
-	public void setPayloadId(String payloadId)
-	{
-		this.payloadId = payloadId;
-	}
+  /**
+   * {@inheritDoc}.
+   */
+  @Override
+  public void setPayloadId(String payloadId)
+  {
+    this.payloadId = payloadId;
+  }
 
-	/**
-	 * {@inheritDoc}.
-	 */
-	@Override
-	public void insert(InputStreamWithEncoding data, InterlokMessage m) throws InterlokException
-	{
-		if (m instanceof MultiPayloadAdaptrisMessage)
-		{
-			insert(data, getPayloadId(), (MultiPayloadAdaptrisMessage)m);
-		}
-		else
-		{
-			throw new InterlokException("Cannot insert payload into message type " + m.getClass().getName() + " as it does not support multiple payloads.");
-		}
-	}
+  /**
+   * {@inheritDoc}.
+   */
+  @Override
+  public void insert(InputStreamWithEncoding data, InterlokMessage m) throws InterlokException
+  {
+    if (m instanceof MultiPayloadAdaptrisMessage)
+    {
+      insert(data, getPayloadId(), (MultiPayloadAdaptrisMessage)m);
+    }
+    else
+    {
+      throw new InterlokException("Cannot insert payload into message type " + m.getClass().getName() + " as it does not support multiple payloads.");
+    }
+  }
 
-	/**
-	 * {@inheritDoc}.
-	 */
-	@Override
-	public void insert(InputStreamWithEncoding data, String id, MultiPayloadAdaptrisMessage m) throws InterlokException
-	{
-		if (id == null)
-		{
-			id = m.getCurrentPayloadId();
-		}
-		try
-		{
-			String encoding = defaultIfEmpty(getContentEncoding(), data.encoding);
-			if (isEmpty(encoding))
-			{
-				copyAndClose(data.inputStream, m.getOutputStream(id));
-			}
-			else
-			{
-				copyAndClose(data.inputStream, m.getWriter(id, encoding));
-				m.setContentEncoding(id, encoding);
-			}
-		}
-		catch (Exception e)
-		{
-			throw ExceptionHelper.wrapCoreException(e);
-		}
-	}
+  /**
+   * {@inheritDoc}.
+   */
+  @Override
+  public void insert(InputStreamWithEncoding data, String id, MultiPayloadAdaptrisMessage m) throws InterlokException
+  {
+    if (id == null)
+    {
+      id = m.getCurrentPayloadId();
+    }
+    try
+    {
+      String encoding = defaultIfEmpty(getContentEncoding(), data.encoding);
+      if (isEmpty(encoding))
+      {
+        copyAndClose(data.inputStream, m.getOutputStream(id));
+      }
+      else
+      {
+        copyAndClose(data.inputStream, m.getWriter(id, encoding));
+        m.setContentEncoding(id, encoding);
+      }
+    }
+    catch (Exception e)
+    {
+      throw ExceptionHelper.wrapCoreException(e);
+    }
+  }
 }

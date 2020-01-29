@@ -15,48 +15,48 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("multi-payload-byte-array-output-parameter")
 public class MultiPayloadByteArrayOutputParameter implements MultiPayloadDataOutputParameter<byte[]>
 {
-	private String payloadId;
+  private String payloadId;
 
-	/**
-	 * {@inheritDoc}.
-	 */
-	@Override
-	public String getPayloadId()
-	{
-		return payloadId;
-	}
+  /**
+   * {@inheritDoc}.
+   */
+  @Override
+  public String getPayloadId()
+  {
+    return payloadId;
+  }
 
-	/**
-	 * {@inheritDoc}.
-	 */
-	@Override
-	public void setPayloadId(String payloadId)
-	{
-		this.payloadId = payloadId;
-	}
+  /**
+   * {@inheritDoc}.
+   */
+  @Override
+  public void setPayloadId(String payloadId)
+  {
+    this.payloadId = payloadId;
+  }
 
-	/**
-	 * {@inheritDoc}.
-	 */
-	@Override
-	public void insert(byte[] data, InterlokMessage m) throws InterlokException
-	{
-		if (m instanceof MultiPayloadAdaptrisMessage)
-		{
-			insert(data, getPayloadId(), (MultiPayloadAdaptrisMessage)m);
-		}
-		else
-		{
-			throw new InterlokException("Cannot insert payload into message type " + m.getClass().getName() + " as it does not support multiple payloads.");
-		}
-	}
+  /**
+   * {@inheritDoc}.
+   */
+  @Override
+  public void insert(byte[] data, InterlokMessage m) throws InterlokException
+  {
+    if (m instanceof MultiPayloadAdaptrisMessage)
+    {
+      insert(data, getPayloadId(), (MultiPayloadAdaptrisMessage)m);
+    }
+    else
+    {
+      throw new InterlokException("Cannot insert payload into message type " + m.getClass().getName() + " as it does not support multiple payloads.");
+    }
+  }
 
-	/**
-	 * {@inheritDoc}.
-	 */
-	@Override
-	public void insert(byte[] data, String id, MultiPayloadAdaptrisMessage m)
-	{
-		m.addPayload(id != null ? id : m.getCurrentPayloadId(), data);
-	}
+  /**
+   * {@inheritDoc}.
+   */
+  @Override
+  public void insert(byte[] data, String id, MultiPayloadAdaptrisMessage m)
+  {
+    m.addPayload(id != null ? id : m.getCurrentPayloadId(), data);
+  }
 }

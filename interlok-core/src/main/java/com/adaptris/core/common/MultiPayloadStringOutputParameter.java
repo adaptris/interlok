@@ -17,48 +17,48 @@ import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 @XStreamAlias("multi-payload-string-output-parameter")
 public class MultiPayloadStringOutputParameter extends StringPayloadDataOutputParameter implements MultiPayloadDataOutputParameter<String>
 {
-	private String payloadId;
+  private String payloadId;
 
-	/**
-	 * {@inheritDoc}.
-	 */
-	@Override
-	public String getPayloadId()
-	{
-		return payloadId;
-	}
+  /**
+   * {@inheritDoc}.
+   */
+  @Override
+  public String getPayloadId()
+  {
+    return payloadId;
+  }
 
-	/**
-	 * {@inheritDoc}.
-	 */
-	@Override
-	public void setPayloadId(String payloadId)
-	{
-		this.payloadId = payloadId;
-	}
+  /**
+   * {@inheritDoc}.
+   */
+  @Override
+  public void setPayloadId(String payloadId)
+  {
+    this.payloadId = payloadId;
+  }
 
-	/**
-	 * {@inheritDoc}.
-	 */
-	@Override
-	public void insert(String data, InterlokMessage m) throws InterlokException
-	{
-		if (m instanceof MultiPayloadAdaptrisMessage)
-		{
-			insert(data, getPayloadId(), (MultiPayloadAdaptrisMessage)m);
-		}
-		else
-		{
-			throw new InterlokException("Cannot insert payload into message type " + m.getClass().getName() + " as it does not support multiple payloads.");
-		}
-	}
+  /**
+   * {@inheritDoc}.
+   */
+  @Override
+  public void insert(String data, InterlokMessage m) throws InterlokException
+  {
+    if (m instanceof MultiPayloadAdaptrisMessage)
+    {
+      insert(data, getPayloadId(), (MultiPayloadAdaptrisMessage)m);
+    }
+    else
+    {
+      throw new InterlokException("Cannot insert payload into message type " + m.getClass().getName() + " as it does not support multiple payloads.");
+    }
+  }
 
-	/**
-	 * {@inheritDoc}.
-	 */
-	@Override
-	public void insert(String data, String id, MultiPayloadAdaptrisMessage m)
-	{
-		m.setContent(id != null ? id : m.getCurrentPayloadId(), data, defaultIfEmpty(getContentEncoding(), m.getContentEncoding()));
-	}
+  /**
+   * {@inheritDoc}.
+   */
+  @Override
+  public void insert(String data, String id, MultiPayloadAdaptrisMessage m)
+  {
+    m.setContent(id != null ? id : m.getCurrentPayloadId(), data, defaultIfEmpty(getContentEncoding(), m.getContentEncoding()));
+  }
 }
