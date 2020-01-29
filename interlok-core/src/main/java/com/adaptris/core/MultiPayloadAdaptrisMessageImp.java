@@ -18,6 +18,7 @@ package com.adaptris.core;
 
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.interlok.resolver.UnresolvableException;
+import com.adaptris.interlok.types.InterlokMessage;
 import com.adaptris.util.IdGenerator;
 import org.apache.commons.lang3.StringUtils;
 
@@ -28,6 +29,8 @@ import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -208,7 +211,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
    */
   @Override
   public byte[] getPayload(@NotNull String payloadId) {
-    return payloads.get(payloadId).data;
+    return payloads.get(payloadId).payload();
   }
 
   /**
@@ -238,13 +241,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
   }
 
   /**
-   * Set the current payload content.
-   *
-   * @param payloadString
-   *          The payload content.
-   * @param charEnc
-   *          The content encoding.
-   * @see AdaptrisMessage#setContent(String, String)
+   * @see InterlokMessage#setContent(String, String).
    */
   @Override
   public void setContent(String payloadString, String charEnc) {
@@ -357,7 +354,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
     result.payloads = new HashMap<>();
     for (String payloadId : payloads.keySet()) {
       Payload payload = payloads.get(payloadId);
-      result.addPayload(payloadId, payload.data.clone());
+      result.addPayload(payloadId, payload.payload());
       result.setContentEncoding(payloadId, payload.encoding);
     }
     result.switchPayload(currentPayloadId);
@@ -395,6 +392,34 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
   @Override
   public OutputStream getOutputStream(@NotNull String payloadId) {
     return new ByteFilterStream(payloadId, new ByteArrayOutputStream());
+  }
+
+  /**
+   * @see InterlokMessage#getWriter()
+   */
+  @Override
+  public Writer getWriter() throws IOException
+  {
+    return getWriter(currentPayloadId);
+  }
+
+  /**
+   * {@inheritDoc}.
+   */
+  @Override
+  public Writer getWriter(@NotNull String payloadId) throws IOException
+  {
+    return getWriter(payloadId, getContentEncoding(payloadId));
+  }
+
+  /**
+   * {@inheritDoc}.
+   */
+  @Override
+  public Writer getWriter(@NotNull String payloadId, String encoding) throws IOException
+  {
+    OutputStream outputStream = getOutputStream(payloadId);
+    return encoding != null ? new OutputStreamWriter(outputStream, encoding) : new OutputStreamWriter(outputStream);
   }
 
   /**
@@ -447,9 +472,10 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
   private class ByteFilterStream extends FilterOutputStream {
     private final String payloadId;
 
-    ByteFilterStream(@NotNull String payloadId, OutputStream out) {
+    ByteFilterStream(@NotNull String payloadId, ByteArrayOutputStream out) {
       super(out);
       this.payloadId = payloadId;
+      payloads.put(payloadId, new Payload(out));
     }
 
     @Override
@@ -460,17 +486,28 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
   }
 
   private class Payload {
-    public String encoding;
-    @NotNull
-    public byte[] data;
+    String encoding;
+    private byte[] data;
+    private ByteArrayOutputStream stream;
 
-    public Payload(String encoding, @NotNull byte[] data) {
+    Payload(String encoding, @NotNull byte[] data) {
       this.encoding = encoding;
       this.data = data;
     }
 
-    public Payload(@NotNull byte[] data) {
+    Payload(@NotNull byte[] data) {
       this.data = data;
+    }
+
+    Payload(@NotNull ByteArrayOutputStream stream) {
+      this.stream = stream;
+    }
+
+    byte[] payload() {
+      if (stream != null) {
+        return stream.toByteArray();
+      }
+      return data;
     }
   }
 }

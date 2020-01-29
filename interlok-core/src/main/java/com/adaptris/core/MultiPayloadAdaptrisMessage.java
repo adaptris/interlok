@@ -17,8 +17,10 @@
 package com.adaptris.core;
 
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Writer;
 import java.util.Set;
 
 /**
@@ -197,4 +199,30 @@ public interface MultiPayloadAdaptrisMessage extends AdaptrisMessage {
    * @return The payload output stream.
    */
   OutputStream getOutputStream(@NotNull String id);
+
+  /**
+   * Return a writer ready for writing the payload for the given payload ID.
+   *
+   * @param id
+   *          The payload ID.
+   *
+   * @return an Writer that can be used to write the payload using the existing encoding.
+   *
+   * @throws IOException if the Writer could not be created.
+   */
+  Writer getWriter(@NotNull String id) throws IOException;
+
+  /**
+   * Return a writer ready for writing the payload for the given payload ID.
+   *
+   * @param id
+   *          The payload ID.
+   * @param encoding
+   *          The payload encoding.
+   *
+   * @return an Writer that can be used to write the payload using the existing encoding.
+   *
+   * @throws IOException if the Writer could not be created.
+   */
+  Writer getWriter(@NotNull String id, String encoding) throws IOException;
 }

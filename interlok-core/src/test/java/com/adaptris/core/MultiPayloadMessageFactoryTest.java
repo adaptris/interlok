@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -177,14 +178,21 @@ public class MultiPayloadMessageFactoryTest extends AdaptrisMessageFactoryImplCa
 
   @Test
   public void testMessageStreams() throws Exception {
-    MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage) messageFactory.newMessage();
+    MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage) messageFactory.newMessage((byte[])null);
+    InputStream is = message.getInputStream();
+    assertTrue(is.read() == -1);
     OutputStream os = message.getOutputStream();
     os.write(PAYLOAD);
     os.close();
-    InputStream is = message.getInputStream();
+    is = message.getInputStream();
     byte[] bytes = new byte[PAYLOAD.length];
     is.read(bytes);
     assertArrayEquals(PAYLOAD, bytes);
+    message.setContentEncoding(null);
+    try (Writer writer = message.getWriter()) {
+      writer.write(CONTENT);
+    }
+    assertEquals(CONTENT, message.getContent());
   }
 
   @Test
