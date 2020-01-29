@@ -16,31 +16,30 @@
 
 package com.adaptris.core.ftp;
 
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Matchers.matches;
+import static org.mockito.ArgumentMatchers.anyObject;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.ArgumentMatchers.matches;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
-
 import java.io.FileFilter;
 import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.oro.io.GlobFilenameFilter;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.StandaloneConsumer;
+import com.adaptris.core.lms.FileBackedMessageFactory;
 import com.adaptris.core.stubs.MockEncoder;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.util.LifecycleHelper;
@@ -102,7 +101,7 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
     LifecycleHelper.stop(consumer);
     LifecycleHelper.close(consumer);
   }
-  
+
   /***********************************************************************************************
    * 
    * 
@@ -355,4 +354,19 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
   protected String getScheme() {
     return "ftp";
   }
+
+
+  @Test
+  public void testSingleFileConsume_FilebackedMessageFactory() throws Exception {
+    this.setFilesToConsume(new String[] {"/MySingleFile.txt"}, new String[] {"My file payload"},
+        new long[] {calendarOneYearAgo.getTimeInMillis()});
+    consumer.setMessageFactory(new FileBackedMessageFactory());
+    LifecycleHelper.init(consumer);
+    LifecycleHelper.start(consumer);
+
+    this.waitForConsumer(1, 3000);
+
+    assertEquals(1, messageListener.getMessages().size());
+  }
+
 }
