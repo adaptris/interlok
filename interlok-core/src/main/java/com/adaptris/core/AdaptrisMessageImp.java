@@ -89,7 +89,6 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   private enum Resolvers {
     UniqueId {
-
       @Override
       String resolve(String key, AdaptrisMessage msg) {
         if ("%uniqueId".equalsIgnoreCase(key)) {
@@ -107,14 +106,21 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
         return null;
       }
     },
+    Payload {
+      @Override
+      String resolve(String key, AdaptrisMessage msg) {
+        if ("%payload".equalsIgnoreCase(key)) {
+          return msg.getContent();
+        }
+        return null;
+      }
+    },
     Metadata {
       @Override
       String resolve(String key, AdaptrisMessage msg) {
         return msg.getMetadataValue(key);
       }
-      
     };
-    
     abstract String resolve(String key, AdaptrisMessage msg);
   }
 
@@ -401,7 +407,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
       String metadataValue = internalResolve(key);
       // Optional<String> metadataValue = (Optional<String>) Optional.ofNullable(internalResolve(key));
       if (metadataValue == null) {
-        throw new UnresolvedMetadataException("Could not resolve [" + key + "] as metadata/uniqueId/size");
+        throw new UnresolvedMetadataException("Could not resolve [" + key + "] as metadata/uniqueId/size/payload");
       }
       String toReplace = "%message{" + key + "}";
       result = result.replace(toReplace, metadataValue);

@@ -601,6 +601,7 @@ public abstract class AdaptrisMessageCase {
     assertEquals(VAL1, msg.resolve("%message{nestedKey}"));
     assertEquals(PAYLOAD.length(), Integer.parseInt(msg.resolve("%message{%size}")));
     assertEquals(msg.getUniqueId(), msg.resolve("%message{%uniqueId}"));
+    assertEquals(msg.getContent(), msg.resolve("%message{%payload}"));
 
     assertEquals(String.format("%s_%s_%s", VAL1, VAL2, "val3"), msg.resolve("%message{key1}_%message{key2}_%message{key*3}"));
     assertEquals(String.format("%s_%s_%s", VAL1, VAL1, "val3"), msg.resolve("%message{key1}_%message{key1}_%message{key*3}"));
