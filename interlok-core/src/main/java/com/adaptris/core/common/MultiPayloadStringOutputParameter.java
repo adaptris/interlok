@@ -1,7 +1,9 @@
 package com.adaptris.core.common;
 
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.MultiPayloadAdaptrisMessage;
 import com.adaptris.interlok.InterlokException;
+import com.adaptris.interlok.config.DataOutputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -15,23 +17,27 @@ import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
  * @config multi-payload-string-output-parameter
  */
 @XStreamAlias("multi-payload-string-output-parameter")
-public class MultiPayloadStringOutputParameter extends StringPayloadDataOutputParameter implements MultiPayloadDataOutputParameter<String>
+public class MultiPayloadStringOutputParameter extends StringPayloadDataOutputParameter implements DataOutputParameter<String>
 {
+  @InputFieldHint(expression=true)
   private String payloadId;
 
   /**
-   * {@inheritDoc}.
+   * Get the ID of the payload to extract.
+   *
+   * @return  The payload ID.
    */
-  @Override
   public String getPayloadId()
   {
     return payloadId;
   }
 
   /**
-   * {@inheritDoc}.
+   * Set the ID of the payload to extract.
+   *
+   * @param payloadId
+   *          The payload ID.
    */
-  @Override
   public void setPayloadId(String payloadId)
   {
     this.payloadId = payloadId;
@@ -45,7 +51,7 @@ public class MultiPayloadStringOutputParameter extends StringPayloadDataOutputPa
   {
     if (m instanceof MultiPayloadAdaptrisMessage)
     {
-      insert(data, getPayloadId(), (MultiPayloadAdaptrisMessage)m);
+      insert(data, m.resolve(getPayloadId()), (MultiPayloadAdaptrisMessage)m);
     }
     else
     {
@@ -54,9 +60,15 @@ public class MultiPayloadStringOutputParameter extends StringPayloadDataOutputPa
   }
 
   /**
-   * {@inheritDoc}.
+   * Insert the data into the multi-payload message for the given payload ID.
+   *
+   * @param data
+   *          The data to insert.
+   * @param id
+   *          The payload ID.
+   * @param m
+   *          The multi-payload message.
    */
-  @Override
   public void insert(String data, String id, MultiPayloadAdaptrisMessage m)
   {
     m.setContent(id != null ? id : m.getCurrentPayloadId(), data, defaultIfEmpty(getContentEncoding(), m.getContentEncoding()));

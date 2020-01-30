@@ -1,7 +1,9 @@
 package com.adaptris.core.common;
 
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.MultiPayloadAdaptrisMessage;
 import com.adaptris.interlok.InterlokException;
+import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -14,23 +16,27 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config multi-payload-byte-array-input-parameter
  */
 @XStreamAlias("multi-payload-byte-array-input-parameter")
-public class MultiPayloadByteArrayInputParameter implements MultiPayloadDataInputParameter<byte[]>
+public class MultiPayloadByteArrayInputParameter implements DataInputParameter<byte[]>
 {
+  @InputFieldHint(expression=true)
   private String payloadId;
 
   /**
-   * {@inheritDoc}.
+   * Get the ID of the payload to extract.
+   *
+   * @return  The payload ID.
    */
-  @Override
   public String getPayloadId()
   {
     return payloadId;
   }
 
   /**
-   * {@inheritDoc}.
+   * Set the ID of the payload to extract.
+   *
+   * @param payloadId
+   *          The payload ID.
    */
-  @Override
   public void setPayloadId(String payloadId)
   {
     this.payloadId = payloadId;
@@ -44,15 +50,21 @@ public class MultiPayloadByteArrayInputParameter implements MultiPayloadDataInpu
   {
     if (m instanceof MultiPayloadAdaptrisMessage)
     {
-      return extract(getPayloadId(), (MultiPayloadAdaptrisMessage)m);
+      return extract(m.resolve(getPayloadId()), (MultiPayloadAdaptrisMessage)m);
     }
     throw new InterlokException("Cannot extract payload from message type " + m.getClass().getName() + " as it does not support multiple payloads.");
   }
 
   /**
-   * {@inheritDoc}.
+   * Extract the payload with the given ID from the multi-payload message.
+   *
+   * @param id
+   *          The payload ID.
+   * @param m
+   *          The multi-payload message.
+   *
+   * @return  The extracted payload.
    */
-  @Override
   public byte[] extract(String id, MultiPayloadAdaptrisMessage m)
   {
     return m.getPayload(id != null ? id : m.getCurrentPayloadId());

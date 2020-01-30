@@ -1,7 +1,9 @@
 package com.adaptris.core.common;
 
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.MultiPayloadAdaptrisMessage;
 import com.adaptris.interlok.InterlokException;
+import com.adaptris.interlok.config.DataOutputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -13,27 +15,32 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config multi-payload-byte-array-output-parameter
  */
 @XStreamAlias("multi-payload-byte-array-output-parameter")
-public class MultiPayloadByteArrayOutputParameter implements MultiPayloadDataOutputParameter<byte[]>
+public class MultiPayloadByteArrayOutputParameter implements DataOutputParameter<byte[]>
 {
+  @InputFieldHint(expression=true)
   private String payloadId;
 
   /**
-   * {@inheritDoc}.
+   * Get the ID of the payload to extract.
+   *
+   * @return  The payload ID.
    */
-  @Override
   public String getPayloadId()
   {
     return payloadId;
   }
 
   /**
-   * {@inheritDoc}.
+   * Set the ID of the payload to extract.
+   *
+   * @param payloadId
+   *          The payload ID.
    */
-  @Override
   public void setPayloadId(String payloadId)
   {
     this.payloadId = payloadId;
   }
+
 
   /**
    * {@inheritDoc}.
@@ -43,7 +50,7 @@ public class MultiPayloadByteArrayOutputParameter implements MultiPayloadDataOut
   {
     if (m instanceof MultiPayloadAdaptrisMessage)
     {
-      insert(data, getPayloadId(), (MultiPayloadAdaptrisMessage)m);
+      insert(data, m.resolve(getPayloadId()), (MultiPayloadAdaptrisMessage)m);
     }
     else
     {
@@ -52,9 +59,15 @@ public class MultiPayloadByteArrayOutputParameter implements MultiPayloadDataOut
   }
 
   /**
-   * {@inheritDoc}.
+   * Insert the data into the multi-payload message for the given payload ID.
+   *
+   * @param data
+   *          The data to insert.
+   * @param id
+   *          The payload ID.
+   * @param m
+   *          The multi-payload message.
    */
-  @Override
   public void insert(byte[] data, String id, MultiPayloadAdaptrisMessage m)
   {
     m.addPayload(id != null ? id : m.getCurrentPayloadId(), data);

@@ -1,7 +1,9 @@
 package com.adaptris.core.common;
 
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.MultiPayloadAdaptrisMessage;
 import com.adaptris.interlok.InterlokException;
+import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -16,23 +18,27 @@ import java.io.InputStream;
  * @config multi-payload-stream-input-parameter
  */
 @XStreamAlias("multi-payload-stream-input-parameter")
-public class MultiPayloadStreamInputParameter extends PayloadStreamInputParameter implements MultiPayloadDataInputParameter<InputStream>
+public class MultiPayloadStreamInputParameter extends PayloadStreamInputParameter implements DataInputParameter<InputStream>
 {
+  @InputFieldHint(expression=true)
   private String payloadId;
 
   /**
-   * {@inheritDoc}.
+   * Get the ID of the payload to extract.
+   *
+   * @return  The payload ID.
    */
-  @Override
   public String getPayloadId()
   {
     return payloadId;
   }
 
   /**
-   * {@inheritDoc}.
+   * Set the ID of the payload to extract.
+   *
+   * @param payloadId
+   *          The payload ID.
    */
-  @Override
   public void setPayloadId(String payloadId)
   {
     this.payloadId = payloadId;
@@ -46,15 +52,21 @@ public class MultiPayloadStreamInputParameter extends PayloadStreamInputParamete
   {
     if (m instanceof MultiPayloadAdaptrisMessage)
     {
-      return extract(getPayloadId(), (MultiPayloadAdaptrisMessage)m);
+      return extract(m.resolve(getPayloadId()), (MultiPayloadAdaptrisMessage)m);
     }
     throw new InterlokException("Cannot extract payload from message type " + m.getClass().getName() + " as it does not support multiple payloads.");
   }
 
   /**
-   * {@inheritDoc}.
+   * Extract the payload with the given ID from the multi-payload message.
+   *
+   * @param id
+   *          The payload ID.
+   * @param m
+   *          The multi-payload message.
+   *
+   * @return  The extracted payload.
    */
-  @Override
   public InputStream extract(String id, MultiPayloadAdaptrisMessage m)
   {
     return m.getInputStream(id != null ? id : m.getCurrentPayloadId());

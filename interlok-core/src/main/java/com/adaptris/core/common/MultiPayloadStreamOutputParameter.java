@@ -1,13 +1,12 @@
 package com.adaptris.core.common;
 
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.MultiPayloadAdaptrisMessage;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.InterlokException;
+import com.adaptris.interlok.config.DataOutputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
-import java.io.IOException;
-import java.io.OutputStream;
 
 import static com.adaptris.util.stream.StreamUtil.copyAndClose;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
@@ -21,27 +20,32 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  * @config multi-payload-stream-output-parameter
  */
 @XStreamAlias("multi-payload-stream-output-parameter")
-public class MultiPayloadStreamOutputParameter extends PayloadStreamOutputParameter implements MultiPayloadDataOutputParameter<InputStreamWithEncoding>
+public class MultiPayloadStreamOutputParameter extends PayloadStreamOutputParameter implements DataOutputParameter<InputStreamWithEncoding>
 {
+  @InputFieldHint(expression=true)
   private String payloadId;
 
   /**
-   * {@inheritDoc}.
+   * Get the ID of the payload to extract.
+   *
+   * @return  The payload ID.
    */
-  @Override
   public String getPayloadId()
   {
     return payloadId;
   }
 
   /**
-   * {@inheritDoc}.
+   * Set the ID of the payload to extract.
+   *
+   * @param payloadId
+   *          The payload ID.
    */
-  @Override
   public void setPayloadId(String payloadId)
   {
     this.payloadId = payloadId;
   }
+
 
   /**
    * {@inheritDoc}.
@@ -51,7 +55,7 @@ public class MultiPayloadStreamOutputParameter extends PayloadStreamOutputParame
   {
     if (m instanceof MultiPayloadAdaptrisMessage)
     {
-      insert(data, getPayloadId(), (MultiPayloadAdaptrisMessage)m);
+      insert(data, m.resolve(getPayloadId()), (MultiPayloadAdaptrisMessage)m);
     }
     else
     {
@@ -60,9 +64,15 @@ public class MultiPayloadStreamOutputParameter extends PayloadStreamOutputParame
   }
 
   /**
-   * {@inheritDoc}.
+   * Insert the data into the multi-payload message for the given payload ID.
+   *
+   * @param data
+   *          The data to insert.
+   * @param id
+   *          The payload ID.
+   * @param m
+   *          The multi-payload message.
    */
-  @Override
   public void insert(InputStreamWithEncoding data, String id, MultiPayloadAdaptrisMessage m) throws InterlokException
   {
     if (id == null)
