@@ -344,11 +344,12 @@ uploadUnitTestStubs {
       pom.artifactId = "interlok-stubs"
       pom.withXml {
         asNode().appendNode("name", "Interlok Test Scaffolding")
-        asNode().appendNode("description", "Test Scaffolding for custom Interlok components")
+        asNode().appendNode("description", "Test Scaffolding for custom Interlok components; of no consequence at runtime")
         def properties = asNode().appendNode("properties")
         properties.appendNode("target", "3.8.0+")
         properties.appendNode("tags", "junit")
         properties.appendNode("license", "false")
+        properties.appendNode("developOnly", "true")
       }
 
     }
