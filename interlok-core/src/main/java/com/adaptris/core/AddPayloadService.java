@@ -112,7 +112,8 @@ public class AddPayloadService extends ServiceImp {
    */
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    log.debug("Attempting to add payload " + newPayloadId + " to message");
+    String id = msg.resolve(getNewPayloadId());
+    log.debug("Attempting to add payload " + id + " to message");
     if (!(msg instanceof MultiPayloadAdaptrisMessage)) {
       throw new ServiceException("Message [" + msg.getUniqueId() + "] is not a multi-payload message");
     }
@@ -124,8 +125,8 @@ public class AddPayloadService extends ServiceImp {
       log.error("Could not extract new payload from source", e);
       throw new ServiceException(e);
     }
-    message.addContent(getNewPayloadId(), payload, newPayloadEncoding(msg));
-    log.debug("Added message payload [" + getNewPayloadId() + "]");
+    message.addContent(id, payload, newPayloadEncoding(msg));
+    log.debug("Added message payload [" + id + "]");
   }
 
   private String newPayloadEncoding(AdaptrisMessage msg) {
