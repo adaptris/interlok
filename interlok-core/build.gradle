@@ -349,7 +349,7 @@ uploadUnitTestStubs {
         properties.appendNode("target", "3.8.0+")
         properties.appendNode("tags", "junit")
         properties.appendNode("license", "false")
-        properties.appendNode("developOnly", "true")
+        properties.appendNode("developerOnly", "true")
       }
 
     }
