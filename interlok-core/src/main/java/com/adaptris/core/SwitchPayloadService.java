@@ -59,14 +59,15 @@ public class SwitchPayloadService extends ServiceImp {
    */
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    log.debug("Attempting to switch message payload to [" + newPayloadId + "]");
+    String id = msg.resolve(getNewPayloadId());
+    log.debug("Attempting to switch message payload to [" + id + "]");
     if (!(msg instanceof MultiPayloadAdaptrisMessage)) {
       throw new ServiceException("Message [" + msg.getUniqueId() + "] is not a multi-payload message");
     }
     MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage) msg;
     log.debug("Switching message payload from [" + message.getCurrentPayloadId() + "]");
-    message.switchPayload(newPayloadId);
-    log.debug("Switched message payload to [" + newPayloadId + "]");
+    message.switchPayload(id);
+    log.debug("Switched message payload to [" + id + "]");
   }
 
   /**

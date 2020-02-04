@@ -17,8 +17,10 @@
 package com.adaptris.core;
 
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Writer;
 import java.util.Set;
 
 /**
@@ -141,6 +143,18 @@ public interface MultiPayloadAdaptrisMessage extends AdaptrisMessage {
   void addContent(@NotNull String id, String content, String encoding);
 
   /**
+   * Add a new payload to the message, with the given ID and content and encoding.
+   *
+   * @param id
+   *          The new payload ID.
+   * @param content
+   *          The payload content.
+   * @param encoding
+   *          The content encoding.
+   */
+  void setContent(@NotNull String id, String content, String encoding);
+
+  /**
    * Get the payload content for the given ID.
    *
    * @param id
@@ -185,4 +199,30 @@ public interface MultiPayloadAdaptrisMessage extends AdaptrisMessage {
    * @return The payload output stream.
    */
   OutputStream getOutputStream(@NotNull String id);
+
+  /**
+   * Return a writer ready for writing the payload for the given payload ID.
+   *
+   * @param id
+   *          The payload ID.
+   *
+   * @return an Writer that can be used to write the payload using the existing encoding.
+   *
+   * @throws IOException if the Writer could not be created.
+   */
+  Writer getWriter(@NotNull String id) throws IOException;
+
+  /**
+   * Return a writer ready for writing the payload for the given payload ID.
+   *
+   * @param id
+   *          The payload ID.
+   * @param encoding
+   *          The payload encoding.
+   *
+   * @return an Writer that can be used to write the payload using the existing encoding.
+   *
+   * @throws IOException if the Writer could not be created.
+   */
+  Writer getWriter(@NotNull String id, String encoding) throws IOException;
 }
