@@ -18,9 +18,6 @@ package com.adaptris.core.services.jdbc;
 
 import java.sql.SQLException;
 import java.util.List;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.lang3.BooleanUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -29,7 +26,6 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.jdbc.JdbcResult;
@@ -104,9 +100,9 @@ public class XmlPayloadTranslator extends XmlPayloadTranslatorImpl {
   public long translateResult(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
     long resultSetCount = 0;
     try {
-      DocumentWrapper d = toDocument(source, target);
-      XmlHelper.writeXmlDocument(d.document, target, getOutputMessageEncoding());
-      resultSetCount = d.resultSetCount;
+      DocumentWrapper wrapper = toDocument(source, target);
+      XmlHelper.writeXmlDocument(wrapper.document, target, getOutputMessageEncoding(), createTransformer(wrapper));
+      resultSetCount = wrapper.resultSetCount;
     }
     catch (SQLException e) {
       throw e;
@@ -117,14 +113,10 @@ public class XmlPayloadTranslator extends XmlPayloadTranslatorImpl {
     return resultSetCount;
   }
 
-  private DocumentWrapper toDocument(JdbcResult rs, AdaptrisMessage msg)
-      throws ParserConfigurationException, SQLException {
+  private DocumentWrapper toDocument(JdbcResult rs, AdaptrisMessage msg) throws Exception {
     XmlUtils xu = createXmlUtils(msg);
-    DocumentBuilderFactoryBuilder factoryBuilder = documentFactoryBuilder(msg);
-    DocumentBuilderFactory factory = factoryBuilder.configure(DocumentBuilderFactory.newInstance());
-    DocumentBuilder builder = factoryBuilder.configure(factory.newDocumentBuilder());
-    Document doc = builder.newDocument();
-    DocumentWrapper result = new DocumentWrapper(doc, 0);
+    DocumentWrapper wrapper = createWrapper(msg);
+    Document doc = wrapper.document;
     ColumnStyle elementNameStyle = getColumnNameStyle();
 
     Element results = doc.createElement(elementNameStyle.format(ELEMENT_NAME_RESULTS));
@@ -140,23 +132,18 @@ public class XmlPayloadTranslator extends XmlPayloadTranslatorImpl {
       else {
         // Not XML, so let's add it in as a CDATA node.
         originalMessage.appendChild(createTextNode(doc, msg.getContent(), true));
+        wrapper.hasCDATA = true;
       }
       results.appendChild(originalMessage);
     }
     for(JdbcResultSet rSet : rs.getResultSets()) {
-      List<Element> elements = createListFromResultSet(builder, doc, rSet);
+      List<Element> elements = createListFromResultSet(wrapper, rSet);
       for (Element element : elements) {
         results.appendChild(element);
       }
-      result.resultSetCount += elements.size();
+      wrapper.resultSetCount += elements.size();
     }
-    return result;
-  }
-
-  private DocumentBuilderFactoryBuilder documentFactoryBuilder(AdaptrisMessage msg) {
-    DocumentBuilderFactoryBuilder factoryBuilder =
-        (DocumentBuilderFactoryBuilder) msg.getObjectHeaders().get(JdbcDataQueryService.KEY_DOCBUILDER_FAC);
-    return DocumentBuilderFactoryBuilder.newInstanceIfNull(factoryBuilder);
+    return wrapper;
   }
 
   private boolean isPreserveOriginalMessage() {
