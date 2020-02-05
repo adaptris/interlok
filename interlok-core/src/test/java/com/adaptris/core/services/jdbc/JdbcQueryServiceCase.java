@@ -309,7 +309,7 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
     }
   }
 
-  protected void populateDatabase(List<AdapterTypeVersion> list, boolean doLogging) throws Exception {
+  protected void populateDatabase(List<AdapterTypeVersion> list, boolean versionIsXml, boolean doLogging) throws Exception {
     Connection c = null;
     PreparedStatement insert = null;
     PreparedStatement select = null;
@@ -324,7 +324,11 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
       for (AdapterTypeVersion atv : list) {
         insert.clearParameters();
         insert.setString(1, atv.getUniqueId());
-        insert.setString(2, atv.getVersion());
+        if (versionIsXml) {
+          insert.setString(2, "<version>" + atv.getVersion() + "</version>");
+        } else {
+          insert.setString(2, atv.getVersion());
+        }
         insert.setString(3, atv.getTranslatorType());
         insert.setTimestamp(4, new Timestamp(atv.getDate().getTime()));
         insert.setInt(5, atv.getCounter());
@@ -359,7 +363,11 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
       JdbcUtil.closeQuietly(select);
       JdbcUtil.closeQuietly(c);
     }
+  }
 
+
+  protected void populateDatabase(List<AdapterTypeVersion> list, boolean doLogging) throws Exception {
+    populateDatabase(list, false, doLogging);
   }
 
   protected static List<AdapterTypeVersion> generate(int max) throws Exception {

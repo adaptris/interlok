@@ -208,15 +208,17 @@ public abstract class JdbcQueryServiceCaseXmlResults extends JdbcQueryServiceCas
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
     AdapterTypeVersion entry = dbItems.get(0);
-    populateDatabase(dbItems, false);
+    populateDatabase(dbItems, true, true);
     JdbcDataQueryService s = createXmlService();
     XmlPayloadTranslatorImpl translator = createPayloadTranslator();
-    translator.setCdataColumnRegexp("ADAPTER.*");
+    translator.setCdataColumnRegexp(".*ADAPTER.*");
     translator.setOutputMessageEncoding("UTF-8");
     s.setResultSetTranslator(translator);
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
     logMessage(getName(), msg);
+    System.err.println(msg.getContent());
+    assertTrue(msg.getContent().contains("<![CDATA["));
   }
 
   @Test
@@ -327,4 +329,5 @@ public abstract class JdbcQueryServiceCaseXmlResults extends JdbcQueryServiceCas
     }
     return result;
   }
+
 }

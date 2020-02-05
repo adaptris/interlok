@@ -18,20 +18,14 @@ package com.adaptris.core.services.jdbc;
 
 import java.sql.SQLException;
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.Args;
-import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.jdbc.JdbcResult;
@@ -88,13 +82,11 @@ public class MergeResultSetIntoXmlPayload extends XmlPayloadTranslatorImpl {
     long resultSetCount = 0;
     try {
       Args.notNull(getMergeImplementation(), "mergeImplementation");
-      DocumentBuilderFactoryBuilder builder =
-          (DocumentBuilderFactoryBuilder) target.getObjectHeaders().get(JdbcDataQueryService.KEY_DOCBUILDER_FAC);
-      DocumentWrapper resultSet = createDocument(source, builder);
-      Document original = XmlHelper.createDocument(target, builder);
-      Document result = mergeImplementation.merge(original, resultSet.document);
-      XmlHelper.writeXmlDocument(result, target, getOutputMessageEncoding());
-      resultSetCount = resultSet.resultSetCount;
+      DocumentWrapper wrapper = createDocument(source, target);
+      Document original = XmlHelper.createDocument(target, wrapper.builderFactoryBuilder);
+      Document result = mergeImplementation.merge(original, wrapper.document);
+      XmlHelper.writeXmlDocument(result, target, getOutputMessageEncoding(), createTransformer(wrapper));
+      resultSetCount = wrapper.resultSetCount;
     }
     catch (SQLException e) {
       throw e;
@@ -107,20 +99,19 @@ public class MergeResultSetIntoXmlPayload extends XmlPayloadTranslatorImpl {
     return resultSetCount;
   }
 
-  private DocumentWrapper createDocument(JdbcResult rs, DocumentBuilderFactoryBuilder builderFactory) throws Exception {
-    DocumentBuilder builder = builderFactory.newDocumentBuilder(DocumentBuilderFactory.newInstance());
-    Document doc = builder.newDocument();
-    DocumentWrapper result = new DocumentWrapper(doc, 0);
+  private DocumentWrapper createDocument(JdbcResult rs, AdaptrisMessage msg) throws Exception {
+    DocumentWrapper wrapper = createWrapper(msg);
+    Document doc = wrapper.document;
     Element results = doc.createElement(getColumnNameStyle().format(ELEMENT_NAME_RESULTS));
     doc.appendChild(results);
     for(JdbcResultSet rSet : rs.getResultSets()) {
-      List<Element> elements = createListFromResultSet(builder, doc, rSet);
+      List<Element> elements = createListFromResultSet(wrapper, rSet);
       for (Element element : elements) {
         results.appendChild(element);
       }
-      result.resultSetCount += elements.size();
+      wrapper.resultSetCount += elements.size();
     }
-    return result;
+    return wrapper;
   }
 
   public DocumentMerge getMergeImplementation() {

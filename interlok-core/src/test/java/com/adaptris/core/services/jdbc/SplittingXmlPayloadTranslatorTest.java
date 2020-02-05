@@ -244,4 +244,22 @@ public class SplittingXmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlRe
         .withConnection(new NullConnection()).withProducer(producer);
   }
 
+  @Override
+  public void testDoService_CDATA() throws Exception {
+    createDatabase();
+    List<AdapterTypeVersion> dbItems = generate(10);
+    AdapterTypeVersion entry = dbItems.get(0);
+    populateDatabase(dbItems, true, true);
+    JdbcDataQueryService s = createXmlService();
+    XmlPayloadTranslatorImpl translator = createPayloadTranslator();
+    translator.setCdataColumnRegexp(".*ADAPTER.*");
+    translator.setOutputMessageEncoding("UTF-8");
+    s.setResultSetTranslator(translator);
+    AdaptrisMessage msg = createMessage(entry);
+    execute(s, msg);
+    AdaptrisMessage outputMessage = producer.getMessages().get(0);
+    logMessage(getName(), outputMessage);
+
+    assertTrue(outputMessage.getContent().contains("<![CDATA["));
+  }
 }
