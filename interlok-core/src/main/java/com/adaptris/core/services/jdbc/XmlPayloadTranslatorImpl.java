@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.regex.Pattern;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
 import org.apache.commons.lang3.BooleanUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -85,11 +88,13 @@ public abstract class XmlPayloadTranslatorImpl extends ResultSetTranslatorImp {
     cdataColumnRegexpPattern = null;
   }
 
-  protected List<Element> createListFromResultSet(DocumentBuilder builder, Document doc, JdbcResultSet rs) throws SQLException {
+  protected List<Element> createListFromResultSet(DocumentWrapper wrapper, JdbcResultSet rs)
+      throws SQLException {
     List<Element> results = new ArrayList<Element>();
 
     List<String> elementNames = new ArrayList<>();
     boolean firstRecord = true;
+    Document doc = wrapper.document;
     for (JdbcResultRow row : rs.getRows()) {
       Element elementRow = doc.createElement(getColumnNameStyle().format(ELEMENT_NAME_ROW));
       // let's go through and build up the element names we need once.
@@ -105,7 +110,7 @@ public abstract class XmlPayloadTranslatorImpl extends ResultSetTranslatorImp {
         if (isXmlColumn(columnName)) {
           try {
             Document xmlColumn = null;
-            xmlColumn = builder.parse(createInputSource(value));
+            xmlColumn = wrapper.builder.parse(createInputSource(value));
             node.appendChild(doc.importNode(xmlColumn.getFirstChild(), true));
           }
           catch (Exception e) {
@@ -113,11 +118,11 @@ public abstract class XmlPayloadTranslatorImpl extends ResultSetTranslatorImp {
               log.warn("Failed to parse column {} as an XML Document, treating as text.", columnName);
               log.trace("Failed to parse column {} as an XML Document", columnName, e);
             }
-            node.appendChild(createTextNode(doc, value, isCdataColumn(columnName)));
+            node.appendChild(createTextNode(doc, value, isCdataColumn(columnName, wrapper)));
           }
         }
         else {
-          node.appendChild(createTextNode(doc, value, isCdataColumn(columnName)));
+          node.appendChild(createTextNode(doc, value, isCdataColumn(columnName, wrapper)));
         }
         elementRow.appendChild(node);
       }
@@ -164,10 +169,14 @@ public abstract class XmlPayloadTranslatorImpl extends ResultSetTranslatorImp {
     return result;
   }
 
-  protected boolean isCdataColumn(String name) {
+  protected boolean isCdataColumn(String name, DocumentWrapper wrapper) {
     boolean result = false;
     if (cdataColumnRegexpPattern != null) {
       result = cdataColumnRegexpPattern.matcher(name).matches();
+
+    }
+    if (result) {
+      wrapper.hasCDATA = true;
     }
     return result;
   }
@@ -274,13 +283,36 @@ public abstract class XmlPayloadTranslatorImpl extends ResultSetTranslatorImp {
     return BooleanUtils.toBooleanDefaultIfNull(getStripIllegalXmlChars(), false);
   }
 
+  protected static Transformer createTransformer(DocumentWrapper wrapper) throws Exception {
+    if (wrapper.hasCDATA) {
+      // Saxon has opinions such that CDATA elements aren't always written
+      // as CDATA, they are escaped as appropriate; might be to do with OutputKeys.CDATA_SECTION_ELEMENTS
+      // Life is a bit to short for "correctness"...
+      // fallback transformer to force CDATA sections to have CDATA...
+      return TransformerFactory.newInstance(XmlHelper.FALLBACK_TRANSFORMER_FACTORY_IMPL, Thread.currentThread().getContextClassLoader())
+          .newTransformer();
+    }
+    return TransformerFactory.newInstance().newTransformer();
+  }
+
+  protected DocumentWrapper createWrapper(AdaptrisMessage msg) throws Exception {
+    return new DocumentWrapper(DocumentBuilderFactoryBuilder
+        .newInstanceIfNull((DocumentBuilderFactoryBuilder) msg.getObjectHeaders().get(JdbcDataQueryService.KEY_DOCBUILDER_FAC)), 0);
+  }
+
   protected class DocumentWrapper {
     Document document;
     long resultSetCount;
+    boolean hasCDATA = false;
+    DocumentBuilder builder = null;
+    DocumentBuilderFactoryBuilder builderFactoryBuilder;
 
-    DocumentWrapper(Document d, long count) {
+    DocumentWrapper(DocumentBuilderFactoryBuilder bfb, long count) throws Exception {
+      this.builderFactoryBuilder = bfb;
+      builder = builderFactoryBuilder.newDocumentBuilder(DocumentBuilderFactory.newInstance());
       resultSetCount = count;
-      document = d;
+      document = builder.newDocument();
+      // document.setXmlStandalone(true);
     }
   }
 }
