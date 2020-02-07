@@ -304,6 +304,25 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
     }
   }
 
+  @Override
+  public String getPayloadForLogging() {
+    StringBuffer sb = new StringBuffer("{");
+    boolean c = false;
+    for (String id : payloads.keySet()) {
+      if (c) {
+        sb.append(",");
+      } else {
+        c = true;
+      }
+      sb.append(id);
+      if (id.equals(currentPayloadId)) {
+        sb.append(":");
+        sb.append(getContent(id));
+      }
+    }
+    return sb.append("}").toString();
+  }
+
   /**
    * {@inheritDoc}.
    */

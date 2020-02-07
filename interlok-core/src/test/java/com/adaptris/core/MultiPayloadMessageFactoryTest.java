@@ -196,6 +196,17 @@ public class MultiPayloadMessageFactoryTest extends AdaptrisMessageFactoryImplCa
   }
 
   @Test
+  public void testOutputForLogging() throws Exception {
+    MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage) messageFactory.newMessage("cupcake", PAYLOAD);
+    message.addContent("bacon", CONTENT);
+    String logged = message.getPayloadForLogging();
+    assertTrue(message.getPayloadCount() == 2);
+    assertTrue(logged.contains("bacon:" + CONTENT));
+    assertTrue(logged.contains("cupcake"));
+    assertFalse(logged.contains("cupcake:" + new String(PAYLOAD)));
+  }
+
+  @Test
   public void testResolve() {
     MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage) messageFactory.newMessage("bacon", CONTENT, ENCODING, METADATA);
     message.addPayload("cake", PAYLOAD);
