@@ -45,7 +45,7 @@ public class ByteArrayPayloadDataOutputParameter implements DataOutputParameter<
   public void insert(byte[] data, InterlokMessage msg) throws InterlokException {
     try (OutputStream os = msg.getOutputStream()) {
       os.write(data);
-    } catch (IOException e) {
+    } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
   }

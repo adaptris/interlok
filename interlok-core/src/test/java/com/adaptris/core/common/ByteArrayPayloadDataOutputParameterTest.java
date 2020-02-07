@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.rules.TestName;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.fail;
 
 public class ByteArrayPayloadDataOutputParameterTest
 {
@@ -22,5 +23,18 @@ public class ByteArrayPayloadDataOutputParameterTest
     AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage();
     parameter.insert(PAYLOAD, message);
     assertArrayEquals(PAYLOAD, message.getPayload());
+  }
+
+  @Test
+  public void testException() throws Exception
+  {
+    try {
+      ByteArrayPayloadDataOutputParameter parameter = new ByteArrayPayloadDataOutputParameter();
+      AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage();
+      parameter.insert(null, message);
+      fail();
+    } catch (Exception e) {
+      // expected
+    }
   }
 }
