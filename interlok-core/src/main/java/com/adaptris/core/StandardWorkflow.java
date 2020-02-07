@@ -16,6 +16,7 @@
 
 package com.adaptris.core;
 
+import java.util.function.Consumer;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -58,7 +59,9 @@ public class StandardWorkflow extends StandardWorkflowImpl {
   }
 
   @Override
-  public synchronized void onAdaptrisMessage(AdaptrisMessage msg) {
+  public synchronized void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success,
+      Consumer<AdaptrisMessage> failure) {
+    ListenerCallbackHelper.prepare(msg, success, failure);
     if (!obtainChannel().isAvailable()) {
       handleChannelUnavailable(msg); // make pluggable?
     }
@@ -90,6 +93,9 @@ public class StandardWorkflow extends StandardWorkflowImpl {
       wip.addEvent(getConsumer(), true); // initial receive event
       getServiceCollection().doService(wip);
       doProduce(wip);
+      // handle success callback here.
+      // failure callback will be handled by the message-error-handler that's configured...
+      ListenerCallbackHelper.handleSuccessCallback(wip);
       logSuccess(wip, start);
     }
     catch (ServiceException e) {
@@ -108,5 +114,6 @@ public class StandardWorkflow extends StandardWorkflowImpl {
     }
     workflowEnd(msg, wip);
   }
+
 
 }

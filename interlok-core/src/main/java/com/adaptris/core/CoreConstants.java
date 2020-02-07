@@ -403,4 +403,17 @@ public abstract class CoreConstants {
    */
   public static final String MESSAGE_CONSUME_LOCATION = "_interlokMessageConsumedFrom";
 
+  /**
+   * Object metadata that stores the on success callback.
+   * 
+   * @see Workflow#onAdaptrisMessage(AdaptrisMessage, java.util.function.Consumer, java.util.function.Consumer)
+   */
+  public static final String OBJ_METADATA_ON_SUCCESS_CALLBACK = "_onSuccessCallback";
+  /**
+   * Object metadata that stores the on failure callback.
+   * 
+   * @see Workflow#onAdaptrisMessage(AdaptrisMessage, java.util.function.Consumer, java.util.function.Consumer)
+   */
+  public static final String OBJ_METADATA_ON_FAILURE_CALLBACK = "_onFailureCallback";
+
 }

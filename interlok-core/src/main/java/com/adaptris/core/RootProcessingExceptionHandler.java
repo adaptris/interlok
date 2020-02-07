@@ -64,6 +64,9 @@ public abstract class RootProcessingExceptionHandler implements ProcessingExcept
     else {
       // Get the digester and add our stuff to it.
       addErrorToDigest(message);
+      // no-one left to notify, so we're done, we've successfully handled the failure
+      // however we've handled it.
+      ListenerCallbackHelper.handleFailureCallback(message);
     }
   }
 
