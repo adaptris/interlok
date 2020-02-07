@@ -315,8 +315,10 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
         c = true;
       }
       sb.append(id);
-      sb.append(":");
-      sb.append(getContent(id));
+      if (id.equals(currentPayloadId)) {
+        sb.append(":");
+        sb.append(getContent(id));
+      }
     }
     return sb.append("}").toString();
   }

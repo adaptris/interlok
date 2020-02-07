@@ -202,7 +202,8 @@ public class MultiPayloadMessageFactoryTest extends AdaptrisMessageFactoryImplCa
     String logged = message.getPayloadForLogging();
     assertTrue(message.getPayloadCount() == 2);
     assertTrue(logged.contains("bacon:" + CONTENT));
-    assertTrue(logged.contains("cupcake:" + new String(PAYLOAD)));
+    assertTrue(logged.contains("cupcake"));
+    assertFalse(logged.contains("cupcake:" + new String(PAYLOAD)));
   }
 
   @Test
