@@ -22,15 +22,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 
 /**
  * A simple bean util class that allows us to call setters that have a {@code primitive} param.
  * 
  *
  */
-public final class SimpleBeanUtil {
+public abstract class SimpleBeanUtil {
   private static final List PRIMITIVES = Arrays.asList(new Class[]
   {
       int.class, Integer.class, Boolean.class, boolean.class, String.class, float.class, Float.class, double.class, Double.class,
@@ -40,42 +39,21 @@ public final class SimpleBeanUtil {
 
   static {
     Map<Class, Objectifier> map = new HashMap<>();
-    map.put(int.class, new Objectifier() {
-      public Object objectify(String str) { return Integer.parseInt(str);  }
-    });
-    map.put(Integer.class, new Objectifier() {
-      public Object objectify(String str) { return Integer.parseInt(str);  }
-    });
-    map.put(Boolean.class, new Objectifier() {
-      public Object objectify(String str) { return BooleanUtils.toBoolean(str);  }
-    });    
-    map.put(boolean.class, new Objectifier() {
-      public Object objectify(String str) { return BooleanUtils.toBoolean(str);  }
-    });  
-    map.put(String.class, new Objectifier() {
-      public Object objectify(String str) { return str;  }
-    });  
-    map.put(float.class, new Objectifier() {
-      public Object objectify(String str) { return Float.parseFloat(str); }
-    });     
-    map.put(Float.class, new Objectifier() {
-      public Object objectify(String str) { return Float.parseFloat(str); }
-    });     
-    map.put(double.class, new Objectifier() {
-      public Object objectify(String str) { return Double.parseDouble(str); }
-    });    
-    map.put(Double.class, new Objectifier() {
-      public Object objectify(String str) { return Double.parseDouble(str); }
-    });
-    map.put(long.class, new Objectifier() {
-      public Object objectify(String str) { return Long.parseLong(str); }
-    });    
-    map.put(Long.class, new Objectifier() {
-      public Object objectify(String str) { return Long.parseLong(str); }
-    });    
+    map.put(int.class, (s) -> Integer.parseInt(s));
+    map.put(Integer.class, (s) -> Integer.parseInt(s));
+    map.put(Boolean.class, (s) -> BooleanUtils.toBoolean(s));
+    map.put(boolean.class, (s) -> BooleanUtils.toBoolean(s));
+    map.put(String.class, (s) -> s);
+    map.put(float.class, (s) -> Float.parseFloat(s));
+    map.put(Float.class, (s) -> Float.parseFloat(s));
+    map.put(double.class, (s) -> Double.parseDouble(s));
+    map.put(Double.class, (s)-> Double.parseDouble(s));    
+    map.put(long.class, (s) -> Long.parseLong(s));
+    map.put(Long.class, (s) -> Long.parseLong(s));
     OBJECTIFIERS = Collections.unmodifiableMap(map);
   }
 
+  @FunctionalInterface
   private interface Objectifier {
     Object objectify(String str);
   }

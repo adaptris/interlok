@@ -16,16 +16,13 @@
 
 package com.adaptris.core.jms;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import javax.jms.JMSException;
 import javax.jms.Message;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.util.Args;
@@ -68,6 +65,7 @@ public class MetadataCorrelationIdSource implements CorrelationIdSource {
    * @see com.adaptris.core.jms.CorrelationIdSource#processCorrelationId
    *      (com.adaptris.core.AdaptrisMessage, javax.jms.Message)
    */
+  @Override
   public void processCorrelationId(AdaptrisMessage src, Message dest) throws JMSException {
     String correlationId = src.getMetadataValue(getMetadataKey());
     if (isEmpty(correlationId)) {
@@ -79,6 +77,7 @@ public class MetadataCorrelationIdSource implements CorrelationIdSource {
     }
   }
 
+  @Override
   public void processCorrelationId(Message src, AdaptrisMessage dest) throws JMSException {
     try {
       Args.notBlank(getMetadataKey(), "metadata-key");

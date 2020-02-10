@@ -19,10 +19,12 @@ import static com.adaptris.core.http.jetty.HttpConsumerTest.JETTY_HTTP_PORT;
 import static com.adaptris.core.http.jetty.HttpConsumerTest.URL_TO_POST_TO;
 import static com.adaptris.core.http.jetty.HttpConsumerTest.XML_PAYLOAD;
 import static com.adaptris.core.http.jetty.JettyHelper.createConnection;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
 import com.adaptris.core.CoreException;
@@ -47,17 +49,12 @@ public class JettyNoBacklogInterceptorTest extends ExampleWorkflowCase {
       + "stop-processing flags so that the service-list and\n" + "producer are not executed (the message is effectively\n"
       + "discarded\n" + "\n-->\n";
 
-  public JettyNoBacklogInterceptorTest(String testName) {
-    super(testName);
-  }
-
   @Override
-  protected void setUp() {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  protected void tearDown() {
-  }
-
+  @Test
   public void testInterceptor() throws Exception {
     HttpConnection connection = createConnection(Integer.parseInt(PROPERTIES.getProperty(JETTY_HTTP_PORT)));
     JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO);

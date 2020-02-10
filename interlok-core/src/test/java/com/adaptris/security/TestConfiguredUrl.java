@@ -27,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.security.keystore.ConfiguredUrl;
 import com.adaptris.security.util.Constants;
-import junit.framework.TestCase;
 
 /**
  * Test Inline Keystore Functionality wrapping a single KEYSTORE_X509 certificate
@@ -42,9 +41,7 @@ public class TestConfiguredUrl {
 
   }
 
-  /**
-   * @see TestCase#setUp()
-   */
+
   @Before
   public void setUp() throws Exception {
     Config config = Config.getInstance();

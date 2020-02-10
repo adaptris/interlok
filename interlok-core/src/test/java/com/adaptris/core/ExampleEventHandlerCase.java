@@ -16,11 +16,13 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import java.util.Iterator;
 import java.util.Map;
-
 import org.junit.Test;
-
 import com.adaptris.core.AdapterMarshallerFactory.MarshallingOutput;
 import com.adaptris.core.event.AdapterCloseEvent;
 import com.adaptris.core.lms.FileBackedMessageFactory;
@@ -53,19 +55,11 @@ public abstract class ExampleEventHandlerCase<T extends EventHandlerBase> extend
   protected AdapterMarshallerFactory marshallerFactory;
 
   public ExampleEventHandlerCase() {
-    super();
-
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
     marshallerFactory = AdapterXStreamMarshallerFactory.getInstance();
   }
-
-  public ExampleEventHandlerCase(String name) {
-    this();
-    setName(name);
-  }
-  
 
   @Override
   protected String createExampleXml(Object object) throws Exception {
@@ -121,7 +115,7 @@ public abstract class ExampleEventHandlerCase<T extends EventHandlerBase> extend
 
   @Test
   public void testSetMarshaller() throws Exception {
-    EventHandlerBase eventHandler = (EventHandlerBase) applyConfiguration(newEventHandler(getName()));
+    EventHandlerBase eventHandler = applyConfiguration(newEventHandler(getName()));
     
     XStreamJsonMarshaller marshaller = (XStreamJsonMarshaller) marshallerFactory.createMarshaller(MarshallingOutput.JSON);
     eventHandler.setMarshaller(marshaller);
@@ -164,21 +158,6 @@ public abstract class ExampleEventHandlerCase<T extends EventHandlerBase> extend
     }
   }
   
-  @SuppressWarnings("deprecation")
-  @Test
-  public void testSendEventWithDestination() throws Exception {
-    Event e = EventFactory.create(AdapterCloseEvent.class);
-    T eh = applyConfiguration(newEventHandler(getName()));
-    try {
-      eh.requestStart();
-      eh.send(e, new ConfiguredProduceDestination("destination"));
-      doAssertions(eh, 1, e.getClass());
-    }
-    finally {
-      eh.requestClose();
-
-    }
-  }
 
   @Test
   public void testSendMultipleEvent() throws Exception {

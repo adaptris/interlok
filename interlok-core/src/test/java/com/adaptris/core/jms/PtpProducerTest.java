@@ -24,10 +24,10 @@ import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 
 public class PtpProducerTest extends BasicJmsProducerCase {
 
-  public PtpProducerTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
-
 
   /**
    * @see com.adaptris.core.ExampleConfigCase#retrieveObjectForSampleConfig()

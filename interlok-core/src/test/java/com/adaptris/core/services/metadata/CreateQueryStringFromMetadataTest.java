@@ -16,24 +16,35 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.MetadataCollection;
+import com.adaptris.core.metadata.MetadataFilterImpl;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 
+@SuppressWarnings("deprecation")
 public class CreateQueryStringFromMetadataTest extends MetadataServiceExample {
 
-  public CreateQueryStringFromMetadataTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   public CreateQueryStringFromMetadata createService() {
-    CreateQueryStringFromMetadata svc = new CreateQueryStringFromMetadata();
+    CreateQueryStringFromMetadata svc = new CreateQueryStringFromMetadata()
+        .withMetadataFilter(new RegexMetadataFilter().withIncludePatterns("param1", "param2", "param3")).withQuerySeparator(null);
     svc.setResultKey("resultKey");
-    svc.setMetadataFilter(new RegexMetadataFilter().withIncludePatterns("param1", "param2", "param3"));
     return svc;
   }
 
 
+  @Test
   public void testQuerySeparator() throws Exception {
     CreateQueryStringFromMetadata service = new CreateQueryStringFromMetadata();
     assertNull(service.getSeparator());
@@ -50,6 +61,7 @@ public class CreateQueryStringFromMetadataTest extends MetadataServiceExample {
     assertEquals("&", service.separator());
   }
 
+  @Test
   public void testService_SimpleQueryString() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata("param1", "one");
@@ -62,7 +74,26 @@ public class CreateQueryStringFromMetadataTest extends MetadataServiceExample {
     assertTrue(msg.getMetadataValue("resultKey").contains("param3=three"));
   }
 
+  @Test
+  public void testService_WithException() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    CreateQueryStringFromMetadata service = createService().withMetadataFilter(new MetadataFilterImpl() {
 
+      @Override
+      public MetadataCollection filter(MetadataCollection original) {
+        throw new RuntimeException();
+      }
+      
+    });
+    try {
+      execute(service, msg);
+      fail();
+    } catch (Exception expected) {
+
+    }
+  }
+
+  @Test
   public void testService_SimpleQueryString_NoQueryPrefix() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     CreateQueryStringFromMetadata service = createService();
@@ -77,13 +108,14 @@ public class CreateQueryStringFromMetadataTest extends MetadataServiceExample {
     assertFalse(msg.getMetadataValue("resultKey").startsWith("?"));
   }
 
-
+  @Test
   public void testService_NoOutput() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     execute(createService(), msg);
     assertEquals("", msg.getMetadataValue("resultKey"));
   }
 
+  @Test
   public void testService_ComplexQueryString() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata("param1", "this is a field");

@@ -29,7 +29,6 @@ import static com.adaptris.core.management.Constants.DBG;
 import static com.adaptris.core.management.Constants.DEFAULT_CONFIG_MANAGER;
 import static com.adaptris.core.management.Constants.DEFAULT_PROPS_RESOURCE;
 import static com.adaptris.core.management.Constants.PROTOCOL_FILE;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -44,12 +43,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.Adapter;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.management.logging.LoggingConfigurator;
@@ -169,15 +167,7 @@ public class BootstrapProperties extends Properties {
    * @return The numerical value for the given property key, or default if necessary.
    */
   public Long getProperty(String key, Long defaultValue) {
-    Long value = null;
-    String v = getProperty(key);
-    try {
-      value = Long.parseLong(v); // rely on parseLong throwing an exception if  v == null, v.isEmpty() or not a number
-    } catch (NumberFormatException e) {
-      log.info("Could not parse numerical value [{}] for key [{}] - using default value [{}]", v, key, defaultValue);
-      value = defaultValue;
-    }
-    return value;
+    return NumberUtils.toLong( getProperty(key), defaultValue);
   }
 
   /**
@@ -293,7 +283,7 @@ public class BootstrapProperties extends Properties {
       rc = false;
     }
     if (DBG) {
-      log.trace("[{}] {}", u.toString(), (rc ? "found" : "not found"));
+      log.trace("[{}] {}", u.toString(), rc ? "found" : "not found");
     }
     return rc;
   }

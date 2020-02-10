@@ -16,7 +16,7 @@
 
 package com.adaptris.core;
 
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +44,7 @@ public class StandaloneConsumer implements AdaptrisMessageConsumer, StateManaged
 
   private AdaptrisConnection connection;
   private AdaptrisMessageConsumer consumer;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean isTrackingEndpoint;
   private transient ComponentState consumerState;

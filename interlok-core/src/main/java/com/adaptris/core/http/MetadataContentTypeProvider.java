@@ -16,13 +16,10 @@
 
 package com.adaptris.core.http;
 
-import static org.apache.commons.lang.StringUtils.defaultIfBlank;
-import static org.apache.commons.lang.StringUtils.isBlank;
-
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import java.util.Locale;
-
-import org.hibernate.validator.constraints.NotBlank;
-
+import javax.validation.constraints.NotBlank;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -70,7 +67,7 @@ public class MetadataContentTypeProvider extends ContentTypeProviderImpl {
     if (isBlank(getMetadataKey())) {
       throw new CoreException("metadata key is blank");
     }
-    return defaultIfBlank(msg.getMetadataValue(getMetadataKey()), defaultMimeType).toLowerCase(Locale.ROOT);
+    return defaultIfBlank(msg.getMetadataValue(getMetadataKey()), getDefaultMimeType()).toLowerCase(Locale.ROOT);
   }
 
 

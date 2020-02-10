@@ -340,6 +340,7 @@ public class NamingContextTest {
     }
   }
 
+  @SuppressWarnings("serial")
   private class CloseableNamingContext extends NamingContext implements Closeable {
 
     public CloseableNamingContext(Hashtable<String, Object> environment, Map<String, Object> objects) {
@@ -350,6 +351,7 @@ public class NamingContextTest {
       super(environment, nameInNamespace);
     }
 
+    @Override
     public void close() {
       try {
         super.close();
@@ -367,22 +369,27 @@ public class NamingContextTest {
       proxy = ne;
     }
 
+    @Override
     public boolean hasMoreElements() {
       return proxy.hasMoreElements();
     }
 
+    @Override
     public Object nextElement() {
       return proxy.nextElement();
     }
 
+    @Override
     public Object next() throws NamingException {
       return proxy.next();
     }
 
+    @Override
     public boolean hasMore() throws NamingException {
       return proxy.hasMore();
     }
 
+    @Override
     public void close() {
       try {
         proxy.close();

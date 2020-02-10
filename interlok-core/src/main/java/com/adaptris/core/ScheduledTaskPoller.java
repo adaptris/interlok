@@ -31,7 +31,7 @@ public abstract class ScheduledTaskPoller extends PollerImp {
 
   private static final TimeInterval DEFAULT_SHUTDOWN_WAIT = new TimeInterval(1L, TimeUnit.MINUTES);
 
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private TimeInterval shutdownWaitTime;
 
   protected transient ScheduledExecutorService executor;

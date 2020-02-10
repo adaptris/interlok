@@ -19,7 +19,7 @@ package com.adaptris.core.services.transcoding;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;

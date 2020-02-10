@@ -16,16 +16,12 @@
 
 package com.adaptris.core.services.metadata;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
-
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;

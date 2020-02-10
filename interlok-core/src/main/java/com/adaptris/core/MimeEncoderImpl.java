@@ -18,7 +18,7 @@ package com.adaptris.core;
 
 import static com.adaptris.core.util.MetadataHelper.convertFromProperties;
 import static com.adaptris.core.util.MetadataHelper.convertToProperties;
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

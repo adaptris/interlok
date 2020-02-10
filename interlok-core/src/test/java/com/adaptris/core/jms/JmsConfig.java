@@ -18,6 +18,7 @@ package com.adaptris.core.jms;
 
 import java.util.Arrays;
 import java.util.List;
+import com.adaptris.core.BaseCase;
 
 public abstract class JmsConfig {
 
@@ -35,4 +36,7 @@ public abstract class JmsConfig {
   protected static final List<MessageTypeTranslator> MESSAGE_TRANSLATOR_LIST = Arrays
       .asList(MESSAGE_TRANSLATORS);
 
+  public static boolean jmsTestsEnabled() {
+    return Boolean.parseBoolean(BaseCase.PROPERTIES.getProperty("jms.tests.enabled", "true"));
+  }
 }

@@ -16,22 +16,22 @@
 
 package com.adaptris.core.services.dynamic;
 
+import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.TradingRelationship;
-import junit.framework.TestCase;
 
 @SuppressWarnings("deprecation")
-public class StandardMatchingStrategyTest extends TestCase {
+public class StandardMatchingStrategyTest {
   
   private StandardMatchingStrategy strategy;
 
-  public StandardMatchingStrategyTest(String arg0) {
-    super(arg0);
-  }
-
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     strategy = new StandardMatchingStrategy();
   }
 
+  @Test
   public void testValidParam() throws Exception {
     TradingRelationship t = new TradingRelationship();
     t.setSource("src");
@@ -64,7 +64,8 @@ public class StandardMatchingStrategyTest extends TestCase {
     TradingRelationship t7 = new TradingRelationship("*", "*", "*");
     assertTrue(ts[7].equals(t7));
   }
-  
+
+  @Test
   public void testNullParam() throws Exception {
     TradingRelationship[] ts = strategy.create(null);
     assertTrue(ts.length == 0);

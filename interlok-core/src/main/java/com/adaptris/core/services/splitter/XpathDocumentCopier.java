@@ -17,18 +17,13 @@
 package com.adaptris.core.services.splitter;
 
 import static com.adaptris.core.util.XmlHelper.createDocument;
-
 import java.io.IOException;
-
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
-
-import org.hibernate.validator.constraints.NotBlank;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -78,12 +73,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"xpath", "copyMetadata", "copyObjectMetadata", "namespaceContext", "xmlDocumentFactoryConfig"})
 public class XpathDocumentCopier extends MessageCopier {
 
-  @NotNull
   @NotBlank
   private String xpath = null;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private KeyValuePairSet namespaceContext;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
   public XpathDocumentCopier() {
@@ -169,6 +163,6 @@ public class XpathDocumentCopier extends MessageCopier {
   }
 
   DocumentBuilderFactoryBuilder documentFactoryBuilder() {
-    return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig());
+    return DocumentBuilderFactoryBuilder.newInstanceIfNull(getXmlDocumentFactoryConfig());
   }
 }

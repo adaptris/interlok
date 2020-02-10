@@ -26,8 +26,7 @@ public abstract class TransformServiceExample extends ServiceCase {
    */
   public static final String BASE_DIR_KEY = "TransformServiceExamples.baseDir";
 
-  public TransformServiceExample(String name) {
-    super(name);
+  public TransformServiceExample() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }

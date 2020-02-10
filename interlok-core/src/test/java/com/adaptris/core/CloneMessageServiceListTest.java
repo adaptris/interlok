@@ -16,10 +16,14 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.Collection;
-
-import com.adaptris.core.metadata.NoOpMetadataFilter;
+import org.junit.Test;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
@@ -31,8 +35,9 @@ public class CloneMessageServiceListTest extends ServiceCollectionCase {
   private static final String VAL1 = "val1";
   private static final String KEY1 = "key1";
 
-  public CloneMessageServiceListTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
@@ -51,6 +56,7 @@ public class CloneMessageServiceListTest extends ServiceCollectionCase {
     return services;
   }
 
+  @Test
   public void testServiceOutOfStateOperation() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     CloneMessageServiceList service = createServiceList();
@@ -61,7 +67,8 @@ public class CloneMessageServiceListTest extends ServiceCollectionCase {
       //expected
     }
   }
-  
+
+  @Test
   public void testNormalOperation() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     CloneMessageServiceList service = createServiceList();
@@ -80,6 +87,29 @@ public class CloneMessageServiceListTest extends ServiceCollectionCase {
     }
   }
 
+  @Test
+  @SuppressWarnings("deprecation")
+  public void testNormalOperation_NoPreserveKeys_LegacyMode() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    CloneMessageServiceList service = createServiceList();
+    service.setOverrideMetadata(false);
+    MarkerService marker = new MarkerService();
+    service.getServices().add(marker);
+    try {
+      LifecycleHelper.initAndStart(service);
+      service.doService(msg);
+
+      // md not present because Service applied to a clone
+      assertTrue(msg.getMetadataValue(KEY1) == null);
+      assertTrue(marker.hasTriggered);
+    }
+    finally {
+      LifecycleHelper.stopAndClose(service);
+    }
+  }
+
+  
+  @Test
   public void testHaltProcessing() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     CloneMessageServiceList service = createServiceList();
@@ -99,17 +129,9 @@ public class CloneMessageServiceListTest extends ServiceCollectionCase {
     }
   }
 
-  public void testOverrideMetadataFilter() throws Exception {
-    CloneMessageServiceList service = createServiceList();
-    assertNull(service.getOverrideMetadataFilter());
-    assertNotNull(service.overrideMetadataFilter());
-    assertEquals(NoOpMetadataFilter.class, service.overrideMetadataFilter().getClass());
-    service.setOverrideMetadataFilter(new RegexMetadataFilter());
-    assertEquals(RegexMetadataFilter.class, service.getOverrideMetadataFilter().getClass());
-    assertEquals(RegexMetadataFilter.class, service.overrideMetadataFilter().getClass());
-  }
-
-  public void testNormalOperationPreserveKey() throws Exception {
+  @Test
+  @SuppressWarnings("deprecation")
+  public void testNormalOperationPreserveKey_LegacyMode() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     CloneMessageServiceList service = createServiceList();
     RegexMetadataFilter rmf = new RegexMetadataFilter();
@@ -130,6 +152,28 @@ public class CloneMessageServiceListTest extends ServiceCollectionCase {
     }
   }
 
+  @Test
+  public void testNormalOperationPreserveKey() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    CloneMessageServiceList service = createServiceList();
+    RegexMetadataFilter rmf = new RegexMetadataFilter();
+    rmf.addIncludePattern(KEY1);
+    service.setOverrideMetadataFilter(rmf);
+    try {
+      LifecycleHelper.initAndStart(service);
+
+      service.doService(msg);
+
+      // md not present because Service applied to a clone
+      assertNotNull(msg.getMetadataValue(KEY1));
+      assertEquals(VAL1, msg.getMetadataValue(KEY1));
+    }
+    finally {
+      LifecycleHelper.stopAndClose(service);
+    }
+  }
+  
+  @Test
   public void testFailWithNoContinueOnFail() throws Exception {
     CloneMessageServiceList services = createServiceList();
     services.addService(new ThrowExceptionService(new ConfiguredException("Fail")));
@@ -144,6 +188,7 @@ public class CloneMessageServiceListTest extends ServiceCollectionCase {
     }
   }
 
+  @Test
   public void testFailWithContinueOnFail() throws Exception {
     CloneMessageServiceList services = createServiceList();
     ServiceImp service3 = new ThrowExceptionService(new ConfiguredException("Fail"));
@@ -153,6 +198,7 @@ public class CloneMessageServiceListTest extends ServiceCollectionCase {
     execute(services, msg);
   }
 
+  @Test
   public void testRestartAffectedServiceOnFail() throws Exception {
     CloneMessageServiceList services = createServiceList();
     services.setRestartAffectedServiceOnException(Boolean.TRUE);
@@ -215,6 +261,7 @@ public class CloneMessageServiceListTest extends ServiceCollectionCase {
       setUniqueId(s);
     }
 
+    @Override
     public void doService(AdaptrisMessage msg) throws ServiceException {
       hasTriggered = true;
     }

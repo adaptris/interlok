@@ -16,11 +16,15 @@
 
 package com.adaptris.core.services.aggregator;
 
+import static org.junit.Assert.assertEquals;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
+import com.adaptris.core.services.conditional.conditions.ConditionImpl;
 import com.adaptris.core.services.mime.MimeJunitHelper;
 import com.adaptris.core.services.splitter.LineCountSplitter;
 import com.adaptris.core.services.splitter.MimePartSplitter;
@@ -30,20 +34,15 @@ import com.adaptris.core.util.MimeHelper;
 import com.adaptris.util.TimeInterval;
 import com.adaptris.util.text.mime.BodyPartIterator;
 
+@SuppressWarnings("deprecation")
 public class MimeAggregatorTest extends MimeAggregatorCase {
 
-  public MimeAggregatorTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-  }
-
+  @Test
   public void testService_ContentEncoding() throws Exception {
     // This is a 100 line message, so we expect to get 11 parts.
     AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
@@ -59,7 +58,7 @@ public class MimeAggregatorTest extends MimeAggregatorCase {
     assertEquals(11, input.size());
   }
 
-  @SuppressWarnings("deprecation")
+  @Test
   public void testService_ContentIdProvided() throws Exception {
     // This is a 100 line message, so we expect to get 11 parts.
     AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
@@ -76,6 +75,7 @@ public class MimeAggregatorTest extends MimeAggregatorCase {
     assertEquals(11, input.size());
   }
 
+  @Test
   public void testService_MimeSplitter() throws Exception {
     // This is a 3 part message, so that should generate 3 split messages; which should generate 4 parts at the end.
     AdaptrisMessage msg = MimeJunitHelper.create();
@@ -90,6 +90,23 @@ public class MimeAggregatorTest extends MimeAggregatorCase {
     execute(service, msg);
     BodyPartIterator input = MimeHelper.createBodyPartIterator(msg);
     assertEquals(4, input.size());
+  }
+
+  @Test
+  public void testService_withFilter() throws Exception {
+    // This is a 100 line message, so we expect to get 11 parts.
+    AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
+    SplitJoinService service = new SplitJoinService();
+    // The service doesn't actually matter right now.
+    service.setService(createAddMetadataService(getName()));
+    service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
+    service.setSplitter(new LineCountSplitter());
+    MimeAggregator aggr = createAggregatorForTests();
+    aggr.setFilterCondition(new EvenOddCondition());
+    service.setAggregator(aggr);
+    execute(service, msg);
+    BodyPartIterator input = MimeHelper.createBodyPartIterator(msg);
+    assertEquals(6, input.size());
   }
 
   @Override
@@ -120,5 +137,22 @@ public class MimeAggregatorTest extends MimeAggregatorCase {
   @Override
   protected String createBaseFileName(Object object) {
     return super.createBaseFileName(object) + "-MimeAggregator";
+  }
+
+  // Have a condition that every other call passes
+
+  private class EvenOddCondition extends ConditionImpl {
+    private int numberOfCalls = 0;
+
+    @Override
+    public boolean evaluate(AdaptrisMessage message) throws CoreException {
+      numberOfCalls++;
+      return numberOfCalls %2 == 0;
+    }
+
+    @Override
+    public void close() {
+      throw new RuntimeException();
+    }
   }
 }

@@ -16,7 +16,7 @@
 
 package com.adaptris.core;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.adaptris.core.util.Args;
 

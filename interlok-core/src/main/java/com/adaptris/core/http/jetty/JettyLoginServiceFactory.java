@@ -8,6 +8,6 @@ import org.eclipse.jetty.security.LoginService;
  */
 public interface JettyLoginServiceFactory {
 
-  public LoginService retrieveLoginService();
+  public LoginService retrieveLoginService() throws Exception;
   
 }

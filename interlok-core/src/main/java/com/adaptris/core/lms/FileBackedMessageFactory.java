@@ -16,20 +16,17 @@
 
 package com.adaptris.core.lms;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
-
 import org.apache.commons.io.FileCleaningTracker;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
@@ -67,7 +64,7 @@ public class FileBackedMessageFactory extends DefaultMessageFactory {
 
   @InputFieldDefault(value = "System.getProperty(java.io.tmpdir)")
   private String tempDirectory;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "256Kb")
   private Integer defaultBufferSize;
   @AdvancedConfig
@@ -80,7 +77,7 @@ public class FileBackedMessageFactory extends DefaultMessageFactory {
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean extendedLogging;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean useNio;
   

@@ -16,32 +16,34 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TestName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.stubs.MessageCounter;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.stubs.ObjectUtils;
+import com.adaptris.core.stubs.UpgradedToJunit4;
 import com.adaptris.core.util.LifecycleHelper;
-
-import junit.framework.TestCase;
 
 /**
  * <p>
@@ -50,9 +52,9 @@ import junit.framework.TestCase;
  * checking files exist and deleting them.
  * </p>
  */
-public abstract class BaseCase extends TestCase {
-  protected static final long MAX_WAIT = 65000;
-  protected static final int DEFAULT_WAIT_INTERVAL = 100;
+public abstract class BaseCase implements UpgradedToJunit4 {
+  public static final long MAX_WAIT = 65000;
+  public static final int DEFAULT_WAIT_INTERVAL = 100;
 
   public static final Properties PROPERTIES;
   public static final String PROPERTIES_RESOURCE = "unit-tests.properties";
@@ -70,13 +72,19 @@ public abstract class BaseCase extends TestCase {
 
   protected transient Log log = LogFactory.getLog(this.getClass().getName());
   protected static transient Logger slf4jLogger = LoggerFactory.getLogger(BaseCase.class);
+  @Rule
+  public TestName testName = new TestName();
 
-  public BaseCase() {
-    super();
+  @Before
+  public void beforeTests() {
+    if (!isAnnotatedForJunit4()) {
+      throw new RuntimeException(this.getClass().getCanonicalName()
+          + ": isAnnotatedForJunit4() method returned false, please add annotations, and override the method.");
+    }
   }
 
-  public BaseCase(String name) {
-    super(name);
+  public String getName() {
+    return testName.getMethodName();
   }
 
   public static void execute(StandaloneConsumer c, StandaloneProducer p, AdaptrisMessage m, MockMessageListener stub)
@@ -159,7 +167,8 @@ public abstract class BaseCase extends TestCase {
     }
   }
 
-  protected static void assertRoundtripEquality(Object input, Object output, List<Class> classesToIgnore) throws Exception {
+  public static void assertRoundtripEquality(Object input, Object output,
+      List<Class> classesToIgnore) throws Exception {
     if (input == null && output == null) {
       return;
     }
@@ -207,23 +216,34 @@ public abstract class BaseCase extends TestCase {
     }
   }
 
-  protected static void assertRoundtripEquality(Object input, Object output) throws Exception {
+  public static void assertRoundtripEquality(Object input, Object output) throws Exception {
     assertRoundtripEquality(input, output, new ArrayList<Class>());
   }
 
 
   protected void doJavaxValidation(Object... objs) {
+    Validator validator = vFactory.getValidator();
     for (Object o : objs) {
-      if (o == null) continue;
-      Validator validator = vFactory.getValidator();
-      Set<ConstraintViolation<Object>> violations = validator.validate(o);
-      for (ConstraintViolation<Object> v : violations) {
-        String logString = String.format("Constraint Violation: [%1$s]=[%2$s]", v.getPropertyPath(), v.getMessage());
-        log.warn(logString);
-        System.err.println(logString);
-      }
+      Set<ConstraintViolation<Object>> violations = validate(validator, o);
+      logViolations(violations);
       assertEquals("Expected 0 Constraint Violations, got " + violations.size(), 0, violations.size());
     }
+  }
+
+  protected void logViolations(Collection<ConstraintViolation<Object>> violations) {
+    for (ConstraintViolation<Object> v : violations) {
+      String logString = String.format("Constraint Violation: [%1$s]=[%2$s]", v.getPropertyPath(), v.getMessage());
+      log.warn(logString);
+      System.err.println(logString);
+    }
+  }
+
+  protected Set<ConstraintViolation<Object>> validate(Validator v, Object o) {
+    if (o == null) {
+      return Collections.EMPTY_SET;
+    }
+    Validator validator = ObjectUtils.defaultIfNull(v, vFactory.getValidator());
+    return validator.validate(o);
   }
 
   @Deprecated
@@ -251,14 +271,15 @@ public abstract class BaseCase extends TestCase {
     return ObjectUtils.invokeGetter(obj, methodName);
   }
 
-  protected static EventHandler createandStartDummyEventHandler() throws CoreException {
+  public static EventHandler createandStartDummyEventHandler() throws CoreException {
     DefaultEventHandler eh = new DefaultEventHandler();
     LifecycleHelper.init(eh);
     LifecycleHelper.start(eh);
     return eh;
   }
 
-  protected static ProcessingExceptionHandler createandStartDummyMessageErrorHandler() throws CoreException {
+  public static ProcessingExceptionHandler createandStartDummyMessageErrorHandler()
+      throws CoreException {
     StandardProcessingExceptionHandler eh = new StandardProcessingExceptionHandler();
     LifecycleHelper.init(eh);
     LifecycleHelper.start(eh);

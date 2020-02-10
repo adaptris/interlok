@@ -17,13 +17,9 @@ package com.adaptris.util.text.xml;
 
 import java.io.InputStream;
 import java.io.Reader;
-
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.stubs.MessageHelper;
@@ -31,14 +27,12 @@ import com.adaptris.core.transform.XmlValidationServiceTest;
 
 public class ValidatorTest extends BaseCase {
 
-  @Before
-  public void setUp() throws Exception {
-  }
 
-  @After
-  public void tearDown() throws Exception {
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
-
+  
   @Test
   public void testValidatorString() throws Exception {
     Validator v = createValidator(null);

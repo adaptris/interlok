@@ -23,15 +23,17 @@ import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_ADAPTER_TYPE;
 import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_METRICS_TYPE;
 import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_WORKFLOW_TYPE;
 import static com.adaptris.core.runtime.AdapterComponentMBean.WORKFLOW_PREFIX;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import javax.management.JMX;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.Channel;
@@ -54,18 +56,14 @@ public abstract class StatisticsMBeanCase extends BaseCase {
   protected MBeanServer mBeanServer;
   protected List<ObjectName> registeredObjects;
 
-  public StatisticsMBeanCase(String name) {
-    super(name);
-  }
-
-  @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     mBeanServer = JmxHelper.findMBeanServer();
     registeredObjects = new ArrayList<ObjectName>();
   }
 
-  @Override
-  protected void tearDown() throws Exception {
+  @After
+  public void tearDown() throws Exception {
     for (ObjectName bean : registeredObjects) {
       if (mBeanServer.isRegistered(bean)) {
         mBeanServer.unregisterMBean(bean);
@@ -74,6 +72,7 @@ public abstract class StatisticsMBeanCase extends BaseCase {
     }
   }
 
+  @Test
   public void testRegistration() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -89,6 +88,7 @@ public abstract class StatisticsMBeanCase extends BaseCase {
     }
   }
 
+  @Test
   public void testStandardGetters() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -113,6 +113,7 @@ public abstract class StatisticsMBeanCase extends BaseCase {
     }
   }
 
+  @Test
   public void testGet_NoTimeslicesAvailable() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
@@ -132,6 +133,7 @@ public abstract class StatisticsMBeanCase extends BaseCase {
     }
   }
 
+  @Test
   public void testGetTimesliceDuration() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 

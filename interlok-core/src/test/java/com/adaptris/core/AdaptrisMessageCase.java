@@ -16,13 +16,11 @@
 
 package com.adaptris.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import com.adaptris.core.stubs.MockEncoder;
+import com.adaptris.util.GuidGenerator;
+import com.adaptris.util.stream.StreamUtil;
+import org.apache.commons.io.IOUtils;
+import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -34,18 +32,20 @@ import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.io.IOUtils;
-import org.junit.Test;
-
-import com.adaptris.core.stubs.MockEncoder;
-import com.adaptris.util.GuidGenerator;
-import com.adaptris.util.stream.StreamUtil;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings("deprecation")
 public abstract class AdaptrisMessageCase {
@@ -297,9 +297,18 @@ public abstract class AdaptrisMessageCase {
   public void testSetCharEncoding() throws Exception {
     AdaptrisMessage msg1 = createMessage();
 
-    msg1.setContentEncoding("ISO-8859-1");
+    msg1.setContentEncoding(StandardCharsets.ISO_8859_1.name());
 
-    assertTrue(msg1.getContentEncoding().equals("ISO-8859-1"));
+    assertEquals(Charset.forName("iso-8859-1").name(), msg1.getCharEncoding());
+    msg1.setCharEncoding("iso-8859-2");
+    assertEquals(Charset.forName("iso-8859-2").name(), msg1.getContentEncoding());
+    try {
+      msg1.setContentEncoding("well, this, should be invalid");
+      fail();
+    } catch (Exception expected) {
+
+    }
+
   }
 
   @Test
@@ -592,6 +601,7 @@ public abstract class AdaptrisMessageCase {
     assertEquals(VAL1, msg.resolve("%message{nestedKey}"));
     assertEquals(PAYLOAD.length(), Integer.parseInt(msg.resolve("%message{%size}")));
     assertEquals(msg.getUniqueId(), msg.resolve("%message{%uniqueId}"));
+    assertEquals(msg.getContent(), msg.resolve("%message{%payload}"));
 
     assertEquals(String.format("%s_%s_%s", VAL1, VAL2, "val3"), msg.resolve("%message{key1}_%message{key2}_%message{key*3}"));
     assertEquals(String.format("%s_%s_%s", VAL1, VAL1, "val3"), msg.resolve("%message{key1}_%message{key1}_%message{key*3}"));

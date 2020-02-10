@@ -16,13 +16,12 @@
 
 package com.adaptris.core.interceptor;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 import java.util.List;
-
 import javax.management.JMX;
 import javax.management.ObjectName;
-
 import com.adaptris.core.Adapter;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.SerializableAdaptrisMessage;
@@ -31,15 +30,11 @@ import com.adaptris.interlok.management.MessageProcessor;
 
 public class MessageMetricsStatisticsByMetadataTest extends MessageMetricsStatisticsTest {
 
-  public MessageMetricsStatisticsByMetadataTest(String name) {
-    super(name);
-  }
-
   @Override
   public void testGetMessageStatistics() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     String payload = "SomePayload";
-    MessageMetricsInterceptorByMetadata interceptor = (MessageMetricsInterceptorByMetadata) createInterceptor();
+    MessageMetricsInterceptorByMetadata interceptor = createInterceptor();
     interceptor.setUniqueId(getName());
     Adapter adapter = createSingleChannelAdapter(adapterName, interceptor);
     List<BaseComponentMBean> mBeans = createJmxManagers(adapter);
@@ -69,6 +64,7 @@ public class MessageMetricsStatisticsByMetadataTest extends MessageMetricsStatis
     }
   }
 
+  @Override
   protected SerializableAdaptrisMessage createMessageForInjection(String payload) {
     SerializableAdaptrisMessage msg = null;
     if (!isEmpty(payload)) {

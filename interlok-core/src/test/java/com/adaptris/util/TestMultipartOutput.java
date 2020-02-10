@@ -16,20 +16,18 @@
 
 package com.adaptris.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import java.io.ByteArrayOutputStream;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.util.text.mime.ByteArrayIterator;
 import com.adaptris.util.text.mime.MimeConstants;
 import com.adaptris.util.text.mime.MultiPartOutput;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
-public class TestMultipartOutput extends TestCase implements MimeConstants {
+public class TestMultipartOutput implements MimeConstants {
   private static final String NUMBER_OF_PARTS = "Number of parts";
 
   private static final String PROPERTY_FILE_HEADER = "System Properties";
@@ -40,28 +38,13 @@ public class TestMultipartOutput extends TestCase implements MimeConstants {
   private GuidGenerator guid;
   static final Log logR = LogFactory.getLog(TestMultipartOutput.class);
 
-  public TestMultipartOutput(java.lang.String testName) {
-    super(testName);
-  }
 
-  public static void main(java.lang.String[] args) {
-    junit.textui.TestRunner.run(suite());
-  }
-
-  public static Test suite() {
-    TestSuite suite = new TestSuite(TestMultipartOutput.class);
-    return suite;
-  }
-
-  @Override
+  @Before
   public void setUp() throws Exception {
     guid = new GuidGenerator();
   }
 
-  @Override
-  public void tearDown() {
-  }
-
+  @Test
   public void testCreatePlainMimeOutput() {
     try {
 
@@ -75,6 +58,7 @@ public class TestMultipartOutput extends TestCase implements MimeConstants {
     }
   }
 
+  @Test
   public void testCreateBase64MimeOutput() {
     try {
 
@@ -88,6 +72,7 @@ public class TestMultipartOutput extends TestCase implements MimeConstants {
     }
   }
 
+  @Test
   public void testCreate7bitMimeOutput() {
     try {
 
@@ -101,6 +86,7 @@ public class TestMultipartOutput extends TestCase implements MimeConstants {
     }
   }
 
+  @Test
   public void testCreate8bitMimeOutput() {
     try {
 
@@ -114,6 +100,7 @@ public class TestMultipartOutput extends TestCase implements MimeConstants {
     }
   }
 
+  @Test
   public void testCreateQuotedPrintableMimeOutput() {
     try {
 
@@ -127,6 +114,7 @@ public class TestMultipartOutput extends TestCase implements MimeConstants {
     }
   }
 
+  @Test
   public void testCreateMultiPartMimeOutput() {
     try {
 
@@ -145,6 +133,7 @@ public class TestMultipartOutput extends TestCase implements MimeConstants {
     }
   }
 
+  @Test
   public void testCreateMultiPartWithNullPayload() {
     try {
 
@@ -160,6 +149,7 @@ public class TestMultipartOutput extends TestCase implements MimeConstants {
     }
   }
 
+  @Test
   public void testCreateMultiPartWithRemovedParts() {
     try {
 

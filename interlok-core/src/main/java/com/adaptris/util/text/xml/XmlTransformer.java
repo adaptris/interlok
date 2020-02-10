@@ -16,14 +16,13 @@
 
 package com.adaptris.util.text.xml;
 
-import static com.adaptris.core.util.DocumentBuilderFactoryBuilder.newInstance;
+import static com.adaptris.core.util.DocumentBuilderFactoryBuilder.newInstanceIfNull;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -68,14 +67,12 @@ public class XmlTransformer {
    * stylesheet.
    * @throws Exception in the event of parsing / transform errors
    */
-  public void transform(Transformer transformer, Source xmlIn, Result xmlOut, String xsl, Map properties) throws Exception {
-    if (properties != null) {
-      transformer.clearParameters();
-      Iterator<String> iter = properties.keySet().iterator();
-      while (iter.hasNext()) {
-        Object o = iter.next();
-        transformer.setParameter(o.toString(), properties.get(o));
-      }
+  public void transform(Transformer transformer, Source xmlIn, Result xmlOut, String xsl, Map<Object, Object> properties) throws Exception {
+    transformer.clearParameters();
+    if (properties != null) {  
+      properties.forEach((key, value) -> {
+        transformer.setParameter(key.toString(), value);
+      });
     }
     transformer.transform(xmlIn, xmlOut);
   }
@@ -91,7 +88,7 @@ public class XmlTransformer {
    * stylesheet.
    * @throws Exception in the event of parsing / transform errors
    */
-  public void transform(Transformer transformer, InputStream xmlIn, OutputStream xmlOut, String xsl, Map properties) throws Exception {
+  public void transform(Transformer transformer, InputStream xmlIn, OutputStream xmlOut, String xsl, Map<Object, Object> properties) throws Exception {
     transform(transformer, createSource(xmlIn), new StreamResult(xmlOut), xsl, properties);
   }
 
@@ -106,7 +103,7 @@ public class XmlTransformer {
    * stylesheet.
    * @throws Exception in the event of parsing / transform errors
    */
-  public void transform(Transformer transformer, Reader xmlIn, Writer xmlOut, String xsl, Map properties) throws Exception {
+  public void transform(Transformer transformer, Reader xmlIn, Writer xmlOut, String xsl, Map<Object, Object> properties) throws Exception {
     transform(transformer, createSource(xmlIn), new StreamResult(xmlOut), xsl, properties);
   }
 
@@ -149,12 +146,17 @@ public class XmlTransformer {
     transform(transformer, xmlIn, xmlOut, xsl, null);
   }
 
+  private DocumentBuilder docBuilder() throws ParserConfigurationException {
+    DocumentBuilderFactoryBuilder myBuilder = newInstanceIfNull(builder);
+    return myBuilder.newDocumentBuilder(myBuilder.build());
+  }
+
   private Source createSource(InputStream in) throws ParserConfigurationException, SAXException, IOException {
-    return createSource(newInstance(builder).build().newDocumentBuilder(), new InputSource(in));
+    return createSource(docBuilder(), new InputSource(in));
   }
 
   private Source createSource(Reader in) throws ParserConfigurationException, SAXException, IOException {
-    return createSource(newInstance(builder).build().newDocumentBuilder(), new InputSource(in));
+    return createSource(docBuilder(), new InputSource(in));
   }
 
   private Source createSource(DocumentBuilder docBuilder, InputSource source) throws SAXException, IOException {

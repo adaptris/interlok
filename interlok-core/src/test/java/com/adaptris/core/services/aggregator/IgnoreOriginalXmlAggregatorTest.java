@@ -18,16 +18,18 @@ package com.adaptris.core.services.aggregator;
 
 import static com.adaptris.core.services.splitter.XpathSplitterTest.ENCODING_UTF8;
 import static com.adaptris.core.services.splitter.XpathSplitterTest.ENVELOPE_DOCUMENT;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
+import com.adaptris.core.services.conditional.conditions.ConditionImpl;
 import com.adaptris.core.services.splitter.SplitJoinService;
 import com.adaptris.core.services.splitter.SplitJoinServiceTest;
 import com.adaptris.core.services.splitter.SplitterCase;
@@ -41,19 +43,13 @@ import com.adaptris.util.text.xml.XPath;
 @SuppressWarnings("deprecation")
 public class IgnoreOriginalXmlAggregatorTest extends XmlAggregatorCase {
 
-  public IgnoreOriginalXmlAggregatorTest(String name) {
-    super(name);
-  }
 
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-  }
-
-
+  @Test
   public void testSplitJoinService_WithExplicitDocumentEnoding() throws Exception {
     // This is a XML doc with 3 iterable elements...
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(SplitterCase.XML_MESSAGE);
@@ -74,6 +70,7 @@ public class IgnoreOriginalXmlAggregatorTest extends XmlAggregatorCase {
     assertEquals("UTF-8", msg.getContentEncoding());
   }
 
+  @Test
   public void testSplitJoinService_WithImplicitDocumentEnoding() throws Exception {
     // This is a XML doc with 3 iterable elements...
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(SplitterCase.XML_MESSAGE, "ISO-8859-1");
@@ -90,6 +87,7 @@ public class IgnoreOriginalXmlAggregatorTest extends XmlAggregatorCase {
     assertEquals("ISO-8859-1", msg.getContentEncoding());
   }
 
+  @Test
   public void testJoinMessage_NoTemplate() throws Exception {
     XmlDocumentAggregator aggr = new IgnoreOriginalXmlDocumentAggregator();
     aggr.setMergeImplementation(new InsertNode(SplitJoinServiceTest.XPATH_ENVELOPE));
@@ -106,6 +104,28 @@ public class IgnoreOriginalXmlAggregatorTest extends XmlAggregatorCase {
     catch (CoreException expected) {
 
     }
+  }
+
+  @Test
+  public void testSplitJoinService_withFilter() throws Exception {
+    // This is a XML doc with 3 iterable elements...
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(SplitterCase.XML_MESSAGE);
+    SplitJoinService service = new SplitJoinService();
+    // The service doesn't actually matter right now.
+    service.setService(asCollection(new NullService()));
+    service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
+    service.setSplitter(new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8));
+    IgnoreOriginalXmlDocumentAggregator aggr = new IgnoreOriginalXmlDocumentAggregator("<new/>", new InsertNode("/new"));
+    aggr.setDocumentEncoding("UTF-8");
+    aggr.setFilterCondition(new EvenOddCondition());
+    service.setAggregator(aggr);
+    execute(service, msg);
+
+    // Should now be 3 document nodes
+    // because we ignore the original
+    XPath xpath = new XPath();
+    assertEquals(1, xpath.selectNodeList(XmlHelper.createDocument(msg, true), "/new/document").getLength());
+    assertEquals("UTF-8", msg.getContentEncoding());
   }
 
   @Override
@@ -130,5 +150,21 @@ public class IgnoreOriginalXmlAggregatorTest extends XmlAggregatorCase {
   @Override
   protected IgnoreOriginalXmlDocumentAggregator createAggregatorForTests() {
     return new IgnoreOriginalXmlDocumentAggregator("<envelope/>");
+  }
+
+  // Have a condition that every other call passes
+  private class EvenOddCondition extends ConditionImpl {
+    private int numberOfCalls = 0;
+
+    @Override
+    public boolean evaluate(AdaptrisMessage message) throws CoreException {
+      numberOfCalls++;
+      return numberOfCalls %2 == 0;
+    }
+
+    @Override
+    public void close() {
+      throw new RuntimeException();
+    }
   }
 }

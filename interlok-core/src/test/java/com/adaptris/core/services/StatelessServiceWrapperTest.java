@@ -16,6 +16,12 @@
 
 package com.adaptris.core.services;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.AdaptrisMessageProducer;
@@ -33,14 +39,11 @@ import com.adaptris.core.util.LifecycleHelper;
 
 public class StatelessServiceWrapperTest extends GeneralServiceExample {
 
-  public StatelessServiceWrapperTest(java.lang.String testName) {
-    super(testName);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
-
+  @Test
   public void testNoWrappedService() throws Exception {
     StatelessServiceWrapper ws = new StatelessServiceWrapper();
     ws.setContinueOnFail(true);
@@ -58,6 +61,7 @@ public class StatelessServiceWrapperTest extends GeneralServiceExample {
 
   }
 
+  @Test
   public void testWrappingOfServiceList() throws Exception {
     ServiceList ws = new ServiceList();
     ws.setUniqueId(ServiceList.class.getSimpleName());
@@ -73,6 +77,7 @@ public class StatelessServiceWrapperTest extends GeneralServiceExample {
     assertNotSame(ws.getUniqueId(), s.getUniqueId());
   }
 
+  @Test
   public void testWrappingOfServiceListWrappedSettersAreCalled() throws Exception {
     ServiceList ws = new ServiceList();
     ws.setUniqueId(ServiceList.class.getSimpleName());
@@ -85,6 +90,7 @@ public class StatelessServiceWrapperTest extends GeneralServiceExample {
     assertEquals(ws.isTrackingEndpoint(), s.isTrackingEndpoint());
   }
 
+  @Test
   public void testWrapping() throws Exception {
     ExampleBranchingService ws = new ExampleBranchingService();
     ws.setUniqueId(ExampleBranchingService.class.getSimpleName());
@@ -105,6 +111,7 @@ public class StatelessServiceWrapperTest extends GeneralServiceExample {
 
   }
 
+  @Test
   public void testWrappingWrappedSettersAreCalled() throws Exception {
     ExampleBranchingService ws = new ExampleBranchingService();
     ws.setUniqueId(ExampleBranchingService.class.getSimpleName());
@@ -118,6 +125,7 @@ public class StatelessServiceWrapperTest extends GeneralServiceExample {
 
   }
 
+  @Test
   public void testService() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("ABC");
     MockMessageProducer prod = new MockMessageProducer();
@@ -128,6 +136,7 @@ public class StatelessServiceWrapperTest extends GeneralServiceExample {
     assertEquals("ABC", prod.getMessages().get(0).getContent());
   }
 
+  @Test
   public void testServiceThatFailsToStart() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("ABC");
     StatelessServiceWrapper service = new StatelessServiceWrapper(new NullService() {
@@ -147,6 +156,7 @@ public class StatelessServiceWrapperTest extends GeneralServiceExample {
     }
   }
 
+  @Test
   public void testWrappedServiceCreateName() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("");
     MockMessageProducer prod = new MockMessageProducer();
@@ -157,6 +167,7 @@ public class StatelessServiceWrapperTest extends GeneralServiceExample {
     assertEquals(StatelessServiceWrapper.class.getName(), sw.createName());
   }
 
+  @Test
   public void testWrappedServiceDefaults() throws Exception {
     StatelessServiceWrapper sw = new StatelessServiceWrapper();
     assertEquals(StatelessServiceWrapper.class.getName(), sw.createName());
@@ -165,6 +176,7 @@ public class StatelessServiceWrapperTest extends GeneralServiceExample {
     assertEquals(false, sw.isBranching());
   }
 
+  @Test
   public void testTryInitNoWrappedService() throws Exception {
     StatelessServiceWrapper sw = new StatelessServiceWrapper();
     try {

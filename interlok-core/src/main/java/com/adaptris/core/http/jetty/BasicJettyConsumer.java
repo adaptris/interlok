@@ -20,8 +20,10 @@ import static com.adaptris.core.CoreConstants.HTTP_METHOD;
 import static com.adaptris.core.http.jetty.JettyConstants.JETTY_QUERY_STRING;
 import static com.adaptris.core.http.jetty.JettyConstants.JETTY_URI;
 import static com.adaptris.core.http.jetty.JettyConstants.JETTY_URL;
-import static org.apache.commons.lang.StringUtils.isEmpty;
-import static org.apache.commons.lang.StringUtils.join;
+import static com.adaptris.core.http.jetty.JettyConstants.JETTY_USER_ROLES;
+import static com.adaptris.core.http.jetty.JettyConstants.JETTY_USER_ROLE_ATTR;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.join;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -82,14 +84,14 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   @AdvancedConfig
   private Boolean additionalDebug;
 
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "return 202 after 10 minutes")
   private TimeoutAction timeoutAction;
 
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "Never")
   private TimeInterval warnAfter;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "20 Seconds")
   private TimeInterval sendProcessingInterval;
 
@@ -386,6 +388,10 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
       msg.addMetadata(HTTP_METHOD, request.getMethod());
       if (!isEmpty(request.getQueryString())) {
         msg.addMetadata(JETTY_QUERY_STRING, request.getQueryString());
+      }
+      String roles = ObjectUtils.defaultIfNull((String) request.getAttribute(JETTY_USER_ROLE_ATTR), "");
+      if (!isEmpty(roles)) {
+        msg.addMetadata(JETTY_USER_ROLES, roles);
       }
       JettyWrapper wrapper = new JettyWrapper().withMonitor(new JettyConsumerMonitor()).withRequest(request).withResponse(response);
       msg.addObjectHeader(JettyConstants.JETTY_WRAPPER, wrapper);

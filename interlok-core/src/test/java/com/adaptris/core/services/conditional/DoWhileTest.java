@@ -16,6 +16,7 @@
 
 package com.adaptris.core.services.conditional;
 
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -48,8 +49,11 @@ public class DoWhileTest extends ConditionalServiceExample {
   @Mock private Service mockService;
   
   @Mock private Condition mockCondition;
-  
+
   @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
@@ -57,9 +61,7 @@ public class DoWhileTest extends ConditionalServiceExample {
     thenService = new ThenService();
     thenService.setService(mockService);
     
-    doWhile = new DoWhile();
-    doWhile.setThen(thenService);
-    doWhile.setCondition(mockCondition);
+    doWhile = new DoWhile().withThen(thenService).withCondition(mockCondition);
     
     message = DefaultMessageFactory.getDefaultInstance().newMessage();
     
@@ -67,7 +69,6 @@ public class DoWhileTest extends ConditionalServiceExample {
 
   }
   
-  @Override
   @After
   public void tearDown() throws Exception {
     LifecycleHelper.stopAndClose(doWhile);
@@ -98,11 +99,29 @@ public class DoWhileTest extends ConditionalServiceExample {
     when(mockCondition.evaluate(message))
         .thenReturn(true);
     
-    doWhile.setMaxLoops(5);
+    doWhile.withMaxLoops(5);
+    doWhile.withOnMaxLoops((e) -> {
+      return;
+    });
     doWhile.doService(message);
     
     verify(mockService, times(5)).doService(message);
   }
+
+  @Test
+  public void testMaxLoops_ThenFail() throws Exception {
+    when(mockCondition.evaluate(message)).thenReturn(true);
+
+    doWhile.withMaxLoops(5);
+    doWhile.withOnMaxLoops(new OnMaxThrowException());
+    try {
+      doWhile.doService(message);
+    } catch (ServiceException expected) {
+
+    }
+    verify(mockService, times(5)).doService(message);
+  }
+
   
   @Test
   public void testShouldRunServiceUnconfiguredFive() throws Exception {
@@ -113,7 +132,7 @@ public class DoWhileTest extends ConditionalServiceExample {
         .thenReturn(true)
         .thenReturn(true)
         .thenReturn(false);
-    doWhile.setMaxLoops(0); // loop forever
+    doWhile.withMaxLoops(0); // loop forever
     doWhile.doService(message);
     verify(mockService, times(5)).doService(message);
   }

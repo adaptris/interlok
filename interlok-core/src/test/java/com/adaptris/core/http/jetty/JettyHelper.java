@@ -17,6 +17,7 @@
 package com.adaptris.core.http.jetty;
 
 import static com.adaptris.core.http.jetty.HttpConsumerTest.URL_TO_POST_TO;
+
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessageProducer;
 import com.adaptris.core.Channel;
@@ -38,7 +39,6 @@ import com.adaptris.core.stubs.MockChannel;
  * @author lchan
  *
  */
-@SuppressWarnings("deprecation")
 public class JettyHelper {
 
   public static Channel createChannel(AdaptrisConnection connection, JettyMessageConsumer consumer,

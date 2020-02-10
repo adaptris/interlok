@@ -3,7 +3,6 @@ package com.adaptris.core.http.auth;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-
 import java.net.Authenticator;
 import java.net.Authenticator.RequestorType;
 import java.net.InetAddress;
@@ -13,7 +12,6 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-
 import org.bouncycastle.util.Arrays;
 import org.junit.After;
 import org.junit.Before;
@@ -26,6 +24,7 @@ public class ThreadLocalCredentialsTest {
   @Before
   public void setup() {
     ThreadLocalCredentials tlc = ThreadLocalCredentials.getInstance(TARGET);
+    AdapterResourceAuthenticator.getInstance().addAuthenticator(ThreadLocalCredentials.getInstance("http://www.adaptris.com"));
     AdapterResourceAuthenticator.getInstance().addAuthenticator(tlc);
     Authenticator.setDefault(AdapterResourceAuthenticator.getInstance());
   }
@@ -34,7 +33,9 @@ public class ThreadLocalCredentialsTest {
   public void teardown() {
     ThreadLocalCredentials tlc = ThreadLocalCredentials.getInstance(TARGET);
     tlc.removeThreadCredentials();
+    AdapterResourceAuthenticator.getInstance().removeAuthenticator(null);
     AdapterResourceAuthenticator.getInstance().removeAuthenticator(tlc);
+    AdapterResourceAuthenticator.getInstance().removeAuthenticator(ThreadLocalCredentials.getInstance("http://www.adaptris.com"));
     Authenticator.setDefault(null);
   }
   

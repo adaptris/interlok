@@ -17,20 +17,22 @@
 package com.adaptris.core;
 
 import static com.adaptris.core.CoreConstants.UNIQUE_ID_JMX_PATTERN;
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import java.util.Date;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.BooleanUtils;
-import org.hibernate.validator.constraints.NotBlank;
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.MarshallingCDATA;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -46,8 +48,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 // Should probably implement EventAware...
 @XStreamAlias("channel")
 @AdapterComponent
-@ComponentProfile(summary = "The base container for workflows", tag = "base")
-public class Channel implements ComponentLifecycleExtension, StateManagedComponentContainer, EventHandlerAware {
+@ComponentProfile(summary = "Channels bind two connections together for workflows to do their work", tag = "base")
+public class Channel implements ComponentLifecycleExtension, StateManagedComponentContainer, EventHandlerAware, ConfigComment {
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
   @NotNull
@@ -63,12 +65,13 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
   @Valid
   private WorkflowList workflowList;
   private ProcessingExceptionHandler messageErrorHandler;
-  @NotNull
   @NotBlank
   @Pattern(regexp = UNIQUE_ID_JMX_PATTERN)
   private String uniqueId;
   @InputFieldDefault(value = "true")
   private Boolean autoStart;
+  @MarshallingCDATA
+  private String comments;
 
   private transient boolean available;
   private transient ComponentState state;
@@ -491,5 +494,15 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
    */
   public Date lastStopTime() {
     return stopTime;
+  }
+
+  @Override
+  public void setComments(String s) {
+    comments = s;
+  }
+
+  @Override
+  public String getComments() {
+    return comments;
   }
 }

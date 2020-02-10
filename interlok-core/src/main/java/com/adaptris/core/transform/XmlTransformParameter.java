@@ -42,5 +42,5 @@ public interface XmlTransformParameter {
    * @param existingParams any existing parameters that might already be configured, null otherwise.
    * @return the parameters to pass into the transform.
    */
-  Map createParameters(AdaptrisMessage msg, Map existingParams) throws ServiceException;
+  Map<Object, Object> createParameters(AdaptrisMessage msg, Map<Object, Object> existingParams) throws ServiceException;
 }

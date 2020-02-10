@@ -16,8 +16,8 @@
 
 package com.adaptris.core.http.client;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.util.Args;

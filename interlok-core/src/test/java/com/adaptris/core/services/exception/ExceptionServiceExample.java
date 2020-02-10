@@ -26,8 +26,7 @@ public abstract class ExceptionServiceExample extends ServiceCase {
    */
   public static final String BASE_DIR_KEY = "ExceptionServiceExamples.baseDir";
 
-  public ExceptionServiceExample(String name) {
-    super(name);
+  public ExceptionServiceExample() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }

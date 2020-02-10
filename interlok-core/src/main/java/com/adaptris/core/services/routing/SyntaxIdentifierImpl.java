@@ -18,11 +18,8 @@ package com.adaptris.core.services.routing;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;

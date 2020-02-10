@@ -15,7 +15,7 @@
 */
 package com.adaptris.core.management.jetty;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;

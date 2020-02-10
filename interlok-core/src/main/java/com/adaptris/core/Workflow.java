@@ -26,7 +26,8 @@ import java.util.List;
  * They also provide error handling functionality.
  * </p>
  */
-public interface Workflow extends AdaptrisMessageListener, StateManagedComponent, EventHandlerAware, ComponentLifecycleExtension {
+public interface Workflow
+    extends AdaptrisMessageListener, StateManagedComponent, EventHandlerAware, ComponentLifecycleExtension, ConfigComment {
   /**
    * <p>
    * Metadata key used to store the ID of the workflow for processing bad

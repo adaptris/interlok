@@ -16,19 +16,25 @@
 
 package com.adaptris.core;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
-
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.fs.FsConsumer;
 import com.adaptris.core.fs.FsProducer;
 import com.adaptris.core.ftp.FtpConnection;
@@ -55,6 +61,7 @@ import com.adaptris.util.KeyValuePairSet;
 /**
  * Base test for testing XSTream configuration vis-a-vis shared components.
  */
+@SuppressWarnings("deprecation")
 public class SharedComponentListTest extends ExampleConfigCase {
   private static final String GUID_PATTERN = "(?m)^\\s*<unique-id>[0-9a-f]{8}\\-[0-9a-f]{4}\\-[0-9a-f]{4}\\-[0-9a-f]{4}\\-[0-9a-f]{12}<\\/unique-id>$";
 
@@ -73,6 +80,8 @@ public class SharedComponentListTest extends ExampleConfigCase {
 
   private enum ConnectionBuilder {
     FtpConnectionBuilder {
+      @Override
+      @SuppressWarnings("deprecation")
       AdaptrisConnection build() {
         FtpConnection c = new FtpConnection("goofy_edison");
         c.setLookupName("adapter:comp/env/optional-lookup-name");
@@ -81,6 +90,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
       }
     },
     PooledJdbcConnectionBuilder {
+      @Override
       AdaptrisConnection build() {
         JdbcPooledConnection connection = new JdbcPooledConnection();
         connection.setUniqueId("vigilant_hypatia");
@@ -89,6 +99,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
       }
     },
     AdvancedPooledJdbcConnectionBuilder {
+      @Override
       AdaptrisConnection build() {
         AdvancedJdbcPooledConnection connection = new AdvancedJdbcPooledConnection();
         connection.setUniqueId("amused_goldberg");
@@ -106,17 +117,20 @@ public class SharedComponentListTest extends ExampleConfigCase {
   }
   private AdaptrisMarshaller myMarshaller;
 
-  public SharedComponentListTest(String name) {
-    super(name);
-
+  public SharedComponentListTest() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
   }
 
   @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
+
+  @Before
+  public void setUp() throws Exception {
     // We force ourselves to use the standard marshaller as we know that ExampleConfigCase doesn't actually
     // use the standard marshaller for config generation.
     myMarshaller = DefaultMarshaller.getDefaultMarshaller();
@@ -138,6 +152,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     return "(" + uid + ")";
   }
 
+  @Test
   public void testObjectReferences() throws Exception {
     Adapter srcAdapter = createAdapter();
     String xml = myMarshaller.marshal(srcAdapter);
@@ -163,8 +178,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
       for (ConnectionBuilder b : ConnectionBuilder.values()) {
         adapter.getSharedComponents().addConnection(b.build());
       }
-      TransactionManager transactionManager = new DummyTransactionManager("nifty_mcclintock",
-          "adapter:comp/env/myTransactionManager");
+      TransactionManager transactionManager = new DummyTransactionManager("myTransactionManager");
       adapter.getSharedComponents().setTransactionManager(transactionManager);
       Channel c = new Channel();
       c.setProduceConnection(new SharedConnection("goofy_edison"));
@@ -175,6 +189,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     return adapter;
   }
 
+  @Test
   public void testDebug() throws Exception {
     SharedComponentList list = new SharedComponentList();
     assertFalse(list.isDebug());
@@ -187,6 +202,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     assertNull(list.getDebug());
   }
 
+  @Test
   public void testAddConnection() throws Exception {
     SharedComponentList list = new SharedComponentList();
     try {
@@ -211,7 +227,8 @@ public class SharedComponentListTest extends ExampleConfigCase {
     assertFalse(list.addConnection(new MockConnection(getName())));
     assertEquals(1, list.getConnections().size());
   }
-  
+
+  @Test
   public void testAddService() throws Exception {
     SharedComponentList list = new SharedComponentList();
 
@@ -234,6 +251,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     assertEquals(1, list.getServices().size());
   }
 
+  @Test
   public void testAddConnections() throws Exception {
     SharedComponentList list = new SharedComponentList();
     try {
@@ -257,7 +275,8 @@ public class SharedComponentListTest extends ExampleConfigCase {
     assertEquals(1, list.getConnections().size());
     assertEquals(1, rejected.size());
   }
-  
+
+  @Test
   public void testAddServices() throws Exception {
     SharedComponentList list = new SharedComponentList();
     try {
@@ -279,6 +298,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     assertEquals(1, rejected.size());
   }
 
+  @Test
   public void testSetConnections() throws Exception {
     SharedComponentList list = new SharedComponentList();
     List<AdaptrisConnection> bad = Arrays.asList(new AdaptrisConnection[] {new MockConnection(getName()), new MockConnection()});
@@ -304,6 +324,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     assertEquals(2, list.getConnections().size());
   }
 
+  @Test
   public void testContainsConnection() throws Exception {
     SharedComponentList list = new SharedComponentList();
     List<AdaptrisConnection> good =
@@ -313,6 +334,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     assertTrue(list.containsConnection(getName()));
   }
 
+  @Test
   public void testLifecycle_Init() throws Exception {
     SharedComponentList list = new SharedComponentList();
     List<AdaptrisConnection> good =
@@ -329,6 +351,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     }
   }
 
+  @Test
   public void testLifecycle_Start() throws Exception {
     SharedComponentList list = new SharedComponentList();
     List<AdaptrisConnection> good =
@@ -346,6 +369,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     }
   }
 
+  @Test
   public void testLifecycle_Stop() throws Exception {
     SharedComponentList list = new SharedComponentList();
     List<AdaptrisConnection> good =
@@ -364,6 +388,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     }
   }
 
+  @Test
   public void testLifecycle_Close() throws Exception {
     SharedComponentList list = new SharedComponentList();
     List<AdaptrisConnection> good =
@@ -386,6 +411,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
 
   // FilteredStart was removing connections
   // from the underlying list.
+  @Test
   public void testInterlok_1096() throws Exception {
     SharedComponentList list = new SharedComponentList();
     List<AdaptrisConnection> good =
@@ -407,7 +433,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     }
   }
 
-
+  @Test
   public void testRemoveConnection() throws Exception {
     SharedComponentList list = new SharedComponentList();
     List<AdaptrisConnection> good =
@@ -420,6 +446,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     assertEquals(1, list.getConnections().size());
   }
 
+  @Test
   public void testRemoveConnection_unbindsJNDI() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
@@ -443,7 +470,8 @@ public class SharedComponentListTest extends ExampleConfigCase {
       stop(adapter);
     }
   }
-  
+
+  @Test
   public void testRemoveService_unbindsJNDI() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
@@ -471,6 +499,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     }
   }
 
+  @Test
   public void testBindJNDI() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
@@ -490,7 +519,8 @@ public class SharedComponentListTest extends ExampleConfigCase {
       stop(adapter);
     }
   }
-  
+
+  @Test
   public void testBindJNDIService() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
@@ -513,6 +543,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     }
   }
 
+  @Test
   public void testBindJNDITransactionManager() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
@@ -533,6 +564,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     }
   }
 
+  @Test
   public void testSharedConnection_StandardLookup() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
@@ -546,6 +578,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     }
   }
 
+  @Test
   public void testSharedTransactionManager_StandardLookup() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
@@ -560,6 +593,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     }
   }
 
+  @Test
   public void testSharedTransactionManager_CompEnvLookupName() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
@@ -574,6 +608,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     }
   }
 
+  @Test
   public void testSharedConnection_Lookup_CompEnvLookupName() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
@@ -587,6 +622,8 @@ public class SharedComponentListTest extends ExampleConfigCase {
     }
   }
 
+
+  @Test
   public void testSharedConnection_Lookup_FallbackToPlainName() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
@@ -602,6 +639,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     }
   }
 
+  @Test
   public void testAddConnection_BindsToJndiWhenStarted() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
@@ -622,6 +660,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     }
   }
 
+  @Test
   public void testClose_UnbindsFromJNDI() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
@@ -651,6 +690,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     }
   }
 
+  @Test
   public void testGetConnectionIds() throws Exception {
     SharedComponentList list = new SharedComponentList();
     List<AdaptrisConnection> good =
@@ -661,6 +701,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     assertTrue(list.getConnectionIds().contains(getName()));
   }
 
+  @Test
   public void testGetConnections() throws Exception {
     SharedComponentList list = new SharedComponentList();
     List<AdaptrisConnection> good =
@@ -685,7 +726,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
 
   }
 
-
+  @Test
   public void testConnectionState() throws Exception {
     Adapter adapter = AdapterTest.createAdapter(getName());
     MockConnection connection = new MockConnection(getName());
@@ -701,6 +742,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     assertEquals(ClosedState.getInstance(), connection.retrieveComponentState());
   }
 
+  @Test
   public void testConnectionState_SharedConnectionState() throws Exception {
     Adapter adapter = AdapterTest.createAdapter(getName());
     MockConnection connection = new MockConnection();
@@ -715,6 +757,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     assertNotSame(ClosedState.getInstance(), connection.retrieveComponentState());
   }
 
+  @Test
   public void testIssue6573() throws Exception {
     testConnectionState_SharedConnectionState();
   }

@@ -18,9 +18,7 @@ package com.adaptris.core.services.routing;
 
 import javax.validation.Valid;
 import javax.xml.namespace.NamespaceContext;
-
 import org.w3c.dom.Document;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.XmlHelper;
@@ -31,8 +29,9 @@ import com.adaptris.util.text.xml.XPath;
 public abstract class XmlSyntaxIdentifierImpl extends SyntaxIdentifierImpl {
 
   @Valid
+  @AdvancedConfig(rare = true)
   private KeyValuePairSet namespaceContext;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
@@ -74,6 +73,6 @@ public abstract class XmlSyntaxIdentifierImpl extends SyntaxIdentifierImpl {
   }
 
   private DocumentBuilderFactoryBuilder documentFactoryBuilder(NamespaceContext nc) {
-    return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig(), nc);
+    return DocumentBuilderFactoryBuilder.newInstanceIfNull(getXmlDocumentFactoryConfig(), nc);
   }
 }

@@ -16,6 +16,11 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -30,9 +35,9 @@ import java.io.Writer;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
-
 import org.apache.commons.io.FileUtils;
-
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.URLString;
 import com.adaptris.util.system.Os;
@@ -43,19 +48,17 @@ public abstract class MarshallingBaseCase extends BaseCase {
 
   protected File testOutputDir;
 
-  public MarshallingBaseCase(java.lang.String testName) {
-    super(testName);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void beforeMyTests() throws Exception {
     testOutputDir = new File(PROPERTIES.getProperty(TEST_DIR));
     testOutputDir.mkdirs();
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-  }
 
   protected abstract AdaptrisMarshaller createMarshaller() throws Exception;
 
@@ -67,6 +70,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     return a;
   }
 
+  @Test
   public void testInlineRoundtrip() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
@@ -74,6 +78,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     assertRoundtripEquality(adapter, marshaller.unmarshal(xml));
   }
 
+  @Test
   public void testRoundTripToFilename() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
@@ -82,6 +87,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     assertRoundtripEquality(adapter, marshaller.unmarshal(f));
   }
 
+  @Test
   public void testRoundTripToFile() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
@@ -90,6 +96,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     assertRoundtripEquality(adapter, marshaller.unmarshal(f));
   }
 
+  @Test
   public void testUnmarshalFromInputStream() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
@@ -99,6 +106,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     }
   }
 
+  @Test
   public void testUnmarshalFromInputStream_WithException() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
@@ -119,6 +127,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     }
   }
 
+  @Test
   public void testUncheckedUnmarshalFromInputStream() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
@@ -128,6 +137,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     }));
   }
 
+  @Test
   public void testUncheckedUnmarshalFromInputStream_WithException() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
@@ -152,6 +162,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     }
   }
 
+  @Test
   public void testUnmarshalFromReader() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
@@ -161,6 +172,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     }
   }
 
+  @Test
   public void testUnmarshalFromReader_WithException() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
@@ -186,6 +198,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     }
   }
 
+  @Test
   public void testRoundTripToURL() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
@@ -194,6 +207,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     assertRoundtripEquality(adapter, marshaller.unmarshal(f.toURI().toURL()));
   }
 
+  @Test
   public void testUnmarshalFromURLString() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
@@ -202,6 +216,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     assertRoundtripEquality(adapter, marshaller.unmarshal(new URLString(f.toURI().toURL())));
   }
 
+  @Test
   public void testUnmarshalWithTransient() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Channel channel = new Channel();
@@ -214,6 +229,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     assertNotSame(false, c2.isAvailable());
   }
 
+  @Test
   public void testMarshalToOutputStream() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
@@ -222,6 +238,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     }
   }
 
+  @Test
   public void testMarshalToOutputStream_WithException() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
@@ -242,6 +259,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     }
   }
 
+  @Test
   public void testUncheckedMarshal_ToOutputStream() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
@@ -250,6 +268,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     });
   }
 
+  @Test
   public void testUncheckedMarshal_ToOutputStreamWithException() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
@@ -268,6 +287,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     }
   }
 
+  @Test
   public void testMarshalToFile_NonExistent() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
@@ -285,6 +305,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     }
   }
 
+  @Test
   public void testUnmarshalString_InvalidXML() throws Exception {
     String xml = "This isn't XML";
     AdaptrisMarshaller marshaller = createMarshaller();
@@ -297,6 +318,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     }
   }
 
+  @Test
   public void testUnmarshal_NonExistent() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     File dir = File.createTempFile("pfx", ".sfx");
@@ -313,6 +335,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     }
   }
 
+  @Test
   public void testMarshalToWriter() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
@@ -320,6 +343,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     marshaller.marshal(adapter, out);
   }
 
+  @Test
   public void testMarshalToWriter_WithException() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
@@ -350,6 +374,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     }
   }
 
+  @Test
   public void testMarshalToURL() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
@@ -385,6 +410,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     marshaller.marshal(adapter, url);
   }
 
+  @Test
   public void testUnmarshalFromUrl() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();
@@ -402,6 +428,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     assertRoundtripEquality(adapter, adapter2);
   }
 
+  @Test
   public void testUnmarshalFromUrlWithException() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     // Ha, anonymous URLStreamHandler to the rescue.
@@ -422,6 +449,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     }
   }
 
+  @Test
   public void testUnmarshalFromUrlStringClasspath() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
 
@@ -438,6 +466,7 @@ public abstract class MarshallingBaseCase extends BaseCase {
     }
   }
 
+  @Test
   public void testUnmarshalFromUrlStringLocalFile() throws Exception {
     AdaptrisMarshaller marshaller = createMarshaller();
     Adapter adapter = createMarshallingObject();

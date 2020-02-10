@@ -1,7 +1,8 @@
 package com.adaptris.core.services.aggregator;
 
 import static com.adaptris.core.services.aggregator.ZipAggregator.DEFAULT_FILENAME_METADATA;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,10 +11,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.Service;
+import com.adaptris.core.services.conditional.conditions.ConditionImpl;
 import com.adaptris.core.services.metadata.AddFormattedMetadataService;
 import com.adaptris.core.services.splitter.SplitByMetadata;
 import com.adaptris.core.stubs.DefectiveMessageFactory;
@@ -21,12 +24,13 @@ import com.adaptris.core.stubs.DefectiveMessageFactory;
 public class ZipAggregatorTest extends AggregatingServiceExample {
 
 
-  public ZipAggregatorTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testJoinMessage() throws Exception {
-
     ZipAggregator aggr = new ZipAggregator();
     AdaptrisMessage original = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     AdaptrisMessage splitMsg1 = AdaptrisMessageFactory.getDefaultInstance().newMessage("<document>hello</document>");
@@ -47,9 +51,40 @@ public class ZipAggregatorTest extends AggregatingServiceExample {
     assertTrue(results.containsKey("file2.xml"));
     assertEquals(results.get("file1.xml"), "<document>hello</document>");
     assertEquals(results.get("file2.xml"), "<document>world</document>");
+  }
+
+  @Test
+  public void testJoinMessageWithFilter() throws Exception {
+    ZipAggregator aggr = new ZipAggregator();
+    aggr.setFilterCondition(new MetadataFilenameCondition());
+    AdaptrisMessage original = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+
+    AdaptrisMessage splitMsg1 = AdaptrisMessageFactory.getDefaultInstance().newMessage("<document>hello</document>");
+    splitMsg1.addMetadata(DEFAULT_FILENAME_METADATA, "xfile1.xml");
+    AdaptrisMessage splitMsg2 = new DefectiveMessageFactory().newMessage("<document>world2</document>");
+    splitMsg2.addMetadata(DEFAULT_FILENAME_METADATA, "file2.xml");
+    AdaptrisMessage splitMsg3 = new DefectiveMessageFactory().newMessage("<document>world3</document>");
+    splitMsg3.addMetadata(DEFAULT_FILENAME_METADATA, "xfile3.xml");
+    AdaptrisMessage splitMsg4 = new DefectiveMessageFactory().newMessage("<document>world4</document>");
+    splitMsg4.addMetadata(DEFAULT_FILENAME_METADATA, "file4.xml");
+    AdaptrisMessage willBeIgnoredMsg = new DefectiveMessageFactory().newMessage("<document>world4</document>");
+    aggr.joinMessage(original, Arrays.asList(splitMsg1, splitMsg2, splitMsg3, splitMsg4, willBeIgnoredMsg));
+
+    boolean isZipped = new ZipInputStream(new ByteArrayInputStream(original.getPayload())).getNextEntry() != null;
+
+    assertTrue(isZipped);
+
+    Map<String, String> results = zipBytesToResultsMap(original.getPayload());
+
+    assertEquals(2, results.size());
+    assertTrue(results.containsKey("file2.xml"));
+    assertTrue(results.containsKey("file4.xml"));
+    assertEquals(results.get("file2.xml"), "<document>world2</document>");
+    assertEquals(results.get("file4.xml"), "<document>world4</document>");
 
   }
 
+  @Test
   public void testGetFilenameMetadata() throws Exception {
     ZipAggregator z = new ZipAggregator();
     assertEquals(DEFAULT_FILENAME_METADATA, z.filenameMetadata());
@@ -111,5 +146,21 @@ public class ZipAggregatorTest extends AggregatingServiceExample {
       zis.close();
     }
     return results;
+  }
+
+  // Filter out metadata filename values that start with 'x'
+  private class MetadataFilenameCondition extends ConditionImpl {
+    @Override
+    public boolean evaluate(AdaptrisMessage message) throws CoreException {
+      final String metadataValue = message.getMetadataValue(DEFAULT_FILENAME_METADATA);
+      if (metadataValue != null && metadataValue.startsWith("x"))
+        return false;
+      return true;
+    }
+
+    @Override
+    public void close() {
+      throw new RuntimeException();
+    }
   }
 }

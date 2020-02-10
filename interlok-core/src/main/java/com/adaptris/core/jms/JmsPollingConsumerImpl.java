@@ -41,8 +41,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.interlok.resolver.ExternalResolver;
-import com.adaptris.security.password.Password;
 import com.adaptris.util.TimeInterval;
 
 /**
@@ -119,30 +117,19 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
     messageHandler = new OnMessageHandler(this);
   }
 
-  protected ConnectionFactory createConnectionFactory() throws CoreException {
-    try {
-      return getVendorImplementation().createConnectionFactory();
-    }
-    catch (JMSException e) {
-      throw new CoreException(e);
-    }
+  protected ConnectionFactory createConnectionFactory() throws Exception {
+    return configuredVendorImplementation().createConnectionFactory();
   }
-
-
-  protected Connection createConnection(ConnectionFactory factory, String user, String password) throws JMSException {
-    return factory.createConnection(user, password);
-  }
-
 
   protected Session createSession(Connection connection, int acknowledgeMode, boolean transacted) throws JMSException {
-    return getVendorImplementation().createSession(connection, transacted, acknowledgeMode);
+    return configuredVendorImplementation().createSession(connection, transacted, acknowledgeMode);
   }
 
 
   private void initialiseConnection() throws Exception {
     long start = System.currentTimeMillis();
     ConnectionFactory factory = createConnectionFactory();
-    connection = createConnection(factory, userName, Password.decode(ExternalResolver.resolve(configuredPassword())));
+    connection = configuredVendorImplementation().createConnection(factory, this);
 
     if (clientId != null) {
       connection.setClientID(clientId);

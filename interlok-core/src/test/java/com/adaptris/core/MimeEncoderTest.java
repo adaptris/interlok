@@ -16,18 +16,25 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 import java.security.MessageDigest;
 import java.util.Properties;
-
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.text.mime.MultiPartOutput;
 
-import junit.framework.TestCase;
-
-public class MimeEncoderTest extends TestCase {
+public class MimeEncoderTest {
 
   private static final String METADATA_VALUE = "value";
   private static final String METADATA_KEY = "key";
@@ -36,16 +43,16 @@ public class MimeEncoderTest extends TestCase {
 
   private MimeEncoder mimeEncoder;
 
-  public MimeEncoderTest(String name) {
-    super(name);
-  }
+  @Rule
+  public TestName testName = new TestName();
 
-  @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     mimeEncoder = new MimeEncoder();
     mimeEncoder.registerMessageFactory(new DefaultMessageFactory());
   }
 
+  @Test
   public void testSetters() throws Exception {
     MimeEncoder mime = new MimeEncoder();
     assertNull(mime.getPayloadEncoding());
@@ -63,6 +70,7 @@ public class MimeEncoderTest extends TestCase {
     mime.toString();
   }
 
+  @Test
   public void testRoundTrip() throws Exception {
 
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
@@ -76,6 +84,7 @@ public class MimeEncoderTest extends TestCase {
     assertTrue(MessageDigest.isEqual(STANDARD_PAYLOAD.getBytes(), result.getPayload()));
   }
 
+  @Test
   public void testEncode_NonOutputStream() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
     msg.addMetadata(METADATA_KEY, METADATA_VALUE);
@@ -87,6 +96,7 @@ public class MimeEncoderTest extends TestCase {
     }
   }
 
+  @Test
   public void testDecode_NonInputStream() throws Exception {
     try {
       mimeEncoder.readMessage(new StringWriter());
@@ -96,6 +106,7 @@ public class MimeEncoderTest extends TestCase {
     }
   }
 
+  @Test
   public void testRoundTrip_WithOddChars() throws Exception {
 
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD_NON_JUST_ALPHA);
@@ -109,10 +120,11 @@ public class MimeEncoderTest extends TestCase {
     assertTrue(MessageDigest.isEqual(STANDARD_PAYLOAD_NON_JUST_ALPHA.getBytes(), result.getPayload()));
   }
 
+  @Test
   public void testRoundTrip_WithException() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
     msg.addMetadata(METADATA_KEY, METADATA_VALUE);
-    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception(getName()));
+    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception(testName.getMethodName()));
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     mimeEncoder.writeMessage(msg, out);
     ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
@@ -123,6 +135,7 @@ public class MimeEncoderTest extends TestCase {
     assertFalse(result.getObjectHeaders().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION));
   }
 
+  @Test
   public void testRoundTrip_Encoded() throws Exception {
 
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
@@ -138,6 +151,7 @@ public class MimeEncoderTest extends TestCase {
     assertTrue(MessageDigest.isEqual(STANDARD_PAYLOAD.getBytes(), result.getPayload()));
   }
 
+  @Test
   public void testRoundTrip_EncodedEncodePlainDecoder() throws Exception {
 
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
@@ -154,6 +168,7 @@ public class MimeEncoderTest extends TestCase {
     assertTrue(MessageDigest.isEqual(STANDARD_PAYLOAD.getBytes(), result.getPayload()));
   }
 
+  @Test
   public void testRoundTrip_EncodeMetadataWithBackslash() throws Exception {
 
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
@@ -166,6 +181,7 @@ public class MimeEncoderTest extends TestCase {
     assertEquals("blah\\blah", msg.getMetadataValue(METADATA_KEY));
   }
 
+  @Test
   public void testRoundTrip_PreserveUniqueId() throws Exception {
 
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
@@ -178,6 +194,7 @@ public class MimeEncoderTest extends TestCase {
     assertEquals(msg.getUniqueId(), result.getUniqueId());
   }
 
+  @Test
   public void testRoundTrip_NoPreserveUniqueId() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
     msg.setUniqueId("abc-123");
@@ -188,6 +205,7 @@ public class MimeEncoderTest extends TestCase {
     assertTrue(!"abc-123".equals(result.getUniqueId()));
   }
 
+  @Test
   public void testRoundTrip_UseConvenienceMethods() throws Exception {
 
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
@@ -198,6 +216,7 @@ public class MimeEncoderTest extends TestCase {
     assertTrue(MessageDigest.isEqual(STANDARD_PAYLOAD.getBytes(), result.getPayload()));
   }
 
+  @Test
   public void testDecode_IgnoreExtraParts() throws Exception {
     AdaptrisMessage result = mimeEncoder.decode(createMimeOutput(true, true));
     assertEquals(METADATA_VALUE, result.getMetadataValue(METADATA_KEY));
@@ -205,6 +224,7 @@ public class MimeEncoderTest extends TestCase {
     assertTrue(MessageDigest.isEqual(STANDARD_PAYLOAD.getBytes(), result.getPayload()));
   }
 
+  @Test
   public void testDecode_NoPayloadPart() throws Exception {
 
     try {
@@ -215,6 +235,7 @@ public class MimeEncoderTest extends TestCase {
     }
   }
 
+  @Test
   public void testDecode_NoMetadataPart() throws Exception {
 
     try {

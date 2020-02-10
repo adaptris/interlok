@@ -24,13 +24,18 @@ import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_PASSWORD;
 import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_TEST_STATEMENT;
 import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_URL_ROOT;
 import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_USERNAME;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
-
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.util.JdbcUtil;
 
@@ -39,21 +44,17 @@ import com.adaptris.core.util.JdbcUtil;
  * @author howard
  */
 public class FailoverConnectionTest extends BaseCase {
-
-  public FailoverConnectionTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     initialiseDatabase();
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-
-  }
-
+  @Test
   public void testFailoverConfigSetters() throws Exception {
     FailoverConfig fc1 = new FailoverConfig();
     try {
@@ -85,6 +86,7 @@ public class FailoverConnectionTest extends BaseCase {
     }
   }
 
+  @Test
   public void testInit() throws Exception {
     Properties p = createProperties();
     p.setProperty(JDBC_USERNAME, "myUser");
@@ -98,6 +100,7 @@ public class FailoverConnectionTest extends BaseCase {
     assertNull(fc.getPassword());
   }
 
+  @Test
   public void testFailoverConfigEquality() throws Exception {
     FailoverConfig fc1 = createFailoverConfig();
     fc1.toString();
@@ -112,7 +115,7 @@ public class FailoverConnectionTest extends BaseCase {
     assertEquals(fc1, fc2);
   }
 
-
+  @Test
   public void testFailoverConfigClone() throws Exception {
     FailoverConfig fc1 = createFailoverConfig();
     FailoverConfig fc2 = (FailoverConfig) fc1.clone();
@@ -120,6 +123,7 @@ public class FailoverConnectionTest extends BaseCase {
     assertEquals(fc1.toString(), fc1.hashCode(), fc2.hashCode());
   }
 
+  @Test
   public void testNoDriver() throws Exception {
     FailoverConfig cfg = createFailoverConfig();
     cfg.setDatabaseDriver("hello.there");
@@ -131,6 +135,7 @@ public class FailoverConnectionTest extends BaseCase {
     }
   }
 
+  @Test
   public void testConnection() throws Exception {
     try {
       FailoverConnection c = new FailoverConnection(new FailoverConfig());
@@ -151,6 +156,7 @@ public class FailoverConnectionTest extends BaseCase {
     }
   }
 
+  @Test
   public void testConnection_BadPassword() throws Exception {
     FailoverConfig cfg = createFailoverConfig();
     cfg.setPassword("ALTPW:abcdef");
@@ -162,6 +168,7 @@ public class FailoverConnectionTest extends BaseCase {
     }
   }
 
+  @Test
   public void testConnection_NoDebug() throws Exception {
     try {
       FailoverConnection c = new FailoverConnection(new FailoverConfig());
@@ -184,6 +191,7 @@ public class FailoverConnectionTest extends BaseCase {
     }
   }
 
+  @Test
   public void testConnection_NoValidate() throws Exception {
     try {
       FailoverConnection c = new FailoverConnection(new FailoverConfig());

@@ -1,28 +1,31 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.ftp;
 
 import static com.adaptris.core.CoreConstants.FS_CONSUME_DIRECTORY;
 import static com.adaptris.core.ftp.FtpHelper.FORWARD_SLASH;
+
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumer;
 import com.adaptris.core.AdaptrisPollingConsumer;
@@ -41,6 +44,7 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
   protected static final TimeInterval DEFAULT_OLDER_THAN = new TimeInterval(0L, TimeUnit.MILLISECONDS);
   protected static final String DEFAULT_FILE_FILTER_IMPL = "org.apache.commons.io.filefilter.RegexFileFilter";
 
+  @InputFieldHint(ofType = "java.io.FileFilter")
   @AdvancedConfig
   private String fileFilterImp;
   @AdvancedConfig
@@ -185,7 +189,7 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
    * {@link com.adaptris.core.fs.SizeGreaterThan}) or last modified may not be supported. We encourage you to stick with filtering
    * by filename only.
    * </p>
-   * 
+   *
    * @param s The fileFilterImp to set, if not specified, then the default is
    *        {@code org.apache.commons.io.filefilter.RegexFileFilter} which uses the
    *        java.util regular expressions to perform filtering
@@ -216,7 +220,7 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
    * timezone in order to get accurate information.</strong>Additionally, the remote FTP server needs to support support the MDTM
    * command.
    * </p>
-   * 
+   *
    * @param interval the quietPeriod to set (default to 0)
    * @see FtpConnection#setServerTimezone(String)
    * @see com.adaptris.core.fs.CompositeFileFilter
@@ -229,7 +233,7 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
   /**
    * Provides the metadata key '{@value com.adaptris.core.CoreConstants#FS_CONSUME_DIRECTORY}' that
    * contains the directory (if not null) where the file was read from.
-   * 
+   *
    * @since 3.9.0
    */
   @Override

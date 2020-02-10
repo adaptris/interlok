@@ -16,8 +16,11 @@
 
 package com.adaptris.core.interceptor;
 
+import static org.junit.Assert.assertEquals;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.DefaultMessageFactory;
@@ -26,13 +29,11 @@ import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.TimeInterval;
 
-import junit.framework.TestCase;
-
-public class MessageMetricsInterceptorByMetadataTest extends TestCase {
+public class MessageMetricsInterceptorByMetadataTest {
 
   private MessageMetricsInterceptorByMetadata interceptor;
 
-  @Override
+  @Before
   public void setUp() throws Exception {
     interceptor = new MessageMetricsInterceptorByMetadata();
     interceptor.setTimesliceDuration(new TimeInterval(1L, TimeUnit.SECONDS));
@@ -40,7 +41,7 @@ public class MessageMetricsInterceptorByMetadataTest extends TestCase {
     interceptor.setMetadataElement(new KeyValuePair("messageType", "ORDER"));
   }
 
-  @Override
+  @After
   public void tearDown() throws Exception {
     LifecycleHelper.stop(interceptor);
     LifecycleHelper.close(interceptor);
@@ -54,6 +55,7 @@ public class MessageMetricsInterceptorByMetadataTest extends TestCase {
     return message;
   }
 
+  @Test
   public void testInterceptor() throws Exception {
     LifecycleHelper.init(interceptor);
     LifecycleHelper.start(interceptor);
@@ -65,6 +67,7 @@ public class MessageMetricsInterceptorByMetadataTest extends TestCase {
     assertEquals(1, ((MessageStatistic) interceptor.getStats().get(0)).getTotalMessageCount());
   }
 
+  @Test
   public void testInterceptor_NoMatch() throws Exception {
     LifecycleHelper.init(interceptor);
     LifecycleHelper.start(interceptor);
@@ -75,6 +78,7 @@ public class MessageMetricsInterceptorByMetadataTest extends TestCase {
     assertEquals(0, interceptor.getStats().size());
   }
 
+  @Test
   public void testInterceptor_MatchByRegexp() throws Exception {
     interceptor.setMetadataElement(new KeyValuePair("messageType", "ORD.*"));
     LifecycleHelper.init(interceptor);
@@ -87,6 +91,7 @@ public class MessageMetricsInterceptorByMetadataTest extends TestCase {
     assertEquals(1, ((MessageStatistic) interceptor.getStats().get(0)).getTotalMessageCount());
   }
 
+  @Test
   public void testInterceptor_WithException() throws Exception {
     LifecycleHelper.init(interceptor);
     LifecycleHelper.start(interceptor);
@@ -99,6 +104,7 @@ public class MessageMetricsInterceptorByMetadataTest extends TestCase {
     assertEquals(1, ((MessageStatistic) interceptor.getStats().get(0)).getTotalMessageErrorCount());
   }
 
+  @Test
   public void testCreatesNewTimeSliceAfterTimeDelay() throws Exception {
     LifecycleHelper.init(interceptor);
     LifecycleHelper.start(interceptor);
@@ -121,6 +127,7 @@ public class MessageMetricsInterceptorByMetadataTest extends TestCase {
     assertEquals(2, ((MessageStatistic) interceptor.getStats().get(1)).getTotalMessageCount());
   }
 
+  @Test
   public void testDoesNotCreateMoreHistoryThanSpecified() throws Exception {
     LifecycleHelper.init(interceptor);
     LifecycleHelper.start(interceptor);
@@ -141,7 +148,7 @@ public class MessageMetricsInterceptorByMetadataTest extends TestCase {
     assertEquals(2, interceptor.getStats().size());
   }
 
-
+  @Test
   public void testMultiThreadedSingleMetricsInterceptorInstance() throws Exception {
     LifecycleHelper.init(interceptor);
     LifecycleHelper.start(interceptor);

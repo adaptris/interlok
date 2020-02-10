@@ -16,9 +16,10 @@
 
 package com.adaptris.core.transform;
 
+import static org.junit.Assert.assertNull;
 import java.util.HashMap;
 import java.util.Map;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BaseCase;
@@ -35,10 +36,12 @@ public class TransformParameterCase extends BaseCase {
 
   protected static final String METADATA_VALUE = "myStringMetadataValue";
 
-  public TransformParameterCase(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testIgnoreMetadataParameter() throws Exception {
     IgnoreMetadataParameter p = new IgnoreMetadataParameter();
     Map existingParams = new HashMap();

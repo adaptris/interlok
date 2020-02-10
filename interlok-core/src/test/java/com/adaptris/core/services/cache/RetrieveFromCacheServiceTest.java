@@ -1,8 +1,13 @@
 package com.adaptris.core.services.cache;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
@@ -16,19 +21,27 @@ public class RetrieveFromCacheServiceTest extends CacheServiceBaseCase {
   static final String LOOKUP_VALUE = "lookupValue";
   static final String LOOKED_UP_VALUE = "lookedUpValue";
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
+
+  @Test
   public void testSetExceptionIfNotFound() {
     RetrieveFromCacheService service = createServiceForTests();
     assertNull(service.getExceptionIfNotFound());
-    assertEquals(true, (boolean)service.exceptionIfNotFound());
+    assertEquals(true, service.exceptionIfNotFound());
 
     service.setExceptionIfNotFound(Boolean.FALSE);
-    assertEquals(false, (boolean)service.exceptionIfNotFound());
+    assertEquals(false, service.exceptionIfNotFound());
 
     service.setExceptionIfNotFound(null);
     assertNull(service.getExceptionIfNotFound());
-    assertEquals(true, (boolean)service.exceptionIfNotFound());
+    assertEquals(true, service.exceptionIfNotFound());
   }
 
+  @Test
   public void testDoService() throws Exception {
     AdaptrisMessage msg = createMessage("Hello World", Arrays.asList(new MetadataElement[]
     {
@@ -52,6 +65,7 @@ public class RetrieveFromCacheServiceTest extends CacheServiceBaseCase {
     }
   }
 
+  @Test
   public void testDoService_AddToMessageFailure() throws Exception {
     AdaptrisMessage msg = createMessage("Hello World", Arrays.asList(new MetadataElement[]
     {
@@ -81,6 +95,7 @@ public class RetrieveFromCacheServiceTest extends CacheServiceBaseCase {
     }
   }
 
+  @Test
   public void testDoService_NullValueTranslator() throws Exception {
     AdaptrisMessage msg = createMessage("Hello World", Arrays.asList(new MetadataElement[]
     {
@@ -110,6 +125,7 @@ public class RetrieveFromCacheServiceTest extends CacheServiceBaseCase {
     }
   }
 
+  @Test
   public void testDoService_KeyNotFound() throws Exception {
     AdaptrisMessage msg = createMessage("Hello World", new ArrayList<MetadataElement>());
     Cache cache = createCacheInstanceForTests();
@@ -127,6 +143,7 @@ public class RetrieveFromCacheServiceTest extends CacheServiceBaseCase {
     }
   }
 
+  @Test
   public void testDoService_ExceptionIfNotFound_NotFound() throws Exception {
     AdaptrisMessage msg = createMessage("Hello World", Arrays.asList(new MetadataElement[]
     {
@@ -150,6 +167,7 @@ public class RetrieveFromCacheServiceTest extends CacheServiceBaseCase {
     }
   }
 
+  @Test
   public void testDoService_NoExceptionIfNotFound_NotFound() throws Exception {
     AdaptrisMessage msg = createMessage("Hello World", Arrays.asList(new MetadataElement[]
     {

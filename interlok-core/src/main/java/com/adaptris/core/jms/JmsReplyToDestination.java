@@ -16,13 +16,10 @@
 
 package com.adaptris.core.jms;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import javax.jms.Destination;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -43,7 +40,7 @@ public class JmsReplyToDestination implements MessageDrivenDestination {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String objectMetadataKey;
 
   // separator char here if required

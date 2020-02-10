@@ -22,10 +22,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -43,7 +40,6 @@ import com.adaptris.core.NullConnection;
 import com.adaptris.core.NullMessageProducer;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.Args;
-import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.XmlHelper;
@@ -189,11 +185,11 @@ public class SplittingXmlPayloadTranslator extends XmlPayloadTranslatorImpl {
           // LimitedResultSet#close() should be doing nothing, since it's only purpose
           // is limit the number of iterations you make.
           try (LimitedResultSet lrs = new LimitedResultSet(rows, maxRowsPerMessage())) {
-            DocumentWrapper doc = toDocument(outputMessage, lrs);
-            XmlHelper.writeXmlDocument(doc.document, outputMessage, getOutputMessageEncoding());
+            DocumentWrapper wrapper = toDocument(outputMessage, lrs);
+            XmlHelper.writeXmlDocument(wrapper.document, outputMessage, getOutputMessageEncoding(), createTransformer(wrapper));
             // Use the configured producer to send the message on its way
             getProducer().produce(outputMessage);
-            resultSetCount += doc.resultSetCount;
+            resultSetCount += wrapper.resultSetCount;
           }
         }
       }
@@ -214,31 +210,22 @@ public class SplittingXmlPayloadTranslator extends XmlPayloadTranslatorImpl {
     return result;
   }
 
-  private DocumentWrapper toDocument(AdaptrisMessage msg, JdbcResultSet rSet) throws ParserConfigurationException, SQLException {
-    DocumentBuilderFactoryBuilder factoryBuilder = documentFactoryBuilder(msg);
-    DocumentBuilderFactory factory = factoryBuilder.configure(DocumentBuilderFactory.newInstance());
-    DocumentBuilder builder = factoryBuilder.configure(factory.newDocumentBuilder());
-    Document doc = builder.newDocument();
-    DocumentWrapper result = new DocumentWrapper(doc, 0);
+  private DocumentWrapper toDocument(AdaptrisMessage msg, JdbcResultSet rSet) throws Exception {
+    DocumentWrapper wrapper = createWrapper(msg);
+    Document doc = wrapper.document;
     ColumnStyle elementNameStyle = getColumnNameStyle();
 
     Element results = doc.createElement(elementNameStyle.format(ELEMENT_NAME_RESULTS));
     doc.appendChild(results);
 
-    List<Element> elements = createListFromResultSet(builder, doc, rSet);
+    List<Element> elements = createListFromResultSet(wrapper, rSet);
     for (Element element : elements) {
       results.appendChild(element);
     }
-    result.resultSetCount += elements.size();
-    return result;
+    wrapper.resultSetCount += elements.size();
+    return wrapper;
   }
-  
-  private DocumentBuilderFactoryBuilder documentFactoryBuilder(AdaptrisMessage msg) {
-    DocumentBuilderFactoryBuilder factoryBuilder =
-        (DocumentBuilderFactoryBuilder) msg.getObjectHeaders().get(JdbcDataQueryService.KEY_DOCBUILDER_FAC);
-    return DocumentBuilderFactoryBuilder.newInstance(factoryBuilder);
-  }
-  
+
   public Integer getMaxRowsPerMessage() {
     return maxRowsPerMessage;
   }

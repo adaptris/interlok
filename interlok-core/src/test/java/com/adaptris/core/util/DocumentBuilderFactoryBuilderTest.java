@@ -19,18 +19,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
-
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.text.xml.Resolver;
@@ -56,6 +52,7 @@ public class DocumentBuilderFactoryBuilderTest {
   public void tearDown() throws Exception {}
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testNewInstance() {
     DocumentBuilderFactoryBuilder b = DocumentBuilderFactoryBuilder.newInstance();
     assertNotNull(b.getFeatures());
@@ -67,6 +64,7 @@ public class DocumentBuilderFactoryBuilderTest {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testNewRestrictedInstance() {
     DocumentBuilderFactoryBuilder b = DocumentBuilderFactoryBuilder.newRestrictedInstance();
     assertNotNull(b.getFeatures());

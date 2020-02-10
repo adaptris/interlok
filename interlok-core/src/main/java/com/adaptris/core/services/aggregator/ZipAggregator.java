@@ -62,7 +62,7 @@ public class ZipAggregator extends MessageAggregatorImpl {
   @Override
   public void joinMessage(AdaptrisMessage msg, Collection<AdaptrisMessage> msgs) throws CoreException {
     try (ZipOutputStream zipOutputStream = new ZipOutputStream(msg.getOutputStream())) {
-      for (AdaptrisMessage message : msgs){
+      for (AdaptrisMessage message : filter(msgs)){
         if(message.getMessageHeaders().containsKey(filenameMetadata())) {
           zipOutputStream.putNextEntry(new ZipEntry(message.getMetadataValue(filenameMetadata())));
           zipOutputStream.write(message.getPayload());

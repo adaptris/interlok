@@ -1,12 +1,10 @@
 package com.adaptris.core;
 
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
-
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import javax.validation.constraints.NotBlank;
 import org.apache.commons.lang3.BooleanUtils;
-import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -24,7 +22,7 @@ public abstract class SharedServiceImpl extends SharedComponent implements Servi
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean continueOnFail;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean isTrackingEndpoint;
 

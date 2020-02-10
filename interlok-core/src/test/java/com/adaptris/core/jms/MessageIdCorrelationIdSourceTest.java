@@ -17,16 +17,13 @@ package com.adaptris.core.jms;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
-
 import javax.jms.Session;
 import javax.jms.TextMessage;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
@@ -46,6 +43,7 @@ public class MessageIdCorrelationIdSourceTest {
 
   @Test
   public void testCorrelationIdAdaptrisMessage_ToMessage() throws Exception {
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     JmsConnection conn = broker.getJmsConnection();
     try {
@@ -66,6 +64,7 @@ public class MessageIdCorrelationIdSourceTest {
 
   @Test
   public void testCorrelationIdMessage_AdaptrisMessage() throws Exception {
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     JmsConnection conn = broker.getJmsConnection();
     try {
@@ -90,6 +89,7 @@ public class MessageIdCorrelationIdSourceTest {
 
   @Test
   public void testCorrelationIdMessage_AdaptrisMessage_NoCorrelationId() throws Exception {
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     JmsConnection conn = broker.getJmsConnection();
     try {

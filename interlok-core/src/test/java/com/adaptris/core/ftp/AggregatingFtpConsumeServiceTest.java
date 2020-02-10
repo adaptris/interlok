@@ -22,10 +22,11 @@ import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_USERNAME;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_WORK_DIR_CANONICAL;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.PAYLOAD;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.SLASH;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import org.mockftpserver.fake.FakeFtpServer;
 import org.mockftpserver.fake.filesystem.FileSystem;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -44,18 +45,12 @@ import com.adaptris.util.text.mime.BodyPartIterator;
 
 public class AggregatingFtpConsumeServiceTest extends AggregatingServiceExample {
 
-  public AggregatingFtpConsumeServiceTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  public void setUp() throws Exception {
-    super.setUp();
-  }
-
-  public void tearDown() throws Exception {
-    super.tearDown();
-  }
-
+  @Test
   public void testInit() throws Exception {
     AggregatingFtpConsumeService service = new AggregatingFtpConsumeService();
     try {
@@ -94,6 +89,7 @@ public class AggregatingFtpConsumeServiceTest extends AggregatingServiceExample 
 
   }
 
+  @Test
   public void testService_SingleFile() throws Exception {
     int count = 1;
 
@@ -117,6 +113,7 @@ public class AggregatingFtpConsumeServiceTest extends AggregatingServiceExample 
     }
   }
 
+  @Test
   public void testService_SingleFile_Failure() throws Exception {
     int count = 1;
 
@@ -145,6 +142,7 @@ public class AggregatingFtpConsumeServiceTest extends AggregatingServiceExample 
     }
   }
 
+  @Test
   public void testService_Single_NoDelete() throws Exception {
     int count = 1;
 
@@ -174,6 +172,7 @@ public class AggregatingFtpConsumeServiceTest extends AggregatingServiceExample 
     }
   }
 
+  @Test
   public void testService_MultipleFiles() throws Exception {
     int count = 5;
 
@@ -199,6 +198,7 @@ public class AggregatingFtpConsumeServiceTest extends AggregatingServiceExample 
     }
   }
 
+  @Test
   public void testService_MultipleFiles_NoDelete() throws Exception {
     int count = 5;
 
@@ -228,6 +228,7 @@ public class AggregatingFtpConsumeServiceTest extends AggregatingServiceExample 
     }
   }
 
+  @Test
   public void testService_MultipleFiles_Failure() throws Exception {
     int count = 5;
 

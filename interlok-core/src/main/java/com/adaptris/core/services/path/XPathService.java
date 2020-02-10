@@ -21,7 +21,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;
@@ -33,13 +32,11 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -206,10 +203,10 @@ public class XPathService extends ServiceImp {
   @XStreamImplicit(itemFieldName="xpath-execution")
   private List<Execution> executions;
   
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private KeyValuePairSet namespaceContext;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
   
@@ -219,6 +216,7 @@ public class XPathService extends ServiceImp {
   }
 
   // @Override
+  @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     NamespaceContext namespaceContext = SimpleNamespaceContext.create(getNamespaceContext(), msg);
     try {
@@ -304,7 +302,7 @@ public class XPathService extends ServiceImp {
   }
 
   DocumentBuilderFactoryBuilder documentFactoryBuilder(NamespaceContext namespaceCtx) {
-    return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig(), namespaceCtx);
+    return DocumentBuilderFactoryBuilder.newInstanceIfNull(getXmlDocumentFactoryConfig(), namespaceCtx);
   }
 
 }

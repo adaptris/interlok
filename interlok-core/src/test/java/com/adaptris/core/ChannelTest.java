@@ -16,14 +16,17 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.fail;
 import java.util.UUID;
-
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
-
+import org.junit.Test;
 import com.adaptris.core.jms.MockJmsConnection;
 import com.adaptris.core.jms.MockNoOpConnectionErrorHandler;
 import com.adaptris.core.jms.UrlVendorImplementation;
+import com.adaptris.core.stubs.ConfigCommentHelper;
 
 
 public class ChannelTest extends ExampleChannelCase {
@@ -34,10 +37,10 @@ public class ChannelTest extends ExampleChannelCase {
   private AdaptrisMessageConsumer consumer;
   private AdaptrisMessageProducer producer;
 
-  public ChannelTest(java.lang.String testName) {
-    super(testName);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
-
 
   @Override
   protected Object retrieveObjectForSampleConfig() {
@@ -47,6 +50,7 @@ public class ChannelTest extends ExampleChannelCase {
       c.setUniqueId(UUID.randomUUID().toString());
       c.getWorkflowList().add(createDefaultWorkflow());
       c.getWorkflowList().add(configureWorkflow(new PoolingWorkflow()));
+      c.setComments("Comments Ignored At Runtime");
       cl.addChannel(c);
     } catch (CoreException e) {
       throw new RuntimeException(e);
@@ -59,6 +63,12 @@ public class ChannelTest extends ExampleChannelCase {
     return Channel.class.getName();
   }
 
+  @Test
+  public void testComments() throws Exception {
+    ConfigCommentHelper.testComments(new Channel());
+  }
+
+  @Test
   public void testLifecycle_Init() throws Exception {
     Channel c = new Channel();
     c.getWorkflowList().add(createDefaultWorkflow());
@@ -66,6 +76,7 @@ public class ChannelTest extends ExampleChannelCase {
     assertEquals(InitialisedState.getInstance(), c.retrieveComponentState());
   }
 
+  @Test
   public void testLifecycle_Start() throws Exception {
     Channel c = new Channel();
     c.getWorkflowList().add(createDefaultWorkflow());
@@ -74,6 +85,7 @@ public class ChannelTest extends ExampleChannelCase {
 
   }
 
+  @Test
   public void testLifecycle_Stop() throws Exception {
     Channel c = new Channel();
     c.getWorkflowList().add(createDefaultWorkflow());
@@ -83,6 +95,7 @@ public class ChannelTest extends ExampleChannelCase {
 
   }
 
+  @Test
   public void testLifecycle_Close() throws Exception {
     Channel c = new Channel();
     c.getWorkflowList().add(createDefaultWorkflow());
@@ -91,6 +104,7 @@ public class ChannelTest extends ExampleChannelCase {
     assertEquals(ClosedState.getInstance(), c.retrieveComponentState());
   }
 
+  @Test
   public void testChannel_StateManagedComponentContainerInit() throws Exception {
     Channel channel = new Channel();
     Workflow workflow = createDefaultWorkflow();
@@ -104,6 +118,7 @@ public class ChannelTest extends ExampleChannelCase {
     assertEquals(InitialisedState.getInstance(), workflow.retrieveComponentState());
   }
 
+  @Test
   public void testChannel_StateManagedComponentContainerStart() throws Exception {
     Channel channel = new Channel();
     Workflow workflow = createDefaultWorkflow();
@@ -117,6 +132,7 @@ public class ChannelTest extends ExampleChannelCase {
     assertEquals(StartedState.getInstance(), workflow.retrieveComponentState());
   }
 
+  @Test
   public void testChannel_StateManagedComponentContainerStop() throws Exception {
     Channel channel = new Channel();
     Workflow workflow = createDefaultWorkflow();
@@ -131,6 +147,7 @@ public class ChannelTest extends ExampleChannelCase {
     assertEquals(StoppedState.getInstance(), workflow.retrieveComponentState());
   }
 
+  @Test
   public void testChannel_StateManagedComponentContainerClose() throws Exception {
     Channel channel = new Channel();
     Workflow workflow = createDefaultWorkflow();
@@ -144,7 +161,7 @@ public class ChannelTest extends ExampleChannelCase {
     assertEquals(StartedState.getInstance(), workflow.retrieveComponentState());
   }
 
-
+  @Test
   public void testSetConsumeConnection() {
     Channel c = new Channel();
     NullConnection conn = new NullConnection();
@@ -159,6 +176,7 @@ public class ChannelTest extends ExampleChannelCase {
     assertEquals(conn, c.getConsumeConnection());
   }
 
+  @Test
   public void testSetProduceConnection() {
     Channel c = new Channel();
     NullConnection conn = new NullConnection();
@@ -173,6 +191,7 @@ public class ChannelTest extends ExampleChannelCase {
     assertEquals(conn, c.getProduceConnection());
   }
 
+  @Test
   public void testSetMessageErrorHandler() {
     Channel c = new Channel();
     ProcessingExceptionHandler obj = new StandardProcessingExceptionHandler();
@@ -187,6 +206,7 @@ public class ChannelTest extends ExampleChannelCase {
     assertEquals(obj, c.getMessageErrorHandler());
   }
 
+  @Test
   public void testRegisterMessageErrorHandler() {
     Channel c = new Channel();
     ProcessingExceptionHandler obj = new StandardProcessingExceptionHandler();
@@ -203,6 +223,7 @@ public class ChannelTest extends ExampleChannelCase {
     assertEquals(obj, c.retrieveActiveMsgErrorHandler());
   }
 
+  @Test
   public void testSetWorkflowList() {
     Channel c = new Channel();
     WorkflowList wl = new WorkflowList();
@@ -217,6 +238,7 @@ public class ChannelTest extends ExampleChannelCase {
     assertEquals(wl, c.getWorkflowList());
   }
 
+  @Test
   public void testBackReferences() throws Exception {
     Channel channel = new Channel();
     NullConnection consConn = new NullConnection();
@@ -256,6 +278,7 @@ public class ChannelTest extends ExampleChannelCase {
     assertEquals(1, channel2.getProduceConnection().retrieveExceptionListeners().size());
   }
 
+  @Test
   public void testConnectionEqualityCheck2DifferentConnections() throws Exception {
     Channel channel = new Channel();
 
@@ -271,6 +294,7 @@ public class ChannelTest extends ExampleChannelCase {
     channel.init();
   }
 
+  @Test
   public void testConnectionEqualityCheck2ConnectionsToSameBroker() throws Exception {
     Channel channel = new Channel();
 
@@ -288,6 +312,7 @@ public class ChannelTest extends ExampleChannelCase {
     }
   }
 
+  @Test
   public void testConnectionEqualityCheck_SharedConnectionSameBroker() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
@@ -307,6 +332,7 @@ public class ChannelTest extends ExampleChannelCase {
     }
   }
 
+  @Test
   public void testConnectionEqualityCheck_MultipleSharedConnections() throws Exception {
 
     Adapter adapter = new Adapter();
@@ -330,6 +356,7 @@ public class ChannelTest extends ExampleChannelCase {
     }
   }
 
+  @Test
   public void testConnectionEqualityCheck_MultipleSharedConnections_SameBroker() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
@@ -354,6 +381,7 @@ public class ChannelTest extends ExampleChannelCase {
     }
   }
 
+  @Test
   public void testConnectionEqualityCheckSameConnectionInstances() throws Exception {
     Channel channel = new Channel();
 
@@ -365,6 +393,7 @@ public class ChannelTest extends ExampleChannelCase {
     channel.init();
   }
 
+  @Test
   public void testHasUniqueId() {
     Channel c = new Channel();
     assertEquals(false, c.hasUniqueId());
@@ -380,6 +409,7 @@ public class ChannelTest extends ExampleChannelCase {
     if (uid != null)
       connection.setUniqueId(uid);
     UrlVendorImplementation vendorImp = new UrlVendorImplementation() {
+      @Override
       public ConnectionFactory createConnectionFactory() throws JMSException {
         return null;
       }

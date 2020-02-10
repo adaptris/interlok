@@ -16,11 +16,15 @@
 
 package com.adaptris.core.services;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BranchingServiceCollection;
@@ -40,14 +44,12 @@ public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
   private static final String MY_METADATA_VALUE = "MyMetadataValue";
   private static final String MY_METADATA_KEY = "MyMetadataKey";
 
-  public EmbeddedScriptingServiceTest(java.lang.String testName) {
-    super(testName);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testService() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata(MY_METADATA_KEY, MY_METADATA_VALUE);
@@ -59,6 +61,7 @@ public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
     assertEquals(new StringBuffer(MY_METADATA_VALUE).reverse().toString(), msg.getMetadataValue(MY_METADATA_KEY));
   }
 
+  @Test
   public void testBranchingService() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata(MY_METADATA_KEY, MY_METADATA_VALUE);
@@ -68,6 +71,7 @@ public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
     assertEquals(NEXT_SERVICE_ID, msg.getNextServiceId());
   }
 
+  @Test
   public void testBranchingServiceExcecution_NextServiceId() throws Exception {
     BranchingServiceCollection bsc = new BranchingServiceCollection();
     bsc.setFirstServiceId(getName());
@@ -84,6 +88,7 @@ public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
     assertEquals(MY_METADATA_VALUE, msg.getMetadataValue(MY_METADATA_KEY2));
   }
 
+  @Test
   public void testBranchingServiceExecution_NoNextServiceId() throws Exception {
     BranchingServiceCollection bsc = new BranchingServiceCollection();
     bsc.setFirstServiceId(getName());
@@ -97,6 +102,7 @@ public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
     assertEquals(MY_METADATA_VALUE, msg.getMetadataValue(MY_METADATA_KEY3));
   }
 
+  @Test
   public void testInit() throws Exception {
     EmbeddedScriptingService service = new EmbeddedScriptingService();
     try {
@@ -118,6 +124,7 @@ public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
     LifecycleHelper.init(service);
   }
 
+  @Test
   public void testDoServiceWithEmptyScript() throws Exception {
     EmbeddedScriptingService service = new EmbeddedScriptingService();
     service.setLanguage("jruby");
@@ -127,6 +134,7 @@ public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
     execute(service, msg);
   }
 
+  @Test
   public void testDoServiceWithFailingScript() throws Exception {
     EmbeddedScriptingService service = createService(getName());
     service.setScript("This Really Should Fail");

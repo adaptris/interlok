@@ -16,14 +16,10 @@
 package com.adaptris.core.http.auth;
 
 import java.net.PasswordAuthentication;
-
-import org.hibernate.validator.constraints.NotBlank;
-
+import javax.validation.constraints.NotBlank;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.security.exc.PasswordException;
-import com.adaptris.security.password.Password;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -42,15 +38,20 @@ public class MetadataUsernamePassword extends UserPassAuthentication {
   @NotBlank
   private String passwordMetadataKey;
   
+  public MetadataUsernamePassword() {
+
+  }
+
+  public MetadataUsernamePassword(String userKey, String passwordKey) {
+    this();
+    setUsernameMetadataKey(userKey);
+    setPasswordMetadataKey(passwordKey);
+  }
+
   @Override
   protected PasswordAuthentication getPasswordAuthentication(AdaptrisMessage msg) throws CoreException {
-    try {
-      String username = msg.getMetadataValue(getUsernameMetadataKey());
-      char[] password = Password.decode(msg.getMetadataValue(getPasswordMetadataKey())).toCharArray();
-      return new PasswordAuthentication(username, password);
-    } catch (PasswordException e) {
-      throw new CoreException("Unable to decode password", e);
-    }
+    return new PasswordAuthentication(msg.getMetadataValue(getUsernameMetadataKey()),
+          decodePassword(msg.getMetadataValue(getPasswordMetadataKey())));
   }
 
   public String getUsernameMetadataKey() {

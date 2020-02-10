@@ -17,12 +17,9 @@
 package com.adaptris.util.text.mime;
 
 import java.util.List;
-
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
-
-import com.adaptris.annotation.Removal;
 
 
 /**
@@ -30,20 +27,6 @@ import com.adaptris.annotation.Removal;
  * 
  */
 public interface PartSelector {
-
-  /**
-   * Select the body part that should form the AdaptrisMessage payload.
-   * 
-   * @param in a MultiPartInput whose iterator returns a MimeBodyPart.
-   * @return the MimeBodyPart that should be the body, or null if no match found.
-   * @deprecated since 3.7.2.
-   * @implSpec The default implementation will return null.
-   */
-  @Deprecated
-  @Removal(version = "3.10.0")
-  default MimeBodyPart select(MultiPartInput in) throws MessagingException {
-    return null;
-  }
 
   /**
    * Select the body part that should form the AdaptrisMessage payload.

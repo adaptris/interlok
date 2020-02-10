@@ -15,12 +15,12 @@
 */
 package com.adaptris.core.http.client.net;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -70,7 +70,7 @@ public abstract class HttpRequestServiceImpl extends ServiceImp {
   @NotBlank
   @AutoPopulated
   @InputFieldDefault(value = "POST")
-  @InputFieldHint(expression = true)
+  @InputFieldHint(expression = true, style = "com.adaptris.core.http.client.RequestMethodProvider.RequestMethod")
   private String method;
 
   @AdvancedConfig

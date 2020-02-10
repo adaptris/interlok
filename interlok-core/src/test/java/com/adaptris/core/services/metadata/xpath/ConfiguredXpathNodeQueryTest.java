@@ -16,9 +16,12 @@
 
 package com.adaptris.core.services.metadata.xpath;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -28,9 +31,6 @@ import com.adaptris.util.text.xml.XPath;
 @SuppressWarnings("deprecation")
 public class ConfiguredXpathNodeQueryTest extends ConfiguredXpathQueryCase {
 
-  public ConfiguredXpathNodeQueryTest(String testName) {
-    super(testName);
-  }
 
   @Override
   protected ConfiguredXpathNodeQuery create() {
@@ -44,6 +44,7 @@ public class ConfiguredXpathNodeQueryTest extends ConfiguredXpathQueryCase {
     return query;
   }
 
+  @Test
   public void testResolveXpath_EmptyResults_NotAllowed() throws Exception {
     ConfiguredXpathNodeQuery query = init(create(), "//@MissingAttribute");
     Document doc = XmlHelper.createDocument(XML);
@@ -57,6 +58,7 @@ public class ConfiguredXpathNodeQueryTest extends ConfiguredXpathQueryCase {
     }
   }
 
+  @Test
   public void testResolveXpath_EmptyResults_Allowed() throws Exception {
     ConfiguredXpathNodeQuery query = init(create(), "//@MissingAttribute");
     query.setAllowEmptyResults(Boolean.TRUE);
@@ -66,6 +68,7 @@ public class ConfiguredXpathNodeQueryTest extends ConfiguredXpathQueryCase {
     assertNull(result);
   }
 
+  @Test
   public void testResolveXpath_Attribute() throws Exception {
     ConfiguredXpathNodeQuery query = init(create(), "//@att");
     Document doc = XmlHelper.createDocument(XML);
@@ -74,7 +77,7 @@ public class ConfiguredXpathNodeQueryTest extends ConfiguredXpathQueryCase {
     assertNotNull(result);
   }
 
-
+  @Test
   public void testResolveXpath_NamespaceWithNamespaceContext() throws Exception {
     ConfiguredXpathNodeQuery query = init(create(), "/svrl:schematron-output/svrl:failed-assert");
 

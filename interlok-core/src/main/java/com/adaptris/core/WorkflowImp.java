@@ -20,24 +20,25 @@ import static com.adaptris.core.CoreConstants.KEY_WORKFLOW_SKIP_PRODUCER;
 import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION;
 import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION_CAUSE;
 import static com.adaptris.core.CoreConstants.UNIQUE_ID_JMX_PATTERN;
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.MarshallingCDATA;
 import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
@@ -95,7 +96,6 @@ public abstract class WorkflowImp implements Workflow {
   @Valid
   @AdvancedConfig
   private ProduceExceptionHandler produceExceptionHandler;
-  @NotNull
   @NotBlank
   @Pattern(regexp = UNIQUE_ID_JMX_PATTERN)
   private String uniqueId;
@@ -105,11 +105,13 @@ public abstract class WorkflowImp implements Workflow {
   @AutoPopulated
   private List<WorkflowInterceptor> interceptors;
   @Valid
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private TimeInterval channelUnavailableWaitInterval;
   @AdvancedConfig
   @InputFieldDefault(value = "message-logger-default")
   private MessageLogger messageLogger;
+  @MarshallingCDATA
+  private String comments;
   
   // not marshalled
   private transient Channel channel;
@@ -707,7 +709,7 @@ public abstract class WorkflowImp implements Workflow {
   }
 
   /**
-   * Mark the workflow having started processing on a message.
+   * Mark the workflow having accepted a message.
    *
    * @param msg the input message
    * @see WorkflowInterceptor
@@ -715,6 +717,18 @@ public abstract class WorkflowImp implements Workflow {
   protected void workflowStart(AdaptrisMessage msg) {
     for (WorkflowInterceptor i : getInterceptors()) {
       i.workflowStart(msg);
+    }
+  }
+
+  /**
+   * Mark the workflow having started processing a message.
+   *
+   * @param msg the input message
+   * @see WorkflowInterceptor
+   */
+  protected void processingStart(AdaptrisMessage msg) {
+    for (WorkflowInterceptor i : getInterceptors()) {
+      i.processingStart(msg);
     }
   }
 
@@ -812,6 +826,17 @@ public abstract class WorkflowImp implements Workflow {
     this.messageLogger = ml;
   }
   
+
+  @Override
+  public void setComments(String s) {
+    comments = s;
+  }
+
+  @Override
+  public String getComments() {
+    return comments;
+  }
+
   @SuppressWarnings("deprecation")
   public MessageLogger messageLogger() {
     if (getLogPayload() != null) {

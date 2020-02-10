@@ -18,7 +18,7 @@ package com.adaptris.core;
 
 import static com.adaptris.core.util.XmlHelper.createDocument;
 import static com.adaptris.util.text.xml.XPath.newXPathInstance;
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import javax.validation.Valid;
 import javax.xml.namespace.NamespaceContext;
 import org.hibernate.validator.constraints.NotBlank;
@@ -69,9 +69,9 @@ public class XpathTradingRelationshipCreator implements
   @NotBlank
   private String typeXpath;
 
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private KeyValuePairSet namespaceContext;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
   /**
@@ -95,6 +95,7 @@ public class XpathTradingRelationshipCreator implements
   /**
    * @see TradingRelationshipCreator #create(AdaptrisMessage)
    */
+  @Override
   public TradingRelationship create(AdaptrisMessage msg) throws CoreException {
     TradingRelationship result = null;
     try {

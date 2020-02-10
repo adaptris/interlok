@@ -16,7 +16,7 @@
 
 package com.adaptris.core;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Factory Class that creates the required Marshaller ie the DataBinder instance that allows

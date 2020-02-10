@@ -19,7 +19,6 @@ package com.adaptris.core;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -28,7 +27,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
 import java.net.URL;
-
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.URLHelper;
@@ -55,12 +53,11 @@ public abstract class AbstractMarshaller implements AdaptrisMarshaller {
    */
   @Override
   public void marshal(Object obj, File fileName) throws CoreException {
-    try (Writer writer = new FileWriter(fileName)) {
-      marshal(obj, writer);
-    }
-    catch (Exception e) {
-      throw ExceptionHelper.wrapCoreException(e);
-    }
+    invokeSerialize(() -> {
+      try (Writer writer = new FileWriter(fileName)) {
+        marshal(obj, writer);
+      }      
+    });
   }
 
   /**
@@ -89,12 +86,11 @@ public abstract class AbstractMarshaller implements AdaptrisMarshaller {
    */
   @Override
   public Object unmarshal(String xml) throws CoreException {
-    try (Reader reader = new StringReader(xml)) {
-      return unmarshal(reader);
-    }
-    catch (Exception e) {
-      throw ExceptionHelper.wrapCoreException(e);
-    }
+    return invokeDeserialize(() -> {
+      try (Reader reader = new StringReader(xml)) {
+        return unmarshal(reader);
+      }
+    });
   }
 
   /**
@@ -102,12 +98,11 @@ public abstract class AbstractMarshaller implements AdaptrisMarshaller {
    */
   @Override
   public Object unmarshal(File file) throws CoreException {
-    try (FileReader reader = new FileReader(file)) {
-      return unmarshal(reader);
-    }
-    catch (Exception e) {
-      throw ExceptionHelper.wrapCoreException(e);
-    }
+    return invokeDeserialize(() -> {
+      try (FileReader reader = new FileReader(file)) {
+        return unmarshal(reader);
+      }
+    });
   }
 
   /**
@@ -116,21 +111,20 @@ public abstract class AbstractMarshaller implements AdaptrisMarshaller {
   @Override
   public Object unmarshal(URL url) throws CoreException {
     Args.notNull(url, "fileUrl");
-    try (InputStream in = url.openStream()) {
-      return this.unmarshal(in);
-    } catch (Exception e) {
-      throw ExceptionHelper.wrapCoreException(e);
-    }
+    return invokeDeserialize(() -> {
+      try (InputStream in = url.openStream()) {
+        return this.unmarshal(in);
+      }
+    });
   }
 
   @Override
   public Object unmarshal(URLString loc) throws CoreException {
-    try (InputStream in = connectToUrl(loc)) {
-      return unmarshal(in);
-    }
-    catch (IOException e) {
-      throw ExceptionHelper.wrapCoreException(e);
-    }
+    return invokeDeserialize(() -> {
+      try (InputStream in = URLHelper.connect(loc)) {
+        return unmarshal(in);
+      }
+    });
   }
 
   @Override
@@ -139,18 +133,36 @@ public abstract class AbstractMarshaller implements AdaptrisMarshaller {
   }
 
   /**
-   * <p>
-   * Connect to the specified URL.
-   * </p>
-   *
-   * @param loc the URL location.
-   * @return an InputStream containing the contents of the URL specified.
-   * @throws IOException on error.
-   * @deprecated since 3.6.3; use {@link URLHelper#connect(URLString)} instead.
+   * Wrap the unmarshalling sequence by catching exceptions and re-throwing as CoreExceptions.
+   * 
    */
-  @Deprecated
-  protected InputStream connectToUrl(URLString loc) throws IOException {
-    return URLHelper.connect(loc);
+  protected static Object invokeDeserialize(Deserializer u) throws CoreException {
+    try {
+      return u.deserialize();
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
+    }
+  }
+  
+  /**
+   * Wrap the marshalling sequence by catching exceptions and re-throwing as CoreExceptions.
+   * 
+   */
+  protected static void invokeSerialize(Serializer m) throws CoreException {
+    try {
+      m.serialize();
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
+    }
   }
 
+  @FunctionalInterface
+  protected interface Deserializer {
+    Object deserialize() throws Exception;
+  }
+
+  @FunctionalInterface
+  protected interface Serializer {
+    void serialize() throws Exception;
+  }
 }

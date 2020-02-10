@@ -15,7 +15,7 @@
  */
 package com.adaptris.core.jmx;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.io.IOException;
 import java.util.Map;

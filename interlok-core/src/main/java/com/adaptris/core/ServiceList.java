@@ -17,16 +17,13 @@
 package com.adaptris.core;
 
 import static com.adaptris.core.util.LoggingHelper.friendlyName;
-import static org.apache.commons.lang.StringUtils.isBlank;
-
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.ListIterator;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -45,7 +42,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"allowForwardSearch", "restartAffectedServiceOnException"})
 public class ServiceList extends ServiceListBase {
 
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "true")
   private Boolean allowForwardSearch;
 

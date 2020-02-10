@@ -18,8 +18,8 @@ package com.adaptris.core.services.exception;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -59,7 +59,7 @@ public class ExceptionAsString implements ExceptionSerializer {
   public void serialize(Exception exc, AdaptrisMessage msg) throws CoreException {
     try {
       if (includeStackTrace()) {
-        target.insert(ExceptionUtils.getFullStackTrace(exc), msg);
+        target.insert(ExceptionUtils.getStackTrace(exc), msg);
       } else {
         target.insert(ExceptionUtils.getRootCauseMessage(exc), msg);
       }

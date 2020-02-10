@@ -16,7 +16,7 @@
 
 package com.adaptris.core.services.aggregator;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -37,7 +37,7 @@ public class ConsumeDestinationFromMetadata implements ConsumeDestinationGenerat
   private String destinationMetadataKey;
   @AdvancedConfig
   private String defaultFilterExpression;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String filterMetadataKey;
 
   public String getDefaultDestination() {

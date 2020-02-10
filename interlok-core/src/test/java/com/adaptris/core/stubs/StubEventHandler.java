@@ -17,13 +17,11 @@
 package com.adaptris.core.stubs;
 
 import java.util.Map;
-
 import com.adaptris.core.ClosedState;
 import com.adaptris.core.ComponentState;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.Event;
 import com.adaptris.core.EventHandler;
-import com.adaptris.core.ProduceDestination;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -44,12 +42,6 @@ public class StubEventHandler implements EventHandler {
   @Override
   public void send(Event evt) throws CoreException {
   }
-
-  @Override
-  public void send(Event evt, ProduceDestination destination)
-      throws CoreException {
-  }
-
 
   @Override
   public void send(Event evt, Map<String, String> properties) throws CoreException {
@@ -101,6 +93,7 @@ public class StubEventHandler implements EventHandler {
     // return this.getClass().getSimpleName();
   }
 
+  @Override
   public void changeState(ComponentState c) {
     state = c;
   }

@@ -16,10 +16,8 @@
 
 package com.adaptris.core.jms;
 
-import javax.validation.constraints.NotNull;
-
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.hibernate.validator.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 
 
 /**
@@ -29,7 +27,6 @@ import org.hibernate.validator.constraints.NotBlank;
  */
 public abstract class UrlVendorImplementation extends VendorImplementationImp {
 
-  @NotNull
   @NotBlank
   private String brokerUrl;
 

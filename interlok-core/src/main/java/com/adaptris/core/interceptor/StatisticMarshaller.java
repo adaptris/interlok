@@ -4,10 +4,8 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -37,7 +35,7 @@ public class StatisticMarshaller extends AbstractMarshaller {
   protected transient Logger log = LoggerFactory.getLogger(this.getClass());
   
   @AutoPopulated
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private AdaptrisMarshaller actualMarshaller;
 
   public StatisticMarshaller() {

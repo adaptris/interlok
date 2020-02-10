@@ -15,20 +15,19 @@
 */
 
 package com.adaptris.core;
-
+import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
-
+import org.junit.Test;
 import com.adaptris.core.util.LifecycleHelper;
 
 public class DefaultLifecycleStrategyTest extends BaseCase {
 
-  public DefaultLifecycleStrategyTest(java.lang.String testName) {
-    super(testName);
+  public DefaultLifecycleStrategyTest() {
   }
 
   @Override
-  public void setUp() throws Exception {
-    super.setUp();
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   protected ChannelLifecycleStrategy createStrategy() {
@@ -41,6 +40,7 @@ public class DefaultLifecycleStrategyTest extends BaseCase {
     return list;
   }
 
+  @Test
   public void testChannelInit() throws Exception {
     String name = renameThread(this.getClass().getSimpleName() + "_" + "testChannelInit");
     ChannelList list = create();
@@ -57,6 +57,7 @@ public class DefaultLifecycleStrategyTest extends BaseCase {
     }
   }
 
+  @Test
   public void testChannelStart() throws Exception {
     String name = renameThread(this.getClass().getSimpleName() + "_" + "testChannelStart");
     ChannelList list = create();
@@ -73,6 +74,7 @@ public class DefaultLifecycleStrategyTest extends BaseCase {
     }
   }
 
+  @Test
   public void testChannelStop() throws Exception {
     String name = renameThread(this.getClass().getSimpleName() + "_" + "testChannelStop");
     ChannelList list = create();
@@ -91,6 +93,7 @@ public class DefaultLifecycleStrategyTest extends BaseCase {
     }
   }
 
+  @Test
   public void testChannelClose() throws Exception {
     String name = renameThread(this.getClass().getSimpleName() + "_" + "testChannelClose");
     ChannelList list = create();
@@ -109,6 +112,7 @@ public class DefaultLifecycleStrategyTest extends BaseCase {
     }
   }
 
+  @Test
   public void testChannelAutoStartFalse() throws Exception {
     String name = renameThread(this.getClass().getSimpleName() + "_" + "testChannelAutoStartFalse");
     ChannelList list = create();
@@ -131,6 +135,7 @@ public class DefaultLifecycleStrategyTest extends BaseCase {
     }
   }
 
+  @Test
   public void testChannelAutoStartTrue() throws Exception {
     String name = renameThread(this.getClass().getSimpleName() + "_" + "testChannelAutoStartTrue");
     ChannelList list = create();
@@ -154,6 +159,7 @@ public class DefaultLifecycleStrategyTest extends BaseCase {
   }
 
   // No ID means that we always start regardless of auto-start being false.
+  @Test
   public void testChannelAutoStartFalseNoUniqueId() throws Exception {
     String name = renameThread(this.getClass().getSimpleName() + "_" + "testChannelAutoStartFalseNoUniqueId");
 
@@ -176,6 +182,7 @@ public class DefaultLifecycleStrategyTest extends BaseCase {
     }
   }
 
+  @Test
   public void testChannelAutoStartTrueNoUniqueId() throws Exception {
     String name = renameThread(this.getClass().getSimpleName() + "_" + "testChannelAutoStartTrueNoUniqueId");
     ChannelList list = create();
@@ -197,6 +204,7 @@ public class DefaultLifecycleStrategyTest extends BaseCase {
     }
   }
 
+  @Test
   public void testChannelAutoStartNotSpecified() throws Exception {
     String name = renameThread(this.getClass().getSimpleName() + "_" + "testChannelAutoStartNotSpecified");
     ChannelList list = create();

@@ -17,10 +17,8 @@
 package com.adaptris.core.services.metadata.compare;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -68,6 +66,7 @@ public class MetadataComparisonService extends ServiceImp {
     setComparator(mc);
   }
 
+  @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     msg.addMetadata(getComparator().compare(msg.getMetadata(getFirstKey()), msg.getMetadata(getSecondKey())));
   }

@@ -27,9 +27,8 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import org.apache.commons.io.IOUtils;
 import com.adaptris.annotation.AdvancedConfig;
-import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.PollerImp;
 import com.adaptris.util.TimeInterval;
@@ -61,10 +60,8 @@ public class FsImmediateEventPoller extends PollerImp {
 
   private static final long DEFAULT_CREATION_COMPLETE_CHECK_MS = 500;
   
-  @NotNull
-  @AutoPopulated
   @Valid
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private TimeInterval creationCompleteCheck;
 
   private transient boolean stopped = false;
@@ -111,8 +108,9 @@ public class FsImmediateEventPoller extends PollerImp {
       @Override
       @SuppressWarnings("unchecked")
       public void run() {
+        WatchService watcher = null;
         try {
-          WatchService watcher = FileSystems.getDefault().newWatchService();
+          watcher = FileSystems.getDefault().newWatchService();
           File directory = createFileReference(createUrlFromString(retrieveConsumer().getDestination().getDestination(), true));
           Path dir = Paths.get(directory.getCanonicalPath());
           
@@ -166,6 +164,8 @@ public class FsImmediateEventPoller extends PollerImp {
         }
         catch (Exception x) {
           log.error("Caught Exception {}", x.getMessage());
+        } finally {
+          IOUtils.closeQuietly(watcher);
         }
       }
 

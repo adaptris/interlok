@@ -17,6 +17,8 @@
 package com.adaptris.ftp;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -28,17 +30,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPCmd;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
-
 import com.adaptris.core.util.Args;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferClientImp;
 import com.adaptris.filetransfer.FileTransferException;
+import com.adaptris.interlok.cloud.RemoteFile;
 import com.adaptris.util.FifoMutexLock;
 
 /**
@@ -103,10 +104,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
         }
         postConnectSettings(ftp);
       } catch (IOException | RuntimeException e) {
-        if (ftp.isConnected()) {
-          ftp.disconnect();
-          ftp = null;
-        }
+        ftp = disconnect(ftp);
         throw e;
       }
     }
@@ -236,32 +234,54 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
     return out.toByteArray();
   }
 
-  /**
-   * list files in the current server directory
-   */
+
+  @Override
+  public String[] dir(String directory, FileFilter filter) throws FileTransferException, IOException {
+    List<File> files = toFileList(listFiles(directory));
+    List<String> output = new ArrayList<String>();
+    FileFilter filterToUse = ensureNotNull(filter);
+    for (File file : files) {
+      if (filterToUse.accept(file)) {
+        output.add(file.getName());
+      }
+    }
+    return output.toArray(new String[0]);
+  }
+
   @Override
   public String[] dir(String dirname, boolean full) throws IOException {
-    String[] listing = new String[0];
+    List<String> output = new ArrayList<String>();
+    FTPFile[] files = listFiles(dirname);
+    for (FTPFile file : files) {
+      if (full) {
+        output.add(file.toFormattedString());
+      } else {
+        output.add(file.getName());
+      }
+    }
+    return output.toArray(new String[0]);
+  }
+
+  private FTPFile[] listFiles(String dirname) throws IOException {
+    FTPFile[] results = new FTPFile[0];
     try {
       acquireLock();
       log("{} {}", FTPCmd.LIST, dirname);
-      FTPFile[] results = ftpClient().listFiles(dirname);
+      results = ftpClient().listFiles(dirname);
       logReply(ftpClient().getReplyStrings());
-      List<String> output = new ArrayList<String>();
-      for (FTPFile file : results) {
-        if (full) {
-          output.add(file.toFormattedString());
-        }
-        else {
-          output.add(file.getName());
-        }
-        listing = output.toArray(new String[output.size()]);
-      }
-    }
-    finally {
+    } finally {
       releaseLock();
     }
-    return listing;
+    return results;
+  }
+
+  private List<File> toFileList(FTPFile... files) {
+    ArrayList<File> result = new ArrayList<>();
+    for (FTPFile f : files) {
+      result.add(new RemoteFile.Builder().setPath(f.getName()).setIsDirectory(f.isDirectory()).setIsDirectory(f.isFile())
+          .setLastModified(f.getTimestamp().getTimeInMillis()).setLength(f.getSize()).build());
+    }
+    return result;
   }
 
   /**
@@ -442,14 +462,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
       return;
     }
     if (isAdditionaDebug()) {
-      StringBuilder sb = new StringBuilder();
-      for (int i = 0; i < replyText.length; i++) {
-        sb.append(replyText[i]);
-        if (i + 1 < replyText.length) {
-          sb.append(System.lineSeparator());
-        }
-      }
-      logR.trace(sb.toString());
+      logR.trace(String.join(System.lineSeparator(), replyText));
     }
   }
 
@@ -540,7 +553,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
     String replyText = reply.substring(4);
     Reply replyObj = new Reply(replyCode, replyText);
 
-    if (replyCode.equals(expectedReplyCode)) {
+    if (replyObj.getReplyCode().equals(expectedReplyCode)) {
       return replyObj;
     }
 
@@ -589,5 +602,13 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
     if (!value) {
       throw new IOException(ftpClient().getReplyString());
     }
+  }
+
+  protected static <T extends FTPClient> T disconnect(T ftp) throws IOException {
+    if (ftp.isConnected()) {
+      ftp.disconnect();
+      return null;
+    }
+    return ftp;
   }
 }

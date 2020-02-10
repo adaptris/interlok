@@ -1,8 +1,11 @@
 package com.adaptris.core.services.cache;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.BranchingServiceCollection;
 import com.adaptris.core.MetadataElement;
@@ -17,13 +20,19 @@ public class CheckAndRetrieveCacheTest extends CacheServiceBaseCase {
   static final String LOOKUP_METADATA_KEY = "lookupMetadataKey";
   static final String LOOKED_UP_VALUE = "lookedUpValue";
 
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+  @Test
   public void testIsBranching() throws Exception {
 
     CheckCacheService service = createServiceForTests();
     assertTrue(service.isBranching());
   }
 
-  public void testDoService_InCache() throws Exception {
+  @Test
+  public void testDoService_Error() throws Exception {
     AdaptrisMessage msg = createMessage("Hello World", Arrays.asList(new MetadataElement[]
     {
         new MetadataElement(LOOKUP_VALUE, LOOKUP_VALUE)
@@ -46,6 +55,28 @@ public class CheckAndRetrieveCacheTest extends CacheServiceBaseCase {
     }
   }
 
+  @Test
+  public void testDoService_InCache() throws Exception {
+    AdaptrisMessage msg =
+        createMessage("Hello World", Arrays.asList(new MetadataElement[] {new MetadataElement(LOOKUP_VALUE, LOOKUP_VALUE)}));
+
+    ExpiringMapCache cache = createCacheInstanceForTests();
+    CheckAndRetrieve service = createServiceForTests();
+    try {
+      service.setConnection(new CacheConnection(cache));
+      service.setKeysFoundServiceId(FOUND);
+      service.setKeysNotFoundServiceId(NOT_FOUND);
+      start(service);
+      cache.put(LOOKUP_VALUE, LOOKED_UP_VALUE);
+      service.doService(msg);
+      assertEquals(FOUND, msg.getNextServiceId());
+      assertEquals(LOOKED_UP_VALUE, msg.getMetadataValue(LOOKUP_METADATA_KEY));
+    } finally {
+      stop(service);
+    }
+  }
+
+  @Test
   public void testDoService_DoesNotUseKeys() throws Exception {
     AdaptrisMessage msg = createMessage("Hello World", Arrays.asList(new MetadataElement[]
     {
@@ -70,6 +101,7 @@ public class CheckAndRetrieveCacheTest extends CacheServiceBaseCase {
     }
   }
 
+  @Test
   public void testDoService_NotInCache() throws Exception {
     AdaptrisMessage msg = createMessage("Hello World", Arrays.asList(new MetadataElement[]
     {

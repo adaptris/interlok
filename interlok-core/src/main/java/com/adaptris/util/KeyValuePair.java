@@ -16,10 +16,8 @@
 
 package com.adaptris.util;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.util.Args;
@@ -59,10 +57,12 @@ public class KeyValuePair implements NameValuePair {
    * </p>
    * @param key may not be null.
    */
+  @Override
   public void setKey(String key) {
     this.key = Args.notNull(key, "key");
   }
 
+  @Override
   public String getKey() {
     return key;
   }
@@ -73,10 +73,12 @@ public class KeyValuePair implements NameValuePair {
    * </p>
    * @param value may not be null
    */
+  @Override
   public void setValue(String value) {
       this.value = Args.notNull(value, "value");
   }
 
+  @Override
   public String getValue() {
     return value;
   }

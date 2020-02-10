@@ -19,9 +19,7 @@ package com.adaptris.core.http.jetty;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
-import org.apache.commons.lang.BooleanUtils;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -57,10 +55,10 @@ public abstract class ResponseProducerImpl extends ProduceOnlyProducerImp {
   @InputFieldDefault(value = "true")
   private Boolean sendPayload;
 
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean forwardConnectionException;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "true")
   private Boolean flushBuffer;
 

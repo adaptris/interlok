@@ -16,17 +16,20 @@
 
 package com.adaptris.core.services.system;
 
-import static org.apache.commons.lang.StringUtils.strip;
-
+import static org.apache.commons.lang3.StringUtils.strip;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.Executor;
-import org.apache.commons.lang.StringUtils;
-
+import org.apache.commons.lang3.StringUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -94,19 +97,22 @@ public class CommonsSystemCommandExecutorServiceTest extends GeneralServiceExamp
 
   private String oldThreadName;
 
-  public CommonsSystemCommandExecutorServiceTest(java.lang.String testName) {
-    super(testName);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     oldThreadName = Thread.currentThread().getName();
   }
 
-  protected void tearDown() throws Exception {
+  @After
+  public void tearDown() throws Exception {
     Thread.currentThread().setName(oldThreadName);
   }
 
+  @Test
   public void testSetCommandBuilder() throws Exception {
     SystemCommandExecutorService service = new SystemCommandExecutorService();
     assertNotNull(service.getCommandBuilder());
@@ -141,6 +147,7 @@ public class CommonsSystemCommandExecutorServiceTest extends GeneralServiceExamp
     assertEquals(dummy, service.getCommandBuilder());
   }
 
+  @Test
   public void testSetOutputCapture() throws Exception {
     SystemCommandExecutorService service = new SystemCommandExecutorService();
     assertNotNull(service.getOutputCapture());
@@ -158,7 +165,7 @@ public class CommonsSystemCommandExecutorServiceTest extends GeneralServiceExamp
     assertEquals(OverwritePayload.class, service.getOutputCapture().getClass());
   }
 
-
+  @Test
   public void testDoService() throws Exception {
     Thread.currentThread().setName(getName());
     SystemCommandExecutorService service = new SystemCommandExecutorService(createEchoCommand(false), new OverwritePayload());
@@ -172,6 +179,7 @@ public class CommonsSystemCommandExecutorServiceTest extends GeneralServiceExamp
     }
   }
 
+  @Test
   public void testDoService_WithWorkingDir() throws Exception {
     Thread.currentThread().setName(getName());
     DefaultCommandBuilder builder = createEchoCommand(false);
@@ -181,6 +189,7 @@ public class CommonsSystemCommandExecutorServiceTest extends GeneralServiceExamp
     execute(service, msg);
   }
 
+  @Test
   public void testDoService_WithStaticEnvironment() throws Exception {
     Thread.currentThread().setName(getName());
     DefaultCommandBuilder builder = createEchoCommandWithEnvVar(KEY_ENV);
@@ -193,6 +202,7 @@ public class CommonsSystemCommandExecutorServiceTest extends GeneralServiceExamp
     assertEquals(VALUE_ENV, StringUtils.strip(msg.getContent()));
   }
 
+  @Test
   public void testDoService_WithMetadataEnvironment() throws Exception {
     Thread.currentThread().setName(getName());
     DefaultCommandBuilder builder = createEchoCommandWithEnvVar(KEY_ENV);
@@ -207,6 +217,7 @@ public class CommonsSystemCommandExecutorServiceTest extends GeneralServiceExamp
     assertEquals(VALUE_ENV, strip(msg.getContent()));
   }
 
+  @Test
   public void testDoService_CaptureOutput() throws Exception {
     Thread.currentThread().setName(getName());
     SystemCommandExecutorService service = new SystemCommandExecutorService(createEchoCommand(false), new OverwritePayload());
@@ -214,7 +225,8 @@ public class CommonsSystemCommandExecutorServiceTest extends GeneralServiceExamp
     execute(service, msg);
     assertEquals("Hello World", strip(msg.getContent()));
   }
-  
+
+  @Test
   public void testDoService_CaptureOutputToMetaData() throws Exception {
     final String METADATA_KEY = "commandOutput";
     
@@ -228,6 +240,7 @@ public class CommonsSystemCommandExecutorServiceTest extends GeneralServiceExamp
     assertEquals("Hello World", msg.getMetadataValue(METADATA_KEY));
   }
 
+  @Test
   public void testDoService_MetadataArguments_CaptureOutput() throws Exception {
     Thread.currentThread().setName(getName());
     SystemCommandExecutorService service = new SystemCommandExecutorService(createEchoCommand(true), new OverwritePayload());
@@ -236,6 +249,7 @@ public class CommonsSystemCommandExecutorServiceTest extends GeneralServiceExamp
     assertEquals("Hello World", strip(msg.getContent()));
   }
 
+  @Test
   public void testDoService_Failure() throws Exception {
     Thread.currentThread().setName(getName());
     DefaultCommandBuilder builder = createEchoCommand(false);
@@ -250,6 +264,7 @@ public class CommonsSystemCommandExecutorServiceTest extends GeneralServiceExamp
     }
   }
 
+  @Test
   public void testDoService_ExceedsTimeout() throws Exception {
     Thread.currentThread().setName(getName());
     SystemCommandExecutorService service = new SystemCommandExecutorService(createTimeoutCommand(), new OverwritePayload());
@@ -265,6 +280,7 @@ public class CommonsSystemCommandExecutorServiceTest extends GeneralServiceExamp
     }
   }
 
+  @Test
   public void testDoService_Quoted() throws Exception {
     Thread.currentThread().setName(getName());
     SystemCommandExecutorService service = new SystemCommandExecutorService(createQuotedCommand(), new OverwritePayload());
@@ -302,7 +318,7 @@ public class CommonsSystemCommandExecutorServiceTest extends GeneralServiceExamp
   }
 
   private DefaultCommandBuilder createBaseCommandBuilder() {
-    return createCommandBuilder((Os.isFamily(Os.WINDOWS_FAMILY)) ? CMD_ECHO_WINDOWS : CMD_ECHO_UNIX);
+    return createCommandBuilder(Os.isFamily(Os.WINDOWS_FAMILY) ? CMD_ECHO_WINDOWS : CMD_ECHO_UNIX);
   }
 
   private DefaultCommandBuilder createEchoCommandWithEnvVar(String envVar) {
@@ -313,11 +329,11 @@ public class CommonsSystemCommandExecutorServiceTest extends GeneralServiceExamp
   }
 
   private DefaultCommandBuilder createTimeoutCommand() throws Exception {
-    return createCommandBuilder((Os.isFamily(Os.WINDOWS_FAMILY)) ? CMD_TIMEOUT_WINDOWS : CMD_TIMEOUT_UNIX);
+    return createCommandBuilder(Os.isFamily(Os.WINDOWS_FAMILY) ? CMD_TIMEOUT_WINDOWS : CMD_TIMEOUT_UNIX);
   }
 
   private DefaultCommandBuilder createQuotedCommand() throws Exception {
-    DefaultCommandBuilder builder = createCommandBuilder((Os.isFamily(Os.WINDOWS_FAMILY)) ? CMD_QUOTED_WINDOWS : CMD_QUOTED_UNIX);
+    DefaultCommandBuilder builder = createCommandBuilder(Os.isFamily(Os.WINDOWS_FAMILY) ? CMD_QUOTED_WINDOWS : CMD_QUOTED_UNIX);
     builder.setQuoteHandling(true);
     return builder;
   }

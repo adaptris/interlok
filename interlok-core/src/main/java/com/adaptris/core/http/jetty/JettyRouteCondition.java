@@ -17,7 +17,7 @@ package com.adaptris.core.http.jetty;
 
 import static com.adaptris.core.CoreConstants.HTTP_METHOD;
 import static com.adaptris.core.http.jetty.JettyConstants.JETTY_URI;
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,12 +26,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.validation.constraints.NotBlank;
 import org.apache.commons.lang3.ObjectUtils;
-import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -70,6 +71,7 @@ public class JettyRouteCondition extends ConditionImpl {
 
   @NotBlank
   private String urlPattern;
+  @InputFieldHint(style = "com.adaptris.core.http.client.RequestMethodProvider.RequestMethod")
   private String method;
   @XStreamImplicit(itemFieldName = "metadata-key")
   @AffectsMetadata

@@ -16,17 +16,16 @@
 
 package com.adaptris.core.jdbc;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import org.junit.Test;
 import com.adaptris.util.text.NullPassThroughConverter;
 import com.adaptris.util.text.NullsNotSupportedConverter;
 
-import junit.framework.TestCase;
+public abstract class NullableParameterCase {
 
-public abstract class NullableParameterCase extends TestCase {
 
-  public void setUp() throws Exception {
-
-  }
-
+  @Test
   public void testNullConverter() throws Exception {
     NullableParameter param = createParameter();
     assertNull(param.getNullConverter());

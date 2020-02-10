@@ -16,22 +16,29 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import org.junit.Before;
+import org.junit.Test;
 
 public class MetadataFileNameCreatorTest extends BaseCase {
 
   private AdaptrisMessage msg;
-  public MetadataFileNameCreatorTest(String arg0) {
-    super(arg0);
-  }
 
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+
+  @Before
+  public void setUp() throws Exception {
     msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata("key", "value");
     msg.addMetadata("key2", "");
 
   }
 
+  @Test
   public void testSetMetadataKey() throws Exception {
     MetadataFileNameCreator fnc = new MetadataFileNameCreator("key");
     try {
@@ -50,6 +57,7 @@ public class MetadataFileNameCreatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testSetDefaultName() throws Exception {
     MetadataFileNameCreator fnc = new MetadataFileNameCreator("key");
     try {
@@ -68,16 +76,19 @@ public class MetadataFileNameCreatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testCreateName() throws CoreException {
     MetadataFileNameCreator fnc = new MetadataFileNameCreator("key");
     assertEquals("value", fnc.createName(msg));
   }
 
+  @Test
   public void testCreateNameDefault() throws CoreException {
     MetadataFileNameCreator fnc = new MetadataFileNameCreator("non existent key");
     assertEquals("MetadataFileNameCreator_default", fnc.createName(msg));
   }
 
+  @Test
   public void testCreateNameNullKey() throws CoreException {
     MetadataFileNameCreator fnc = new MetadataFileNameCreator();
     try {
@@ -89,12 +100,13 @@ public class MetadataFileNameCreatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testCreateNameKeyReturnsEmptyString() throws CoreException {
     MetadataFileNameCreator fnc = new MetadataFileNameCreator("key2");
     assertEquals("MetadataFileNameCreator_default", fnc.createName(msg));
   }
 
-
+  @Test
   public void testXmlRoundTrip() throws Exception {
     MetadataFileNameCreator input = new MetadataFileNameCreator("key", "default");
     AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();

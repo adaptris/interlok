@@ -16,13 +16,12 @@
 package com.adaptris.core.services.metadata;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotBlank;
-
+import org.apache.commons.lang3.ObjectUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
@@ -41,6 +40,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
+ * Add a formatted metadata item to a Message.
+ * <p>
+ * Allows you to add a new metadata key using {@code String.format()} as the syntax.
+ * </p>
  * 
  * @config add-formatted-metadata-service
  */
@@ -63,7 +66,7 @@ public class AddFormattedMetadataService extends ServiceImp {
   @AffectsMetadata
   private String metadataKey;
   @Valid
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private ElementFormatter elementFormatter;
 
   public AddFormattedMetadataService() {
@@ -106,6 +109,8 @@ public class AddFormattedMetadataService extends ServiceImp {
   }
 
   /**
+   * Set the format string that complies with {@link String#format(String, Object...)}.
+   * 
    * @param formatString the formatString to set
    */
   public void setFormatString(String formatString) {
@@ -135,6 +140,11 @@ public class AddFormattedMetadataService extends ServiceImp {
     setArgumentMetadataKeys(s);
     return this;
   }
+
+  public AddFormattedMetadataService withArgumentMetadataKeys(String... s) {
+    return withArgumentMetadataKeys(new ArrayList<>(Arrays.asList(s)));
+  }
+
 
   /**
    * @return the metadatakey
@@ -173,7 +183,7 @@ public class AddFormattedMetadataService extends ServiceImp {
     this.elementFormatter = elementFormatter;
   }
 
-  ElementFormatter elementFormatter() {
-    return getElementFormatter() != null ? getElementFormatter() : DEF_FORMATTER;
+  private ElementFormatter elementFormatter() {
+    return ObjectUtils.defaultIfNull(getElementFormatter(), DEF_FORMATTER);
   }
 }

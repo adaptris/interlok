@@ -17,17 +17,13 @@
 package com.adaptris.core;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
-
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-
 import javax.validation.Valid;
-
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.ManagedThreadFactory;
@@ -46,7 +42,7 @@ public abstract class AdaptrisMessageWorkerImp implements AdaptrisMessageWorker 
   @AdvancedConfig
   @Valid
   private AdaptrisMessageEncoder encoder;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean isTrackingEndpoint;
 

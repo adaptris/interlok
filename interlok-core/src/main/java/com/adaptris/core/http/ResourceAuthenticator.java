@@ -20,9 +20,8 @@ import java.net.Authenticator.RequestorType;
 import java.net.InetAddress;
 import java.net.PasswordAuthentication;
 import java.net.URL;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * Interface used to delegate authentication for network resources.
@@ -123,7 +122,7 @@ public interface ResourceAuthenticator {
     }
 
     public ResourceTarget withRequestingScheme(String scheme) {
-      setRequestingPrompt(scheme);
+      setRequestingScheme(scheme);
       return this;
     }
 

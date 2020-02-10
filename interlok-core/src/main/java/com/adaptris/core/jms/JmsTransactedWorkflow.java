@@ -17,9 +17,7 @@
 package com.adaptris.core.jms;
 
 import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -68,7 +66,7 @@ public final class JmsTransactedWorkflow extends StandardWorkflow {
     }
   };
 
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "true")
   private Boolean strict;
   @AdvancedConfig

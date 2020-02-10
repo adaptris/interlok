@@ -16,22 +16,25 @@
 
 package com.adaptris.core.interceptor;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
-import junit.framework.TestCase;
-
-public class ThrottlingInterceptorTest extends TestCase {
+public class ThrottlingInterceptorTest {
 
   private ThrottlingInterceptor throttlingInterceptor;
   private String cacheName = "default";
 
-  @Override
+  @Before
   public void setUp() throws Exception {
     throttlingInterceptor = new ThrottlingInterceptor();
     throttlingInterceptor.setCacheName(cacheName);
@@ -41,11 +44,12 @@ public class ThrottlingInterceptorTest extends TestCase {
     LifecycleHelper.start(throttlingInterceptor);
   }
 
-  @Override
+  @After
   public void tearDown() throws Exception{
     ((TimeSliceDefaultCacheProvider)throttlingInterceptor.getCacheProvider()).getPersistence().clear();
   }
 
+  @Test
   public void testThrottleNoDelay() throws Exception {
     throttlingInterceptor.setMaximumMessages(6);
 
@@ -63,6 +67,7 @@ public class ThrottlingInterceptorTest extends TestCase {
     assertTrue(startTimeLong + 5000 > endTimeLong);
   }
 
+  @Test
   public void testThrottleDelay() throws Exception {
     throttlingInterceptor.setMaximumMessages(2);
 
@@ -77,7 +82,8 @@ public class ThrottlingInterceptorTest extends TestCase {
     // Make sure we WERE delayed
     assertFalse(startTimeLong + 500 > endTimeLong);
   }
-  
+
+  @Test
   public void testMultiThreadedWithSingleInterceptor() throws Exception {
     throttlingInterceptor.setMaximumMessages(Integer.MAX_VALUE);
     
@@ -93,7 +99,8 @@ public class ThrottlingInterceptorTest extends TestCase {
     int totalMessageCount = throttlingInterceptor.getCacheProvider().get(cacheName).getTotalMessageCount();
     assertEquals(50, totalMessageCount);
   }
-  
+
+  @Test
   public void testMultiThreadedWithSingleInterceptorMultiTimeSlice() throws Exception {
     throttlingInterceptor.setMaximumMessages(40);
     throttlingInterceptor.setCacheName("NewCache");
@@ -122,6 +129,7 @@ public class ThrottlingInterceptorTest extends TestCase {
       this.numMessages = numMessages;
     }
     
+    @Override
     public void run() {
       for(int counter = 1; counter <= numMessages; counter ++) {
         AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage();

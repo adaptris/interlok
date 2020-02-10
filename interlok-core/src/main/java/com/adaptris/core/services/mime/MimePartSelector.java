@@ -16,7 +16,7 @@
 
 package com.adaptris.core.services.mime;
 
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import java.util.Enumeration;
 import javax.mail.Header;
 import javax.mail.internet.MimeBodyPart;
@@ -65,10 +65,10 @@ public class MimePartSelector extends ServiceImp {
   private Boolean preservePartHeadersAsMetadata;
   @InputFieldDefault(value = "false")
   private Boolean markAsNonMime;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "")
   private String headerPrefix;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "")
   private String partHeaderPrefix;
   @NotNull

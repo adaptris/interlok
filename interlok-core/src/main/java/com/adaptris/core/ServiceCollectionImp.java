@@ -17,25 +17,23 @@
 package com.adaptris.core;
 
 import static com.adaptris.core.util.LoggingHelper.friendlyName;
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
-
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.MarshallingCDATA;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
@@ -52,7 +50,9 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   private static final OutOfStateHandler DEFAULT_STATE_HANDLER = new RaiseExceptionOutOfStateHandler();
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
+  @Deprecated
+  @Removal(version = "3.11.0", message = "Will be removed to avoid JNDI ambiguity")
   private String lookupName;
   
   private String uniqueId;
@@ -61,16 +61,18 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean continueOnFail;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean isTrackingEndpoint;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private OutOfStateHandler outOfStateHandler;
   @AutoPopulated
   @NotNull
   @Valid
   private List<Service> services;
+  @MarshallingCDATA
+  private String comments;
   
   private transient FifoMutexLock lock = new FifoMutexLock();
   protected transient EventHandler eventHandler;
@@ -188,6 +190,16 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
    */
   public void setServices(List<Service> serviceList) {
     services = (List<Service>) enforceRequirements(Args.notNull(serviceList, "serviceList"));
+  }
+
+  @Override
+  public void setComments(String s) {
+    comments = s;
+  }
+
+  @Override
+  public String getComments() {
+    return comments;
   }
 
   @Override
@@ -409,7 +421,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
       log.debug("Service restarts on error, restarting [{}]", serviceName);
       restartService(service);
     } 
-    if ((service != null) && (service.continueOnFailure())) {
+    if (service != null && service.continueOnFailure()) {
       log.debug("continue-on-fail is true, ignoring Exception [{}] from [{}]", e.getMessage(), serviceName);
     }
     else {
@@ -573,10 +585,19 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   }
 
   @Override
+  @Deprecated
+  @Removal(version = "3.11.0", message = "Will be removed to avoid JNDI ambiguity")
   public String getLookupName() {
     return lookupName;
   }
 
+  /**
+   * 
+   * @deprecated since 3.9.1 with no replacement; and will be removed to avoid JNDI ambiguity
+   * 
+   */
+  @Deprecated
+  @Removal(version = "3.11.0", message = "Will be removed to avoid JNDI ambiguity")
   public void setLookupName(String lookupName) {
     this.lookupName = lookupName;
   }

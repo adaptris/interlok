@@ -20,20 +20,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeBodyPart;
-
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.util.stream.UnbufferedLineInputStream;
 import com.adaptris.util.text.mime.BodyPartIterator;
 import com.adaptris.util.text.mime.ByteArrayIterator;
 import com.adaptris.util.text.mime.MimeConstants;
-import com.adaptris.util.text.mime.MultiPartInput;
 
 /**
  * Utility for handling MIME messages.
@@ -80,55 +75,6 @@ public abstract class MimeHelper {
     }
     if (result == null) {
       throw new IOException("Could not parse " + msg.getUniqueId() + " into a standard MIME Multipart");
-    }
-    return result;
-  }
-
-  /**
-   * Parse an AdaptrisMessage into a MultiPartInput.
-   *
-   * @param msg the Message to parse.
-   * @return a MultiPartInput ready for iterating, each invocation of {@link MultiPartInput#next() } returns a byte array
-   * @throws IOException if the message could not be parsed.
-   * @see #create(AdaptrisMessage, boolean)
-   * @throws MessagingException on any underlying MIME Exception
-   * @deprecated since 3.7.2 use {@link #createByteArrayIterator(AdaptrisMessage)} or
-   *             {@link #createBodyPartIterator(AdaptrisMessage)} instead.
-   */
-  @Deprecated
-  public static MultiPartInput create(AdaptrisMessage msg) throws IOException,
-      MessagingException {
-    return create(msg, true);
-  }
-
-  /**
-   * Parse an AdaptrisMessage into a MultiPartInput.
-   *
-   * @param msg the Message to parse.
-   * @param simplifiedIterator if true, then each invocation of {@link MultiPartInput#next() } returns a byte array rather than a
-   *          {@link MimeBodyPart}.
-   * @return a MultiPartInput ready for iterating.
-   * @throws IOException if the message could not be parsed.
-   * @throws MessagingException on any underlying MIME Exception
-   * @see MultiPartInput#next()
-   * @deprecated since 3.7.2 use {@link #createByteArrayIterator(AdaptrisMessage)} or
-   *             {@link #createBodyPartIterator(AdaptrisMessage)} instead.
-   */
-  @Deprecated
-  public static MultiPartInput create(AdaptrisMessage msg,
-                                      boolean simplifiedIterator)
-      throws IOException, MessagingException {
-    MultiPartInput result = null;
-    try (InputStream in = msg.getInputStream()) {
-      result = new MultiPartInput(in, simplifiedIterator);
-    }
-    catch (Exception e) {
-      String mimeBoundary = getBoundary(msg);
-      result = create(mimeFaker(msg, mimeBoundary), simplifiedIterator);
-    }
-    if (result == null) {
-      throw new IOException("Could not parse " + msg.getUniqueId()
-          + " into a standard MIME Multipart");
     }
     return result;
   }

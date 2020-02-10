@@ -21,7 +21,7 @@ import java.io.RandomAccessFile;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.junit.Test;
 import com.thoughtworks.xstream.XStream;
 
 /**
@@ -57,11 +57,7 @@ public abstract class ExampleConfigCase extends BaseCase {
     }
   }
 
-  public ExampleConfigCase(String name) {
-    this();
-    setName(name);
-  }
-
+  @Test
   public void testCreateExampleConfig() throws Exception {
     if (baseDir != null) {
       List objects = retrieveObjectsForSampleConfig();
@@ -88,6 +84,7 @@ public abstract class ExampleConfigCase extends BaseCase {
     return result;
   }
 
+  @Test
   public final void testXmlRoundTrip() throws Exception {
     Object input = retrieveObjectForCastorRoundTrip();
     if (input != null) {
@@ -183,16 +180,13 @@ public abstract class ExampleConfigCase extends BaseCase {
 
     @Override
     public void marshal(Object obj, Writer writer) throws CoreException {
-      try {
+      invokeSerialize(() -> {
         XStream xstream = AdapterXStreamMarshallerFactory.getInstance().createXStream();
-//        XStream xstream = XStreamBootstrap.createXStream();
-//        xstream.setMode(XStream.XPATH_ABSOLUTE_REFERENCES);
+        // XStream xstream = XStreamBootstrap.createXStream();
+        // xstream.setMode(XStream.XPATH_ABSOLUTE_REFERENCES);
         xstream.toXML(obj, writer);
         writer.flush();
-      }
-      catch (Exception ex) {
-        throw new CoreException(ex);
-      }
+      });
     }
   }
 }

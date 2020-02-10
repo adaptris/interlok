@@ -23,12 +23,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
-import org.apache.commons.lang.BooleanUtils;
-
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
@@ -131,8 +128,7 @@ public class AddMetadataService extends MetadataServiceImpl {
   }
 
   public AddMetadataService(MetadataElement... elements) {
-    this();
-    setMetadataElements(new HashSet<MetadataElement>(Arrays.asList(elements)));
+    this(new HashSet<MetadataElement>(Arrays.asList(elements)));
   }
 
   /**

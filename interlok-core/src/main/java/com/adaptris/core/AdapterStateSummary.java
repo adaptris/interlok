@@ -16,11 +16,9 @@
 
 package com.adaptris.core;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 import com.adaptris.core.util.Args;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
@@ -36,7 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("adapter-state-summary")
 public class AdapterStateSummary {
 
-  private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+  private transient final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 
   private String lastStartTime;
   private String lastStopTime;

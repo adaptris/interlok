@@ -16,27 +16,26 @@
 
 package com.adaptris.core.jms;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 
 public class ObjectMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
 
-  public ObjectMessageTranslatorTest(String name) {
-    super(name);
-  }
-
+  @Test
   public void testObjectMessageToAdaptrisMessage() throws Exception {
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = new ObjectMessageTranslator();
     try {
@@ -60,7 +59,9 @@ public class ObjectMessageTranslatorTest extends GenericMessageTypeTranslatorCas
     }
   }
 
+  @Test
   public void testAdaptrisMessageToObjectMessage() throws Exception {
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = new ObjectMessageTranslator();
     try {

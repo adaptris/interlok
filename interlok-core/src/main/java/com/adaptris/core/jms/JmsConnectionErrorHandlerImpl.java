@@ -16,10 +16,10 @@
 
 package com.adaptris.core.jms;
 
-import static org.apache.commons.lang.StringUtils.abbreviate;
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.abbreviate;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.ConnectionErrorHandler;

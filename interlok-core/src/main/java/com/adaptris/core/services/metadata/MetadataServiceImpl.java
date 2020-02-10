@@ -38,7 +38,7 @@ public abstract class MetadataServiceImpl extends ServiceImp {
   protected static final LogWrapper WARN = (logger, msg, metadata) -> logger.warn(msg, metadata);
   protected static final LogWrapper ERROR = (logger, msg, metadata) -> logger.error(msg, metadata);
 
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "full key and value")
   @Valid
   private MetadataLogger metadataLogger;

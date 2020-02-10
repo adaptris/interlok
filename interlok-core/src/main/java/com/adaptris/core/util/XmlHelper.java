@@ -16,28 +16,31 @@
 
 package com.adaptris.core.util;
 
-import static org.apache.commons.lang.StringUtils.defaultIfBlank;
-import static org.apache.commons.lang.StringUtils.isBlank;
-
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
-
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.apache.xerces.util.XMLChar;
 import org.w3c.dom.Document;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.util.XmlUtils;
@@ -67,6 +70,9 @@ public class XmlHelper {
       "\\\\", "\\?", "\\*", "\\:", " ", "\\|", "&", "\\\"", "\\'", "<", ">", "\\)", "\\(", "\\/", "#"
   };
   private static final String ELEM_REPL_VALUE = "_";
+
+  public static final String FALLBACK_TRANSFORMER_FACTORY_IMPL =
+      "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl";
 
   /**
    * Create an XMLUtils class from an AdaptrisMessage.
@@ -108,10 +114,13 @@ public class XmlHelper {
       throws CoreException {
     XmlUtils result = null;
     DivertConsoleOutput dc = new DivertConsoleOutput();
-
+    DocumentBuilderFactoryBuilder builderToUse = copy(DocumentBuilderFactoryBuilder.newInstanceIfNull(builder));
+    if (ctx != null) {
+      builderToUse.setNamespaceAware(true);
+    }
     try (InputStream input = msg.getInputStream()) {
-      DocumentBuilderFactory dbf = DocumentBuilderFactoryBuilder.newInstance(builder).withNamespaceAware(ctx).build();
-      result = new XmlUtils(ctx, dbf);
+      DocumentBuilderFactory dbf = builderToUse.build();
+      result = new XmlUtils(builderToUse.getEntityResolver(), ctx, dbf);
       InputSource in = new InputSource(input);
       // Well what we're going to do here is annoyingly bad, but I want to eat
       // those stupid System.err messages that contain shit like
@@ -129,6 +138,20 @@ public class XmlHelper {
     }
     return result;
   }
+
+  private static DocumentBuilderFactoryBuilder copy(DocumentBuilderFactoryBuilder orig) {
+    return
+        DocumentBuilderFactoryBuilder.newInstance().withCoalescing(orig.getCoalescing())
+        .withEntityResolver(orig.getEntityResolver())
+        .withExpandEntityReferences(orig.getExpandEntityReferences())
+        .withFeatures(orig.getFeatures())
+        .withIgnoreComments(orig.getIgnoreComments())
+        .withIgnoreWhitespace(orig.getIgnoreWhitespace())
+        .withNamespaceAware(orig.getNamespaceAware())
+        .withValidating(orig.getValidating())
+        .withXIncludeAware(orig.getXincludeAware());
+  }
+
   /**
    * Create a document from an AdaptrisMessage.
    * 
@@ -190,7 +213,8 @@ public class XmlHelper {
   }
 
   private static DocumentBuilder newDocumentBuilder(DocumentBuilderFactoryBuilder cfg) throws ParserConfigurationException {
-    DocumentBuilder builder = DocumentBuilderFactoryBuilder.newInstance(cfg).build().newDocumentBuilder();
+    DocumentBuilderFactoryBuilder docBuilderFactory = DocumentBuilderFactoryBuilder.newInstanceIfNull(cfg);
+    DocumentBuilder builder = docBuilderFactory.configure(docBuilderFactory.build().newDocumentBuilder());
     builder.setErrorHandler(new DefaultErrorHandler());
     return builder;
   }
@@ -323,7 +347,7 @@ public class XmlHelper {
     if (isBlank(name)) {
       name = defaultIfBlank;
     } else {
-      if (!XMLChar.isNameStart((name.charAt(0)))) {
+      if (!XMLChar.isNameStart(name.charAt(0))) {
         name = ELEM_REPL_VALUE + name;
       }
       for (String invalid : INVALID_ELEMENT_CHARS) {
@@ -357,12 +381,27 @@ public class XmlHelper {
    * @throws Exception
    */
   public static void writeXmlDocument(Document doc, AdaptrisMessage msg, String encoding) throws Exception {
+    writeXmlDocument(doc, msg, encoding, TransformerFactory.newInstance().newTransformer());
+  }
+
+  /**
+   * Write an XML document to the message with specified encoding.
+   * 
+   * @param doc the document
+   * @param msg the message
+   * @param encoding will default to "UTF-8" if not specified, and the msg does not have a declared content encoding.
+   * @param serializer the {@link Transformer} to use.
+   * @throws Exception
+   */
+  public static void writeXmlDocument(Document doc, AdaptrisMessage msg, String encoding, Transformer serializer)
+      throws Exception {
     String encodingToUse = getXmlEncoding(msg, encoding);
     try (OutputStream out = msg.getOutputStream()) {
-      new XmlUtils().writeDocument(doc, out, encodingToUse);
+      configure(serializer, encodingToUse).transform(new DOMSource(doc), new StreamResult(out));
     }
     msg.setContentEncoding(encodingToUse);
   }
+
 
   /**
    * Figure out what encoding to use when writing a document.
@@ -381,6 +420,17 @@ public class XmlHelper {
     }
     return encoding;
   }
+
+  private static Transformer configure(Transformer serializer, String encoding)
+      throws TransformerFactoryConfigurationError, TransformerException {
+    serializer.setOutputProperty(OutputKeys.ENCODING, encoding);
+    serializer.setOutputProperty(OutputKeys.INDENT, "yes");
+    serializer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+    serializer.setOutputProperty(OutputKeys.STANDALONE, "no");
+    serializer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC, "");
+    return serializer;
+  }
+
 
   private static class DefaultErrorHandler implements ErrorHandler {
 

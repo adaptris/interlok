@@ -16,17 +16,17 @@
 
 package com.adaptris.core.services.system;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.Executor;
-import org.apache.commons.lang.BooleanUtils;
-import org.hibernate.validator.constraints.NotBlank;
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
@@ -51,11 +51,11 @@ public class DefaultCommandBuilder implements CommandBuilder {
 
   @NotNull
   @AutoPopulated
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private List<String> environmentMetadataKeys;
   @NotNull
   @AutoPopulated
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private KeyValuePairSet environmentProperties;
   @NotNull
   @AutoPopulated

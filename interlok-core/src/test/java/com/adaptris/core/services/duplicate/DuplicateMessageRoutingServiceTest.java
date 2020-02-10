@@ -16,13 +16,16 @@
 
 package com.adaptris.core.services.duplicate;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
-
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.services.SyntaxRoutingServiceExample;
 import com.adaptris.util.GuidGenerator;
 
@@ -33,38 +36,37 @@ public class DuplicateMessageRoutingServiceTest extends SyntaxRoutingServiceExam
   private static final String UNIQUE_KEY = "uniqueKey";
   private static final String KEY_DUPLICATE_STORE = "DuplicateMessageRoutingService.store";
 
-  public DuplicateMessageRoutingServiceTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void setUp() throws Exception {
 
-    File f = fromURI();
+  @Before
+  public void setUp() throws Exception {
+
+    File f = FsHelper.toFile(PROPERTIES.getProperty(KEY_DUPLICATE_STORE));
     if (f.exists()) {
       f.delete();
     }
   }
 
+  @Test
   public void testService() throws Exception {
     DuplicateMessageRoutingService service = createService();
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance()
-        .newMessage("ASDF");
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("ASDF");
     String key = new GuidGenerator().getUUID();
     msg.addMetadata(CHECK_KEY, key);
-    start(service);
-    service.doService(msg);
-    assertEquals("Should be unique Key", UNIQUE_KEY, msg
-        .getMetadataValue(DESTINATION_KEY));
+    execute(service, msg);
+    assertEquals(UNIQUE_KEY, msg.getMetadataValue(DESTINATION_KEY));
     msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("ASDF");
     msg.addMetadata(CHECK_KEY, key);
     execute(service, msg);
-    assertEquals("Should be duplicate Key", DUPLICATE_KEY, msg
-        .getMetadataValue(DESTINATION_KEY));
-    stop(service);
+    assertEquals(DUPLICATE_KEY, msg.getMetadataValue(DESTINATION_KEY));
     assertConfigStoreExists();
   }
 
+  @Test
   public void testServiceHistory() throws Exception {
     DuplicateMessageRoutingService service = createService();
     start(service);
@@ -76,37 +78,41 @@ public class DuplicateMessageRoutingServiceTest extends SyntaxRoutingServiceExam
     for (int i = 0; i < 101; i++) {
       AdaptrisMessage m = create(guid.getUUID());
       service.doService(m);
-      assertEquals("Should be unique Key", UNIQUE_KEY, m
-          .getMetadataValue(DESTINATION_KEY));
+      assertEquals(UNIQUE_KEY, m.getMetadataValue(DESTINATION_KEY));
     }
     msg = create(key);
-    execute(service, msg);
-    assertEquals("Should be unique Key due to history flush", UNIQUE_KEY, msg
-        .getMetadataValue(DESTINATION_KEY));
+    service.doService(msg);
+    // Should be unique again.
+    assertEquals(UNIQUE_KEY, msg.getMetadataValue(DESTINATION_KEY));
     stop(service);
     assertConfigStoreExists();
   }
 
-  private void assertConfigStoreExists() throws Exception {
-    File f = fromURI();
-    assertTrue("ConfigLocation [" + f.getCanonicalPath()
-        + "] exists after shutdown", f.exists());
+  @Test
+  public void testStaticMethods() throws Exception {
+    
+    DuplicateMessageRoutingService.tryAndLog("hello", () -> {
+    });
+    DuplicateMessageRoutingService.tryAndLog("hello", () -> {
+      throw new RuntimeException();
+    });
+    DuplicateMessageRoutingService.tryAndWrap(() -> {
+    });
+    try {
+      DuplicateMessageRoutingService.tryAndWrap(() -> {
+        throw new RuntimeException();
+      });
+      fail();
+    } catch (CoreException expected) {
+
+    }
   }
 
-  private File fromURI() throws Exception {
-    File result = null;
-    try {
-      result = new File(new URI(PROPERTIES.getProperty(KEY_DUPLICATE_STORE)));
-    }
-    catch (URISyntaxException e) {
-      // Specifically here to copy with file:///c:/ (which is what
-      // the user wants illegal due to additional :
-      // (which should be encoded)
-      result = new File(new URI(URLEncoder.encode(PROPERTIES
-          .getProperty(KEY_DUPLICATE_STORE), "UTF-8")).toString());
-    }
 
-    return result;
+  private void assertConfigStoreExists() throws Exception {
+    File f = FsHelper.toFile(PROPERTIES.getProperty(KEY_DUPLICATE_STORE));
+    assertTrue("ConfigLocation [" + f.getCanonicalPath()
+        + "] exists after shutdown", f.exists());
   }
 
   private DuplicateMessageRoutingService createService() {

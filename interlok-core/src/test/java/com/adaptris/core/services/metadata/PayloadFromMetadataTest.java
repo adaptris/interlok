@@ -16,6 +16,10 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.MetadataElement;
@@ -30,13 +34,9 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
   private static final String PAYLOAD_TEMPLATE_EXPR = "{ \"key\": \"%message{helloMetadataKey}\"}";
   private static final String DEFAULT_METADATA_KEY = "helloMetadataKey";
 
-  public PayloadFromMetadataTest(String arg0) {
-    super(arg0);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   private PayloadFromMetadataService createService() {
@@ -57,6 +57,7 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
     return msg;
   }
 
+  @Test
   public void testValid() throws Exception {
     PayloadFromMetadataService s1 = createService().withQuietMode(true);
     PayloadFromMetadataService s2 = createService().withQuietMode(false);
@@ -69,6 +70,7 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
     assertEquals("Hello World", msg.getContent());
   }
 
+  @Test
   public void testNoMetadataMatch() throws Exception {
     PayloadFromMetadataService s1 = createService().withQuietMode(false);
     PayloadFromMetadataService s2 = createService().withQuietMode(true);
@@ -82,6 +84,7 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
     assertEquals("__HELLO__ World", msg.getContent());
   }
 
+  @Test
   public void testService_MetadataValueHasSlash_CanEscape() throws Exception {
     PayloadFromMetadataService service = createService();
     AdaptrisMessage msg = createMessage();
@@ -91,6 +94,7 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
     assertEquals("\\tHello World", msg.getContent());
   }
 
+  @Test
   public void testService_MetadataValueHasSlash_NoEscape() throws Exception {
     PayloadFromMetadataService service = createService().withEscapeBackslash(false);
     AdaptrisMessage msg = createMessage();
@@ -100,6 +104,7 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
     assertEquals("tHello World", msg.getContent());
   }
 
+  @Test
   public void testService_MetadataValueHasDollar_NoEscape() throws Exception {
     PayloadFromMetadataService service = createService().withEscapeBackslash(false);
     AdaptrisMessage msg = createMessage();
@@ -129,6 +134,7 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
     }
   }
 
+  @Test
   public void testService_MetadataValueHasDollar_CanEscape() throws Exception {
     PayloadFromMetadataService service = createService().withEscapeBackslash(true);
     AdaptrisMessage msg = createMessage();
@@ -137,14 +143,16 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
     assertEquals("Hello$", msg.getMetadataValue(DEFAULT_METADATA_KEY));
     assertEquals("Hello$ World", msg.getContent());
   }
-  
+
+  @Test
   public void testService_Expression() throws Exception {
     PayloadFromMetadataService service = new PayloadFromMetadataService(PAYLOAD_TEMPLATE_EXPR).withQuietMode(false);
     AdaptrisMessage msg = createMessage();
     execute(service, msg);
     assertEquals(PAYLOAD_EXPR_RESULT,msg.getContent());
   }
-  
+
+  @Test
   public void testService_Expression_WithNewLine() throws Exception {
     PayloadFromMetadataService s1 = new PayloadFromMetadataService(PAYLOAD_TEMPLATE_EXP_NEWLINE).withMultiLineExpression(true);
     PayloadFromMetadataService s2 = new PayloadFromMetadataService(PAYLOAD_TEMPLATE_EXP_NEWLINE).withMultiLineExpression(false);

@@ -15,17 +15,18 @@
 */
 
 package com.adaptris.core;
-
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 import com.adaptris.core.stubs.MockConnection;
 
 public abstract class ComponentStateCase extends BaseCase {
 
-  public ComponentStateCase(String name) {
-    super(name);
+  public ComponentStateCase() {
   }
 
   // This is to check that we don't trigger the requestXXX operation multiple times.
   //
+  @Test
   public void testStateChange_MultiThreaded() throws Exception {
     MockConnection connection = new MockConnection(1000);
     ComponentState expected = createState();

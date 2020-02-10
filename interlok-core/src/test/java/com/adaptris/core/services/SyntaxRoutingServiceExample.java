@@ -26,8 +26,7 @@ public abstract class SyntaxRoutingServiceExample extends ServiceCase {
    */
   public static final String BASE_DIR_KEY = "SyntaxRoutingServiceExamples.baseDir";
 
-  public SyntaxRoutingServiceExample(String name) {
-    super(name);
+  public SyntaxRoutingServiceExample() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }

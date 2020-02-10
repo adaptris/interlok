@@ -16,21 +16,28 @@
 
 package com.adaptris.core.services;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
 
 public class ChangeCharEncodingServiceTest extends GeneralServiceExample {
 
-  public ChangeCharEncodingServiceTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
   protected Object retrieveObjectForSampleConfig() {
-    return new ChangeCharEncodingService("iso-8859-1");
+    return new ChangeCharEncodingService(StandardCharsets.ISO_8859_1.name());
   }
 
+  @Test
   public void testSetCharEncoding() {
     ChangeCharEncodingService srv = new ChangeCharEncodingService();
     assertNull(srv.getCharEncoding());
@@ -40,14 +47,14 @@ public class ChangeCharEncodingServiceTest extends GeneralServiceExample {
     assertEquals(null, srv.getCharEncoding());
   }
 
-
+  @Test
   public void testChangeCharset() throws Exception {
     ChangeCharEncodingService srv = new ChangeCharEncodingService();
     srv.setCharEncoding("iso-8859-1");
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello");
     assertNull(msg.getContentEncoding());
     execute(srv, msg);
-    assertEquals("iso-8859-1", msg.getContentEncoding());
+    assertEquals(Charset.forName("iso-8859-1"), Charset.forName(msg.getContentEncoding()));
   }
 
 }

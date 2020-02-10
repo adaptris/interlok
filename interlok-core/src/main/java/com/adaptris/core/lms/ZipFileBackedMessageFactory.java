@@ -16,7 +16,7 @@
 
 package com.adaptris.core.lms;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import org.apache.commons.lang3.BooleanUtils;
 

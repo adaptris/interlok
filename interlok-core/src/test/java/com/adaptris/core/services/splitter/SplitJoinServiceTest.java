@@ -20,21 +20,27 @@ import static com.adaptris.core.ServiceCase.asCollection;
 import static com.adaptris.core.ServiceCase.execute;
 import static com.adaptris.core.services.splitter.XpathSplitterTest.ENCODING_UTF8;
 import static com.adaptris.core.services.splitter.XpathSplitterTest.ENVELOPE_DOCUMENT;
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import org.awaitility.Duration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -291,6 +297,13 @@ public class SplitJoinServiceTest {
     service.setSplitter(new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8));
     service.setAggregator(new XmlDocumentAggregator(new InsertNode(XPATH_ENVELOPE)));
     execute(service, msg);
+    
+    await()
+        .atLeast(Duration.ONE_HUNDRED_MILLISECONDS)
+        .atMost(Duration.FIVE_SECONDS)
+      .with()
+        .pollInterval(Duration.ONE_HUNDRED_MILLISECONDS)
+        .until(eventProducer::messageCount, equalTo(3));
 
     assertTrue(eventProducer.getMessages().size() > 0);
   }

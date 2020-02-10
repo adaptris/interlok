@@ -18,7 +18,7 @@ package com.adaptris.core.services.jdbc;
 
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.adaptris.annotation.AutoPopulated;
 

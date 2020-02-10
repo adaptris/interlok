@@ -18,16 +18,11 @@ package com.adaptris.core.services;
 
 import java.io.IOException;
 import java.io.Reader;
-
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-
+import javax.validation.constraints.NotBlank;
 import org.apache.commons.lang3.BooleanUtils;
-import org.hibernate.validator.constraints.NotBlank;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -45,8 +40,6 @@ import com.adaptris.core.util.ExceptionHelper;
  * 
  */
 public abstract class ScriptingServiceImp extends ServiceImp implements DynamicPollingTemplate.TemplateProvider {
-
-  private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
   @NotBlank
   private String language;

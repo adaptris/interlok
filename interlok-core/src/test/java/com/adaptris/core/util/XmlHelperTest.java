@@ -20,14 +20,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-
 import java.io.IOException;
-
 import javax.xml.namespace.NamespaceContext;
-
 import org.junit.Test;
 import org.w3c.dom.Document;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;

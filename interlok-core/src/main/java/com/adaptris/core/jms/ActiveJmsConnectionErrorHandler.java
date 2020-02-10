@@ -18,7 +18,6 @@ package com.adaptris.core.jms;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -26,9 +25,7 @@ import javax.jms.Message;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TemporaryTopic;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
@@ -165,11 +162,12 @@ public class ActiveJmsConnectionErrorHandler extends JmsConnectionErrorHandlerIm
         temporaryDest = new JmsTemporaryDestination(session);
         startLatch.countDown();
         while (isActive) {
+          MessageProducer messageProducer = null;
           try {
             if (additionalLogging()) {
               log.trace("Attempting to verify {} using {}", idForLogging, temporaryDest.getDestination());
             }
-            MessageProducer messageProducer = session.createProducer(temporaryDest.getDestination());
+            messageProducer = session.createProducer(temporaryDest.getDestination());
             Message message = session.createMessage();
             messageProducer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
             messageProducer.setTimeToLive(5000L);
@@ -182,6 +180,8 @@ public class ActiveJmsConnectionErrorHandler extends JmsConnectionErrorHandlerIm
               finish();
             }
             break;
+          } finally {
+            JmsUtils.closeQuietly(messageProducer);
           }
           TimeUnit.MILLISECONDS.sleep(retryInterval());
         }

@@ -20,11 +20,16 @@ import static com.adaptris.core.ServiceCase.execute;
 import static com.adaptris.core.services.splitter.MessageSplitterServiceImp.KEY_CURRENT_SPLIT_MESSAGE_COUNT;
 import static com.adaptris.core.services.splitter.SplitterCase.XML_MESSAGE;
 import static com.adaptris.core.services.splitter.SplitterCase.createLineCountMessageInput;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -34,26 +39,13 @@ import com.adaptris.core.ServiceCase;
 import com.adaptris.core.stubs.MockConnection;
 import com.adaptris.core.stubs.MockMessageProducer;
 
-import junit.framework.TestCase;
-
-public class BasicMessageSplitterServiceTest extends TestCase {
+public class BasicMessageSplitterServiceTest {
 
   protected static final String METADATA_KEY = "key";
   protected static final String METADATA_VALUE = "value";
   protected static final String REGEXP_DATA = "****|****|****|****|";
 
-  public BasicMessageSplitterServiceTest(String name) {
-    super(name);
-  }
-
-  @Override
-  protected void setUp() throws Exception {
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-  }
-
+  @Test
   public void testSetIgnoreSplitFailures() throws Exception {
     MessageSplitterServiceImp service = createServiceImpl(new LineCountSplitter(), new MockMessageProducer());
     assertNull(service.getIgnoreSplitMessageFailures());
@@ -67,6 +59,7 @@ public class BasicMessageSplitterServiceTest extends TestCase {
     assertFalse(service.ignoreSplitMessageFailures());
   }
 
+  @Test
   public void testInit() throws Exception {
     BasicMessageSplitterService service = new BasicMessageSplitterService();
     try {
@@ -82,6 +75,7 @@ public class BasicMessageSplitterServiceTest extends TestCase {
     service.init();
   }
 
+  @Test
   public void testServiceSetters() {
     BasicMessageSplitterService service = new BasicMessageSplitterService();
     assertEquals(NullConnection.class, service.getConnection().getClass());
@@ -115,6 +109,7 @@ public class BasicMessageSplitterServiceTest extends TestCase {
     }
   }
 
+  @Test
   public void testServiceWithXmlSplitter() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     MessageSplitterServiceImp service = createServiceImpl(new XpathMessageSplitter("/envelope/document", "UTF-8"), producer);
@@ -124,6 +119,7 @@ public class BasicMessageSplitterServiceTest extends TestCase {
     assertEquals("Number of messages", 3, producer.getMessages().size());
   }
 
+  @Test
   public void testServiceWithLineCountSplitter() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     MessageSplitterServiceImp service = createServiceImpl(new LineCountSplitter(), producer);
@@ -134,6 +130,7 @@ public class BasicMessageSplitterServiceTest extends TestCase {
     assertEquals("splitCount metadata", 10, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
   }
 
+  @Test
   public void testServiceWithRegexpSplitter() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     MessageSplitterServiceImp service = createServiceImpl(new SimpleRegexpMessageSplitter("\\|"), producer);
@@ -144,6 +141,7 @@ public class BasicMessageSplitterServiceTest extends TestCase {
     assertEquals("splitCount metadata", 4, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
   }
 
+  @Test
   public void testDoServiceWithCopyObjectMetadata() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     MessageSplitterServiceImp service = createServiceImpl(new SimpleRegexpMessageSplitter("\\|"), producer);
@@ -166,6 +164,7 @@ public class BasicMessageSplitterServiceTest extends TestCase {
     }
   }
 
+  @Test
   public void testDoServiceWithoutCopyObjectMetadata() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     MessageSplitterServiceImp service = createServiceImpl(new SimpleRegexpMessageSplitter("\\|"), producer);
@@ -186,6 +185,7 @@ public class BasicMessageSplitterServiceTest extends TestCase {
     }
   }
 
+  @Test
   public void testDoServiceWithCopyMetadata() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     MessageSplitterServiceImp service = createServiceImpl(new SimpleRegexpMessageSplitter("\\|"), producer);
@@ -203,6 +203,7 @@ public class BasicMessageSplitterServiceTest extends TestCase {
     }
   }
 
+  @Test
   public void testDoServiceWithoutCopyMetadata() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     MessageSplitterServiceImp service = createServiceImpl(new SimpleRegexpMessageSplitter("\\|"), producer);
@@ -239,6 +240,7 @@ public class BasicMessageSplitterServiceTest extends TestCase {
   // assertTrue(testObject2 == testObject2.getConnection().retrieveExceptionListeners().toArray()[0]);
   // }
 
+  @Test
   public void testAlreadyComplete() throws Exception {
     Future<Boolean> future = new MessageSplitterServiceImp.AlreadyComplete();
     assertFalse(future.cancel(true));

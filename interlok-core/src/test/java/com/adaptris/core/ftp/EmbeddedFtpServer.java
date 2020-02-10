@@ -38,7 +38,6 @@ import org.mockftpserver.fake.filesystem.UnixFakeFileSystem;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 
-@SuppressWarnings("deprecation")
 public class EmbeddedFtpServer {
 
   private static final String MDTM = "mdtm";
@@ -64,13 +63,24 @@ public class EmbeddedFtpServer {
   public static final String DESTINATION_URL = "ftp://localhost" + DEFAULT_HOME_DIR;
   public static final String SERVER_ADDRESS = "localhost";
 
+  private transient boolean goodMDTM;
+
+  public EmbeddedFtpServer() {
+    goodMDTM = true;
+  }
+
+  public EmbeddedFtpServer(boolean goodMDTM) {
+    this();
+    this.goodMDTM = goodMDTM;
+  }
+
   public FakeFtpServer createAndStart(FileSystem filesystem) {
     return createAndStart(filesystem, new UserAccount(DEFAULT_USERNAME, DEFAULT_PASSWORD, DEFAULT_HOME_DIR));
   }
 
   public FakeFtpServer createAndStart(FileSystem filesystem, UserAccount account) {
     FakeFtpServer server = new FakeFtpServer();
-    server.setCommandHandler("MDTM", new MdtmCommandHandler());
+    server.setCommandHandler("MDTM", new MdtmCommandHandler(goodMDTM));
     server.setServerControlPort(0);
     server.addUserAccount(account);
     server.setFileSystem(filesystem);
@@ -127,7 +137,10 @@ public class EmbeddedFtpServer {
 
   public class MdtmCommandHandler extends AbstractFakeCommandHandler {
 
-    public MdtmCommandHandler() {
+    private boolean good = false;
+
+    public MdtmCommandHandler(boolean good) {
+      this.good = good;
     }
 
     @Override
@@ -142,7 +155,8 @@ public class EmbeddedFtpServer {
       String result = tsFormat.format(entry.getLastModified());
       ArrayList args = new ArrayList();
       args.add(result);
-      sendReply(session, 213, MDTM, args);
+      // If we are "good" then let's return a file status response, otherwise return a "HELP" message which is "bad".
+      sendReply(session, good ? 213 : 214, MDTM, args);
     }
 
     // This is to override with the mdtm resource bundle w/o having to change the resource bundle

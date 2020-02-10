@@ -23,9 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.servlet.Servlet;
-
 import org.eclipse.jetty.security.SecurityHandler;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -58,8 +56,18 @@ public class JettyServerManager implements ServerManager {
   private static final String DEFAULT_DESCRIPTOR_XML = "com/adaptris/core/management/webserver/jetty-webdefault-failsafe.xml";
   private static final String OVERRIDE_DESCRIPTOR_XML = "jetty-webdefault.xml";
 
+  /**
+   * System property that controls whether or not starting the {@code WebAppContext} should throw an exception or not.
+   * <p>
+   * The default is false for backwards compatibility; but can be toggled to true; it will be defaulted to true in a future release.
+   * </p>
+   */
+  public static final String SYS_PROP_THROW_UNAVAILABLE_EXCEPTION = "interlok.jetty.throw.unavailable.on.startup";
+
+  private static final boolean THROW_UNAVAILABLE_ON_START = Boolean.getBoolean(SYS_PROP_THROW_UNAVAILABLE_EXCEPTION);
+
   public static final String CONTEXT_PATH = "contextPath";
-  public static final String ROLES = "roles";
+
   public static final String SECURITY_CONSTRAINTS = "securityConstraints";
 
   /**
@@ -94,6 +102,10 @@ public class JettyServerManager implements ServerManager {
 
   @Override
   public boolean isStarted() {
+    if (servers.size() == 0) {
+      // no servers, we can't be started
+      return false;
+    }
     int result = 0;
     for (Server server : servers) {
       result += server.isStarted() ? 1 : 0;
@@ -129,6 +141,7 @@ public class JettyServerManager implements ServerManager {
     // Have to stop the WAR before we can reconfigure the security handler, not true if we just want
     // to add a new servlet; but it's probaby good practice to.
     rootWar.stop();
+    rootWar.setThrowUnavailableOnStartupException(THROW_UNAVAILABLE_ON_START);
     String pathSpec = (String) additionalProperties.get(CONTEXT_PATH);
     log.trace("Adding servlet to existing ROOT WebAppContext against {}", pathSpec);
     rootWar.addServlet(servlet, pathSpec);

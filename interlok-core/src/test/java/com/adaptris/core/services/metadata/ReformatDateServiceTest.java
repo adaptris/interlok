@@ -16,6 +16,9 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -24,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.core.AdaptrisMessage;
@@ -42,13 +46,11 @@ public class ReformatDateServiceTest extends MetadataServiceExample {
   private static final String REGEXP_DEST_DATE_NUMERIC = "^[0-9]+$";
   protected transient Logger myLogger = LoggerFactory.getLogger(this.getClass().getName());
 
-  public ReformatDateServiceTest(java.lang.String testName) {
-    super(testName);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void setUp() throws Exception {
-  }
 
   private static AdaptrisMessage createMessage() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -57,6 +59,7 @@ public class ReformatDateServiceTest extends MetadataServiceExample {
     return msg;
   }
 
+  @Test
   public void testService_Defaults() throws Exception {
     ReformatDateService service = new ReformatDateService();
     service.setMetadataKeyRegexp(DATE_METADATA_KEY);
@@ -67,6 +70,7 @@ public class ReformatDateServiceTest extends MetadataServiceExample {
     assertEquals(date, new SimpleDateFormat(DateFormatBuilder.DEFAULT_DATE_FORMAT).parse(msg.getMetadataValue(DATE_METADATA_KEY)));
   }
 
+  @Test
   public void testService() throws Exception {
     ReformatDateService service = new ReformatDateService();
     service.setSourceFormatBuilder(new DateFormatBuilder());
@@ -79,6 +83,7 @@ public class ReformatDateServiceTest extends MetadataServiceExample {
     assertEquals(date, new SimpleDateFormat(DEST_DATE_FORMAT).parse(msg.getMetadataValue(DATE_METADATA_KEY)));
   }
 
+  @Test
   public void testService_WithTimezone_WithLanguage() throws Exception {
     ReformatDateService service = new ReformatDateService();
     DateFormatBuilder sourceFormatBuilder = new DateFormatBuilder().withLanguageTag(Locale.getDefault().getLanguage())
@@ -93,6 +98,7 @@ public class ReformatDateServiceTest extends MetadataServiceExample {
     assertEquals(date, new SimpleDateFormat(DEST_DATE_FORMAT).parse(msg.getMetadataValue(DATE_METADATA_KEY)));
   }
 
+  @Test
   public void testService_SourceFormat_SecondsEpoch() throws Exception {
 
     ReformatDateService service = new ReformatDateService();
@@ -109,6 +115,7 @@ public class ReformatDateServiceTest extends MetadataServiceExample {
     assertTrue(msg.getMetadataValue(DATE_METADATA_KEY).matches(REGEXP_DEST_DATE_FORMAT));
   }
 
+  @Test
   public void testService_SourceFormat_MillisecondsEpoch() throws Exception {
 
     ReformatDateService service = new ReformatDateService();
@@ -125,6 +132,7 @@ public class ReformatDateServiceTest extends MetadataServiceExample {
     assertTrue(msg.getMetadataValue(DATE_METADATA_KEY).matches(REGEXP_DEST_DATE_FORMAT));
   }
 
+  @Test
   public void testService_SourceFormat_SecondsEpoch_SciNotation() throws Exception {
 
     ReformatDateService service = new ReformatDateService();
@@ -141,6 +149,7 @@ public class ReformatDateServiceTest extends MetadataServiceExample {
     assertTrue(msg.getMetadataValue(DATE_METADATA_KEY).matches(REGEXP_DEST_DATE_FORMAT));
   }
 
+  @Test
   public void testService_SourceFormat_MillisecondsEpoch_SciNotation() throws Exception {
 
     ReformatDateService service = new ReformatDateService();
@@ -157,6 +166,7 @@ public class ReformatDateServiceTest extends MetadataServiceExample {
     assertTrue(msg.getMetadataValue(DATE_METADATA_KEY).matches(REGEXP_DEST_DATE_FORMAT));
   }
 
+  @Test
   public void testService_DestFormat_SecondsEpoch() throws Exception {
     ReformatDateService service = new ReformatDateService();
     service.setDestinationFormatBuilder(new DateFormatBuilder(DateFormatUtil.CustomDateFormat.SECONDS_SINCE_EPOCH.name()));
@@ -167,6 +177,7 @@ public class ReformatDateServiceTest extends MetadataServiceExample {
     assertTrue(msg.getMetadataValue(DATE_METADATA_KEY).matches(REGEXP_DEST_DATE_NUMERIC));
   }
 
+  @Test
   public void testService_DestFormat_MillisecondsEpoch() throws Exception {
     ReformatDateService service = new ReformatDateService();
     service.setDestinationFormatBuilder(new DateFormatBuilder(DateFormatUtil.CustomDateFormat.MILLISECONDS_SINCE_EPOCH.name()));
@@ -177,6 +188,7 @@ public class ReformatDateServiceTest extends MetadataServiceExample {
     assertTrue(msg.getMetadataValue(DATE_METADATA_KEY).matches(REGEXP_DEST_DATE_NUMERIC));
   }
 
+  @Test
   public void testServiceWithBadFormat() throws Exception {
     ReformatDateService service = new ReformatDateService();
     service.setDestinationFormatBuilder(new DateFormatBuilder(DEST_DATE_FORMAT));

@@ -15,23 +15,18 @@
 */
 
 package com.adaptris.core;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.core.lifecycle.BlockingChannelLifecycleStrategy;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
 public class BlockingLifecycleStrategyTest extends DefaultLifecycleStrategyTest {
 
-  public BlockingLifecycleStrategyTest(java.lang.String testName) {
-    super(testName);
-  }
-
-  @Override
-  public void setUp() throws Exception {
-    super.setUp();
+  public BlockingLifecycleStrategyTest() {
   }
 
   @Override
@@ -39,6 +34,7 @@ public class BlockingLifecycleStrategyTest extends DefaultLifecycleStrategyTest 
     return new BlockingChannelLifecycleStrategy();
   }
 
+  @Test
   public void testChannelAutoStartFalse_Bug2341() throws Exception {
     String name = renameThread(this.getClass().getSimpleName() + "_" + "Bug2341");
     ChannelList list = create();
@@ -61,6 +57,7 @@ public class BlockingLifecycleStrategyTest extends DefaultLifecycleStrategyTest 
     }
   }
 
+  @Test
   public void testChannelInit_ThrowsException() throws Exception {
     String name = renameThread(this.getClass().getSimpleName() + "_" + "testChannelInit_ThrowsException");
     ChannelList list = create();
@@ -92,6 +89,7 @@ public class BlockingLifecycleStrategyTest extends DefaultLifecycleStrategyTest 
     }
   }
 
+  @Test
   public void testChannelInit_ThrowsRuntimeException() throws Exception {
     String name = renameThread(this.getClass().getSimpleName() + "_" + "testChannelInit_ThrowsRuntimeException");
     ChannelList list = create();
@@ -124,6 +122,7 @@ public class BlockingLifecycleStrategyTest extends DefaultLifecycleStrategyTest 
     }
   }
 
+  @Test
   public void testChannelStart_ThrowsException() throws Exception {
     String name = renameThread(this.getClass().getSimpleName() + "_" + "testChannelStart_ThrowsException");
     ChannelList list = create();
@@ -156,6 +155,7 @@ public class BlockingLifecycleStrategyTest extends DefaultLifecycleStrategyTest 
     }
   }
 
+  @Test
   public void testChannelStart_ThrowsRuntimeException() throws Exception {
     String name = renameThread(this.getClass().getSimpleName() + "_" + "testChannelStart_ThrowsRuntimeException");
     ChannelList list = create();
@@ -188,6 +188,7 @@ public class BlockingLifecycleStrategyTest extends DefaultLifecycleStrategyTest 
     }
   }
 
+  @Test
   public void testChannelInit_ExceedsTimeout() throws Exception {
     String name = renameThread(this.getClass().getSimpleName() + "_" + "testChannelInit_ExceedsTimeout");
     ChannelList list = create();
@@ -227,6 +228,7 @@ public class BlockingLifecycleStrategyTest extends DefaultLifecycleStrategyTest 
     }
   }
 
+  @Test
   public void testChannelStart_ExceedsTimeout() throws Exception {
     String name = renameThread(this.getClass().getSimpleName() + "_" + "testChannelStart_ExceedsTimeout");
     ChannelList list = create();

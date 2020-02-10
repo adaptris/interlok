@@ -16,7 +16,7 @@
 
 package com.adaptris.core.metadata;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.MetadataElement;

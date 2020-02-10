@@ -17,14 +17,10 @@
 package com.adaptris.core.http.jetty;
 
 import java.util.HashMap;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
-
 import javax.validation.Valid;
-
 import org.eclipse.jetty.security.SecurityHandler;
 import org.eclipse.jetty.webapp.WebAppContext;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -35,6 +31,7 @@ import com.adaptris.core.management.webserver.JettyServerManager;
 import com.adaptris.core.management.webserver.SecurityHandlerWrapper;
 import com.adaptris.core.management.webserver.ServerManager;
 import com.adaptris.core.management.webserver.WebServerManagementUtil;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -68,9 +65,7 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
 
   private static final TimeInterval DEFAULT_MAX_WAIT = new TimeInterval(10l, TimeUnit.MINUTES);
 
-  @AdvancedConfig
-  private Set<String> roles;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private TimeInterval maxStartupWait;
   @Valid
   @AdvancedConfig
@@ -111,25 +106,11 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
   protected void prepareConnection() throws CoreException {
   }
 
-  public Set<String> getRoles() {
-    return roles;
-  }
-
-  /**
-   * Set any roles that are required to access the consumers.
-   *
-   * @param roles the roles.
-   */
-  public void setRoles(Set<String> roles) {
-    this.roles = roles;
-  }
-
   @Override
   public void addServlet(ServletWrapper wrapper) throws CoreException {
     try {
       JettyServerManager serverManager = (JettyServerManager) WebServerManagementUtil.getServerManager();
       HashMap<String, Object> additionalProperties = new HashMap<String, Object>();
-      additionalProperties.put(JettyServerManager.ROLES, getRoles());
       additionalProperties.put(JettyServerManager.CONTEXT_PATH, wrapper.getUrl());
       additionalProperties.put(JettyServerManager.SECURITY_CONSTRAINTS, getSecurityHandler());
       serverManager.addServlet(wrapper.getServletHolder(), additionalProperties);
@@ -137,7 +118,7 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
       log.trace("Added " + wrapper.getServletHolder() + " against " + wrapper.getUrl());
     }
     catch (Exception ex) {
-      rethrow(ex);
+      throw ExceptionHelper.wrapCoreException(ex);
     }
 
   }
@@ -152,15 +133,8 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
       log.trace("Removed " + wrapper.getServletHolder() + " from " + wrapper.getUrl());
     }
     catch (Exception ex) {
-      rethrow(ex);
+      throw ExceptionHelper.wrapCoreException(ex);
     }
-  }
-
-  private void rethrow(Exception e) throws CoreException {
-    if (e instanceof CoreException) {
-      throw (CoreException) e;
-    }
-    throw new CoreException(e);
   }
 
   private static void waitForJettyStart(ServerManager sm, long maxWaitTime) throws CoreException {
@@ -174,8 +148,8 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
         throw new CoreException("Max Wait time exceeded : " + maxWaitTime + "ms");
       }
     }
-    catch (InterruptedException e) {
-      throw new CoreException(e);
+    catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
     }
   }
 

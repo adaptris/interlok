@@ -22,15 +22,18 @@ import static com.adaptris.core.jms.JmsConfig.HIGHEST_PRIORITY;
 import static com.adaptris.core.jms.JmsConstants.JMS_DELIVERY_MODE;
 import static com.adaptris.core.jms.JmsConstants.JMS_EXPIRATION;
 import static com.adaptris.core.jms.JmsConstants.JMS_PRIORITY;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
 import javax.jms.JMSException;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ConfiguredProduceDestination;
@@ -40,10 +43,6 @@ import com.adaptris.core.ProduceException;
 import com.adaptris.core.stubs.MockMessageListener;
 
 public abstract class JmsProducerCase extends JmsProducerExample {
-
-  public JmsProducerCase(String name) {
-    super(name);
-  }
 
   public static AdaptrisMessage createMessage() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(DEFAULT_PAYLOAD);
@@ -79,6 +78,7 @@ public abstract class JmsProducerCase extends JmsProducerExample {
     return p;
   }
 
+  @Test
   public void testSetPriority() throws Exception {
     DefinedJmsProducer p = createDummyProducer();
     assertEquals(Integer.valueOf(1), p.getPriority());
@@ -88,6 +88,7 @@ public abstract class JmsProducerCase extends JmsProducerExample {
     assertEquals(4, p.messagePriority());
   }
 
+  @Test
   public void testOverrideDeliveryMode() throws Exception {
     DefinedJmsProducer p = createDummyProducer();
     AdaptrisMessage msg = createMessage();
@@ -96,6 +97,7 @@ public abstract class JmsProducerCase extends JmsProducerExample {
     assertEquals(DeliveryMode.PERSISTENT, p.calculateDeliveryMode(msg, p.getDeliveryMode()));
   }
 
+  @Test
   public void testOverridePriority() throws Exception {
     DefinedJmsProducer p = createDummyProducer();
     AdaptrisMessage msg = createMessage();
@@ -104,6 +106,7 @@ public abstract class JmsProducerCase extends JmsProducerExample {
     assertEquals(1, p.calculatePriority(msg, p.getPriority()));
   }
 
+  @Test
   public void testOverrideTimeToLive() throws Exception {
     DefinedJmsProducer p = createDummyProducer();
     AdaptrisMessage msg = createMessage();
@@ -113,6 +116,7 @@ public abstract class JmsProducerCase extends JmsProducerExample {
     assertEquals(0, p.calculateTimeToLive(msg, p.getTtl()));
   }
 
+  @Test
   public void testOverrideTimeToLiveTimestamp() throws Exception {
     DefinedJmsProducer p = createDummyProducer();
     AdaptrisMessage msg = createMessage();
@@ -125,6 +129,7 @@ public abstract class JmsProducerCase extends JmsProducerExample {
     assertEquals(0, p.calculateTimeToLive(msg, p.getTtl()));
   }
 
+  @Test
   public void testLogLinkedException() throws Exception {
     DefinedJmsProducer p = createDummyProducer();
     p.logLinkedException("", new Exception());
@@ -135,6 +140,7 @@ public abstract class JmsProducerCase extends JmsProducerExample {
     p.logLinkedException("", e1);
   }
 
+  @Test
   public void testSetCaptureOutgoingMessageDetails() throws Exception {
     DefinedJmsProducer p = createDummyProducer();
     assertNull(p.getCaptureOutgoingMessageDetails());

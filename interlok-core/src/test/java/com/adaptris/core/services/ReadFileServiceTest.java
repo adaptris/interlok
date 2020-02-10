@@ -15,6 +15,10 @@
 package com.adaptris.core.services;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.file.Files;
@@ -28,11 +32,9 @@ import com.adaptris.core.GeneralServiceExample;
 public class ReadFileServiceTest extends GeneralServiceExample {
   private static final String FILE = "build.gradle";
 
-
-
   @Override
-  protected void setUp() throws Exception {
-    /* empty method */
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
 

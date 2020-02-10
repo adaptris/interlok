@@ -15,11 +15,13 @@
 */
 package com.adaptris.core.security.access;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -38,10 +40,12 @@ public class IdentityBuilderTest extends BaseCase {
   public static final String PASSWORD = "password";
   public static final String ROLE = "role";
 
-  public IdentityBuilderTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testEmptyIdentityBuilder() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata(USER, getName() + ThreadLocalRandom.current().nextInt());
@@ -51,12 +55,14 @@ public class IdentityBuilderTest extends BaseCase {
     assertEquals(0, builder.build(msg).size());
   }
 
+  @Test
   public void testEmptyIdentityBuilder_RoundTrip() throws Exception {
     EmptyIdentityBuilder builder = new EmptyIdentityBuilder();
     AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
     assertRoundtripEquality(builder, m.unmarshal(m.marshal(builder)));
   }
 
+  @Test
   public void testMetadataIdentityBuilder() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     String username = getName() + ThreadLocalRandom.current().nextInt();
@@ -72,15 +78,16 @@ public class IdentityBuilderTest extends BaseCase {
       assertTrue(identityMap.containsKey(ROLE));
       assertTrue(identityMap.containsKey(USER));
       assertTrue(identityMap.containsKey(PASSWORD));
-      assertEquals(username, (String) identityMap.get(USER));
-      assertEquals(password, (String) identityMap.get(PASSWORD));
-      assertEquals(role, (String) identityMap.get(ROLE));
+      assertEquals(username, identityMap.get(USER));
+      assertEquals(password, identityMap.get(PASSWORD));
+      assertEquals(role, identityMap.get(ROLE));
     }
     finally {
       BaseCase.stop(builder);
     }
   }
 
+  @Test
   public void testMetadataIdentityBuilder_ObjectMetadata() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     String username = getName() + ThreadLocalRandom.current().nextInt();
@@ -96,21 +103,23 @@ public class IdentityBuilderTest extends BaseCase {
       assertTrue(identityMap.containsKey(ROLE));
       assertTrue(identityMap.containsKey(USER));
       assertTrue(identityMap.containsKey(PASSWORD));
-      assertEquals(username, (String) identityMap.get(USER));
-      assertEquals(password, (String) identityMap.get(PASSWORD));
-      assertEquals(role, (String) identityMap.get(ROLE));
+      assertEquals(username, identityMap.get(USER));
+      assertEquals(password, identityMap.get(PASSWORD));
+      assertEquals(role, identityMap.get(ROLE));
     }
     finally {
       BaseCase.stop(builder);
     }
   }
 
+  @Test
   public void testMetadataIdentityBuilder_RoundTrip() throws Exception {
     MetadataIdentityBuilder builder = new MetadataIdentityBuilder(MetadataSource.Standard, Arrays.asList(USER, PASSWORD, ROLE));
     AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
     assertRoundtripEquality(builder, m.unmarshal(m.marshal(builder)));
   }
 
+  @Test
   public void testMappedMetadataIdentityBuilder() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     String username = getName() + ThreadLocalRandom.current().nextInt();
@@ -129,15 +138,16 @@ public class IdentityBuilderTest extends BaseCase {
       assertTrue(identityMap.containsKey(ROLE));
       assertTrue(identityMap.containsKey(USER));
       assertTrue(identityMap.containsKey(PASSWORD));
-      assertEquals(username, (String) identityMap.get(USER));
-      assertEquals(password, (String) identityMap.get(PASSWORD));
-      assertEquals(role, (String) identityMap.get(ROLE));
+      assertEquals(username, identityMap.get(USER));
+      assertEquals(password, identityMap.get(PASSWORD));
+      assertEquals(role, identityMap.get(ROLE));
     }
     finally {
       BaseCase.stop(builder);
     }
   }
 
+  @Test
   public void testMappedMetadataIdentityBuilder_ObjectMetadata() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     String username = getName() + ThreadLocalRandom.current().nextInt();
@@ -157,15 +167,16 @@ public class IdentityBuilderTest extends BaseCase {
       assertTrue(identityMap.containsKey(ROLE));
       assertTrue(identityMap.containsKey(USER));
       assertTrue(identityMap.containsKey(PASSWORD));
-      assertEquals(username, (String) identityMap.get(USER));
-      assertEquals(password, (String) identityMap.get(PASSWORD));
-      assertEquals(role, (String) identityMap.get(ROLE));
+      assertEquals(username, identityMap.get(USER));
+      assertEquals(password, identityMap.get(PASSWORD));
+      assertEquals(role, identityMap.get(ROLE));
     }
     finally {
       BaseCase.stop(builder);
     }
   }
 
+  @Test
   public void testMappedMetadataIdentityBuilder_RoundTrip() throws Exception {
     MappedMetadataIdentityBuilder builder = new MappedMetadataIdentityBuilder(MetadataSource.Standard,
         new KeyValuePairList(Arrays.asList(new KeyValuePair[]
@@ -176,6 +187,7 @@ public class IdentityBuilderTest extends BaseCase {
     assertRoundtripEquality(builder, m.unmarshal(m.marshal(builder)));
   }
 
+  @Test
   public void testCompositeIdentityBuilder() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     String username = getName() + ThreadLocalRandom.current().nextInt();
@@ -198,15 +210,16 @@ public class IdentityBuilderTest extends BaseCase {
       assertTrue(identityMap.containsKey(ROLE));
       assertTrue(identityMap.containsKey(USER));
       assertTrue(identityMap.containsKey(PASSWORD));
-      assertEquals(username, (String) identityMap.get(USER));
-      assertEquals(password, (String) identityMap.get(PASSWORD));
-      assertEquals(role, (String) identityMap.get(ROLE));
+      assertEquals(username, identityMap.get(USER));
+      assertEquals(password, identityMap.get(PASSWORD));
+      assertEquals(role, identityMap.get(ROLE));
     }
     finally {
       BaseCase.stop(builder);
     }
   }
 
+  @Test
   public void testCompositeMetadataIdentityBuilder_RoundTrip() throws Exception {
     MappedMetadataIdentityBuilder mapped = new MappedMetadataIdentityBuilder(new KeyValuePairList(Arrays.asList(new KeyValuePair[]
     {

@@ -15,7 +15,9 @@
 */
 
 package com.adaptris.core.services.metadata;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 
@@ -25,12 +27,9 @@ public class UrlDecodeMetadataServiceTest extends MetadataServiceExample {
   public static final String ENCODED = "2016-01-01T12%3A00%3A00Z";
   public static final String DECODED = "2016-01-01T12:00:00Z";
 
-  public UrlDecodeMetadataServiceTest(java.lang.String testName) {
-    super(testName);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   private static AdaptrisMessage createMessage() {
@@ -39,6 +38,7 @@ public class UrlDecodeMetadataServiceTest extends MetadataServiceExample {
     return msg;
   }
 
+  @Test
   public void testService() throws Exception {
     UrlDecodeMetadataService service = new UrlDecodeMetadataService(SOURCE_METADATA_KEY);
     AdaptrisMessage msg = createMessage();

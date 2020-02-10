@@ -106,6 +106,7 @@ junit.XmlTransformService.remove.namespace.mapping=file:///@BASE_DIR@/src/test/r
 
 
 junit.XpathSplitter.issue2658.input=@BASE_DIR@/src/test/resources/services/issue2658.xml
+junit.XpathSplitter.filter-test.input=@BASE_DIR@/src/test/resources/services/agx-growers-list.xml
 
 junit.StoreMetadataValueServiceTest.storeFileUrl=file:///@BASE_DIR@/src/test/resources/store
 junit.CheckMetadataValueServiceTest.storeFileUrl=file:///@BASE_DIR@/src/test/resources/store

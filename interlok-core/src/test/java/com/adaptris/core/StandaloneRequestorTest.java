@@ -16,8 +16,16 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.core.stubs.MockNonStandardRequestReplyProducer;
 import com.adaptris.core.stubs.MockRequestReplyProducer;
 import com.adaptris.util.TimeInterval;
@@ -25,14 +33,12 @@ import com.adaptris.util.TimeInterval;
 @SuppressWarnings("deprecation")
 public class StandaloneRequestorTest extends GeneralServiceExample {
 
-  public StandaloneRequestorTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testSetTimeoutOverride() throws Exception {
     MockRequestReplyProducer m = new MockRequestReplyProducer();
     StandaloneRequestor service = new StandaloneRequestor(m);
@@ -50,6 +56,7 @@ public class StandaloneRequestorTest extends GeneralServiceExample {
 
   }
 
+  @Test
   public void testStandardDoService() throws Exception {
     MockRequestReplyProducer m = new MockRequestReplyProducer();
     StandaloneRequestor service = new StandaloneRequestor(m);
@@ -60,6 +67,7 @@ public class StandaloneRequestorTest extends GeneralServiceExample {
     assertEquals(1, m.getProducedMessages().size());
   }
 
+  @Test
   public void testNonStandardDoService() throws Exception {
     MockNonStandardRequestReplyProducer m = new MockNonStandardRequestReplyProducer();
     StandaloneRequestor service = new StandaloneRequestor(m);
@@ -71,6 +79,7 @@ public class StandaloneRequestorTest extends GeneralServiceExample {
     assertEquals(1, m.getProducedMessages().size());
   }
 
+  @Test
   public void testDoServiceNoTimeout() throws Exception {
     MockRequestReplyProducer m = new MockRequestReplyProducer();
     StandaloneRequestor service = new StandaloneRequestor(m);
@@ -82,6 +91,7 @@ public class StandaloneRequestorTest extends GeneralServiceExample {
     assertEquals(1, m.getProducedMessages().size());
   }
 
+  @Test
   public void testCreateName() throws Exception {
     MockRequestReplyProducer m = new MockRequestReplyProducer();
     StandaloneRequestor service = new StandaloneRequestor(m);
@@ -89,12 +99,73 @@ public class StandaloneRequestorTest extends GeneralServiceExample {
     assertEquals(service.getProducer().createName(), service.createName());
   }
 
+  @Test
   public void testCreateQualifier() throws Exception {
     MockRequestReplyProducer mp = new MockRequestReplyProducer();
     StandaloneRequestor service = new StandaloneRequestor(mp);
     mp.setUniqueId("abc");
     assertEquals("abc", service.createQualifier());
     assertEquals(service.getProducer().createQualifier(), service.createQualifier());
+  }
+
+  @Test
+  public void testNullProducer() throws Exception {
+    StandaloneRequestor service = new StandaloneRequestor();
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("XYZ");
+    execute(service, msg);
+    // all we care here is that a NPE isn't thrown (see INTERLOK-2829)
+  }
+
+  @Test
+  public void testNullMessage() throws Exception {
+    StandaloneRequestor service = new StandaloneRequestor();
+    service.doService(null);
+  }
+
+  @Test
+  public void testConsumerProducer() throws Exception {
+    AdaptrisMessageProducer mp = mock(AdaptrisMessageProducer.class);
+    StandaloneRequestor service = new StandaloneRequestor(mp);
+    service.setReplyTimeout(new TimeInterval(-1L, TimeUnit.MILLISECONDS));
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("XYZ");
+    doReturn(msg).when(mp).request(msg);
+    execute(service, msg);
+  }
+
+  @Test
+  public void testConsumerProducerCopyFails() throws Exception {
+    AdaptrisMessageProducer mp = mock(AdaptrisMessageProducer.class);
+    StandaloneRequestor service = new StandaloneRequestor(mp);
+    service.setReplyTimeout(new TimeInterval(-1L, TimeUnit.MILLISECONDS));
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("XYZ");
+    AdaptrisMessage reply = mock(AdaptrisMessage.class);
+    doReturn(reply).when(mp).request(msg);
+    doThrow(new IOException("expected")).when(reply).getInputStream();
+    try {
+      service.doService(msg);
+      fail("Output stream on the message should thrpow an error and be caught.");
+    } catch (CoreException ex) {
+      // expected
+    }
+  }
+
+  @Test
+  public void testConsumerProducerNullMessageWithReply() throws Exception {
+    AdaptrisMessageProducer mp = mock(AdaptrisMessageProducer.class);
+    StandaloneRequestor service = new StandaloneRequestor(mp);
+    service.setReplyTimeout(new TimeInterval(-1L, TimeUnit.MILLISECONDS));
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("XYZ");
+    doReturn(msg).when(mp).request(null);
+    service.doService(null);
+  }
+
+  @Test
+  public void testNullRequest() throws Exception {
+    AdaptrisMessageProducer mp = mock(AdaptrisMessageProducer.class);
+    StandaloneRequestor service = new StandaloneRequestor(mp);
+    service.setReplyTimeout(new TimeInterval(-1L, TimeUnit.MILLISECONDS));
+    doReturn(null).when(mp).request(null);
+    service.doService(null);
   }
 
   @Override

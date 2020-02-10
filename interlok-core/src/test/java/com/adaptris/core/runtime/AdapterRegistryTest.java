@@ -16,28 +16,32 @@
 
 package com.adaptris.core.runtime;
 
-import static org.mockito.Matchers.any;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
-
 import javax.management.InstanceNotFoundException;
 import javax.management.JMX;
 import javax.management.ObjectName;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-
 import org.apache.commons.io.FileUtils;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-
 import com.adaptris.core.Adapter;
 import com.adaptris.core.ClosedState;
 import com.adaptris.core.CoreException;
@@ -79,13 +83,16 @@ public class AdapterRegistryTest extends ComponentManagerCase {
 
   private transient Properties contextEnv = new Properties();
 
-  public AdapterRegistryTest(String name) {
-    super(name);
+  public AdapterRegistryTest() {
   }
 
   @Override
-  public void setUp() throws Exception {
-    super.setUp();
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+  
+  @Before
+  public void beforeMyTests() throws Exception {
     contextEnv.put(Context.INITIAL_CONTEXT_FACTORY, JndiContextFactory.class.getName());
     spyPreProcessorLoader = new DefaultPreProcessorLoader();
 
@@ -98,12 +105,14 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     super.tearDown();
   }
 
+  @Test
   public void testGetConfiguration() throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
     assertEquals(0, myAdapterRegistry.getConfiguration().size());
   }
 
+  @Test
   public void testPutConfigurationUrl() throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -111,7 +120,8 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     myAdapterRegistry.putConfigurationURL(myAdapterRegistry.createObjectName(), url);
     assertEquals(url, myAdapterRegistry.getConfigurationURL(myAdapterRegistry.createObjectName()));
   }
-  
+
+  @Test
   public void testPutConfigurationUrlString() throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -119,10 +129,12 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertEquals("http://localhost/1234", myAdapterRegistry.getConfigurationURLString(myAdapterRegistry.createObjectName()));
   }
 
+  @Test
   public void testPreProcessorsLoaded() throws Exception {
 
     Properties bsProperties = new Properties();
-    bsProperties.put(AdapterConfigManager.CONFIGURATION_PRE_PROCESSORS, DummyConfigurationPreProcessor.class.getName());
+    bsProperties.put(AdapterConfigManager.CONFIGURATION_PRE_PROCESSORS,
+        DummyConfigurationPreProcessor.class.getName());
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry.findInstance(new JunitBootstrapProperties(bsProperties));
     AdapterBuilder builder = new ArrayList<AdapterBuilder>(myAdapterRegistry.builders()).get(0);
     builder.setConfigurationPreProcessorLoader(spyPreProcessorLoader);
@@ -137,6 +149,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     verify(spyPreProcessorLoader, times(1)).load(any(BootstrapProperties.class));
   }
 
+  @Test
   public void testPreProcessorCalled() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -158,6 +171,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     verify(mockPreProcessor, times(1)).process(any(String.class));
   }
 
+  @Test
   public void testMultiPreProcessorCalled() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -181,6 +195,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     verify(mockPreProcessor, times(3)).process(any(String.class));
   }
 
+  @Test
   public void testAddAdapterMBean() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -194,6 +209,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertEquals(1, myAdapterRegistry.getAdapters().size());
   }
 
+  @Test
   public void testAddAdapterMBean_ExistingObjectName() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -214,6 +230,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testCreateAdapter_URL() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -230,6 +247,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertEquals(1, myAdapterRegistry.getAdapters().size());
   }
 
+  @Test
   public void testCreateAdapter_NullUrl() throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -239,7 +257,8 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     catch (CoreException expected) {
     }
   }
-  
+
+  @Test
   public void testCreateAdapterFromUrl_String() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -255,7 +274,8 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertEquals(ClosedState.getInstance(), manager.getComponentState());
     assertEquals(1, myAdapterRegistry.getAdapters().size());
   }
-  
+
+  @Test
   public void testCreateAdapterFromUrl_NullUrlString() throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -266,6 +286,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testProxy_CreateAdapter_URL() throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -285,6 +306,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertEquals(1, registry.getAdapters().size());
   }
 
+  @Test
   public void testCreateAdapter_String() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -302,6 +324,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertEquals(1, myAdapterRegistry.getAdapters().size());
   }
 
+  @Test
   public void testCreateAdapter_NoUniqueId_NoValidation() throws Exception {
     String xml = DefaultMarshaller.getDefaultMarshaller().marshal(new Adapter());
     AdapterRegistry myAdapterRegistry =
@@ -314,6 +337,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testProxy_CreateAdapter_String() throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -332,7 +356,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertEquals(1, registry.getAdapters().size());
   }
 
-
+  @Test
   public void testValidateConfig_ValidXML() throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -342,6 +366,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     myAdapterRegistry.validateConfig(xml);
   }
 
+  @Test
   public void testValidateConfig_InvalidXML() throws Exception {
     String xml = "<adapter><hello-world/></adapter>";
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
@@ -354,6 +379,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testPersistAdapter_MBean_to_URL() throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -369,6 +395,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertRoundtripEquality(adapter, marshalledAdapter);
   }
 
+  @Test
   public void testProxy_PersistAdapter_Bean_to_URL() throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -385,7 +412,8 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     Adapter marshalledAdapter = (Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(filename);
     assertRoundtripEquality(adapter, marshalledAdapter);
   }
-  
+
+  @Test
   public void testProxy_PersistAdapter_Bean_to_URL_String() throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -403,6 +431,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertRoundtripEquality(adapter, marshalledAdapter);
   }
 
+  @Test
   public void testPersistAdapter_ObjectName_To_File() throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -416,6 +445,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertRoundtripEquality(adapter, marshalledAdapter);
   }
 
+  @Test
   public void testProxy_PersistAdapter_ObjectName_To_URL() throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -430,7 +460,8 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     Adapter marshalledAdapter = (Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(filename);
     assertRoundtripEquality(adapter, marshalledAdapter);
   }
-  
+
+  @Test
   public void testProxy_PersistAdapter_ObjectName_To_URL_String() throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -446,6 +477,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertRoundtripEquality(adapter, marshalledAdapter);
   }
 
+  @Test
   public void testDestroyAdapter_NotRegistered() throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -469,6 +501,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testDestroyAdapter_MBean() throws Exception {
     AdapterRegistryMBean myAdapterRegistry = AdapterRegistry.findInstance(new JunitBootstrapProperties(new Properties()));
     String adapterName = this.getClass().getSimpleName() + "." + getName();
@@ -489,6 +522,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertEquals(0, myAdapterRegistry.getAdapters().size());
   }
 
+  @Test
   public void testProxy_DestroyAdapter_MBean() throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -512,6 +546,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertEquals(0, registry.getAdapters().size());
   }
 
+  @Test
   public void testProxy_DestroyAdapter_MBean_SharedConnection_JNDI() throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -537,6 +572,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertEquals(0, registry.getAdapters().size());
   }
 
+  @Test
   public void testDestroyAdapter_ObjectName() throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -553,6 +589,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertEquals(0, myAdapterRegistry.getAdapters().size());
   }
 
+  @Test
   public void testProxy_DestroyAdapter_ObjectName() throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -569,6 +606,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertEquals(0, myAdapterRegistry.getAdapters().size());
   }
 
+  @Test
   public void testStart() throws Exception {
     AdapterRegistry adapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -582,6 +620,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertEquals(StartedState.getInstance(), manager.getComponentState());
   }
 
+  @Test
   public void testStop() throws Exception {
     AdapterRegistry adapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -596,6 +635,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertEquals(StoppedState.getInstance(), manager.getComponentState());
   }
 
+  @Test
   public void testClose() throws Exception {
     AdapterRegistry adapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -610,6 +650,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertEquals(ClosedState.getInstance(), manager.getComponentState());
   }
 
+  @Test
   public void testSendShutdownEvent() throws Exception {
     AdapterRegistry adapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -637,6 +678,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     producer.getMessages().clear();
   }
 
+  @Test
   public void testSendShutdownEvent_AdapterAlreadyClosed() throws Exception {
     AdapterRegistry adapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -665,6 +707,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     producer.getMessages().clear();
   }
 
+  @Test
   public void testGetConfigurationURL() throws Exception {
     AdapterRegistry adapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -679,6 +722,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertEquals(expectedURL, adapterRegistry.getConfigurationURL(objName));
   }
 
+  @Test
   public void testGetConfigurationURL_NoURL() throws Exception {
     AdapterRegistry adapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -691,6 +735,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertNull(adapterRegistry.getConfigurationURL(objName));
   }
 
+  @Test
   public void testRemoveConfigurationURL() throws Exception {
     AdapterRegistry adapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -708,6 +753,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertFalse(adapterRegistry.removeConfigurationURL(objName));
   }
 
+  @Test
   public void testDestroy_With_GetConfigurationURL() throws Exception {
     AdapterRegistry adapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -724,6 +770,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertEquals(expectedURL, adapterRegistry.getConfigurationURL(objName));
   }
 
+  @Test
   public void testProxy_GetConfigurationURL() throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -740,6 +787,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertEquals(expectedURL, registry.getConfigurationURL(objName));
   }
 
+  @Test
   public void testProxy_GetConfigurationURL_NoURL() throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -754,6 +802,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertNull(registry.getConfigurationURL(objName));
   }
 
+  @Test
   public void testProxy_RemoveConfigurationURL() throws Exception {
     AdapterRegistry adapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -774,6 +823,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertFalse(registry.removeConfigurationURL(objName));
   }
 
+  @Test
   public void testProxy_Destroy_With_GetConfigurationURL() throws Exception {
     AdapterRegistry adapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -791,6 +841,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertEquals(expectedURL, registry.getConfigurationURL(objName));
   }
 
+  @Test
   public void testReloadFromVersionControl_NoVCS() throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -803,6 +854,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testReloadFromVersionControl_WithVCS() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -820,6 +872,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertEquals(1, myAdapterRegistry.getAdapters().size());
   }
 
+  @Test
   public void testReloadFromVersionControl_WithVCS_2Builders() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter1 = createAdapter(adapterName, 2, 2);
@@ -845,6 +898,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertEquals(2, adapterRegistry.getAdapters().size());
   }
 
+  @Test
   public void testReloadFromConfig() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -861,6 +915,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertEquals(1, myAdapterRegistry.getAdapters().size());
   }
 
+  @Test
   public void testGetVersionControl() throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -870,6 +925,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertEquals("MOCK", myAdapterRegistry.getVersionControl());
   }
 
+  @Test
   public void testValidateAdapter() throws Exception {
     Properties custom = new Properties();
     custom.setProperty(Constants.CFG_KEY_VALIDATE_CONFIG, "true");
@@ -889,6 +945,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     myAdapterRegistry.destroyAdapter(objName);
   }
 
+  @Test
   public void testGetClassDescription() throws Exception {
     Properties custom = new Properties();
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry.findInstance(new JunitBootstrapProperties(custom));
@@ -903,7 +960,8 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     assertEquals(2, addMetadataServiceDef.getClassDescriptorProperties().size());
     assertEquals("service", addMetadataServiceDef.getClassType());
   }
-  
+
+  @Test
   public void testClassDescriptionGetSubTypes() throws Exception {
     Properties custom = new Properties();
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry.findInstance(new JunitBootstrapProperties(custom));

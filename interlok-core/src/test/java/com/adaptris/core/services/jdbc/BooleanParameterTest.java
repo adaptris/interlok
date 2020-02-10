@@ -15,27 +15,13 @@
 */
 
 package com.adaptris.core.services.jdbc;
-
-import org.junit.After;
-import org.junit.Before;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import org.junit.Test;
-
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.services.jdbc.StatementParameterImpl.QueryType;
 
-public class BooleanParameterTest extends BaseCase {
-
-  public BooleanParameterTest(String n) {
-    super(n);
-  }
-
-  @Before
-  public void setUp() throws Exception {
-  }
-
-  @After
-  public void tearDown() throws Exception {
-  }
+public class BooleanParameterTest {
 
   @Test
   public void testConvert() throws Exception {
@@ -57,6 +43,6 @@ public class BooleanParameterTest extends BaseCase {
   public void testMakeCopy() throws Exception {
     BooleanStatementParameter sp = new BooleanStatementParameter("true", QueryType.constant, null, null);
     BooleanStatementParameter copy = sp.makeCopy();
-    assertRoundtripEquality(sp, copy);
+    BaseCase.assertRoundtripEquality(sp, copy);
   }
 }

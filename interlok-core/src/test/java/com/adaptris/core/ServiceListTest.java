@@ -16,10 +16,16 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.core.services.WaitService;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
@@ -41,10 +47,10 @@ public class ServiceListTest extends ServiceCollectionCase {
   private static final String VAL1 = "val1";
   private static final String KEY1 = "key1";
 
-  public ServiceListTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
-
   @Override
   public ServiceList createServiceCollection() {
     return new ServiceList();
@@ -77,6 +83,7 @@ public class ServiceListTest extends ServiceCollectionCase {
     assertTrue(tmp.contains(newService));
   }
 
+  @Test
   public void testDoService() throws CoreException {
     ServiceList services = createServiceList(true);
 
@@ -87,7 +94,8 @@ public class ServiceListTest extends ServiceCollectionCase {
     assertTrue(msg.getMetadataValue(KEY2).equals(VAL2));
     assertTrue(msg.getMetadataValue(KEY3) == null);
   }
-  
+
+  @Test
   public void testDoServiceOutOfState() throws CoreException {
     ServiceList services = createServiceList(true);
 
@@ -100,6 +108,7 @@ public class ServiceListTest extends ServiceCollectionCase {
     }
   }
 
+  @Test
   public void testBreakOutOfServiceList() throws CoreException {
     ServiceList services = createServiceList(false);
 
@@ -118,7 +127,8 @@ public class ServiceListTest extends ServiceCollectionCase {
     // ...and that fourth service has not been applied
     assertTrue(msg.getMetadataValue(KEY3) == null);
   }
-  
+
+  @Test
   public void testDontProcessFirstServiceIfStopProcessingSet() throws CoreException {
     ServiceList services = createServiceList(false);
 
@@ -132,6 +142,7 @@ public class ServiceListTest extends ServiceCollectionCase {
     assertNull(msg.getMetadataValue(KEY2));
   }
 
+  @Test
   public void testFailWithNoContinueOnFail() throws Exception {
     ServiceList services = createServiceList(false);
     services.addService(new ThrowExceptionService(new ConfiguredException("Fail")));
@@ -146,6 +157,7 @@ public class ServiceListTest extends ServiceCollectionCase {
     }
   }
 
+  @Test
   public void testFail_CheckObjectMetadata() throws Exception {
     ServiceList services = createServiceList(false);
     ThrowExceptionService errorService = new ThrowExceptionService(new ConfiguredException("Fail"));
@@ -169,6 +181,7 @@ public class ServiceListTest extends ServiceCollectionCase {
     }
   }
 
+  @Test
   public void testFail_NestedServiceList_ObjectMetadata() throws Exception {
     ServiceList services = createServiceList(false);
     ThrowExceptionService errorService = new ThrowExceptionService(new ConfiguredException("Fail"));
@@ -195,6 +208,7 @@ public class ServiceListTest extends ServiceCollectionCase {
     }
   }
 
+  @Test
   public void testFailWithNoContinueOnFailAndRuntimeException() throws Exception {
     ServiceList services = createServiceList(false);
     services.addService(new NullService() {
@@ -215,6 +229,7 @@ public class ServiceListTest extends ServiceCollectionCase {
     }
   }
 
+  @Test
   public void testFailWithContinueOnFail() throws Exception {
     ServiceList services = createServiceList(true);
 
@@ -227,6 +242,7 @@ public class ServiceListTest extends ServiceCollectionCase {
     assertTrue(msg.getMetadataValue(KEY4).equals(VAL4));
   }
 
+  @Test
   public void testRestartAffectedServiceOnFail() throws Exception {
     ServiceList services = createServiceList(true);
     services.setRestartAffectedServiceOnException(Boolean.TRUE);
@@ -245,6 +261,7 @@ public class ServiceListTest extends ServiceCollectionCase {
     }
   }
 
+  @Test
   public void testBug2055() throws Exception {
     String name = Thread.currentThread().getName();
     Thread.currentThread().setName("testBug2055");
@@ -257,6 +274,7 @@ public class ServiceListTest extends ServiceCollectionCase {
     final ExceptionContainer c = new ExceptionContainer();
     Thread t = new Thread(new Runnable() {
 
+      @Override
       public void run() {
         try {
           AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -279,6 +297,7 @@ public class ServiceListTest extends ServiceCollectionCase {
     Thread.currentThread().setName(name);
   }
 
+  @Test
   public void testAllowSkip() {
     ServiceList result = new ServiceList();
     assertTrue(result.forwardSearch());
@@ -288,6 +307,7 @@ public class ServiceListTest extends ServiceCollectionCase {
     assertFalse(result.forwardSearch());
   }
 
+  @Test
   public void testForwardSearch_Default() throws Exception {
     NextServiceIdSetter first = new NextServiceIdSetter(getName(), "third");
     MarkerService second = new MarkerService("second");
@@ -306,6 +326,7 @@ public class ServiceListTest extends ServiceCollectionCase {
     }
   }
 
+  @Test
   public void testForwardSearch_NotEnabled() throws Exception {
     NextServiceIdSetter first = new NextServiceIdSetter(getName(), "third");
     MarkerService second = new MarkerService("second");
@@ -325,6 +346,7 @@ public class ServiceListTest extends ServiceCollectionCase {
     }
   }
 
+  @Test
   public void testForwardSearch_MissingUniqueId() throws Exception {
     NextServiceIdSetter first = new NextServiceIdSetter(getName(), "third");
     MarkerService second = new MarkerService("");
@@ -343,7 +365,7 @@ public class ServiceListTest extends ServiceCollectionCase {
     }
   }
 
-
+  @Test
   public void testForwardSearch_NoMatch() throws Exception {
     NextServiceIdSetter first = new NextServiceIdSetter(getName(), "99 Luftballon");
     MarkerService second = new MarkerService("second");
@@ -362,6 +384,7 @@ public class ServiceListTest extends ServiceCollectionCase {
     }
   }
 
+  @Test
   public void testForwardSearch_BackwardsNotAllowed() throws Exception {
     MarkerService first = new MarkerService("first");
     NextServiceIdSetter second = new NextServiceIdSetter(getName(), "first");
@@ -387,7 +410,7 @@ public class ServiceListTest extends ServiceCollectionCase {
     result.addService(new NullService());
     result.addService(new NullService());
     result.addService(new NullService());
-
+    result.setComments("Comments Ignored At Runtime");
     return result;
   }
 
@@ -421,6 +444,7 @@ public class ServiceListTest extends ServiceCollectionCase {
       setUniqueId(s);
     }
 
+    @Override
     public void doService(AdaptrisMessage msg) throws ServiceException {
       hasTriggered = true;
     }
@@ -448,6 +472,7 @@ public class ServiceListTest extends ServiceCollectionCase {
       nextServiceId = next;
     }
 
+    @Override
     public void doService(AdaptrisMessage msg) throws ServiceException {
       msg.setNextServiceId(nextServiceId);
     }

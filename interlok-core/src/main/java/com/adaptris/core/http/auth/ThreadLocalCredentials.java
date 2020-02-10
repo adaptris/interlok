@@ -19,11 +19,9 @@ import java.net.PasswordAuthentication;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.http.ResourceAuthenticator;
 
 public class ThreadLocalCredentials implements ResourceAuthenticator {
@@ -42,11 +40,9 @@ public class ThreadLocalCredentials implements ResourceAuthenticator {
   protected static final transient Logger log =
       LoggerFactory.getLogger(ThreadLocalCredentials.class);
 
-  private final String target;
   private final ResourceTargetMatcher matcher;
 
-  private ThreadLocalCredentials(String target, ResourceTargetMatcher matcher) {
-    this.target = target;
+  private ThreadLocalCredentials(ResourceTargetMatcher matcher) {
     this.matcher = matcher;
   }
 
@@ -65,11 +61,7 @@ public class ThreadLocalCredentials implements ResourceAuthenticator {
    * Remove the credentials for the current thread
    */
   public void removeThreadCredentials() {
-    this.threadAuthentication.set(null);
-  }
-
-  private String target() {
-    return target;
+    this.threadAuthentication.remove();
   }
 
   private ResourceTargetMatcher matcher() {
@@ -103,7 +95,7 @@ public class ThreadLocalCredentials implements ResourceAuthenticator {
     ThreadLocalCredentials instance = instances.get(target);
     if (instance == null) {
       if (matcher != null) {
-        instance = new ThreadLocalCredentials(target, matcher);
+        instance = new ThreadLocalCredentials(matcher);
         instances.put(target, instance);
       } else {
         instance = getInstance(target);

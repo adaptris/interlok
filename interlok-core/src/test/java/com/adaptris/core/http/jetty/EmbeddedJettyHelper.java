@@ -46,9 +46,6 @@ public class EmbeddedJettyHelper {
   }
 
   public void startServer() throws Exception {
-// ManagementComponentFactory.create(new BootstrapProperties(jettyConfig));
-// ManagementComponentFactory.initCreated();
-// Thread.sleep(1000);
     jetty = new JettyServerComponent();
     jetty.init(jettyConfig);
     jetty.setClassLoader(Thread.currentThread().getContextClassLoader());
@@ -61,8 +58,6 @@ public class EmbeddedJettyHelper {
   }
 
   public void stopServer() throws Exception {
-// ManagementComponentFactory.stopCreated();
-// ManagementComponentFactory.closeCreated();
     jetty.stop();
     jetty.destroy();
     PortManager.release(portForServer);

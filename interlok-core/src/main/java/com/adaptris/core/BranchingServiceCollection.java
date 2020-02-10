@@ -17,14 +17,11 @@
 package com.adaptris.core;
 
 import static com.adaptris.core.util.LoggingHelper.friendlyName;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.validator.constraints.NotBlank;
-
+import javax.validation.constraints.NotBlank;
+import org.apache.commons.lang3.StringUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;

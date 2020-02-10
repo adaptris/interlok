@@ -16,12 +16,19 @@
 
 package com.adaptris.core.http;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.Properties;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.http.Http;
 
@@ -36,17 +43,18 @@ public class RequestParameterConverterServiceTest extends HttpServiceExample {
   private static final String SAVE_PARAM = "PostParameterToSaveAsPayload";
   private RequestParameterConverterService service;
 
-  public RequestParameterConverterServiceTest(String arg0) {
-    super(arg0);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     service = new RequestParameterConverterService();
   }
 
-  @Override
-  protected void tearDown() throws Exception {
+  @After
+  public void tearDown() throws Exception {
     LifecycleHelper.stop(service);
     LifecycleHelper.close(service);
   }
@@ -57,6 +65,7 @@ public class RequestParameterConverterServiceTest extends HttpServiceExample {
     return service;
   }
 
+  @Test
   public void testServiceWithMissingContentTypeKey() throws Exception {
     String payload = formatAsFormData(createProperties(), "UTF-8");
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance()
@@ -68,6 +77,7 @@ public class RequestParameterConverterServiceTest extends HttpServiceExample {
     assertTrue("Metadata size = 0", msg.getMetadata().size() == 0);
   }
 
+  @Test
   public void testServiceWithContentTypeValueMismatch() throws Exception {
     String payload = formatAsFormData(createProperties(), "UTF-8");
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance()
@@ -79,6 +89,7 @@ public class RequestParameterConverterServiceTest extends HttpServiceExample {
     assertEquals("Metadata Count", 1, msg.getMetadata().size());
   }
 
+  @Test
   public void testServiceWithSaveParam() throws Exception {
     String payload = formatAsFormData(createProperties(), "UTF-8");
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance()
@@ -93,6 +104,7 @@ public class RequestParameterConverterServiceTest extends HttpServiceExample {
     assertEquals("Metadata Count", 11, msg.getMetadata().size());
   }
 
+  @Test
   public void testXmlRequestParmWithSaveParam() throws Exception {
     String payload = formatAsFormData(createProperties(true), "UTF-8");
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance()
@@ -107,6 +119,7 @@ public class RequestParameterConverterServiceTest extends HttpServiceExample {
     assertEquals("Metadata Count", 11, msg.getMetadata().size());
   }
 
+  @Test
   public void testServiceWithoutSaveParam() throws Exception {
     String payload = formatAsFormData(createProperties(), "UTF-8");
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance()
@@ -120,6 +133,21 @@ public class RequestParameterConverterServiceTest extends HttpServiceExample {
     assertEquals("Metadata value", TEST_VALUE, msg.getMetadataValue(SAVE_PARAM));
   }
 
+  @Test
+  public void testService_Failure() throws Exception {
+    String payload = formatAsFormData(createProperties(), "UTF-8");
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(payload);
+    // Use an invalid MIME type which should cause the ContentType constructor to fail.
+    msg.addMetadata(Http.CONTENT_TYPE, "/x-www-form-urlencoded");
+    try {
+      execute(service, msg);
+      fail();
+    } catch (ServiceException e) {
+
+    }
+  }
+
+  @Test
   public void testServiceWithInferredCharset() throws Exception {
     String payload = formatAsFormData(createProperties(), "ISO-8859-1");
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance()

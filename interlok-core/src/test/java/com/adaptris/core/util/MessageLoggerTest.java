@@ -2,6 +2,7 @@ package com.adaptris.core.util;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
@@ -46,14 +47,30 @@ public class MessageLoggerTest {
 
 
   @Test
-  public void testPayloadLogger() {
+  public void testPayloadLoggerIncludeMetadata() {
     AdaptrisMessage msg = createMessage();
-    String s = new PayloadMessageLogger().toString(msg);
+    PayloadMessageLogger payloadMessageLogger = new PayloadMessageLogger();
+    String s = payloadMessageLogger.toString(msg);
     System.err.println("testPayloadLogger:: " + s);
     assertNotNull(s);
     assertTrue(s.contains("The quick brown fox jumps over the lazy dog"));
     assertFalse(s.contains("MessageLifecycleEvent"));
     assertTrue(s.contains("hello world"));
+    assertNull(payloadMessageLogger.getIncludeMetadata());
+  }
+
+  @Test
+  public void testPayloadLoggerWithoutMetadata() {
+    AdaptrisMessage msg = createMessage();
+    PayloadMessageLogger payloadMessageLogger = new PayloadMessageLogger();
+    payloadMessageLogger.setIncludeMetadata(false);
+    String s = payloadMessageLogger.toString(msg);
+    System.err.println("testPayloadLogger:: " + s);
+    assertNotNull(s);
+    assertFalse(s.contains("The quick brown fox jumps over the lazy dog"));
+    assertFalse(s.contains("MessageLifecycleEvent"));
+    assertTrue(s.contains("hello world"));
+    assertFalse(payloadMessageLogger.getIncludeMetadata());
   }
 
   @Test

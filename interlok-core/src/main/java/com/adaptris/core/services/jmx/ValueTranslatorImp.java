@@ -15,8 +15,7 @@
 */
 package com.adaptris.core.services.jmx;
 
-import org.hibernate.validator.constraints.NotBlank;
-
+import javax.validation.constraints.NotBlank;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.util.Args;
 
@@ -30,10 +29,12 @@ public abstract class ValueTranslatorImp implements ValueTranslator {
     this.setType(DEFAULT_PARAMETER_TYPE);
   }
 
+  @Override
   public String getType() {
     return this.type;
   }
 
+  @Override
   public void setType(String type) {
     this.type = Args.notBlank(type, "type");
   }

@@ -77,7 +77,7 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
   @InputFieldDefault(value = "false")
   private Boolean reportAllErrors;
 
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @XStreamImplicit
   private List<MetadataConverter> metadataConverters;
 

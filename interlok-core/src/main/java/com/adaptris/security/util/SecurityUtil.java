@@ -19,8 +19,7 @@ package com.adaptris.security.util;
 import java.security.Provider;
 import java.security.SecureRandom;
 import java.security.Security;
-import java.util.Arrays;
-
+import java.util.TreeSet;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 /**
@@ -58,17 +57,14 @@ public abstract class SecurityUtil {
 
   public static String getAlgorithms() {
     initialise();
-    StringBuffer sb = new StringBuffer("Security Algorithms available");
+    TreeSet<String> algs = new TreeSet<>();
+    Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
     for (Provider provider : Security.getProviders()) {
-      sb.append("\nProvider : " + provider.toString() + "\n");
-
-      Object[] objs = provider.keySet().toArray();
-      Arrays.sort(objs);
-      for (Object o : objs) {
-        sb.append(o.toString() + ", ");
-      }
+      provider.getServices().stream().map((service) -> {
+        return String.format("[%s][%s]: %s", service.getType(), service.getProvider().getName(), service.getAlgorithm());
+      }).forEach(algs::add);
     }
-    return sb.toString();
+    return algs.toString();
   }
 
   private static synchronized void initialise() {

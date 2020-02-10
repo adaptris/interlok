@@ -20,8 +20,10 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -87,6 +89,10 @@ public class While extends ServiceImp {
   @InputFieldDefault("10")
   private Integer maxLoops;
   
+  @AdvancedConfig
+  @InputFieldDefault(value = "continue with no error")
+  private MaxLoopBehaviour onMaxLoops;
+
   public While() {
     this.setMaxLoops(DEFAULT_MAX_LOOPS);
     setThen(new ThenService());
@@ -102,8 +108,7 @@ public class While extends ServiceImp {
         log.trace("Logical 'IF' evaluated to true on WHILE test, running service.");
         getThen().getService().doService(msg);
         loopCount ++;
-        if (exceedsMax(loopCount)) {
-          log.debug("Reached maximum loops({}), breaking.", maxLoops());
+        if (!continueLooping(loopCount, msg)) {
           break;
         }
       }
@@ -178,11 +183,67 @@ public class While extends ServiceImp {
     this.maxLoops = maxLoops;
   }
 
-  protected int maxLoops() {
+  public MaxLoopBehaviour getOnMaxLoops() {
+    return onMaxLoops;
+  }
+
+  /**
+   * Set the behaviour desired when the max-loop condition is hit.
+   * 
+   * @param onMaxLoops the desired behaviour; the default which is to "continue" (effectively {@link OnMaxNoOp} if not explicitly
+   *        configured
+   */
+  public void setOnMaxLoops(MaxLoopBehaviour onMaxLoops) {
+    this.onMaxLoops = onMaxLoops;
+  }
+
+
+  @SuppressWarnings("unchecked")
+  public <T extends While> T withMaxLoops(Integer maxLoops) {
+    setMaxLoops(maxLoops);
+    return (T) this;
+  }
+
+
+  @SuppressWarnings("unchecked")
+  public <T extends While> T withThen(ThenService t) {
+    setThen(t);
+    return (T) this;
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T extends While> T withCondition(Condition c) {
+    setCondition(c);
+    return (T) this;
+  }
+
+
+  @SuppressWarnings("unchecked")
+  public <T extends While> T withOnMaxLoops(MaxLoopBehaviour c) {
+    setOnMaxLoops(c);
+    return (T) this;
+  }
+
+  protected MaxLoopBehaviour onMaxLoops() {
+    return ObjectUtils.defaultIfNull(getOnMaxLoops(), (e) -> {
+      return;
+    });
+  }
+
+  private int maxLoops() {
     return NumberUtils.toIntDefaultIfNull(getMaxLoops(), DEFAULT_MAX_LOOPS);
   }
 
-  protected boolean exceedsMax(int loopCount) {
+  private boolean exceedsMax(int loopCount) {
     return BooleanUtils.and(new boolean[] {maxLoops() > 0, loopCount >= maxLoops()});
+  }
+
+  protected boolean continueLooping(int loopCount, AdaptrisMessage msg) throws Exception {
+    if (exceedsMax(loopCount)) {
+      log.trace("Reached maximum loops({}), triggering on-max behaviour", maxLoops());
+      onMaxLoops().onMax(msg);
+      return false;
+    }
+    return true;
   }
 }

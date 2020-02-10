@@ -26,11 +26,20 @@ import static com.adaptris.core.jms.JmsConstants.JMS_REDELIVERED;
 import static com.adaptris.core.jms.JmsConstants.JMS_REPLY_TO;
 import static com.adaptris.core.jms.JmsConstants.JMS_TIMESTAMP;
 import static com.adaptris.core.jms.JmsConstants.JMS_TYPE;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -49,7 +58,7 @@ import com.adaptris.core.util.LifecycleHelper;
 /**
  */
 @SuppressWarnings("deprecation")
-public abstract class MessageTypeTranslatorCase extends BaseCase {
+public abstract class MessageTypeTranslatorCase {
 
 
   public static final String INTEGER_VALUE = "-1";
@@ -62,36 +71,28 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
   public static final String TEXT2 = "jumps over the lazy dog";
 
   protected transient Log log = LogFactory.getLog(this.getClass());
-
-  public MessageTypeTranslatorCase(String name) {
-    super(name);
-  }
-
-  @Override
-  protected void setUp() throws Exception {
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-  }
+  @Rule
+  public TestName testName = new TestName();
 
   protected abstract MessageTypeTranslatorImp createTranslator() throws Exception;
 
   protected abstract Message createMessage(Session session) throws Exception;
 
   private StandaloneProducer createProducer(MessageTypeTranslator mt) throws Exception {
-    PasProducer producer = new PasProducer(new ConfiguredProduceDestination(getName()));
+    PasProducer producer =
+        new PasProducer(new ConfiguredProduceDestination(testName.getMethodName()));
     producer.setMessageTranslator(mt);
     return new StandaloneProducer(new JmsConnection(), producer);
   }
 
+  @Test
   public void testRoundTrip() throws Exception {
     MessageTypeTranslatorImp translator =
         createTranslator().withMoveJmsHeaders(true).withMetadataFilter(new NoOpMetadataFilter())
             .withReportAllErrors(true);
     StandaloneProducer p1 = createProducer(translator);
     StandaloneProducer p2 = roundTrip(p1);
-    assertRoundtripEquality(p1, p2);
+    BaseCase.assertRoundtripEquality(p1, p2);
   }
 
   protected StandaloneProducer roundTrip(StandaloneProducer src) throws Exception {
@@ -100,6 +101,7 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
     return (StandaloneProducer) m.unmarshal(xml);
   }
 
+  @Test
   public void testSetMetadataFilter() throws Exception {
     MessageTypeTranslatorImp translator = createTranslator();
     assertNull(translator.getMetadataFilter());
@@ -115,6 +117,7 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
     assertEquals(NoOpMetadataFilter.class, translator.metadataFilter().getClass());
   }
 
+  @Test
   public void testSetMoveJmsHeaders() throws Exception {
     MessageTypeTranslatorImp translator = createTranslator();
     assertNull(translator.getMoveJmsHeaders());
@@ -127,6 +130,7 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
     assertFalse(translator.moveJmsHeaders());
   }
 
+  @Test
   public void testSetReportAllErrors() throws Exception {
     MessageTypeTranslatorImp translator = createTranslator();
     assertNull(translator.getReportAllErrors());
@@ -139,7 +143,9 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
     assertFalse(translator.reportAllErrors());
   }
 
+  @Test
   public void testMoveMetadataJmsMessageToAdaptrisMessage() throws Exception {
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     try {
@@ -158,7 +164,9 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
 
   }
 
+  @Test
   public void testMoveMetadataJmsMessageToAdaptrisMessage_RemoveAllFilter() throws Exception {
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     trans.setMetadataFilter(new RemoveAllMetadataFilter());
@@ -179,7 +187,9 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
     }
   }
 
+  @Test
   public void testMoveMetadata_JmsMessageToAdaptrisMessage_WithFilter() throws Exception {
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     RegexMetadataFilter regexp = new RegexMetadataFilter();
@@ -203,7 +213,9 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
 
   }
 
+  @Test
   public void testMoveJmsHeadersJmsMessageToAdaptrisMessage() throws Exception {
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     try {
@@ -233,7 +245,9 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
 
   }
 
+  @Test
   public void testMoveJmsHeadersAdaptrisMessageToJmsMessage() throws Exception {
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator().withMoveJmsHeaders(true);
     try {
@@ -263,7 +277,9 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
 
   }
 
+  @Test
   public void testMoveMetadataAdaptrisMessageToJmsMessage() throws Exception {
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     try {
@@ -284,7 +300,9 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
     }
   }
 
+  @Test
   public void testMoveMetadata_AdaptrisMessageToJmsMessage_RemoveAll() throws Exception {
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans =
         createTranslator().withMetadataFilter(new RemoveAllMetadataFilter());
@@ -308,6 +326,7 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
     }
   }
 
+  @Test
   public void testMoveMetadata_AdaptrisMessageToJmsMessage_WithFilter() throws Exception {
 
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
@@ -333,7 +352,9 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
     }
   }
 
+  @Test
   public void testBug895() throws Exception {
+
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     try {
@@ -357,8 +378,6 @@ public abstract class MessageTypeTranslatorCase extends BaseCase {
 
     }
   }
-
-
 
   public static void assertMetadata(AdaptrisMessage msg) {
     assertMetadata(msg, new MetadataElement(STRING_METADATA, STRING_VALUE));

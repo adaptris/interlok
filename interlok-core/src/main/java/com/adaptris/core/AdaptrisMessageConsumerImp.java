@@ -18,7 +18,7 @@ package com.adaptris.core;
 
 import javax.validation.Valid;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.adaptris.core.util.Args;
 

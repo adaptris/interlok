@@ -17,13 +17,16 @@
 package com.adaptris.core.jdbc;
 
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.util.TimeInterval;
 
 public class JdbcConnectionTest extends DatabaseConnectionCase<JdbcConnection> {
 
-  public JdbcConnectionTest(String arg0) {
-    super(arg0);
+  public JdbcConnectionTest() {
+  }
+
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override

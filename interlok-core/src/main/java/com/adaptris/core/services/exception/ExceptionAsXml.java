@@ -16,13 +16,11 @@
 package com.adaptris.core.services.exception;
 
 import javax.validation.Valid;
-
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
@@ -59,7 +57,7 @@ public class ExceptionAsXml implements ExceptionSerializer {
   private ExceptionReportGenerator exceptionGenerator;
   @InputFieldDefault(value = "UTF-8")
   private String xmlEncoding;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
@@ -101,7 +99,6 @@ public class ExceptionAsXml implements ExceptionSerializer {
       Document newDoc =
           exceptionGenerator().create(exception, msg.getMetadataValue(Workflow.WORKFLOW_ID_KEY),
               (String) msg.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION_CAUSE));
-      documentFactoryBuilder().build().newDocumentBuilder().newDocument();
       Document result = documentMerge().merge(XmlHelper.createDocument(msg, documentFactoryBuilder(), ignoreXmlParseExceptions()),
           newDoc);
       String encoding = XmlHelper.getXmlEncoding(msg, getXmlEncoding());
@@ -191,7 +188,7 @@ public class ExceptionAsXml implements ExceptionSerializer {
   }
   
   private DocumentBuilderFactoryBuilder documentFactoryBuilder() {
-    return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig());
+    return DocumentBuilderFactoryBuilder.newInstanceIfNull(getXmlDocumentFactoryConfig());
   }
 
 

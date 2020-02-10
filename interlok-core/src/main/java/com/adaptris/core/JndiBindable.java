@@ -16,12 +16,15 @@
 
 package com.adaptris.core;
 
+import com.adaptris.annotation.Removal;
+
 /**
  * Interface for objects that can be bound to the internal JNDI context.
  * 
  * @author amcgrath
  * 
  */
+@Deprecated
 public interface JndiBindable {
 
   /**
@@ -33,7 +36,10 @@ public interface JndiBindable {
    * </p>
    * 
    * @return the lookup name.
+   * @deprecated since 3.9.1 with no replacement; the behaviour is ambiguous in some circumstances.
    */
+  @Deprecated
+  @Removal(version = "3.11.0", message = "Deprecated since 3.9.1 with no replacement, since the behaviour is ambiguous")
   String getLookupName();
   
 }

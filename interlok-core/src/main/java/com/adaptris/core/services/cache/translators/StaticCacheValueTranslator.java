@@ -1,7 +1,6 @@
 package com.adaptris.core.services.cache.translators;
 
-import org.hibernate.validator.constraints.NotBlank;
-
+import javax.validation.constraints.NotBlank;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -36,15 +35,7 @@ public class StaticCacheValueTranslator implements CacheValueTranslator<String>,
    */
   @Override
   public String getValueFromMessage(AdaptrisMessage msg) throws CoreException {
-    return msg.resolve(value);
-  }
-
-  /**
-   * @throws UnsupportedOperationException this method is not implemented for this translator
-   */
-  @Override
-  public void addValueToMessage(AdaptrisMessage msg, String value) throws CoreException {
-    throw new UnsupportedOperationException("StaticCacheValueTranslator can't add things to a message.");
+    return msg.resolve(getValue());
   }
 
   /**
@@ -58,6 +49,11 @@ public class StaticCacheValueTranslator implements CacheValueTranslator<String>,
 
   public String getValue() {
     return value;
+  }
+
+  public StaticCacheValueTranslator withValue(String s) {
+    setValue(s);
+    return this;
   }
 
   @Override

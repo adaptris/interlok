@@ -15,12 +15,15 @@
 */
 
 package com.adaptris.core.jdbc;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.DefaultMarshaller;
@@ -37,16 +40,17 @@ public abstract class DatabaseConnectionCase<T extends DatabaseConnection> exten
 
   protected static GuidGenerator nameGen = new GuidGenerator();
 
-  public DatabaseConnectionCase(String arg0) {
-    super(arg0);
+  public DatabaseConnectionCase() {
   }
 
+  @Test
   public void testXmlRoundTrip() throws Exception {
     DatabaseConnection conn1 = configure(createConnection());
     DatabaseConnection conn2 = roundTrip(conn1, DefaultMarshaller.getDefaultMarshaller());
     assertRoundtripEquality(conn1, conn2);
   }
 
+  @Test
   public void testSetConnectionRetryInterval() throws Exception {
     DatabaseConnection con = createConnection();
     assertNull(con.getConnectionRetryInterval());
@@ -60,6 +64,7 @@ public abstract class DatabaseConnectionCase<T extends DatabaseConnection> exten
     assertEquals(60000, con.connectionRetryInterval());
   }
 
+  @Test
   public void testSetConnectionAttempts() throws Exception {
     DatabaseConnection con = createConnection();
     assertNull(con.getConnectionAttempts());
@@ -72,12 +77,14 @@ public abstract class DatabaseConnectionCase<T extends DatabaseConnection> exten
     assertEquals(-1, con.connectionAttempts());
   }
 
+  @Test
   public void testEquality() throws Exception {
     DatabaseConnection conn1 = configure(createConnection());
     DatabaseConnection conn2 = roundTrip(conn1, DefaultMarshaller.getDefaultMarshaller());
-    assertEquals(conn1, conn2);
+    assertRoundtripEquality(conn1, conn2);
   }
 
+  @Test
   public void testInvalidSelectStatement() throws Exception {
     DatabaseConnection conn = configure(createConnection());
     conn.setTestStatement("What Ho");
@@ -92,7 +99,7 @@ public abstract class DatabaseConnectionCase<T extends DatabaseConnection> exten
     }
   }
 
-
+  @Test
   public void testConnectionWhenNotInitialised() throws Exception {
     DatabaseConnection con = configure(createConnection());
     try {
@@ -104,6 +111,7 @@ public abstract class DatabaseConnectionCase<T extends DatabaseConnection> exten
     }
   }
 
+  @Test
   public void testConnectWithoutDebugMode() throws Exception {
     DatabaseConnection conn = configure(createConnection());
     conn.setTestStatement(DEFAULT_TEST_STATEMENT);
@@ -112,6 +120,7 @@ public abstract class DatabaseConnectionCase<T extends DatabaseConnection> exten
     conn.connect();
   }
 
+  @Test
   public void testConnectWithDebugMode() throws Exception {
     DatabaseConnection conn = configure(createConnection());
     conn.setDebugMode(true);
@@ -120,6 +129,7 @@ public abstract class DatabaseConnectionCase<T extends DatabaseConnection> exten
     conn.connect();
   }
 
+  @Test
   public void testConnectWithAlwaysValidate() throws Exception {
     DatabaseConnection conn = configure(createConnection());
     conn.setAlwaysValidateConnection(true);
@@ -128,6 +138,7 @@ public abstract class DatabaseConnectionCase<T extends DatabaseConnection> exten
     conn.connect();
   }
 
+  @Test
   public void testConnectWithoutAlwaysValidate() throws Exception {
     DatabaseConnection conn = configure(createConnection());
     conn.setAlwaysValidateConnection(false);
@@ -136,6 +147,7 @@ public abstract class DatabaseConnectionCase<T extends DatabaseConnection> exten
     conn.connect();
   }
 
+  @Test
   public void testConnectWithDebugModeAndAlwaysValidate() throws Exception {
     DatabaseConnection conn = configure(createConnection());
     conn.setDebugMode(true);
@@ -145,12 +157,14 @@ public abstract class DatabaseConnectionCase<T extends DatabaseConnection> exten
     conn.connect();
   }
 
+  @Test
   public void testConnectionWhenInitialised() throws Exception {
     DatabaseConnection con = configure(createConnection());
     LifecycleHelper.init(con);
     con.connect();
   }
 
+  @Test
   public void testConnectionWhenStarted() throws Exception {
     DatabaseConnection con = configure(createConnection());
     LifecycleHelper.init(con);
@@ -158,6 +172,7 @@ public abstract class DatabaseConnectionCase<T extends DatabaseConnection> exten
     con.connect();
   }
 
+  @Test
   public void testConnectWithNullProperties() throws Exception {
     DatabaseConnection con = configure(createConnection());
     con.setConnectionProperties(null);
@@ -166,6 +181,7 @@ public abstract class DatabaseConnectionCase<T extends DatabaseConnection> exten
     con.connect();
   }
 
+  @Test
   public void testConnectWithProperties() throws Exception {
     DatabaseConnection con = configure(createConnection());
     con.setConnectionProperties(new KeyValuePairSet());
@@ -174,6 +190,7 @@ public abstract class DatabaseConnectionCase<T extends DatabaseConnection> exten
     con.connect();
   }
 
+  @Test
   public void testConnectionWhenStopped() throws Exception {
     DatabaseConnection con = configure(createConnection());
     LifecycleHelper.init(con);
@@ -188,6 +205,7 @@ public abstract class DatabaseConnectionCase<T extends DatabaseConnection> exten
     }
   }
 
+  @Test
   public void testConnectionWhenClosed() throws Exception {
     DatabaseConnection con = configure(createConnection());
     LifecycleHelper.init(con);
@@ -203,6 +221,7 @@ public abstract class DatabaseConnectionCase<T extends DatabaseConnection> exten
     }
   }
 
+  @Test
   public void testConnectionDataSource() throws Exception {
     DatabaseConnection con = configure(createConnection());
     try {
@@ -217,6 +236,7 @@ public abstract class DatabaseConnectionCase<T extends DatabaseConnection> exten
     }
   }
 
+  // @Test
 //  public void testConnectionDataSource_NotYetInitialised() throws Exception {
 //    DatabaseConnection con = configure(createConnection());
 //    try {

@@ -2,11 +2,7 @@ package com.adaptris.core.jms;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
-
-import org.apache.commons.lang.math.NumberUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import org.apache.commons.lang3.math.NumberUtils;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.metadata.MetadataFilter;
@@ -25,8 +21,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("jms-integer-metadata-converter")
 @DisplayOrder(order = {"metadataFilter"})
 public class IntegerMetadataConverter extends MetadataConverter {
-
-  private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   /** @see MetadataConverter#MetadataConverter() */
   public IntegerMetadataConverter() {

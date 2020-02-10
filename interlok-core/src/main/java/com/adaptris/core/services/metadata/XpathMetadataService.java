@@ -20,13 +20,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;
-
 import org.w3c.dom.Document;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -70,10 +67,10 @@ public class XpathMetadataService extends MetadataServiceImpl {
   @Valid
   @XStreamImplicit(itemFieldName = "xpath-query")
   private List<XpathQuery> xpathQueries;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private KeyValuePairSet namespaceContext;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
@@ -166,6 +163,6 @@ public class XpathMetadataService extends MetadataServiceImpl {
   }
 
   DocumentBuilderFactoryBuilder documentFactoryBuilder() {
-    return DocumentBuilderFactoryBuilder.newInstance(getXmlDocumentFactoryConfig());
+    return DocumentBuilderFactoryBuilder.newInstanceIfNull(getXmlDocumentFactoryConfig());
   }
 }

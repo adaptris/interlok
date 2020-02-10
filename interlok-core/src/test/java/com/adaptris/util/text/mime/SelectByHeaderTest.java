@@ -19,13 +19,10 @@ import static com.adaptris.util.text.mime.PartIteratorCase.createMultipart;
 import static com.adaptris.util.text.mime.PartIteratorCase.generateByteArrayInput;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-
 import java.util.List;
-
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,14 +37,6 @@ public class SelectByHeaderTest {
   public void tearDown() throws Exception {
   }
 
-  @Test
-  @SuppressWarnings("deprecation")
-  public void testSelectMultiPartInput() throws Exception {
-    MultiPartInput input = new MultiPartInput(generateByteArrayInput(false), false);
-    SelectByHeader selector = new SelectByHeader("Content-Id", "payload1");
-    MimeBodyPart part = selector.select(input);
-    assertNull(part);
-  }
 
   @Test(expected = MessagingException.class)
   public void testSelectMimeMultipart() throws Exception {

@@ -68,7 +68,9 @@ public interface AdaptrisMessage extends InterlokMessage {
    *             string; since 2.9.3
    */
   @Deprecated
-  void setStringPayload(String payload);
+  default void setStringPayload(String payload) {
+    setContent(payload, null);
+  }
 
   /**
    * <p>
@@ -82,7 +84,9 @@ public interface AdaptrisMessage extends InterlokMessage {
    * @deprecated since 3.0.6 Use {@link #setContent(String, String)}
    */
   @Deprecated
-  void setStringPayload(String payload, String charEncoding);
+  default void setStringPayload(String payload, String charEncoding) {
+    setContent(payload, null);
+  }
 
   /**
    * <p>
@@ -97,7 +101,9 @@ public interface AdaptrisMessage extends InterlokMessage {
    * @deprecated since 3.0.6 use {{@link #getContent()} instead.
    */
   @Deprecated
-  String getStringPayload();
+  default String getStringPayload() {
+    return getContent();
+  }
 
 
   /**
@@ -111,7 +117,9 @@ public interface AdaptrisMessage extends InterlokMessage {
    * @deprecated since 3.0.6 use {{@link #setContentEncoding(String)} instead.
    */
   @Deprecated
-  void setCharEncoding(String charEncoding);
+  default void setCharEncoding(String charEncoding) {
+    setContentEncoding(charEncoding);
+  }
 
   /**
    * <p>
@@ -124,7 +132,9 @@ public interface AdaptrisMessage extends InterlokMessage {
    * @deprecated since 3.0.6 use {{@link #getContentEncoding()} instead.
    */
   @Deprecated
-  String getCharEncoding();
+  default String getCharEncoding() {
+    return getContentEncoding();
+  }
 
   /**
    * <p>
@@ -164,7 +174,9 @@ public interface AdaptrisMessage extends InterlokMessage {
    * @deprecated since 3.0.6 use {@link #headersContainsKey(String)} instead.
    */
   @Deprecated
-  boolean containsKey(String key);
+  default boolean containsKey(String key) {
+    return headersContainsKey(key);
+  }
 
   /**
    * <p>
@@ -287,7 +299,9 @@ public interface AdaptrisMessage extends InterlokMessage {
    * @deprecated since 3.0.6 use {@link #addObjectHeader(Object, Object)} instead.
    */
   @Deprecated
-  void addObjectMetadata(String key, Object object);
+  default void addObjectMetadata(String key, Object object) {
+    addObjectHeader(key, object);
+  }
 
   /**
    * <p>
@@ -298,7 +312,9 @@ public interface AdaptrisMessage extends InterlokMessage {
    * @deprecated since 3.0.6 use {@link #getObjectHeaders()} instead.
    */
   @Deprecated
-  Map getObjectMetadata();
+  default Map getObjectMetadata() {
+    return getObjectHeaders();
+  }
 
   /**
    * <p>

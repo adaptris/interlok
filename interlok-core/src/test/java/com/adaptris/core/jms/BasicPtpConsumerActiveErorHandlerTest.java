@@ -17,7 +17,6 @@
 package com.adaptris.core.jms;
 
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
@@ -31,12 +30,9 @@ public class BasicPtpConsumerActiveErorHandlerTest extends JmsConsumerCase {
       + "\nnon-persistent message with a TTL of 5000ms; if this fails, then the connection"
       + "\nis deemed to have failed and the connection restarted." + "\n-->\n";
 
-  public BasicPtpConsumerActiveErorHandlerTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override

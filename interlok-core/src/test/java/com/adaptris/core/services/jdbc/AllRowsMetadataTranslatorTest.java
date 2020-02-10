@@ -16,10 +16,12 @@
 
 package com.adaptris.core.services.jdbc;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-
+import org.apache.commons.lang3.StringUtils;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 
 public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
@@ -31,15 +33,12 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
   private static final String ALL_ROWS_QUERY_NAMED_PARAMS =
       "SELECT adapter_version, message_translator_type FROM adapter_type_version " + "WHERE adapter_version!=#adapterVersion";
 
-  public AllRowsMetadataTranslatorTest(String arg0) {
-    super(arg0);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testJdbcDataQueryService() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -64,7 +63,8 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
 
     assertFalse(msg.headersContainsKey(JdbcDataQueryService.class.getCanonicalName()));
   }
-  
+
+  @Test
   public void testJdbcDataQueryService_Aliases() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -93,6 +93,7 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
     assertEquals("10", msg.getMetadataValue("TotalRows"));
   }
 
+  @Test
   public void testJdbcDataQueryServiceWithResultCount() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -111,7 +112,8 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
     assertTrue(msg.headersContainsKey("resultCount"));
     assertEquals("10", msg.getMetadataValue("resultCount"));
   }
-  
+
+  @Test
   public void testJdbcDataQueryServiceWithNamedParams() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -143,6 +145,7 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
     assertFalse(msg.headersContainsKey(JdbcDataQueryService.class.getCanonicalName()));
   }
 
+  @Test
   public void testServiceWithStyleUpperCase() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -168,6 +171,7 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
 
   }
 
+  @Test
   public void testServiceWithStyleLowerCase() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -194,6 +198,7 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
 
   }
 
+  @Test
   public void testServiceWithStyleCapitalize() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);

@@ -17,7 +17,7 @@
 package com.adaptris.core.common;
 
 import static com.adaptris.core.common.MetadataDataOutputParameter.DEFAULT_METADATA_KEY;
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
 import java.io.IOException;
 import java.io.InputStreamReader;

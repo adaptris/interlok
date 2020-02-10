@@ -16,8 +16,12 @@
 
 package com.adaptris.core.transform;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Arrays;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
@@ -41,14 +45,12 @@ public class XmlValidationServiceTest extends TransformServiceExample {
 
   public static final String KEY_INPUT_FILE = "XmlValidationServiceTest.input.xml";
 
-  public XmlValidationServiceTest(String arg0) {
-    super(arg0);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testSchemaValidator_SetUrl() {
     XmlSchemaValidator v = new XmlSchemaValidator();
     assertNull(v.getSchema());
@@ -59,6 +61,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
 
   }
 
+  @Test
   public void testSchemaValidator_SetMetadataKey() {
     XmlSchemaValidator v = new XmlSchemaValidator();
     assertNull(v.getSchemaMetadataKey());
@@ -68,6 +71,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     assertNull(v.getSchemaMetadataKey());
   }
 
+  @Test
   public void testSchemaValidator_InitDefault() {
     XmlValidationService service = new XmlValidationService(new XmlSchemaValidator());
     try {
@@ -81,6 +85,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testSchemaValidator_ValidXmlConfiguredSchemaOnly() throws Exception {
     String schemaUrl = PROPERTIES.getProperty(KEY_WILL_VALIDATE_SCHEMA);
     // if (!ExternalResourcesHelper.isExternalServerAvailable(new URLString(schemaUrl))) {
@@ -93,6 +98,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     execute(service, msg);
   }
 
+  @Test
   public void testSchemaValidator_ValidSchema_MessageFails() throws Exception {
     String schemaUrl = PROPERTIES.getProperty(KEY_WILL_NOT_VALIDATE);
     // if (!ExternalResourcesHelper.isExternalServerAvailable(new URLString(schemaUrl))) {
@@ -111,6 +117,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testSchemaValidator_MetadataSchemaKeyDoesNotExist() throws Exception {
     String schemaUrl = PROPERTIES.getProperty(KEY_WILL_VALIDATE_SCHEMA);
     // if (!ExternalResourcesHelper.isExternalServerAvailable(new URLString(schemaUrl))) {
@@ -127,6 +134,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testSchemaValidator_MetadataSchemaKeyIsEmpty() throws Exception {
     String schemaUrl = PROPERTIES.getProperty(KEY_WILL_VALIDATE_SCHEMA);
     // if (!ExternalResourcesHelper.isExternalServerAvailable(new URLString(schemaUrl))) {
@@ -145,6 +153,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testValidXmlSchemaInMetadataOnly() throws Exception {
     String schemaUrl = PROPERTIES.getProperty(KEY_WILL_VALIDATE_SCHEMA);
     // if (!ExternalResourcesHelper.isExternalServerAvailable(new URLString(schemaUrl))) {
@@ -159,6 +168,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     execute(service, msg);
   }
 
+  @Test
   public void testValidXmlSchema_Expression() throws Exception {
     String schemaUrl = PROPERTIES.getProperty(KEY_WILL_VALIDATE_SCHEMA);
     // if (!ExternalResourcesHelper.isExternalServerAvailable(new URLString(schemaUrl))) {
@@ -180,6 +190,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testValidXmlSchemaInMetadataAndConfiguredSchema() throws Exception {
     String schemaUrl = PROPERTIES.getProperty(KEY_WILL_VALIDATE_SCHEMA);
     String schemaUrl2 = PROPERTIES.getProperty(KEY_WILL_NOT_VALIDATE);
@@ -199,6 +210,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     execute(service, msg);
   }
 
+  @Test
   public void testSchemaValidator_InvalidXml() throws Exception {
     String schemaUrl = PROPERTIES.getProperty(KEY_WILL_VALIDATE_SCHEMA);
     // if (!ExternalResourcesHelper.isExternalServerAvailable(new URLString(schemaUrl))) {
@@ -218,6 +230,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testSchemaValidator_InvalidXmlSchemaInMetadata() throws Exception {
     String schemaUrl = PROPERTIES.getProperty(KEY_INVALID_SCHEMA_URL);
     // if (!ExternalResourcesHelper.isExternalServerAvailable(new URLString(schemaUrl))) {
@@ -239,6 +252,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testSimpleValidator_IsXml() throws Exception {
     XmlValidationService service = new XmlValidationService();
     XmlBasicValidator validator = new XmlBasicValidator();
@@ -247,6 +261,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     execute(service, msg);
   }
 
+  @Test
   public void testSimpleValidator_IsNotXml() throws Exception {
     XmlBasicValidator validator = new XmlBasicValidator();
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("BLABLAH");
@@ -260,6 +275,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testSimpleValidator_IsInvalidXml_AmpersandNoEntity() throws Exception {
     XmlBasicValidator validator = new XmlBasicValidator();
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("<?xml version=\"1.0\"?><Root>&</Root>");
@@ -273,6 +289,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     }
   }
 
+  @Test
   public void testSimpleValidator_IsInvalidXml_LessThan() throws Exception {
     XmlBasicValidator validator = new XmlBasicValidator(new DocumentBuilderFactoryBuilder());
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("<?xml version=\"1.0\"?><Root><</Root>");

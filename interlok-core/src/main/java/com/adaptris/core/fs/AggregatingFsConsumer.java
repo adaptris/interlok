@@ -12,11 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.fs;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileFilter;
@@ -26,9 +27,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
 import javax.validation.Valid;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageEncoder;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -68,10 +72,11 @@ public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFs
   private static final String OBJ_METADATA_KEY_FILE = AggregatingFsConsumer.class.getCanonicalName() + ".file";
   private static final String OBJ_METADATA_KEY_FILENAME = AggregatingFsConsumer.class.getCanonicalName() + ".filename";
 
+  @InputFieldHint(ofType = "java.io.FileFilter")
   private String fileFilterImp;
   @AdvancedConfig
   private Boolean deleteAggregatedFiles;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String wipSuffix;
   @Valid
   @AdvancedConfig
@@ -167,7 +172,7 @@ public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFs
   }
 
   private AdaptrisMessage read(File src, AdaptrisMessageFactory factory) throws ServiceException {
-    AdaptrisMessage msg = null;    
+    AdaptrisMessage msg = null;
     try {
       log.trace("Reading " + src.getCanonicalPath());
       File wipFile = FsHelper.renameFile(src, wipSuffix(), fsWorker);
@@ -203,7 +208,7 @@ public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFs
   }
 
   private FileFilter createFileFilter(String filterExpression) throws Exception {
-    Class[] paramTypes =
+    Class<?>[] paramTypes =
     {
       filterExpression.getClass()
     };
@@ -212,8 +217,8 @@ public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFs
       filterExpression
     };
 
-    Class c = Class.forName(fileFilterImp());
-    Constructor cnst = c.getDeclaredConstructor(paramTypes);
+    Class<?> c = Class.forName(fileFilterImp());
+    Constructor<?> cnst = c.getDeclaredConstructor(paramTypes);
     return (FileFilter) cnst.newInstance(args);
   }
 

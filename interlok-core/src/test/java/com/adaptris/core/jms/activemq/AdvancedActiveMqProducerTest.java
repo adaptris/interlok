@@ -17,14 +17,14 @@
 package com.adaptris.core.jms.activemq;
 
 import static com.adaptris.core.jms.activemq.AdvancedActiveMqImplementationTest.createImpl;
-
 import org.apache.activemq.ActiveMQPrefetchPolicy;
 import org.apache.activemq.RedeliveryPolicy;
-
+import org.junit.Test;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
+import com.adaptris.core.jms.JmsConfig;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.PtpConsumer;
 import com.adaptris.core.jms.PtpProducer;
@@ -34,21 +34,24 @@ import com.adaptris.util.KeyValuePair;
 
 public class AdvancedActiveMqProducerTest extends BasicActiveMqProducerTest {
 
-  public AdvancedActiveMqProducerTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-  }
 
   @Override
   protected String createBaseFileName(Object object) {
     return ((StandaloneProducer) object).getProducer().getClass().getName() + "-AdvancedActiveMQ";
   }
 
+  @Test
   public void testQueueProduceAndConsumeWithRedeliveryPolicy() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();
@@ -71,7 +74,13 @@ public class AdvancedActiveMqProducerTest extends BasicActiveMqProducerTest {
     }
   }
 
+  @Test
   public void testQueueProduceAndConsumeWithPrefetch() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();

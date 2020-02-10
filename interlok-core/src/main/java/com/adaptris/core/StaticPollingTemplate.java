@@ -15,7 +15,7 @@
 */
 package com.adaptris.core;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import com.adaptris.annotation.MarshallingCDATA;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 

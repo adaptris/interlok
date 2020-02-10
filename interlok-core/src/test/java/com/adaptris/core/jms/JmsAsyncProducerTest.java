@@ -1,20 +1,20 @@
 package com.adaptris.core.jms;
 
-import static org.mockito.Matchers.any;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import javax.jms.CompletionListener;
-import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageProducer;
-
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
@@ -43,6 +43,7 @@ public class JmsAsyncProducerTest extends JmsProducerExample {
   @Mock private StandardProcessingExceptionHandler mockExceptionHandler;
   
   
+  @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
     
@@ -69,14 +70,16 @@ public class JmsAsyncProducerTest extends JmsProducerExample {
     .thenReturn(1l);
   
   }
-  
-  public JmsAsyncProducerTest(String name) {
-    super(name);
+
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
-  
+
+  @Test
   public void testSendFails() throws Exception {
     doThrow(new JMSException("expected"))
-      .when(mockMessageProducer).send(any(Destination.class), any(Message.class), any(CompletionListener.class));
+      .when(mockMessageProducer).send(any(), eq(mockMessage), any(CompletionListener.class));
       
     try {
       producer.produce(adaptrisMessage, mockJmsDestination);
@@ -85,20 +88,23 @@ public class JmsAsyncProducerTest extends JmsProducerExample {
       // expected;
     }
   }
-  
+
+  @Test
   public void testSendPerMessageProperties() throws Exception {
     producer.produce(adaptrisMessage, mockJmsDestination);
     
-    verify(mockMessageProducer).send(any(Destination.class), any(Message.class), any(int.class), any(int.class), any(long.class), any(CompletionListener.class));
+    verify(mockMessageProducer).send(any(), eq(mockMessage), any(int.class), any(int.class), any(long.class), any(CompletionListener.class));
   }
-  
+
+  @Test
   public void testSendNotPerMessageProperties() throws Exception {
     producer.setPerMessageProperties(false);
     producer.produce(adaptrisMessage, mockJmsDestination);
     
-    verify(mockMessageProducer).send(any(Destination.class), any(Message.class), any(CompletionListener.class));
+    verify(mockMessageProducer).send(any(), eq(mockMessage), any(JmsAsyncProducer.class));
   }
-  
+
+  @Test
   public void testCaptureOutgoingMessageProperties() throws Exception {
     producer.setCaptureOutgoingMessageDetails(true);
     producer.produce(adaptrisMessage, mockJmsDestination);
@@ -108,7 +114,8 @@ public class JmsAsyncProducerTest extends JmsProducerExample {
     verify(mockMessage).getJMSDeliveryMode();
     verify(mockMessage).getJMSPriority();
   }
-  
+
+  @Test
   public void testNotCaptureOutgoingMessageProperties() throws Exception {
     producer.setCaptureOutgoingMessageDetails(false);
     producer.produce(adaptrisMessage, mockJmsDestination);
@@ -118,7 +125,8 @@ public class JmsAsyncProducerTest extends JmsProducerExample {
     verify(mockMessage, times(0)).getJMSDeliveryMode();
     verify(mockMessage, times(0)).getJMSPriority();
   }
-  
+
+  @Test
   public void testInitWithoutExceptionHandlerFails() throws Exception {
     producer.setAsyncMessageErrorHandler(null);
     
@@ -129,7 +137,8 @@ public class JmsAsyncProducerTest extends JmsProducerExample {
       //expected.
     }
   }
-  
+
+  @Test
   public void testInitWithExceptionHandler() throws Exception {    
     try {
       LifecycleHelper.init(producer);
@@ -137,20 +146,28 @@ public class JmsAsyncProducerTest extends JmsProducerExample {
       fail("Shouldn't throw core exception with a configured exception handler.");
     }
   }
-  
+
+  @Test
   public void testExceptionHandler() throws Exception {
     producer.onException(mockMessage, new Exception());
     
-    verify(mockExceptionHandler).handleProcessingException(any(AdaptrisMessage.class));
+    verify(mockExceptionHandler).handleProcessingException(any());
   }
-  
+
+  @Test
   public void testSuccessHandler() throws Exception {
     producer.onCompletion(mockMessage);
     
     verify(mockExceptionHandler, times(0)).handleProcessingException(any(AdaptrisMessage.class));
   }
-  
+
+  @Test
   public void testEmbeddedSuccessHandler() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedArtemis broker = new EmbeddedArtemis();
     JmsAsyncProducer producer = new JmsAsyncProducer();
     producer.setAsyncMessageErrorHandler(mockExceptionHandler);
@@ -176,8 +193,14 @@ public class JmsAsyncProducerTest extends JmsProducerExample {
     
     verify(mockExceptionHandler, times(0)).handleProcessingException(any(AdaptrisMessage.class));
   }
-  
+
+  @Test
   public void testEmbeddedJmsException() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedArtemis broker = new EmbeddedArtemis();
     JmsAsyncProducer producer = new JmsAsyncProducer();
     producer.setAsyncMessageErrorHandler(mockExceptionHandler);

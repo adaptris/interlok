@@ -17,7 +17,6 @@
 package com.adaptris.core;
 
 import java.util.UUID;
-
 import com.adaptris.core.services.LogMessageService;
 import com.adaptris.core.services.metadata.AddMetadataService;
 
@@ -35,15 +34,9 @@ public abstract class ExampleChannelCase extends ExampleConfigCase {
   public static final String BASE_DIR_KEY = "ChannelCase.baseDir";
 
   public ExampleChannelCase() {
-    super();
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
-  }
-
-  public ExampleChannelCase(String name) {
-    this();
-    setName(name);
   }
 
 

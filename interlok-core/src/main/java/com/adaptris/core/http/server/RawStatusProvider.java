@@ -17,7 +17,6 @@
 package com.adaptris.core.http.server;
 
 import java.net.HttpURLConnection;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -35,7 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class RawStatusProvider implements HttpStatusProvider {
 
   private int code;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String text;
 
   public RawStatusProvider() {

@@ -16,18 +16,14 @@
 
 package com.adaptris.core;
 
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
-
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.metadata.ElementFormatter;
 import com.adaptris.core.metadata.ElementValueFormatter;

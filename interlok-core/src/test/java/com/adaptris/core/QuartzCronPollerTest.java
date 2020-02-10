@@ -15,11 +15,12 @@
 */
 
 package com.adaptris.core;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import java.util.Iterator;
-
+import org.junit.Test;
 import org.quartz.Scheduler;
-
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
 
@@ -27,14 +28,13 @@ public class QuartzCronPollerTest extends BaseCase {
 
   private static final String PAYLOAD = "The Quick Brown Fox Jumps Over The Lazy Dog";
 
-  public QuartzCronPollerTest(java.lang.String testName) {
-    super(testName);
-  }
-
   @Override
-  protected void tearDown() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+
+  @Test
   public void testSchedulerGroup() throws Exception {
     QuartzCronPoller p1 = new QuartzCronPoller();
     p1.setCronExpression("*/5 * * * * ?");
@@ -46,7 +46,7 @@ public class QuartzCronPollerTest extends BaseCase {
     assertEquals("", p1.getSchedulerGroup());
   }
 
-
+  @Test
   public void testGeneratedSchedulerGroup_hasId() throws Exception {
     QuartzCronPoller p1 = new QuartzCronPoller();
     p1.setCronExpression("*/5 * * * * ?");
@@ -64,6 +64,7 @@ public class QuartzCronPollerTest extends BaseCase {
     }
   }
 
+  @Test
   public void testGeneratedSchedulerGroup_NoGroup() throws Exception {
     QuartzCronPoller p1 = new QuartzCronPoller();
     p1.setCronExpression("*/5 * * * * ?");
@@ -80,6 +81,7 @@ public class QuartzCronPollerTest extends BaseCase {
     }
   }
 
+  @Test
   public void testQuartzId() throws Exception {
     QuartzCronPoller p1 = new QuartzCronPoller();
     p1.setCronExpression("*/5 * * * * ?");
@@ -91,6 +93,7 @@ public class QuartzCronPollerTest extends BaseCase {
     assertEquals("", p1.getQuartzId());
   }
 
+  @Test
   public void testGeneratedQuartzId_hasQuartzId() throws Exception {
     QuartzCronPoller p1 = new QuartzCronPoller();
     p1.setCronExpression("*/5 * * * * ?");
@@ -108,6 +111,7 @@ public class QuartzCronPollerTest extends BaseCase {
     }
   }
 
+  @Test
   public void testGeneratedQuartzId_NoDestination() throws Exception {
     QuartzCronPoller p1 = new QuartzCronPoller();
     p1.setCronExpression("*/5 * * * * ?");
@@ -124,6 +128,7 @@ public class QuartzCronPollerTest extends BaseCase {
     }
   }
 
+  @Test
   public void testGeneratedQuartzId_HasDestination() throws Exception {
     QuartzCronPoller p1 = new QuartzCronPoller();
     p1.setCronExpression("*/5 * * * * ?");
@@ -140,6 +145,7 @@ public class QuartzCronPollerTest extends BaseCase {
     }
   }
 
+  @Test
   public void testBug917() throws Exception {
     QuartzCronPoller p1 = new QuartzCronPoller();
     p1.setCronExpression("*/5 * * * * ?");
@@ -156,6 +162,7 @@ public class QuartzCronPollerTest extends BaseCase {
     }
   }
 
+  @Test
   public void testWithMessages() throws Exception {
 
     MockMessageProducer mock1 = new MockMessageProducer();
@@ -182,6 +189,7 @@ public class QuartzCronPollerTest extends BaseCase {
     assertEquals("No. Produced messages = 0", 0, mock2.getMessages().size());
   }
 
+  @Test
   public void testWithMessages_StandardThreadPool() throws Exception {
 
     MockMessageProducer mock1 = new MockMessageProducer();

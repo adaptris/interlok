@@ -16,14 +16,11 @@
 
 package com.adaptris.util;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import java.security.SecureRandom;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.util.text.Conversion;
@@ -63,7 +60,7 @@ public class PseudoRandomIdGenerator implements IdGenerator {
 
   @InputFieldDefault(value = "")
   private String prefix;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "true")
   private Boolean useSecureRandom;
   private final static SecureRandom SECURE_RAND = new SecureRandom();
@@ -89,6 +86,7 @@ public class PseudoRandomIdGenerator implements IdGenerator {
    *
    *
    */
+  @Override
   public String create(Object msg) {
     byte[] bytes = new byte[8];
     random().nextBytes(bytes);

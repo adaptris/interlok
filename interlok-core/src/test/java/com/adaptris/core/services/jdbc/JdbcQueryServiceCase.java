@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services.jdbc;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -28,7 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -163,9 +165,6 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
 
   }
 
-  public JdbcQueryServiceCase(String arg0) {
-    super(arg0);
-  }
 
   protected abstract ResultSetTranslator createTranslatorForConfig();
 
@@ -242,6 +241,7 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
     return name;
   }
 
+  @Test
   public void testBug1762() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -263,6 +263,7 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
     }
   }
 
+  @Test
   public void testInit_NoCreator() throws Exception {
     createDatabase();
     JdbcDataQueryService s = createMessageIdService();
@@ -278,7 +279,7 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
   }
 
 
-  @Override
+  @Test
   public void testBackReferences() throws Exception {
     this.testBackReferences(new JdbcDataQueryService(new ConfiguredSQLStatement("INSERT INTO MYTABLE ('ABC');")));
   }
@@ -308,7 +309,7 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
     }
   }
 
-  protected void populateDatabase(List<AdapterTypeVersion> list, boolean doLogging) throws Exception {
+  protected void populateDatabase(List<AdapterTypeVersion> list, boolean versionIsXml, boolean doLogging) throws Exception {
     Connection c = null;
     PreparedStatement insert = null;
     PreparedStatement select = null;
@@ -323,7 +324,11 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
       for (AdapterTypeVersion atv : list) {
         insert.clearParameters();
         insert.setString(1, atv.getUniqueId());
-        insert.setString(2, atv.getVersion());
+        if (versionIsXml) {
+          insert.setString(2, "<version>" + atv.getVersion() + "</version>");
+        } else {
+          insert.setString(2, atv.getVersion());
+        }
         insert.setString(3, atv.getTranslatorType());
         insert.setTimestamp(4, new Timestamp(atv.getDate().getTime()));
         insert.setInt(5, atv.getCounter());
@@ -358,7 +363,11 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
       JdbcUtil.closeQuietly(select);
       JdbcUtil.closeQuietly(c);
     }
+  }
 
+
+  protected void populateDatabase(List<AdapterTypeVersion> list, boolean doLogging) throws Exception {
+    populateDatabase(list, false, doLogging);
   }
 
   protected static List<AdapterTypeVersion> generate(int max) throws Exception {

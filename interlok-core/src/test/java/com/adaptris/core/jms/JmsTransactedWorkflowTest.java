@@ -16,14 +16,15 @@
 
 package com.adaptris.core.jms;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.junit.Test;
 import com.adaptris.core.Channel;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
@@ -48,10 +49,12 @@ public class JmsTransactedWorkflowTest extends ExampleWorkflowCase {
 
   private static Log logR = LogFactory.getLog(JmsTransactedWorkflowTest.class);
 
-  public JmsTransactedWorkflowTest(String arg0) {
-    super(arg0);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testSetStrict() throws Exception {
     JmsTransactedWorkflow workflow = new JmsTransactedWorkflow();
     assertEquals(true, workflow.isStrict());
@@ -66,7 +69,13 @@ public class JmsTransactedWorkflowTest extends ExampleWorkflowCase {
     assertEquals(Boolean.TRUE, workflow.getStrict());
   }
 
+  @Test
   public void testInit_UnsupportedConsumer() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     Channel channel = createStartableChannel(broker);
     JmsTransactedWorkflow workflow = (JmsTransactedWorkflow) channel.getWorkflowList().get(0);
@@ -84,17 +93,25 @@ public class JmsTransactedWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testSetJmsPollingConsumer() throws Exception {
     JmsTransactedWorkflow workflow = new JmsTransactedWorkflow();
     workflow.setConsumer(new PtpPollingConsumer(new ConfiguredConsumeDestination("queue")));
   }
 
+  @Test
   public void testSetJmsConsumer() throws Exception {
     JmsTransactedWorkflow workflow = new JmsTransactedWorkflow();
     workflow.setConsumer(new PtpConsumer(new ConfiguredConsumeDestination("queue")));
   }
 
+  @Test
   public void testInit_UnsupportedProduceExceptionHandler() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     Channel channel = createStartableChannel(broker);
     JmsTransactedWorkflow workflow = (JmsTransactedWorkflow) channel.getWorkflowList().get(0);
@@ -113,7 +130,13 @@ public class JmsTransactedWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testInit() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     Channel channel = createStartableChannel(broker);
     try {
@@ -126,7 +149,13 @@ public class JmsTransactedWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testStart() throws Exception {
+    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
+    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    if (!JmsConfig.jmsTestsEnabled()) {
+      return;
+    }
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     Channel channel = createStartableChannel(broker);
     try {

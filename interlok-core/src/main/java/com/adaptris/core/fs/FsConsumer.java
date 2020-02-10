@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.fs;
 
@@ -20,9 +20,9 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
+import javax.validation.constraints.NotBlank;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.lang3.BooleanUtils;
-import org.hibernate.validator.constraints.NotBlank;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -86,23 +86,23 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("fs-consumer")
 @AdapterComponent
 @ComponentProfile(summary = "Pickup messages from the filesystem", tag = "consumer,fs,filesystem",
-    metadata =
-    {
-        CoreConstants.ORIGINAL_NAME_KEY, CoreConstants.FS_FILE_SIZE,
-        CoreConstants.FILE_LAST_MODIFIED_KEY, CoreConstants.FS_CONSUME_DIRECTORY,
-        CoreConstants.MESSAGE_CONSUME_LOCATION, CoreConstants.FS_CONSUME_PARENT_DIR
-    }, recommended =
-    {
-        NullConnection.class
-    })
+metadata =
+{
+    CoreConstants.ORIGINAL_NAME_KEY, CoreConstants.FS_FILE_SIZE,
+    CoreConstants.FILE_LAST_MODIFIED_KEY, CoreConstants.FS_CONSUME_DIRECTORY,
+    CoreConstants.MESSAGE_CONSUME_LOCATION, CoreConstants.FS_CONSUME_PARENT_DIR
+}, recommended =
+  {
+      NullConnection.class
+  })
 @DisplayOrder(order = {"poller", "createDirs", "fileFilterImp", "fileSorter", "wipSuffix", "resetWipFiles"})
 public class FsConsumer extends FsConsumerImpl {
 
   @NotBlank
   @AutoPopulated
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String wipSuffix;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean resetWipFiles;
 
@@ -161,6 +161,9 @@ public class FsConsumer extends FsConsumerImpl {
    */
   @Override
   public void init() throws CoreException {
+    if(this.getDestination() == null) {
+      throw new CoreException("Please configure a valid FS consumer destination.");
+    }
     try {
       if (resetWipFiles()) {
         renameWipFiles();
@@ -188,7 +191,7 @@ public class FsConsumer extends FsConsumerImpl {
     File[] files = dir.listFiles((FilenameFilter) p5);
     if (files == null) {
       throw new CoreException("Failed to list files in " + dir.getCanonicalPath()
-          + ", incorrect permissions?. Cannot reset WIP files");
+      + ", incorrect permissions?. Cannot reset WIP files");
     }
     for (File f : files) {
       File parent = f.getParentFile();

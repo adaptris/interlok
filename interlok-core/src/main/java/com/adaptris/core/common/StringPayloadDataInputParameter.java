@@ -16,6 +16,7 @@
 
 package com.adaptris.core.common;
 
+import com.adaptris.interlok.InterlokException;
 import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -40,10 +41,9 @@ public class StringPayloadDataInputParameter implements DataInputParameter<Strin
   public StringPayloadDataInputParameter() {
     
   }
-  
+
   @Override
-  public String extract(InterlokMessage message) {
+  public String extract(InterlokMessage message) throws InterlokException {
     return message.getContent();
   }
-
 }

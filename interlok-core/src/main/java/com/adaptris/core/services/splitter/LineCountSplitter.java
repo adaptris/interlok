@@ -21,9 +21,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
@@ -55,7 +53,7 @@ public class LineCountSplitter extends MessageSplitterImp {
   private Integer splitOnLine;
   @InputFieldDefault(value = "false")
   private Boolean ignoreBlankLines;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "8192")
   private Integer bufferSize;
 
@@ -68,6 +66,7 @@ public class LineCountSplitter extends MessageSplitterImp {
     setSplitOnLine(splitOnLine);
   }
 
+  @Override
   public com.adaptris.core.util.CloseableIterable<AdaptrisMessage> splitMessage(final AdaptrisMessage msg) throws CoreException {
     logR.trace("LineCountSplitter splits every {} lines", splitOnLine());
 
@@ -186,6 +185,7 @@ public class LineCountSplitter extends MessageSplitterImp {
       logR.trace("Using message factory: {}", factory.getClass());
     }
 
+    @Override
     protected AdaptrisMessage constructAdaptrisMessage() throws IOException {
       AdaptrisMessage tmpMessage = factory.newMessage();
       int i = 0;

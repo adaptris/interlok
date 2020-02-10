@@ -18,8 +18,6 @@ package com.adaptris.core;
 
 import java.util.Map;
 
-import com.adaptris.annotation.Removal;
-
 /**
  * <p>
  * Defines behaviour related to sending and receiving <code>Event</code>s using
@@ -47,20 +45,6 @@ public interface EventHandler
    * @throws CoreException wrapping any underlying Exceptions
    */
   void send(Event evt, Map<String,String> properties) throws CoreException;
-
-  
-  /**
-   * <p>
-   * Send an <code>Event</code> to the specified destination.
-   * </p>
-   * @param evt the <code>Event</code> to send
-   * @param destination the <code>ProduceDestination</code> to send to
-   * @throws CoreException wrapping any underlying Exceptions
-   * @deprecated since 3.8.2; events should really be explicitly configured, will be removed with no replacement
-   */
-  @Deprecated
-  @Removal(version="3.10.0")
-  void send(Event evt, ProduceDestination destination) throws CoreException;
 
   /**
    * <p>

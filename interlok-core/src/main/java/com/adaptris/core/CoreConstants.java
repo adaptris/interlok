@@ -77,6 +77,27 @@ public abstract class CoreConstants {
 
   /**
    * <p>
+   * A channel's id is stored against this key in the logger's Mapped Diagnostic Context
+   * </p>
+   */
+  public static final String CHANNEL_ID_KEY = "channelid";
+
+  /**
+   * <p>
+   * A workflow's id is stored against this key in the logger's Mapped Diagnostic Context
+   * </p>
+   */
+  public static final String WORKFLOW_ID_KEY = "workflowid";
+
+  /**
+   * <p>
+   * A message's unique ID is stored against this key in various places
+   * </p>
+   */
+  public static final String MESSAGE_UNIQUE_ID_KEY = "messageuniqueid";
+
+  /**
+   * <p>
    * Metadata key which <code>MessageSplitterService</code> uses to store the unique ID of the original parent message on the split,
    * child message.
    * </p>
@@ -335,28 +356,6 @@ public abstract class CoreConstants {
   @Deprecated
   @Removal(version = "3.11.0")
   public static final String JCO_IDOCTYP = "jcoidoctyp";
-
-
-  /**
-   * @deprecated since 3.8.0 use {@link com.adaptris.core.http.jetty.JettyConstants#JETTY_URL} instead
-   */
-  @Deprecated
-  @Removal(version = "3.10.0")
-  public static final String JETTY_URL = com.adaptris.core.http.jetty.JettyConstants.JETTY_URL;
-
-  /**
-   * @deprecated since 3.8.0 use {@link com.adaptris.core.http.jetty.JettyConstants#JETTY_URI} instead
-   */
-  @Deprecated
-  @Removal(version = "3.10.0")
-  public static final String JETTY_URI = com.adaptris.core.http.jetty.JettyConstants.JETTY_URI;
-
-  /**
-   * @deprecated since 3.8.0 use {@link com.adaptris.core.http.jetty.JettyConstants#JETTY_QUERY_STRING} instead
-   */
-  @Deprecated
-  @Removal(version = "3.10.0")
-  public static final String JETTY_QUERY_STRING = com.adaptris.core.http.jetty.JettyConstants.JETTY_QUERY_STRING;
 
   /**
    * <p>

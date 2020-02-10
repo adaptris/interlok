@@ -16,7 +16,7 @@
 
 package com.adaptris.core.security;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -52,9 +52,9 @@ public abstract class CoreSecurityService extends ServiceImp {
   @Valid
   @AutoPopulated
   private EncryptionAlgorithm encryptionAlgorithm = null;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String successId = null;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String failId = null;
   @AdvancedConfig
   private String remotePartnerMetadataKey;

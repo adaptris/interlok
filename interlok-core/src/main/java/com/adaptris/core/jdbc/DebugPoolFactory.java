@@ -2,23 +2,23 @@ package com.adaptris.core.jdbc;
 
 import java.io.PrintWriter;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.core.CoreException;
 import com.adaptris.util.TimeInterval;
 import com.adaptris.util.stream.Slf4jLoggingOutputStream;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
+ * Constructs a C3P0 connection pool with various debug settings enabled.
  * 
  * @config jdbc-debug-pool-factory
  *
  */
 @XStreamAlias("jdbc-debug-pool-factory")
+@ComponentProfile(summary = "Build a connection pool using C3P0 with some debug enabled")
 public class DebugPoolFactory extends DefaultPoolFactory {
   private static final TimeInterval DEFAULT_MAX_UNRETURNED = new TimeInterval(1L, TimeUnit.DAYS);
 
@@ -30,16 +30,11 @@ public class DebugPoolFactory extends DefaultPoolFactory {
   private Boolean debugUnreturnedConnectionStackTraces;
 
   @Override
-  public ComboPooledDataSource create(JdbcPoolConfiguration cfg) throws CoreException {
-    ComboPooledDataSource result = super.create(cfg);
-    try {
-
-      result.setUnreturnedConnectionTimeout(unreturnedConnectionTimeout());
-      result.setDebugUnreturnedConnectionStackTraces(debugUnreturnedConnectionStackTraces());
-      result.setLogWriter(new PrintWriter(new Slf4jLoggingOutputStream(logger, "DEBUG"), true)); // lgtm
-    } catch (Exception ex) {
-      throw new CoreException(ex);
-    }
+  public ComboPooledDataSource create() throws Exception {
+    ComboPooledDataSource result = super.create();
+    result.setUnreturnedConnectionTimeout(unreturnedConnectionTimeout());
+    result.setDebugUnreturnedConnectionStackTraces(debugUnreturnedConnectionStackTraces());
+    result.setLogWriter(new PrintWriter(new Slf4jLoggingOutputStream(logger, "DEBUG"), true)); // lgtm
     return result;
   }
 
@@ -57,7 +52,12 @@ public class DebugPoolFactory extends DefaultPoolFactory {
     this.unreturnedConnectionTimeout = interval;
   }
 
-  int unreturnedConnectionTimeout() {
+  public DebugPoolFactory withUnreturnedConnectionTimeout(TimeInterval interval) {
+    setUnreturnedConnectionTimeout(interval);
+    return this;
+  }
+
+  private int unreturnedConnectionTimeout() {
     return Long.valueOf(TimeInterval.toSecondsDefaultIfNull(getUnreturnedConnectionTimeout(),
         DEFAULT_MAX_UNRETURNED)).intValue();
   }
@@ -76,7 +76,13 @@ public class DebugPoolFactory extends DefaultPoolFactory {
     this.debugUnreturnedConnectionStackTraces = onOff;
   }
 
-  boolean debugUnreturnedConnectionStackTraces() {
+  public DebugPoolFactory withDebugUnreturnedConnectionStackTraces(Boolean b) {
+    setDebugUnreturnedConnectionStackTraces(b);
+    return this;
+  }
+
+
+  private boolean debugUnreturnedConnectionStackTraces() {
     return BooleanUtils.toBooleanDefaultIfNull(getDebugUnreturnedConnectionStackTraces(), false);
   }
 }

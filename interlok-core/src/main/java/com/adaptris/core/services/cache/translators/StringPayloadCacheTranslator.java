@@ -1,7 +1,6 @@
 package com.adaptris.core.services.cache.translators;
 
-import static org.apache.commons.lang.StringUtils.isEmpty;
-
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.services.cache.CacheKeyTranslator;
@@ -29,19 +28,11 @@ public class StringPayloadCacheTranslator implements CacheValueTranslator<String
     setCharEncoding(s);
   }
 
-  /**
-   * @return byte[] containing the payload of the message
-   */
   @Override
   public String getValueFromMessage(AdaptrisMessage msg) throws CoreException {
     return msg.getContent();
   }
 
-  /**
-   * @param msg the {@link AdaptrisMessage}
-   * @param value byte[] to be set as the payload of the message
-   * @throws IllegalArgumentException if value is not of type byte[]
-   */
   @Override
   public void addValueToMessage(AdaptrisMessage msg, String value) throws CoreException {
     if (isEmpty(getCharEncoding())) {

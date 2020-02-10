@@ -15,7 +15,9 @@
 */
 
 package com.adaptris.core.jdbc;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import com.adaptris.core.ServiceCase;
 import com.adaptris.core.XStreamMarshaller;
 import com.adaptris.util.GuidGenerator;
@@ -24,9 +26,6 @@ public abstract class JdbcServiceCase extends ServiceCase {
 
   private static final GuidGenerator GUID = new GuidGenerator();
 
-	public JdbcServiceCase(String name) {
-		super(name);
-	}
 
   protected <T extends JdbcService> void testBackReferences(T testObject) throws Exception {
     JdbcConnection conn = new JdbcConnection();
@@ -58,7 +57,5 @@ public abstract class JdbcServiceCase extends ServiceCase {
     testObject2.close();    
     
   }
-
-	public abstract void testBackReferences() throws Exception;
 
 }

@@ -16,7 +16,7 @@
 
 package com.adaptris.core.services.jdbc;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,7 +24,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.validation.constraints.NotNull;
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.InputFieldDefault;
@@ -42,7 +42,7 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
   @NotNull
   @InputFieldHint(style = "SQL", expression = true)
   private String statement = null;
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean saveReturnedKeys = null;
   @InputFieldDefault(value = "")
@@ -190,6 +190,7 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
     public PreparedStatement getInsertStatement(AdaptrisMessage msg) throws SQLException {
       String currentStatement = getParameterApplicator().prepareParametersToStatement(msg.resolve(getStatement()));
       if (!lastInsertStatement.equals(currentStatement) || insertStatement == null) {
+        JdbcUtil.closeQuietly(insertStatement);
         insertStatement = prepare(currentStatement);
         lastInsertStatement = currentStatement;
       }
@@ -214,8 +215,7 @@ public abstract class JdbcDataCaptureServiceImpl extends JdbcServiceWithParamete
     }
 
     void destroy() {
-      JdbcUtil.closeQuietly(insertStatement);
-      JdbcUtil.closeQuietly(sqlConnection);
+      JdbcUtil.closeQuietly(insertStatement, sqlConnection);
       sqlConnection = null;
       insertStatement = null;
     }

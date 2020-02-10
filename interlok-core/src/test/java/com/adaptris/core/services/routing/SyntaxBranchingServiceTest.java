@@ -16,10 +16,12 @@
 
 package com.adaptris.core.services.routing;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BranchingServiceCollection;
@@ -32,8 +34,10 @@ public class SyntaxBranchingServiceTest extends BranchingServiceExample {
   private static final String POSTCODE_REGEXP_2 = "[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z-[CIKMOV]]{2}";
   private static final String POSTCODE_REGEXP_1 = "[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z]{2}";
 
-  public SyntaxBranchingServiceTest(String arg0) {
-    super(arg0);
+
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
@@ -41,6 +45,7 @@ public class SyntaxBranchingServiceTest extends BranchingServiceExample {
     return SyntaxBranchingService.class.getName();
   }
 
+  @Test
   public void testSetters() throws Exception {
     SyntaxBranchingService sbs = new SyntaxBranchingService();
     sbs.addSyntaxIdentifier(new RegexpSyntaxIdentifier(Arrays.asList(new String[]
@@ -66,6 +71,7 @@ public class SyntaxBranchingServiceTest extends BranchingServiceExample {
     assertEquals(1, sbs.getSyntaxIdentifiers().size());
   }
 
+  @Test
   public void testDoServiceFirstMatch() throws Exception {
     SyntaxBranchingService sbs = new SyntaxBranchingService();
     sbs.setSyntaxIdentifiers(createStandardIdentifiers());
@@ -74,6 +80,7 @@ public class SyntaxBranchingServiceTest extends BranchingServiceExample {
     assertEquals("isPostcode", msg.getNextServiceId());
   }
 
+  @Test
   public void testDoServiceSecondMatch() throws Exception {
     SyntaxBranchingService sbs = new SyntaxBranchingService();
     sbs.setSyntaxIdentifiers(createStandardIdentifiers());
@@ -83,6 +90,7 @@ public class SyntaxBranchingServiceTest extends BranchingServiceExample {
     assertEquals("isXml", msg.getNextServiceId());
   }
 
+  @Test
   public void testDoServiceNoMatch() throws Exception {
     SyntaxBranchingService sbs = new SyntaxBranchingService();
     sbs.setSyntaxIdentifiers(createStandardIdentifiers());

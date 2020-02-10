@@ -16,9 +16,8 @@
 
 package com.adaptris.core;
 
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.validator.constraints.NotBlank;
-
+import javax.validation.constraints.NotBlank;
+import org.apache.commons.lang3.StringUtils;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
@@ -75,6 +74,7 @@ public class MetadataFileNameCreator implements FileNameCreator {
    * @see com.adaptris.core.FileNameCreator
    *   #createName(com.adaptris.core.AdaptrisMessage)
    */
+  @Override
   public String createName(AdaptrisMessage msg) throws CoreException {
     if (getMetadataKey() == null) {
       throw new CoreException("illegal metadata key [" + metadataKey + "]");

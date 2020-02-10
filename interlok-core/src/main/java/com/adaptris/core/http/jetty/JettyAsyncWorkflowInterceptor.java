@@ -16,15 +16,11 @@
 package com.adaptris.core.http.jetty;
 
 import static com.adaptris.core.http.jetty.JettyConstants.JETTY_WRAPPER;
-
 import java.util.concurrent.TimeUnit;
-
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -36,7 +32,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 import net.jodah.expiringmap.ExpiringMap;
 
 /**
@@ -58,7 +53,7 @@ import net.jodah.expiringmap.ExpiringMap;
 @DisplayOrder(order = {"cacheKey"})
 public class JettyAsyncWorkflowInterceptor extends JettyWorkflowInterceptorImpl {
 
-  private static transient Logger log = LoggerFactory.getLogger(JettyAsyncWorkflowInterceptor.class);
+  private static transient Logger staticLogger = LoggerFactory.getLogger(JettyAsyncWorkflowInterceptor.class);
 
   // Should probably use JSR107 for some caching action?? make it pluggable.
   // But for now, same JVM, so a map will do in a pinch
@@ -74,7 +69,7 @@ public class JettyAsyncWorkflowInterceptor extends JettyWorkflowInterceptorImpl 
       @Override
       void workflowStart(String key, AdaptrisMessage msg) {
         JettyWrapper wrapper = JettyWrapper.unwrap(msg);
-        log.trace("Storing {} in cache against {}", wrapper, key);
+        staticLogger.trace("Storing {} in cache against {}", wrapper, key);
         EXPIRING_CACHE.put(key, wrapper);
       }
 
@@ -91,7 +86,7 @@ public class JettyAsyncWorkflowInterceptor extends JettyWorkflowInterceptorImpl 
       @Override
       void workflowStart(String key, AdaptrisMessage msg) {
         JettyWrapper wrapper = EXPIRING_CACHE.get(key);
-        log.trace("Found {} in cache against {}", wrapper, key);
+        staticLogger.trace("Found {} in cache against {}", wrapper, key);
         if (wrapper != null) {
           EXPIRING_CACHE.remove(key);
           msg.addObjectHeader(JETTY_WRAPPER, wrapper);
@@ -113,7 +108,7 @@ public class JettyAsyncWorkflowInterceptor extends JettyWorkflowInterceptorImpl 
 
   @InputFieldHint(style = "BLANKABLE")
   @InputFieldDefault(value = "")
-  @AdvancedConfig
+  @AdvancedConfig(rare = true)
   private String cacheKey;
 
   @Override
