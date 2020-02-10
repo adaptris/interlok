@@ -15,7 +15,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config multi-payload-byte-array-output-parameter
  */
 @XStreamAlias("multi-payload-byte-array-output-parameter")
-public class MultiPayloadByteArrayOutputParameter implements DataOutputParameter<byte[]>
+public class MultiPayloadByteArrayOutputParameter extends ByteArrayPayloadDataOutputParameter implements DataOutputParameter<byte[]>
 {
   @InputFieldHint(expression=true)
   private String payloadId;
