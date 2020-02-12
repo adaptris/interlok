@@ -57,9 +57,8 @@ public class LargeMessageWorkflow extends StandardWorkflow {
   }
 
   @Override
-  public synchronized void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success,
-      Consumer<AdaptrisMessage> failure) {
-    ListenerCallbackHelper.prepare(msg, success, failure);
+  public synchronized void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success) {
+    ListenerCallbackHelper.prepare(msg, success);
     if (!obtainChannel().isAvailable()) {
       handleChannelUnavailable(msg); // make pluggable?
     }

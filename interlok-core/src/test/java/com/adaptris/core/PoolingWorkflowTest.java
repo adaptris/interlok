@@ -37,7 +37,6 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
-import com.adaptris.core.services.AlwaysFailService;
 import com.adaptris.core.services.WaitService;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
@@ -578,7 +577,6 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
   @Test 
   public void testOnMessage_SuccessCallback() throws Exception {
     AtomicBoolean onSuccess = new AtomicBoolean(false);
-    AtomicBoolean onFailure = new AtomicBoolean(false);
     MockChannel channel = createChannel();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD_1);
     PoolingWorkflow wf = (PoolingWorkflow) channel.getWorkflowList().get(0);
@@ -587,45 +585,15 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
       start(channel);
       wf.onAdaptrisMessage(msg, (m) -> {
         onSuccess.set(true);
-      }, (m) -> {
-        onFailure.set(true);
       });
       waitForMessages(prod, 1);
       assertTrue(onSuccess.get());
-      assertFalse(onFailure.get());
     } finally {
       stop(channel);
     }
     
   }
   
-  
-  @Test 
-  public void testOnMessage_FailureCallback() throws Exception {
-    AtomicBoolean onSuccess = new AtomicBoolean(false);
-    AtomicBoolean onFailure = new AtomicBoolean(false);
-    MockMessageProducer prod = new MockMessageProducer();
-    StandardProcessingExceptionHandler errorHandler = new StandardProcessingExceptionHandler(new StandaloneProducer(prod));
-    MockChannel channel = createChannel(errorHandler, Arrays.asList(new Service[] {new AlwaysFailService()}));
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD_1);
-    PoolingWorkflow wf = (PoolingWorkflow) channel.getWorkflowList().get(0);
-    try {
-      start(channel);
-      wf.onAdaptrisMessage(msg, (m) -> {
-        onSuccess.set(true);
-      }, (m) -> {
-        onFailure.set(true);
-      });
-      waitForMessages(prod, 1);      
-      assertFalse(onSuccess.get());
-      assertTrue(onFailure.get());
-    } finally {
-      stop(channel);
-    }
-    
-  }
-  
-
   private void submitMessages(PoolingWorkflow wf, int number) throws Exception {
     MockMessageConsumer m = (MockMessageConsumer) wf.getConsumer();
     for (int i = 0; i < number; i++) {

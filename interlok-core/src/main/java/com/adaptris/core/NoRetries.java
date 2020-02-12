@@ -60,7 +60,8 @@ public class NoRetries implements FailedMessageRetrier {
   public void stop() {
   }
 
-  public void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success, Consumer<AdaptrisMessage> failure) {
+  @Override
+  public void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success) {
   }
 
   @Override

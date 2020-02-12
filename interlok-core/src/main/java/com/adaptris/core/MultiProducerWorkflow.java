@@ -70,17 +70,11 @@ public class MultiProducerWorkflow extends StandardWorkflow {
   }
 
   /**
-   * <p>
-   * This method is <code>synchronized</code> in case client code is
-   * multi-threaded.
-   * </p>
-   *
    * @see AdaptrisMessageListener#onAdaptrisMessage(AdaptrisMessage)
    */
   @Override
-  public synchronized void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success,
-      Consumer<AdaptrisMessage> failure) {
-    ListenerCallbackHelper.prepare(msg, success, failure);
+  public synchronized void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success) {
+    ListenerCallbackHelper.prepare(msg, success);
     if (!obtainChannel().isAvailable()) {
       handleChannelUnavailable(msg); // make pluggable?
     }
