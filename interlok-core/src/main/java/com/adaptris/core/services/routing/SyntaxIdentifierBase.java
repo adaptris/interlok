@@ -16,23 +16,26 @@
 
 package com.adaptris.core.services.routing;
 
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
+import javax.validation.constraints.NotBlank;
+import com.adaptris.core.util.Args;
 
-public class AlwaysMatchSyntaxIdentifierTest {
+public abstract class SyntaxIdentifierBase implements SyntaxIdentifier {
+  @NotBlank
+  private String destination = null;
 
-  public static final String LINE = "The quick brown fox jumps over the lazy dog";
-
-
-  public AlwaysMatchSyntaxIdentifier createIdentifier() {
-    return new AlwaysMatchSyntaxIdentifier();
+  public SyntaxIdentifierBase() {
   }
 
-  @Test
-  public void testMatch() throws Exception {
-    AlwaysMatchSyntaxIdentifier ident = createIdentifier();
-    assertTrue("Matches regexp", ident.isThisSyntax(LINE));
+  /**
+   *  @see SyntaxIdentifier#setDestination(java.lang.String)
+   */
+  @Override
+  public void setDestination(String dest) {
+    destination = Args.notBlank(dest, "destination");
   }
 
-
+  @Override
+  public String getDestination() {
+    return destination;
+  }
 }
