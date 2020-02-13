@@ -60,52 +60,7 @@ public class StandardWorkflow extends StandardWorkflowImpl {
 
   @Override
   public synchronized void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success) {
-    ListenerCallbackHelper.prepare(msg, success);
-    if (!obtainChannel().isAvailable()) {
-      handleChannelUnavailable(msg); // make pluggable?
-    } else {
-      handleMessage(msg, true);
-    }
+    super.onAdaptrisMessage(msg, success);
   }
 
-  /**
-   * @see WorkflowImp#resubmitMessage(com.adaptris.core.AdaptrisMessage)
-   */
-  @Override
-  protected void resubmitMessage(AdaptrisMessage msg) {
-    handleMessage(msg, true);
-  }
-
-  protected void handleMessage(final AdaptrisMessage msg, boolean clone) {
-    AdaptrisMessage wip = addConsumeLocation(msg);
-    workflowStart(msg);
-    processingStart(msg);
-    try {
-      long start = System.currentTimeMillis();
-      log.debug("start processing msg [{}]", messageLogger().toString(msg));
-      if (clone) {
-        wip = (AdaptrisMessage) msg.clone(); // retain orig. for error handling
-      }
-      wip.getMessageLifecycleEvent().setChannelId(obtainChannel().getUniqueId());
-      wip.getMessageLifecycleEvent().setWorkflowId(obtainWorkflowId());
-      wip.addEvent(getConsumer(), true); // initial receive event
-      getServiceCollection().doService(wip);
-      doProduce(wip);
-      // handle success callback here.
-      // failure callback will be handled by the message-error-handler that's configured...
-      ListenerCallbackHelper.handleSuccessCallback(wip);
-      logSuccess(wip, start);
-    } catch (ServiceException e) {
-      handleBadMessage("Exception from ServiceCollection", e, copyExceptionHeaders(wip, msg));
-    } catch (ProduceException e) {
-      wip.addEvent(getProducer(), false); // generate event
-      handleBadMessage("Exception producing msg", e, copyExceptionHeaders(wip, msg));
-      handleProduceException();
-    } catch (Exception e) { // all other Exc. inc. runtime
-      handleBadMessage("Exception processing message", e, copyExceptionHeaders(wip, msg));
-    } finally {
-      sendMessageLifecycleEvent(wip);
-    }
-    workflowEnd(msg, wip);
-  }
 }
