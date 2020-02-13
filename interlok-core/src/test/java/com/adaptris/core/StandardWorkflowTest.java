@@ -28,6 +28,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -538,6 +539,25 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  
+  @Test 
+  public void testOnMessage_SuccessCallback() throws Exception {
+    AtomicBoolean onSuccess = new AtomicBoolean(false);
+    MockChannel channel = createChannel(new MockMessageProducer(), Arrays.asList(new Service[] {new NullService()}));
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD_1);
+    StandardWorkflow workflow = (StandardWorkflow) channel.getWorkflowList().get(0);
+    try {
+      start(channel);
+      workflow.onAdaptrisMessage(msg, (m) -> {
+        onSuccess.set(true);
+      });
+      assertTrue(onSuccess.get());
+    } finally {
+      stop(channel);
+    }
+    
+  }
+    
   @Override
   protected Object retrieveObjectForSampleConfig() {
     Channel c = new Channel();

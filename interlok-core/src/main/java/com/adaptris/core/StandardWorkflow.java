@@ -16,6 +16,7 @@
 
 package com.adaptris.core;
 
+import java.util.function.Consumer;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -58,11 +59,11 @@ public class StandardWorkflow extends StandardWorkflowImpl {
   }
 
   @Override
-  public synchronized void onAdaptrisMessage(AdaptrisMessage msg) {
+  public synchronized void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success) {
+    ListenerCallbackHelper.prepare(msg, success);
     if (!obtainChannel().isAvailable()) {
       handleChannelUnavailable(msg); // make pluggable?
-    }
-    else {
+    } else {
       handleMessage(msg, true);
     }
   }
@@ -90,23 +91,21 @@ public class StandardWorkflow extends StandardWorkflowImpl {
       wip.addEvent(getConsumer(), true); // initial receive event
       getServiceCollection().doService(wip);
       doProduce(wip);
+      // handle success callback here.
+      // failure callback will be handled by the message-error-handler that's configured...
+      ListenerCallbackHelper.handleSuccessCallback(wip);
       logSuccess(wip, start);
-    }
-    catch (ServiceException e) {
+    } catch (ServiceException e) {
       handleBadMessage("Exception from ServiceCollection", e, copyExceptionHeaders(wip, msg));
-    }
-    catch (ProduceException e) {
+    } catch (ProduceException e) {
       wip.addEvent(getProducer(), false); // generate event
       handleBadMessage("Exception producing msg", e, copyExceptionHeaders(wip, msg));
       handleProduceException();
-    }
-    catch (Exception e) { // all other Exc. inc. runtime
+    } catch (Exception e) { // all other Exc. inc. runtime
       handleBadMessage("Exception processing message", e, copyExceptionHeaders(wip, msg));
-    }
-    finally {
+    } finally {
       sendMessageLifecycleEvent(wip);
     }
     workflowEnd(msg, wip);
   }
-
 }

@@ -17,9 +17,10 @@
 package com.adaptris.core.stubs;
 
 import java.util.List;
-
+import java.util.function.Consumer;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageListener;
+import com.adaptris.core.ListenerCallbackHelper;
 import com.adaptris.core.ProduceException;
 
 /**
@@ -43,12 +44,14 @@ public class MockMessageListener implements AdaptrisMessageListener, MessageCoun
     this.waitTime = waitTime;
   }
 
-  public void onAdaptrisMessage(AdaptrisMessage msg) {
+  @Override
+  public void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success) {
+    ListenerCallbackHelper.prepare(msg, success);
     try {
       producer.produce(msg);
+      ListenerCallbackHelper.handleSuccessCallback(msg);
     }
     catch (ProduceException e) {
-      ;
     }
     if (waitTime != -1) {
       try {
@@ -61,10 +64,12 @@ public class MockMessageListener implements AdaptrisMessageListener, MessageCoun
 
   }
 
+  @Override
   public List<AdaptrisMessage> getMessages() {
     return producer.getMessages();
   }
 
+  @Override
   public int messageCount() {
     return producer.messageCount();
   }

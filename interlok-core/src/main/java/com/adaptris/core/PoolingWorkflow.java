@@ -25,6 +25,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -306,7 +307,8 @@ public class PoolingWorkflow extends WorkflowImp {
    * @param msg the AdaptrisMessage.
    */
   @Override
-  public void onAdaptrisMessage(final AdaptrisMessage msg) {
+  public void onAdaptrisMessage(final AdaptrisMessage msg, Consumer<AdaptrisMessage> success) {
+    ListenerCallbackHelper.prepare(msg, success);
     if (!obtainChannel().isAvailable()) {
       handleChannelUnavailable(msg);
     }
@@ -759,6 +761,9 @@ public class PoolingWorkflow extends WorkflowImp {
         wip.addEvent(getConsumer(), true);
         sc.doService(wip);
         doProduce(wip);
+        // handle success callback here.
+        // failure callback will be handled by the message-error-handler that's configured...
+        ListenerCallbackHelper.handleSuccessCallback(wip);
         logSuccess(wip, start);
       }
       catch (ProduceException e) {
