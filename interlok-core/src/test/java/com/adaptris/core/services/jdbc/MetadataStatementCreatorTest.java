@@ -23,6 +23,7 @@ import java.util.List;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 
+@SuppressWarnings("deprecation")
 public class MetadataStatementCreatorTest extends JdbcQueryServiceCase {
 
   protected static final String QUERY_SQL_2 =
