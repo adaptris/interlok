@@ -23,6 +23,7 @@ import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
+import com.adaptris.core.util.EncodingHelper.Base64Encoding;
 
 public class Base64ServiceTest extends GeneralServiceExample {
 
@@ -37,7 +38,7 @@ public class Base64ServiceTest extends GeneralServiceExample {
   public void testBase64Service() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(
         LINE.getBytes());
-    execute(new Base64EncodeService(), msg);
+    execute(new Base64EncodeService().withStyle(Base64Encoding.MIME), msg);
     execute(new Base64DecodeService(), msg);
 
     assertEquals("base64 then debase64 gives same result", LINE, msg

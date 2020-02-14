@@ -20,12 +20,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
 import java.io.IOException;
 import java.security.MessageDigest;
-
 import org.junit.Test;
 
+@SuppressWarnings("deprecation")
 public class ConversionTest {
 
   private static final String TEXT = "The Quick Brown Fox Jumps Over The Lazy Dog";

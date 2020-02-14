@@ -25,10 +25,10 @@ import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.services.metadata.PayloadToMetadataService.Encoding;
 import com.adaptris.core.services.metadata.PayloadToMetadataService.MetadataTarget;
 import com.adaptris.core.stubs.DefectiveMessageFactory;
 import com.adaptris.core.stubs.DefectiveMessageFactory.WhenToBreak;
+import com.adaptris.core.util.EncodingHelper.Encoding;
 
 @SuppressWarnings("deprecation")
 public class PayloadToMetadataTest extends MetadataServiceExample {
@@ -74,7 +74,7 @@ public class PayloadToMetadataTest extends MetadataServiceExample {
   @Test
   public void testService_Metadata_Encoded() throws Exception {
     PayloadToMetadataService service = createService(MetadataTarget.Standard);
-    service.setEncoding(Encoding.Base64);
+    service.setEncoding(Encoding.Basic_Base64);
     AdaptrisMessage msg = createMessage();
     execute(service, msg);
     assertTrue(msg.containsKey(DEFAULT_METADATA_KEY));

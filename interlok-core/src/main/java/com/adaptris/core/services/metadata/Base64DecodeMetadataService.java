@@ -17,17 +17,13 @@
 package com.adaptris.core.services.metadata;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.util.text.Base64ByteTranslator;
-import com.adaptris.util.text.ByteTranslator;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -39,16 +35,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config metadata-base64-decode
  * 
- * 
- * 
  */
 @XStreamAlias("metadata-base64-decode")
 @AdapterComponent
 @ComponentProfile(summary = "Base64 decode an item of metadata", tag = "service,metadata,base64")
 @DisplayOrder(order = {"metadataKeyRegexp", "metadataLogger"})
-public class Base64DecodeMetadataService extends ReformatMetadata {
-
-  private transient ByteTranslator byteTranslator = new Base64ByteTranslator();
+public class Base64DecodeMetadataService extends Base64MetadataService {
 
   public Base64DecodeMetadataService() {
     super();
@@ -60,8 +52,7 @@ public class Base64DecodeMetadataService extends ReformatMetadata {
 
   @Override
   public String reformat(String s, String charEncoding) throws Exception {
-    byte[] debased = byteTranslator.translate(s);
-    return toString(debased, charEncoding);
+    return toString(style().decoder().decode(s), charEncoding);
   }
 
   private String toString(byte[] metadataValue, String charset) throws UnsupportedEncodingException {

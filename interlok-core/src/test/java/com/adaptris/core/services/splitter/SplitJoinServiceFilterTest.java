@@ -32,6 +32,7 @@ import com.adaptris.util.text.xml.InsertNode;
 import com.adaptris.util.text.xml.XPath;
 
 
+@SuppressWarnings("deprecation")
 public class SplitJoinServiceFilterTest extends SplitterServiceExample {
   private static Log logR = LogFactory.getLog(SplitJoinServiceFilterTest.class);
 

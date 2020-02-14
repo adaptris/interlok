@@ -23,6 +23,7 @@ import java.security.MessageDigest;
 import org.junit.Test;
 import com.adaptris.util.GuidGenerator;
 
+@SuppressWarnings("deprecation")
 public class ByteTranslatorTest {
 
   @Test

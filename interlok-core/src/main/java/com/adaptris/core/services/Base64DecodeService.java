@@ -16,16 +16,13 @@
 
 package com.adaptris.core.services;
 
-import javax.mail.internet.MimeUtility;
-
+import java.io.InputStream;
+import java.io.OutputStream;
+import org.apache.commons.io.IOUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.ServiceImp;
-import com.adaptris.util.stream.StreamUtil;
-import com.adaptris.util.text.mime.MimeConstants;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -38,31 +35,16 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("base64-decode-service")
 @AdapterComponent
 @ComponentProfile(summary = "Base64 decode the message", tag = "service,base64")
-public class Base64DecodeService extends ServiceImp {
+public class Base64DecodeService extends Base64Service {
 
-  /**
-   * @see com.adaptris.core.Service#doService(com.adaptris.core.AdaptrisMessage)
-   */
+  @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-
-    try {
-      StreamUtil.copyAndClose(MimeUtility.decode(msg.getInputStream(), MimeConstants.ENCODING_BASE64), msg.getOutputStream());
+    try (InputStream in = style().decoder().wrap(msg.getInputStream()); OutputStream out = msg.getOutputStream()) {
+      IOUtils.copy(in, out);
     }
     catch (Exception e) {
       throw new ServiceException(e);
     }
-  }
-
-  @Override
-  protected void initService() throws CoreException {
-  }
-
-  @Override
-  protected void closeService() {
-  }
-
-  @Override
-  public void prepare() throws CoreException {
   }
 
 }

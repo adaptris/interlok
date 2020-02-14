@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNotSame;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.util.EncodingHelper.Base64Encoding;
 import com.adaptris.util.text.Base64ByteTranslator;
 
 public class Base64MetadataDecodeTest extends MetadataServiceExample {
@@ -34,7 +35,7 @@ public class Base64MetadataDecodeTest extends MetadataServiceExample {
 
   @Test
   public void testService() throws Exception {
-    Base64DecodeMetadataService service = new Base64DecodeMetadataService(METADATA_KEY);
+    Base64DecodeMetadataService service = new Base64DecodeMetadataService(METADATA_KEY).withStyle(Base64Encoding.BASIC);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("asdfghjk");
 
     String metadataValue = new Base64ByteTranslator().translate("Hello World".getBytes());

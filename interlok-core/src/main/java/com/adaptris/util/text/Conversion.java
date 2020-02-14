@@ -19,12 +19,13 @@ package com.adaptris.util.text;
 import java.io.IOException;
 
 
-/** Simple Data Conversion methods.
- *  <p>Only small amounts of data should be converted using this class, to
- *  write a large number of bytes as a Base64 String, an alternative method
- *  such as IAIK's Base64OutputStream should be used, or
- *  javax.mail.internet.MimeUtility.
- *  @author $Author: lchan $
+/**
+ * Simple Data Conversion methods.
+ * <p>
+ * Only small amounts of data should be converted using this class, to write a large number of bytes as a Base64 String, an
+ * alternative method such as IAIK's Base64OutputStream should be used, or javax.mail.internet.MimeUtility.
+ * </p>
+ * 
  */
 public final class Conversion {
 
@@ -83,11 +84,15 @@ public final class Conversion {
     return result;
   }
 
-  /** Convert a byte array to a base 64 string (see RFC 1421).
-   *  @param b the bytes
-   *  @param len the length
-   *  @return the hex String
+  /**
+   * Convert a byte array to a base 64 string (see RFC 1421).
+   * 
+   * @param b the bytes
+   * @param len the length
+   * @return the hex String
+   * @deprecated since 3.10, use {@link java.util.Base64} instead.
    */
+  @Deprecated
   public static String byteArrayToBase64String(byte[] b, int len) {
 
     String s = "";
@@ -126,15 +131,20 @@ public final class Conversion {
     return result;
   }
 
-  /** Convert a byte array to a base 64 string (see RFC 1421).
-   *  @param b the bytes
-   *  @return the String
+  /**
+   * Convert a byte array to a base 64 string (see RFC 1421).
+   * 
+   * @param b the bytes
+   * @return the String
+   * @deprecated since 3.10, use {@link java.util.Base64} instead.
    */
+  @Deprecated
   public static String byteArrayToBase64String(byte[] b) {
     return byteArrayToBase64String(b, b.length);
   }
 
   // Perform the base64 transformation
+  @Deprecated
   private static String toBase64(byte b1, byte b2, byte b3) {
 
     int[] digit = new int[4];
@@ -155,6 +165,7 @@ public final class Conversion {
   }
 
   /** Perform a padded base64 transformation. */
+  @Deprecated
   private static String toBase64(byte b1, byte b2) {
 
     int[] digit = new int[3];
@@ -175,6 +186,7 @@ public final class Conversion {
   }
 
   /** Perform a padded base64 transformation */
+  @Deprecated
   private static String toBase64(byte b1) {
 
     int[] digit = new int[2];
@@ -192,6 +204,7 @@ public final class Conversion {
     return result;
   }
 
+  @Deprecated
   private static char base64Digit(int i) {
     if (i < 26) {
       return (char) ('A' + i);
@@ -213,11 +226,15 @@ public final class Conversion {
     }
   }
 
-  /** Convert a base 64 string to a byte array (see RFC 1421).
-   *  @param s the string
-   *  @return the byte array
-   *  @throws NumberFormatException if the stirng is invalid base64
+  /**
+   * Convert a base 64 string to a byte array (see RFC 1421).
+   * 
+   * @param s the string
+   * @return the byte array
+   * @throws NumberFormatException if the stirng is invalid base64
+   * @deprecated since 3.10, use {@link java.util.Base64} instead.
    */
+  @Deprecated
   public static byte[] base64StringToByteArray(String s)
     throws NumberFormatException {
 
@@ -283,6 +300,7 @@ public final class Conversion {
   }
 
   // Convert string to bytes
+  @Deprecated
   private static byte[] base64ToBytes(String s) {
 
     int len = 0;

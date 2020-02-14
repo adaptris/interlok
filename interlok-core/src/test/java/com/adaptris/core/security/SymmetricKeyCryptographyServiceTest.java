@@ -24,6 +24,7 @@ import com.adaptris.util.text.Conversion;
 /**
  * @author mwarman
  */
+@SuppressWarnings("deprecation")
 public class SymmetricKeyCryptographyServiceTest extends SecurityServiceExample {
 
   private static final String ALGORITHM = "AES";
