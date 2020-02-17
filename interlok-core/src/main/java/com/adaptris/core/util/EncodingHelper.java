@@ -12,7 +12,6 @@ public class EncodingHelper {
    * Standard supported encodings
    */
   public enum Encoding {
-    @Deprecated
     @Removal(version="3.11.0", message="Use Base64_MIME / Base64_URL / Base64_Basic instead")
     Base64 {
       @Override

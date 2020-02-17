@@ -101,7 +101,7 @@ public class PayloadToMetadataService extends ServiceImp {
   private MetadataTarget metadataTarget;
   @AdvancedConfig
   @InputFieldDefault(value = "None")
-  private Encoding encoding;
+  private Encoding encoding = Encoding.None;
 
   public PayloadToMetadataService() {
     setMetadataTarget(MetadataTarget.Standard);

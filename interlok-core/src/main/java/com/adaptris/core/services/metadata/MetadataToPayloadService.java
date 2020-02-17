@@ -120,7 +120,7 @@ public class MetadataToPayloadService extends ServiceImp {
   @InputFieldDefault(value = "Standard")
   private MetadataSource metadataSource;
   @InputFieldDefault(value = "None")
-  private Encoding encoding;
+  private Encoding encoding = Encoding.None;
 
   public MetadataToPayloadService() {
   }
