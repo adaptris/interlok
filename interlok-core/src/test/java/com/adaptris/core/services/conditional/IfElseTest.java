@@ -25,6 +25,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -40,6 +41,7 @@ import com.adaptris.core.services.conditional.conditions.ConditionMetadata;
 import com.adaptris.core.services.conditional.conditions.ConditionOr;
 import com.adaptris.core.services.conditional.operator.Equals;
 import com.adaptris.core.services.conditional.operator.NotNull;
+import com.adaptris.core.services.routing.AlwaysMatchSyntaxIdentifier;
 import com.adaptris.core.util.LifecycleHelper;
 
 public class IfElseTest extends ConditionalServiceExample {
@@ -166,6 +168,26 @@ public class IfElseTest extends ConditionalServiceExample {
     }
     
   }
+
+
+  @Test
+  public void testSyntaxIdentifier() throws Exception {
+    Service mockThen = Mockito.mock(Service.class);
+    Service mockElse = Mockito.mock(Service.class);
+    IfElse ifElse = new IfElse();
+    ifElse.getThen().setService(mockThen);
+    ifElse.getOtherwise().setService(mockElse);
+    ifElse.setCondition(new AlwaysMatchSyntaxIdentifier());
+    try {
+      LifecycleHelper.initAndStart(ifElse);
+      ifElse.doService(message);
+      verify(mockThen, times(1)).doService(message);
+      verify(mockElse, times(0)).doService(message);
+    } finally {
+      LifecycleHelper.stopAndClose(ifElse);
+    }
+  }
+
 
   @Override
   protected Object retrieveObjectForSampleConfig() {

@@ -18,15 +18,12 @@ package com.adaptris.core.services.routing;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
-public abstract class SyntaxIdentifierImpl implements SyntaxIdentifier {
-  @NotBlank
-  private String destination = null;
+public abstract class SyntaxIdentifierImpl extends SyntaxIdentifierBase {
   @XStreamImplicit(itemFieldName = "pattern")
   @AutoPopulated
   @NotNull
@@ -36,42 +33,14 @@ public abstract class SyntaxIdentifierImpl implements SyntaxIdentifier {
     patterns = new ArrayList<String>();
   }
 
-  /**
-   *  @see SyntaxIdentifier#setDestination(java.lang.String)
-   */
-  @Override
-  public void setDestination(String dest) {
-    destination = Args.notBlank(dest, "destination");
-  }
-
-  /**
-   *  @see SyntaxIdentifier#getDestination()
-   */
-  @Override
-  public String getDestination() {
-    return destination;
-  }
-
-  /**
-   *  @see SyntaxIdentifier#addPattern(java.lang.String)
-   */
-  @Override
   public void addPattern(String pattern) {
     patterns.add(Args.notBlank(pattern, "pattern"));
   }
 
-  /**
-   *  @see SyntaxIdentifier#getPatterns()
-   */
-  @Override
   public List<String> getPatterns() {
     return patterns;
   }
 
-  /**
-   *  @see SyntaxIdentifier#getPatterns()
-   */
-  @Override
   public void setPatterns(List<String> l) {
     patterns = Args.notNull(l, "patterns");
   }

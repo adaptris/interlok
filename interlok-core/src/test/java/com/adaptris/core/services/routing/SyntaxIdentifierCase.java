@@ -33,11 +33,11 @@ public abstract class SyntaxIdentifierCase extends BaseCase {
     return true;
   }
 
-  public abstract SyntaxIdentifier createIdentifier();
+  public abstract <T extends SyntaxIdentifierImpl> T createIdentifier();
 
   @Test
   public void testSetPatterns() throws Exception {
-    SyntaxIdentifier si = createIdentifier();
+    SyntaxIdentifierImpl si = createIdentifier();
     si.addPattern("ABC");
     si.addPattern("DEF");
     assertEquals(2, si.getPatterns().size());
@@ -62,7 +62,7 @@ public abstract class SyntaxIdentifierCase extends BaseCase {
 
   @Test
   public void testSetDestination() throws Exception {
-    SyntaxIdentifier si = createIdentifier();
+    SyntaxIdentifierImpl si = createIdentifier();
     si.setDestination("ABC");
     assertEquals("ABC", si.getDestination());
     try {

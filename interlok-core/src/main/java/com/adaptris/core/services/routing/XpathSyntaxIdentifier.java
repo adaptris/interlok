@@ -17,13 +17,11 @@
 package com.adaptris.core.services.routing;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 import java.util.List;
-
 import org.w3c.dom.Document;
-
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.services.conditional.Condition;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.util.text.xml.XPath;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -36,12 +34,15 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * has namespaces in it. We have included a shim so that behaviour can be toggled based on what you have configured.
  * </p>
  * 
+ * <p>
+ * Since <strong>3.10.0</strong> this class implements {@link Condition} which means that it can be used as part of the conditional
+ * services; if used in such a manner, then configuration is contextual, get/setDestination will be ignored (but may still have to
+ * be configured due to validation
+ * </p>
+ * 
  * @see XPath#newXPathInstance(DocumentBuilderFactoryBuilder, NamespaceContext)
- * 
  * @config routing-xpath-syntax-identifier
- * 
  * @author sellidge
- * @author $Author: lchan $
  */
 @XStreamAlias("routing-xpath-syntax-identifier")
 @DisplayOrder(order = {"destination", "patterns", "namespaceContext"})

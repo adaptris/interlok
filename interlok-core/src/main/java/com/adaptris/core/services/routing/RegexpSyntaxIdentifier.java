@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.services.conditional.Condition;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -30,11 +30,15 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <p>
  * The regular expressions are the same as those in the <code>java.util.regex</code> package.
  * </p>
+ * <p>
+ * Since <strong>3.10.0</strong> this class implements {@link Condition} which means that it can be used as part of the conditional
+ * services; if used in such a manner, then configuration is contextual, get/setDestination will be ignored (but may still have to
+ * be configured due to validation
+ * </p>
  * 
  * @config routing-regexp-syntax-identifier
  * @see java.util.regex.Pattern
  * @author sellidge
- * @author $Author: lchan $
  */
 @XStreamAlias("routing-regexp-syntax-identifier")
 @DisplayOrder(order = {"destination", "patterns"})
