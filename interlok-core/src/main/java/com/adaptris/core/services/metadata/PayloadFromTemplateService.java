@@ -225,8 +225,7 @@ public class PayloadFromTemplateService extends ServiceImp {
    * 
    * <p>
    * The value here is passed to {@link InterlokMessage#resolve(String, boolean)}. True will allow you to do replacements on
-   * multi-line templates; It defaults to false. Setting it to true means that multi-line templates along the lines of will be
-   * supported.
+   * multi-line templates; It defaults to true which means that multi-line templates along the lines of will be supported.
    * 
    * <pre>
    * {@code 
