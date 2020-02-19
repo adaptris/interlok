@@ -37,7 +37,7 @@ import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.WorkflowImp;
 import com.adaptris.core.http.client.net.HttpRequestService;
-import com.adaptris.core.services.metadata.PayloadFromMetadataService;
+import com.adaptris.core.services.metadata.PayloadFromTemplateService;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
@@ -106,7 +106,7 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
     StandardWorkflow receivingWF = new StandardWorkflow();
     MockMessageProducer producer = new MockMessageProducer();
     receivingWF.addInterceptor(new JettyAsyncWorkflowInterceptor().withMode(JettyAsyncWorkflowInterceptor.Mode.REQUEST));
-    receivingWF.getServiceCollection().add(new PayloadFromMetadataService("hello world"));
+    receivingWF.getServiceCollection().add(new PayloadFromTemplateService().withTemplate("hello world"));
     receivingWF.getServiceCollection().add(new StandaloneProducer(producer));
     receivingWF.getServiceCollection().add(new JettyResponseService(200, "text/plain"));
     receivingWF.getServiceCollection().add(new ShortCutJettyResponse());
@@ -142,7 +142,7 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
     // Mainly to keep track of the msgID. we use a standard workflow so new objects aren't created.
     MockMessageProducer producer = new MockMessageProducer();
     respondingWF.addInterceptor(new JettyAsyncWorkflowInterceptor().withMode(JettyAsyncWorkflowInterceptor.Mode.RESPONSE));
-    respondingWF.getServiceCollection().add(new PayloadFromMetadataService("hello world"));
+    respondingWF.getServiceCollection().add(new PayloadFromTemplateService().withTemplate("hello world"));
     respondingWF.getServiceCollection().add(new JettyResponseService(200, "text/plain"));
     respondingWF.getServiceCollection().add(new StandaloneProducer(producer));
 
@@ -183,7 +183,7 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
     MockMessageProducer producer = new MockMessageProducer();
     respondingWF.addInterceptor(
         new JettyAsyncWorkflowInterceptor().withMode(JettyAsyncWorkflowInterceptor.Mode.RESPONSE).withCacheKey(cacheKey));
-    respondingWF.getServiceCollection().add(new PayloadFromMetadataService("hello world"));
+    respondingWF.getServiceCollection().add(new PayloadFromTemplateService().withTemplate("hello world"));
     respondingWF.getServiceCollection().add(new JettyResponseService(200, "text/plain"));
     respondingWF.getServiceCollection().add(new StandaloneProducer(producer));
 
