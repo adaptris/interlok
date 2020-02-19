@@ -72,7 +72,7 @@ import com.adaptris.core.http.jetty.StandardResponseProducer;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.services.WaitService;
-import com.adaptris.core.services.metadata.PayloadFromMetadataService;
+import com.adaptris.core.services.metadata.PayloadFromTemplateService;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.security.password.Password;
 import com.adaptris.util.KeyValuePair;
@@ -172,8 +172,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     HttpConnection jc = HttpHelper.createConnection();
     JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
     ServiceList sl = new ServiceList();
-    PayloadFromMetadataService pms = new PayloadFromMetadataService();
-    pms.setTemplate(TEXT);
+    PayloadFromTemplateService pms = new PayloadFromTemplateService().withTemplate(TEXT);
     sl.add(pms);
     sl.add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
     Channel c = createChannel(jc, createWorkflow(mc, mock, sl));
@@ -205,8 +204,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     HttpConnection jc = HttpHelper.createConnection();
     JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
     ServiceList sl = new ServiceList();
-    PayloadFromMetadataService pms = new PayloadFromMetadataService();
-    pms.setTemplate(TEXT);
+    PayloadFromTemplateService pms = new PayloadFromTemplateService().withTemplate(TEXT);
     sl.add(pms);
     sl.add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
     Channel c = createChannel(jc, createWorkflow(mc, mock, sl));
@@ -238,8 +236,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
     Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList()));
     StandardWorkflow workflow = (StandardWorkflow) c.getWorkflowList().get(0);
-    PayloadFromMetadataService pms = new PayloadFromMetadataService();
-    pms.setTemplate(TEXT);
+    PayloadFromTemplateService pms = new PayloadFromTemplateService().withTemplate(TEXT);
     workflow.getServiceCollection().add(pms);
     workflow.getServiceCollection().add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
     StandardHttpProducer stdHttp = new StandardHttpProducer(HttpHelper.createProduceDestination(c));
@@ -269,8 +266,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
     Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList()));
     StandardWorkflow workflow = (StandardWorkflow) c.getWorkflowList().get(0);
-    PayloadFromMetadataService pms = new PayloadFromMetadataService();
-    pms.setTemplate(TEXT);
+    PayloadFromTemplateService pms = new PayloadFromTemplateService().withTemplate(TEXT);
     workflow.getServiceCollection().add(pms);
     workflow.getServiceCollection().add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
 
@@ -446,7 +442,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
 
     ServiceList services = new ServiceList();
-    services.add(new PayloadFromMetadataService(TEXT));
+    services.add(new PayloadFromTemplateService().withTemplate(TEXT));
     services.add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.UNAUTHORIZED_401)));
     Channel c = createChannel(jc, createWorkflow(mc, mock, services));
     StandardHttpProducer stdHttp = new StandardHttpProducer(HttpHelper.createProduceDestination(c));
@@ -825,7 +821,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
     mc.setSendProcessingInterval(new TimeInterval(100L, TimeUnit.MILLISECONDS));
     ServiceList services = new ServiceList();
-    services.add(new PayloadFromMetadataService(TEXT));
+    services.add(new PayloadFromTemplateService().withTemplate(TEXT));
     services.add(new WaitService(new TimeInterval(2L, TimeUnit.SECONDS)));
     services.add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
     

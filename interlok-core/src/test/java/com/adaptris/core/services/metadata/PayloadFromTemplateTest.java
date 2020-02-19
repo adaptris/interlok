@@ -19,6 +19,8 @@ package com.adaptris.core.services.metadata;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.fail;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -26,8 +28,7 @@ import com.adaptris.core.MetadataElement;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
-@SuppressWarnings("deprecation")
-public class PayloadFromMetadataTest extends MetadataServiceExample {
+public class PayloadFromTemplateTest extends MetadataServiceExample {
 
   private static final String PAYLOAD_EXP_NEWLINE_RESULT = "{ \n\"key\": \"Hello\"\n}";
   private static final String PAYLOAD_EXPR_RESULT = "{ \"key\": \"Hello\"}";
@@ -40,14 +41,11 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
     return true;
   }
 
-  private PayloadFromMetadataService createService() {
-    KeyValuePair k = new KeyValuePair();
-    k.setKey(DEFAULT_METADATA_KEY);
-    k.setValue("__HELLO__");
-    KeyValuePairSet kvps = new KeyValuePairSet();
-    kvps.addKeyValuePair(k);
-    PayloadFromMetadataService service = new PayloadFromMetadataService("__HELLO__ World").withMetadataTokens(kvps);
-    return service;
+  private PayloadFromTemplateService createService() {
+    Map<String, String> map = new HashMap<>();
+    map.put(DEFAULT_METADATA_KEY, "__HELLO__");
+    return
+        new PayloadFromTemplateService().withTemplate("__HELLO__ World").withQuoteReplacement(true).withMetadataTokens(map);
   }
 
   private AdaptrisMessage createMessage() {
@@ -58,8 +56,8 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
 
   @Test
   public void testValid() throws Exception {
-    PayloadFromMetadataService s1 = createService().withQuietMode(true);
-    PayloadFromMetadataService s2 = createService().withQuietMode(false);
+    PayloadFromTemplateService s1 = createService().withQuietMode(true);
+    PayloadFromTemplateService s2 = createService().withQuietMode(false);
     AdaptrisMessage msg = createMessage();
     execute(s1, msg);
     assertEquals("Hello", msg.getMetadataValue(DEFAULT_METADATA_KEY));
@@ -71,8 +69,8 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
 
   @Test
   public void testNoMetadataMatch() throws Exception {
-    PayloadFromMetadataService s1 = createService().withQuietMode(false);
-    PayloadFromMetadataService s2 = createService().withQuietMode(true);
+    PayloadFromTemplateService s1 = createService().withQuietMode(false);
+    PayloadFromTemplateService s2 = createService().withQuietMode(true);
     AdaptrisMessage msg = createMessage();
     msg.removeMetadata(new MetadataElement(DEFAULT_METADATA_KEY, ""));
     execute(s1, msg);
@@ -84,8 +82,8 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
   }
 
   @Test
-  public void testService_MetadataValueHasSlash_WillEscape() throws Exception {
-    PayloadFromMetadataService service = createService();
+  public void testService_MetadataValueHasSlash_CanEscape() throws Exception {
+    PayloadFromTemplateService service = createService();
     AdaptrisMessage msg = createMessage();
     msg.addMetadata(DEFAULT_METADATA_KEY, "\\tHello");
     execute(service, msg);
@@ -95,7 +93,7 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
 
   @Test
   public void testService_MetadataValueHasSlash_NoEscape() throws Exception {
-    PayloadFromMetadataService service = createService().withEscapeBackslash(false);
+    PayloadFromTemplateService service = createService().withQuoteReplacement(false);
     AdaptrisMessage msg = createMessage();
     msg.addMetadata(DEFAULT_METADATA_KEY, "\\tHello");
     execute(service, msg);
@@ -105,7 +103,7 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
 
   @Test
   public void testService_MetadataValueHasDollar_NoEscape() throws Exception {
-    PayloadFromMetadataService service = createService().withEscapeBackslash(false);
+    PayloadFromTemplateService service = createService().withQuoteReplacement(false);
     AdaptrisMessage msg = createMessage();
     msg.addMetadata(DEFAULT_METADATA_KEY, "Hello$");
     try {
@@ -135,7 +133,7 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
 
   @Test
   public void testService_MetadataValueHasDollar_CanEscape() throws Exception {
-    PayloadFromMetadataService service = createService().withEscapeBackslash(true);
+    PayloadFromTemplateService service = createService().withQuoteReplacement(true);
     AdaptrisMessage msg = createMessage();
     msg.addMetadata(DEFAULT_METADATA_KEY, "Hello$");
     execute(service, msg);
@@ -145,7 +143,7 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
 
   @Test
   public void testService_Expression() throws Exception {
-    PayloadFromMetadataService service = new PayloadFromMetadataService(PAYLOAD_TEMPLATE_EXPR).withQuietMode(false);
+    PayloadFromTemplateService service = createService().withTemplate(PAYLOAD_TEMPLATE_EXPR).withQuietMode(false);
     AdaptrisMessage msg = createMessage();
     execute(service, msg);
     assertEquals(PAYLOAD_EXPR_RESULT,msg.getContent());
@@ -153,8 +151,10 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
 
   @Test
   public void testService_Expression_WithNewLine() throws Exception {
-    PayloadFromMetadataService s1 = new PayloadFromMetadataService(PAYLOAD_TEMPLATE_EXP_NEWLINE).withMultiLineExpression(true);
-    PayloadFromMetadataService s2 = new PayloadFromMetadataService(PAYLOAD_TEMPLATE_EXP_NEWLINE).withMultiLineExpression(false);
+    PayloadFromTemplateService s1 =
+        new PayloadFromTemplateService().withTemplate(PAYLOAD_TEMPLATE_EXP_NEWLINE).withMultiLineExpression(true);
+    PayloadFromTemplateService s2 =
+        new PayloadFromTemplateService().withTemplate(PAYLOAD_TEMPLATE_EXP_NEWLINE).withMultiLineExpression(false);
     AdaptrisMessage msg = createMessage();
     execute(s1, msg);
     assertEquals(PAYLOAD_EXP_NEWLINE_RESULT,msg.getContent());
@@ -174,7 +174,8 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
 
   @Override
   protected Object retrieveObjectForSampleConfig() {
-    return createService();
+    return new PayloadFromTemplateService().withTemplate("{\n\"message\": \"%message{helloMetadataKey} World\"\n}")
+        .withMultiLineExpression(true);
   }
 
   @Override
@@ -183,14 +184,9 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
         + "\n<!-- \n In this instance you have a metadata key 'helloMetadataKey' that has the contents 'Goodbye Cruel '"
         + "stored against it\n"
         + "We want to replace the existing payload with the contents of 'helloMetadataKey' along with the\n"
-        + "static string 'World'\n"
-        + "We configure the template with an arbitary token (bearing in mind possible REGEXP replacement issues);\n"
-        + "so we have a template of __HELLO__World, where we intend to replace __HELLO__ with the contents of \n"
-        + "'helloMetadataKey'. We subsequently configure the metadata-tokens so that each metadata-token contains\n"
-        + "the 'metadata key we wish to use' and the value contains 'the token we wish to replace in the template'\n"
-        + "\nAfter executing this service, the contents of the message will be 'Goodbye Cruel World'" + "\n"
-        + "\nIf you have special characters stored in the metadata key such as '\' or '$' then escape-backslash should"
-        + "\nbe set to true so that they are not treated as special characters during the replacement phase." + "\n-->\n";
+        + "static string 'World'. Since the template extends over multiple lines, we set multi-line-expression to\n"
+        + "be true"
+        + "\n-->\n";
   }
 
 }
