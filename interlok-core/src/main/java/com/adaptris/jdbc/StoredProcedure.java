@@ -17,17 +17,14 @@
 package com.adaptris.jdbc;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -69,7 +66,7 @@ public class StoredProcedure {
     try {
       String sqlStatement =getStatementCreator().createCall(getName(), getParameters().size());
       log.trace("Generated SQL Statement [{}]", sqlStatement);
-      CallableStatement statement = getConnection().prepareCall(sqlStatement);
+      CallableStatement statement = getConnection().prepareCall(sqlStatement); // lgtm [java/database-resource-leak]
       if (timeout > 0) {
         statement.setQueryTimeout((int) TimeUnit.MILLISECONDS.toSeconds(this.getTimeout()));
       }
