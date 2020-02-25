@@ -56,7 +56,7 @@ public class PayloadFromMetadataService extends PayloadFromTemplateService {
   @Removal(version = "3.12.0", message = "use quote-replacement instead")
   private Boolean escapeBackslash;
 
-  private boolean warningLogged = false;
+  private transient boolean warningLogged = false;
 
   public PayloadFromMetadataService() {
     setMultiLineExpression(Boolean.FALSE);
