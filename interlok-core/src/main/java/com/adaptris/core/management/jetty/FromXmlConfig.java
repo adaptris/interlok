@@ -91,7 +91,7 @@ final class FromXmlConfig extends ServerBuilder {
   private static URL relativeConfig(URI uri) throws Exception {
     String pwd = backslashToSlash(System.getProperty("user.dir"));
     String path = pwd + "/" + uri;
-    URL result = new URL("file:///" + path);
+    URL result = new URL(new URI("file", path, null).toASCIIString());
     return result;
   }
 
