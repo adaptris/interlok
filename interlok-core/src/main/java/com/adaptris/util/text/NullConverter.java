@@ -23,6 +23,7 @@ package com.adaptris.util.text;
  * @author lchan
  * 
  */
+@FunctionalInterface
 public interface NullConverter {
 
   /**
