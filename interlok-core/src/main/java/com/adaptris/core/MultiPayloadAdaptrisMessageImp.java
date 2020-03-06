@@ -261,7 +261,11 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
    */
   @Override
   public void addContent(@NotNull String payloadId, String payloadString) {
-    addContent(payloadId, payloadString, null);
+    String encoding = null;
+    if (payloads.containsKey(payloadId)) {
+      encoding = getContentEncoding(payloadId);
+    }
+    addContent(payloadId, payloadString, encoding);
   }
 
   /**
@@ -336,7 +340,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
    */
   @Override
   public void setContentEncoding(@NotNull String payloadId, String enc) {
-    String contentEncoding = enc != null ? Charset.forName(enc).name() : null;
+    String contentEncoding = enc != null ? Charset.forName(enc).name() : getFactory().getDefaultCharEncoding();
     Payload payload;
     if (payloads.containsKey(payloadId)) {
       payload = payloads.get(payloadId);
@@ -360,7 +364,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
    */
   @Override
   public String getContentEncoding(@NotNull String payloadId) {
-    return payloads.get(payloadId).encoding;
+    return payloads.containsKey(payloadId) ? payloads.get(payloadId).encoding : getFactory().getDefaultCharEncoding();
   }
 
   /**
@@ -505,7 +509,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
   }
 
   private class Payload {
-    String encoding;
+    String encoding = getFactory().getDefaultCharEncoding();
     private byte[] data;
     private ByteArrayOutputStream stream;
 
