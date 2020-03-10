@@ -111,16 +111,20 @@ public class UnifiedBootstrap {
   }
 
   public void init(AdapterManagerMBean adapter) throws Exception {
-    bootstrapProperties.getConfigManager().syncAdapterConfiguration(adapter);
-    adapterRegistry = bootstrapProperties.getConfigManager().getAdapterRegistry();
-    bootstrapProperties.setProperty(Constants.CFG_JMX_LOCAL_ADAPTER_UID, adapter.getUniqueId());
+    if (adapter != null) {
+      bootstrapProperties.getConfigManager().syncAdapterConfiguration(adapter);
+      adapterRegistry = bootstrapProperties.getConfigManager().getAdapterRegistry();
+      bootstrapProperties.setProperty(Constants.CFG_JMX_LOCAL_ADAPTER_UID, adapter.getUniqueId());
+    }
     ManagementComponentFactory.create(bootstrapProperties);
     ManagementComponentFactory.initCreated(bootstrapProperties);
   }
 
   public void start() throws Exception {
     ManagementComponentFactory.startCreated(bootstrapProperties);
-    tryStart(adapterRegistry.getAdapters());
+    if (adapterRegistry != null) {
+      tryStart(adapterRegistry.getAdapters());
+    }
   }
 
   private void tryStart(Set<ObjectName> adapters) throws Exception {

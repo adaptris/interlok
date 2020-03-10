@@ -41,28 +41,32 @@ abstract class CmdLineBootstrap {
   private static final String[] ARG_CONFIG_CHECK = new String[]
   {
       "-configtest", "-configcheck", "--configtest", "--configcheck"
-
   };
 
   private static final String[] ARG_VERSION = new String[]
   {
       "-version", "--version"
-
   };
 
   private static final String[] ARG_BOOTSTRAP_PROPERTIES = new String[]
   {
       "-file", "--file"
+  };
 
+  private static final String[] ARG_JETTY_ONLY = new String[]
+  {
+    "--jettyonly"
   };
 
   private transient String bootstrapResource;
   private transient ArgUtil arguments;
   private transient boolean configCheckOnly = false;
+  private transient boolean jettyOnly = false;
 
   protected boolean configCheckOnly() {
     return configCheckOnly;
   }
+
 
   protected String getBootstrapResource() {
     return bootstrapResource;
@@ -95,7 +99,7 @@ abstract class CmdLineBootstrap {
   protected void startAdapter(BootstrapProperties bootProperties) throws Exception {
     boolean startQuietly = bootProperties.isEnabled(CFG_KEY_START_QUIETLY);
     final UnifiedBootstrap bootstrap = new UnifiedBootstrap(bootProperties);
-    AdapterManagerMBean adapter = bootstrap.createAdapter();
+    AdapterManagerMBean adapter = jettyOnly ? null : bootstrap.createAdapter();
     if (!configCheckOnly()) {
       bootstrap.init(adapter);
       Runtime.getRuntime().addShutdownHook(new ShutdownHandler(bootProperties));
@@ -146,6 +150,7 @@ abstract class CmdLineBootstrap {
       }
       configCheckOnly = true;
     }
+    jettyOnly = arguments.hasArgument(ARG_JETTY_ONLY);
   }
 
   /**
