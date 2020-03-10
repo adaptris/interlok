@@ -19,12 +19,11 @@ package com.adaptris.core.management;
 import com.adaptris.core.management.logging.LoggingConfigurator;
 
 /**
- * Entry point into an adapter from the commandline.
- * <p>
- * Basically the same as StandardBootstrap but without the classpath initialization.
- * </p>
+ * Entry point into an adapter from the command line.
  *
- * @author gcsiki
+ * Basically the same as {@SimpleBootstrap} but without the Adapter being started.
+ *
+ * @author aanderson
  */
 public class NoAdapterBootstrap extends CmdLineBootstrap {
 
