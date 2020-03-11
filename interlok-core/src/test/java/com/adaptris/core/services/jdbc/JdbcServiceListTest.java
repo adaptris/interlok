@@ -16,6 +16,10 @@
 
 package com.adaptris.core.services.jdbc;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -24,7 +28,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ComponentLifecycle;
@@ -48,15 +52,11 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
   private static final String CFG_JDBC_URL = "jdbc.jdbcservicelist.url";
   private static final String CFG_JDBC_DRIVER = "jdbc.jdbcservicelist.driver";
 
-  public JdbcServiceListTest(String name) {
-    super(name);
-  }
-
   @Override
-  public void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
-
-
+  @Test
   public void testSetConnection() {
     JdbcConnection connection = new JdbcConnection();
     JdbcServiceList list = new JdbcServiceList();
@@ -69,6 +69,7 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
     assertNull(list.connection());
   }
 
+  @Test
   public void testServiceList_NoConnectionInObjectMetadata() throws Exception {
     createDatabase();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -79,6 +80,7 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
     assertFalse(msg.getObjectHeaders().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY));
   }
 
+  @Test
   public void testServiceList_SqlConnectionInObjectMetadata() throws Exception {
     createDatabase();
     JdbcServiceList service = createServiceCollection();
@@ -90,6 +92,7 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
     Connection sqlCon = (Connection) msg.getObjectHeaders().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
   }
 
+  @Test
   public void testServiceList_NoConnectionInObjectMetadata_WithException() throws Exception {
     createDatabase();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -111,6 +114,7 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
     assertFalse(msg.getObjectHeaders().containsKey(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY));
   }
 
+  @Test
   public void testServiceList_SequenceNumber_Commit_AutoCommit() throws Exception {
     createDatabase();
     JdbcServiceList service = createServiceCollection();
@@ -124,6 +128,7 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
     Connection sqlCon = (Connection) msg.getObjectHeaders().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
   }
 
+  @Test
   public void testServiceList_PooledConnection() throws Exception {
     int maxServices = 5;
     final int iterations = 5;
@@ -162,7 +167,8 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
       Thread.currentThread().setName(name);
     }
   }
-  
+
+  @Test
   public void testServiceList_AdvancedPooledConnection() throws Exception {
     int maxServices = 5;
     final int iterations = 5;
@@ -202,6 +208,7 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
     }
   }
 
+  @Test
   public void testServiceList_SequenceNumber_NoAutoCommit() throws Exception {
     createDatabase();
     JdbcServiceList service = createServiceCollection();
@@ -218,6 +225,7 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
     Connection sqlCon = (Connection) msg.getObjectHeaders().get(JdbcConstants.OBJ_METADATA_DATABASE_CONNECTION_KEY);
   }
 
+  @Test
   public void testServiceList_ExceptionRollsback() throws Exception {
     createDatabase();
     JdbcServiceList service = createServiceCollection();
@@ -254,6 +262,7 @@ public class JdbcServiceListTest extends ServiceCollectionCase {
     }
   }
 
+  @Test
   public void testServiceList_RuntimeExceptionRollsback() throws Exception {
     createDatabase();
     JdbcServiceList service = createServiceCollection();

@@ -17,14 +17,10 @@
 package com.adaptris.core.services.metadata;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 import java.io.UnsupportedEncodingException;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.util.text.Base64ByteTranslator;
-import com.adaptris.util.text.ByteTranslator;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -36,16 +32,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config metadata-base64-decode
  * 
- * 
- * 
  */
 @XStreamAlias("metadata-base64-encode")
 @AdapterComponent
 @ComponentProfile(summary = "Base64 encode an item of metadata", tag = "service,metadata,base64")
 @DisplayOrder(order = {"metadataKeyRegexp", "metadataLogger"})
-public class Base64EncodeMetadataService extends ReformatMetadata {
-
-  private transient ByteTranslator byteTranslator = new Base64ByteTranslator();
+public class Base64EncodeMetadataService extends Base64MetadataService {
 
   public Base64EncodeMetadataService() {
     super();
@@ -57,7 +49,7 @@ public class Base64EncodeMetadataService extends ReformatMetadata {
 
   @Override
   public String reformat(String s, String charEncoding) throws Exception {
-    return byteTranslator.translate(toBytes(s, charEncoding));
+    return style().encoder().encodeToString(toBytes(s, charEncoding));
   }
 
   private byte[] toBytes(String metadataValue, String charset) throws UnsupportedEncodingException {

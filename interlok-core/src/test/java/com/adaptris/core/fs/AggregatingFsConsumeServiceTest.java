@@ -16,10 +16,14 @@
 
 package com.adaptris.core.fs;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.services.aggregator.AggregatingServiceExample;
@@ -38,18 +42,12 @@ public class AggregatingFsConsumeServiceTest extends AggregatingServiceExample {
   protected static final String DATA_PAYLOAD = "Pack my box with five dozen liquor jugs";
   protected static final String INITIAL_PAYLOAD = "Glib jocks quiz nymph to vex dwarf";
 
-  public AggregatingFsConsumeServiceTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  public void setUp() throws Exception {
-    super.setUp();
-  }
-
-  public void tearDown() throws Exception {
-    super.tearDown();
-  }
-
+  @Test
   public void testService() throws Exception {
     Object o = new Object();
     File tempFile = TempFileUtils.createTrackedFile(o);
@@ -73,6 +71,7 @@ public class AggregatingFsConsumeServiceTest extends AggregatingServiceExample {
     }
   }
 
+  @Test
   public void testServiceNonDeleting() throws Exception {
     Object o = new Object();
     File tempFile = TempFileUtils.createTrackedFile(o);
@@ -97,6 +96,7 @@ public class AggregatingFsConsumeServiceTest extends AggregatingServiceExample {
     }
   }
 
+  @Test
   public void testService_MultipleMessages() throws Exception {
     GuidGenerator o = new GuidGenerator();
     File tempDir = TempFileUtils.createTrackedDir(o);

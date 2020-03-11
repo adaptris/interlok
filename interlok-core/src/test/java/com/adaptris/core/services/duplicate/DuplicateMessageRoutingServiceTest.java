@@ -16,7 +16,12 @@
 
 package com.adaptris.core.services.duplicate;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.File;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -31,12 +36,14 @@ public class DuplicateMessageRoutingServiceTest extends SyntaxRoutingServiceExam
   private static final String UNIQUE_KEY = "uniqueKey";
   private static final String KEY_DUPLICATE_STORE = "DuplicateMessageRoutingService.store";
 
-  public DuplicateMessageRoutingServiceTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void setUp() throws Exception {
+
+  @Before
+  public void setUp() throws Exception {
 
     File f = FsHelper.toFile(PROPERTIES.getProperty(KEY_DUPLICATE_STORE));
     if (f.exists()) {
@@ -44,6 +51,7 @@ public class DuplicateMessageRoutingServiceTest extends SyntaxRoutingServiceExam
     }
   }
 
+  @Test
   public void testService() throws Exception {
     DuplicateMessageRoutingService service = createService();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("ASDF");
@@ -58,6 +66,7 @@ public class DuplicateMessageRoutingServiceTest extends SyntaxRoutingServiceExam
     assertConfigStoreExists();
   }
 
+  @Test
   public void testServiceHistory() throws Exception {
     DuplicateMessageRoutingService service = createService();
     start(service);
@@ -79,7 +88,7 @@ public class DuplicateMessageRoutingServiceTest extends SyntaxRoutingServiceExam
     assertConfigStoreExists();
   }
 
-
+  @Test
   public void testStaticMethods() throws Exception {
     
     DuplicateMessageRoutingService.tryAndLog("hello", () -> {

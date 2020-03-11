@@ -16,16 +16,16 @@
 
 package com.adaptris.core.services.metadata.xpath;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 
 public abstract class ConfiguredXpathQueryCase extends XpathQueryCase {
 
-  public ConfiguredXpathQueryCase(String testName) {
-    super(testName);
-  }
-
-
+  @Test
   public void testSetXpathQuery() throws Exception {
     ConfiguredXpathQueryImpl query = (ConfiguredXpathQueryImpl) create();
     assertNull(query.getXpathQuery());
@@ -49,6 +49,7 @@ public abstract class ConfiguredXpathQueryCase extends XpathQueryCase {
     assertEquals("//root", query.getXpathQuery());
   }
 
+  @Test
   public void testInit_NoXpathQuery() throws Exception {
     ConfiguredXpathQueryImpl query = (ConfiguredXpathQueryImpl) create();
     query.setMetadataKey("key");
@@ -62,6 +63,7 @@ public abstract class ConfiguredXpathQueryCase extends XpathQueryCase {
     }
   }
 
+  @Test
   public void testCreateXpath() throws Exception {
     ConfiguredXpathQueryImpl query = (ConfiguredXpathQueryImpl) create();
     query.setXpathQuery("//root");

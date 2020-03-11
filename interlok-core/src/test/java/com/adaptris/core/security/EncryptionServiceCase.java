@@ -18,7 +18,10 @@ package com.adaptris.core.security;
 
 import static com.adaptris.core.security.JunitSecurityHelper.SECURITY_ALIAS;
 import static com.adaptris.core.security.JunitSecurityHelper.SECURITY_PASSWORD;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreConstants;
@@ -66,15 +69,7 @@ public abstract class EncryptionServiceCase extends SecurityServiceCase {
       + "tItpX25JP3RhnzFrwriwUyFshUaF+J05O+6P2WilvUsX7+Q1prU7POnyizhdlvlt" + "6c+G3SjCAdM/oKJB1LSVLuxUzx0vTs2S"
       + "</X509Certificate>" + "</X509Data>" + "</KeyInfo>";
 
-  public EncryptionServiceCase(String name) {
-    super(name);
-  }
-
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-  }
-
+  @Test
   public void testEncryptionDecryptionWithLegacyProvider() throws Exception {
     String url = createKeystore();
     CoreSecurityService input = create();
@@ -89,6 +84,7 @@ public abstract class EncryptionServiceCase extends SecurityServiceCase {
     assertEquals("Payload equality", EXAMPLE_MSG, msg.getContent());
   }
 
+  @Test
   public void testEncryptionDecryptionWithConfiguredProvider() throws Exception {
     String url = createKeystore();
     CoreSecurityService input = create();
@@ -103,6 +99,7 @@ public abstract class EncryptionServiceCase extends SecurityServiceCase {
     assertEquals("Payload equality", EXAMPLE_MSG, msg.getContent());
   }
 
+  @Test
   public void testEncryptionDecryptionWithMissingPrivateKeyPassword() throws Exception {
     String url = createKeystore();
     CoreSecurityService input = create();
@@ -117,6 +114,7 @@ public abstract class EncryptionServiceCase extends SecurityServiceCase {
     assertEquals("Payload equality", EXAMPLE_MSG, msg.getContent());
   }
 
+  @Test
   public void testEncryptionDecryptionWithEncryptedPassword() throws Exception {
     String url = createKeystore();
     CoreSecurityService input = create();
@@ -132,6 +130,7 @@ public abstract class EncryptionServiceCase extends SecurityServiceCase {
     assertEquals("Payload equality", EXAMPLE_MSG, msg.getContent());
   }
 
+  @Test
   public void testFailedEncryption() throws Exception {
     String url = createKeystore();
     CoreSecurityService input = create();
@@ -147,6 +146,7 @@ public abstract class EncryptionServiceCase extends SecurityServiceCase {
     }
   }
 
+  @Test
   public void testFailedEncryptionWithBranch() throws Exception {
     String url = createKeystore();
     CoreSecurityService input = create();
@@ -162,6 +162,7 @@ public abstract class EncryptionServiceCase extends SecurityServiceCase {
 
   }
 
+  @Test
   public void testSuccessfulEncryptionWithBranch() throws Exception {
     String url = createKeystore();
     CoreSecurityService input = create();
@@ -178,6 +179,7 @@ public abstract class EncryptionServiceCase extends SecurityServiceCase {
     assertEquals("Payload equality", EXAMPLE_MSG, msg.getContent());
   }
 
+  @Test
   public void testRoundTripWithRemotePartnerFromDefaultMetadata() throws Exception {
     String url = createKeystore();
     CoreSecurityService input = create();
@@ -193,6 +195,7 @@ public abstract class EncryptionServiceCase extends SecurityServiceCase {
     assertEquals("Payload equality", EXAMPLE_MSG, msg.getContent());
   }
 
+  @Test
   public void testRoundTripWithRemotePartnerFromCustomMetadata() throws Exception {
     String url = createKeystore();
     CoreSecurityService input = create();
@@ -210,6 +213,7 @@ public abstract class EncryptionServiceCase extends SecurityServiceCase {
     assertEquals("Payload equality", EXAMPLE_MSG, msg.getContent());
   }
 
+  @Test
   public void testRoundTripWithBadMetadata() throws Exception {
     String url = createKeystore();
     CoreSecurityService input = create();

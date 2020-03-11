@@ -15,9 +15,15 @@
  */
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import org.junit.Test;
 import com.adaptris.core.services.LogMessageService;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
@@ -26,10 +32,10 @@ import com.adaptris.core.util.LifecycleHelper;
 
 public class SharedServiceTest extends ServiceCase {
 
-  public SharedServiceTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
-
   @Override
   protected Object retrieveObjectForSampleConfig() {
     return new SharedService("example-shared-service");
@@ -54,15 +60,7 @@ public class SharedServiceTest extends ServiceCase {
     return SharedService.class.getName();
   }
 
-  @Override
-  public void setUp() throws Exception {
-  }
-
-  @Override
-  public void tearDown() throws Exception {
-
-  }
-
+  @Test
   public void testContinueOnFail() {
     SharedService sharedService = new SharedService(getName());
     assertNull(sharedService.getContinueOnFail());
@@ -71,6 +69,7 @@ public class SharedServiceTest extends ServiceCase {
     assertTrue(sharedService.continueOnFailure());
   }
 
+  @Test
   public void testIsTrackingEndpoint() {
     SharedService sharedService = new SharedService(getName());
     assertNull(sharedService.getIsTrackingEndpoint());
@@ -79,6 +78,7 @@ public class SharedServiceTest extends ServiceCase {
     assertTrue(sharedService.isTrackingEndpoint());
   }
 
+  @Test
   public void testCloneService() throws Exception {
     NullService mockService = new NullService(getName());
     SharedService sharedService = new SharedService(getName());
@@ -96,6 +96,7 @@ public class SharedServiceTest extends ServiceCase {
     }
   }
 
+  @Test
   public void testNoCloneService() throws Exception {
     NullService mockService = new NullService(getName());
     SharedService sharedService = new SharedService(getName());
@@ -115,6 +116,7 @@ public class SharedServiceTest extends ServiceCase {
     }
   }
 
+  @Test
   public void testDoService() throws Exception {
     MockService mockService = new MockService(getName());
     SharedService sharedService = new SharedService(getName());
@@ -136,6 +138,7 @@ public class SharedServiceTest extends ServiceCase {
     }
   }
 
+  @Test
   public void testDoService_WithFailure() throws Exception {
     ThrowExceptionService mockService = new ThrowExceptionService(getName(), new ConfiguredException("Fail"));
     SharedService sharedService = new SharedService(getName());

@@ -19,10 +19,8 @@ package com.adaptris.core.ftp;
 import static com.adaptris.core.ftp.SftpExampleHelper.createConnectionsForExamples;
 import static com.adaptris.core.ftp.SftpExampleHelper.createPollers;
 import static com.adaptris.core.ftp.SftpExampleHelper.getConfigSimpleName;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.Poller;
 import com.adaptris.core.StandaloneConsumer;
@@ -31,8 +29,7 @@ public class RelaxedSftpConsumerTest extends RelaxedFtpConsumerCase {
 
   private static final String BASE_DIR_KEY = "SftpConsumerExamples.baseDir";
 
-  public RelaxedSftpConsumerTest(String name) {
-    super(name);
+  public RelaxedSftpConsumerTest() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }

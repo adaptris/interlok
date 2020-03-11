@@ -16,20 +16,26 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.util.EncodingHelper.Base64Encoding;
 import com.adaptris.util.text.Base64ByteTranslator;
 
 public class Base64MetadataDecodeTest extends MetadataServiceExample {
 
   private static final String METADATA_KEY = "key";
   
-  public Base64MetadataDecodeTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testService() throws Exception {
-    Base64DecodeMetadataService service = new Base64DecodeMetadataService(METADATA_KEY);
+    Base64DecodeMetadataService service = new Base64DecodeMetadataService(METADATA_KEY).withStyle(Base64Encoding.BASIC);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("asdfghjk");
 
     String metadataValue = new Base64ByteTranslator().translate("Hello World".getBytes());
@@ -40,6 +46,7 @@ public class Base64MetadataDecodeTest extends MetadataServiceExample {
     assertEquals("Hello World", msg.getMetadataValue(METADATA_KEY));
   }
 
+  @Test
   public void testService_Encoding() throws Exception {
     Base64DecodeMetadataService service = new Base64DecodeMetadataService(METADATA_KEY);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("asdfghjk", "UTF-8");

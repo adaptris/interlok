@@ -16,6 +16,11 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,9 +28,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import org.junit.Test;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
-import com.adaptris.core.services.metadata.PayloadFromMetadataService;
+import com.adaptris.core.services.metadata.PayloadFromTemplateService;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.MockSkipProducerService;
@@ -38,14 +44,12 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
   private static final String ORIGINAL_PAYLOAD = PAYLOAD_1;
   private static final String MODIFIED_PAYLOAD = PAYLOAD_2;
 
-  public MultiProducerWorkflowTest(String arg0) {
-    super(arg0);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testToString() throws Exception {
     MockMessageProducer mock1 = new MockMessageProducer();
     MockMessageProducer mock2 = new MockMessageProducer();
@@ -54,12 +58,13 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
         mock1, mock2
     }), Arrays.asList(new Service[]
     {
-      new PayloadFromMetadataService(MODIFIED_PAYLOAD)
+        new PayloadFromTemplateService().withTemplate(MODIFIED_PAYLOAD)
     }));
     MultiProducerWorkflow workflow = (MultiProducerWorkflow) channel.getWorkflowList().get(0);
     assertNotNull(workflow.toString());
   }
 
+  @Test
   public void testUseProcessedMessage() throws Exception {
     MockMessageProducer mock1 = new MockMessageProducer();
     MockMessageProducer mock2 = new MockMessageProducer();
@@ -68,7 +73,7 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
         mock1, mock2
     }), Arrays.asList(new Service[]
     {
-      new PayloadFromMetadataService(MODIFIED_PAYLOAD)
+        new PayloadFromTemplateService().withTemplate(MODIFIED_PAYLOAD)
     }));
     try {
       MultiProducerWorkflow workflow = (MultiProducerWorkflow) channel.getWorkflowList().get(0);
@@ -87,6 +92,7 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testHandleChannelUnavailable_bug2343() throws Exception {
     MockMessageProducer mock1 = new MockMessageProducer();
     MockMessageProducer mock2 = new MockMessageProducer();
@@ -95,7 +101,7 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
         mock1, mock2
     }), Arrays.asList(new Service[]
     {
-      new PayloadFromMetadataService(MODIFIED_PAYLOAD)
+        new PayloadFromTemplateService().withTemplate(MODIFIED_PAYLOAD)
     }));
     try {
       MultiProducerWorkflow workflow = (MultiProducerWorkflow) channel.getWorkflowList().get(0);
@@ -126,6 +132,7 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testUseOriginalMessage() throws Exception {
     MockMessageProducer mock1 = new MockMessageProducer();
     MockMessageProducer mock2 = new MockMessageProducer();
@@ -134,7 +141,7 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
         mock1, mock2
     }), Arrays.asList(new Service[]
     {
-      new PayloadFromMetadataService(MODIFIED_PAYLOAD)
+        new PayloadFromTemplateService().withTemplate(MODIFIED_PAYLOAD)
     }));
     try {
       MultiProducerWorkflow workflow = (MultiProducerWorkflow) channel.getWorkflowList().get(0);
@@ -153,6 +160,7 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testOnMessage_SkipProducer() throws Exception {
     MockMessageProducer mock1 = new MockMessageProducer();
     MockMessageProducer mock2 = new MockMessageProducer();
@@ -183,6 +191,7 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testWorkflowWithInterceptor() throws Exception {
     MockMessageProducer mock1 = new MockMessageProducer();
     MockMessageProducer mock2 = new MockMessageProducer();
@@ -193,7 +202,7 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
         mock1, mock2
     }), Arrays.asList(new Service[]
     {
-      new PayloadFromMetadataService(MODIFIED_PAYLOAD)
+        new PayloadFromTemplateService().withTemplate(MODIFIED_PAYLOAD)
     }));
     try {
       MultiProducerWorkflow workflow = (MultiProducerWorkflow) channel.getWorkflowList().get(0);
@@ -214,6 +223,7 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testHandleServiceException() throws Exception {
     System.out.println("*** HandleServiceException START");
     MockMessageProducer mock1 = new MockMessageProducer();
@@ -249,6 +259,7 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
     System.out.println("*** HandleServiceException END");
   }
 
+  @Test
   public void testHandleProduceException() throws Exception {
     MockMessageProducer mock1 = new MockMessageProducer();
     MockMessageProducer mock2 = new MockMessageProducer();
@@ -258,7 +269,7 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
         mock1, mock2
     }), Arrays.asList(new Service[]
     {
-      new PayloadFromMetadataService(MODIFIED_PAYLOAD)
+        new PayloadFromTemplateService().withTemplate(MODIFIED_PAYLOAD)
     }));
     channel.setMessageErrorHandler(new StandardProcessingExceptionHandler(
     		new ServiceList(new ArrayList(Arrays.asList(new Service[]
@@ -293,6 +304,7 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testHandleAdditionalProducerProduceException() throws Exception {
     MockMessageProducer mock1 = new MockMessageProducer() {
       @Override
@@ -311,7 +323,7 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
         mock1, mock2
     }), Arrays.asList(new Service[]
     {
-      new PayloadFromMetadataService(MODIFIED_PAYLOAD)
+        new PayloadFromTemplateService().withTemplate(MODIFIED_PAYLOAD)
     }));
     try {
       MultiProducerWorkflow workflow = (MultiProducerWorkflow) channel.getWorkflowList().get(0);
@@ -329,6 +341,7 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testHandleRuntimeException() throws Exception {
     MockMessageProducer mock1 = new MockMessageProducer();
     MockMessageProducer mock2 = new MockMessageProducer();
@@ -338,7 +351,7 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
         mock1, mock2
     }), Arrays.asList(new Service[]
     {
-      new PayloadFromMetadataService(MODIFIED_PAYLOAD)
+        new PayloadFromTemplateService().withTemplate(MODIFIED_PAYLOAD)
 
     }));
     channel.setMessageErrorHandler(new StandardProcessingExceptionHandler(
@@ -374,6 +387,7 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testOnMessage_withConsumeLocation() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     MockChannel channel = createChannel(Arrays.asList( new AdaptrisMessageProducer[] {
@@ -394,6 +408,7 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testOnMessage_withConsumeLocation_NoMatch() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     MockChannel channel = createChannel(Arrays.asList(new AdaptrisMessageProducer[] {producer}),
@@ -447,6 +462,7 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
     return new MultiProducerWorkflow();
   }
 
+  @Test
   public void testAddStandaloneProducer() {
     MultiProducerWorkflow wf = new MultiProducerWorkflow();
     wf.addStandaloneProducer(new StandaloneProducer());
@@ -460,6 +476,7 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
     assertEquals(1, wf.getStandaloneProducers().size());
   }
 
+  @Test
   public void testSetStandaloneProducers() {
     MultiProducerWorkflow wf = new MultiProducerWorkflow();
     wf.setStandaloneProducers(Arrays.asList(new StandaloneProducer[]

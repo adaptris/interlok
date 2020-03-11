@@ -357,28 +357,6 @@ public abstract class CoreConstants {
   @Removal(version = "3.11.0")
   public static final String JCO_IDOCTYP = "jcoidoctyp";
 
-
-  /**
-   * @deprecated since 3.8.0 use {@link com.adaptris.core.http.jetty.JettyConstants#JETTY_URL} instead
-   */
-  @Deprecated
-  @Removal(version = "3.10.0")
-  public static final String JETTY_URL = com.adaptris.core.http.jetty.JettyConstants.JETTY_URL;
-
-  /**
-   * @deprecated since 3.8.0 use {@link com.adaptris.core.http.jetty.JettyConstants#JETTY_URI} instead
-   */
-  @Deprecated
-  @Removal(version = "3.10.0")
-  public static final String JETTY_URI = com.adaptris.core.http.jetty.JettyConstants.JETTY_URI;
-
-  /**
-   * @deprecated since 3.8.0 use {@link com.adaptris.core.http.jetty.JettyConstants#JETTY_QUERY_STRING} instead
-   */
-  @Deprecated
-  @Removal(version = "3.10.0")
-  public static final String JETTY_QUERY_STRING = com.adaptris.core.http.jetty.JettyConstants.JETTY_QUERY_STRING;
-
   /**
    * <p>
    * Metadata key for storing the directory where a file was consumed from.
@@ -424,5 +402,12 @@ public abstract class CoreConstants {
    * @since 3.9.0
    */
   public static final String MESSAGE_CONSUME_LOCATION = "_interlokMessageConsumedFrom";
+
+  /**
+   * Object metadata that stores the on success callback.
+   * 
+   * @see Workflow#onAdaptrisMessage(AdaptrisMessage, java.util.function.Consumer, java.util.function.Consumer)
+   */
+  public static final String OBJ_METADATA_ON_SUCCESS_CALLBACK = "_onSuccessCallback";
 
 }

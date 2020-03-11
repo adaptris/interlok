@@ -16,10 +16,12 @@
 
 package com.adaptris.core.lms;
 
+import java.util.function.Consumer;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.ListenerCallbackHelper;
 import com.adaptris.core.StandardWorkflow;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -55,7 +57,8 @@ public class LargeMessageWorkflow extends StandardWorkflow {
   }
 
   @Override
-  public synchronized void onAdaptrisMessage(AdaptrisMessage msg) {
+  public synchronized void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success) {
+    ListenerCallbackHelper.prepare(msg, success);
     if (!obtainChannel().isAvailable()) {
       handleChannelUnavailable(msg); // make pluggable?
     }

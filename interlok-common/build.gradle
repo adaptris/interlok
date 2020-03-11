@@ -7,15 +7,14 @@ dependencies {
 
   compile project(':interlok-core-apt')
   compile ("com.thoughtworks.xstream:xstream:$xstreamVersion")
-  compile ("commons-collections:commons-collections:3.2.2")
   compile ("commons-io:commons-io:2.6")
   compile ("commons-net:commons-net:3.6")
   compile ("commons-pool:commons-pool:1.6")
   compile ("org.apache.commons:commons-lang3:3.9")
-  compile ("org.apache.commons:commons-pool2:2.7.0")
+  compile ("org.apache.commons:commons-pool2:2.8.0")
 
   compile ("org.slf4j:slf4j-api:$slf4jVersion")
-  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.24.v20191120")
+  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.26.v20200117")
   compile ("javax.servlet:javax.servlet-api:4.0.1")
 
   annotationProcessor project(':interlok-core-apt')
@@ -23,8 +22,7 @@ dependencies {
 
   javadoc project(':interlok-core-apt')
 
-  testCompile ("log4j:log4j:1.2.17")
-  testCompile ("junit:junit:4.12")
+  testCompile ("junit:junit:4.13")
   testCompile ("org.mockito:mockito-core:$mockitoVersion")
   testCompile ("org.mockito:mockito-inline:$mockitoVersion")
 }

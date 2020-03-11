@@ -16,26 +16,20 @@
 
 package com.adaptris.core.services.jdbc;
 
-import org.junit.After;
-import org.junit.Before;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import org.junit.Test;
-
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.services.jdbc.StatementParameterImpl.QueryType;
 
 public class ShortParameterTest extends BaseCase {
 
-  public ShortParameterTest(String n) {
-    super(n);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Before
-  public void setUp() throws Exception {
-  }
-
-  @After
-  public void tearDown() throws Exception {
-  }
 
   @Test
   public void testConvert() throws Exception {

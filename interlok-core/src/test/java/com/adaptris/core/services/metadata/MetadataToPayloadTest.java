@@ -16,29 +16,29 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.services.metadata.MetadataToPayloadService.Encoding;
 import com.adaptris.core.services.metadata.MetadataToPayloadService.MetadataSource;
+import com.adaptris.core.util.EncodingHelper.Encoding;
 import com.adaptris.util.text.Conversion;
 
+@SuppressWarnings("deprecation")
 public class MetadataToPayloadTest extends MetadataServiceExample {
 
   private static final String DEFAULT_PAYLOAD = "zzzzzzzz";
   private static final String DEFAULT_METADATA_KEY = "helloMetadataKey";
 
-  public MetadataToPayloadTest(String arg0) {
-    super(arg0);
+  private MetadataToPayloadService createService(MetadataSource target) {
+    return new MetadataToPayloadService(DEFAULT_METADATA_KEY, target);
   }
 
   @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-  }
-
-  private MetadataToPayloadService createService(MetadataSource target) {
-    return new MetadataToPayloadService(DEFAULT_METADATA_KEY, target);
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   private AdaptrisMessage createMessage(boolean base64) {
@@ -53,13 +53,15 @@ public class MetadataToPayloadTest extends MetadataServiceExample {
     return msg;
   }
 
+  @Test
   public void testService_Metadata() throws Exception {
     MetadataToPayloadService service = createService(MetadataSource.Standard);
     AdaptrisMessage msg = createMessage(false);
     execute(service, msg);
     assertEquals(DEFAULT_PAYLOAD, msg.getContent());
   }
-  
+
+  @Test
   public void testService_NoMetadata() throws Exception {
     MetadataToPayloadService service = new MetadataToPayloadService("DoesNotExistKey", MetadataSource.Standard);
     AdaptrisMessage msg = createMessage(false);
@@ -70,7 +72,8 @@ public class MetadataToPayloadTest extends MetadataServiceExample {
       // expected.
     }
   }
-  
+
+  @Test
   public void testService_NoObjectMetadata() throws Exception {
     MetadataToPayloadService service = new MetadataToPayloadService("DoesNotExistKey", MetadataSource.Object);
     AdaptrisMessage msg = createMessage(false);
@@ -82,15 +85,16 @@ public class MetadataToPayloadTest extends MetadataServiceExample {
     }
   }
 
+  @Test
   public void testService_Metadata_Encoded() throws Exception {
     MetadataToPayloadService service = createService(MetadataSource.Standard);
-    service.setEncoding(Encoding.Base64);
+    service.setEncoding(Encoding.Basic_Base64);
     AdaptrisMessage msg = createMessage(true);
     execute(service, msg);
     assertEquals(DEFAULT_PAYLOAD, msg.getContent());
   }
 
-
+  @Test
   public void testService_ObjectMetadata() throws Exception {
     MetadataToPayloadService service = createService(MetadataSource.Object);
     AdaptrisMessage msg = createMessage(false);
@@ -99,7 +103,7 @@ public class MetadataToPayloadTest extends MetadataServiceExample {
 
   }
 
-
+  @Test
   public void testService_ObjectMetadata_Encoded() throws Exception {
     MetadataToPayloadService service = createService(MetadataSource.Object);
     service.setEncoding(Encoding.Base64);

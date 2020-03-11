@@ -16,16 +16,21 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
 
 
 public class ProduceExceptionHandlerTest extends BaseCase {
 
-  public ProduceExceptionHandlerTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+
+  @Test
   public void testNullProduceExceptionHandler() throws Exception {
     MockChannel channel = new MockChannel();
     MyStandardWorkflow wf = new MyStandardWorkflow();
@@ -38,6 +43,7 @@ public class ProduceExceptionHandlerTest extends BaseCase {
     assertEquals(1, channel.getStartCount());
   }
 
+  @Test
   public void testRestartProduceExceptionHandler() throws Exception {
     MockChannel channel = new MockChannel();
     MyStandardWorkflow wf = new MyStandardWorkflow();
@@ -51,6 +57,7 @@ public class ProduceExceptionHandlerTest extends BaseCase {
     assertEquals(2, wf.getStartCount());
   }
 
+  @Test
   public void testChannelRestartProduceExceptionHandler() throws Exception {
     MockChannel channel = new MockChannel();
     MyStandardWorkflow wf = new MyStandardWorkflow();

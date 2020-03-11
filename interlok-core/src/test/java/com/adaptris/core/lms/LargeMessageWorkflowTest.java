@@ -15,11 +15,13 @@
 */
 
 package com.adaptris.core.lms;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
@@ -44,20 +46,13 @@ import com.adaptris.core.stubs.MockMessageProducer;
 @SuppressWarnings("deprecation")
 public class LargeMessageWorkflowTest extends StandardWorkflowTest {
 
-  public LargeMessageWorkflowTest(java.lang.String testName) {
-    super(testName);
-  }
-
-  @Override
-  protected void setUp() {
-
-  }
-
+  @Test
   public void testCleanup() {
     FilePurge.getInstance().purge();
   }
 
   @Override
+  @Test
   public void testServiceException() throws Exception {
 
     MockMessageProducer producer = new MockMessageProducer();
@@ -100,6 +95,7 @@ public class LargeMessageWorkflowTest extends StandardWorkflowTest {
   }
 
   @Override
+  @Test
   public void testProduceException() throws Exception {
 
     MockMessageProducer producer = new MockMessageProducer() {
@@ -149,6 +145,7 @@ public class LargeMessageWorkflowTest extends StandardWorkflowTest {
   }
 
   @Override
+  @Test
   public void testRuntimeException() throws Exception {
 
     MockMessageProducer producer = new MockMessageProducer() {

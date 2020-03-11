@@ -18,6 +18,7 @@ package com.adaptris.core;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.BooleanUtils;
@@ -69,15 +70,11 @@ public class MultiProducerWorkflow extends StandardWorkflow {
   }
 
   /**
-   * <p>
-   * This method is <code>synchronized</code> in case client code is
-   * multi-threaded.
-   * </p>
-   *
    * @see AdaptrisMessageListener#onAdaptrisMessage(AdaptrisMessage)
    */
   @Override
-  public synchronized void onAdaptrisMessage(AdaptrisMessage msg) {
+  public synchronized void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success) {
+    ListenerCallbackHelper.prepare(msg, success);
     if (!obtainChannel().isAvailable()) {
       handleChannelUnavailable(msg); // make pluggable?
     }
@@ -104,6 +101,7 @@ public class MultiProducerWorkflow extends StandardWorkflow {
       getServiceCollection().doService(wip);
       doProduce(wip);
       sendProcessedMessage(wip, msg); // only if produce succeeds
+      ListenerCallbackHelper.handleSuccessCallback(wip);
       logSuccess(msg, start);
     }
     catch (ServiceException e) {

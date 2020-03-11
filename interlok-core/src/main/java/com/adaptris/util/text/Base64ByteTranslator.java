@@ -16,6 +16,7 @@
 
 package com.adaptris.util.text;
 
+import java.util.Base64;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -38,7 +39,7 @@ public class Base64ByteTranslator extends ByteTranslator {
    */
   @Override
   public byte[] translate(String s) {
-    return Conversion.base64StringToByteArray(s);
+    return Base64.getDecoder().decode(s);
   }
 
   /**
@@ -47,6 +48,6 @@ public class Base64ByteTranslator extends ByteTranslator {
    */
   @Override
   public String translate(byte[] bytes) {
-    return Conversion.byteArrayToBase64String(bytes);
+    return Base64.getEncoder().encodeToString(bytes);
   }
 }

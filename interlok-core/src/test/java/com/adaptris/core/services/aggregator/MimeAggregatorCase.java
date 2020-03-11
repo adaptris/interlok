@@ -16,12 +16,18 @@
 
 package com.adaptris.core.services.aggregator;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.mail.internet.MimeBodyPart;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -36,18 +42,12 @@ public abstract class MimeAggregatorCase extends AggregatorCase {
 
   protected static final String PAYLOAD = "Pack my box with five dozen liquor jugs.";
 
-  public MimeAggregatorCase(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-  }
-
+  @Test
   public void testSetters() throws Exception {
     MimeAggregator aggr = createAggregatorForTests();
     assertNull(aggr.getEncoding());
@@ -61,6 +61,7 @@ public abstract class MimeAggregatorCase extends AggregatorCase {
     assertEquals("myMetadataKey", aggr.getPartContentTypeMetadataKey());
   }
 
+  @Test
   public void testJoinMessage_NoOverwriteMetadata() throws Exception {
     MimeAggregator aggr = createAggregatorForTests();
     aggr.setOverwriteMetadata(false);
@@ -76,6 +77,7 @@ public abstract class MimeAggregatorCase extends AggregatorCase {
     assertEquals("originalValue", original.getMetadataValue("originalKey"));
   }
 
+  @Test
   public void testJoinMessage_OverwriteMetadata() throws Exception {
     MimeAggregator aggr = createAggregatorForTests();
     aggr.setOverwriteMetadata(true);
@@ -91,6 +93,7 @@ public abstract class MimeAggregatorCase extends AggregatorCase {
     assertEquals("newValue", original.getMetadataValue("originalKey"));
   }
 
+  @Test
   public void testJoinMessage_ContentType() throws Exception {
     MimeAggregator aggr = createAggregatorForTests();
     aggr.setPartContentTypeMetadataKey("MyContentType");
@@ -109,6 +112,7 @@ public abstract class MimeAggregatorCase extends AggregatorCase {
     }
   }
 
+  @Test
   public void testJoinMessage_ContentTypeExpression() throws Exception {
     MimeAggregator aggr = createAggregatorForTests().withPartContentType("%message{MyContentType}");
     Set<MetadataElement> metadata = new HashSet<>();
@@ -127,6 +131,7 @@ public abstract class MimeAggregatorCase extends AggregatorCase {
     }
   }
 
+  @Test
   public void testJoinMessage_ContentId() throws Exception {
     MimeAggregator aggr = createAggregatorForTests();
     aggr.setPartContentIdMetadataKey("MyContentId");
@@ -156,6 +161,7 @@ public abstract class MimeAggregatorCase extends AggregatorCase {
     }
   }
 
+  @Test
   public void testJoinMessage_ContentIdExpression() throws Exception {
     MimeAggregator aggr = createAggregatorForTests().withPartContentId("%message{MyContentId}");
     aggr.setPartContentIdMetadataKey("MyContentId");
@@ -181,6 +187,7 @@ public abstract class MimeAggregatorCase extends AggregatorCase {
     }
   }
 
+  @Test
   public void testJoinMessage_Fails() throws Exception {
     MimeAggregator aggr = createAggregatorForTests();
     AdaptrisMessage original = new DefectiveMessageFactory().newMessage("<envelope/>");
@@ -198,6 +205,7 @@ public abstract class MimeAggregatorCase extends AggregatorCase {
     }
   }
 
+  @Test
   public void testJoinMessage_PartHeaderFilter() throws Exception {
     MimeAggregator aggr = createAggregatorForTests().withPartHeaderFilter(new NoOpMetadataFilter());
     AdaptrisMessage original = AdaptrisMessageFactory.getDefaultInstance().newMessage("<envelope/>",
@@ -215,6 +223,7 @@ public abstract class MimeAggregatorCase extends AggregatorCase {
     assertTrue(payload.contains("ZZLC-split2"));
   }
 
+  @Test
   public void testJoinMessage_MimeHeaderFilter() throws Exception {
     MimeAggregator aggr = createAggregatorForTests().withMimeHeaderFilter(new NoOpMetadataFilter());
     AdaptrisMessage original =
@@ -233,6 +242,7 @@ public abstract class MimeAggregatorCase extends AggregatorCase {
     assertFalse(payload.contains("ZZLC-split2"));
   }
 
+  @Test
   public void testJoinMessage_WithSubType() throws Exception {
     MimeAggregator aggr = createAggregatorForTests().withMimeContentSubType("form-data");
     AdaptrisMessage original =

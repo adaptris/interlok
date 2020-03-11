@@ -22,8 +22,13 @@ import static com.adaptris.core.services.mime.MimeJunitHelper.PAYLOAD_2;
 import static com.adaptris.core.services.mime.MimeJunitHelper.PAYLOAD_3;
 import static com.adaptris.core.services.mime.MimeJunitHelper.create;
 import static com.adaptris.util.text.mime.MimeConstants.HEADER_CONTENT_ENCODING;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreConstants;
@@ -50,9 +55,9 @@ public class MimePartChooserTest extends MimeServiceExample {
       new com.adaptris.util.text.mime.SelectByHeader("Content-Type", "text/xml")
   };
 
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   // overriding to use the list alternative...
@@ -82,6 +87,7 @@ public class MimePartChooserTest extends MimeServiceExample {
     return o.getClass().getName() + "-" + s.getClass().getSimpleName();
   }
 
+  @Test
   public void testInit() throws Exception {
     MimePartSelector mps = createBaseService();
     mps.setSelector(new com.adaptris.util.text.mime.SelectByPosition(10));
@@ -96,6 +102,7 @@ public class MimePartChooserTest extends MimeServiceExample {
     }
   }
 
+  @Test
   public void testSelectWithNoMatch() throws Exception {
     MimePartSelector mps = createBaseService();
     mps.setSelector(new com.adaptris.util.text.mime.SelectByPosition(10));
@@ -107,6 +114,7 @@ public class MimePartChooserTest extends MimeServiceExample {
     assertFalse(ASSERT_PART_CID_HEADER, msg.containsKey(METADATA_PART_HDR_CONTENT_ID));
   }
 
+  @Test
   public void testSelectByContentId() throws Exception {
     MimePartSelector mps = createBaseService();
 
@@ -118,7 +126,7 @@ public class MimePartChooserTest extends MimeServiceExample {
     assertTrue(ASSERT_PART_CID_HEADER, msg.containsKey(METADATA_PART_HDR_CONTENT_ID));
   }
 
-
+  @Test
   public void testSelectByHeader() throws Exception {
     MimePartSelector mps = createBaseService();
 
@@ -130,7 +138,7 @@ public class MimePartChooserTest extends MimeServiceExample {
     assertTrue(ASSERT_PART_CID_HEADER, msg.containsKey(METADATA_PART_HDR_CONTENT_ID));
   }
 
-
+  @Test
   public void testSelectByPosition() throws Exception {
     MimePartSelector mps = createBaseService();
 
@@ -142,7 +150,7 @@ public class MimePartChooserTest extends MimeServiceExample {
     assertTrue(ASSERT_PART_CID_HEADER, msg.containsKey(METADATA_PART_HDR_CONTENT_ID));
   }
 
-
+  @Test
   public void testSelect_NoHeaderMetadata() throws Exception {
     MimePartSelector mps = createBaseService();
     mps.setPreserveHeadersAsMetadata(false);
@@ -155,6 +163,7 @@ public class MimePartChooserTest extends MimeServiceExample {
     assertTrue(ASSERT_PART_CID_HEADER, msg.containsKey(METADATA_PART_HDR_CONTENT_ID));
   }
 
+  @Test
   public void testSelect_NoPartHeaderMetadata() throws Exception {
     MimePartSelector mps = createBaseService();
     mps.setPreserveHeadersAsMetadata(true);
@@ -168,7 +177,7 @@ public class MimePartChooserTest extends MimeServiceExample {
 
   }
 
-
+  @Test
   public void testSelect_MarkAsNotMime() throws Exception {
     MimePartSelector mps = createBaseService();
     mps.setSelector(new com.adaptris.util.text.mime.SelectByPosition(1));
@@ -182,6 +191,7 @@ public class MimePartChooserTest extends MimeServiceExample {
     assertFalse("Should no longer be marked as a MIME Message", msg.containsKey(CoreConstants.MSG_MIME_ENCODED));
   }
 
+  @Test
   public void testSelect_MarkAsNotMime_OriginalWasNotMarked() throws Exception {
     MimePartSelector mps = createBaseService();
     mps.setSelector(new com.adaptris.util.text.mime.SelectByPosition(1));
@@ -196,6 +206,7 @@ public class MimePartChooserTest extends MimeServiceExample {
     assertFalse("Should no longer be marked as a MIME Message", msg.containsKey(CoreConstants.MSG_MIME_ENCODED));
   }
 
+  @Test
   public void testService_MessageIsNotMime() throws Exception {
     MimePartSelector mps = createBaseService();
     mps.setSelector(new com.adaptris.util.text.mime.SelectByPosition(1));

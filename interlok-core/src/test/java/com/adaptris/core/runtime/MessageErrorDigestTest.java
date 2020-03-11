@@ -16,28 +16,28 @@
 
 package com.adaptris.core.runtime;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMessageFactory;
 
-import junit.framework.TestCase;
-
-public class MessageErrorDigestTest extends TestCase {
+public class MessageErrorDigestTest {
 
   private AdaptrisMessageFactory factory;
 
-  @Override
+  @Before
   public void setUp() throws Exception {
     factory = DefaultMessageFactory.getDefaultInstance();
   }
 
-  @Override
-  public void tearDown() throws Exception {
 
-  }
-
+  @Test
   public void testAddMessages() throws Exception {
     MessageErrorDigest digest = new MessageErrorDigest();
     digest.add(createMessageError("1", "workflow1", new Exception()));
@@ -46,6 +46,7 @@ public class MessageErrorDigestTest extends TestCase {
     assertEquals("1", digest.get(0).getUniqueId());
   }
 
+  @Test
   public void testAddMessagesPastMaxAmount() throws Exception {
     MessageErrorDigest digest = new MessageErrorDigest();
     digest.setMaxMessages(3);
@@ -60,6 +61,7 @@ public class MessageErrorDigestTest extends TestCase {
     assertNotNull(digest.get(0).getStackTrace());
   }
 
+  @Test
   public void testAddMessagesFIFO() throws Exception {
     MessageErrorDigest digest = new MessageErrorDigest();
     digest.setMaxMessages(3);
@@ -74,6 +76,7 @@ public class MessageErrorDigestTest extends TestCase {
     assertEquals("5", digest.get(2).getUniqueId());
   }
 
+  @Test
   public void testDigestSimpleClone() throws Exception {
     MessageErrorDigest digest = new MessageErrorDigest();
 
@@ -86,6 +89,7 @@ public class MessageErrorDigestTest extends TestCase {
 
   }
 
+  @Test
   public void testDigestCloneWithOffset() throws Exception {
     MessageErrorDigest digest = new MessageErrorDigest();
 
@@ -102,6 +106,7 @@ public class MessageErrorDigestTest extends TestCase {
 
   }
 
+  @Test
   public void testDigestCloneWithOffsetAndLimit() throws Exception {
     MessageErrorDigest digest = new MessageErrorDigest();
 
@@ -114,6 +119,7 @@ public class MessageErrorDigestTest extends TestCase {
     assertEquals(MessageErrorDigest.DEFAULT_MAX_MESSAGES, clonedDigest.getMaxMessages());
   }
 
+  @Test
   public void testDigestCloneWithOffsetGreaterThanOriginalsMessageCount() throws Exception {
     try {
       MessageErrorDigest digest = new MessageErrorDigest();
@@ -128,6 +134,7 @@ public class MessageErrorDigestTest extends TestCase {
     }
   }
 
+  @Test
   public void testSetMaxMessages() throws Exception {
     MessageErrorDigest digest = new MessageErrorDigest();
     assertEquals(MessageErrorDigest.DEFAULT_MAX_MESSAGES, digest.getMaxMessages());
@@ -137,7 +144,7 @@ public class MessageErrorDigestTest extends TestCase {
     assertEquals(MessageErrorDigest.DEFAULT_MAX_MESSAGES, digest.getMaxMessages());
   }
 
-
+  @Test
   public void testGet() throws Exception {
     MessageErrorDigest digest = new MessageErrorDigest();
     MessageDigestErrorEntry error = createMessageError("1", "workflow1", new Exception());
@@ -146,6 +153,7 @@ public class MessageErrorDigestTest extends TestCase {
     assertEquals(error, digest.get(0));
   }
 
+  @Test
   public void testRemove_ByIndex() throws Exception {
     MessageErrorDigest digest = new MessageErrorDigest();
     MessageDigestErrorEntry error = createMessageError("1", "workflow1", new Exception());
@@ -156,6 +164,7 @@ public class MessageErrorDigestTest extends TestCase {
     assertFalse(digest.contains(error));
   }
 
+  @Test
   public void testRemove() throws Exception {
     MessageErrorDigest digest = new MessageErrorDigest();
     MessageDigestErrorEntry error = createMessageError("1", "workflow1", new Exception());
@@ -166,6 +175,7 @@ public class MessageErrorDigestTest extends TestCase {
     assertFalse(digest.contains(error));
   }
 
+  @Test
   public void testAddAll_WithIndex() throws Exception {
     MessageErrorDigest digest = new MessageErrorDigest();
     try {
@@ -178,7 +188,7 @@ public class MessageErrorDigestTest extends TestCase {
     }
   }
 
-
+  @Test
   public void testAdd_WithIndex() throws Exception {
     MessageErrorDigest digest = new MessageErrorDigest();
 
@@ -191,6 +201,7 @@ public class MessageErrorDigestTest extends TestCase {
     }
   }
 
+  @Test
   public void testSet_WithIndex() throws Exception {
     MessageErrorDigest digest = new MessageErrorDigest();
 
@@ -203,6 +214,7 @@ public class MessageErrorDigestTest extends TestCase {
     }
   }
 
+  @Test
   public void testIndexOf() throws Exception {
     MessageErrorDigest digest = new MessageErrorDigest();
     MessageDigestErrorEntry error = createMessageError("1", "workflow1", new Exception());
@@ -211,6 +223,7 @@ public class MessageErrorDigestTest extends TestCase {
     assertEquals(0, digest.indexOf(error));
   }
 
+  @Test
   public void testLastIndexOf() throws Exception {
     MessageErrorDigest digest = new MessageErrorDigest();
     MessageDigestErrorEntry error = createMessageError("1", "workflow1", new Exception());
@@ -220,6 +233,7 @@ public class MessageErrorDigestTest extends TestCase {
     assertEquals(4, digest.lastIndexOf(error));
   }
 
+  @Test
   public void testIterators() throws Exception {
     MessageErrorDigest digest = new MessageErrorDigest();
     digest.addAll(createListOfErrors(5, 1));
@@ -231,6 +245,7 @@ public class MessageErrorDigestTest extends TestCase {
     }
   }
 
+  @Test
   public void testSubList() throws Exception {
     MessageErrorDigest digest = new MessageErrorDigest();
     digest.addAll(createListOfErrors(5, 1));

@@ -16,6 +16,9 @@
 
 package com.adaptris.core.services;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BranchingServiceCollection;
@@ -31,12 +34,10 @@ public class SizeBasedBranchingServiceTest extends BranchingServiceExample {
   private static final String LARGE_MESSAGE = "LargeMessage";
   private static final int DEFAULT_SIZE_CRITERIA = 30;
 
-  public SizeBasedBranchingServiceTest(String name) {
-    super(name);
-  }
 
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   private SizeBasedBranchingService setupForTests() {
@@ -48,6 +49,7 @@ public class SizeBasedBranchingServiceTest extends BranchingServiceExample {
     return s;
   }
 
+  @Test
   public void testInitWithNoServiceIds() throws Exception {
     SizeBasedBranchingService s = new SizeBasedBranchingService();
     try {
@@ -78,6 +80,7 @@ public class SizeBasedBranchingServiceTest extends BranchingServiceExample {
     }
   }
 
+  @Test
   public void testGreaterThanSizeCriteria() throws Exception {
     AdaptrisMessage msg = new SizeMessageFactory(DEFAULT_SIZE_CRITERIA + 1).newMessage();
     System.err.println("testGreaterThanSizeCriteria SizeOfMessage " + msg.getSize());
@@ -86,6 +89,7 @@ public class SizeBasedBranchingServiceTest extends BranchingServiceExample {
     assertEquals(LARGE_MESSAGE, msg.getNextServiceId());
   }
 
+  @Test
   public void testSmallerThanSizeCriteria() throws Exception {
     AdaptrisMessage msg = new SizeMessageFactory(DEFAULT_SIZE_CRITERIA - 1).newMessage();
     System.err.println("testSmallerThanSizeCriteria SizeOfMessage " + msg.getSize());
@@ -94,6 +98,7 @@ public class SizeBasedBranchingServiceTest extends BranchingServiceExample {
     assertEquals(SMALL_MESSAGE, msg.getNextServiceId());
   }
 
+  @Test
   public void testEqualToSizeCriteria() throws Exception {
     AdaptrisMessage msg = new SizeMessageFactory(DEFAULT_SIZE_CRITERIA).newMessage();
     System.err.println("testEqualToSizeCriteria SizeOfMessage " + msg.getSize());

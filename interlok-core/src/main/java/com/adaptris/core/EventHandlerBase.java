@@ -84,11 +84,6 @@ public abstract class EventHandlerBase implements EventHandler {
   }
 
   @Override
-  public void send(Event evt, ProduceDestination dest) throws CoreException {
-    eventProducerDelegate.produce(retrieveProducer(), createMessage(evt, null), dest);
-  }
-
-  @Override
   public void send(Event evt) throws CoreException {
     this.send(evt, (Map) null);
   }

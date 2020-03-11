@@ -1,21 +1,21 @@
 /*
  * Copyright 2015 Adaptris Ltd.
  * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
-*/
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS"
+ * BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
+ */
 
 package com.adaptris.ftp.test;
 
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -25,9 +25,9 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.oro.io.GlobFilenameFilter;
-
+import org.junit.Assume;
+import org.junit.Test;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FtpCase;
 import com.adaptris.ftp.CommonsNetFtpClient;
@@ -52,151 +52,148 @@ public class TestCommonsNetFtp extends FtpCase {
   private static final String FTP_PASSWORD = "ftp.password";
   private static final String FTP_USERNAME = "ftp.username";
   // -rwxrwxrwx 1 user group 28725 Jun 30 09:38 RAC DMAIL FUEL 10X2 100X73.pdf
-  private static final String LIST_DIR_FULL = "^(\\S*)\\s+(\\S*)\\s+(\\S*)\\s+(\\S*)"
-      + "\\s+(\\d*)\\s+(\\S*)\\s+(\\S*)\\s+(\\S*)\\s+(.*)";
+  private static final String LIST_DIR_FULL =
+      "^(\\S*)\\s+(\\S*)\\s+(\\S*)\\s+(\\S*)" + "\\s+(\\d*)\\s+(\\S*)\\s+(\\S*)\\s+(\\S*)\\s+(.*)";
 
   private static final Pattern LIST_DIR_PATTERN = Pattern.compile(LIST_DIR_FULL);
 
-  public TestCommonsNetFtp(String testName) {
-    super(testName);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testBug1924() throws Exception {
-    if (areTestsEnabled()) {
-      String oldName = Thread.currentThread().getName();
-      try {
-        Thread.currentThread().setName("testBug1924");
-        // Use an arbitarily small timeout to a range that almost certainly
-        // shouldn't exist when the tests are running.
-        CommonsNetFtpClient client = new CommonsNetFtpClient("192.168.17.1", 21, 1);
-        client.disconnect();
-        fail("Successfully connected, with a timeout of 1ms (surely not possible!)");
-      }
-      catch (SocketTimeoutException e) {
-        ; // expected.
-      }
-      catch (NoRouteToHostException e) {
-        ; // also possibly expected
-      }
-      catch (IOException e) {
-        ; // also possibly expected from FtpCommonsNetClient
-      }
-      finally {
-        Thread.currentThread().setName(oldName);
-      }
+    Assume.assumeTrue(areTestsEnabled());
+    String oldName = Thread.currentThread().getName();
+    try {
+      Thread.currentThread().setName("testBug1924");
+      // Use an arbitarily small timeout to a range that almost certainly
+      // shouldn't exist when the tests are running.
+      CommonsNetFtpClient client = new CommonsNetFtpClient("192.168.17.1", 21, 1);
+      client.disconnect();
+      fail("Successfully connected, with a timeout of 1ms (surely not possible!)");
+    } catch (SocketTimeoutException e) {
+      ; // expected.
+    } catch (NoRouteToHostException e) {
+      ; // also possibly expected
+    } catch (IOException e) {
+      ; // also possibly expected from FtpCommonsNetClient
+    } finally {
+      Thread.currentThread().setName(oldName);
     }
+
   }
 
+  @Test
   public void testConnectWithTimeout() throws Exception {
-    if (areTestsEnabled()) {
-      String oldName = Thread.currentThread().getName();
-      try {
-        Thread.currentThread().setName("testBug1924");
-        // Use an arbitarily small timeout.
-        CommonsNetFtpClient client = new CommonsNetFtpClient("192.168.17.1", 21, 1);
-        client.setAdditionalDebug(true);
-        client.connect(config.getProperty(FTP_USERNAME), config.getProperty(FTP_PASSWORD));
-        client.disconnect();
-        fail("Successfully connected, with a timeout of 1ms (surely not possible!)");
-      }
-      catch (SocketTimeoutException e) {
-        ; // expected.
-      } catch (NoRouteToHostException e) {
-        ; // also possibly expected
-      }
-      catch (IOException e) {
-        ; // also possibly expected from FtpCommonsNetClient
-      }
-      finally {
-        Thread.currentThread().setName(oldName);
-      }
+    Assume.assumeTrue(areTestsEnabled());
+    String oldName = Thread.currentThread().getName();
+    try {
+      Thread.currentThread().setName("testBug1924");
+      // Use an arbitarily small timeout.
+      CommonsNetFtpClient client = new CommonsNetFtpClient("192.168.17.1", 21, 1);
+      client.setAdditionalDebug(true);
+      client.connect(config.getProperty(FTP_USERNAME), config.getProperty(FTP_PASSWORD));
+      client.disconnect();
+      fail("Successfully connected, with a timeout of 1ms (surely not possible!)");
+    } catch (SocketTimeoutException e) {
+      ; // expected.
+    } catch (NoRouteToHostException e) {
+      ; // also possibly expected
+    } catch (IOException e) {
+      ; // also possibly expected from FtpCommonsNetClient
+    } finally {
+      Thread.currentThread().setName(oldName);
     }
+
   }
 
+  @Test
   public void testBug1483() throws Exception {
-    if (areTestsEnabled()) {
-      String oldName = Thread.currentThread().getName();
-      try {
-        Thread.currentThread().setName("testBug1483");
-        FileTransferClient client = connectClientImpl();
-        String[] files = client.dir(getRemoteGetDirectory(), true);
-        for (int i = 0; i < files.length; i++) {
-          logR.debug(files[i]);
-          Matcher m = LIST_DIR_PATTERN.matcher(files[i]);
-          assertTrue("Output Should match " + LIST_DIR_FULL, m.matches());
-          // logR.debug(HexDump.parse(files[i].getBytes()));
-        }
-        assertTrue(files.length > 0);
-        client.disconnect();
+    Assume.assumeTrue(areTestsEnabled());
+    String oldName = Thread.currentThread().getName();
+    try {
+      Thread.currentThread().setName("testBug1483");
+      FileTransferClient client = connectClientImpl();
+      String[] files = client.dir(getRemoteGetDirectory(), true);
+      for (int i = 0; i < files.length; i++) {
+        logR.debug(files[i]);
+        Matcher m = LIST_DIR_PATTERN.matcher(files[i]);
+        assertTrue("Output Should match " + LIST_DIR_FULL, m.matches());
+        // logR.debug(HexDump.parse(files[i].getBytes()));
       }
-      finally {
-        Thread.currentThread().setName(oldName);
-      }
+      assertTrue(files.length > 0);
+      client.disconnect();
+    } finally {
+      Thread.currentThread().setName(oldName);
     }
+
   }
 
+  @Test
   public void testGetLastModifiedWithTimezone() throws Exception {
-    if (areTestsEnabled()) {
-      String oldName = Thread.currentThread().getName();
-      try {
-        Thread.currentThread().setName("testGetLastModifiedWithTimezone");
-        FileTransferClient client = connectClientImpl();
-        client.chdir(getRemoteGetDirectory());
-        long mtime = client.lastModified(getRemoteGetFilename());
-        client.disconnect();
+    Assume.assumeTrue(areTestsEnabled());
+    String oldName = Thread.currentThread().getName();
+    try {
+      Thread.currentThread().setName("testGetLastModifiedWithTimezone");
+      FileTransferClient client = connectClientImpl();
+      client.chdir(getRemoteGetDirectory());
+      long mtime = client.lastModified(getRemoteGetFilename());
+      client.disconnect();
 
-        CommonsNetFtpClient tzClient = (CommonsNetFtpClient) connectClientImpl();
-        tzClient.setServerTimezone(TimeZone.getTimeZone(ALTERNATE_TZ));
-        tzClient.chdir(getRemoteGetDirectory());
-        long tztime = tzClient.lastModified(getRemoteGetFilename());
-        tzClient.disconnect();
+      CommonsNetFtpClient tzClient = (CommonsNetFtpClient) connectClientImpl();
+      tzClient.setServerTimezone(TimeZone.getTimeZone(ALTERNATE_TZ));
+      tzClient.chdir(getRemoteGetDirectory());
+      long tztime = tzClient.lastModified(getRemoteGetFilename());
+      tzClient.disconnect();
 
-        logR.debug("testGetLastModifiedWithTimezone : " + new Date(tztime));
-        assertNotSame("" + new Date(mtime), mtime, tztime);
-      }
-      finally {
-        Thread.currentThread().setName(oldName);
-      }
+      logR.debug("testGetLastModifiedWithTimezone : " + new Date(tztime));
+      assertNotSame("" + new Date(mtime), mtime, tztime);
+    } finally {
+      Thread.currentThread().setName(oldName);
     }
+
   }
 
+  @Test
   public void testGetLastModifiedDateWithTimezone() throws Exception {
-    if (areTestsEnabled()) {
-      String oldName = Thread.currentThread().getName();
-      try {
-        Thread.currentThread().setName("testGetLastModifiedDateWithTimezone");
-        FileTransferClient client = connectClientImpl();
-        client.chdir(getRemoteGetDirectory());
-        Date mtime = client.lastModifiedDate(getRemoteGetFilename());
-        client.disconnect();
+    Assume.assumeTrue(areTestsEnabled());
+    String oldName = Thread.currentThread().getName();
+    try {
+      Thread.currentThread().setName("testGetLastModifiedDateWithTimezone");
+      FileTransferClient client = connectClientImpl();
+      client.chdir(getRemoteGetDirectory());
+      Date mtime = client.lastModifiedDate(getRemoteGetFilename());
+      client.disconnect();
 
-        CommonsNetFtpClient tzClient = (CommonsNetFtpClient) connectClientImpl();
-        tzClient.setServerTimezone(TimeZone.getTimeZone(ALTERNATE_TZ));
-        tzClient.chdir(getRemoteGetDirectory());
-        Date tzDate = tzClient.lastModifiedDate(getRemoteGetFilename());
-        tzClient.disconnect();
-        logR.debug("testGetLastModifiedWithTimezone : " + tzDate);
+      CommonsNetFtpClient tzClient = (CommonsNetFtpClient) connectClientImpl();
+      tzClient.setServerTimezone(TimeZone.getTimeZone(ALTERNATE_TZ));
+      tzClient.chdir(getRemoteGetDirectory());
+      Date tzDate = tzClient.lastModifiedDate(getRemoteGetFilename());
+      tzClient.disconnect();
+      logR.debug("testGetLastModifiedWithTimezone : " + tzDate);
 
-        assertNotSame("" + mtime, mtime, tzDate);
-      }
-      finally {
-        Thread.currentThread().setName(oldName);
-      }
+      assertNotSame("" + mtime, mtime, tzDate);
+    } finally {
+      Thread.currentThread().setName(oldName);
+
     }
   }
 
+  @Test
   public void testSetTimeout() throws Exception {
-    if (areTestsEnabled()) {
-      String oldName = Thread.currentThread().getName();
-      try {
-        Thread.currentThread().setName("testSetTimeout");
-        CommonsNetFtpClient client = new CommonsNetFtpClient(config.getProperty(FTP_HOST));
-        client.setTimeout(client.getTimeout());
-        client.setKeepAliveTimeout(client.getKeepAliveTimeout());
-      } finally {
-        Thread.currentThread().setName(oldName);
-      }
+    Assume.assumeTrue(areTestsEnabled());
+    String oldName = Thread.currentThread().getName();
+    try {
+      Thread.currentThread().setName("testSetTimeout");
+      CommonsNetFtpClient client = new CommonsNetFtpClient(config.getProperty(FTP_HOST));
+      client.setTimeout(client.getTimeout());
+      client.setKeepAliveTimeout(client.getKeepAliveTimeout());
+    } finally {
+      Thread.currentThread().setName(oldName);
     }
+
   }
 
   @Override
@@ -241,7 +238,7 @@ public class TestCommonsNetFtp extends FtpCase {
     client.connect(config.getProperty(FTP_USERNAME), Password.decode(config.getProperty(FTP_PASSWORD)));
     logR.trace("Server OS         : " + client.system());
     logR.trace("Current Directory : " + client.pwd());
-    // logR.trace("Transfer Type     : " + client.getType().toString());
+    // logR.trace("Transfer Type : " + client.getType().toString());
     return client;
   }
 }

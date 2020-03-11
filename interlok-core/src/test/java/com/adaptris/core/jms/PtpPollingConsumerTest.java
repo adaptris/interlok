@@ -17,7 +17,6 @@
 package com.adaptris.core.jms;
 
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.StandaloneConsumer;
@@ -26,8 +25,9 @@ import com.adaptris.util.TimeInterval;
 public class PtpPollingConsumerTest extends PollingJmsConsumerCase {
   private static final long DEFAULT_WAIT = 100;
 
-  public PtpPollingConsumerTest(String arg0) {
-    super(arg0);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override

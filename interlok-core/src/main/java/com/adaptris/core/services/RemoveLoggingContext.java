@@ -16,9 +16,9 @@
 
 package com.adaptris.core.services;
 
-import javax.validation.constraints.NotBlank;
-
-import com.thoughtworks.xstream.annotations.XStreamImplicit;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.slf4j.MDC;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
@@ -30,9 +30,7 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
  * Remove a mapped diagnostic context via {@link MDC#remove(String)}.
@@ -49,7 +47,7 @@ import java.util.List;
 @ComponentProfile(summary = "Remove a mapped diagnostic context for logging; useful for filtering", tag = "service,logging,debug")
 @DisplayOrder(order =
 {
-    "key"
+    "keys"
 })
 public class RemoveLoggingContext extends ServiceImp {
 
@@ -63,7 +61,7 @@ public class RemoveLoggingContext extends ServiceImp {
 
   public RemoveLoggingContext(String key) {
     this();
-    getKeys().add(key);
+    setKeys(new ArrayList<>(Arrays.asList(key)));
   }
 
   @Override
@@ -99,7 +97,7 @@ public class RemoveLoggingContext extends ServiceImp {
    * 
    * @param keys the key to set
    */
-  public void setKey(List<String> keys) {
+  public void setKeys(List<String> keys) {
     this.keys = keys;
   }
 

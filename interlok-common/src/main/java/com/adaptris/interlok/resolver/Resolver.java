@@ -15,6 +15,8 @@
 */
 package com.adaptris.interlok.resolver;
 
+import com.adaptris.interlok.types.InterlokMessage;
+
 /**
  * Resolve a value from an external source.
  * 
@@ -34,4 +36,8 @@ public interface Resolver {
    * @return true or false.
    */
   boolean canHandle(String value);
+
+  default String resolve(String value, InterlokMessage target) {
+    return resolve(value);
+  }
 }

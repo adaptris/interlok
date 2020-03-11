@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services.jdbc;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -28,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -162,9 +165,6 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
 
   }
 
-  public JdbcQueryServiceCase(String arg0) {
-    super(arg0);
-  }
 
   protected abstract ResultSetTranslator createTranslatorForConfig();
 
@@ -241,6 +241,7 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
     return name;
   }
 
+  @Test
   public void testBug1762() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -262,6 +263,7 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
     }
   }
 
+  @Test
   public void testInit_NoCreator() throws Exception {
     createDatabase();
     JdbcDataQueryService s = createMessageIdService();
@@ -277,7 +279,7 @@ public abstract class JdbcQueryServiceCase extends JdbcServiceExample {
   }
 
 
-  @Override
+  @Test
   public void testBackReferences() throws Exception {
     this.testBackReferences(new JdbcDataQueryService(new ConfiguredSQLStatement("INSERT INTO MYTABLE ('ABC');")));
   }

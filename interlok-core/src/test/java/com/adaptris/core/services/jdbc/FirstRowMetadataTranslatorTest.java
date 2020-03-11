@@ -16,15 +16,18 @@
 
 package com.adaptris.core.services.jdbc;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ComponentLifecycle;
@@ -49,15 +52,12 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
   private static final String DATE_QUERY_SQL = "SELECT adapter_version, message_translator_type, inserted_on, counter"
       + " FROM adapter_type_version " + " WHERE inserted_on > ?";
 
-  public FirstRowMetadataTranslatorTest(String arg0) {
-    super(arg0);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testMetadataStatementParameter() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -77,6 +77,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
     assertFalse(msg.containsKey(JdbcDataQueryService.class.getCanonicalName()));
   }
 
+  @Test
   public void testMetadataWithResultCount() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -93,6 +94,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
     assertEquals("1", msg.getMetadataValue("resultCount"));
   }
 
+  @Test
   public void testConstantStatementParameter() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -112,6 +114,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
     assertFalse(msg.containsKey(JdbcDataQueryService.class.getCanonicalName()));
   }
 
+  @Test
   public void testMessageIdParameter() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -131,6 +134,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
     assertFalse(msg.containsKey(JdbcDataQueryService.class.getCanonicalName()));
   }
 
+  @Test
   public void testDateStatementParameter() throws Exception {
     createDatabase();
     Date yesterday = yesterday();
@@ -171,6 +175,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
     return f.format(date);
   }
 
+  @Test
   public void testXmlStatementParameter() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -190,6 +195,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
     assertFalse(msg.containsKey(JdbcDataQueryService.class.getCanonicalName()));
   }
 
+  @Test
   public void testServiceWithStyleUpperCase() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -211,6 +217,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
         msg.getMetadataValue(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE.toUpperCase()));
   }
 
+  @Test
   public void testServiceWithStyleLowerCase() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -233,6 +240,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
         msg.getMetadataValue(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE.toLowerCase()));
   }
 
+  @Test
   public void testServiceWithStyleCapitalize() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -254,7 +262,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
         msg.getMetadataValue(t.getMetadataKeyPrefix() + t.getSeparator() + StringUtils.capitalize(COLUMN_TYPE)));
   }
 
-
+  @Test
   public void testService_PooledConnection() throws Exception {
     int maxServices = 5;
     final int iterations = 5;
@@ -293,7 +301,8 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
       Thread.currentThread().setName(name);
     }
   }
-  
+
+  @Test
   public void testService_AdvancedPooledConnection() throws Exception {
     int maxServices = 5;
     final int iterations = 5;
@@ -334,6 +343,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
   }
 
   // "SELECT adapter_version, message_translator_type, inserted_on, counter FROM adapter_type_version "
+  @Test
   public void testServiceWithExactColumnTranslators() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -365,6 +375,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
   }
 
   // "SELECT adapter_version, message_translator_type, inserted_on, counter FROM adapter_type_version "
+  @Test
   public void testServiceWithDateNotTimestampColumnTranslators() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -396,6 +407,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
   }
 
   // "SELECT adapter_version, message_translator_type, inserted_on, counter FROM adapter_type_version "
+  @Test
   public void testServiceWithTimeNotTimestampColumnTranslators() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -435,6 +447,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
   }
 
   // "SELECT adapter_version, message_translator_type, inserted_on, counter FROM adapter_type_version "
+  @Test
   public void testServiceWithFloatNotIntColumnTranslators() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -467,6 +480,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
   }
 
   // "SELECT adapter_version, message_translator_type, inserted_on, counter FROM adapter_type_version "
+  @Test
   public void testServiceWithFormattedFloatNotIntColumnTranslators() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -499,6 +513,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
   }
 
   // "SELECT adapter_version, message_translator_type, inserted_on, counter FROM adapter_type_version "
+  @Test
   public void testServiceWithDoubleNotIntColumnTranslators() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -531,6 +546,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
   }
 
   // "SELECT adapter_version, message_translator_type, inserted_on, counter FROM adapter_type_version "
+  @Test
   public void testServiceWithFormattedDoubleNotIntColumnTranslators() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -565,6 +581,7 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
   }
 
   // "SELECT adapter_version, message_translator_type, inserted_on, counter FROM adapter_type_version "
+  @Test
   public void testServiceWithMismatchedSizeColumnTranslators() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);
@@ -592,7 +609,8 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
     // fAIRLY unlikely to be able to test equality on a date field when I specified a translator for it!
     assertTrue(msg.containsKey(t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_INSERTED_ON));
   }
-  
+
+  @Test
   public void testBugRedmine6841NoRowsReturned() throws Exception {
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(10);

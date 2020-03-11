@@ -16,17 +16,18 @@
 
 package com.adaptris.core.interceptor;
 
-import static org.mockito.Matchers.any;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -36,9 +37,7 @@ import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
-import junit.framework.TestCase;
-
-public class MetadataTotalsInterceptorTest extends TestCase {
+public class MetadataTotalsInterceptorTest {
 
   private static final String COUNTER_1 = "counter1";
   private static final String COUNTER_2 = "counter2";
@@ -49,7 +48,7 @@ public class MetadataTotalsInterceptorTest extends TestCase {
   @Mock private StandaloneProducer mockStandaloneProducer;
   @Mock private AdaptrisMarshaller mockMarshaller;
 
-  @Override
+  @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
     
@@ -61,12 +60,13 @@ public class MetadataTotalsInterceptorTest extends TestCase {
     metricsInterceptor.setTimesliceHistoryCount(2);
   }
 
-  @Override
+  @After
   public void tearDown() throws Exception {
     LifecycleHelper.stop(metricsInterceptor);
     LifecycleHelper.close(metricsInterceptor);
   }
 
+  @Test
   public void testInterceptor() throws Exception {
     LifecycleHelper.init(metricsInterceptor);
     LifecycleHelper.start(metricsInterceptor);
@@ -81,7 +81,8 @@ public class MetadataTotalsInterceptorTest extends TestCase {
     assertEquals(0, ((MetadataStatistic) metricsInterceptor.getStats().get(0)).getValue(this.getClass().getSimpleName()));
     assertEquals(0, ((MetadataStatistic) metricsInterceptor.getStats().get(0)).getValue("blah"));
   }
-  
+
+  @Test
   public void testNoProduceBeforeNewTimeSlice() throws Exception {
     ProducingStatisticManager producingStatisticManager = new ProducingStatisticManager();
     producingStatisticManager.setMarshaller(mockMarshaller);
@@ -105,7 +106,8 @@ public class MetadataTotalsInterceptorTest extends TestCase {
     verify(mockMarshaller, times(0)).marshal(any());
     verify(mockStandaloneProducer, times(0)).produce(any());
   }
-  
+
+  @Test
   public void testProduceAfterNewTimeSlice() throws Exception {
     ProducingStatisticManager producingStatisticManager = new ProducingStatisticManager();
     producingStatisticManager.setMarshaller(mockMarshaller);
@@ -131,6 +133,7 @@ public class MetadataTotalsInterceptorTest extends TestCase {
     verify(mockStandaloneProducer).produce(any());
   }
 
+  @Test
   public void testCreatesNewTimeSliceAfterTimeDelay() throws Exception {
     LifecycleHelper.init(metricsInterceptor);
     LifecycleHelper.start(metricsInterceptor);
@@ -159,6 +162,7 @@ public class MetadataTotalsInterceptorTest extends TestCase {
     assertEquals(20, ((MetadataStatistic) metricsInterceptor.getStats().get(1)).getValue(COUNTER_2));
   }
 
+  @Test
   public void testDoesNotCreateMoreHistoryThanSpecified() throws Exception {
     metricsInterceptor.setStatisticManager(new StandardStatisticManager());
     
@@ -182,7 +186,7 @@ public class MetadataTotalsInterceptorTest extends TestCase {
     assertEquals(2, metricsInterceptor.getStats().size());
   }
 
-
+  @Test
   public void testMultiThreadedSingleMetricsInterceptorInstance() throws Exception {
     LifecycleHelper.init(metricsInterceptor);
     LifecycleHelper.start(metricsInterceptor);

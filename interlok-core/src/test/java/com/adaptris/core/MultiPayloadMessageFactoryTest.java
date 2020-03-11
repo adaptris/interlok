@@ -1,22 +1,21 @@
 package com.adaptris.core;
 
-import org.junit.Before;
-import org.junit.Test;
-
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import org.junit.Before;
+import org.junit.Test;
 
 public class MultiPayloadMessageFactoryTest extends AdaptrisMessageFactoryImplCase {
   private final MultiPayloadMessageFactory messageFactory = new MultiPayloadMessageFactory();
@@ -24,8 +23,7 @@ public class MultiPayloadMessageFactoryTest extends AdaptrisMessageFactoryImplCa
   private static final String ID = "custom-message-id";
   private static final String ENCODING = "UTF-8";
   private static final String CONTENT = "Bacon ipsum dolor amet jowl boudin salami strip steak turkey.";
-  private static final byte[] PAYLOAD = "Cupcake ipsum dolor sit amet fruitcake jelly-o tootsie roll."
-      .getBytes(Charset.forName(ENCODING));
+  private static final byte[] PAYLOAD = "Cupcake ipsum dolor sit amet fruitcake jelly-o tootsie roll.".getBytes(Charset.forName(ENCODING));
 
   private static final Set<MetadataElement> METADATA = new HashSet<>();
 
@@ -97,8 +95,7 @@ public class MultiPayloadMessageFactoryTest extends AdaptrisMessageFactoryImplCa
 
   @Test
   public void testMessageFactoryPayloadMetadataID() {
-    MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage) messageFactory.newMessage(ID, PAYLOAD,
-        METADATA);
+    MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage) messageFactory.newMessage(ID, PAYLOAD, METADATA);
     assertEquals(ID, message.getCurrentPayloadId());
     assertEquals(1, message.getPayloadCount());
     assertArrayEquals(PAYLOAD, message.getPayload());
@@ -126,8 +123,7 @@ public class MultiPayloadMessageFactoryTest extends AdaptrisMessageFactoryImplCa
 
   @Test
   public void testMessageFactoryContentEncodingMetadata() {
-    MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage) messageFactory.newMessage(CONTENT, ENCODING,
-        METADATA);
+    MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage) messageFactory.newMessage(CONTENT, ENCODING, METADATA);
     assertEquals(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, message.getCurrentPayloadId());
     assertEquals(1, message.getPayloadCount());
     assertEquals(CONTENT, message.getContent());
@@ -136,7 +132,7 @@ public class MultiPayloadMessageFactoryTest extends AdaptrisMessageFactoryImplCa
   }
 
   @Test
-  public void testMessageFactoryContentgMetadata() {
+  public void testMessageFactoryContentMetadata() {
     MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage) messageFactory.newMessage(CONTENT, METADATA);
     assertEquals(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, message.getCurrentPayloadId());
     assertEquals(1, message.getPayloadCount());
@@ -147,8 +143,7 @@ public class MultiPayloadMessageFactoryTest extends AdaptrisMessageFactoryImplCa
 
   @Test
   public void testMessageFactoryContentEncodingMetadataID() {
-    MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage) messageFactory.newMessage(ID, CONTENT, ENCODING,
-        METADATA);
+    MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage) messageFactory.newMessage(ID, CONTENT, ENCODING, METADATA);
     assertEquals(ID, message.getCurrentPayloadId());
     assertEquals(1, message.getPayloadCount());
     assertEquals(CONTENT, message.getContent());
@@ -159,8 +154,7 @@ public class MultiPayloadMessageFactoryTest extends AdaptrisMessageFactoryImplCa
   @Test
   public void testMessageFactoryCloneMessage() throws Exception {
     AdaptrisMessage singleMessage = DefaultMessageFactory.getDefaultInstance().newMessage(PAYLOAD, METADATA);
-    MultiPayloadAdaptrisMessage multiMessage = (MultiPayloadAdaptrisMessage) messageFactory.newMessage(singleMessage,
-        null);
+    MultiPayloadAdaptrisMessage multiMessage = (MultiPayloadAdaptrisMessage) messageFactory.newMessage(singleMessage, null);
     assertEquals(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, multiMessage.getCurrentPayloadId());
     assertEquals(1, multiMessage.getPayloadCount());
     assertEquals(0, multiMessage.getPayload().length);
@@ -175,8 +169,7 @@ public class MultiPayloadMessageFactoryTest extends AdaptrisMessageFactoryImplCa
     keys.add("KEY");
     keys.add("UNKNOWN");
     messageFactory.setDefaultCharEncoding(null);
-    MultiPayloadAdaptrisMessage multiMessage = (MultiPayloadAdaptrisMessage) messageFactory.newMessage(singleMessage,
-        keys);
+    MultiPayloadAdaptrisMessage multiMessage = (MultiPayloadAdaptrisMessage) messageFactory.newMessage(singleMessage, keys);
     assertEquals(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID, multiMessage.getCurrentPayloadId());
     assertEquals(1, multiMessage.getPayloadCount());
     assertEquals(0, multiMessage.getPayload().length);
@@ -185,29 +178,50 @@ public class MultiPayloadMessageFactoryTest extends AdaptrisMessageFactoryImplCa
 
   @Test
   public void testMessageStreams() throws Exception {
-    MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage) messageFactory.newMessage();
+    MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage) messageFactory.newMessage((byte[])null);
+    InputStream is = message.getInputStream();
+    assertTrue(is.read() == -1);
     OutputStream os = message.getOutputStream();
     os.write(PAYLOAD);
     os.close();
-    InputStream is = message.getInputStream();
+    is = message.getInputStream();
     byte[] bytes = new byte[PAYLOAD.length];
     is.read(bytes);
     assertArrayEquals(PAYLOAD, bytes);
+    message.setContentEncoding(null);
+    try (Writer writer = message.getWriter()) {
+      writer.write(CONTENT);
+    }
+    assertEquals(CONTENT, message.getContent());
+  }
+
+  @Test
+  public void testOutputForLogging() throws Exception {
+    MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage) messageFactory.newMessage("cupcake", PAYLOAD);
+    message.addContent("bacon", CONTENT);
+    String logged = message.getPayloadForLogging();
+    assertTrue(message.getPayloadCount() == 2);
+    assertTrue(logged.contains("bacon:" + CONTENT));
+    assertTrue(logged.contains("cupcake"));
+    assertFalse(logged.contains("cupcake:" + new String(PAYLOAD)));
   }
 
   @Test
   public void testResolve() {
+    MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage) messageFactory.newMessage("bacon", CONTENT, ENCODING, METADATA);
+    message.addPayload("cake", PAYLOAD);
+    message.switchPayload("bacon");
+    assertEquals(CONTENT.length() + "," + CONTENT, message.resolve("%message{%size},%payload_id{bacon}", true));
+    assertEquals(CONTENT.length() + "," + CONTENT, message.resolve("%message{%size},%payload_id{bacon}", false));
+    assertEquals(CONTENT.length() + "," + CONTENT, message.resolve("%message{%size},%payload{id:bacon}", true));
+    assertEquals(CONTENT.length() + "," + CONTENT, message.resolve("%message{%size},%payload{id:bacon}", false));
+    assertEquals(new String(PAYLOAD), message.resolve("%payload_id{cake}"));
+    assertNull(message.resolve(null));
+    assertEquals("VALUE", message.resolve("%message{KEY}"));
     try {
-      MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage) messageFactory.newMessage("bacon", CONTENT,
-          ENCODING, METADATA);
-      message.addPayload("cake", PAYLOAD);
-      assertEquals(CONTENT, message.resolve("%payload_id{bacon}", true));
-      assertEquals(new String(PAYLOAD), message.resolve("%payload_id{cake}"));
-      assertNull(message.resolve(null));
-      assertEquals("VALUE", message.resolve("%message{KEY}"));
       message.resolve("%payload_id{fail}");
       fail();
-    } catch (UnresolvedMetadataException e) {
+    } catch (Exception e) {
       /* expected */
     }
   }

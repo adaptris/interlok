@@ -15,20 +15,23 @@
 */
 
 package com.adaptris.core;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 
 @SuppressWarnings("deprecation")
-public class ConfiguredTradingRelationshipCreatorTest extends BaseCase {
+public class ConfiguredTradingRelationshipCreatorTest {
 
   private static final String TYPE = "type";
   private static final String DEST = "dest";
   private static final String SRC = "src";
 
 
-  public ConfiguredTradingRelationshipCreatorTest(String arg0) {
-    super(arg0);
+  public ConfiguredTradingRelationshipCreatorTest() {
   }
 
-
+  @Test
   public void testSetDestination() throws Exception {
     ConfiguredTradingRelationshipCreator creator = new ConfiguredTradingRelationshipCreator();
     try {
@@ -39,6 +42,7 @@ public class ConfiguredTradingRelationshipCreatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testSetSource() throws Exception {
     ConfiguredTradingRelationshipCreator creator = new ConfiguredTradingRelationshipCreator();
     try {
@@ -49,6 +53,7 @@ public class ConfiguredTradingRelationshipCreatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testSetType() throws Exception {
     ConfiguredTradingRelationshipCreator creator = new ConfiguredTradingRelationshipCreator();
     try {
@@ -59,6 +64,7 @@ public class ConfiguredTradingRelationshipCreatorTest extends BaseCase {
     }
   }
 
+  @Test
   public void testCreate() throws Exception {
     ConfiguredTradingRelationshipCreator creator = new ConfiguredTradingRelationshipCreator(SRC, DEST, TYPE);
     assertNotNull(creator.create(new DefaultMessageFactory().newMessage()));
@@ -69,11 +75,12 @@ public class ConfiguredTradingRelationshipCreatorTest extends BaseCase {
     assertEquals(new TradingRelationship(SRC, DEST, TYPE).toString(), new TradingRelationship(SRC, DEST, TYPE), rel);
   }
 
+  @Test
   public void testXmlRoundTrip() throws Exception {
     ConfiguredTradingRelationshipCreator input = new ConfiguredTradingRelationshipCreator(SRC, DEST, TYPE);
     AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
     String xml = m.marshal(input);
     ConfiguredTradingRelationshipCreator output = (ConfiguredTradingRelationshipCreator) m.unmarshal(xml);
-    assertRoundtripEquality(input, output);
+    BaseCase.assertRoundtripEquality(input, output);
   }
 }

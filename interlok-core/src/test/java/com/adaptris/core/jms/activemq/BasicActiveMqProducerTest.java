@@ -21,6 +21,8 @@ import static com.adaptris.core.jms.JmsConfig.HIGHEST_PRIORITY;
 import static com.adaptris.core.jms.JmsConfig.LOWEST_PRIORITY;
 import static com.adaptris.core.jms.activemq.AdvancedActiveMqImplementationTest.createImpl;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.addBlobUrlRef;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
 import javax.jms.Message;
@@ -35,6 +37,7 @@ import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQQueueSender;
 import org.apache.activemq.ActiveMQSession;
 import org.apache.activemq.ActiveMQTopicPublisher;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
@@ -80,17 +83,9 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     }
   }
 
-  public BasicActiveMqProducerTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
@@ -120,6 +115,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     return result;
   }
 
+  @Test
   public void testTopicRequestReply() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -146,6 +142,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testTopicRequestReplyWithMessageWrongType() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -172,6 +169,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testQueueRequestReply() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -198,6 +196,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testQueueRequestReplyWithMessageWrongType() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -226,6 +225,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testTopicProduce_WithStaticReplyTo() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -253,6 +253,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testQueueProduce_WithStaticReplyTo() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -280,6 +281,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testTopicProduceWithPerMessagePropertiesDisabled() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -310,6 +312,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testTopicProduceWithPerMessageProperties() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -340,6 +343,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testTopicProduceAndConsume() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -366,6 +370,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testTopicProduceAndConsume_CustomMessageFactory() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -394,6 +399,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testTopicProduceAndConsume_WithEncoder() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -421,6 +427,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testTopicProduceAndConsume_DurableSubscriber() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -461,6 +468,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testTopicProduceAndConsumeWrongType() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -488,6 +496,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testQueueProduceAndConsume() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -515,6 +524,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testQueueProduceAndConsume_CustomMessageFactory() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -544,6 +554,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testQueueProduceAndConsume_WithEncoder() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -573,6 +584,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testQueueProduceAndConsumeWrongType() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -600,6 +612,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testQueueProduceAndConsumeWithSecurity() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -632,6 +645,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testQueueProduceAndConsumeWithSecurity_EncryptedPassword() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -664,6 +678,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     }
   }
 
+  // @Test
   // public void testBug2089() throws Exception {
   // EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
   // try {
@@ -698,6 +713,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
   // }
   // }
 
+  @Test
   public void testBlobConsumeWithNonBlob() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -726,6 +742,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testBlobProduceConsume() throws Exception {
     if (!ExternalResourcesHelper.isExternalServerAvailable()) {
       log.debug("Blob Server not available; skipping test");
@@ -758,6 +775,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testBlobProduceAndConsumeWithFileMessageFactory() throws Exception {
     if (!ExternalResourcesHelper.isExternalServerAvailable()) {
       log.debug("Blob Server not available; skipping test");
@@ -791,6 +809,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testTopicRequestReply_Bug2277() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -818,6 +837,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     }
   }
 
+  @Test
   public void testQueueRequestReply_Bug2277() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());

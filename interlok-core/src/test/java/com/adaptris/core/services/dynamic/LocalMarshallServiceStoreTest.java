@@ -15,8 +15,11 @@
 */
 
 package com.adaptris.core.services.dynamic;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.File;
+import org.junit.Test;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.stubs.TempFileUtils;
@@ -24,10 +27,7 @@ import com.adaptris.core.stubs.TempFileUtils;
 @SuppressWarnings("deprecation")
 public class LocalMarshallServiceStoreTest extends MarshallServiceStoreCase {
 
-  public LocalMarshallServiceStoreTest(String s) {
-    super(s);
-  }
-
+  @Test
   public void testBaseDirUrl() throws Exception {
     LocalMarshallServiceStore store = new LocalMarshallServiceStore();
     try {
@@ -49,6 +49,7 @@ public class LocalMarshallServiceStoreTest extends MarshallServiceStoreCase {
     return new LocalMarshallServiceStore();
   }
 
+  @Test
   public void testValidate() throws Exception {
     LocalMarshallServiceStore store = createServiceStore();
     File tmpDir = TempFileUtils.createTrackedDir(getClass().getSimpleName(), null, null, store);
@@ -65,12 +66,14 @@ public class LocalMarshallServiceStoreTest extends MarshallServiceStoreCase {
     store.validate();
   }
 
+  @Test
   public void testNullBaseDir() throws Exception {
     LocalMarshallServiceStore store = createServiceStore();
     ServiceList service = (ServiceList) store.obtain("whatever");
     assertEquals(service, null);
   }
 
+  @Test
   public void testSuccessfulObtain() throws Exception {
     File tmpDir = writeOutTheService("service");
 
@@ -82,6 +85,7 @@ public class LocalMarshallServiceStoreTest extends MarshallServiceStoreCase {
     assertTrue(service.getServices().size() == 1);
   }
 
+  @Test
   public void testSuccessfulObtainPrefixSuffix() throws Exception {
     File tmpDir = writeOutTheService("prefix-service.suffix");
 
@@ -95,6 +99,7 @@ public class LocalMarshallServiceStoreTest extends MarshallServiceStoreCase {
     assertTrue(service.getServices().size() == 1);
   }
 
+  @Test
   public void testMissingService() throws Exception {
     File tmpDir = createAndTrackTempDir();
 
@@ -105,6 +110,7 @@ public class LocalMarshallServiceStoreTest extends MarshallServiceStoreCase {
     assertEquals(service, null);
   }
 
+  @Test
   public void testDefaultService() throws Exception {
     File tmpDir = writeOutTheService("service");
     LocalMarshallServiceStore store = createServiceStore();

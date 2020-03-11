@@ -33,9 +33,4 @@ public abstract class MimeServiceExample extends ServiceCase {
     }
   }
 
-  public MimeServiceExample(String name) {
-    this();
-    setName(name);
-  }
-
 }

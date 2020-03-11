@@ -16,23 +16,22 @@
 
 package com.adaptris.core.services.jmx;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import java.util.Date;
-
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 
-import junit.framework.TestCase;
-
-public class ObjectMetadataValueTranslatorTest extends TestCase {
+public class ObjectMetadataValueTranslatorTest {
   
   private ObjectMetadataValueTranslator objectMetadataValueTranslator;
   
   private AdaptrisMessage message;
   
-  public ObjectMetadataValueTranslatorTest() {
-    super();
-  }
-  
+  @Before
   public void setUp() throws Exception {
     objectMetadataValueTranslator = new ObjectMetadataValueTranslator();
     message = DefaultMessageFactory.getDefaultInstance().newMessage();
@@ -40,7 +39,8 @@ public class ObjectMetadataValueTranslatorTest extends TestCase {
   
   public void tearDown() throws Exception {
   }
-  
+
+  @Test
   public void testSetValue() throws Exception {
     String newMetadataKey = "NewMetadataKey";
     String expectedValue = "NewValue";
@@ -54,7 +54,8 @@ public class ObjectMetadataValueTranslatorTest extends TestCase {
     
     assertEquals(expectedValue, newValue);
   }
-  
+
+  @Test
   public void testSetValueNoMetadataKey() throws Exception {
     String newValue = "NewValue";
     
@@ -62,7 +63,8 @@ public class ObjectMetadataValueTranslatorTest extends TestCase {
     // no error, just warning log
     objectMetadataValueTranslator.setValue(message, newValue);
   }
-  
+
+  @Test
   public void testGetValueNoMetadataKey() throws Exception {
     String newValue = "NewValue";
         
@@ -70,7 +72,8 @@ public class ObjectMetadataValueTranslatorTest extends TestCase {
     
     assertNull(newValue, objectMetadataValueTranslator.getValue(message));
   }
-  
+
+  @Test
   public void testSetValueWithIntegerType() throws Exception {
     String newMetadataKey = "NewMetadataKey";
     Integer newValue = new Integer(1);
@@ -85,7 +88,8 @@ public class ObjectMetadataValueTranslatorTest extends TestCase {
     assertTrue(value instanceof Integer);
     assertEquals(new Integer(1), newValue);
   }
-  
+
+  @Test
   public void testGetValueDefaultType() throws Exception {
     String newMetadataKey = "NewMetadataKey";
     String newValue = "NewValue";
@@ -96,7 +100,8 @@ public class ObjectMetadataValueTranslatorTest extends TestCase {
     
     assertEquals(newValue, objectMetadataValueTranslator.getValue(message));
   }
-  
+
+  @Test
   public void testGetValueDateType() throws Exception {
     String newMetadataKey = "NewMetadataKey";
     Date todaysDate = new Date();
@@ -108,7 +113,7 @@ public class ObjectMetadataValueTranslatorTest extends TestCase {
     
     Object value = objectMetadataValueTranslator.getValue(message);
     assertTrue(value instanceof Date);
-    assertEquals(todaysDate, ((Date)value));
+    assertEquals(todaysDate, value);
   }
 
 }

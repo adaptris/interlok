@@ -18,11 +18,12 @@ package com.adaptris.core.services.metadata;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeUtility;
 import javax.validation.constraints.NotBlank;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.commons.lang3.ObjectUtils;
 import com.adaptris.annotation.AdapterComponent;
@@ -37,8 +38,8 @@ import com.adaptris.core.ServiceImp;
 import com.adaptris.core.UnresolvedMetadataException;
 import com.adaptris.core.metadata.MetadataResolver;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.EncodingHelper.Encoding;
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.util.stream.StreamUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -112,34 +113,6 @@ public class MetadataToPayloadService extends ServiceImp {
     abstract InputStream getInputStream(AdaptrisMessage msg, String key) throws MessagingException;
   };
 
-  // Looking at the source of MimeUtility, 7bit/8bit don't do anything, and x-uuenc are just semaphores for uuencode.
-  /**
-   * The types of encoding supported.
-   * 
-   * @see MimeUtility#decode(InputStream, String)
-   */
-  public enum Encoding {
-    Base64("base64"),
-    Quoted_Printable("quoted-printable"),
-    UUEncode("uuencode"),
-    None(null) {
-      @Override
-      InputStream unwrap(InputStream orig) {
-        return orig;
-      }
-    };
-    private String mimeEncoding;
-
-    Encoding(String encoding) {
-      mimeEncoding = encoding;
-    }
-
-    InputStream unwrap(InputStream orig) throws MessagingException {
-      return MimeUtility.decode(orig, mimeEncoding);
-    }
-  }
-
-
 
   @NotBlank
   @InputFieldHint(expression = true)
@@ -147,7 +120,7 @@ public class MetadataToPayloadService extends ServiceImp {
   @InputFieldDefault(value = "Standard")
   private MetadataSource metadataSource;
   @InputFieldDefault(value = "None")
-  private Encoding encoding;
+  private Encoding encoding = Encoding.None;
 
   public MetadataToPayloadService() {
   }
@@ -161,10 +134,8 @@ public class MetadataToPayloadService extends ServiceImp {
 
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    // MimeUtility should return the original InputStream stream if getContentEncoding is null.
-    try {
-      StreamUtil.copyAndClose(encoding().unwrap(source().getInputStream(msg, getKey())),
-          msg.getOutputStream());
+    try (InputStream in = encoding().wrap(source().getInputStream(msg, getKey())); OutputStream out = msg.getOutputStream();) {
+      IOUtils.copy(in, out);
     } catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);
     }

@@ -14,48 +14,42 @@
  * limitations under the License.
 */
 
-package com.adaptris.core.stubs;
+package com.adaptris.core.services;
 
-import com.adaptris.annotation.GenerateBeanInfo;
+import org.slf4j.MDC;
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
-import com.adaptris.util.GuidGenerator;
+import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-// For testing the @GenerateBeanInfo annotation is doing it's job for XStreamMarshaller
-@XStreamAlias("xstream-bean-info-wrapper")
-@GenerateBeanInfo
-@SuppressWarnings("deprecation")
-public class XStreamBeanInfoWrapper extends ServiceImp {
+/**
+ * Remove all mapped diagnostic context via {@link MDC#clear()}.
+ *
+ * 
+ * @config clear-logging-context-service
+ * 
+ */
+@XStreamAlias("clear-logging-context-service")
+@AdapterComponent
+@ComponentProfile(summary = "Remove all mapped diagnostic contexts", tag = "service,logging,debug", since = "3.10.0")
+public class ClearLoggingContext extends ServiceImp {
 
-  private String marshalledIdentity;
-  private transient boolean setterCalled = false;
-
-  public XStreamBeanInfoWrapper() {
-    marshalledIdentity = new GuidGenerator().getUUID();
-  }
-
-  public String getMarshalledIdentity() {
-    return marshalledIdentity;
-  }
-
-  public void setMarshalledIdentity(String s) {
-    setterCalled = true;
-    marshalledIdentity = s;
-  }
-
-  public boolean getSetterCalled() {
-    return setterCalled;
+  public ClearLoggingContext() {
+    super();
   }
 
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-  }
-
-  @Override
-  public void prepare() throws CoreException {
+    try {
+      MDC.clear();
+    }
+    catch (IllegalArgumentException | IllegalStateException e) {
+      throw ExceptionHelper.wrapServiceException(e);
+    }
   }
 
   @Override
@@ -66,4 +60,7 @@ public class XStreamBeanInfoWrapper extends ServiceImp {
   protected void closeService() {
   }
 
+  @Override
+  public void prepare() throws CoreException {
+  }
 }

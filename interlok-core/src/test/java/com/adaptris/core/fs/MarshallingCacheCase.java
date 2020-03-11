@@ -15,39 +15,38 @@
 */
 
 package com.adaptris.core.fs;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import java.io.File;
-
 import org.apache.commons.io.FileUtils;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.CoreException;
 
 public abstract class MarshallingCacheCase extends ExpiringCacheCase {
 
-  public MarshallingCacheCase(String name) {
-    super(name);
-  }
-
   protected File persistentStore;
 
+  @Override
   protected abstract MarshallingItemCache createCache() throws Exception;
   
   protected abstract AdaptrisMarshaller createMarshaller() throws Exception;
   
-  @Override
+  @Before
   public void setUp() throws Exception {
     persistentStore = File.createTempFile(this.getClass().getSimpleName(), "");
     persistentStore.delete();
-    super.setUp();
   }
 
-  @Override
+  @After
   public void tearDown() throws Exception {
     FileUtils.deleteQuietly(persistentStore);
-    super.tearDown();
   }
 
+  @Test
   public void testPersistence() throws Exception {
     String oldName = Thread.currentThread().getName();
     MarshallingItemCache cache = createCache();
@@ -67,6 +66,7 @@ public abstract class MarshallingCacheCase extends ExpiringCacheCase {
 
   }
 
+  @Test
   public void testPersistenceWithBadPersistentStore() throws Exception {
     String oldName = Thread.currentThread().getName();
     MarshallingItemCache cache = createCache();
@@ -91,6 +91,7 @@ public abstract class MarshallingCacheCase extends ExpiringCacheCase {
 
   }
 
+  @Test
   public void testPersistenceWithZeroLengthPersistentStore() throws Exception {
     String oldName = Thread.currentThread().getName();
     MarshallingItemCache cache = createCache();
@@ -113,6 +114,7 @@ public abstract class MarshallingCacheCase extends ExpiringCacheCase {
 
   }
 
+  @Test
   public void testRoundTripAfterFlush() throws Exception {
     String oldName = Thread.currentThread().getName();
     MarshallingItemCache cache = createCache();

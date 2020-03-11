@@ -16,11 +16,16 @@
 
 package com.adaptris.core.services.conditional;
 
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -36,6 +41,7 @@ import com.adaptris.core.services.conditional.conditions.ConditionMetadata;
 import com.adaptris.core.services.conditional.conditions.ConditionOr;
 import com.adaptris.core.services.conditional.operator.Equals;
 import com.adaptris.core.services.conditional.operator.NotNull;
+import com.adaptris.core.services.routing.AlwaysMatchSyntaxIdentifier;
 import com.adaptris.core.util.LifecycleHelper;
 
 public class IfElseTest extends ConditionalServiceExample {
@@ -54,7 +60,7 @@ public class IfElseTest extends ConditionalServiceExample {
   
   @Mock private Condition mockCondition;
   
-  @Override
+  @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
     
@@ -74,11 +80,16 @@ public class IfElseTest extends ConditionalServiceExample {
     LifecycleHelper.initAndStart(logicalExpression);
   }
   
-  @Override
+  @After
   public void tearDown() throws Exception {
     LifecycleHelper.stopAndClose(logicalExpression);
   }
-  
+
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+  @Test
   public void testNoThenService() throws Exception {
     logicalExpression.getThen().setService(new NullService());
     
@@ -93,7 +104,8 @@ public class IfElseTest extends ConditionalServiceExample {
     
     verify(mockElseService, times(0)).doService(message);
   }
-  
+
+  @Test
   public void testNoElseService() throws Exception {
     logicalExpression.getOtherwise().setService(new NullService());
     
@@ -108,7 +120,8 @@ public class IfElseTest extends ConditionalServiceExample {
     
     verify(mockService, times(1)).doService(message);
   }
-  
+
+  @Test
   public void testShouldRunService() throws Exception {
     when(mockCondition.evaluate(message))
         .thenReturn(true);
@@ -117,7 +130,8 @@ public class IfElseTest extends ConditionalServiceExample {
     
     verify(mockService).doService(message);
   }
-  
+
+  @Test
   public void testShouldNotRunService() throws Exception {
     when(mockCondition.evaluate(message))
         .thenReturn(false);
@@ -127,7 +141,8 @@ public class IfElseTest extends ConditionalServiceExample {
     verify(mockService, times(0)).doService(message);
     verify(mockElseService, times(1)).doService(message);
   }
-  
+
+  @Test
   public void testInnerServiceExceptionPropagated() throws Exception {
     when(mockCondition.evaluate(message))
         .thenReturn(true);
@@ -142,7 +157,8 @@ public class IfElseTest extends ConditionalServiceExample {
       // expected.
     }
   }
-  
+
+  @Test
   public void testNoConditionSet() throws Exception {
     try {
       LifecycleHelper.initAndStart(new IfElse());
@@ -152,6 +168,26 @@ public class IfElseTest extends ConditionalServiceExample {
     }
     
   }
+
+
+  @Test
+  public void testSyntaxIdentifier() throws Exception {
+    Service mockThen = Mockito.mock(Service.class);
+    Service mockElse = Mockito.mock(Service.class);
+    IfElse ifElse = new IfElse();
+    ifElse.getThen().setService(mockThen);
+    ifElse.getOtherwise().setService(mockElse);
+    ifElse.setCondition(new AlwaysMatchSyntaxIdentifier());
+    try {
+      LifecycleHelper.initAndStart(ifElse);
+      ifElse.doService(message);
+      verify(mockThen, times(1)).doService(message);
+      verify(mockElse, times(0)).doService(message);
+    } finally {
+      LifecycleHelper.stopAndClose(ifElse);
+    }
+  }
+
 
   @Override
   protected Object retrieveObjectForSampleConfig() {

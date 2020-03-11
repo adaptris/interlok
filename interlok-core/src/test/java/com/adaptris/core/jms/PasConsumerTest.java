@@ -22,8 +22,9 @@ import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 
 public class PasConsumerTest extends JmsConsumerCase {
 
-  public PasConsumerTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   /**

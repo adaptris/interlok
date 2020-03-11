@@ -16,8 +16,10 @@
 
 package com.adaptris.core.services.metadata.xpath;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import org.w3c.dom.Document;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -56,9 +58,7 @@ public class MultiItemConfiguredXpathQueryTest extends ConfiguredXpathQueryCase 
   
   private static final String XPATH_EMPTY_NODES = "/root/segment_PIX/segment_Contents/record_/PXREF1";
 
-  public MultiItemConfiguredXpathQueryTest(String testName) {
-    super(testName);
-  }
+
 
   @Override
   protected MultiItemConfiguredXpathQuery create() {
@@ -72,6 +72,7 @@ public class MultiItemConfiguredXpathQueryTest extends ConfiguredXpathQueryCase 
     return query;
   }
 
+  @Test
   public void testSetSeparator() {
     MultiItemConfiguredXpathQuery query = create();
     assertEquals("|", query.getSeparator());
@@ -89,6 +90,7 @@ public class MultiItemConfiguredXpathQueryTest extends ConfiguredXpathQueryCase 
     assertEquals("", query.getSeparator());
   }
 
+  @Test
   public void testResolveXpath_EmptyResults_NotAllowed() throws Exception {
     MultiItemConfiguredXpathQuery query = init(create(), "//@MissingAttribute");
     Document doc = XmlHelper.createDocument(XML);
@@ -102,6 +104,7 @@ public class MultiItemConfiguredXpathQueryTest extends ConfiguredXpathQueryCase 
     }
   }
 
+  @Test
   public void testResolveXpath_EmptyResults_Allowed() throws Exception {
     MultiItemConfiguredXpathQuery query = init(create(), "//@MissingAttribute");
 
@@ -112,6 +115,7 @@ public class MultiItemConfiguredXpathQueryTest extends ConfiguredXpathQueryCase 
     assertEquals("", result.getValue());
   }
 
+  @Test
   public void testResolveXpath_EmptyResults_Allowed_EmptyValues() throws Exception {
     MultiItemConfiguredXpathQuery query = init(create(), XPATH_EMPTY_NODES);
 
@@ -122,7 +126,7 @@ public class MultiItemConfiguredXpathQueryTest extends ConfiguredXpathQueryCase 
     assertEquals("|||91/01|91/01|91/01", result.getValue());
   }
 
-
+  @Test
   public void testResolveXpath() throws Exception {
     MultiItemConfiguredXpathQuery query = init(create(), "//extra[@att='multi']");
     Document doc = XmlHelper.createDocument(XML);

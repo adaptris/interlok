@@ -19,18 +19,18 @@ package com.adaptris.core.runtime;
 import static com.adaptris.core.runtime.AdapterComponentCheckerMBean.COMPONENT_CHECKER_TYPE;
 import static com.adaptris.core.runtime.AdapterComponentMBean.ADAPTER_PREFIX;
 import static com.adaptris.core.runtime.AdapterComponentMBean.ID_PREFIX;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
 import javax.management.JMX;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
-
 import org.apache.commons.lang3.StringUtils;
-
+import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -53,10 +53,10 @@ import com.adaptris.interlok.types.SerializableMessage;
 @SuppressWarnings("deprecation")
 public class AdapterComponentCheckerTest extends ComponentManagerCase {
 
-  public AdapterComponentCheckerTest(String name) {
-    super(name);
+  public AdapterComponentCheckerTest() {
   }
 
+  @Test
   public void testRegistered() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -69,6 +69,7 @@ public class AdapterComponentCheckerTest extends ComponentManagerCase {
     assertTrue(names.contains(objectName));
   }
 
+  @Test
   public void testCheckInitialised() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -79,6 +80,7 @@ public class AdapterComponentCheckerTest extends ComponentManagerCase {
     manager.checkInitialise(createServiceForTests());
   }
 
+  @Test
   public void testCheckInitialised_NotComponent() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -95,6 +97,7 @@ public class AdapterComponentCheckerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testCheckInitialised_Connection() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -105,6 +108,7 @@ public class AdapterComponentCheckerTest extends ComponentManagerCase {
     manager.checkInitialise(DefaultMarshaller.getDefaultMarshaller().marshal(new NullConnection()));
   }
 
+  @Test
   public void testCheckInitialised_RetriesConnection() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -116,6 +120,7 @@ public class AdapterComponentCheckerTest extends ComponentManagerCase {
     manager.checkInitialise(DefaultMarshaller.getDefaultMarshaller().marshal(new MockAllowsRetriesConnection(1)));
   }
 
+  @Test
   public void testApplyService() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -129,6 +134,7 @@ public class AdapterComponentCheckerTest extends ComponentManagerCase {
     assertEquals("value", msg.getMetadataValue("key"));
   }
 
+  @Test
   public void testApplyService_NotService() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -146,6 +152,7 @@ public class AdapterComponentCheckerTest extends ComponentManagerCase {
     }
   }
 
+  @Test
   public void testApplyService_WithConnections_Rewrite() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -163,6 +170,7 @@ public class AdapterComponentCheckerTest extends ComponentManagerCase {
     assertEquals("value", msg.getMetadataValue("key"));
   }
 
+  @Test
   public void testApplyService_WithConnections_NoRewrite() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
@@ -218,5 +226,10 @@ public class AdapterComponentCheckerTest extends ComponentManagerCase {
 
   private SerializableMessage createSerializableMessage() throws Exception {
     return new DefaultSerializableMessageTranslator().translate(AdaptrisMessageFactory.getDefaultInstance().newMessage());
+  }
+
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 }

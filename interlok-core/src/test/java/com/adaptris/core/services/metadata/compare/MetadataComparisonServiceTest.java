@@ -16,11 +16,14 @@
 
 package com.adaptris.core.services.metadata.compare;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -114,15 +117,13 @@ public class MetadataComparisonServiceTest extends MetadataServiceExample {
     abstract ComparatorImpl create();
 
   };
-  
-  public MetadataComparisonServiceTest(String name) {
-    super(name);
-  }
 
   @Override
-  public void setUp() {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testInit() throws Exception {
     MetadataComparisonService s = new MetadataComparisonService();
     assertNull(s.getFirstKey());
@@ -157,6 +158,7 @@ public class MetadataComparisonServiceTest extends MetadataServiceExample {
     }
   }
 
+  @Test
   public void testStartsWith() throws Exception {
     MetadataComparisonService s = new MetadataComparisonService(KEY_1, KEY_2, new StartsWith());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -166,6 +168,7 @@ public class MetadataComparisonServiceTest extends MetadataServiceExample {
     assertEquals("true", msg.getMetadataValue(StartsWith.class.getCanonicalName()));
   }
 
+  @Test
   public void testStartsWithIgnoreCase() throws Exception {
     MetadataComparisonService s = new MetadataComparisonService(KEY_1, KEY_2, new StartsWithIgnoreCase());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -175,6 +178,7 @@ public class MetadataComparisonServiceTest extends MetadataServiceExample {
     assertEquals("true", msg.getMetadataValue(StartsWithIgnoreCase.class.getCanonicalName()));
   }
 
+  @Test
   public void testEndsWith() throws Exception {
     MetadataComparisonService s = new MetadataComparisonService(KEY_1, KEY_2, new EndsWith());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -184,6 +188,7 @@ public class MetadataComparisonServiceTest extends MetadataServiceExample {
     assertEquals("true", msg.getMetadataValue(EndsWith.class.getCanonicalName()));
   }
 
+  @Test
   public void testEndsWithIgnoreCase() throws Exception {
     MetadataComparisonService s = new MetadataComparisonService(KEY_1, KEY_2, new EndsWithIgnoreCase());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -193,6 +198,7 @@ public class MetadataComparisonServiceTest extends MetadataServiceExample {
     assertEquals("true", msg.getMetadataValue(EndsWithIgnoreCase.class.getCanonicalName()));
   }
 
+  @Test
   public void testContains() throws Exception {
     MetadataComparisonService s = new MetadataComparisonService(KEY_1, KEY_2, new Contains());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -202,6 +208,7 @@ public class MetadataComparisonServiceTest extends MetadataServiceExample {
     assertEquals("true", msg.getMetadataValue(Contains.class.getCanonicalName()));
   }
 
+  @Test
   public void testContainsIgnoreCase() throws Exception {
     MetadataComparisonService s = new MetadataComparisonService(KEY_1, KEY_2, new ContainsIgnoreCase());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -211,6 +218,7 @@ public class MetadataComparisonServiceTest extends MetadataServiceExample {
     assertEquals("true", msg.getMetadataValue(ContainsIgnoreCase.class.getCanonicalName()));
   }
 
+  @Test
   public void testEquals() throws Exception {
     MetadataComparisonService s = new MetadataComparisonService(KEY_1, KEY_2, new Equals());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -220,6 +228,7 @@ public class MetadataComparisonServiceTest extends MetadataServiceExample {
     assertEquals("false", msg.getMetadataValue(Equals.class.getCanonicalName()));
   }
 
+  @Test
   public void testEqualsIgnoreCase() throws Exception {
     MetadataComparisonService s = new MetadataComparisonService(KEY_1, KEY_2, new EqualsIgnoreCase());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -229,6 +238,7 @@ public class MetadataComparisonServiceTest extends MetadataServiceExample {
     assertEquals("true", msg.getMetadataValue(EqualsIgnoreCase.class.getCanonicalName()));
   }
 
+  @Test
   public void testCompareTimestamp() throws Exception {
     MetadataComparisonService s = new MetadataComparisonService(KEY_1, KEY_2, new CompareTimestamps());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -239,6 +249,7 @@ public class MetadataComparisonServiceTest extends MetadataServiceExample {
     assertEquals("-1", msg.getMetadataValue(CompareTimestamps.class.getCanonicalName()));
   }
 
+  @Test
   public void testCompareTimestamp_WithFormat() throws Exception {
     MetadataComparisonService s =
         new MetadataComparisonService(KEY_1, KEY_2, new CompareTimestamps("CompareTimestamps", "yyyy-MM-dd"));
@@ -250,7 +261,7 @@ public class MetadataComparisonServiceTest extends MetadataServiceExample {
     assertEquals("-1", msg.getMetadataValue("CompareTimestamps"));
   }
 
-
+  @Test
   public void testCompareTimestamp_Fails() throws Exception {
     MetadataComparisonService s =
         new MetadataComparisonService(KEY_1, KEY_2, new CompareTimestamps());
@@ -280,6 +291,7 @@ public class MetadataComparisonServiceTest extends MetadataServiceExample {
     return list;
   }
 
+  @Override
   protected String createBaseFileName(Object object) {
     MetadataComparisonService s = (MetadataComparisonService) object;
     return super.createBaseFileName(object) + "-" + s.getComparator().getClass().getSimpleName();

@@ -19,9 +19,12 @@ import static com.adaptris.core.http.jetty.HttpConsumerTest.JETTY_HTTP_PORT;
 import static com.adaptris.core.http.jetty.HttpConsumerTest.URL_TO_POST_TO;
 import static com.adaptris.core.http.jetty.HttpConsumerTest.XML_PAYLOAD;
 import static com.adaptris.core.http.jetty.JettyHelper.createConnection;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
@@ -34,7 +37,7 @@ import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.WorkflowImp;
 import com.adaptris.core.http.client.net.HttpRequestService;
-import com.adaptris.core.services.metadata.PayloadFromMetadataService;
+import com.adaptris.core.services.metadata.PayloadFromTemplateService;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
@@ -51,17 +54,12 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
       + "it arrives."
       + "\n-->\n";
 
-  public JettyAsyncWorkflowInterceptorTest(String testName) {
-    super(testName);
-  }
-
   @Override
-  protected void setUp() {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  protected void tearDown() {
-  }
-
+  @Test
   public void testLifecycle() throws Exception {
     JettyAsyncWorkflowInterceptor interceptor = new JettyAsyncWorkflowInterceptor();
     try {
@@ -78,6 +76,7 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testInterceptor_Cache() throws Exception {
     JettyAsyncWorkflowInterceptor requestor = new JettyAsyncWorkflowInterceptor()
         .withMode(JettyAsyncWorkflowInterceptor.Mode.REQUEST);
@@ -100,13 +99,14 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testInterceptor_WithShortcut() throws Exception {
     HttpConnection connection = createConnection(Integer.parseInt(PROPERTIES.getProperty(JETTY_HTTP_PORT)));
     JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO, getName());
     StandardWorkflow receivingWF = new StandardWorkflow();
     MockMessageProducer producer = new MockMessageProducer();
     receivingWF.addInterceptor(new JettyAsyncWorkflowInterceptor().withMode(JettyAsyncWorkflowInterceptor.Mode.REQUEST));
-    receivingWF.getServiceCollection().add(new PayloadFromMetadataService("hello world"));
+    receivingWF.getServiceCollection().add(new PayloadFromTemplateService().withTemplate("hello world"));
     receivingWF.getServiceCollection().add(new StandaloneProducer(producer));
     receivingWF.getServiceCollection().add(new JettyResponseService(200, "text/plain"));
     receivingWF.getServiceCollection().add(new ShortCutJettyResponse());
@@ -129,6 +129,7 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testAcrossMultipleWorkflows() throws Exception {
     HttpConnection connection = createConnection(Integer.parseInt(PROPERTIES.getProperty(JETTY_HTTP_PORT)));
     JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO, getName());
@@ -141,7 +142,7 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
     // Mainly to keep track of the msgID. we use a standard workflow so new objects aren't created.
     MockMessageProducer producer = new MockMessageProducer();
     respondingWF.addInterceptor(new JettyAsyncWorkflowInterceptor().withMode(JettyAsyncWorkflowInterceptor.Mode.RESPONSE));
-    respondingWF.getServiceCollection().add(new PayloadFromMetadataService("hello world"));
+    respondingWF.getServiceCollection().add(new PayloadFromTemplateService().withTemplate("hello world"));
     respondingWF.getServiceCollection().add(new JettyResponseService(200, "text/plain"));
     respondingWF.getServiceCollection().add(new StandaloneProducer(producer));
 
@@ -165,6 +166,7 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testAcrossMultipleWorkflows_WithCacheKey() throws Exception {
     HttpConnection connection = createConnection(Integer.parseInt(PROPERTIES.getProperty(JETTY_HTTP_PORT)));
     JettyMessageConsumer consumer = JettyHelper.createConsumer(URL_TO_POST_TO, getName());
@@ -181,7 +183,7 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
     MockMessageProducer producer = new MockMessageProducer();
     respondingWF.addInterceptor(
         new JettyAsyncWorkflowInterceptor().withMode(JettyAsyncWorkflowInterceptor.Mode.RESPONSE).withCacheKey(cacheKey));
-    respondingWF.getServiceCollection().add(new PayloadFromMetadataService("hello world"));
+    respondingWF.getServiceCollection().add(new PayloadFromTemplateService().withTemplate("hello world"));
     respondingWF.getServiceCollection().add(new JettyResponseService(200, "text/plain"));
     respondingWF.getServiceCollection().add(new StandaloneProducer(producer));
 

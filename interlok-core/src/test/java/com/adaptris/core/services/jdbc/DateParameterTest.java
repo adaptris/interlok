@@ -16,23 +16,24 @@
 
 package com.adaptris.core.services.jdbc;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.text.SimpleDateFormat;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.services.jdbc.StatementParameterImpl.QueryType;
 
-public class DateParameterTest extends BaseCase {
+public class DateParameterTest {
 
   private static final String DATE_FORMAT = "yyyy-MM-dd";
   private String dateString;
   private java.sql.Date date;
 
-  public DateParameterTest(String n) {
-    super(n);
+  public DateParameterTest() {
   }
 
   @Before
@@ -91,6 +92,6 @@ public class DateParameterTest extends BaseCase {
     DateStatementParameter sp = new DateStatementParameter(dateString, QueryType.constant, null, null,
         new SimpleDateFormat(DATE_FORMAT));
     DateStatementParameter copy = sp.makeCopy();
-    assertRoundtripEquality(sp, copy);
+    BaseCase.assertRoundtripEquality(sp, copy);
   }
 }

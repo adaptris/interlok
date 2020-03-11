@@ -16,29 +16,28 @@
 
 package com.adaptris.util;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.fail;
+import org.junit.Before;
+import org.junit.Test;
 
-
-public class TestKeyValuePair extends TestCase {
-
-  public TestKeyValuePair(java.lang.String testName) {
-    super(testName);
-  }
+public class TestKeyValuePair {
 
   KeyValuePair pair1;
   KeyValuePair pair2;
 
 
-  @Override
+  @Before
   public void setUp() {
     pair1 = new KeyValuePair("key", "value");
     pair2 = new KeyValuePair("key", "value");
   }
 
-  @Override
-  public void tearDown() {
-  }
 
+  @Test
   public void testEquals() {
     assertEquals(pair1, pair2);
     assertEquals(pair2, pair1);
@@ -55,12 +54,14 @@ public class TestKeyValuePair extends TestCase {
     assertFalse(pair1.equals(new Object()));
   }
 
+  @Test
   public void testToString() {
     assertNotNull(pair1.toString());
     assertNotNull(pair2.toString());
     assertNotNull(new KeyValuePair().toString());
   }
 
+  @Test
   public void testSets() {
     try {
       pair1.setKey(null);

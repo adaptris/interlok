@@ -1,5 +1,11 @@
 package com.adaptris.core.services.transcoding;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -13,17 +19,19 @@ public class DecodingServiceTest extends TranscodingServiceCase {
 
   private static final String OVERRIDE_HEADER_VALUE = "value";
 
-  public DecodingServiceTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+
+  @Test
   public void testInit() throws Exception {
     DecodingService service = new DecodingService();
     try {
       LifecycleHelper.init(service);
       fail();
-    }
-    catch (CoreException expected) {
+    } catch (CoreException expected) {
     }
     service.setEncoder(new MockEncoder());
     LifecycleHelper.init(service);
@@ -31,6 +39,7 @@ public class DecodingServiceTest extends TranscodingServiceCase {
     LifecycleHelper.init(service);
   }
 
+  @Test
   public void testSetEncoder() throws Exception {
     DecodingService s = new DecodingService();
     assertNull(s.getEncoder());
@@ -42,6 +51,7 @@ public class DecodingServiceTest extends TranscodingServiceCase {
     assertEquals(me, s.getEncoder());
   }
 
+  @Test
   public void testSetMessageFactory() throws Exception {
     DecodingService s = new DecodingService();
     assertNull(s.getMessageFactory());
@@ -61,6 +71,7 @@ public class DecodingServiceTest extends TranscodingServiceCase {
     }
   }
 
+  @Test
   public void testSetOverrideMetadata() throws Exception {
 
     DecodingService s = new DecodingService();
@@ -75,6 +86,7 @@ public class DecodingServiceTest extends TranscodingServiceCase {
     assertFalse(s.isOverrideMetadata());
   }
 
+  @Test
   public void testMockEncoder() throws Exception {
     DecodingService service = new DecodingService(new MockEncoder());
     AdaptrisMessage msg = createSimpleMessage();
@@ -82,6 +94,7 @@ public class DecodingServiceTest extends TranscodingServiceCase {
     assertEquals(TEST_PAYLOAD, new String(msg.getPayload()));
   }
 
+  @Test
   public void testMimeEncoder() throws Exception {
     DecodingService service = new DecodingService(new MimeEncoder());
     AdaptrisMessage msg = createMimeMessage();
@@ -95,6 +108,7 @@ public class DecodingServiceTest extends TranscodingServiceCase {
     assertEquals(TEST_PAYLOAD, new String(msg.getPayload()));
   }
 
+  @Test
   public void testMimeEncoder_OverrideHeader() throws Exception {
     DecodingService service = new DecodingService(new MimeEncoder());
     service.setOverrideMetadata(true);
@@ -110,6 +124,7 @@ public class DecodingServiceTest extends TranscodingServiceCase {
     assertEquals(TEST_PAYLOAD, new String(msg.getPayload()));
   }
 
+  @Test
   public void testMimeEncoder_DoNotOverrideHeader() throws Exception {
     DecodingService service = new DecodingService(new MimeEncoder());
     service.setOverrideMetadata(false);

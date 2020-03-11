@@ -16,6 +16,10 @@
 
 package com.adaptris.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -23,10 +27,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Constructor;
 import java.net.URL;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.stubs.TempFileUtils;
 
@@ -43,8 +47,8 @@ public class TestURLString extends BaseCase {
 
   protected File testOutputDir;
 
-  @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     testOutputDir = new File(PROPERTIES.getProperty(TEST_DIR));
     testOutputDir.mkdirs();
   }
@@ -57,10 +61,12 @@ public class TestURLString extends BaseCase {
   private static String file = "/url";
   private static String protocol = "http";
 
-  public TestURLString(java.lang.String testName) {
-    super(testName);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testUrlByString() throws Exception {
     URLString url = new URLString(testUrl);
     assertEquals(protocol, url.getProtocol());
@@ -72,6 +78,7 @@ public class TestURLString extends BaseCase {
     assertEquals(testUrl, url.toString());
   }
 
+  @Test
   public void testUrlByURL() throws Exception {
     URLString url = new URLString(new URL(testUrl));
     assertEquals(protocol, url.getProtocol());
@@ -83,6 +90,7 @@ public class TestURLString extends BaseCase {
     assertEquals(testUrl, url.toString());
   }
 
+  @Test
   public void testUrlByFile() throws Exception {
     Object marker = new Object();
     File trackedFile = TempFileUtils.createTrackedFile(marker);
@@ -91,7 +99,7 @@ public class TestURLString extends BaseCase {
     assertEquals(trackedFile.getCanonicalPath(), new File(url.getFile()).getCanonicalPath());
   }
 
-
+  @Test
   public void testUrlByComponents() throws Exception {
     URLString url = new URLString(protocol, host, port, file, username, password);
     assertEquals(protocol, url.getProtocol());
@@ -103,6 +111,7 @@ public class TestURLString extends BaseCase {
     assertEquals(testUrl, url.toString());
   }
 
+  @Test
   public void testUrlNonUrl() throws Exception {
     URLString url = new URLString("config.xml");
     logR.trace(url.getFile());
@@ -111,6 +120,7 @@ public class TestURLString extends BaseCase {
 
   }
 
+  @Test
   public void testBug898() throws Exception {
     String buggyURL = "smtp://user%40btinternet.com:password@mail.btinternet.com/";
     String username = "user@btinternet.com";
@@ -126,6 +136,7 @@ public class TestURLString extends BaseCase {
     assertEquals(buggyURL, url.toString());
   }
 
+  @Test
   public void testEquals() throws Exception {
     URLString url1 = new URLString("http://config.f4f.com/v3config/adapter.xml");
     URLString url_pw = new URLString("http://user%40btinternet.com:password@mail.btinternet.com/");
@@ -161,6 +172,7 @@ public class TestURLString extends BaseCase {
     assertNotSame(url_pw.hashCode(), new URLString("http://user:password@mail.btinternet.com/").hashCode());
   }
 
+  @Test
   public void testGetURL() throws Exception {
     String httpURL = "http://config.f4f.com/v3config/adapter.xml";
     URLString url = new URLString(httpURL);
@@ -176,6 +188,7 @@ public class TestURLString extends BaseCase {
     assertEquals(httpURL, url.getURL().toString());
   }
 
+  @Test
   public void testSerialize() throws Exception {
     URLString url = new URLString("http://config.f4f.com/v3config/adapter.xml");
     URLString roundtrip = roundTrip(url);
@@ -194,7 +207,7 @@ public class TestURLString extends BaseCase {
 
   }
 
-
+  @Test
   public void testUnserialize() throws Exception {
     String httpURL = "http://config.f4f.com/v3config/adapter.xml";
     URLString urlString = new URLString(httpURL);

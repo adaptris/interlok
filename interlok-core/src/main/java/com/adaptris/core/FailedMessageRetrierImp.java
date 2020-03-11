@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
@@ -57,19 +58,12 @@ public abstract class FailedMessageRetrierImp implements FailedMessageRetrier {
     setStandaloneConsumer(new StandaloneConsumer());
   }
 
-  /**
-   * <p>
-   * This method is <code>synchronized</code> in case client code is multi-threaded.
-   * </p>
-   * 
-   * @see com.adaptris.core.AdaptrisMessageListener #onAdaptrisMessage(com.adaptris.core.AdaptrisMessage)
-   */
   @Override
-  public synchronized void onAdaptrisMessage(AdaptrisMessage msg) {
+  public synchronized void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success) {
     try {
       Workflow workflow = getWorkflow(msg);
       updateRetryCountMetadata(msg);
-      workflow.onAdaptrisMessage(msg); // workflow.onAM is sync'd...
+      workflow.onAdaptrisMessage(msg, success); // workflow.onAM is sync'd...
     }
     catch (Exception e) { // inc. runtime, exc. Workflow
       log.error("exception retrying message", e);

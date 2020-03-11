@@ -16,6 +16,9 @@
 
 package com.adaptris.core.services;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMessageFactory;
@@ -26,8 +29,9 @@ public class UseXmlCharsetEncodingServiceTest extends GeneralServiceExample {
   private static final String EXAMPLE_XML = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?><root/>";
   private static final String EXAMPLE_XML_2 = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><root/>";
 
-  public UseXmlCharsetEncodingServiceTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
@@ -35,7 +39,7 @@ public class UseXmlCharsetEncodingServiceTest extends GeneralServiceExample {
     return new UseXmlCharsetAsEncodingService();
   }
 
-
+  @Test
   public void testService() throws Exception {
     AdaptrisMessage msg1 = AdaptrisMessageFactory.getDefaultInstance().newMessage(EXAMPLE_XML);
     assertNull(msg1.getContentEncoding());

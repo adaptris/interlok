@@ -16,10 +16,12 @@
 
 package com.adaptris.core.services.routing;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -33,10 +35,13 @@ public class SyntaxRoutingServiceTest extends SyntaxRoutingServiceExample {
   private static final String POSTCODE_REGEXP_2 = "[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z-[CIKMOV]]{2}";
   private static final String POSTCODE_REGEXP_1 = "[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z]{2}";
 
-  public SyntaxRoutingServiceTest(String arg0) {
-    super(arg0);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+
+  @Test
   public void testSetRoutingKey() throws Exception {
     SyntaxRoutingService service = new SyntaxRoutingService();
     try {
@@ -69,6 +74,7 @@ public class SyntaxRoutingServiceTest extends SyntaxRoutingServiceExample {
     LifecycleHelper.close(service);
   }
 
+  @Test
   public void testSetSyntaxIdentifiers() throws Exception {
     SyntaxRoutingService service = new SyntaxRoutingService();
     service.addSyntaxIdentifier(new RegexpSyntaxIdentifier(Arrays.asList(new String[]
@@ -94,6 +100,7 @@ public class SyntaxRoutingServiceTest extends SyntaxRoutingServiceExample {
     assertEquals(1, service.getSyntaxIdentifiers().size());
   }
 
+  @Test
   public void testDoServiceFirstMatch() throws Exception {
     SyntaxRoutingService service = new SyntaxRoutingService();
     service.setRoutingKey(ROUTING_KEY);
@@ -103,6 +110,7 @@ public class SyntaxRoutingServiceTest extends SyntaxRoutingServiceExample {
     assertEquals("isPostcode", msg.getMetadataValue(ROUTING_KEY));
   }
 
+  @Test
   public void testDoServiceSecondMatch() throws Exception {
     SyntaxRoutingService service = new SyntaxRoutingService();
     service.setRoutingKey(ROUTING_KEY);
@@ -113,6 +121,7 @@ public class SyntaxRoutingServiceTest extends SyntaxRoutingServiceExample {
     assertEquals("isXml", msg.getMetadataValue(ROUTING_KEY));
   }
 
+  @Test
   public void testDoServiceNoMatch() throws Exception {
     SyntaxRoutingService service = new SyntaxRoutingService();
     service.setRoutingKey(ROUTING_KEY);

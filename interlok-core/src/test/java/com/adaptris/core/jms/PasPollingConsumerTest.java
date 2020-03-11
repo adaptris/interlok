@@ -17,7 +17,6 @@
 package com.adaptris.core.jms;
 
 import java.util.concurrent.TimeUnit;
-
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.StandaloneConsumer;
@@ -25,16 +24,9 @@ import com.adaptris.util.TimeInterval;
 
 public class PasPollingConsumerTest extends PollingJmsConsumerCase {
 
-  public PasPollingConsumerTest(String arg0) {
-    super(arg0);
-  }
-
   @Override
-  protected void setUp() throws Exception {
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override

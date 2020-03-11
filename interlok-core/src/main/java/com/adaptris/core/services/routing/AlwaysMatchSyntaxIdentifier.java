@@ -16,6 +16,7 @@
 
 package com.adaptris.core.services.routing;
 
+import com.adaptris.core.services.conditional.Condition;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 
@@ -24,11 +25,17 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <p>
  * Always returns true when isThisSyntax() is used.
  * </p>
+ * <p>
+ * Since <strong>3.10.0</strong> this class implements {@link Condition} which means that it can be used as part of the conditional
+ * services; if used in such a manner, then configuration is contextual, get/setDestination will be ignored (but may still have to
+ * be configured due to validation
+ * </p>
  * 
+ * @author sellidge
  * @config routing-always-match-syntax-identifier
  */
 @XStreamAlias("routing-always-match-syntax-identifier")
-public class AlwaysMatchSyntaxIdentifier extends SyntaxIdentifierImpl {
+public class AlwaysMatchSyntaxIdentifier extends SyntaxIdentifierBase {
 
   public AlwaysMatchSyntaxIdentifier() {
     super();
@@ -47,4 +54,5 @@ public class AlwaysMatchSyntaxIdentifier extends SyntaxIdentifierImpl {
   public boolean isThisSyntax(String message) {
     return true;
   }
+
 }

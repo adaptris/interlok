@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services;
 
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
@@ -24,13 +26,17 @@ import com.adaptris.core.services.LoggingServiceImpl.LoggingLevel;
 public class LoggingServiceTest extends GeneralServiceExample {
 
   @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
+  }
+  @Override
   protected LoggingService retrieveObjectForSampleConfig() {
     return new LoggingService(LoggingLevel.DEBUG, "Using Metadata [%message{the-metadata-key}] to as the lookup");
   }
 
-  @SuppressWarnings("deprecation")
+  @Test
   public void testLogging() throws Exception {
-    LoggingService s1 = new LoggingService(LoggingLevel.FATAL, "Metadata key set to [%message{the-metadata-key}]");
+    LoggingService s1 = new LoggingService(LoggingLevel.ERROR, "Metadata key set to [%message{the-metadata-key}]");
     LoggingService s2 = new LoggingService(LoggingLevel.DEBUG, "Metadata key set to [%message{the-metadata-key}]")
         .withLogCategory(this.getClass().getCanonicalName());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("hello");

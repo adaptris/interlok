@@ -16,25 +16,24 @@
 
 package com.adaptris.core.services.jdbc;
 
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceException;
 
-import junit.framework.TestCase;
-
-public class SequentialParameterApplicatorTest extends TestCase {
+public class SequentialParameterApplicatorTest {
   
   private String twoParamSqlStatement = "insert into table values(?,?)";
   private String zeroParamSqlStatement = "select * from dual";
@@ -48,6 +47,7 @@ public class SequentialParameterApplicatorTest extends TestCase {
   @Mock
   private PreparedStatement mockStatement;
   
+  @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
     
@@ -65,20 +65,23 @@ public class SequentialParameterApplicatorTest extends TestCase {
   public void tearDown() throws Exception {
     
   }
-  
+
+  @Test
   public void testParameterApplicator() throws Exception {
     parameterApplicator.applyStatementParameters(message, mockStatement, parameters, twoParamSqlStatement);
     
     verify(mockStatement).setObject(1, "MyValue1");
     verify(mockStatement).setObject(2, "MyValue2");
   }
-  
+
+  @Test
   public void testParameterApplicatorZeroParams() throws Exception {
     parameterApplicator.applyStatementParameters(message, mockStatement, new StatementParameterList(), zeroParamSqlStatement);
     
     verify(mockStatement, never()).setObject(anyInt(), anyString());
   }
-  
+
+  @Test
   public void testParameterApplicatorServiceException() throws Exception {
     doThrow(new SQLException("Expected")).when(mockStatement).setObject(anyInt(), anyString());
     
@@ -90,6 +93,7 @@ public class SequentialParameterApplicatorTest extends TestCase {
     }
   }
 
+  @Test
   public void testPrepareStatement() throws Exception {
     assertEquals(zeroParamSqlStatement, parameterApplicator.prepareParametersToStatement(zeroParamSqlStatement));
     assertEquals(twoParamSqlStatement, parameterApplicator.prepareParametersToStatement(twoParamSqlStatement));

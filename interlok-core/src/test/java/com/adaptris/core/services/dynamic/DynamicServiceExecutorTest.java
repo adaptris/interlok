@@ -19,11 +19,12 @@ package com.adaptris.core.services.dynamic;
 import static com.adaptris.util.text.mime.MimeConstants.ENCODING_7BIT;
 import static com.adaptris.util.text.mime.MimeConstants.ENCODING_8BIT;
 import static com.adaptris.util.text.mime.MimeConstants.ENCODING_BASE64;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMarshaller;
@@ -190,17 +191,11 @@ public class DynamicServiceExecutorTest extends DynamicServiceExample {
     abstract String getExampleCommentHeader() throws Exception;
   };
 
-  public DynamicServiceExecutorTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-  @Override
-  protected void setUp() throws Exception {
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-  }
 
   @Override
   protected String getExampleCommentHeader(Object object) {
@@ -239,6 +234,7 @@ public class DynamicServiceExecutorTest extends DynamicServiceExample {
     return null;
   }
 
+  @Test
   public void testSetExtractor() {
     DynamicServiceExecutor service = new DynamicServiceExecutor();
     assertEquals(DefaultServiceExtractor.class, service.getServiceExtractor().getClass());
@@ -256,6 +252,7 @@ public class DynamicServiceExecutorTest extends DynamicServiceExample {
     assertEquals(MimeServiceExtractor.class, service.getServiceExtractor().getClass());
   }
 
+  @Test
   public void testDoService_DefaultServiceExtractor() throws Exception {
     AddMetadataService metadataService = new AddMetadataService();
     metadataService.addMetadataElement(new MetadataElement(getName(), getName()));
@@ -265,6 +262,7 @@ public class DynamicServiceExecutorTest extends DynamicServiceExample {
     assertEquals(getName(), msg.getMetadataValue(getName()));
   }
 
+  @Test
   public void testDoService_DefaultServiceExtractor_WithMarshaller() throws Exception {
     AddMetadataService metadataService = new AddMetadataService();
     metadataService.addMetadataElement(new MetadataElement(getName(), getName()));
@@ -278,6 +276,7 @@ public class DynamicServiceExecutorTest extends DynamicServiceExample {
     assertEquals(getName(), msg.getMetadataValue(getName()));
   }
 
+  @Test
   public void testDoService_DefaultServiceExtractor_NotService() throws Exception {
     DynamicServiceExecutor dynamicService = createService();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(getName());
@@ -290,7 +289,7 @@ public class DynamicServiceExecutorTest extends DynamicServiceExample {
     }
   }
 
-
+  @Test
   public void testDoService_DefaultServiceExtractor_SwallowException() throws Exception {
     DynamicServiceExecutor dynamicService = createService();
     dynamicService.setTreatNotFoundAsError(false);
@@ -298,6 +297,7 @@ public class DynamicServiceExecutorTest extends DynamicServiceExample {
     execute(dynamicService, msg);
   }
 
+  @Test
   public void testDoService_MimeServiceExtractor_NullSelector() throws Exception {
     AddMetadataService metadataService = new AddMetadataService();
     metadataService.addMetadataElement(new MetadataElement(getName(), getName()));
@@ -316,6 +316,7 @@ public class DynamicServiceExecutorTest extends DynamicServiceExample {
     }
   }
 
+  @Test
   public void testDoService_MimeServiceExtractor_ByPosition() throws Exception {
     AddMetadataService metadataService = new AddMetadataService();
     metadataService.addMetadataElement(new MetadataElement(getName(), getName()));
@@ -329,6 +330,7 @@ public class DynamicServiceExecutorTest extends DynamicServiceExample {
     assertEquals(getName(), msg.getMetadataValue(getName()));
   }
 
+  @Test
   public void testDoService_MimeServiceExtractor_ByContentId_NotFound() throws Exception {
     AddMetadataService metadataService = new AddMetadataService();
     metadataService.addMetadataElement(new MetadataElement(getName(), getName()));
@@ -347,6 +349,7 @@ public class DynamicServiceExecutorTest extends DynamicServiceExample {
     }
   }
 
+  @Test
   public void testDoService_MimeServiceExtractor_ByContentId() throws Exception {
     AddMetadataService metadataService = new AddMetadataService();
     metadataService.addMetadataElement(new MetadataElement(getName(), getName()));

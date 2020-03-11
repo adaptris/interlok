@@ -193,6 +193,7 @@ public class SharedConnectionTest {
     }
   }
 
+  @Test
   public void testCloneForTesting() throws Exception {
     Adapter a = createAndStart();
     NullConnection nc = (NullConnection) a.getSharedComponents().getConnections().get(0);

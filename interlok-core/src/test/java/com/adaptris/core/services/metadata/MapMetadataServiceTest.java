@@ -16,6 +16,11 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.util.KeyValuePair;
@@ -35,8 +40,9 @@ public class MapMetadataServiceTest extends MetadataServiceExample {
 
   private static final String UNMATCHED_REGXP = "ABCDEFGHIJKL(.*)";
 
-  public MapMetadataServiceTest(String arg0) {
-    super(arg0);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   private MapMetadataService createService() {
@@ -51,6 +57,7 @@ public class MapMetadataServiceTest extends MetadataServiceExample {
     return service;
   }
 
+  @Test
   public void testSetter() throws Exception {
     MapMetadataService service = createService();
     try {
@@ -62,6 +69,7 @@ public class MapMetadataServiceTest extends MetadataServiceExample {
     }
   }
 
+  @Test
   public void testReplacementNoMatch() throws Exception {
     MapMetadataService service = new MapMetadataService();
     service.setMetadataKey(null);
@@ -70,6 +78,7 @@ public class MapMetadataServiceTest extends MetadataServiceExample {
     assertFalse(msg.containsKey(METADATA_KEY));
   }
 
+  @Test
   public void testReplacementNoMap() throws Exception {
     MapMetadataService service = new MapMetadataService();
     service.setMetadataKey(METADATA_KEY);
@@ -79,7 +88,7 @@ public class MapMetadataServiceTest extends MetadataServiceExample {
     assertEquals(BASIC_MATCH_VALUE, msg.getMetadataValue(METADATA_KEY));
   }
 
-
+  @Test
   public void testReplacementNoMatchingKey() throws Exception {
     MapMetadataService service = createService();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("zzzzzzzz");
@@ -87,6 +96,7 @@ public class MapMetadataServiceTest extends MetadataServiceExample {
     assertFalse(msg.containsKey(METADATA_KEY));
   }
 
+  @Test
   public void testReplacement() throws Exception {
     MapMetadataService service = createService();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance()
@@ -96,6 +106,7 @@ public class MapMetadataServiceTest extends MetadataServiceExample {
     assertTrue(msg.getMetadataValue(METADATA_KEY).equals(BASIC_NEW_VALUE));
   }
 
+  @Test
   public void testReplacement_Resolved() throws Exception {
     MapMetadataService service = createService();
     KeyValuePairList kvps = new KeyValuePairList();
@@ -108,6 +119,7 @@ public class MapMetadataServiceTest extends MetadataServiceExample {
     assertTrue(msg.getMetadataValue(METADATA_KEY).equals(BASIC_NEW_VALUE));
   }
 
+  @Test
   public void testRegexGroupReplacement() throws Exception {
     MapMetadataService service = createService();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance()

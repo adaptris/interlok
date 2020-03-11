@@ -16,25 +16,24 @@
 
 package com.adaptris.core.services.jdbc;
 
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceException;
 
-import junit.framework.TestCase;
-
-public class NamedParameterApplicatorTest extends TestCase {
+public class NamedParameterApplicatorTest {
   
   private String fiveParamSqlStatement = "insert into table values(#paramOne,#paramTwo,#paramThree,#paramFour,#paramFive)";
   private String twoParamSqlStatementDiffPrefix = "insert into table values(%paramOne,%paramTwo)";
@@ -54,6 +53,7 @@ public class NamedParameterApplicatorTest extends TestCase {
   @Mock
   private PreparedStatement mockStatement;
   
+  @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
     
@@ -73,36 +73,43 @@ public class NamedParameterApplicatorTest extends TestCase {
   public void tearDown() throws Exception {
     
   }
-  
+
+  @Test
   public void testPrepareStatementNoNamedParams() throws Exception {
     assertEquals(twoParamSqlStatementNoNames, parameterApplicator.prepareParametersToStatement(twoParamSqlStatementNoNames));
   }
-  
+
+  @Test
   public void testPrepareStatementTwoNamedParams() throws Exception {
     assertEquals(twoParamSqlStatementNoNames, parameterApplicator.prepareParametersToStatement(twoParamSqlStatement));
   }
-  
+
+  @Test
   public void testSelectPrepareStatementTwoNamedParams() throws Exception {
     assertEquals(expectedTwoParamSelectStatement, parameterApplicator.prepareParametersToStatement(twoParamSelectStatement));
   }
-  
+
+  @Test
   public void testPrepareStatementTwoNamedParamsDiffPrefix() throws Exception {
     assertEquals(twoParamSqlStatementDiffPrefix, parameterApplicator.prepareParametersToStatement(twoParamSqlStatementDiffPrefix));
   }
-  
+
+  @Test
   public void testPrepareStatementTwoNamedParamsConfiguredDiffPrefix() throws Exception {
     parameterApplicator.setParameterNamePrefix("%");
     parameterApplicator.setParameterNameRegex("%\\w*");
     assertEquals(twoParamSqlStatementNoNames, parameterApplicator.prepareParametersToStatement(twoParamSqlStatementDiffPrefix));
   }
-  
+
+  @Test
   public void testParameterApplicator() throws Exception {
     parameterApplicator.applyStatementParameters(message, mockStatement, parameters, twoParamSqlStatement);
     
     verify(mockStatement).setObject(1, "MyValue1");
     verify(mockStatement).setObject(2, "MyValue2");
   }
-  
+
+  @Test
   public void testParameterApplicatorParamNotFound() throws Exception {
     try {
       parameterApplicator.applyStatementParameters(message, mockStatement, parameters, twoParamSelectStatementNameNotExists);
@@ -111,7 +118,8 @@ public class NamedParameterApplicatorTest extends TestCase {
       //expected
     }
   }
-  
+
+  @Test
   public void testParameterApplicatorParametersOutOfOrder() throws Exception {
     StatementParameter param1 = new StatementParameter("MyValue1", "java.lang.String", StatementParameter.QueryType.constant);
     param1.setName("paramOne");
@@ -139,13 +147,15 @@ public class NamedParameterApplicatorTest extends TestCase {
     verify(mockStatement).setObject(4, "MyValue4");
     verify(mockStatement).setObject(5, "MyValue5");
   }
-  
+
+  @Test
   public void testParameterApplicatorZeroParams() throws Exception {
     parameterApplicator.applyStatementParameters(message, mockStatement, new StatementParameterList(), zeroParamSqlStatement);
     
     verify(mockStatement, never()).setObject(anyInt(), anyString());
   }
-  
+
+  @Test
   public void testParameterApplicatorServiceException() throws Exception {
     doThrow(new SQLException("Expected")).when(mockStatement).setObject(anyInt(), anyString());
     

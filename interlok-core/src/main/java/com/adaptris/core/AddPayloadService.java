@@ -2,10 +2,9 @@ package com.adaptris.core;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -14,6 +13,18 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Add a new payload to the message.
+ *
+ * <pre>{@code
+ * <add-payload-service>
+ *   <unique-id>add-payload-unique-id</unique-id>
+ *   <new-payload-id>payload-2</new-payload-id>
+ *   <new-payload class="file-data-input-parameter">
+ *     <destination class="configured-destination">
+ *       <destination><!-- path to file to include as new payload --></destination>
+ *     </destination>
+ *   </new-payload>
+ * </add-payload-service>
+ * }</pre>
  *
  * @author aanderson
  * @since 3.9.x
@@ -101,7 +112,8 @@ public class AddPayloadService extends ServiceImp {
    */
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    log.debug("Attempting to add payload " + newPayloadId + " to message");
+    String id = msg.resolve(getNewPayloadId());
+    log.debug("Attempting to add payload " + id + " to message");
     if (!(msg instanceof MultiPayloadAdaptrisMessage)) {
       throw new ServiceException("Message [" + msg.getUniqueId() + "] is not a multi-payload message");
     }
@@ -113,11 +125,12 @@ public class AddPayloadService extends ServiceImp {
       log.error("Could not extract new payload from source", e);
       throw new ServiceException(e);
     }
-    if (getNewPayloadEncoding() == null) {
-      setNewPayloadEncoding(message.getContentEncoding());
-    }
-    message.addContent(getNewPayloadId(), payload, getNewPayloadEncoding());
-    log.debug("Added message payload [" + getNewPayloadId() + "]");
+    message.addContent(id, payload, newPayloadEncoding(msg));
+    log.debug("Added message payload [" + id + "]");
+  }
+
+  private String newPayloadEncoding(AdaptrisMessage msg) {
+    return ObjectUtils.defaultIfNull(getNewPayloadEncoding(), msg.getContentEncoding());
   }
 
   /**

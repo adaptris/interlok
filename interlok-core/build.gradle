@@ -4,7 +4,7 @@ import org.apache.tools.ant.filters.*
 ext {
   componentName='Base Interlok'
   activeMqVersion='5.15.11'
-  artemisVersion='2.10.1'
+  artemisVersion='2.11.0'
   bouncyCastleVersion='1.64'
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
   classesToTest = project.hasProperty("junit.test.classes") ? project.getProperty("junit.test.classes") : "**/*Test*"
@@ -49,7 +49,7 @@ dependencies {
 
   compile ("com.thoughtworks.xstream:xstream:$xstreamVersion")
   compile ("org.codehaus.jettison:jettison:1.2")
-  compile ("io.github.classgraph:classgraph:4.8.52")
+  compile ("io.github.classgraph:classgraph:4.8.60")
   compile ("net.jodah:expiringmap:0.5.9")
   compile ("javax.activation:activation:1.1.1")
   compile ("org.apache.activemq:activemq-client:$activeMqVersion") {
@@ -58,15 +58,15 @@ dependencies {
   compile ("org.apache.geronimo.specs:geronimo-jms_2.0_spec:1.0-alpha-2")
   compile ("org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final")
   compile ("javax.validation:validation-api:2.0.1.Final")
-  compile ("org.hibernate.validator:hibernate-validator:6.0.17.Final")
+  compile ("org.hibernate.validator:hibernate-validator:6.1.2.Final")
   compile ("org.glassfish:javax.el:3.0.1-b11")
-  compile ("commons-collections:commons-collections:3.2.2")
   compile ("commons-io:commons-io:2.6")
   compile ("org.apache.commons:commons-lang3:3.9")
   compile ("commons-net:commons-net:3.6")
-  compile ("org.apache.commons:commons-pool2:2.7.0")
+  compile ("org.apache.commons:commons-pool2:2.8.0")
   compile ("org.apache.commons:commons-exec:1.3")
   compile ("org.apache.commons:commons-text:1.8")
+  compile ("org.apache.commons:commons-collections4:4.4")
   compile ("org.bouncycastle:bcprov-jdk15on:$bouncyCastleVersion")
   compile ("org.bouncycastle:bcpkix-jdk15on:$bouncyCastleVersion")
   compile ("org.bouncycastle:bcmail-jdk15on:$bouncyCastleVersion")
@@ -75,38 +75,39 @@ dependencies {
   compile ("org.glassfish.external:opendmk_jdmkrt_jar:1.0-b01-ea")
   compile ("javax.xml.bind:jaxb-api:2.3.1")
   compile ("com.jcraft:jsch:0.1.55")
-  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.24.v20191120")
+  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.26.v20200117")
   compile ("javax.servlet:javax.servlet-api:4.0.1")
   compile ("net.sf.joost:joost:0.9.1")
   compile ("org.quartz-scheduler:quartz:2.3.2") {
     exclude group: "com.zaxxer", module: "HikariCP-java7"
   }
-  compile ("com.zaxxer:HikariCP:3.4.1")
-  compile ("net.sf.saxon:Saxon-HE:9.8.0-15")
+  compile ("com.zaxxer:HikariCP:3.4.2")
+  compile ("net.sf.saxon:Saxon-HE:9.9.1-6")
   compile ("xerces:xercesImpl:2.12.0")
-  compile ("com.mchange:c3p0:0.9.5.4")
+  compile ("com.mchange:c3p0:0.9.5.5")
   compile ("org.apache.derby:derby:10.14.2.0")
   compile ("org.apache-extras.beanshell:bsh:2.0b6")
 
   compile ("org.slf4j:slf4j-api:$slf4jVersion")
   compile "org.slf4j:jcl-over-slf4j:$slf4jVersion", optional
-  compile "org.slf4j:slf4j-log4j12:$slf4jVersion", optional
   compile "org.slf4j:jul-to-slf4j:$slf4jVersion", optional
   compile "org.apache.logging.log4j:log4j-core:$log4j2Version", optional
   compile "org.apache.logging.log4j:log4j-api:$log4j2Version", optional
+  compile "org.apache.logging.log4j:log4j-slf4j-impl:$log4j2Version", optional
   compile "org.apache.logging.log4j:log4j-1.2-api:$log4j2Version", optional
 
-  testCompile ("log4j:log4j:1.2.17")
-  testCompile ("junit:junit:4.12")
+  testCompile ("junit:junit:4.13")
   testCompile ("org.apache.activemq:artemis-jms-server:$artemisVersion")
   testCompile ("oro:oro:2.0.8")
+
+  testCompile ("org.awaitility:awaitility:3.0.0")
 
   testCompile ("org.apache.activemq:activemq-broker:$activeMqVersion")
   testCompile ("org.apache.activemq:activemq-jaas:$activeMqVersion")
   testCompile ("org.apache.activemq:activemq-kahadb-store:$activeMqVersion")
   testCompile ("org.apache.activemq.protobuf:activemq-protobuf:1.1")
 
-  testCompile ("org.jruby:jruby-complete:9.2.9.0")
+  testCompile ("org.jruby:jruby-complete:9.2.10.0")
   testCompile ("org.mockftpserver:MockFtpServer:2.7.1")
   testCompile ("org.mockito:mockito-core:$mockitoVersion")
   testCompile ("org.mockito:mockito-inline:$mockitoVersion")
@@ -343,11 +344,12 @@ uploadUnitTestStubs {
       pom.artifactId = "interlok-stubs"
       pom.withXml {
         asNode().appendNode("name", "Interlok Test Scaffolding")
-        asNode().appendNode("description", "Test Scaffolding for custom Interlok components")
+        asNode().appendNode("description", "Test Scaffolding for custom Interlok components; of no consequence at runtime")
         def properties = asNode().appendNode("properties")
         properties.appendNode("target", "3.8.0+")
         properties.appendNode("tags", "junit")
         properties.appendNode("license", "false")
+        properties.appendNode("developerOnly", "true")
       }
 
     }

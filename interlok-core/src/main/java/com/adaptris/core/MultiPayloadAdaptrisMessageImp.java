@@ -16,6 +16,9 @@
 
 package com.adaptris.core;
 
+import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.interlok.resolver.UnresolvableException;
+import com.adaptris.interlok.types.InterlokMessage;
 import com.adaptris.util.IdGenerator;
 import org.apache.commons.lang3.StringUtils;
 
@@ -26,6 +29,8 @@ import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -45,29 +50,32 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  * @see MultiPayloadAdaptrisMessage
  * @see MultiPayloadMessageFactory
  * @see AdaptrisMessageImp
- * @since 3.9.x
+ * @since 3.9.3
  */
+@ComponentProfile(summary = "A multi-payload message implementation", tag = "multi-payload,message", since="3.9.3")
 public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implements MultiPayloadAdaptrisMessage {
-  private static final String RESOLVE_PREFIX = "%payload_id";
-  private static final String RESOLVE_REGEXP = "^.*" + RESOLVE_PREFIX + "\\{([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
+  private static final String RESOLVE_REGEXP = "^.*%payload_id\\{([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
+  private static final String RESOLVE_2_REGEX = "^.*%payload\\{id:([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
   private static final transient Pattern normalPayloadResolver = Pattern.compile(RESOLVE_REGEXP);
   private static final transient Pattern dotAllPayloadResolver = Pattern.compile(RESOLVE_REGEXP, Pattern.DOTALL);
+  private static final transient Pattern normalPayloadResolver2 = Pattern.compile(RESOLVE_2_REGEX);
+  private static final transient Pattern dotAllPayloadResolver2 = Pattern.compile(RESOLVE_2_REGEX, Pattern.DOTALL);
 
   private Map<String, Payload> payloads = new HashMap<>();
 
   @NotNull
   private String currentPayloadId = DEFAULT_PAYLOAD_ID;
 
-  protected MultiPayloadAdaptrisMessageImp(@NotNull String payloadId, IdGenerator guid, AdaptrisMessageFactory messageFactory) {
+  public MultiPayloadAdaptrisMessageImp(@NotNull String payloadId, IdGenerator guid, AdaptrisMessageFactory messageFactory) {
     this(payloadId, guid, messageFactory, new byte[0]);
   }
 
-  protected MultiPayloadAdaptrisMessageImp(@NotNull String payloadId, IdGenerator guid, AdaptrisMessageFactory messageFactory, byte[] payload) {
+  public MultiPayloadAdaptrisMessageImp(@NotNull String payloadId, IdGenerator guid, AdaptrisMessageFactory messageFactory, byte[] payload) {
     super(guid, messageFactory);
     addPayload(payloadId, payload);
   }
 
-  protected MultiPayloadAdaptrisMessageImp(@NotNull String payloadId, IdGenerator guid, AdaptrisMessageFactory messageFactory, String content, Charset encoding) {
+  public MultiPayloadAdaptrisMessageImp(@NotNull String payloadId, IdGenerator guid, AdaptrisMessageFactory messageFactory, String content, Charset encoding) {
     super(guid, messageFactory);
     addContent(payloadId, content, encoding != null ? encoding.toString() : null);
   }
@@ -203,7 +211,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
    */
   @Override
   public byte[] getPayload(@NotNull String payloadId) {
-    return payloads.get(payloadId).data;
+    return payloads.get(payloadId).payload();
   }
 
   /**
@@ -233,17 +241,19 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
   }
 
   /**
-   * Set the current payload content.
-   *
-   * @param payloadString
-   *          The payload content.
-   * @param charEnc
-   *          The content encoding.
-   * @see AdaptrisMessage#setContent(String, String)
+   * @see InterlokMessage#setContent(String, String).
    */
   @Override
   public void setContent(String payloadString, String charEnc) {
     addContent(currentPayloadId, payloadString, charEnc);
+  }
+
+  /**
+   * {@inheritDoc}.
+   */
+  @Override
+  public void setContent(String payloadId, String payloadString, String charEnc) {
+    addContent(payloadId, payloadString, charEnc);
   }
 
   /**
@@ -292,6 +302,25 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
     } else {
       return new String(payload, Charset.forName(getContentEncoding()));
     }
+  }
+
+  @Override
+  public String getPayloadForLogging() {
+    StringBuffer sb = new StringBuffer("{");
+    boolean c = false;
+    for (String id : payloads.keySet()) {
+      if (c) {
+        sb.append(",");
+      } else {
+        c = true;
+      }
+      sb.append(id);
+      if (id.equals(currentPayloadId)) {
+        sb.append(":");
+        sb.append(getContent(id));
+      }
+    }
+    return sb.append("}").toString();
   }
 
   /**
@@ -344,7 +373,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
     result.payloads = new HashMap<>();
     for (String payloadId : payloads.keySet()) {
       Payload payload = payloads.get(payloadId);
-      result.addPayload(payloadId, payload.data.clone());
+      result.addPayload(payloadId, payload.payload());
       result.setContentEncoding(payloadId, payload.encoding);
     }
     result.switchPayload(currentPayloadId);
@@ -364,7 +393,8 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
    */
   @Override
   public InputStream getInputStream(@NotNull String payloadId) {
-    return new ByteArrayInputStream(getPayload(payloadId));
+    byte[] payload = getPayload(payloadId);
+    return payload != null ? new ByteArrayInputStream(payload) : new ByteArrayInputStream(new byte[0]);
   }
 
   /**
@@ -384,6 +414,34 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
   }
 
   /**
+   * @see InterlokMessage#getWriter()
+   */
+  @Override
+  public Writer getWriter() throws IOException
+  {
+    return getWriter(currentPayloadId);
+  }
+
+  /**
+   * {@inheritDoc}.
+   */
+  @Override
+  public Writer getWriter(@NotNull String payloadId) throws IOException
+  {
+    return getWriter(payloadId, getContentEncoding(payloadId));
+  }
+
+  /**
+   * {@inheritDoc}.
+   */
+  @Override
+  public Writer getWriter(@NotNull String payloadId, String encoding) throws IOException
+  {
+    OutputStream outputStream = getOutputStream(payloadId);
+    return encoding != null ? new OutputStreamWriter(outputStream, encoding) : new OutputStreamWriter(outputStream);
+  }
+
+  /**
    * Resolve against this message's payloads or metadata.
    * <p>
    * This is a helper method that allows you to pass in {@code %payload_id{pl1}}
@@ -396,7 +454,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
    * values {@code %message{%uniqueId}} and {@code %message{%size}} should return
    * the message unique-id and message size respectively
    *
-   * @param s
+   * @param target
    *          The string to resolve.
    * @param dotAll
    *          Whether to resolve in {@link java.util.regex.Pattern#DOTALL} mode,
@@ -405,36 +463,38 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
    *         null (if none exists).
    */
   @Override
-  public String resolve(String s, boolean dotAll) {
-    if (s == null) {
+  public String resolve(String target, boolean dotAll) {
+    if (target == null) {
       return null;
     }
-    if (!s.contains(RESOLVE_PREFIX)) {
-      return super.resolve(s, dotAll);
-    } else {
-      Pattern pattern = dotAll ? normalPayloadResolver : dotAllPayloadResolver;
-      String result = s;
-      Matcher m = pattern.matcher(s);
-      while (m.matches()) {
-        String key = m.group(1);
-        if (!hasPayloadId(key)) {
-          throw new UnresolvedMetadataException("Could not resolve payload ID [" + key + "]");
-        }
-        String content = getContent(key);
-        String toReplace = RESOLVE_PREFIX + "{" + key + "}";
-        result = result.replace(toReplace, content);
-        m = pattern.matcher(result);
+    // resolve any %payload{id:…}'s or %payload_id{…}'s before attempting any %message{…}'s
+    Pattern pattern = dotAll ? normalPayloadResolver2 : dotAllPayloadResolver2;
+    target = resolve(target, pattern, false);
+    pattern = dotAll ? normalPayloadResolver : dotAllPayloadResolver;
+    target = resolve(target, pattern, true);
+    return super.resolve(target, dotAll);
+  }
+
+  private String resolve(String target, Pattern pattern, boolean defaultPattern) {
+    Matcher m = pattern.matcher(target);
+    while (m.matches()) {
+      String key = m.group(1);
+      if (!hasPayloadId(key)) {
+        throw new UnresolvableException("Could not resolve payload ID [" + key + "]");
       }
-      return result;
+      target = target.replace(String.format(defaultPattern ? "%%payload_id{%s}" : "%%payload{id:%s}", key), getContent(key));
+      m = pattern.matcher(target);
     }
+    return target;
   }
 
   private class ByteFilterStream extends FilterOutputStream {
     private final String payloadId;
 
-    ByteFilterStream(@NotNull String payloadId, OutputStream out) {
+    ByteFilterStream(@NotNull String payloadId, ByteArrayOutputStream out) {
       super(out);
       this.payloadId = payloadId;
+      payloads.put(payloadId, new Payload(out));
     }
 
     @Override
@@ -445,17 +505,28 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
   }
 
   private class Payload {
-    public String encoding;
-    @NotNull
-    public byte[] data;
+    String encoding;
+    private byte[] data;
+    private ByteArrayOutputStream stream;
 
-    public Payload(String encoding, @NotNull byte[] data) {
+    Payload(String encoding, @NotNull byte[] data) {
       this.encoding = encoding;
       this.data = data;
     }
 
-    public Payload(@NotNull byte[] data) {
+    Payload(@NotNull byte[] data) {
       this.data = data;
+    }
+
+    Payload(@NotNull ByteArrayOutputStream stream) {
+      this.stream = stream;
+    }
+
+    byte[] payload() {
+      if (stream != null) {
+        return stream.toByteArray();
+      }
+      return data;
     }
   }
 }

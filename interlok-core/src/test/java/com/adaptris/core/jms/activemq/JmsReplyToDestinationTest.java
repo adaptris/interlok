@@ -15,7 +15,8 @@
 */
 
 package com.adaptris.core.jms.activemq;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import javax.jms.Destination;
 import javax.jms.Queue;
 import javax.jms.Session;
@@ -23,6 +24,7 @@ import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ExampleProduceDestinationCase;
@@ -37,8 +39,9 @@ public class JmsReplyToDestinationTest extends ExampleProduceDestinationCase {
   private static final String ANY_OLD_KEY = "ANY_OLD_KEY";
   protected static Log log = LogFactory.getLog(JmsReplyToDestinationTest.class);
 
-  public JmsReplyToDestinationTest(String arg0) throws Exception {
-    super(arg0);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   private AdaptrisMessage createMessage(Destination d) throws Exception {
@@ -55,6 +58,7 @@ public class JmsReplyToDestinationTest extends ExampleProduceDestinationCase {
    return session.createTemporaryQueue();
   }
 
+  @Test
   public void testRetrieveDestination() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -74,7 +78,7 @@ public class JmsReplyToDestinationTest extends ExampleProduceDestinationCase {
     }
   }
 
-
+  @Test
   public void testRetrieveDestination_ByName() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -95,6 +99,7 @@ public class JmsReplyToDestinationTest extends ExampleProduceDestinationCase {
     }
   }
 
+  @Test
   public void testGetDestination() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -114,6 +119,7 @@ public class JmsReplyToDestinationTest extends ExampleProduceDestinationCase {
     }
   }
 
+  @Test
   public void testGetDestination_MetadataDoesNotExist() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());

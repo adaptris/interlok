@@ -15,9 +15,12 @@
 */
 
 package com.adaptris.core;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.UUID;
-
+import org.junit.Test;
 import com.adaptris.core.stubs.FailFirstMockMessageProducer;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageConsumer;
@@ -30,8 +33,10 @@ public abstract class FailedMessageRetrierCase extends ExampleFailedMessageRetri
 
   private static final GuidGenerator guid = new GuidGenerator();
 
-  public FailedMessageRetrierCase(String name) {
-    super(name);
+
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   protected StandardWorkflow createWorkflow() throws Exception {
@@ -56,6 +61,7 @@ public abstract class FailedMessageRetrierCase extends ExampleFailedMessageRetri
     return workflow;
   }
 
+  @Test
   public void testSetter() throws Exception {
     FailedMessageRetrierImp retrier = (FailedMessageRetrierImp) create();
     try {
@@ -66,6 +72,7 @@ public abstract class FailedMessageRetrierCase extends ExampleFailedMessageRetri
     }
   }
 
+  @Test
   public void testRegisteredWorkflowIds() throws Exception {
     FailedMessageRetrier retrier = create();
     StandardWorkflow wf1 = createWorkflow();
@@ -77,6 +84,7 @@ public abstract class FailedMessageRetrierCase extends ExampleFailedMessageRetri
     assertTrue(retrier.registeredWorkflowIds().contains(wf2.obtainWorkflowId()));
   }
 
+  @Test
   public void testClearWorkflows() throws Exception {
     FailedMessageRetrier retrier = create();
     retrier.addWorkflow(createWorkflow());
@@ -85,6 +93,7 @@ public abstract class FailedMessageRetrierCase extends ExampleFailedMessageRetri
     assertEquals(0, retrier.registeredWorkflowIds().size());
   }
 
+  @Test
   public void testRetry() throws Exception {
     FailedMessageRetrier retrier = create();
     StandardWorkflow wf = createWorkflow();
@@ -105,6 +114,7 @@ public abstract class FailedMessageRetrierCase extends ExampleFailedMessageRetri
     }
   }
 
+  @Test
   public void testRetryNoWorkflowId() throws Exception {
     FailedMessageRetrier retrier = create();
     StandardWorkflow wf = createWorkflow();
@@ -125,6 +135,7 @@ public abstract class FailedMessageRetrierCase extends ExampleFailedMessageRetri
     }
   }
 
+  @Test
   public void testRetryNoMatchForWorkflowId() throws Exception {
     FailedMessageRetrier retrier = create();
     StandardWorkflow wf = createWorkflow();
@@ -146,6 +157,7 @@ public abstract class FailedMessageRetrierCase extends ExampleFailedMessageRetri
     }
   }
 
+  @Test
   public void testRetryInvalidCounter() throws Exception {
     FailedMessageRetrier retrier = create();
     StandardWorkflow wf = createWorkflow();
@@ -169,6 +181,7 @@ public abstract class FailedMessageRetrierCase extends ExampleFailedMessageRetri
     }
   }
 
+  @Test
   public void testMultipleRetries() throws Exception {
     FailedMessageRetrier retrier = create();
     StandardWorkflow wf = createWorkflow();
@@ -195,6 +208,7 @@ public abstract class FailedMessageRetrierCase extends ExampleFailedMessageRetri
     }
   }
 
+  @Test
   public void testAdapterRetry() throws Exception {
     FailedMessageRetrier retrier = create();
     MockMessageProducer errProd = new MockMessageProducer();
@@ -219,6 +233,7 @@ public abstract class FailedMessageRetrierCase extends ExampleFailedMessageRetri
     }
   }
 
+  @Test
   public void testRoundTrip_AdapterRetry() throws Exception {
     AdaptrisMarshaller marshaller = DefaultMarshaller.getDefaultMarshaller();
     Adapter adapter = (Adapter) marshaller.unmarshal(marshaller.marshal(createAdapterForRetry(create(),

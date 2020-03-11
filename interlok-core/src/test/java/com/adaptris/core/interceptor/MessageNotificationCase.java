@@ -19,10 +19,10 @@ package com.adaptris.core.interceptor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-
+import org.junit.After;
+import org.junit.Before;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.Channel;
@@ -38,18 +38,15 @@ public abstract class MessageNotificationCase extends BaseCase {
   protected MBeanServer mBeanServer;
   protected List<ObjectName> registeredObjects;
 
-  public MessageNotificationCase(String name) {
-    super(name);
-  }
 
-  @Override
-  protected void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
     mBeanServer = JmxHelper.findMBeanServer();
     registeredObjects = new ArrayList<ObjectName>();
   }
 
-  @Override
-  protected void tearDown() throws Exception {
+  @After
+  public void tearDown() throws Exception {
     for (ObjectName bean : registeredObjects) {
       if (mBeanServer.isRegistered(bean)) {
         mBeanServer.unregisterMBean(bean);

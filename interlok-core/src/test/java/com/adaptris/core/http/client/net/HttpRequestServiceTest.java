@@ -19,7 +19,12 @@ package com.adaptris.core.http.client.net;
 import static com.adaptris.core.http.jetty.JettyHelper.createChannel;
 import static com.adaptris.core.http.jetty.JettyHelper.createConsumer;
 import static com.adaptris.core.http.jetty.JettyHelper.createWorkflow;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.util.Arrays;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
@@ -43,21 +48,19 @@ import com.adaptris.core.http.jetty.SecurityConstraint;
 import com.adaptris.core.http.jetty.StandardResponseProducer;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.metadata.RegexMetadataFilter;
-import com.adaptris.core.services.metadata.PayloadFromMetadataService;
+import com.adaptris.core.services.metadata.PayloadFromTemplateService;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
 
 public class HttpRequestServiceTest extends HttpServiceExample {
   private static final String TEXT = "ABCDEFG";
 
-  public HttpRequestServiceTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testService_init() throws Exception {
     HttpRequestService service = new HttpRequestService();
     try {
@@ -74,6 +77,7 @@ public class HttpRequestServiceTest extends HttpServiceExample {
     LifecycleHelper.stop(service);
   }
 
+  @Test
   public void testService_WithContentTypeMetadata() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock);
@@ -96,6 +100,7 @@ public class HttpRequestServiceTest extends HttpServiceExample {
     assertEquals("text/complicated", m2.getMetadataValue("Content-Type"));
   }
 
+  @Test
   public void testService_MetadataRequestHeaders() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock);
@@ -117,15 +122,14 @@ public class HttpRequestServiceTest extends HttpServiceExample {
     assertEquals(getName(), m2.getMetadataValue(getName()));
   }
 
-
+  @Test
   public void testService_WithMetadataMethod() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     HttpConnection jc = HttpHelper.createConnection();
     JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
-    Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList(new Service[]
-        {
-            new PayloadFromMetadataService(TEXT), new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200))
-          })));
+    Channel c = createChannel(jc,
+        createWorkflow(mc, mock, new ServiceList(new Service[] {new PayloadFromTemplateService().withTemplate(TEXT),
+            new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200))})));
 
     HttpRequestService service =
         new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
@@ -145,15 +149,14 @@ public class HttpRequestServiceTest extends HttpServiceExample {
     assertEquals(TEXT, msg.getContent());
   }
 
-
+  @Test
   public void testRequest_GetMethod_ZeroBytes() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     HttpConnection jc = HttpHelper.createConnection();
     JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
-    Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList(new Service[]
-        {
-            new PayloadFromMetadataService(TEXT), new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200))
-        })));
+    Channel c = createChannel(jc,
+        createWorkflow(mc, mock, new ServiceList(new Service[] {new PayloadFromTemplateService().withTemplate(TEXT),
+            new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200))})));
 
     HttpRequestService service =
         new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
@@ -173,13 +176,15 @@ public class HttpRequestServiceTest extends HttpServiceExample {
     assertEquals(TEXT, msg.getContent());
   }
 
+  @Test
   public void testRequest_PostMethod_ZeroBytes() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     HttpConnection jc = HttpHelper.createConnection();
     JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
     Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList(new Service[]
         {
-            new PayloadFromMetadataService(TEXT), new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200))
+        new PayloadFromTemplateService().withTemplate(TEXT),
+        new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200))
         })));
 
     HttpRequestService service =
@@ -200,6 +205,7 @@ public class HttpRequestServiceTest extends HttpServiceExample {
     assertEquals(TEXT, msg.getContent());
   }
 
+  @Test
   public void testRequest_EmptyReply() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     HttpConnection jc = HttpHelper.createConnection();
@@ -228,8 +234,7 @@ public class HttpRequestServiceTest extends HttpServiceExample {
     assertEquals(0, msg.getSize());
   }
 
-
-
+  @Test
   public void testRequest_MetadataResponseHeaders() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock);
@@ -255,7 +260,7 @@ public class HttpRequestServiceTest extends HttpServiceExample {
     assertTrue(msg.headersContainsKey("Server"));
   }
 
-
+  @Test
   public void testRequest_ObjectMetadataResponseHeaders() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock);
@@ -278,13 +283,15 @@ public class HttpRequestServiceTest extends HttpServiceExample {
     assertTrue(msg.getObjectHeaders().containsKey("Server"));
   }
 
+  @Test
   public void testRequest_GetMethod_NonZeroBytes() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     HttpConnection jc = HttpHelper.createConnection();
     JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
     Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList(new Service[]
     {
-        new PayloadFromMetadataService(TEXT), new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200))
+        new PayloadFromTemplateService().withTemplate(TEXT),
+        new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200))
     })));
 
     HttpRequestService service = new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
@@ -303,7 +310,8 @@ public class HttpRequestServiceTest extends HttpServiceExample {
     assertEquals("GET", m2.getMetadataValue(CoreConstants.HTTP_METHOD));
     assertEquals(TEXT, msg.getContent());
   }
-  
+
+  @Test
   public void testRequest_GetMethod_NonZeroBytes_WithErrorResponse() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     HttpConnection jc = HttpHelper.createConnection();
@@ -311,7 +319,8 @@ public class HttpRequestServiceTest extends HttpServiceExample {
 
     Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList(new Service[]
     {
-        new PayloadFromMetadataService(TEXT), new StandaloneProducer(new StandardResponseProducer(HttpStatus.UNAUTHORIZED_401))
+        new PayloadFromTemplateService().withTemplate(TEXT),
+        new StandaloneProducer(new StandardResponseProducer(HttpStatus.UNAUTHORIZED_401))
     })));
     HttpRequestService service =
         new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
@@ -337,6 +346,7 @@ public class HttpRequestServiceTest extends HttpServiceExample {
     return auth;
   }
 
+  @Test
   public void testProduce_WithUsernamePassword() throws Exception {
     String threadName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());

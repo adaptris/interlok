@@ -15,21 +15,24 @@
 */
 
 package com.adaptris.core;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.fs.FsProducer;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
 
 public class StandaloneProducerTest extends GeneralServiceExample {
 
-  public StandaloneProducerTest(String name) {
-    super(name);
-  }
-
   @Override
-  protected void setUp() throws Exception {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testDoService() throws Exception {
     MockMessageProducer m = new MockMessageProducer();
     StandaloneProducer service = new StandaloneProducer(m);
@@ -39,6 +42,7 @@ public class StandaloneProducerTest extends GeneralServiceExample {
     assertEquals(1, m.getMessages().size());
   }
 
+  @Test
   public void testDoProduce() throws Exception {
     MockMessageProducer m = new MockMessageProducer();
     StandaloneProducer service = new StandaloneProducer(m);
@@ -54,6 +58,7 @@ public class StandaloneProducerTest extends GeneralServiceExample {
     }
   }
 
+  @Test
   public void testDoProduceWithDest() throws Exception {
     MockMessageProducer m = new MockMessageProducer();
     StandaloneProducer service = new StandaloneProducer(m);
@@ -69,12 +74,14 @@ public class StandaloneProducerTest extends GeneralServiceExample {
     }
   }
 
+  @Test
   public void testCreateName() throws Exception {
     StandaloneProducer service = new StandaloneProducer(new MockMessageProducer());
     assertEquals(MockMessageProducer.class.getName(), service.createName());
     assertEquals(service.getProducer().createName(), service.createName());
   }
 
+  @Test
   public void testCreateQualifier() throws Exception {
     FsProducer mp = new FsProducer();
     mp.setUniqueId("abc");
@@ -87,6 +94,7 @@ public class StandaloneProducerTest extends GeneralServiceExample {
     assertNotSame(service.getProducer().createQualifier(), service.createQualifier());
   }
 
+  @Test
   public void testSetConnection() throws Exception {
     StandaloneProducer service = new StandaloneProducer();
     try {
@@ -98,6 +106,7 @@ public class StandaloneProducerTest extends GeneralServiceExample {
     }
   }
 
+  @Test
   public void testSetProducer() throws Exception {
     StandaloneProducer service = new StandaloneProducer();
     try {
@@ -109,6 +118,7 @@ public class StandaloneProducerTest extends GeneralServiceExample {
     }
   }
 
+  @Test
   public void testBackReferences() throws Exception {
     StandaloneProducer producer = new StandaloneProducer();
     NullConnection conn = new NullConnection();

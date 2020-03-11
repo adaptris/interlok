@@ -16,10 +16,12 @@
 
 package com.adaptris.jdbc;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
-public class ConfiguredStatementCreatorTest extends TestCase{
+public class ConfiguredStatementCreatorTest {
   
+  @Test
   public void testConfiguredStatementCreator() {
     String statement = "{ CALL procedureName(?, ?, ?); }";
     
@@ -29,6 +31,7 @@ public class ConfiguredStatementCreatorTest extends TestCase{
     assertEquals(statement, statementCreator.createCall(null, 0));
   }
   
+  @Test
   public void testConfiguredStatementCreatorWithProcName() {
     String expected = "{ CALL procedureName(?, ?, ?); }";
     String statement = "{ CALL $(?, ?, ?); }";
@@ -39,6 +42,7 @@ public class ConfiguredStatementCreatorTest extends TestCase{
     assertEquals(expected, statementCreator.createCall("procedureName", 0));
   }
   
+  @Test
   public void testConfiguredStatementCreatorWithProcNameExtraWhiteSpace() {
     String expected = "{ CALL procedureName ( ? , ? , ? ); }";
     String statement = "{ CALL $ ( ? , ? , ? ); }";

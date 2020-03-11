@@ -32,10 +32,4 @@ public abstract class ConditionalServiceExample extends ServiceCase {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
   }
-
-  public ConditionalServiceExample(String name) {
-    this();
-    setName(name);
-  }
-
 }

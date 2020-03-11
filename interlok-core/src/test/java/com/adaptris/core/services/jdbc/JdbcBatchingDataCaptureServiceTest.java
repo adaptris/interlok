@@ -16,9 +16,12 @@
 
 package com.adaptris.core.services.jdbc;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import java.sql.SQLException;
 import java.sql.Statement;
-
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.jdbc.AdvancedJdbcPooledConnection;
@@ -28,8 +31,9 @@ import com.adaptris.core.jdbc.PooledConnectionHelper;
 
 public class JdbcBatchingDataCaptureServiceTest extends JdbcDataCaptureServiceCase {
 
-  public JdbcBatchingDataCaptureServiceTest(String arg0) {
-    super(arg0);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
@@ -39,10 +43,12 @@ public class JdbcBatchingDataCaptureServiceTest extends JdbcDataCaptureServiceCa
     return service;
   }
 
-  @Override
+  @Test
   public void testBackReferences() throws Exception {
     this.testBackReferences(new JdbcBatchingDataCaptureService("INSERT INTO MYTABLE ('ABC');"));
   }
+
+  @Test
   public void testBatchWindow() {
     JdbcBatchingDataCaptureService service = new JdbcBatchingDataCaptureService();
     assertNull(service.getBatchWindow());
@@ -55,6 +61,7 @@ public class JdbcBatchingDataCaptureServiceTest extends JdbcDataCaptureServiceCa
     assertEquals(JdbcBatchingDataCaptureService.DEFAULT_BATCH_WINDOW, service.batchWindow());
   }
 
+  @Test
   public void testService_IterationsLessThanBatch() throws Exception {
     createDatabase();
     JdbcBatchingDataCaptureService service = (JdbcBatchingDataCaptureService) createBasicService();
@@ -69,6 +76,7 @@ public class JdbcBatchingDataCaptureServiceTest extends JdbcDataCaptureServiceCa
     doBasicCaptureAsserts(2);
   }
 
+  @Test
   public void testRowsUpdated() throws Exception {
     try {
       int[] results = {1, Statement.EXECUTE_FAILED, 2};

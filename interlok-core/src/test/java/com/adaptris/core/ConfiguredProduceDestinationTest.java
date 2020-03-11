@@ -16,17 +16,25 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import org.junit.Test;
+
+
 public class ConfiguredProduceDestinationTest extends ExampleProduceDestinationCase {
 
-  public ConfiguredProduceDestinationTest(java.lang.String testName) {
-    super(testName);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testGetDestination() {
     ConfiguredProduceDestination dest1 = new ConfiguredProduceDestination("1");
     assertEquals("1", dest1.getDestination());
   }
 
+  @Test
   public void testSetDestination() {
     ConfiguredProduceDestination dest1 = new ConfiguredProduceDestination();
     dest1.setDestination("3");

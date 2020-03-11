@@ -19,7 +19,6 @@ package com.adaptris.core.http.client.net;
 import static com.adaptris.core.http.jetty.JettyHelper.createChannel;
 import static com.adaptris.core.http.jetty.JettyHelper.createConsumer;
 import static com.adaptris.core.http.jetty.JettyHelper.createWorkflow;
-
 import com.adaptris.core.Channel;
 import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.ConfiguredProduceDestination;
@@ -34,7 +33,7 @@ import com.adaptris.core.http.jetty.MetadataHeaderHandler;
 import com.adaptris.core.http.jetty.StandardResponseProducer;
 import com.adaptris.core.http.server.HttpStatusProvider;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
-import com.adaptris.core.services.metadata.PayloadFromMetadataService;
+import com.adaptris.core.services.metadata.PayloadFromTemplateService;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
 
@@ -74,7 +73,8 @@ public class HttpHelper {
     HttpConnection jc = createConnection();
     Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList(new Service[]
     {
-        new PayloadFromMetadataService(replyPayload), new StandaloneProducer(new StandardResponseProducer(status))
+        new PayloadFromTemplateService().withTemplate(replyPayload),
+        new StandaloneProducer(new StandardResponseProducer(status))
     })));
     start(c);
     return c;

@@ -16,11 +16,14 @@
 
 package com.adaptris.core.ftp;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
+import org.junit.Test;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FixedIntervalPoller;
@@ -30,9 +33,9 @@ import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.util.TimeInterval;
 
 public abstract class FtpConsumerCase extends FtpConsumerExample {
-
-  public FtpConsumerCase(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
   @Override
@@ -61,6 +64,7 @@ public abstract class FtpConsumerCase extends FtpConsumerExample {
     return result;
   }
 
+  @Test
   public void testSetQuietPeriod() throws Exception {
     FtpConsumer consumer = new FtpConsumer();
     TimeInterval defaultInterval = new TimeInterval(0L, TimeUnit.SECONDS);
@@ -79,6 +83,7 @@ public abstract class FtpConsumerCase extends FtpConsumerExample {
     assertEquals(defaultInterval.toMilliseconds(), consumer.olderThanMs());
   }
 
+  @Test
   public void testInit_UnknownFileFilter() throws Exception {
     FtpConsumer ftpConsumer = new FtpConsumer();
     ftpConsumer.setDestination(new ConfiguredConsumeDestination(getDestinationString(), ".*", "testInit_UnknownFileFilter"));
@@ -94,6 +99,7 @@ public abstract class FtpConsumerCase extends FtpConsumerExample {
     }
   }
 
+  @Test
   public void testInit_WorkDir() throws Exception {
     FtpConsumer ftpConsumer = new FtpConsumer();
     ftpConsumer.setDestination(new ConfiguredConsumeDestination(getDestinationString(), null, "testInit_NoWorkDir"));
@@ -115,6 +121,7 @@ public abstract class FtpConsumerCase extends FtpConsumerExample {
     ftpConsumer.close();
   }
 
+  @Test
   public void testInit_ProcDir() throws Exception {
     FtpConsumer ftpConsumer = new FtpConsumer();
     ftpConsumer.setDestination(new ConfiguredConsumeDestination(getDestinationString(), null, "testInit_NoWorkDir"));

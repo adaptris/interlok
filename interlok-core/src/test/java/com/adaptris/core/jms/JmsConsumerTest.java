@@ -19,8 +19,7 @@ package com.adaptris.core.jms;
 import static com.adaptris.core.jms.JmsConfig.MESSAGE_TRANSLATOR_LIST;
 import static com.adaptris.core.jms.JmsProducerCase.assertMessages;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.jms.MessageConsumer;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import com.adaptris.core.ConfiguredConsumeDestination;
@@ -45,16 +46,17 @@ public class JmsConsumerTest extends JmsConsumerCase {
   @Mock private BasicActiveMqImplementation mockVendor;
   @Mock MessageConsumer mockMessageConsumer;
 
-  @Override
+  @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
   }
 
-  public JmsConsumerTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
-
+  @Test
   public void testDeferConsumerCreationToVendor() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -100,6 +102,7 @@ public class JmsConsumerTest extends JmsConsumerCase {
     }
   }
 
+  @Test
   public void testDefaultFalseDeferConsumerCreationToVendor() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -147,6 +150,7 @@ public class JmsConsumerTest extends JmsConsumerCase {
     }
   }
 
+  @Test
   public void testDurableTopicConsume() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -177,6 +181,7 @@ public class JmsConsumerTest extends JmsConsumerCase {
 
   }
 
+  @Test
   public void testSharedDurableTopicConsume() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -207,6 +212,7 @@ public class JmsConsumerTest extends JmsConsumerCase {
 
   }
 
+  @Test
   public void testSharedTopicConsume() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -237,6 +243,7 @@ public class JmsConsumerTest extends JmsConsumerCase {
 
   }
 
+  @Test
   public void testTopicConsume() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -267,6 +274,7 @@ public class JmsConsumerTest extends JmsConsumerCase {
 
   }
 
+  @Test
   public void testQueueConsume() throws Exception {
     // This would be best, but we can't mix Junit3 with Junit4 assumptions.
     // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());

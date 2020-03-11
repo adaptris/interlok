@@ -17,7 +17,6 @@ package com.adaptris.core.marshaller.xstream;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -27,12 +26,10 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.HashSet;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import com.adaptris.annotation.AnnotationConstants;
-import com.adaptris.core.services.metadata.PayloadFromMetadataService;
+import com.adaptris.core.services.metadata.PayloadFromTemplateService;
 import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
 
 public class PrettyStaxDriverTest {
@@ -72,21 +69,21 @@ public class PrettyStaxDriverTest {
   public void testPrettyPrintWriter() throws Exception {
     PrettyStaxDriver driver = new PrettyStaxDriver(cdata, true);
     // service
-    //      <payload-from-metadata-service>
+    //      <payload-from-template-service>
     //        <unique-id>naughty-hodgkin</unique-id>
     //        <template><![CDATA[Hello World]]></template>
-    //      </payload-from-metadata-service>
+    //      </payload-from-template-service>
     StringWriter writer = new StringWriter();
     try (Writer w = writer) {
       PrettyPrintWriter printWriter = (PrettyPrintWriter) driver.createWriter(w);
-      printWriter.startNode("payload-from-metadata-service", PayloadFromMetadataService.class);
+      printWriter.startNode("payload-from-template-service", PayloadFromTemplateService.class);
       printWriter.startNode("unique-id", String.class);
       printWriter.setValue("naughty-hodgkin");
       printWriter.endNode(); // unique-id
       printWriter.startNode("template", String.class);
       printWriter.setValue("Hello World");
       printWriter.endNode(); // template
-      printWriter.endNode(); // payload-from-metadata-service
+      printWriter.endNode(); // payload-from-template-service
     }
     System.err.println(writer.toString());
     assertTrue(writer.toString().contains("CDATA"));

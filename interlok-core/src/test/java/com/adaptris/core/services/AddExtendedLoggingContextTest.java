@@ -16,28 +16,29 @@
 
 package com.adaptris.core.services;
 
+import static org.junit.Assert.assertEquals;
+import java.util.Collections;
+import org.junit.Test;
+import org.slf4j.MDC;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.GeneralServiceExample;
 import com.adaptris.util.KeyValuePairList;
-import org.slf4j.MDC;
-
-import java.util.Collections;
 
 public class AddExtendedLoggingContextTest extends GeneralServiceExample {
 
-  public AddExtendedLoggingContextTest(String name) {
-    super(name);
+  @Override
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
-
-
   @Override
   protected AddExtendedLoggingContext retrieveObjectForSampleConfig() {
     return new AddExtendedLoggingContext()
         .withValuesToSet(new KeyValuePairList(Collections.singletonMap("contextKey", "contextValue")));
   }
 
+  @Test
   public void testDefaultLoggingContext() throws Exception {
     AddExtendedLoggingContext srv =  new AddExtendedLoggingContext()
         .withValuesToSet(new KeyValuePairList(Collections.singletonMap("contextKey", "contextValue")))
@@ -47,6 +48,7 @@ public class AddExtendedLoggingContextTest extends GeneralServiceExample {
     assertEquals("contextValue", MDC.get("contextKey"));
   }
 
+  @Test
   public void testLoggingContextFromMetadata() throws Exception {
     AddExtendedLoggingContext srv = new AddExtendedLoggingContext()
         .withValuesToSet(new KeyValuePairList(Collections.singletonMap("%message{myContextKey}", "%message{myContextValue}")))
@@ -58,6 +60,7 @@ public class AddExtendedLoggingContextTest extends GeneralServiceExample {
     assertEquals("contextValue", MDC.get("contextKey"));
   }
 
+  @Test
   public void testUseDefaultKeysChannel() throws Exception {
     AddExtendedLoggingContext srv = new AddExtendedLoggingContext()
         .withUseDefaultKeys(true);
@@ -67,6 +70,7 @@ public class AddExtendedLoggingContextTest extends GeneralServiceExample {
     assertEquals("channel", MDC.get(CoreConstants.CHANNEL_ID_KEY));
   }
 
+  @Test
   public void testUseDefaultKeysWorkflow() throws Exception {
     AddExtendedLoggingContext srv =  new AddExtendedLoggingContext()
         .withUseDefaultKeys(true);
@@ -76,6 +80,7 @@ public class AddExtendedLoggingContextTest extends GeneralServiceExample {
     assertEquals("workflow", MDC.get(CoreConstants.WORKFLOW_ID_KEY));
   }
 
+  @Test
   public void testUseDefaultKeysUniqueId() throws Exception {
     AddExtendedLoggingContext srv =  new AddExtendedLoggingContext()
         .withUseDefaultKeys(true);
@@ -85,6 +90,7 @@ public class AddExtendedLoggingContextTest extends GeneralServiceExample {
     assertEquals("unique", MDC.get(CoreConstants.MESSAGE_UNIQUE_ID_KEY));
   }
 
+  @Test
   public void testUseDefaultKeysReplace() throws Exception {
     AddExtendedLoggingContext srv =  new AddExtendedLoggingContext()
         .withUseDefaultKeys(true)

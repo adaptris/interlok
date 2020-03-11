@@ -34,7 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("time-slice-default-cache-provider")
 public class TimeSliceDefaultCacheProvider extends TimeSliceAbstractCacheProvider {
 
-  private TimeSlicePersistence persistence;
+  private transient TimeSlicePersistence persistence;
 
   @Override
   public void start() throws CoreException {

@@ -15,18 +15,23 @@
 */
 
 package com.adaptris.core;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 
-public class ConfiguredConsumeDestinationTest extends BaseCase {
-
+public class ConfiguredConsumeDestinationTest {
   private static final String EMPTY_STRING = "";
   private static final String THREAD_NAME = "threadName";
   private static final String DEST_NAME = "destination";
   private static final String FILTER = "filter";
 
-  public ConfiguredConsumeDestinationTest(String name) {
-    super(name);
+  public ConfiguredConsumeDestinationTest() {
   }
 
+  @Test
   public void testEquals() {
     ConfiguredConsumeDestination d1 = new ConfiguredConsumeDestination(DEST_NAME, FILTER);
     ConfiguredConsumeDestination d2 = new ConfiguredConsumeDestination(DEST_NAME, FILTER);
@@ -75,18 +80,21 @@ public class ConfiguredConsumeDestinationTest extends BaseCase {
     }
   }
 
+  @Test
   public void testSetDestination() {
     ConfiguredConsumeDestination destination = new ConfiguredConsumeDestination(DEST_NAME, FILTER);
     destination.setDestination("newDestination");
     assertTrue("newDestination".equals(destination.getDestination()));
   }
 
+  @Test
   public void testSetFilterExpression() {
     ConfiguredConsumeDestination destination = new ConfiguredConsumeDestination(DEST_NAME, FILTER);
     destination.setFilterExpression("new");
     assertTrue("new".equals(destination.getFilterExpression()));
   }
 
+  @Test
   public void testSetConfiguredThreadName() {
     ConfiguredConsumeDestination destination = new ConfiguredConsumeDestination(DEST_NAME, FILTER, THREAD_NAME);
     assertEquals(destination.toString(), THREAD_NAME, destination.getConfiguredThreadName());
@@ -103,11 +111,12 @@ public class ConfiguredConsumeDestinationTest extends BaseCase {
     assertNotSame(destination.toString(), EMPTY_STRING, destination.getDeliveryThreadName());
   }
 
+  @Test
   public void testXmlRoundTrip() throws Exception {
     ConfiguredConsumeDestination input = new ConfiguredConsumeDestination(DEST_NAME, FILTER, THREAD_NAME);
     AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
     String xml = m.marshal(input);
     ConfiguredConsumeDestination output = (ConfiguredConsumeDestination) m.unmarshal(xml);
-    assertRoundtripEquality(input, output);
+    BaseCase.assertRoundtripEquality(input, output);
   }
 }

@@ -15,19 +15,21 @@
 */
 
 package com.adaptris.core.metadata;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.MetadataCollection;
 
-import junit.framework.TestCase;
-
-public class MetadataRegexKeyFilterTest extends TestCase {
+public class MetadataRegexKeyFilterTest {
 
   private RegexMetadataFilter filterer;
   private AdaptrisMessage message;
 
-  @Override
+  @Before
   public void setUp() throws Exception {
     message = DefaultMessageFactory.getDefaultInstance().newMessage();
     addSomeMetadata(message);
@@ -35,16 +37,14 @@ public class MetadataRegexKeyFilterTest extends TestCase {
     filterer = new RegexMetadataFilter();
   }
 
-  @Override
-  public void tearDown() throws Exception {
-  }
-
+  @Test
   public void testNoIncludesOrExcludes() {
     MetadataCollection resultingCollection = filterer.filter(message);
 
     assertEquals(message.getMetadata().size(), resultingCollection.size());
   }
 
+  @Test
   public void testIncludesOnly1() {
     filterer.addIncludePattern("key1");
     MetadataCollection resultingCollection = filterer.filter(message);
@@ -52,6 +52,7 @@ public class MetadataRegexKeyFilterTest extends TestCase {
     assertEquals(1, resultingCollection.size());
   }
 
+  @Test
   public void testIncludesOnly5Keys() {
     filterer.addIncludePattern("key");
     MetadataCollection resultingCollection = filterer.filter(message);
@@ -59,6 +60,7 @@ public class MetadataRegexKeyFilterTest extends TestCase {
     assertEquals(5, resultingCollection.size());
   }
 
+  @Test
   public void testIncludesOnly2Keys() {
     filterer.addIncludePattern("Jill");
     MetadataCollection resultingCollection = filterer.filter(message);
@@ -66,6 +68,7 @@ public class MetadataRegexKeyFilterTest extends TestCase {
     assertEquals(2, resultingCollection.size());
   }
 
+  @Test
   public void testExcludes5Keys() {
     filterer.addExcludePattern("key");
     MetadataCollection resultingCollection = filterer.filter(message);
@@ -76,6 +79,7 @@ public class MetadataRegexKeyFilterTest extends TestCase {
     assertTrue(resultingCollection.containsKey("JillAndJack"));
   }
 
+  @Test
   public void testExcludes2Keys() {
     filterer.addExcludePattern("Jill");
     MetadataCollection resultingCollection = filterer.filter(message);
@@ -89,6 +93,7 @@ public class MetadataRegexKeyFilterTest extends TestCase {
     assertTrue(resultingCollection.containsKey("someRandomKey"));
   }
 
+  @Test
   public void testIncludesKeyAndExcludes3() {
     filterer.addIncludePattern("key");
     filterer.addExcludePattern("3");
@@ -102,6 +107,7 @@ public class MetadataRegexKeyFilterTest extends TestCase {
     assertTrue(resultingCollection.containsKey("key5"));
   }
 
+  @Test
   public void testMultipleIncludes() {
     filterer.withIncludePatterns("key", "Jill");
 
@@ -111,6 +117,7 @@ public class MetadataRegexKeyFilterTest extends TestCase {
     assertFalse(resultingCollection.containsKey("someRandomKey"));
   }
 
+  @Test
   public void testMultipleExcludes() {
     filterer.withExcludePatterns("key", "Jill");
 

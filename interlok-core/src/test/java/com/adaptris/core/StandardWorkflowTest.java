@@ -16,6 +16,10 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -24,6 +28,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.core.services.exception.ConfiguredException;
@@ -49,15 +55,13 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
   protected static final String METADATA_KEY = "key1";
   protected static final String METADATA_VALUE = "value";
 
-  public StandardWorkflowTest(java.lang.String testName) {
-    super(testName);
-  }
 
   @Override
-  protected void setUp() {
-
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testInitialiseWithEventAware() throws Exception {
     EventHandlerAwareProducer prod = new EventHandlerAwareProducer();
     EventHandlerAwareConsumer cons = new EventHandlerAwareConsumer();
@@ -77,6 +81,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
     assertEquals(eh, service.retrieveEventHandler());
   }
 
+  @Test
   public void testObtainWorkflowIdWithNoChannelId() throws Exception {
     MockChannel channel = createChannel(new MockMessageProducer(), Arrays.asList(new Service[]
     {
@@ -101,6 +106,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
     assertEquals(result.toString(), workflow.obtainWorkflowId());
   }
 
+  @Test
   public void testObtainWorkflowIdWithNoUniqueId() throws Exception {
     MockChannel channel = createChannel(new MockMessageProducer(), Arrays.asList(new Service[]
     {
@@ -115,6 +121,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
     assertTrue(workflow.obtainWorkflowId().endsWith("Channel"));
   }
 
+  @Test
   public void testObtainWorkflowIdWithUniqueId() throws Exception {
     MockChannel channel = createChannel(new MockMessageProducer(), Arrays.asList(new Service[]
     {
@@ -130,6 +137,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
     assertEquals("Workflow@Channel", workflow.obtainWorkflowId());
   }
 
+  @Test
   public void testOnMessageWithSendEvents() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     MockMessageProducer eventProd = new MockMessageProducer();
@@ -165,6 +173,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testOnMessageWithoutEvents() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     MockMessageProducer eventProd = new MockMessageProducer();
@@ -200,6 +209,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testOnMessageWithInterceptors() throws Exception {
     MockWorkflowInterceptor interceptor = new MockWorkflowInterceptor();
     MockMessageProducer producer = new MockMessageProducer();
@@ -234,6 +244,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
 
   }
 
+  @Test
   public void testHandleChannelUnavailable() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     final MockChannel channel = createChannel(producer, Arrays.asList(new Service[]
@@ -273,6 +284,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testHandleChannelUnavailableForever() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     final MockChannel channel = createChannel(producer, Arrays.asList(new Service[]
@@ -311,6 +323,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testServiceException() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     MockMessageProducer meh = new MockMessageProducer();
@@ -348,6 +361,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testProduceException() throws Exception {
     MockMessageProducer producer = new MockMessageProducer() {
       @Override
@@ -391,6 +405,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testRuntimeException() throws Exception {
     MockMessageProducer producer = new MockMessageProducer() {
       @Override
@@ -437,6 +452,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testOnMessage_SkipProducer() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     MockMessageProducer serviceProducer = new MockMessageProducer();
@@ -454,7 +470,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
-
+  @Test
   public void testOnMessage_LogPayload() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     MockChannel channel = createChannel(producer, Arrays.asList(new Service[] {new NullService()}));
@@ -470,6 +486,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testOnMessage_MessageLogger() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     MockChannel channel = createChannel(producer, Arrays.asList(new Service[] {new NullService()}));
@@ -485,7 +502,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
-
+  @Test
   public void testOnMessage_withConsumeLocation() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     MockChannel channel = createChannel(producer, Arrays.asList(new Service[] {new NullService()}));
@@ -505,6 +522,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
   public void testOnMessage_withConsumeLocation_NoMatch() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     MockChannel channel = createChannel(producer, Arrays.asList(new Service[] {new NullService()}));
@@ -521,6 +539,25 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  
+  @Test 
+  public void testOnMessage_SuccessCallback() throws Exception {
+    AtomicBoolean onSuccess = new AtomicBoolean(false);
+    MockChannel channel = createChannel(new MockMessageProducer(), Arrays.asList(new Service[] {new NullService()}));
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD_1);
+    StandardWorkflow workflow = (StandardWorkflow) channel.getWorkflowList().get(0);
+    try {
+      start(channel);
+      workflow.onAdaptrisMessage(msg, (m) -> {
+        onSuccess.set(true);
+      });
+      assertTrue(onSuccess.get());
+    } finally {
+      stop(channel);
+    }
+    
+  }
+    
   @Override
   protected Object retrieveObjectForSampleConfig() {
     Channel c = new Channel();

@@ -16,6 +16,12 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import org.junit.Test;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
@@ -29,14 +35,12 @@ public class XpathProduceDestinationTest extends ExampleProduceDestinationCase {
   private static final String XML_DOC = "<root>" + LINE_SEP
       + "<document>value</document>" + LINE_SEP + "</root>" + LINE_SEP;
 
-  public XpathProduceDestinationTest(java.lang.String testName) {
-    super(testName);
-  }
-
   @Override
-  protected void setUp() {
+  public boolean isAnnotatedForJunit4() {
+    return true;
   }
 
+  @Test
   public void testSetNamespaceContext() {
     XpathProduceDestination obj = new XpathProduceDestination();
     assertNull(obj.getNamespaceContext());
@@ -47,6 +51,7 @@ public class XpathProduceDestinationTest extends ExampleProduceDestinationCase {
     assertNull(obj.getNamespaceContext());
   }
 
+  @Test
   public void testEquals() {
     assertEquals(new XpathProduceDestination(), new XpathProduceDestination());
     XpathProduceDestination d1 = new XpathProduceDestination(DEST_XPATH);
@@ -73,6 +78,7 @@ public class XpathProduceDestinationTest extends ExampleProduceDestinationCase {
     assertFalse(new XpathProduceDestination().equals(new Object()));
   }
 
+  @Test
   public void testHashCode() {
     XpathProduceDestination dest = new XpathProduceDestination(DEST_XPATH, DEFAULT_DEST);
     XpathProduceDestination d2 = new XpathProduceDestination(DEST_XPATH, DEFAULT_DEST);
@@ -80,6 +86,7 @@ public class XpathProduceDestinationTest extends ExampleProduceDestinationCase {
     assertEquals(dest.hashCode(), d2.hashCode());
   }
 
+  @Test
   public void testSetDefaultDestination() {
     XpathProduceDestination dest = new XpathProduceDestination();
     try {
@@ -95,6 +102,7 @@ public class XpathProduceDestinationTest extends ExampleProduceDestinationCase {
     assertEquals(DEFAULT_DEST, dest.getDefaultDestination());
   }
 
+  @Test
   public void testSetXpath() {
     XpathProduceDestination dest = new XpathProduceDestination();
     try {
@@ -110,6 +118,7 @@ public class XpathProduceDestinationTest extends ExampleProduceDestinationCase {
     assertEquals(DEST_XPATH, dest.getXpath());
   }
 
+  @Test
   public void testValidXpathDestination() {
     XpathProduceDestination dest1 = new XpathProduceDestination(DEST_XPATH, DEFAULT_DEST);
     dest1.setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder.newInstance());
@@ -117,6 +126,7 @@ public class XpathProduceDestinationTest extends ExampleProduceDestinationCase {
     assertEquals("Value from Xpath", "value", s);
   }
 
+  @Test
   public void testValidXpathFunctionDestination() {
     XpathProduceDestination dest1 = new XpathProduceDestination(DEST_XPATH_WITH_FUNCTION, DEFAULT_DEST);
     dest1.setNamespaceContext(createContextEntries());
@@ -124,18 +134,21 @@ public class XpathProduceDestinationTest extends ExampleProduceDestinationCase {
     assertEquals("Value from Xpath", "root", s);
   }
 
+  @Test
   public void testInvalidXpathDestination() {
     XpathProduceDestination dest1 = new XpathProduceDestination("ABCDE", DEFAULT_DEST);
     String s = dest1.getDestination(AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_DOC));
     assertEquals("Value from Xpath", DEFAULT_DEST, s);
   }
 
+  @Test
   public void testInvalidXML() {
     XpathProduceDestination dest1 = new XpathProduceDestination(DEST_XPATH, DEFAULT_DEST);
     String s = dest1.getDestination(AdaptrisMessageFactory.getDefaultInstance().newMessage("ABCDEFG"));
     assertEquals(DEFAULT_DEST, s);
   }
 
+  @Test
   public void testXmlrRoundTrip() throws Exception {
     XpathProduceDestination dest1 = new XpathProduceDestination(DEST_XPATH, DEFAULT_DEST);
     Object input = dest1;
