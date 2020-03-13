@@ -104,6 +104,9 @@ subprojects { subproject ->
     all*.exclude group: 'org.hibernate', module: 'hibernate-validator'
     // INTERLOK-3197 exclude old javax.mail
     all*.exclude group: 'com.sun.mail', module: 'javax.mail'
+    all*.exclude group: 'javax.validation', module: 'validation-api'
+    all*.exclude group: 'javax.activation', module: 'activation'
+    all*.exclude group: 'javax.activation', module: 'javax.activation-api'
   }
 
   dependencies {
