@@ -15,5 +15,11 @@
     <packageUrl regex="true">^pkg:maven/org\.apache\.activemq/activemq\-client@.*$</packageUrl>
     <cve>CVE-2015-5182</cve>
   </suppress>
-
+  <suppress>
+    <notes><![CDATA[
+    file name: javax.security.auth.message-1.0.0.v201108011116.jar, isn't geronimo!
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty\.orbit/javax\.security\.auth\.message@.*$</packageUrl>
+    <cpe>cpe:/a:apache:geronimo</cpe>
+  </suppress>
 </suppressions>
