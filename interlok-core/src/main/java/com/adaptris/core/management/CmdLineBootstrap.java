@@ -99,16 +99,15 @@ abstract class CmdLineBootstrap {
   protected void startAdapter(BootstrapProperties bootProperties) throws Exception {
     boolean startQuietly = bootProperties.isEnabled(CFG_KEY_START_QUIETLY);
     final UnifiedBootstrap bootstrap = new UnifiedBootstrap(bootProperties);
-    AdapterManagerMBean adapter = jettyOnly ? null : bootstrap.createAdapter();
     if (!configCheckOnly()) {
-      bootstrap.init(adapter);
+      bootstrap.init(jettyOnly ? null : bootstrap.createAdapter());
       Runtime.getRuntime().addShutdownHook(new ShutdownHandler(bootProperties));
       launchAdapter(bootstrap, startQuietly);
     }
     else {
       // This seems a bit cheaty, but we're going to exit anyway, so
       // calling prepare probably makes no difference.
-      Adapter clonedAdapter = (Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(adapter.getConfiguration());
+      Adapter clonedAdapter = (Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(bootstrap.createAdapter().getConfiguration());
       LifecycleHelper.prepare(clonedAdapter);
 
       // INTERLOK-1455 Shutdown the logging subsystem if we're only just doing a config check.
