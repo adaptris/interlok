@@ -55,7 +55,7 @@ abstract class CmdLineBootstrap {
 
   private static final String[] ARG_JETTY_ONLY = new String[]
   {
-    "--jettyonly"
+          "-jettyonly", "--jettyonly", "-jetty-only", "--jetty-only"
   };
 
   private transient String bootstrapResource;
