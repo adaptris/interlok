@@ -110,12 +110,7 @@ public class NewXmlTransformService extends XmlTransformService {
      */
 
     try (InputStream input = msg.getInputStream(sourcePayloadId); OutputStream output = msg.getOutputStream(outputPayloadId)) {
-
-
-      // TODO a new parameter class that deals with data input parameters (perhaps by way of a list of them)
       Map<Object, Object> parameters = getParameterBuilder().createParameters(msg, null);
-
-
       xmlTransformerImpl.transform(transformer, input, output, urlToUse, parameters);
       if (!StringUtils.isBlank(getOutputMessageEncoding())) {
         msg.setContentEncoding(outputPayloadId, getOutputMessageEncoding());
