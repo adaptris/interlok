@@ -4,6 +4,8 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.interlok.InterlokException;
+import com.adaptris.util.KeyValuePair;
+import com.adaptris.util.KeyValuePairList;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,37 +19,33 @@ import java.util.Map;
 
 @XStreamAlias("xml-transform-resolvable-expression-parameter")
 @DisplayOrder(order = {"expressions"})
-public class ResolvableExpressionTransformParameter implements XmlTransformParameter
+public class ResolvableExpressionParameter implements XmlTransformParameter
 {
 	@NotNull
 	@Valid
 	@InputFieldHint(expression = true)
-	private List<String> expressions;
+	private KeyValuePairList expressions;
 
 	@Override
 	public Map<Object, Object> createParameters(AdaptrisMessage message, Map<Object, Object> existingParams)
 	{
-		if (expressions.size() == 0)
-		{
-			return null;
-		}
 		if (existingParams == null)
 		{
 			existingParams = new HashMap<>();
 		}
-		for (String expression : expressions)
+		for (KeyValuePair pair : expressions.getKeyValuePairs())
 		{
-			existingParams.put(expression, message.resolve(expression));
+			existingParams.put(pair.getKey(), message.resolve(pair.getValue()));
 		}
 		return existingParams;
 	}
 
-	public void setExpressions(List<String> expressions)
+	public void setExpressions(KeyValuePairList expressions)
 	{
 		this.expressions = expressions;
 	}
 
-	public List<String> getExpressions()
+	public KeyValuePairList getExpressions()
 	{
 		return expressions;
 	}

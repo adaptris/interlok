@@ -17,7 +17,6 @@
 package com.adaptris.core.transform;
 
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.MultiPayloadAdaptrisMessage;
 import com.adaptris.core.MultiPayloadMessageFactory;
 import com.adaptris.core.Service;
@@ -27,6 +26,7 @@ import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.KeyValuePair;
+import com.adaptris.util.KeyValuePairList;
 import com.adaptris.util.text.xml.StxTransformerFactory;
 import com.adaptris.util.text.xml.XPath;
 import com.adaptris.util.text.xml.XmlTransformerFactory;
@@ -103,20 +103,28 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
       return s;
     }
   }
+
   private enum ParameterConfig {
-    IGNORE(new IgnoreMetadataParameter()), METADATA(new StringMetadataParameter(new String[]
-    {
-      ".*metadataToInclude.*"
-    }, new String[]
-    {
-      ".*metadataToExclude.*"
-    })), COMPOSITE(new XmlTransformParameterBuilder(new StringMetadataParameter(new String[]
-    {
-      ".*metadataToInclude.*"
-    }, new String[]
-    {
-      ".*metadataToExclude.*"
-    }), new ObjectMetadataParameter(".*myObjectMetadataKeys.*"))), OBJECT(new ObjectMetadataParameter(".*myObjectMetadataKeys.*"));
+    IGNORE(new IgnoreMetadataParameter()),
+    METADATA(new StringMetadataParameter(new String[]
+        {
+          ".*metadataToInclude.*"
+        },
+        new String[]
+        {
+          ".*metadataToExclude.*"
+        })),
+    COMPOSITE(new XmlTransformParameterBuilder(new StringMetadataParameter(new String[]
+        {
+          ".*metadataToInclude.*"
+        },
+        new String[]
+        {
+          ".*metadataToExclude.*"
+        }),
+        new ObjectMetadataParameter(".*myObjectMetadataKeys.*"))),
+    OBJECT(new ObjectMetadataParameter(".*myObjectMetadataKeys.*"));
+
     XmlTransformParameter param;
 
     ParameterConfig(XmlTransformParameter p) {
@@ -568,6 +576,23 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
     service.setTransformParameter(new ObjectMetadataParameter(".*my.*"));
     execute(service, msg);
     assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World", msg.getContent(PAYLOAD_ID_OUTPUT));
+  }
+
+  @Test
+  public void testResolvableExpressionParameter_XSLTOutput() throws Exception {
+    MultiPayloadAdaptrisMessage message = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    message.addPayload("somePayload", "World".getBytes());
+
+    NewXmlTransformService service = createBaseExample();
+
+    ResolvableExpressionParameter params = new ResolvableExpressionParameter();
+    KeyValuePairList exprns = new KeyValuePairList();
+    exprns.add(new KeyValuePair("world", "%payload{id:somePayload}"));
+    params.setExpressions(exprns);
+    service.setTransformParameter(params);
+
+    execute(service, message);
+    assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World", message.getContent(PAYLOAD_ID_OUTPUT));
   }
 
   @Test
