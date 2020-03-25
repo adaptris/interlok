@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Adaptris Ltd.
+ * Copyright 2020 Adaptris Ltd.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.MultiPayloadAdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.adaptris.util.text.xml.XmlTransformer;
@@ -38,24 +37,24 @@ import java.util.Map;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
- * <p>
- * Implementation of <code>Service</code> which provides transformation of XML payloads.
- * </p>
- * <p>
- * You are required to configure the XML transformer factory; see the javadoc and implementations of {@link XmlTransformerFactory}
- * for details on the supported transformer factories.
- * </p>
- * <p>
- * Configuration including allow over-ride behaviour matches previous implementation.
- * </p>
- * 
- * @config xml-transform-service
+ * Implementation of <code>Service</code> which provides transformation
+ * of XML payloads contained within the new multi-payload message.
+ *
+ * You are required to configure the XML transformer factory; see the
+ * javadoc and implementations of {@link XmlTransformerFactory} for
+ * details on the supported transformer factories.
+ *
+ * Configuration including allow over-ride behaviour matches previous
+ * implementation.
+ *
+ * @author aanderson
+ * @config new-xml-transform-service
  * 
  */
 @XStreamAlias("new-xml-transform-service")
 @AdapterComponent
 @ComponentProfile(summary = "Execute an XSLT transform", tag = "service,transform,xml,multi,payload,multi-payload")
-@DisplayOrder(order = {"url", "outputMessageEncoding", "cacheTransforms", "allowOverride", "metadataKey", "transformParameter", "xmlTransformerFactory"})
+@DisplayOrder(order = { "sourcePayloadId", "targetPayloadId", "url", "outputMessageEncoding", "cacheTransforms", "allowOverride", "metadataKey", "transformParameter", "xmlTransformerFactory" })
 public class NewXmlTransformService extends XmlTransformService {
 
   @NotNull
@@ -67,10 +66,9 @@ public class NewXmlTransformService extends XmlTransformService {
   private String outputPayloadId;
 
   /**
-   * <p>
-   * Creates a new instance. Defaults to caching transforms and not allowing over-rides. Default metadata key is
+   * Creates a new instance. Defaults to caching transforms and not
+   * allowing over-rides. Default metadata key is
    * <code>transformurl</code>.
-   * </p>
    */
   public NewXmlTransformService() {
     super();

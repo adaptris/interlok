@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Adaptris Ltd.
+ * Copyright 2020 Adaptris Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,6 @@ import static com.adaptris.core.transform.XmlTransformServiceTest.ISSUE2641_SRC_
 import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_ISSUE2641_INPUT;
 import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_ISSUE2641_TRANSFORM_URL;
 import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_NODE_TRANSFORM_URL;
-import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_REMOVE_NAMESPACE_MAPPING;
 import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_FATAL_TRANSFORM_URL;
 import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_INPUT;
 import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_INVALID_TRANSFORM_URL;
