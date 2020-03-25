@@ -68,7 +68,7 @@ public class ManagementComponentFactory {
       try {
         manCompInfo.getInstance().init(bootstrapProperties);
       } catch (Exception e) {
-        log.error("Failed to initialize management component []", manCompInfo.getName(), e);
+        log.error("Failed to initialize management component {}", manCompInfo.getName(), e);
       }
     }
   }
@@ -78,7 +78,7 @@ public class ManagementComponentFactory {
       try {
         manCompInfo.getInstance().start();
       } catch (Exception e) {
-        log.error("Failed to start management component []", manCompInfo.getName(), e);
+        log.error("Failed to start management component {}", manCompInfo.getName(), e);
       }
     }
   }
@@ -88,7 +88,7 @@ public class ManagementComponentFactory {
       try {
         manCompInfo.getInstance().stop();
       } catch (Exception e) {
-        log.error("Failed to stop management component []", manCompInfo.getName(), e);
+        log.error("Failed to stop management component {}", manCompInfo.getName(), e);
       }
     }
   }
@@ -98,7 +98,7 @@ public class ManagementComponentFactory {
       try {
         manCompInfo.getInstance().destroy();
       } catch (Exception e) {
-        log.error("Failed to destroy management component []", manCompInfo.getName(), e);
+        log.error("Failed to destroy management component {}", manCompInfo.getName(), e);
       }
     }
   }
