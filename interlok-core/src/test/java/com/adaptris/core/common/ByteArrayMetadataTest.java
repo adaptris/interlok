@@ -22,6 +22,7 @@ import java.security.MessageDigest;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.util.text.SimpleByteTranslator;
 
 public class ByteArrayMetadataTest {
 
@@ -33,7 +34,7 @@ public class ByteArrayMetadataTest {
   public void testWrapString() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata(KEY, HELLO_WORLD);
-    byte[] wrapped = new ByteArrayFromMetadata().withKey(KEY).wrap(msg);
+    byte[] wrapped = new ByteArrayFromMetadata().withTranslator(new SimpleByteTranslator()).withKey(KEY).wrap(msg);
     assertTrue(MessageDigest.isEqual(BYTE_ARRAY, wrapped));
   }
 
