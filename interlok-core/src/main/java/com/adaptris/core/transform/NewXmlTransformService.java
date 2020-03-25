@@ -101,12 +101,6 @@ public class NewXmlTransformService extends XmlTransformService {
     }
     // INTERLOK-2022 Let the XML parser do its thing, rather than using a reader/writer.
 
-    /*
-     * for new-xml-transform-service: allow data-input-parameters for
-     * payload streams and possibly in place of urlToUse (and maybe
-     * even parameters)
-     */
-
     try (InputStream input = msg.getInputStream(sourcePayloadId); OutputStream output = msg.getOutputStream(outputPayloadId)) {
       Map<Object, Object> parameters = getParameterBuilder().createParameters(msg, null);
       xmlTransformerImpl.transform(transformer, input, output, urlToUse, parameters);
