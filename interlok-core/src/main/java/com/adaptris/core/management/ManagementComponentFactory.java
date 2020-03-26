@@ -22,8 +22,6 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,6 +32,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.adaptris.core.ClosedState;
 import com.adaptris.core.management.classloader.ClassLoaderFactory;
 
 /**
@@ -43,7 +42,7 @@ import com.adaptris.core.management.classloader.ClassLoaderFactory;
  */
 public class ManagementComponentFactory {
 
-  private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
+  private static transient Logger log = LoggerFactory.getLogger(ManagementComponentFactory.class.getName());
 
   private static final String COMPONENT_SEPARATOR = ":";
   private static final String PROPERTY_KEY = "class";
@@ -51,100 +50,92 @@ public class ManagementComponentFactory {
   private static final String CLASSLOADER_KEY = "classloader";
   private static final ManagementComponentFactory INSTANCE = new ManagementComponentFactory();
 
-  private final Map<Properties, List<Object>> managementComponents = new HashMap<>();
-
+  private final Map<Properties, List<ManagementComponentInfo>> managementComponents = new HashMap<>();
+  
   private ManagementComponentFactory() {
   }
 
-  public static List<Object> create(final BootstrapProperties p) throws Exception {
+  public static List<ManagementComponentInfo> create(final BootstrapProperties p) throws Exception {
     if (!INSTANCE.getManagementComponents().containsKey(p)) {
-      List<Object> obj = INSTANCE.createComponents(p);
-      INSTANCE.getManagementComponents().put(p,obj );
+      List<ManagementComponentInfo> manCompInfo = INSTANCE.createComponents(p);
+      INSTANCE.getManagementComponents().put(p,manCompInfo );
     }
     return INSTANCE.getManagementComponents().get(p);
   }
 
-  public static void initCreated(BootstrapProperties p) {
-    INSTANCE.invokeInit(p, INSTANCE.getManagementComponents().get(p));
+  public static void initCreated(BootstrapProperties bootstrapProperties) {
+    for(ManagementComponentInfo manCompInfo : INSTANCE.getManagementComponents().get(bootstrapProperties)) {
+      try {
+        manCompInfo.getInstance().init(bootstrapProperties);
+      } catch (Exception e) {
+        log.error("Failed to initialize management component {}", manCompInfo.getName(), e);
+      }
+    }
   }
 
-  public static void startCreated(BootstrapProperties p) {
-    INSTANCE.invoke(INSTANCE.getManagementComponents().get(p), "start", new Class[0], new Object[0]);
+  public static void startCreated(BootstrapProperties bootstrapProperties) {
+    for(ManagementComponentInfo manCompInfo : INSTANCE.getManagementComponents().get(bootstrapProperties)) {
+      try {
+        manCompInfo.getInstance().start();
+      } catch (Exception e) {
+        log.error("Failed to start management component {}", manCompInfo.getName(), e);
+      }
+    }
   }
 
-  public static void stopCreated(BootstrapProperties p, boolean reverseOrder) {
-    INSTANCE.invoke(reverseOrder(INSTANCE.getManagementComponents().get(p), reverseOrder), "stop", new Class[0], new Object[0]);
+  public static void stopCreated(BootstrapProperties bootstrapProperties, boolean reverseOrder) {
+    for(ManagementComponentInfo manCompInfo : reverseOrder(INSTANCE.getManagementComponents().get(bootstrapProperties), reverseOrder)) {
+      try {
+        manCompInfo.getInstance().stop();
+      } catch (Exception e) {
+        log.error("Failed to stop management component {}", manCompInfo.getName(), e);
+      }
+    }
   }
 
-  public static void closeCreated(BootstrapProperties p, boolean reverseOrder) {
-    INSTANCE.invoke(reverseOrder(INSTANCE.getManagementComponents().get(p), reverseOrder), "destroy", new Class[0], new Object[0]);
+  public static void closeCreated(BootstrapProperties bootstrapProperties, boolean reverseOrder) {
+    for(ManagementComponentInfo manCompInfo : reverseOrder(INSTANCE.getManagementComponents().get(bootstrapProperties), reverseOrder)) {
+      try {
+        manCompInfo.getInstance().destroy();
+      } catch (Exception e) {
+        log.error("Failed to destroy management component {}", manCompInfo.getName(), e);
+      }
+    }
   }
 
-  private static List<Object> reverseOrder(List<Object> list, boolean reverseOrder) {
-    List<Object> newList = new ArrayList<>(list);
+  private static List<ManagementComponentInfo> reverseOrder(List<ManagementComponentInfo> list, boolean reverseOrder) {
+    List<ManagementComponentInfo> newList = new ArrayList<>(list);
     if (reverseOrder) {
       Collections.reverse(newList);
     }
     return newList;
   }
 
-  private Map<Properties, List<Object>> getManagementComponents() {
+  private Map<Properties, List<ManagementComponentInfo>> getManagementComponents() {
     return managementComponents;
   }
 
-  private List<Object> createComponents(final BootstrapProperties p) throws Exception {
-    List<Object> result = new ArrayList<>();
-    final String componentList = getPropertyIgnoringCase(p, CFG_KEY_MANAGEMENT_COMPONENT, "");
+  private List<ManagementComponentInfo> createComponents(final BootstrapProperties bootstropProperties) throws Exception {
+    List<ManagementComponentInfo> result = new ArrayList<>();
+    final String componentList = getPropertyIgnoringCase(bootstropProperties, CFG_KEY_MANAGEMENT_COMPONENT, "");
     if (!isEmpty(componentList)) {
       final String components[] = componentList.split(COMPONENT_SEPARATOR);
-      for (final String c : components) {
-        result.add(resolve(c, p));
+      for (final String componentName : components) {
+        ManagementComponent resolvedComponent = resolve(componentName, bootstropProperties);
+        
+        ManagementComponentInfo mcInfo = new ManagementComponentInfo();
+        mcInfo.setClassName(resolvedComponent.getClass().getName());
+        mcInfo.setState(ClosedState.getInstance());
+        mcInfo.setName(componentName);
+        mcInfo.setInstance(resolvedComponent);
+        
+        result.add(mcInfo);
       }
     }
     return result;
   }
 
-  private void invokeInit(Properties initProperties, List<Object> mgmtComponents) {
-    invoke(mgmtComponents, "init", new Class[] {
-      Properties.class
-    }, new Properties[] {
-        initProperties
-    });
-  }
-
-  private void invoke(List<Object> objects, final String methodName, final Class[] paramTypes, final Object[] params) {
-    if (objects == null) {
-      return;
-    }
-    for (final Object o : objects) {
-      invokeMethod(o, methodName, paramTypes, params);
-    }
-  }
-
-  private void invokeMethod(final Object o, final String methodName, final Class[] paramTypes, final Object[] params) {
-    final Class<? extends Object> clas = o.getClass();
-    List<String> types = paramTypes(paramTypes);
-    try {
-      log.trace("{}#{}({})", clas.getName(), methodName, (types.size() > 0 ? types : ""));
-      final Method method = clas.getMethod(methodName, paramTypes);
-      method.setAccessible(true);
-      method.invoke(o, params);
-    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-      log.trace("FAILED: {}#{}({})", clas, methodName, (types.size() > 0 ? types : ""), e);
-    }
-  }
-
-  private static List<String> paramTypes(Class[] params) {
-    List<String> result = new ArrayList<>();
-    for (Class p : params) {
-      if (p != null) {
-        result.add(p.getCanonicalName());
-      }
-    }
-    return result;
-  }
-
-  private Object resolve(final String name, BootstrapProperties bootstrapProperties) throws Exception {
+  private ManagementComponent resolve(final String name, BootstrapProperties bootstrapProperties) throws Exception {
     final ClassLoader originalContectClassLoader = Thread.currentThread().getContextClassLoader();
     ClassLoader classLoader = getClass().getClassLoader();
     try (final InputStream in = classLoader.getResourceAsStream(RESOURCE_PATH + name)) {
@@ -161,17 +152,13 @@ public class ManagementComponentFactory {
           classLoader = classLoaderFactory.create(classLoader);
           Thread.currentThread().setContextClassLoader(classLoader);
         }
-        final Object component = Class.forName(p.getProperty(PROPERTY_KEY), true, classLoader).newInstance();
+        final ManagementComponent component = (ManagementComponent) Class.forName(p.getProperty(PROPERTY_KEY), true, classLoader).newInstance();
         if (classloaderProperty != null) {
-          invokeMethod(component, "setClassLoader", new Class[] {
-            ClassLoader.class
-          }, new ClassLoader[] {
-            classLoader
-          });
+          component.setClassLoader(classLoader);
         }
         return component;
       }
-      return Class.forName(name).newInstance();
+      return (ManagementComponent) Class.forName(name).newInstance();
     } finally {
       Thread.currentThread().setContextClassLoader(originalContectClassLoader);
     }

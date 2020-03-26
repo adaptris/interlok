@@ -114,7 +114,7 @@ public class UnifiedBootstrap {
     bootstrapProperties.getConfigManager().syncAdapterConfiguration(adapter);
     adapterRegistry = bootstrapProperties.getConfigManager().getAdapterRegistry();
     bootstrapProperties.setProperty(Constants.CFG_JMX_LOCAL_ADAPTER_UID, adapter.getUniqueId());
-    ManagementComponentFactory.create(bootstrapProperties);
+    adapterRegistry.setManagementComponentInfo(ManagementComponentFactory.create(bootstrapProperties));
     ManagementComponentFactory.initCreated(bootstrapProperties);
   }
 
