@@ -17,16 +17,15 @@
 package com.adaptris.core.common;
 
 import static com.adaptris.core.common.MetadataDataOutputParameter.DEFAULT_METADATA_KEY;
-
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
-
 import org.apache.commons.io.output.WriterOutputStream;
-
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.Removal;
+import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.interlok.types.InterlokMessage;
 import com.adaptris.interlok.types.MessageWrapper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -36,13 +35,18 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * @config metadata-output-stream-wrapper
  * @since 3.9.0
+ * @deprecated since 3.10.1
  */
+@Deprecated
 @XStreamAlias("metadata-output-stream-wrapper")
 @DisplayOrder(order = {"metadataKey", "contentEncoding"})
 @ComponentProfile(summary = "MessageWrapper implementation wraps a metadata value as an Outputstream", since = "3.9.0")
+@Removal(version = "4.0", message = "Use metadata-stream-output instead")
 public class MetadataOutputStreamWrapper extends MetadataStreamOutputParameter
     implements MessageWrapper<OutputStream> {
     
+  private transient boolean warningLogged = false;
+
   public MetadataOutputStreamWrapper() {
     super();
     this.setMetadataKey(DEFAULT_METADATA_KEY);
@@ -50,6 +54,8 @@ public class MetadataOutputStreamWrapper extends MetadataStreamOutputParameter
   
   @Override
   public OutputStream wrap(InterlokMessage m) throws Exception {
+    LoggingHelper.logDeprecation(warningLogged, () -> warningLogged = true, this.getClass().getSimpleName(),
+        MetadataStreamOutput.class.getCanonicalName());
     return new MetadataOutputStream(m, new StringWriter());
   }
 

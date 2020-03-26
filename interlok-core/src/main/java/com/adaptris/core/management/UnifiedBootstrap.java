@@ -20,13 +20,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
 import javax.management.JMX;
 import javax.management.ObjectName;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.CoreException;
 import com.adaptris.core.management.vcs.RuntimeVersionControl;
 import com.adaptris.core.management.vcs.RuntimeVersionControlLoader;
@@ -115,8 +112,8 @@ public class UnifiedBootstrap {
       bootstrapProperties.getConfigManager().syncAdapterConfiguration(adapter);
       adapterRegistry = bootstrapProperties.getConfigManager().getAdapterRegistry();
       bootstrapProperties.setProperty(Constants.CFG_JMX_LOCAL_ADAPTER_UID, adapter.getUniqueId());
+      adapterRegistry.setManagementComponentInfo(ManagementComponentFactory.create(bootstrapProperties));
     }
-    ManagementComponentFactory.create(bootstrapProperties);
     ManagementComponentFactory.initCreated(bootstrapProperties);
   }
 

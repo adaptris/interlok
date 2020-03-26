@@ -59,8 +59,7 @@ public class GetOauthTokenTest extends HttpServiceExample {
     String expiryDate = DateFormatUtil.format(new Date(now));
 
     AccessToken t = new AccessToken(getName(), now);
-    GetOauthToken service = new GetOauthToken();
-    service.setTokenExpiryKey("expiry");
+    GetOauthToken service = new GetOauthToken().withTokenExpiryKey("expiry");
     service.setAccessTokenBuilder(new DummyAccessTokenBuilder(t));
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
     try {
@@ -98,8 +97,7 @@ public class GetOauthTokenTest extends HttpServiceExample {
   @Test
   public void testService_WithExpiry_NoAccessTokenExpiry() throws Exception {
     AccessToken t = new AccessToken(getName());
-    GetOauthToken service = new GetOauthToken();
-    service.setTokenExpiryKey("expiry");
+    GetOauthToken service = new GetOauthToken().withTokenExpiryKey("expiry");
     service.setAccessTokenBuilder(new DummyAccessTokenBuilder(t));
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
     try {
@@ -134,6 +132,44 @@ public class GetOauthTokenTest extends HttpServiceExample {
     assertEquals("Bearer " + getName(), msg.getMetadataValue("Authorization"));
     assertFalse(msg.headersContainsKey("expiry"));
   }
+
+  @Test
+  public void testService_WithRefreshToken() throws Exception {
+    AccessToken t = new AccessToken(getName()).withRefreshToken("refreshToken");
+    GetOauthToken service = new GetOauthToken().withTokenKey("Authorization").withRefreshTokenKey("refreshTokenKey")
+        .withAccessTokenBuilder(new DummyAccessTokenBuilder(t));
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
+    try {
+      execute(service, msg);
+
+    } finally {
+
+    }
+    assertTrue(msg.headersContainsKey("Authorization"));
+    assertEquals("Bearer " + getName(), msg.getMetadataValue("Authorization"));
+    assertFalse(msg.headersContainsKey("expiry"));
+    assertEquals("refreshToken", msg.getMetadataValue("refreshTokenKey"));
+  }
+
+  @Test
+  public void testService_RefreshToken_NoToken() throws Exception {
+    AccessToken t = new AccessToken(getName());
+    GetOauthToken service = new GetOauthToken().withTokenKey("Authorization").withRefreshTokenKey("refreshTokenKey")
+        .withAccessTokenBuilder(new DummyAccessTokenBuilder(t));
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
+    try {
+      execute(service, msg);
+
+    } finally {
+
+    }
+    assertTrue(msg.headersContainsKey("Authorization"));
+    assertEquals("Bearer " + getName(), msg.getMetadataValue("Authorization"));
+    assertFalse(msg.headersContainsKey("expiry"));
+    assertFalse(msg.headersContainsKey("refreshTokenKey"));
+  }
+
+
 
   @Override
   protected GetOauthToken retrieveObjectForSampleConfig() {

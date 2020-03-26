@@ -1,7 +1,6 @@
 package com.adaptris.core.http.oauth;
 
 import java.util.Date;
-
 import com.adaptris.util.text.DateFormatUtil;
 
 /**
@@ -14,6 +13,7 @@ public class AccessToken {
   private String type;
   private String token;
   private String expiry;
+  private String refreshToken;
 
   /**
    * Calls {@link #AccessToken(String, String, long)} with {@code Bearer} as the type.
@@ -52,6 +52,15 @@ public class AccessToken {
   }
 
 
+  /**
+   * Set the refresh token.
+   * 
+   */
+  public AccessToken withRefreshToken(String s) {
+    setRefreshToken(s);
+    return this;
+  }
+
   public String getType() {
     return type;
   }
@@ -74,6 +83,14 @@ public class AccessToken {
 
   public void setExpiry(String expiry) {
     this.expiry = expiry;
+  }
+
+  public String getRefreshToken() {
+    return refreshToken;
+  }
+
+  public void setRefreshToken(String refreshToken) {
+    this.refreshToken = refreshToken;
   }
 
 }
