@@ -100,7 +100,12 @@ abstract class CmdLineBootstrap {
     boolean startQuietly = bootProperties.isEnabled(CFG_KEY_START_QUIETLY);
     final UnifiedBootstrap bootstrap = new UnifiedBootstrap(bootProperties);
     if (!configCheckOnly()) {
-      bootstrap.init(jettyOnly ? null : bootstrap.createAdapter());
+      if (jettyOnly) {
+        System.err.println("Starting Jetty/UI without a local adapter");
+        bootstrap.init(null);
+      } else {
+        bootstrap.init(bootstrap.createAdapter());
+      }
       Runtime.getRuntime().addShutdownHook(new ShutdownHandler(bootProperties));
       launchAdapter(bootstrap, startQuietly);
     }

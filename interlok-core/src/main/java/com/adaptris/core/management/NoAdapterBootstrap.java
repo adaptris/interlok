@@ -17,6 +17,8 @@
 package com.adaptris.core.management;
 
 import com.adaptris.core.management.logging.LoggingConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Entry point into an adapter from the command line.
@@ -27,12 +29,16 @@ import com.adaptris.core.management.logging.LoggingConfigurator;
  */
 public class NoAdapterBootstrap extends CmdLineBootstrap {
 
+  private transient Logger log = LoggerFactory.getLogger(NoAdapterBootstrap.class.getName());
+
   public NoAdapterBootstrap(String[] argv) throws Exception {
     super(argv);
   }
 
   @Override
   public void boot() throws Exception {
+    log.info("Starting Jetty/UI without a local adapter");
+
     logVersionInformation();
     // standard boot
     LoggingConfigurator.newConfigurator().defaultInitialisation();
@@ -48,7 +54,6 @@ public class NoAdapterBootstrap extends CmdLineBootstrap {
 
     // don't launch adapter
     ManagementComponentFactory.startCreated(bootProperties);
-
   }
 
   /**
