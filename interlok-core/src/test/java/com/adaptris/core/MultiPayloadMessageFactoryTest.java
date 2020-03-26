@@ -45,8 +45,10 @@ public class MultiPayloadMessageFactoryTest extends AdaptrisMessageFactoryImplCa
     assertEquals(0, message.getPayload().length);
     message.setContent(null, ENCODING);
     assertEquals(0, message.getContent().length());
+    message.addContent("bacon", "empty", ENCODING);
     message.addContent("bacon", CONTENT);
     assertEquals(CONTENT, message.getContent("bacon"));
+    assertEquals(ENCODING, message.getContentEncoding("bacon"));
     AdaptrisMessage clone = (AdaptrisMessage) message.clone();
     assertTrue(clone.equivalentForTracking(message));
     message.setContentEncoding("US-ASCII");
