@@ -51,11 +51,11 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  * @config new-xml-transform-service
  * 
  */
-@XStreamAlias("new-xml-transform-service")
+@XStreamAlias("multi-payload-xml-transform-service")
 @AdapterComponent
 @ComponentProfile(summary = "Execute an XSLT transform", tag = "service,transform,xml,multi,payload,multi-payload")
 @DisplayOrder(order = { "sourcePayloadId", "targetPayloadId", "url", "outputMessageEncoding", "cacheTransforms", "allowOverride", "metadataKey", "transformParameter", "xmlTransformerFactory" })
-public class NewXmlTransformService extends XmlTransformService {
+public class MultiPayloadXmlTransformService extends XmlTransformService {
 
   @NotNull
   @Valid
@@ -70,7 +70,7 @@ public class NewXmlTransformService extends XmlTransformService {
    * allowing over-rides. Default metadata key is
    * <code>transformurl</code>.
    */
-  public NewXmlTransformService() {
+  public MultiPayloadXmlTransformService() {
     super();
   }
 

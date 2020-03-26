@@ -72,7 +72,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @SuppressWarnings("deprecation")
-public class NewXmlTransformServiceTest extends TransformServiceExample {
+public class MultiPayloadXmlTransformServiceTest extends TransformServiceExample {
 
   private static final String URL = "url";
   private static final String PAYLOAD_ID_SOURCE = "source-payload";
@@ -82,7 +82,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
     STX(new StxTransformerFactory()),
     XSLT(new XsltTransformerFactory()) {
       @Override
-      NewXmlTransformService configure(NewXmlTransformService s) {
+      MultiPayloadXmlTransformService configure(MultiPayloadXmlTransformService s) {
         DocumentBuilderFactoryBuilder dbfb = new DocumentBuilderFactoryBuilder();
         dbfb.getFeatures().add(new KeyValuePair("http://xml.org/sax/features/external-general-entities", "false"));
         ((XsltTransformerFactory) factory).setXmlDocumentFactoryConfig(dbfb);
@@ -97,7 +97,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
       this.factory = fac;
     }
 
-    NewXmlTransformService configure(NewXmlTransformService s) {
+    MultiPayloadXmlTransformService configure(MultiPayloadXmlTransformService s) {
       s.setXmlTransformerFactory(factory);
       return s;
     }
@@ -130,7 +130,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
       param = p;
     }
 
-    NewXmlTransformService configure(NewXmlTransformService s) {
+    MultiPayloadXmlTransformService configure(MultiPayloadXmlTransformService s) {
       s.setTransformParameter(param);
       return s;
     }
@@ -144,7 +144,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
   @Test
   public void testRemoveNamespaceMapping() throws Exception {
     // This explicit tests some behavioural changes that might have occurred due to migration SaxonHE
-    NewXmlTransformService service = createBaseExample();
+    MultiPayloadXmlTransformService service = createBaseExample();
     service.setOutputMessageEncoding("ISO-8859-1");
     MultiPayloadAdaptrisMessage msg = (MultiPayloadAdaptrisMessage)new MultiPayloadMessageFactory().newMessage(PAYLOAD_ID_SOURCE, XML_WITH_NAMESPACE, "UTF-8");
     execute(service, msg);
@@ -154,14 +154,14 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
   @Test
   public void testSetUrl() {
     try {
-      NewXmlTransformService service = new NewXmlTransformService();
+      MultiPayloadXmlTransformService service = new MultiPayloadXmlTransformService();
       service.setUrl("");
       fail();
     }
     catch (IllegalArgumentException expected) {
       // expected
     }
-    NewXmlTransformService service = new NewXmlTransformService();
+    MultiPayloadXmlTransformService service = new MultiPayloadXmlTransformService();
     service.setUrl(URL);
     assertEquals(URL, service.getUrl());
   }
@@ -169,14 +169,14 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
   @Test
   public void testSetPayloadIDSource() {
     try {
-      NewXmlTransformService service = new NewXmlTransformService();
+      MultiPayloadXmlTransformService service = new MultiPayloadXmlTransformService();
       service.setSourcePayloadId("");
       fail();
     }
     catch (IllegalArgumentException expected) {
       // expected
     }
-    NewXmlTransformService service = new NewXmlTransformService();
+    MultiPayloadXmlTransformService service = new MultiPayloadXmlTransformService();
     service.setSourcePayloadId(PAYLOAD_ID_SOURCE);
     assertEquals(PAYLOAD_ID_SOURCE, service.getSourcePayloadId());
   }
@@ -184,14 +184,14 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
   @Test
   public void testSetPayloadIDOutput() {
     try {
-      NewXmlTransformService service = new NewXmlTransformService();
+      MultiPayloadXmlTransformService service = new MultiPayloadXmlTransformService();
       service.setOutputPayloadId("");
       fail();
     }
     catch (IllegalArgumentException expected) {
       // expected
     }
-    NewXmlTransformService service = new NewXmlTransformService();
+    MultiPayloadXmlTransformService service = new MultiPayloadXmlTransformService();
     service.setOutputPayloadId(PAYLOAD_ID_OUTPUT);
     assertEquals(PAYLOAD_ID_OUTPUT, service.getOutputPayloadId());
   }
@@ -199,21 +199,21 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
   @Test
   public void testSetMetadataKey() {
     try {
-      NewXmlTransformService service = new NewXmlTransformService();
+      MultiPayloadXmlTransformService service = new MultiPayloadXmlTransformService();
       service.setMetadataKey("");
       fail();
     }
     catch (IllegalArgumentException expected) {
       // expected
     }
-    NewXmlTransformService service = new NewXmlTransformService();
+    MultiPayloadXmlTransformService service = new MultiPayloadXmlTransformService();
     service.setMetadataKey("key");
     assertEquals("key", service.getMetadataKey());
   }
 
   @Test
   public void testInitDefault() throws Exception {
-    NewXmlTransformService service = new NewXmlTransformService();
+    MultiPayloadXmlTransformService service = new MultiPayloadXmlTransformService();
     try {
       LifecycleHelper.init(service);
       assertTrue(service.allowOverride()); // set by init
@@ -225,7 +225,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
 
   @Test
   public void testInitWithUrl() throws Exception {
-    NewXmlTransformService service = new NewXmlTransformService();
+    MultiPayloadXmlTransformService service = new MultiPayloadXmlTransformService();
     try {
       service.setUrl(URL);
       LifecycleHelper.init(service);
@@ -238,7 +238,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
 
   @Test
   public void testInitWithMetadataKey() throws Exception {
-    NewXmlTransformService service = new NewXmlTransformService();
+    MultiPayloadXmlTransformService service = new MultiPayloadXmlTransformService();
     try {
       service.setMetadataKey("key");
       LifecycleHelper.init(service);
@@ -251,7 +251,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
 
   @Test
   public void testObtainUrlWithUrlOnly() throws Exception {
-    NewXmlTransformService service = new NewXmlTransformService();
+    MultiPayloadXmlTransformService service = new MultiPayloadXmlTransformService();
     MultiPayloadAdaptrisMessage msg = (MultiPayloadAdaptrisMessage)new MultiPayloadMessageFactory().newMessage();
     try {
       service.setUrl(URL);
@@ -265,7 +265,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
 
   @Test
   public void testObtainUrlWithNullMetadataValueInMessage() throws Exception {
-    NewXmlTransformService service = new NewXmlTransformService();
+    MultiPayloadXmlTransformService service = new MultiPayloadXmlTransformService();
     MultiPayloadAdaptrisMessage msg = (MultiPayloadAdaptrisMessage)new MultiPayloadMessageFactory().newMessage();
     try {
       service.setUrl(URL);
@@ -280,7 +280,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
 
   @Test
   public void testObtainUrlWithEmptyMetadataValueInMessage() throws Exception {
-    NewXmlTransformService service = new NewXmlTransformService();
+    MultiPayloadXmlTransformService service = new MultiPayloadXmlTransformService();
     MultiPayloadAdaptrisMessage msg = (MultiPayloadAdaptrisMessage)new MultiPayloadMessageFactory().newMessage();
     msg.addMetadata("key", "");
     try {
@@ -298,7 +298,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
   public void testObtainUrlWithMetadataValueInMessage() throws Exception {
     MultiPayloadAdaptrisMessage msg = (MultiPayloadAdaptrisMessage)new MultiPayloadMessageFactory().newMessage();
     msg.addMetadata("key", "val");
-    NewXmlTransformService service = new NewXmlTransformService();
+    MultiPayloadXmlTransformService service = new MultiPayloadXmlTransformService();
     try {
       service.setUrl(URL);
       service.setMetadataKey("key");
@@ -315,7 +315,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
   public void testObtainUrlWithMetadataValueInMessageAllowOverride() throws Exception {
 
     MultiPayloadAdaptrisMessage msg = (MultiPayloadAdaptrisMessage)new MultiPayloadMessageFactory().newMessage();
-    NewXmlTransformService service = new NewXmlTransformService();
+    MultiPayloadXmlTransformService service = new MultiPayloadXmlTransformService();
     msg.addMetadata("key", "val");
     try {
       service.setUrl(URL);
@@ -333,7 +333,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
   @Test
   public void testObtainUrlWithNoMetadataValueNoUrl() throws Exception {
     MultiPayloadAdaptrisMessage msg = (MultiPayloadAdaptrisMessage)new MultiPayloadMessageFactory().newMessage();
-    NewXmlTransformService service = new NewXmlTransformService();
+    MultiPayloadXmlTransformService service = new MultiPayloadXmlTransformService();
     try {
       service.setMetadataKey("key");
       service.setAllowOverride(true);
@@ -353,7 +353,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
 
   @Test
   public void testObtainUrlWithNoMetadataValue() throws Exception {
-    NewXmlTransformService service = new NewXmlTransformService();
+    MultiPayloadXmlTransformService service = new MultiPayloadXmlTransformService();
     MultiPayloadAdaptrisMessage msg = (MultiPayloadAdaptrisMessage)new MultiPayloadMessageFactory().newMessage();
     try {
       service.setUrl(URL);
@@ -371,7 +371,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
   public void testObtainUrlWithEmptyMetadataValue() throws Exception {
     MultiPayloadAdaptrisMessage msg = (MultiPayloadAdaptrisMessage)new MultiPayloadMessageFactory().newMessage();
     msg.addMetadata("key", "");
-    NewXmlTransformService service = new NewXmlTransformService();
+    MultiPayloadXmlTransformService service = new MultiPayloadXmlTransformService();
     try {
       service.setUrl(URL);
       service.setMetadataKey("key");
@@ -384,8 +384,8 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
     }
   }
 
-  protected NewXmlTransformService createBaseExample() {
-    NewXmlTransformService service = new NewXmlTransformService();
+  protected MultiPayloadXmlTransformService createBaseExample() {
+    MultiPayloadXmlTransformService service = new MultiPayloadXmlTransformService();
     service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
     service.setMetadataKey("optional metadata key against which over-ride URL may be stored, only if allowOverride == true");
     service.setAllowOverride(true);
@@ -396,7 +396,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
 
   @Override
   protected String createBaseFileName(Object object) {
-    NewXmlTransformService service = (NewXmlTransformService) object;
+    MultiPayloadXmlTransformService service = (MultiPayloadXmlTransformService) object;
     return super.createBaseFileName(object) + "-" + service.getXmlTransformerFactory().getClass().getSimpleName() + "-"
         + service.getTransformParameter().getClass().getSimpleName();
   }
@@ -423,7 +423,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
     MultiPayloadAdaptrisMessage m1 = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     MultiPayloadAdaptrisMessage m2 = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
 
-    NewXmlTransformService service = createBaseExample();
+    MultiPayloadXmlTransformService service = createBaseExample();
     try {
       start(service);
       service.doService(m1);
@@ -444,7 +444,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
     m1.addMessageHeader("myKey", "myValue");
     MultiPayloadAdaptrisMessage m2 = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
 
-    NewXmlTransformService service = createBaseExample();
+    MultiPayloadXmlTransformService service = createBaseExample();
     service.setCacheTransforms(true);
     service.setTransformParameter(new StringMetadataParameter(new String[] {"myKey"}, new String[0]));
     try {
@@ -464,7 +464,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
     MultiPayloadAdaptrisMessage m1 = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     MultiPayloadAdaptrisMessage m2 = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
 
-    NewXmlTransformService service = createBaseExample();
+    MultiPayloadXmlTransformService service = createBaseExample();
     service.setCacheTransforms(false);
     try {
       start(service);
@@ -481,7 +481,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
   @Test
   public void testXSLTOutput() throws Exception {
     MultiPayloadAdaptrisMessage m1 = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
-    NewXmlTransformService service = createBaseExample();
+    MultiPayloadXmlTransformService service = createBaseExample();
     execute(service, m1);
     assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getContent(PAYLOAD_ID_OUTPUT));
   }
@@ -489,7 +489,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
   @Test
   public void testXSLTOutput_NamedXsltTransformFactory() throws Exception {
     MultiPayloadAdaptrisMessage m1 = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
-    NewXmlTransformService service = createBaseExample();
+    MultiPayloadXmlTransformService service = createBaseExample();
     XsltTransformerFactory fac = new XsltTransformerFactory(net.sf.saxon.TransformerFactoryImpl.class.getCanonicalName());
     service.setXmlTransformerFactory(fac);
     execute(service, m1);
@@ -499,7 +499,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
   @Test
   public void testSTXOutput() throws Exception {
     MultiPayloadAdaptrisMessage m1 = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
-    NewXmlTransformService service = createBaseExample();
+    MultiPayloadXmlTransformService service = createBaseExample();
     service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_STX_TRANSFORM_URL));
     service.setXmlTransformerFactory(new StxTransformerFactory());
     execute(service, m1);
@@ -511,7 +511,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
     MultiPayloadAdaptrisMessage m1 = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     String oldName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
-    NewXmlTransformService service = createBaseExample();
+    MultiPayloadXmlTransformService service = createBaseExample();
     try {
       execute(service, m1);
       // INTERLOK-1850 - Saxon 9.7 won't report exceptions, so even if we throw, it'll just eat it.
@@ -529,7 +529,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
     MultiPayloadAdaptrisMessage m1 = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     String oldName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
-    NewXmlTransformService service = createBaseExample();
+    MultiPayloadXmlTransformService service = createBaseExample();
     XsltTransformerFactory fac = new XsltTransformerFactory();
     fac.setFailOnRecoverableError(false);
     service.setXmlTransformerFactory(fac);
@@ -545,7 +545,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
   @Test
   public void testXSLT_FatalError() throws Exception {
     MultiPayloadAdaptrisMessage m1 = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
-    NewXmlTransformService service = createBaseExample();
+    MultiPayloadXmlTransformService service = createBaseExample();
     service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_FATAL_TRANSFORM_URL));
     try {
       execute(service, m1);
@@ -559,7 +559,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
   public void testSingleParameter_XSLTOutput() throws Exception {
     MultiPayloadAdaptrisMessage msg = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     msg.addMetadata("world", "World");
-    NewXmlTransformService service = createBaseExample();
+    MultiPayloadXmlTransformService service = createBaseExample();
     service.setTransformParameter(new StringMetadataParameter());
     execute(service, msg);
     assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World", msg.getContent(PAYLOAD_ID_OUTPUT));
@@ -570,7 +570,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
     MultiPayloadAdaptrisMessage msg = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     msg.addObjectHeader("myDocumentObject", XmlHelper.createDocument("<data>World</data>"));
     msg.addObjectHeader("anotherDocument", XmlHelper.createDocument("<data>GoodBye</data>"));
-    NewXmlTransformService service = createBaseExample();
+    MultiPayloadXmlTransformService service = createBaseExample();
     service.setUrl(PROPERTIES.getProperty(KEY_XML_NODE_TRANSFORM_URL));
     service.setTransformParameter(new ObjectMetadataParameter(".*my.*"));
     execute(service, msg);
@@ -582,7 +582,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
     MultiPayloadAdaptrisMessage message = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     message.addPayload("somePayload", "World".getBytes());
 
-    NewXmlTransformService service = createBaseExample();
+    MultiPayloadXmlTransformService service = createBaseExample();
 
     ResolvableExpressionParameter params = new ResolvableExpressionParameter();
     KeyValuePairList exprns = new KeyValuePairList();
@@ -599,7 +599,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
     MultiPayloadAdaptrisMessage msg = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     msg.addObjectHeader("myDocumentObject", XmlHelper.createDocument("<data>World</data>"));
     msg.addObjectHeader("anotherDocument", XmlHelper.createDocument("<data>GoodBye</data>"));
-    NewXmlTransformService service = createBaseExample();
+    MultiPayloadXmlTransformService service = createBaseExample();
     service.setUrl(PROPERTIES.getProperty(KEY_XML_NODE_TRANSFORM_URL));
     service.setTransformParameter(new ObjectMetadataParameter());
     try {
@@ -615,7 +615,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
   public void testParameterBuilder_XSLTOutput() throws Exception {
     MultiPayloadAdaptrisMessage msg = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     msg.addMetadata("world", "World");
-    NewXmlTransformService service = createBaseExample();
+    MultiPayloadXmlTransformService service = createBaseExample();
     service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
     service.setTransformParameter(new XmlTransformParameterBuilder(new IgnoreMetadataParameter(), new StringMetadataParameter()));
     execute(service, msg);
@@ -627,7 +627,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
     MultiPayloadAdaptrisMessage msg = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     msg.addMetadata("key", "value");
     msg.addObjectHeader("myDocumentObject", XmlHelper.createDocument("<data>World</data>"));
-    NewXmlTransformService service = createBaseExample();
+    MultiPayloadXmlTransformService service = createBaseExample();
     service.setUrl(PROPERTIES.getProperty(KEY_XML_NODE_TRANSFORM_URL));
     service.setTransformParameter(new XmlTransformParameterBuilder(new IgnoreMetadataParameter(), new StringMetadataParameter(), new ObjectMetadataParameter(".*")));
     execute(service, msg);
@@ -638,7 +638,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
   public void testSingleParameter_STXOutput() throws Exception {
     MultiPayloadAdaptrisMessage msg = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     msg.addMetadata("world", "World");
-    NewXmlTransformService service = createBaseExample();
+    MultiPayloadXmlTransformService service = createBaseExample();
     service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_STX_TRANSFORM_URL));
     service.setXmlTransformerFactory(new StxTransformerFactory());
     service.setTransformParameter(new StringMetadataParameter());
@@ -654,7 +654,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
     msg.addMetadata("two", "World");
     msg.addMetadata("three", "World");
     msg.addMetadata("four", "World");
-    NewXmlTransformService service = createBaseExample();
+    MultiPayloadXmlTransformService service = createBaseExample();
     service.setTransformParameter(new StringMetadataParameter());
     execute(service, msg);
     assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World", msg.getContent(PAYLOAD_ID_OUTPUT));
@@ -668,7 +668,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
     msg.addMetadata("two", "World");
     msg.addMetadata("three", "World");
     msg.addMetadata("four", "World");
-    NewXmlTransformService service = createBaseExample();
+    MultiPayloadXmlTransformService service = createBaseExample();
     service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_STX_TRANSFORM_URL));
     service.setXmlTransformerFactory(new StxTransformerFactory());
     service.setTransformParameter(new StringMetadataParameter());
@@ -684,7 +684,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
     String srcValue = srcXpath.selectSingleTextItem(srcXml, ISSUE2641_SRC_XPATH);
     assertEquals("ISO-8859-1", msg.getContentEncoding());
 
-    NewXmlTransformService service = createBaseExample();
+    MultiPayloadXmlTransformService service = createBaseExample();
     service.setUrl(PROPERTIES.getProperty(KEY_ISSUE2641_TRANSFORM_URL));
     service.setOutputMessageEncoding("UTF-8");
     execute(service, msg);
@@ -709,7 +709,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
     String srcValue = srcXpath.selectSingleTextItem(srcXml, ISSUE2641_SRC_XPATH);
     assertEquals("ISO-8859-1", msg.getContentEncoding());
 
-    NewXmlTransformService service = createBaseExample();
+    MultiPayloadXmlTransformService service = createBaseExample();
     service.setUrl(PROPERTIES.getProperty(KEY_ISSUE2641_TRANSFORM_URL));
     execute(service, msg);
 
@@ -728,7 +728,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
   @Test
   public void testXSLT_XslMessageTerminate() throws Exception {
     MultiPayloadAdaptrisMessage m1 = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
-    NewXmlTransformService service = createBaseExample();
+    MultiPayloadXmlTransformService service = createBaseExample();
     XsltTransformerFactory fac = new XsltTransformerFactory();
     fac.getTransformerFactoryAttributes().add(new KeyValuePair("http://saxon.sf.net/feature/messageEmitterClass", MessageWarner.class.getCanonicalName()));
     fac.getTransformerFactoryFeatures().add(new KeyValuePair(XMLConstants.FEATURE_SECURE_PROCESSING, "true"));
@@ -745,7 +745,7 @@ public class NewXmlTransformServiceTest extends TransformServiceExample {
   @Test
   public void testOutputWrongMessageType() throws Exception {
     AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
-    NewXmlTransformService service = new NewXmlTransformService();
+    MultiPayloadXmlTransformService service = new MultiPayloadXmlTransformService();
     service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
     service.setCacheTransforms(false);
     try {
