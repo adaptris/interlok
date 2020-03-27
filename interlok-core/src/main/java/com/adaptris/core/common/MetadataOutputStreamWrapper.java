@@ -42,8 +42,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"metadataKey", "contentEncoding"})
 @ComponentProfile(summary = "MessageWrapper implementation wraps a metadata value as an Outputstream", since = "3.9.0")
 @Removal(version = "4.0", message = "Use metadata-stream-output instead")
-public class MetadataOutputStreamWrapper extends MetadataStreamOutputParameter
-    implements MessageWrapper<OutputStream> {
+public class MetadataOutputStreamWrapper extends MetadataStreamParameter implements MessageWrapper<OutputStream> {
     
   private transient boolean warningLogged = false;
 
