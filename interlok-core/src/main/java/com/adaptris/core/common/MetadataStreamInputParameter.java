@@ -17,14 +17,8 @@
 package com.adaptris.core.common;
 
 import static com.adaptris.core.common.MetadataDataInputParameter.DEFAULT_METADATA_KEY;
-
 import java.io.InputStream;
-import java.io.StringReader;
-
-import org.apache.commons.io.input.ReaderInputStream;
-
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.core.util.Args;
 import com.adaptris.interlok.InterlokException;
 import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
@@ -52,9 +46,7 @@ public class MetadataStreamInputParameter extends MetadataStreamParameter
 
   @Override
   public InputStream extract(InterlokMessage m) throws InterlokException {
-    Args.notBlank(getMetadataKey(), "metadataKey");
-    String data= m.getMessageHeaders().get(getMetadataKey());
-    return new ReaderInputStream(new StringReader(data), charset(getContentEncoding()));
+    return toInputStream(m, getMetadataKey(), getContentEncoding());
   }
 
 }

@@ -58,6 +58,7 @@ import com.adaptris.core.EventFactory;
 import com.adaptris.core.XStreamJsonMarshaller;
 import com.adaptris.core.event.AdapterShutdownEvent;
 import com.adaptris.core.fs.FsHelper;
+import com.adaptris.core.management.ManagementComponentInfo;
 import com.adaptris.core.util.JmxHelper;
 import com.adaptris.util.URLString;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -87,6 +88,7 @@ public class AdapterRegistry implements AdapterRegistryMBean {
   private transient Map<ObjectName, AdapterBuilder> builderByObjectName = new HashMap<>();
   private transient Map<Properties, AdapterBuilder> builderByProps = new HashMap<>();
   private transient AdapterBuilder defaultBuilder;
+  private transient List<ManagementComponentInfo> managementComponentInfo = new ArrayList<>();
 
   private AdapterRegistry() throws MalformedObjectNameException {
     mBeanServer = JmxHelper.findMBeanServer();
@@ -566,5 +568,18 @@ public class AdapterRegistry implements AdapterRegistryMBean {
 
   Set<AdapterBuilder> builders() {
     return new HashSet<AdapterBuilder>(builderByProps.values());
+  }
+
+  public void addManagementComponentInfo(ManagementComponentInfo componentInfo) {
+    this.getManagementComponentInfo().add(componentInfo);
+  }
+  
+  @Override
+  public List<ManagementComponentInfo> getManagementComponentInfo() {
+    return this.managementComponentInfo;
+  }
+
+  public void setManagementComponentInfo(List<ManagementComponentInfo> managementComponentInfo) {
+    this.managementComponentInfo = managementComponentInfo;
   }
 }

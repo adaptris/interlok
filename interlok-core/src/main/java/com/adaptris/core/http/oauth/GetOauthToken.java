@@ -32,7 +32,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Make a HTTP(s) request to an OAUTH server and retrieve an access token", tag = "service,http,https,oauth")
 @DisplayOrder(order =
 {
-    "tokenKey", "accessTokenBuilder", "tokenExpiryKey"
+    "tokenKey", "accessTokenBuilder", "tokenExpiryKey", "refreshTokenKey"
 })
 public class GetOauthToken extends ServiceImp {
 
@@ -43,6 +43,9 @@ public class GetOauthToken extends ServiceImp {
   @AffectsMetadata
   @AdvancedConfig
   private String tokenExpiryKey;
+  @AffectsMetadata
+  @AdvancedConfig
+  private String refreshTokenKey;
 
   @NotNull
   @Valid
@@ -60,6 +63,9 @@ public class GetOauthToken extends ServiceImp {
       msg.addMessageHeader(getTokenKey(), tokenMetadataValue);
       if (!isBlank(getTokenExpiryKey()) && !isBlank(token.getExpiry())) {
         msg.addMessageHeader(getTokenExpiryKey(), token.getExpiry());
+      }
+      if (!isBlank(getRefreshTokenKey()) && !isBlank(token.getRefreshToken())) {
+        msg.addMessageHeader(getRefreshTokenKey(), token.getRefreshToken());
       }
     }
     catch (CoreException | IOException e) {
@@ -100,6 +106,12 @@ public class GetOauthToken extends ServiceImp {
     LifecycleHelper.close(getAccessTokenBuilder());
   }
 
+  public GetOauthToken withTokenKey(String b) {
+    setTokenKey(b);
+    return this;
+  }
+
+
   public String getTokenKey() {
     return tokenKey;
   }
@@ -111,6 +123,12 @@ public class GetOauthToken extends ServiceImp {
    */
   public void setTokenKey(String key) {
     this.tokenKey = Args.notBlank(key, "tokenMetadataKey");
+  }
+
+
+  public GetOauthToken withTokenExpiryKey(String b) {
+    setTokenExpiryKey(b);
+    return this;
   }
 
   public String getTokenExpiryKey() {
@@ -129,9 +147,16 @@ public class GetOauthToken extends ServiceImp {
     this.tokenExpiryKey = Args.notBlank(key, "tokenExpiryKey");
   }
 
+
+  public GetOauthToken withAccessTokenBuilder(AccessTokenBuilder b) {
+    setAccessTokenBuilder(b);
+    return this;
+  }
+
   public AccessTokenBuilder getAccessTokenBuilder() {
     return accessTokenBuilder;
   }
+
 
   /**
    * Set the access token builder.
@@ -140,6 +165,28 @@ public class GetOauthToken extends ServiceImp {
    */
   public void setAccessTokenBuilder(AccessTokenBuilder b) {
     this.accessTokenBuilder = Args.notNull(b, "accessTokenBuilder");
+  }
+
+
+  public GetOauthToken withRefreshTokenKey(String refreshMetadataKey) {
+    setRefreshTokenKey(refreshMetadataKey);
+    return this;
+  }
+
+  public String getRefreshTokenKey() {
+    return refreshTokenKey;
+  }
+
+  /**
+   * Set the metadata key for storing the refresh token.
+   * <p>
+   * In some cases, there is no refresh token, in which case, the metadata key will never be set even if configured.
+   * </p>
+   * 
+   * @param key key.
+   */
+  public void setRefreshTokenKey(String key) {
+    this.refreshTokenKey = key;
   }
 
 }

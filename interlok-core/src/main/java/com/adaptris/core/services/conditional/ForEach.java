@@ -52,7 +52,7 @@ import java.util.concurrent.TimeUnit;
 @ComponentProfile(
 		summary = "Runs the configured service/list for each multi-payload message payload.",
 		tag = "for,each,for each,for-each,then,multi-payload",
-		since = "3.10")
+		since = "3.10.0")
 @DisplayOrder(order = {"then", "threadCount"})
 public class ForEach extends ServiceImp
 {

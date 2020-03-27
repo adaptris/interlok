@@ -17,7 +17,6 @@
 package com.adaptris.core.common;
 
 import java.io.InputStream;
-
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.interlok.types.InterlokMessage;
@@ -33,8 +32,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("metadata-input-stream-wrapper")
 @DisplayOrder(order = {"metadataKey", "contentEncoding"})
 @ComponentProfile(summary = "MessageWrapper implementation wraps a metadata value as an InputStream", since = "3.9.0")
-public class MetadataInputStreamWrapper extends MetadataStreamInputParameter
-    implements MessageWrapper<InputStream> {
+public class MetadataInputStreamWrapper extends MetadataStreamParameter implements MessageWrapper<InputStream> {
 
   public MetadataInputStreamWrapper() {
     super();
@@ -47,7 +45,6 @@ public class MetadataInputStreamWrapper extends MetadataStreamInputParameter
 
   @Override
   public InputStream wrap(InterlokMessage m) throws Exception {
-    return extract(m);
+    return toInputStream(m, getMetadataKey(), getContentEncoding());
   }
-
 }
