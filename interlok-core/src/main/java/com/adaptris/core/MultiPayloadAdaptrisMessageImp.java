@@ -447,7 +447,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 
   /**
    * Resolve against this message's payloads or metadata.
-   * <p>
+   *
    * This is a helper method that allows you to pass in {@code %payload_id{pl1}}
    * and get the payload associated with {@code pl1}, or {@code %message{key1}}
    * and get the metadata associated with {@code key1}. Strings that do not match
@@ -456,7 +456,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
    * limited subset of punctuation characters in addition to standard word
    * characters ({@code [a-zA-Z_0-9]}); they are {@code _!"#&'+,-.:=}. The magic
    * values {@code %message{%uniqueId}} and {@code %message{%size}} should return
-   * the message unique-id and message size respectively
+   * the message unique-id and message size respectively.
    *
    * @param target
    *          The string to resolve.
@@ -471,12 +471,12 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
     if (target == null) {
       return null;
     }
+    target = super.resolve(target, dotAll);
     // resolve any %payload{id:…}'s or %payload_id{…}'s before attempting any %message{…}'s
     Pattern pattern = dotAll ? normalPayloadResolver2 : dotAllPayloadResolver2;
     target = resolve(target, pattern, false);
     pattern = dotAll ? normalPayloadResolver : dotAllPayloadResolver;
-    target = resolve(target, pattern, true);
-    return super.resolve(target, dotAll);
+    return resolve(target, pattern, true);
   }
 
   private String resolve(String target, Pattern pattern, boolean defaultPattern) {
