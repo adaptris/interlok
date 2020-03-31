@@ -33,7 +33,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("metadata-value-escape-double-quote")
 @AdapterComponent
-@ComponentProfile(summary = "Changes matching metadata double quote into escaped double quote", tag = "service,metadata,string,escape,quote")
+@ComponentProfile(summary = "Changes matching metadata double quote into escaped double quote", tag = "service,metadata,string,escape,quote,double")
 @DisplayOrder(order = {"metadataKeyRegexp", "metadataLogger"})
 public class MetadataValueEscapeDoubleQuote extends ReformatMetadata {
 

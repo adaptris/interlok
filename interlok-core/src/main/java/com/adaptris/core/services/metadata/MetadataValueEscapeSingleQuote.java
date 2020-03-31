@@ -33,7 +33,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("metadata-value-escape-single-quote")
 @AdapterComponent
-@ComponentProfile(summary = "Changes matching metadata single quote into escaped single quote", tag = "service,metadata,string,escape,quote")
+@ComponentProfile(summary = "Changes matching metadata single quote into escaped single quote", tag = "service,metadata,string,escape,quote,single")
 @DisplayOrder(order = {"metadataKeyRegexp", "metadataLogger"})
 public class MetadataValueEscapeSingleQuote extends ReformatMetadata {
 
