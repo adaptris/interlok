@@ -12,7 +12,7 @@ public class SwitchPayloadServiceTest extends ServiceCase {
   private static final String ENCODING = "UTF-8";
 
   private static final String CONTENT = "Bacon ipsum dolor amet bresaola ball tip flank, doner pork chop ham hock rump kielbasa pork loin beef burgdoggen short ribs tongue.";
-  private static final byte[] PAYLOAD = "Cupcake ipsum dolor sit amet dragée carrot cake halvah jujubes."
+  private static final byte[] PAYLOAD = "Cupcake ipsum dolor sit amet dragee carrot cake halvah jujubes."
       .getBytes(Charset.forName(ENCODING));
 
   private static final String[] ID = { "bacon", "cupcake" };

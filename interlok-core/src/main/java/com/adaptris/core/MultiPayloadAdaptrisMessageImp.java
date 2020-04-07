@@ -472,7 +472,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
       return null;
     }
     target = super.resolve(target, dotAll);
-    // resolve any %payload{id:…}'s or %payload_id{…}'s before attempting any %message{…}'s
+    // resolve any %payload{id:...}'s or %payload_id{...}'s before attempting any %message{...}'s
     Pattern pattern = dotAll ? normalPayloadResolver2 : dotAllPayloadResolver2;
     target = resolve(target, pattern, false);
     pattern = dotAll ? normalPayloadResolver : dotAllPayloadResolver;
