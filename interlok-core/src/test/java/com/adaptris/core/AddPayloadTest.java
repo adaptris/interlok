@@ -14,7 +14,7 @@ public class AddPayloadTest extends ServiceCase {
   private static final String[] CONTENT = {
       "Bacon ipsum dolor amet bresaola ball tip flank, doner pork chop ham hock rump kielbasa pork loin beef burgdoggen short ribs tongue.",
       "Bacon ipsum dolor amet ball tip venison pastrami, short loin kielbasa andouille rump chuck pork spare ribs salami turducken shankle.",
-      "Cupcake ipsum dolor sit amet dragée carrot cake halvah jujubes.",
+      "Cupcake ipsum dolor sit amet dragee carrot cake halvah jujubes.",
       "Cupcake ipsum dolor sit. Amet jelly cupcake sweet roll I love lollipop." };
 
   private static final String[] ID = { "bacon-1", "bacon-2", "cupcake-1", "cupcake-2" };
