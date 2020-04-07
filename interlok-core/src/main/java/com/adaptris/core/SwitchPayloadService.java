@@ -2,6 +2,7 @@ package com.adaptris.core;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.InputFieldHint;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,7 @@ public class SwitchPayloadService extends ServiceImp {
 
   @Valid
   @NotNull
+  @InputFieldHint(expression=true)
   private String newPayloadId;
 
   /**
