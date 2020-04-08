@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import org.apache.commons.lang3.math.NumberUtils;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
@@ -40,8 +39,8 @@ public class AddValueToCache extends SingleKeyValueCacheImpl {
   private static final List<ExpiryParser> EXPIRY_PARSERS =
       Collections.unmodifiableList(
           Arrays.asList(new ExpiryParser[] {
-          (val) -> build(DateFormatUtil.parse(val, null)),
-          (val) -> build(val)
+          (val) -> build(val),
+          (val) -> build(DateFormatUtil.parse(val, null))
       }));
 
   @InputFieldHint(expression = true)
@@ -52,11 +51,15 @@ public class AddValueToCache extends SingleKeyValueCacheImpl {
     try {
       Cache cache = retrieveCache();
       Optional<ExpiryWrapper> hasExpiry = buildExpiry(msg);
+      String cacheKey = msg.resolve(getKey());
       // should be hasExpiry.ifPresentOrElse() once we goto J11...
       if (hasExpiry.isPresent()) {
-        cache.put(msg.resolve(getKey()), getValueTranslator().getValueFromMessage(msg), hasExpiry.get().asInterval());
+        TimeInterval expiryInterval = hasExpiry.get().asInterval();
+        log.trace("Expiry for [{}], in [{}]", cacheKey, expiryInterval);
+        cache.put(cacheKey, getValueTranslator().getValueFromMessage(msg), hasExpiry.get().asInterval());
       } else {
-        cache.put(msg.resolve(getKey()), getValueTranslator().getValueFromMessage(msg));
+        log.trace("Expiry for [{}], taken from cache settings", cacheKey);
+        cache.put(cacheKey, getValueTranslator().getValueFromMessage(msg));
       }
     } catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);
@@ -84,8 +87,9 @@ public class AddValueToCache extends SingleKeyValueCacheImpl {
   }
 
   private static Optional<ExpiryWrapper> build(final String millis) {
-    return Optional.ofNullable(millis).filter(t -> NumberUtils.isCreatable(t))
-        .map(t -> Optional.of(new ExpiryWrapper(NumberUtils.toLong(t)))).orElse(Optional.empty());
+    // don't use NumberUtils since we don't want to support a - number...
+    return Optional.ofNullable(millis).filter(t -> t.chars().allMatch(c -> c >= '0' && c <= '9'))
+        .map(t -> Optional.of(new ExpiryWrapper(Long.parseLong(t)))).orElse(Optional.empty());
   }
 
   /**
@@ -95,10 +99,10 @@ public class AddValueToCache extends SingleKeyValueCacheImpl {
    * The rules once the value has been resolved are :
    * </p>
    * <ul>
-   * <li>If the value is a recognised value from {@link DateFormatUtil#parse(String)} then it is treated as absolute</li>
    * <li>If the value is numeric and less than {@link System#currentTimeMillis()} then it is treated as relative to
    * {@code now()}</li>
    * <li>If the value is numberic and greater than {@link System#currentTimeMillis()} then it is treated as absolute</li>
+   * <li>If the value is a recognised value from {@link DateFormatUtil#parse(String)} then it is treated as absolute</li>
    * <li>If it can't be resolved by any of those means, then it is ignored (i.e. treated as though there is no expiry).
    * </ul>
    * 
@@ -116,23 +120,24 @@ public class AddValueToCache extends SingleKeyValueCacheImpl {
   }
 
   private static class ExpiryWrapper {
-    private long expiryValue;
+    private transient TimeInterval expiry;
 
     public ExpiryWrapper(long absoluteOrRelativeMs) {
-      if (absoluteOrRelativeMs < System.currentTimeMillis()) {
-        expiryValue = absoluteOrRelativeMs;
+      long now = System.currentTimeMillis();
+      if (absoluteOrRelativeMs < now) {
+        expiry = new TimeInterval(absoluteOrRelativeMs, TimeUnit.MILLISECONDS);
       } else {
-        expiryValue = absoluteOrRelativeMs - System.currentTimeMillis();
+        expiry = new TimeInterval(absoluteOrRelativeMs - now, TimeUnit.MILLISECONDS);
       }
     }
 
     public ExpiryWrapper(Date futureDate) {
       Date now = new Date();
-      expiryValue = futureDate.getTime() - now.getTime();
+      expiry = new TimeInterval(futureDate.getTime() - now.getTime(), TimeUnit.MILLISECONDS);
     }
 
     public TimeInterval asInterval() {
-      return new TimeInterval(expiryValue, TimeUnit.MILLISECONDS);
+      return expiry;
     }
 
 

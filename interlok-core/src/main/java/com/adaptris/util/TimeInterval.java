@@ -16,7 +16,6 @@
 
 package com.adaptris.util;
 
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -45,14 +44,6 @@ public class TimeInterval {
   private static final TimeUnit DEFAULT_UNIT = TimeUnit.SECONDS;
 
   public TimeInterval() {
-  }
-
-  /**
-   * Create a time interval from a duration.
-   * 
-   */
-  public TimeInterval(Duration d) {
-    this(d.toMillis(), TimeUnit.MILLISECONDS);
   }
 
   public TimeInterval(Long interval, String unit) {
