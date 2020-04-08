@@ -17,18 +17,14 @@ package com.adaptris.core.cache;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
-
 import net.jodah.expiringmap.ExpirationListener;
 
 /**
@@ -54,10 +50,8 @@ public class ExpiringMapCacheListener implements ExpirationListener<String, Obje
   }
 
   @Override
-  public void expired(String key, Object value) {
-    for (CacheEventListener listener : getListeners()) {
-      listener.itemExpired(key, value);
-    }
+  public void expired(final String key, final Object value) {
+    getListeners().forEach((l) -> l.itemExpired(key, value));
   }
 
   public Set<CacheEventListener> getListeners() {

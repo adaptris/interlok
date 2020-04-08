@@ -18,8 +18,6 @@ package com.adaptris.core.cache;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.adaptris.core.CoreException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -35,28 +33,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class NullCacheImplementation implements Cache {
 
   @Override
-  public void init() throws CoreException {
-  }
+  public void put(String key, Serializable value) {}
 
   @Override
-  public void start() throws CoreException {
-  }
-
-  @Override
-  public void stop() {
-  }
-
-  @Override
-  public void close() {
-  }
-
-  @Override
-  public void put(String key, Serializable value) {
-  }
-
-  @Override
-  public void put(String key, Object value) {
-  }
+  public void put(String key, Object value) {}
 
   @Override
   public Object get(String key) {
@@ -64,8 +44,7 @@ public class NullCacheImplementation implements Cache {
   }
 
   @Override
-  public void remove(String key) {
-  }
+  public void remove(String key) {}
 
   @Override
   public List<String> getKeys() {
@@ -73,11 +52,16 @@ public class NullCacheImplementation implements Cache {
   }
 
   @Override
-  public void clear() {
-  }
+  public void clear() {}
 
   @Override
   public int size() {
     return 0;
   }
+
+  @Override
+  public void put(String key, Serializable value, long ttl) {}
+
+  @Override
+  public void put(String key, Object value, long ttl) {}
 }
