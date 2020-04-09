@@ -64,9 +64,8 @@ public class AddValueToCacheTest extends SingleKeyCacheCase {
     }
   }
 
-
   @Test
-  public void testDoService_NoExpiry() throws Exception {
+  public void testDoService_NoExpiryMetadata() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello World");
     ExpiringMapCache cache = createCacheInstanceForTests().withExpiration(new TimeInterval(1L, TimeUnit.SECONDS));
     MyCacheEventListener listener = new MyCacheEventListener();    
@@ -76,11 +75,37 @@ public class AddValueToCacheTest extends SingleKeyCacheCase {
         .withKey("%message{%uniqueId}").withConnection(new CacheConnection().withCacheInstance(cache));
     try {
       start(service);
-      msg.addMetadata("expiry", "a"); // empty expiry should not expire.
+      // msg.addMetadata("expiry", "a"); // empty expiry should not expire.
       service.doService(msg);
       Object value = cache.get(msg.getUniqueId());
       assertEquals("Hello World", value);
-      // Default expiration is > 5 seconds.
+      await()
+          .atMost(Duration.ofSeconds(5))
+          .with()
+          .pollInterval(Duration.ofMillis(100))
+          .until(listener::expiredCount, greaterThanOrEqualTo(1));
+      assertEquals(0, cache.size());      
+    } finally {
+      stop(service);
+    }
+  }
+  
+
+  @Test
+  public void testDoService_Expiry_Unsupported() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello World");
+    ExpiringMapCache cache = createCacheInstanceForTests().withExpiration(new TimeInterval(1L, TimeUnit.SECONDS));
+    MyCacheEventListener listener = new MyCacheEventListener();    
+    cache.getEventListener().addEventListener(listener);
+    AddValueToCache service =
+        new AddValueToCache().withExpiry("%message{expiry}").withValueTranslator(new StringPayloadCacheTranslator())
+        .withKey("%message{%uniqueId}").withConnection(new CacheConnection().withCacheInstance(cache));
+    try {
+      start(service);
+      msg.addMetadata("expiry", "a"); // unparseable expiry should not expire.
+      service.doService(msg);
+      Object value = cache.get(msg.getUniqueId());
+      assertEquals("Hello World", value);
       await()
           .atMost(Duration.ofSeconds(5))
           .with()

@@ -11,6 +11,7 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.UnresolvedMetadataException;
 import com.adaptris.core.cache.Cache;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.TimeInterval;
@@ -67,10 +68,13 @@ public class AddValueToCache extends SingleKeyValueCacheImpl {
   }
 
   private Optional<ExpiryWrapper> buildExpiry(AdaptrisMessage msg) {
-    final String value = msg.resolve(getExpiry());
-    Optional<ExpiryWrapper> result =
-        EXPIRY_PARSERS.stream().map((p) -> p.parse(value)).filter((o) -> o.isPresent()).findFirst().orElse(Optional.empty());
-    return result;
+    try {
+      final String value = msg.resolve(getExpiry());
+      return
+          EXPIRY_PARSERS.stream().map((p) -> p.parse(value)).filter((o) -> o.isPresent()).findFirst().orElse(Optional.empty());
+    } catch (UnresolvedMetadataException e) {
+      return Optional.empty();
+    }
   }
 
   public <T extends AddValueToCache> T withExpiry(String s) {
