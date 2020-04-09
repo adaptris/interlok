@@ -99,9 +99,10 @@ public class AddValueToCache extends SingleKeyValueCacheImpl {
    * The rules once the value has been resolved are :
    * </p>
    * <ul>
-   * <li>If the value is numeric and less than {@link System#currentTimeMillis()} then it is treated as relative to
-   * {@code now()}</li>
-   * <li>If the value is numberic and greater than {@link System#currentTimeMillis()} then it is treated as absolute</li>
+   * <li>If the value is numeric and less than {@link System#currentTimeMillis()} then it is treated as relative to {@code now()};
+   * expiry is in milliseconds</li>
+   * <li>If the value is numberic and greater than {@link System#currentTimeMillis()} then it is treated as absolute; expiry is in
+   * milliseconds</li>
    * <li>If the value is a recognised value from {@link DateFormatUtil#parse(String)} then it is treated as absolute</li>
    * <li>If it can't be resolved by any of those means, then it is ignored (i.e. treated as though there is no expiry).
    * </ul>
