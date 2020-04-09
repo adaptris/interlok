@@ -55,10 +55,10 @@ public class AddValueToCache extends SingleKeyValueCacheImpl {
       // should be hasExpiry.ifPresentOrElse() once we goto J11...
       if (hasExpiry.isPresent()) {
         TimeInterval expiryInterval = hasExpiry.get().asInterval();
-        log.trace("Expiry for [{}], in [{}]", cacheKey, expiryInterval);
+        log.trace("[{}] will expire in {}", cacheKey, expiryInterval);
         cache.put(cacheKey, getValueTranslator().getValueFromMessage(msg), hasExpiry.get().asInterval());
       } else {
-        log.trace("Expiry for [{}], taken from cache settings", cacheKey);
+        log.trace("Expiry for [{}] taken from cache settings", cacheKey);
         cache.put(cacheKey, getValueTranslator().getValueFromMessage(msg));
       }
     } catch (Exception e) {
