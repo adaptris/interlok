@@ -6,9 +6,12 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
+import org.awaitility.Awaitility;
 import org.junit.Test;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.StartedState;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.GuidGenerator;
@@ -97,7 +100,12 @@ public class PluggableJdbcPooledConnectionTest extends DatabaseConnectionCase<Pl
     con.withPoolProperties(poolProps);
     try {
       LifecycleHelper.initAndStart(con);
-      Thread.sleep(500);
+      Awaitility.await()
+      .atMost(Duration.ofSeconds(5))
+      .with()
+      .pollInterval(Duration.ofMillis(100))
+      .until(() ->con.retrieveComponentState().equals(StartedState.getInstance()));   
+
       Connection c1 = con.connect();
       Connection c2 = con.connect();
       // Shouldn't be the same object...

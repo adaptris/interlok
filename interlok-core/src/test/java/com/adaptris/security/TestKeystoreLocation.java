@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.util.Properties;
 import org.apache.commons.io.FileUtils;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -119,59 +120,52 @@ public class TestKeystoreLocation {
 
   @Test
   public void testRemoteKeystore() throws Exception {
-    if (Boolean.parseBoolean(cfg.getProperty(Config.REMOTE_TESTS_ENABLED,
-        "false"))) {
-      String ks = cfg.getProperty(Config.KEYSTORE_TEST_URL);
-      ks = ks.replaceAll("\\\\", "/");
-      URI uri = new URI(ks);
-      File keystore = new File(uri.getPath());
-      String filename = keystore.getName();
-      File newFile = new File(cfg.getProperty(Config.KEYSTORE_REMOTE_REALPATH)
-          + "/" + filename);
-      FileUtils.copyFile(keystore, newFile);
-      Thread.sleep(10000);
-      logR.debug("newFile " + newFile.getCanonicalPath());
-      String keystoreType = uri.getQuery();
-      String url = cfg.getProperty(Config.KEYSTORE_REMOTE_ROOT) + filename
-          + "?" + keystoreType;
-      KeystoreLocation k = KeystoreFactory.getDefault().create(url,
-          cfg.getProperty(Config.KEYSTORE_COMMON_KEYSTORE_PW).toCharArray());
-      assertTrue("Remote Keystore exists", k.exists());
-      InputStream in = k.openInput();
-      in.close();
-      assertTrue(!k.isWriteable());
-      boolean openOutputSuccess = false;
-      try {
-        OutputStream o = k.openOutput();
-        openOutputSuccess = true;
-        o.close();
-      }
-      catch (Exception e) {
-        // Expected as it's non-writeable
-      }
-      newFile.delete();
-      if (openOutputSuccess) {
-        fail("Successfully opened output to a remote keystore!");
-      }
+    Assume.assumeTrue(Boolean.parseBoolean(cfg.getProperty(Config.REMOTE_TESTS_ENABLED, "false")));
+    String ks = cfg.getProperty(Config.KEYSTORE_TEST_URL);
+    ks = ks.replaceAll("\\\\", "/");
+    URI uri = new URI(ks);
+    File keystore = new File(uri.getPath());
+    String filename = keystore.getName();
+    File newFile = new File(cfg.getProperty(Config.KEYSTORE_REMOTE_REALPATH) + "/" + filename);
+    FileUtils.copyFile(keystore, newFile);
+    // Thread.sleep(10000);
+    logR.debug("newFile " + newFile.getCanonicalPath());
+    String keystoreType = uri.getQuery();
+    String url = cfg.getProperty(Config.KEYSTORE_REMOTE_ROOT) + filename + "?" + keystoreType;
+    KeystoreLocation k =
+        KeystoreFactory.getDefault().create(url, cfg.getProperty(Config.KEYSTORE_COMMON_KEYSTORE_PW).toCharArray());
+    assertTrue("Remote Keystore exists", k.exists());
+    InputStream in = k.openInput();
+    in.close();
+    assertTrue(!k.isWriteable());
+    boolean openOutputSuccess = false;
+    try {
+      OutputStream o = k.openOutput();
+      openOutputSuccess = true;
+      o.close();
+    } catch (Exception e) {
+      // Expected as it's non-writeable
+    }
+    newFile.delete();
+    if (openOutputSuccess) {
+      fail("Successfully opened output to a remote keystore!");
     }
   }
 
   @Test
   public void testNonExistentRemoteKeystore() {
-    if (Boolean.parseBoolean(cfg.getProperty(Config.REMOTE_TESTS_ENABLED,
-        "false"))) {
-      try {
-        String url = cfg.getProperty(Config.KEYSTORE_REMOTE_ROOT)
-            + "fred.ks?keystoreType=jks";
-        KeystoreLocation k = KeystoreFactory.getDefault().create(url,
-            cfg.getProperty(Config.KEYSTORE_COMMON_KEYSTORE_PW).toCharArray());
-        assertTrue("Keystore Location", !k.exists());
-      }
-      catch (Exception e) {
-        logR.error("testNonExistentRemoteKeystore failed", e);
-        fail(e.getMessage());
-      }
+    Assume.assumeTrue(Boolean.parseBoolean(cfg.getProperty(Config.REMOTE_TESTS_ENABLED, "false")));
+
+    try {
+      String url = cfg.getProperty(Config.KEYSTORE_REMOTE_ROOT) + "fred.ks?keystoreType=jks";
+      KeystoreLocation k =
+          KeystoreFactory.getDefault().create(url, cfg.getProperty(Config.KEYSTORE_COMMON_KEYSTORE_PW).toCharArray());
+      assertTrue("Keystore Location", !k.exists());
+    } catch (Exception e) {
+      logR.error("testNonExistentRemoteKeystore failed", e);
+      fail(e.getMessage());
     }
+
   }
 
 }

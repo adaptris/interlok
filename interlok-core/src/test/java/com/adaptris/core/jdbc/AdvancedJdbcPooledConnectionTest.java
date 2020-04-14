@@ -5,9 +5,12 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
+import org.awaitility.Awaitility;
 import org.junit.Test;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.StartedState;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.GuidGenerator;
@@ -100,7 +103,12 @@ public class AdvancedJdbcPooledConnectionTest extends DatabaseConnectionCase<Adv
     con.setConnectionPoolProperties(poolProps);
     try {
       LifecycleHelper.initAndStart(con);
-      Thread.sleep(500);
+      Awaitility.await()
+      .atMost(Duration.ofSeconds(5))
+      .with()
+      .pollInterval(Duration.ofMillis(100))
+      .until(() ->con.retrieveComponentState().equals(StartedState.getInstance()));
+      
       ComboPooledDataSource poolDs = ((C3P0PooledDataSource) con.asDataSource()).wrapped();
       assertEquals(0, poolDs.getNumBusyConnections());
       Connection c0 = null;
@@ -110,7 +118,12 @@ public class AdvancedJdbcPooledConnectionTest extends DatabaseConnectionCase<Adv
       } finally {
         JdbcUtil.closeQuietly(c0);
       }
-      Thread.sleep(1500);
+      Awaitility.await()
+      .atMost(Duration.ofSeconds(5))
+      .with()
+      .pollInterval(Duration.ofMillis(100))
+      .until(() ->poolDs.getNumBusyConnections() == 0);
+      
       Connection c1 = poolDs.getConnection();
       slf4jLogger.info("1 get (again): NumConnections={}, NumBusyConnnections={}, NumIdleConnections={}", poolDs.getNumConnections() ,poolDs.getNumBusyConnections(), poolDs.getNumIdleConnections());
       Connection c2 = poolDs.getConnection();
@@ -127,7 +140,11 @@ public class AdvancedJdbcPooledConnectionTest extends DatabaseConnectionCase<Adv
       slf4jLogger.info("7 get: NumConnections={}, NumBusyConnnections={}, NumIdleConnections={}", poolDs.getNumConnections() ,poolDs.getNumBusyConnections(), poolDs.getNumIdleConnections());
       assertTrue(poolDs.getNumBusyConnections() > 0);
       JdbcUtil.closeQuietly(c1,c2,c3,c4,c5,c6,c7);
-      Thread.sleep(2000);
+      Awaitility.await()
+        .atMost(Duration.ofSeconds(5))
+        .with()
+        .pollInterval(Duration.ofMillis(100))
+        .until(() ->poolDs.getNumBusyConnections() == 0);     
       slf4jLogger.info("closed: NumConnections={}, NumBusyConnnections={}, NumIdleConnections={}", poolDs.getNumConnections() ,poolDs.getNumBusyConnections(), poolDs.getNumIdleConnections());
       assertEquals(0, poolDs.getNumBusyConnections());
     } finally {
