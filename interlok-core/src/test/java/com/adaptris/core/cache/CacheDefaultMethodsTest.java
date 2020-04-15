@@ -1,11 +1,11 @@
 package com.adaptris.core.cache;
 
 import java.io.Serializable;
-
+import java.util.concurrent.TimeUnit;
 import org.junit.Test;
-
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.util.TimeInterval;
 
 public class CacheDefaultMethodsTest implements Cache {
 
@@ -19,7 +19,6 @@ public class CacheDefaultMethodsTest implements Cache {
       LifecycleHelper.stopAndClose(this);
     }
   }
-
 
   @Test(expected = UnsupportedOperationException.class)
   public void testDefaultGetKeys() throws Exception {
@@ -50,6 +49,29 @@ public class CacheDefaultMethodsTest implements Cache {
       LifecycleHelper.stopAndClose(this);
     }
   }
+
+  @Test(expected = UnsupportedOperationException.class)
+  public void testDefaultPutSerializable_WithExpiration() throws Exception {
+    TimeInterval expiry = new TimeInterval(250L, TimeUnit.MILLISECONDS);
+    try {
+      LifecycleHelper.initAndStart(this);
+      put("hello", "", expiry);
+    } finally {
+      LifecycleHelper.stopAndClose(this);
+    }
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  public void testDefaultPutObject_WithExpiration() throws Exception {
+    TimeInterval expiry = new TimeInterval(250L, TimeUnit.MILLISECONDS);
+    try {
+      LifecycleHelper.initAndStart(this);
+      put("hello", new Object(), expiry);
+    } finally {
+      LifecycleHelper.stopAndClose(this);
+    }
+  }
+
 
   @Override
   public void put(String key, Serializable value) throws CoreException {

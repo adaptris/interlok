@@ -20,12 +20,12 @@ import static com.adaptris.core.util.LifecycleHelper.stopAndClose;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-
 import java.util.List;
-
+import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import com.adaptris.util.TimeInterval;
 
 public class NullCacheImplementationTest {
 
@@ -111,6 +111,22 @@ public class NullCacheImplementationTest {
       assertFalse(x == y);
     }
     finally {
+      stopAndClose(cache);
+    }
+  }
+
+
+  @Test
+  public void testPut_WithExpiration() throws Exception {
+    NullCacheImplementation cache = new NullCacheImplementation();
+    TimeInterval expiry = new TimeInterval(250L, TimeUnit.MILLISECONDS);
+    initAndStart(cache);
+    try {
+      cache.put("one", "1", expiry);
+      cache.put("object", new Object(), expiry);
+      assertEquals(0, cache.size());
+      assertEquals(0, cache.getKeys().size());
+    } finally {
       stopAndClose(cache);
     }
   }

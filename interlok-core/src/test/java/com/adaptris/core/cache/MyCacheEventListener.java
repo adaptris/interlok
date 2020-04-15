@@ -15,35 +15,57 @@
 */
 package com.adaptris.core.cache;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class MyCacheEventListener implements CacheEventListener {
-  public int evictedItems = 0;
-  public int expiredItems = 0;
-  public int putItems = 0;
-  public int removedItems = 0;
-  public int updatedItems = 0;
+  private AtomicInteger evictedItems = new AtomicInteger(0);
+  private AtomicInteger expiredItems = new AtomicInteger(0);;
+  private AtomicInteger putItems = new AtomicInteger(0);;
+  private AtomicInteger removedItems = new AtomicInteger(0);;
+  private AtomicInteger updatedItems = new AtomicInteger(0);;
 
   @Override
   public void itemEvicted(String key, Object value) {
-    evictedItems++;
+    evictedItems.incrementAndGet();
   }
 
   @Override
   public void itemExpired(String key, Object value) {
-    expiredItems++;
+    expiredItems.incrementAndGet();
   }
 
   @Override
   public void itemPut(String key, Object value) {
-    putItems++;
+    putItems.incrementAndGet();
   }
 
   @Override
   public void itemRemoved(String key, Object value) {
-    removedItems++;
+    removedItems.incrementAndGet();
   }
 
   @Override
   public void itemUpdated(String key, Object value) {
-    updatedItems++;
+    updatedItems.incrementAndGet();
+  }
+
+  public int evictCount() {
+    return evictedItems.get();
+  }
+
+  public int expiredCount() {
+    return expiredItems.get();
+  }
+
+  public int putCount() {
+    return putItems.get();
+  }
+
+  public int removedCount() {
+    return removedItems.get();
+  }
+
+  public int updatedCount() {
+    return updatedItems.get();
   }
 }
