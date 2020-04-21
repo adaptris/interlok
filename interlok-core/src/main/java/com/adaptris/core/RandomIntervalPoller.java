@@ -48,8 +48,23 @@ public class RandomIntervalPoller extends FixedIntervalPoller {
   protected void scheduleTask() {
     if (executor != null && !executor.isShutdown()) {
       long delay = ThreadLocalRandom.current().nextLong(pollInterval());
-      pollerTask = executor.schedule(new MyPollerTask(), delay, TimeUnit.MILLISECONDS);
-      log.trace("Next Execution scheduled in {}ms", delay);
+      
+      if(delay < 5000L) {
+        pollerTask = executor.schedule(new MyPollerTask(), TimeUnit.MILLISECONDS.toMillis(delay), TimeUnit.MILLISECONDS);
+        log.trace("Next Execution scheduled in {}ms", TimeUnit.MILLISECONDS.toMillis(delay));
+      }
+      else if((delay >= 5000L) && (delay <= 120000L)) {
+        pollerTask = executor.schedule(new MyPollerTask(), TimeUnit.MILLISECONDS.toSeconds(delay), TimeUnit.SECONDS);
+        log.trace("Next Execution scheduled in {}s",TimeUnit.MILLISECONDS.toSeconds(delay));
+      }
+      else if ((delay > 120000L) && (delay <= 7200000L)) {
+        pollerTask = executor.schedule(new MyPollerTask(), TimeUnit.MILLISECONDS.toMinutes(delay), TimeUnit.MINUTES);
+        log.trace("Next Execution scheduled in {}m",TimeUnit.MILLISECONDS.toMinutes(delay));
+      }
+      else {
+        pollerTask = executor.schedule(new MyPollerTask(), TimeUnit.MILLISECONDS.toHours(delay), TimeUnit.HOURS);
+        log.trace("Next Execution scheduled in {}h", TimeUnit.MILLISECONDS.toHours(delay));
+      }
     }
   }
 
