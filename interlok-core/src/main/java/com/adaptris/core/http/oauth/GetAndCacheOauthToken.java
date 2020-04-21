@@ -106,8 +106,11 @@ public class GetAndCacheOauthToken extends OauthTokenGetter implements Connected
       String key = msg.resolve(getCacheKey());
       AccessToken token = (AccessToken) cache.get(key);
       if (token == null) {
+        log.trace("[{}] not found in cache; requesting new token", key);
         token = getAccessTokenBuilder().build(msg);
         addToCache(cache, key, token);
+      } else {
+        log.trace("[{}] found in cache", key);
       }
       tokenWriterToUse().apply(token, msg);
     } catch (Exception e) {

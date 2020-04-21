@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
@@ -151,8 +152,8 @@ public class GetAndCacheOauthTokenTest extends HttpServiceExample {
     }
 
     private AccessToken rebuild() {
-      AccessToken t = new AccessToken(baseToken.getType(), baseToken.getToken()).withRefreshToken(baseToken.getRefreshToken());
-      t.setExpiry("" + expiresIn);
+      AccessToken t = new AccessToken(baseToken.getType(), baseToken.getToken()).withRefreshToken(baseToken.getRefreshToken())
+          .withExpiry(new Date(System.currentTimeMillis() + expiresIn));
       return t;
     }
   }

@@ -99,6 +99,11 @@ public class AccessToken implements Serializable {
     return this;
   }
 
+  public AccessToken withExpiry(Date d) {
+    return withExpiry(DateFormatUtil.format(d));
+  }
+
+
   public String getRefreshToken() {
     return refreshToken;
   }
