@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Adaptris Ltd.
+ * Copyright 2020 Adaptris Ltd.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,27 +43,52 @@ public class RandomIntervalPoller extends FixedIntervalPoller {
   public RandomIntervalPoller(TimeInterval interval) {
     super(interval);
   }
+  
+  private long millToMill(long milliseconds) {
+    return TimeUnit.MILLISECONDS.toMillis(milliseconds);
+  }
+  
+  private long millToSec(long milliseconds) {
+    return TimeUnit.MILLISECONDS.toSeconds(milliseconds);
+  }
+  
+  private long millToMin(long milliseconds) {
+    return TimeUnit.MILLISECONDS.toMinutes(milliseconds);
+  }
+  
+  private long millToHour(long milliseconds) {
+    return TimeUnit.MILLISECONDS.toHours(milliseconds);
+  }
+  
+  private long residualTime(String measure, long millis) {
+    if(measure == "minutes") {
+      return millToMin(millis) - (millToHour(millis) * 60);
+    }
+    else if(measure == "seconds"){
+      return millToSec(millis) - (millToMin(millis) * 60);
+    }
+    else {
+      return millToMill(millis) - (millToSec(millis) * 1000);
+    }
+  }  
 
   @Override
   protected void scheduleTask() {
     if (executor != null && !executor.isShutdown()) {
       long delay = ThreadLocalRandom.current().nextLong(pollInterval());
+      pollerTask = executor.schedule(new MyPollerTask(), delay, TimeUnit.MILLISECONDS);
       
       if(delay < 5000L) {
-        pollerTask = executor.schedule(new MyPollerTask(), TimeUnit.MILLISECONDS.toMillis(delay), TimeUnit.MILLISECONDS);
-        log.trace("Next Execution scheduled in {}ms", TimeUnit.MILLISECONDS.toMillis(delay));
+        log.trace("Next Execution scheduled in {}ms", millToMill(delay));
       }
       else if((delay >= 5000L) && (delay <= 120000L)) {
-        pollerTask = executor.schedule(new MyPollerTask(), TimeUnit.MILLISECONDS.toSeconds(delay), TimeUnit.SECONDS);
-        log.trace("Next Execution scheduled in {}s",TimeUnit.MILLISECONDS.toSeconds(delay));
+        log.trace("Next Execution scheduled in {}s", millToSec(delay));
       }
       else if ((delay > 120000L) && (delay <= 7200000L)) {
-        pollerTask = executor.schedule(new MyPollerTask(), TimeUnit.MILLISECONDS.toMinutes(delay), TimeUnit.MINUTES);
-        log.trace("Next Execution scheduled in {}m",TimeUnit.MILLISECONDS.toMinutes(delay));
+        log.trace("Next Execution scheduled in: {}m {}s",millToMin(delay), residualTime("seconds", delay));
       }
       else {
-        pollerTask = executor.schedule(new MyPollerTask(), TimeUnit.MILLISECONDS.toHours(delay), TimeUnit.HOURS);
-        log.trace("Next Execution scheduled in {}h", TimeUnit.MILLISECONDS.toHours(delay));
+        log.trace("Next Execution scheduled in: {}h {}m", millToHour(delay), residualTime("minutes", delay));
       }
     }
   }
