@@ -1,11 +1,6 @@
 package com.adaptris.core.services.cache;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
@@ -13,6 +8,8 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.UnresolvedMetadataException;
 import com.adaptris.core.cache.Cache;
+import com.adaptris.core.cache.CacheExpiry;
+import com.adaptris.core.cache.CacheExpiry.Expiry;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.TimeInterval;
 import com.adaptris.util.text.DateFormatUtil;
@@ -37,13 +34,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"connection", "key", "valueTranslator", "expiry"})
 public class AddValueToCache extends SingleKeyValueCacheImpl {
 
-  private static final List<ExpiryParser> EXPIRY_PARSERS =
-      Collections.unmodifiableList(
-          Arrays.asList(new ExpiryParser[] {
-          (val) -> build(val),
-          (val) -> build(DateFormatUtil.parse(val, null))
-      }));
-
   @InputFieldHint(expression = true)
   private String expiry;
 
@@ -51,13 +41,13 @@ public class AddValueToCache extends SingleKeyValueCacheImpl {
   public void doService(AdaptrisMessage msg) throws ServiceException {
     try {
       Cache cache = retrieveCache();
-      Optional<ExpiryWrapper> hasExpiry = buildExpiry(msg);
+      Optional<Expiry> hasExpiry = buildExpiry(msg);
       String cacheKey = msg.resolve(getKey());
       // should be hasExpiry.ifPresentOrElse() once we goto J11...
       if (hasExpiry.isPresent()) {
-        TimeInterval expiryInterval = hasExpiry.get().asInterval();
+        TimeInterval expiryInterval = hasExpiry.get().expiresIn();
         log.trace("[{}] will expire in {}", cacheKey, expiryInterval);
-        cache.put(cacheKey, getValueTranslator().getValueFromMessage(msg), hasExpiry.get().asInterval());
+        cache.put(cacheKey, getValueTranslator().getValueFromMessage(msg), hasExpiry.get().expiresIn());
       } else {
         log.trace("Expiry for [{}] taken from cache settings", cacheKey);
         cache.put(cacheKey, getValueTranslator().getValueFromMessage(msg));
@@ -67,11 +57,10 @@ public class AddValueToCache extends SingleKeyValueCacheImpl {
     }
   }
 
-  private Optional<ExpiryWrapper> buildExpiry(AdaptrisMessage msg) {
+  private Optional<Expiry> buildExpiry(AdaptrisMessage msg) {
     try {
       final String value = msg.resolve(getExpiry());
-      return
-          EXPIRY_PARSERS.stream().map((p) -> p.parse(value)).filter((o) -> o.isPresent()).findFirst().orElse(Optional.empty());
+      return CacheExpiry.buildExpiry(value);
     } catch (UnresolvedMetadataException e) {
       return Optional.empty();
     }
@@ -84,16 +73,6 @@ public class AddValueToCache extends SingleKeyValueCacheImpl {
 
   public String getExpiry() {
     return expiry;
-  }
-
-  private static Optional<ExpiryWrapper> build(final Date date) {
-    return Optional.ofNullable(date).map(d -> Optional.of(new ExpiryWrapper(d))).orElse(Optional.empty());
-  }
-
-  private static Optional<ExpiryWrapper> build(final String millis) {
-    // don't use NumberUtils since we don't want to support a - number...
-    return Optional.ofNullable(millis).filter(t -> t.chars().allMatch(c -> c >= '0' && c <= '9'))
-        .map(t -> Optional.of(new ExpiryWrapper(Long.parseLong(t)))).orElse(Optional.empty());
   }
 
   /**
@@ -115,36 +94,5 @@ public class AddValueToCache extends SingleKeyValueCacheImpl {
    */
   public void setExpiry(String s) {
     this.expiry = s;
-  }
-
-  // Can't do an array of generic functions so new Function<String,Optional<ExpiryWrapper>>[] isn't loved by the
-  // compiler. This is basically a Function though.
-  @FunctionalInterface
-  private static interface ExpiryParser {
-    Optional<ExpiryWrapper> parse(String s);
-  }
-
-  private static class ExpiryWrapper {
-    private transient TimeInterval expiry;
-
-    public ExpiryWrapper(long absoluteOrRelativeMs) {
-      long now = System.currentTimeMillis();
-      if (absoluteOrRelativeMs < now) {
-        expiry = new TimeInterval(absoluteOrRelativeMs, TimeUnit.MILLISECONDS);
-      } else {
-        expiry = new TimeInterval(absoluteOrRelativeMs - now, TimeUnit.MILLISECONDS);
-      }
-    }
-
-    public ExpiryWrapper(Date futureDate) {
-      Date now = new Date();
-      expiry = new TimeInterval(futureDate.getTime() - now.getTime(), TimeUnit.MILLISECONDS);
-    }
-
-    public TimeInterval asInterval() {
-      return expiry;
-    }
-
-
   }
 }

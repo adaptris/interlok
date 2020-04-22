@@ -1,23 +1,18 @@
 package com.adaptris.core.http.oauth;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import java.io.IOException;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import org.apache.commons.lang3.StringUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.core.util.LoggingHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -32,78 +27,52 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Make a HTTP(s) request to an OAUTH server and retrieve an access token", tag = "service,http,https,oauth")
 @DisplayOrder(order =
 {
-    "tokenKey", "accessTokenBuilder", "tokenExpiryKey", "refreshTokenKey"
+    "accessTokenBuilder", "accessTokenWriter"
 })
-public class GetOauthToken extends ServiceImp {
+public class GetOauthToken extends OauthTokenGetter {
 
-  @NotBlank
   @AffectsMetadata
   @InputFieldDefault(value = "Authorization")
+  @Deprecated
+  @Removal(version = "3.12.0", message = "Use a access-token-writer instead")
   private String tokenKey;
   @AffectsMetadata
   @AdvancedConfig
+  @Deprecated
+  @Removal(version = "3.12.0", message = "Use a access-token-writer instead")
   private String tokenExpiryKey;
   @AffectsMetadata
   @AdvancedConfig
+  @Deprecated
+  @Removal(version = "3.12.0", message = "Use a access-token-writer instead")
   private String refreshTokenKey;
 
-  @NotNull
-  @Valid
-  private AccessTokenBuilder accessTokenBuilder;
+  private transient boolean warningLogged = false;
 
   public GetOauthToken() {
-    setTokenKey("Authorization");
   }
 
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     try {
       AccessToken token = getAccessTokenBuilder().build(msg);
-      String tokenMetadataValue = String.format("%s %s", token.getType(), token.getToken());
-      msg.addMessageHeader(getTokenKey(), tokenMetadataValue);
-      if (!isBlank(getTokenExpiryKey()) && !isBlank(token.getExpiry())) {
-        msg.addMessageHeader(getTokenExpiryKey(), token.getExpiry());
-      }
-      if (!isBlank(getRefreshTokenKey()) && !isBlank(token.getRefreshToken())) {
-        msg.addMessageHeader(getRefreshTokenKey(), token.getRefreshToken());
-      }
+      tokenWriterToUse().apply(token, msg);
     }
-    catch (CoreException | IOException e) {
+    catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);
     }
   }
 
   @Override
-  public void prepare() throws CoreException {
-    try {
-      Args.notNull(getAccessTokenBuilder(), "accessTokenBuilder");
-      LifecycleHelper.prepare(getAccessTokenBuilder());
+  protected AccessTokenWriter tokenWriterIfNull() {
+    if (getAccessTokenWriter() == null) {
+      LoggingHelper.logWarning(warningLogged, () -> warningLogged = true,
+          "Use of token-key/token-expiry/refresh-key is deprecated; use an access-token-writer instead");
+      return new MetadataAccessTokenWriter().withTokenKey(StringUtils.defaultIfBlank(getTokenKey(), "Authorization"))
+          .withTokenExpiryKey(getTokenExpiryKey())
+          .withRefreshTokenKey(getRefreshTokenKey());
     }
-    catch (Exception e) {
-      throw ExceptionHelper.wrapCoreException(e);
-    }
-  }
-
-  @Override
-  protected void initService() throws CoreException {
-    LifecycleHelper.init(getAccessTokenBuilder());
-  }
-
-  @Override
-  public void start() throws CoreException {
-    super.start();
-    LifecycleHelper.start(getAccessTokenBuilder());
-  }
-
-  @Override
-  public void stop() {
-    super.stop();
-    LifecycleHelper.stop(getAccessTokenBuilder());
-  }
-
-  @Override
-  protected void closeService() {
-    LifecycleHelper.close(getAccessTokenBuilder());
+    return super.tokenWriterIfNull();
   }
 
   public GetOauthToken withTokenKey(String b) {
@@ -112,6 +81,8 @@ public class GetOauthToken extends ServiceImp {
   }
 
 
+  @Deprecated
+  @Removal(version = "3.12.0", message = "Use a access-token-writer instead")
   public String getTokenKey() {
     return tokenKey;
   }
@@ -121,58 +92,49 @@ public class GetOauthToken extends ServiceImp {
    * 
    * @param key the key.
    */
+  @Deprecated
+  @Removal(version = "3.12.0", message = "Use a access-token-writer instead")
   public void setTokenKey(String key) {
     this.tokenKey = Args.notBlank(key, "tokenMetadataKey");
   }
 
 
+  @Deprecated
+  @Removal(version = "3.12.0", message = "Use a access-token-writer instead")
   public GetOauthToken withTokenExpiryKey(String b) {
     setTokenExpiryKey(b);
     return this;
   }
 
+  @Deprecated
+  @Removal(version = "3.12.0", message = "Use a access-token-writer instead")
   public String getTokenExpiryKey() {
     return tokenExpiryKey;
   }
 
   /**
-   * Set the metadata key for storing the expiry date (ISO8601 style).
+   * Set the metadata key for storing the expiry
    * <p>
    * In some cases, there is no expiry date for a token, in which case, the metadata key will never be set even if configured.
    * </p>
    * 
    * @param key key.
    */
+  @Deprecated
+  @Removal(version = "3.12.0", message = "Use a access-token-writer instead")
   public void setTokenExpiryKey(String key) {
     this.tokenExpiryKey = Args.notBlank(key, "tokenExpiryKey");
   }
 
-
-  public GetOauthToken withAccessTokenBuilder(AccessTokenBuilder b) {
-    setAccessTokenBuilder(b);
-    return this;
-  }
-
-  public AccessTokenBuilder getAccessTokenBuilder() {
-    return accessTokenBuilder;
-  }
-
-
-  /**
-   * Set the access token builder.
-   * 
-   * @param b the builder.
-   */
-  public void setAccessTokenBuilder(AccessTokenBuilder b) {
-    this.accessTokenBuilder = Args.notNull(b, "accessTokenBuilder");
-  }
-
-
+  @Deprecated
+  @Removal(version = "3.12.0", message = "Use a access-token-write instead")
   public GetOauthToken withRefreshTokenKey(String refreshMetadataKey) {
     setRefreshTokenKey(refreshMetadataKey);
     return this;
   }
 
+  @Deprecated
+  @Removal(version = "3.12.0", message = "Use a access-token-write instead")
   public String getRefreshTokenKey() {
     return refreshTokenKey;
   }
@@ -185,8 +147,9 @@ public class GetOauthToken extends ServiceImp {
    * 
    * @param key key.
    */
+  @Deprecated
+  @Removal(version = "3.12.0", message = "Use a access-token-write instead")
   public void setRefreshTokenKey(String key) {
     this.refreshTokenKey = key;
   }
-
 }
