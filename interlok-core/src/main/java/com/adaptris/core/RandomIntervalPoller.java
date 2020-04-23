@@ -51,7 +51,15 @@ public class RandomIntervalPoller extends FixedIntervalPoller {
     if (executor != null && !executor.isShutdown()) {
       long delay = ThreadLocalRandom.current().nextLong(pollInterval());
       pollerTask = executor.schedule(new MyPollerTask(), delay, TimeUnit.MILLISECONDS);
-      log.trace("Next Execution scheduled in {}", DurationFormatUtils.formatDuration(delay, "HH'h' mm'm' ss's' SSS'ms'"));
+      if(delay >= 3600000L) {
+        log.trace("Next Execution scheduled in {}", DurationFormatUtils.formatDuration(delay, "HH'h' mm'm' ss's' SSS'ms'"));
+      }
+      else if(delay < 60000L){
+        log.trace("Next Execution scheduled in {}", DurationFormatUtils.formatDuration(delay, "ss's' SSS'ms'"));
+      }
+      else {
+        log.trace("Next Execution scheduled in {}", DurationFormatUtils.formatDuration(delay, "mm'm' ss's' SSS'ms'"));
+      }
     }
   }
 
