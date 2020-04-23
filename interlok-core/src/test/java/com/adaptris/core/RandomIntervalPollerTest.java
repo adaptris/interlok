@@ -68,39 +68,4 @@ public class RandomIntervalPollerTest extends BaseCase {
     }
   }
 
-  @Test
-  public void testAlternativeTimeIntervals() throws Exception {
-    PollingTrigger consumer = new PollingTrigger();
-    consumer.setPoller(new RandomIntervalPoller(new TimeInterval(9000L, TimeUnit.MILLISECONDS)));
-    MockMessageProducer producer = new MockMessageProducer();
-
-    MockChannel channel = new MockChannel();
-    StandardWorkflow workflow = new StandardWorkflow();
-    workflow.setConsumer(consumer);
-    workflow.setProducer(producer);
-    channel.getWorkflowList().add(workflow);
-    try {
-      channel.requestStop();
-      consumer.setPoller(new RandomIntervalPoller(new TimeInterval(72001L, TimeUnit.MILLISECONDS)));
-      channel.requestStart();
-      waitForMessages(producer, 1);
-
-      channel.requestStop();
-      producer.getMessages().clear();
-      consumer.setPoller(new RandomIntervalPoller(new TimeInterval(7200000L, TimeUnit.MILLISECONDS)));
-      channel.requestStart();
-      waitForMessages(producer, 1);
-
-      channel.requestStop();
-      producer.getMessages().clear();
-      consumer.setPoller(new RandomIntervalPoller(new TimeInterval(72000001L, TimeUnit.MILLISECONDS)));
-      channel.requestStart();
-      waitForMessages(producer, 1);
-
-    }
-    finally {
-      channel.requestClose();
-    }
-  }
-
 }
