@@ -24,7 +24,6 @@ import com.adaptris.util.TimeInterval;
 
 public class RandomIntervalPollerTest extends BaseCase {
 
-
   @Override
   public boolean isAnnotatedForJunit4() {
     return true;
@@ -34,7 +33,6 @@ public class RandomIntervalPollerTest extends BaseCase {
   public void testSetConstructors() throws Exception {
     RandomIntervalPoller p = new RandomIntervalPoller();
     p = new RandomIntervalPoller(new TimeInterval(10L, TimeUnit.SECONDS));
-    
   }
 
   @Test
@@ -69,7 +67,7 @@ public class RandomIntervalPollerTest extends BaseCase {
       channel.requestClose();
     }
   }
-  
+
   @Test
   public void testAlternativeTimeIntervals() throws Exception {
     PollingTrigger consumer = new PollingTrigger();
@@ -82,44 +80,34 @@ public class RandomIntervalPollerTest extends BaseCase {
     workflow.setProducer(producer);
     channel.getWorkflowList().add(workflow);
     try {
-      
       channel.requestStop();
       consumer.setPoller(new RandomIntervalPoller(new TimeInterval(72001L, TimeUnit.MILLISECONDS)));
       channel.requestStart();
       waitForMessages(producer, 1);
-      
 
       channel.requestStop();
       producer.getMessages().clear();
-      
-      channel.requestClose();
       channel.requestStart();
       waitForMessages(producer, 1);
-      
-      
 
       channel.requestStop();
       producer.getMessages().clear();
-      
       consumer.setPoller(new RandomIntervalPoller(new TimeInterval(7200000L, TimeUnit.MILLISECONDS)));
 
       channel.requestStart();
       waitForMessages(producer, 1);
 
-      channel.requestClose();
+      channel.requestStop();
       producer.getMessages().clear();
       consumer.setPoller(new RandomIntervalPoller(new TimeInterval(72000001L, TimeUnit.MILLISECONDS)));
 
       channel.requestStart();
       waitForMessages(producer, 1);
-      
+
     }
     finally {
       channel.requestClose();
     }
   }
- 
-  
-  
 
 }
