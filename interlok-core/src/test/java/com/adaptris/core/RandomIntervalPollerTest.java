@@ -87,20 +87,13 @@ public class RandomIntervalPollerTest extends BaseCase {
 
       channel.requestStop();
       producer.getMessages().clear();
-      channel.requestStart();
-      waitForMessages(producer, 1);
-
-      channel.requestStop();
-      producer.getMessages().clear();
       consumer.setPoller(new RandomIntervalPoller(new TimeInterval(7200000L, TimeUnit.MILLISECONDS)));
-
       channel.requestStart();
       waitForMessages(producer, 1);
 
       channel.requestStop();
       producer.getMessages().clear();
       consumer.setPoller(new RandomIntervalPoller(new TimeInterval(72000001L, TimeUnit.MILLISECONDS)));
-
       channel.requestStart();
       waitForMessages(producer, 1);
 
