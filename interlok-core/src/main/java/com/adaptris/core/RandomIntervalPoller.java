@@ -16,6 +16,8 @@
 
 package com.adaptris.core;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
@@ -51,15 +53,10 @@ public class RandomIntervalPoller extends FixedIntervalPoller {
     if (executor != null && !executor.isShutdown()) {
       long delay = ThreadLocalRandom.current().nextLong(pollInterval());
       pollerTask = executor.schedule(new MyPollerTask(), delay, TimeUnit.MILLISECONDS);
-      if(delay >= 3600000L) {
-        log.trace("Next Execution scheduled in {}", DurationFormatUtils.formatDuration(delay, "HH'h' mm'm' ss's' SSS'ms'"));
-      }
-      else if(delay < 60000L){
-        log.trace("Next Execution scheduled in {}", DurationFormatUtils.formatDuration(delay, "ss's' SSS'ms'"));
-      }
-      else {
-        log.trace("Next Execution scheduled in {}", DurationFormatUtils.formatDuration(delay, "mm'm' ss's' SSS'ms'"));
-      }
+      Calendar currentTime = Calendar.getInstance();
+      currentTime.add(Calendar.MILLISECOND, (int)delay);
+      SimpleDateFormat approxFormat = new SimpleDateFormat("HH:mm");
+      log.trace("Next Execution scheduled in {} approx {}", DurationFormatUtils.formatDurationWords(delay, true, true), approxFormat.format(currentTime.getTime()));
     }
   }
 
