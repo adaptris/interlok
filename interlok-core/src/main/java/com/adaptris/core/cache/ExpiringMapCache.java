@@ -19,10 +19,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.ObjectUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
@@ -33,13 +32,17 @@ import com.adaptris.core.util.Args;
 import com.adaptris.util.NumberUtils;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
 
 /**
  * Cache implementation backed by {@code net.jodah:expiringmap} hosted on
  * <a href="https://github.com/jhalterman/expiringmap">github</a>.
+ * 
+ * <p>
+ * Note that this implementation supports all the operations defined in {@link Cache} so you can use this if you need per-item
+ * expiry and other features.
+ * </p>
  * 
  * @config expiring-map-cache
  */
@@ -72,19 +75,7 @@ public class ExpiringMapCache implements Cache {
   @Override
   public void init() throws CoreException {
     cache = ExpiringMap.builder().maxSize(maxEntries()).asyncExpirationListener(getEventListener())
-        .expirationPolicy(expirationPolicy()).expiration(expiration(), TimeUnit.MILLISECONDS).build();
-  }
-
-  @Override
-  public void start() throws CoreException {
-  }
-
-  @Override
-  public void stop() {
-  }
-
-  @Override
-  public void close() {
+        .expirationPolicy(expirationPolicy()).expiration(expiration(), TimeUnit.MILLISECONDS).variableExpiration().build();
   }
 
   @Override
@@ -95,6 +86,32 @@ public class ExpiringMapCache implements Cache {
   @Override
   public void put(String key, Object value) throws CoreException {
     cache.put(key, value);
+  }
+
+  /**
+   * Put an object into the cache with a specific expiration.
+   * <p>
+   * Note that the underlying behaviour is to explicitly set the {@link ExpirationPolicy} to be {@code CREATED} for the object
+   * overriding whatever has been configured as part of the cache itself.
+   * </p>
+   */
+  @Override
+  public void put(String key, Object value, long ttl) throws CoreException {
+    // Make sure the expiration policy is CREATED.
+    cache.put(key, value, ExpirationPolicy.CREATED, ttl, TimeUnit.MILLISECONDS);
+  }
+
+  /**
+   * Put an object into the cache with a specific expiration.
+   * <p>
+   * Note that the underlying behaviour is to explicitly set the {@link ExpirationPolicy} to be {@code CREATED} for the object
+   * overriding whatever has been configured as part of the cache itself.
+   * </p>
+   */
+  @Override
+  public void put(String key, Serializable value, long ttl) throws CoreException {
+    // Make sure the expiration policy is CREATED.
+    cache.put(key, value, ExpirationPolicy.CREATED, ttl, TimeUnit.MILLISECONDS);
   }
 
   @Override
@@ -163,7 +180,7 @@ public class ExpiringMapCache implements Cache {
   }
 
   public ExpirationPolicy expirationPolicy() {
-    return getExpirationPolicy() != null ? getExpirationPolicy() : ExpirationPolicy.ACCESSED;
+    return ObjectUtils.defaultIfNull(getExpirationPolicy(), ExpirationPolicy.ACCESSED);
   }
 
   public ExpiringMapCache withMaxEntries(Integer i) {

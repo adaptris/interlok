@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -59,7 +59,7 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  * However calling <b>addMetadata("$$myKey", "myValue")</b> will lookup the value of the metadata key named "myKey" and use that
  * value as the key for the addMetadata() method.
  * </p>
- * 
+ *
  *
  * @see DefaultMessageFactory
  * @see AdaptrisMessageFactory
@@ -394,11 +394,11 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     if (s == null) {
       return null;
     }
-    // see if there are any external resolvers before processing any %message{…}'s
+    // see if there are any external resolvers before processing any %message{...}'s
     s = ExternalResolver.resolve(s, this);
     return resolve(s, dotAll ? dotAllResolver : normalResolver);
   }
-  
+
   private String resolve(String s, Pattern pattern) {
     String result = s;
     Matcher m = pattern.matcher(s);
@@ -531,15 +531,15 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     }
     return null;
   }
-  
+
   private class ContentEncodingOnClose extends OutputStreamWriter {
     private String charset;
-    
+
     public ContentEncodingOnClose(OutputStream out, String charsetName) throws UnsupportedEncodingException {
       super(out, charsetName);
       this.charset = charsetName;
     }
-    
+
     @Override
     public void close() throws IOException {
       super.close();

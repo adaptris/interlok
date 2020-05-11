@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.jms.MessageConsumer;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -58,11 +59,7 @@ public class JmsConsumerTest extends JmsConsumerCase {
 
   @Test
   public void testDeferConsumerCreationToVendor() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
 
     when(mockVendor.createConsumer(any(), any(), any(JmsActorConfig.class))).thenReturn(mockMessageConsumer);
@@ -104,11 +101,8 @@ public class JmsConsumerTest extends JmsConsumerCase {
 
   @Test
   public void testDefaultFalseDeferConsumerCreationToVendor() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
 
     when(mockVendor.createConsumer(any(JmsDestination.class), any(String.class), any(JmsActorConfig.class)))
@@ -152,11 +146,8 @@ public class JmsConsumerTest extends JmsConsumerCase {
 
   @Test
   public void testDurableTopicConsume() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String rfc6167 = "jms:topic:" + getName() + "?subscriptionId=" + getName();
 
@@ -183,11 +174,8 @@ public class JmsConsumerTest extends JmsConsumerCase {
 
   @Test
   public void testSharedDurableTopicConsume() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedArtemis activeMqBroker = new EmbeddedArtemis();
     String rfc6167 = "jms:topic:" + getName() + "?subscriptionId=MySubId&sharedConsumerId=" + getName();
 
@@ -214,11 +202,8 @@ public class JmsConsumerTest extends JmsConsumerCase {
 
   @Test
   public void testSharedTopicConsume() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedArtemis activeMqBroker = new EmbeddedArtemis();
     String rfc6167 = "jms:topic:" + getName() + "?sharedConsumerId=" + getName();
 
@@ -245,11 +230,8 @@ public class JmsConsumerTest extends JmsConsumerCase {
 
   @Test
   public void testTopicConsume() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String rfc6167 = "jms:topic:" + getName();
 
@@ -276,11 +258,8 @@ public class JmsConsumerTest extends JmsConsumerCase {
 
   @Test
   public void testQueueConsume() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
+    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String rfc6167 = "jms:queue:" + getName();
 

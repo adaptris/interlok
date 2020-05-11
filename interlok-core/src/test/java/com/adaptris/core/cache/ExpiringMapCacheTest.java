@@ -14,24 +14,21 @@
  * limitations under the License.
 */
 package com.adaptris.core.cache;
-
 import static com.adaptris.core.util.LifecycleHelper.initAndStart;
 import static com.adaptris.core.util.LifecycleHelper.stopAndClose;
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
-
 import net.jodah.expiringmap.ExpirationPolicy;
 
 public class ExpiringMapCacheTest {
@@ -187,12 +184,41 @@ public class ExpiringMapCacheTest {
       cache.put("three", "3");
       cache.put("four", "4");
       cache.put("five", "5");
-      LifecycleHelper.waitQuietly(1000);
-      assertTrue(listener.expiredItems > 1);
-      assertEquals(0, removedListener.expiredItems);
+
+      await()
+          .atMost(Duration.ofSeconds(1))
+          .with()
+          .pollInterval(Duration.ofMillis(100))
+          .until(listener::expiredCount, greaterThanOrEqualTo(2));
+      assertTrue(listener.expiredCount() > 1);
+      assertEquals(0, removedListener.expiredCount());
 
     }
     finally {
+      stopAndClose(cache);
+    }
+  }
+
+  @Test
+  public void testPut_WithExpiration() throws Exception {
+    TimeInterval expiry = new TimeInterval(250L, TimeUnit.MILLISECONDS);
+    MyCacheEventListener listener = new MyCacheEventListener();
+    ExpiringMapCache cache = new ExpiringMapCache().withExpirationPolicy(ExpirationPolicy.ACCESSED);
+    cache.getEventListener().addEventListener(listener);
+    initAndStart(cache);
+    try {
+      cache.put("one", "1", expiry);
+      cache.put("object", new Object(), expiry);
+      
+      // Default expiration is > 5 seconds.
+      await()
+          .atMost(Duration.ofSeconds(5))
+          .with()
+          .pollInterval(Duration.ofMillis(100))
+          .until(listener::expiredCount, greaterThanOrEqualTo(2));
+      
+      assertEquals(0, cache.size());
+    } finally {
       stopAndClose(cache);
     }
   }

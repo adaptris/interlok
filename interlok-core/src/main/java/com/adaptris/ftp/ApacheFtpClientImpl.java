@@ -278,7 +278,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
   private List<File> toFileList(FTPFile... files) {
     ArrayList<File> result = new ArrayList<>();
     for (FTPFile f : files) {
-      result.add(new RemoteFile.Builder().setPath(f.getName()).setIsDirectory(f.isDirectory()).setIsDirectory(f.isFile())
+      result.add(new RemoteFile.Builder().setPath(f.getName()).setIsDirectory(f.isDirectory()).setIsFile(f.isFile())
           .setLastModified(f.getTimestamp().getTimeInMillis()).setLength(f.getSize()).build());
     }
     return result;

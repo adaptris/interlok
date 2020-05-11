@@ -100,7 +100,7 @@ public class FromPayloadUsingXPath extends ResolverImp
   /**
    * Can this resolver handle this type of value.
    *
-   * @param value the value e.g. {@code %payload{xpath:…}}
+   * @param value the value e.g. {@code %payload{xpath:...}}
    *
    * @return True if the value will provide matches, false otherwise.
    */

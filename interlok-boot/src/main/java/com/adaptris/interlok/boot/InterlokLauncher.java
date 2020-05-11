@@ -66,6 +66,7 @@ public class InterlokLauncher extends Launcher {
   private static final boolean DEBUG = Boolean.getBoolean("adp.bootstrap.debug") || Boolean.getBoolean("interlok.bootstrap.debug");
 
   static final String INTERLOK_MAIN_CLASS = "com.adaptris.core.management.SimpleBootstrap";
+  static final String JETTY_ONLY_MAIN_CLASS = "com.adaptris.core.management.NoAdapterBootstrap";
   static final String INTERLOK_FAILOVER_MAIN_CLASS = "com.adaptris.failover.SimpleBootstrap";
   static final String INTERLOK_CONTAINER_MAIN_CLASS = "com.adaptris.management.aar.SimpleBootstrap";
   static final String SERVICE_TEST_MAIN_CLASS = "com.adaptris.tester.runners.TestExecutor";
@@ -94,6 +95,10 @@ public class InterlokLauncher extends Launcher {
   private static final String[] ARG_PASSWORD = new String[]
       {
           "-password", "--password"
+      };
+  private static final String[] ARG_JETTY_ONLY = new String[]
+      {
+          "-jettyonly", "--jettyonly", "-jetty-only", "--jetty-only"
       };
 
 
@@ -130,6 +135,12 @@ public class InterlokLauncher extends Launcher {
         return cmdLine.hasArgument(ARG_PASSWORD);
       }
 
+    },
+    JETTY_ONLY(JETTY_ONLY_MAIN_CLASS) {
+      @Override
+      boolean matches(CommandLineArgs cmdLine) {
+        return cmdLine.hasArgument(ARG_JETTY_ONLY);
+      }
     },
     // Last so it's the default.
     INTERLOK(INTERLOK_MAIN_CLASS) {

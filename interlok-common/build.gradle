@@ -10,11 +10,11 @@ dependencies {
   compile ("commons-io:commons-io:2.6")
   compile ("commons-net:commons-net:3.6")
   compile ("commons-pool:commons-pool:1.6")
-  compile ("org.apache.commons:commons-lang3:3.9")
+  compile ("org.apache.commons:commons-lang3:3.10")
   compile ("org.apache.commons:commons-pool2:2.8.0")
 
   compile ("org.slf4j:slf4j-api:$slf4jVersion")
-  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.26.v20200117")
+  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.28.v20200408")
   compile ("javax.servlet:javax.servlet-api:4.0.1")
 
   annotationProcessor project(':interlok-core-apt')

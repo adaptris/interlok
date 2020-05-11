@@ -16,9 +16,12 @@
 
 package com.adaptris.util;
 
+import java.util.Arrays;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-
+import org.apache.commons.lang3.ObjectUtils;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -32,8 +35,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("time-interval")
 @DisplayOrder(order = {"interval", "unit"})
 public class TimeInterval {
-
+  @InputFieldDefault(value = "SECONDS")
   private TimeUnit unit;
+  @InputFieldDefault(value = "10")
   private Long interval;
 
   private static final long DEFAULT_INTERVAL = 10L;
@@ -52,19 +56,13 @@ public class TimeInterval {
   }
 
   public long toMilliseconds() {
-    TimeUnit unit = getUnit() != null ? getUnit() : DEFAULT_UNIT;
-    return unit.toMillis(getInterval() != null ? getInterval().longValue() : DEFAULT_INTERVAL);
+    return ObjectUtils.defaultIfNull(getUnit(), DEFAULT_UNIT)
+        .toMillis(NumberUtils.toLongDefaultIfNull(getInterval(), DEFAULT_INTERVAL));
   }
 
   private static TimeUnit parse(String s) {
-    TimeUnit result = TimeUnit.SECONDS;
-    for (TimeUnit tu : TimeUnit.values()) {
-      if (tu.name().equalsIgnoreCase(s)) {
-        result = tu;
-        break;
-      }
-    }
-    return result;
+    Optional<TimeUnit> parsed = Arrays.stream(TimeUnit.values()).filter((t) -> t.name().equalsIgnoreCase(s)).findFirst();
+    return parsed.orElse(TimeUnit.SECONDS);
   }
 
   @Override

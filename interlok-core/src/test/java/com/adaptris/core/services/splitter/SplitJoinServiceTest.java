@@ -28,19 +28,16 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import org.awaitility.Duration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -67,6 +64,8 @@ public class SplitJoinServiceTest {
 
   public static final String XPATH_ENVELOPE = "/envelope";
 
+  protected static final Duration ONE_HUNDRED_MILLISECONDS = Duration.ofMillis(100);
+  protected static final Duration FIVE_SECONDS = Duration.ofSeconds(5);
 
   @Rule
   public TestName testName = new TestName();
@@ -297,12 +296,10 @@ public class SplitJoinServiceTest {
     service.setSplitter(new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8));
     service.setAggregator(new XmlDocumentAggregator(new InsertNode(XPATH_ENVELOPE)));
     execute(service, msg);
-    
     await()
-        .atLeast(Duration.ONE_HUNDRED_MILLISECONDS)
-        .atMost(Duration.FIVE_SECONDS)
-      .with()
-        .pollInterval(Duration.ONE_HUNDRED_MILLISECONDS)
+        .atMost(FIVE_SECONDS)
+        .with()
+        .pollInterval(ONE_HUNDRED_MILLISECONDS)
         .until(eventProducer::messageCount, equalTo(3));
 
     assertTrue(eventProducer.getMessages().size() > 0);

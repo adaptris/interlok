@@ -191,7 +191,7 @@ public class XmlTransformService extends ServiceImp {
     }
   }
 
-  private Transformer cacheAndGetTransformer(String urlToUse, XmlTransformerFactory xmlTransformerFactory) throws Exception {
+  protected Transformer cacheAndGetTransformer(String urlToUse, XmlTransformerFactory xmlTransformerFactory) throws Exception {
     if (this.getTransforms().containsKey(urlToUse)) return this.getTransforms().get(urlToUse);
     else {
       Transformer transformer = xmlTransformerFactory.createTransformer(urlToUse);
@@ -352,7 +352,7 @@ public class XmlTransformService extends ServiceImp {
     this.transformParameter = param;
   }
 
-  private XmlTransformParameter getParameterBuilder() {
+  protected XmlTransformParameter getParameterBuilder() {
     return getTransformParameter() != null ? getTransformParameter() : new IgnoreMetadataParameter();
   }
 

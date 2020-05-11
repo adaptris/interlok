@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMessageFactory;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
 public class TimedInactivityRestartStrategyTest {
@@ -64,12 +65,7 @@ public class TimedInactivityRestartStrategyTest {
   public void testExceedsTimeoutNoMessage() throws Exception {
     restartStrategy.setInactivityPeriod(new TimeInterval(1L, "SECONDS"));
     assertFalse(restartStrategy.requiresRestart());
-    
-    try {
-      Thread.sleep(1500);
-    } catch (Exception ex) {
-    }
-    
+    LifecycleHelper.waitQuietly(1500);
     assertTrue(restartStrategy.requiresRestart());
   }
 
@@ -100,17 +96,9 @@ public class TimedInactivityRestartStrategyTest {
     for(int counter = 0; counter < 10; counter ++) {
       restartStrategy.messageProcessed(messageFactory.newMessage());
       assertFalse(restartStrategy.requiresRestart());
-      try {
-        Thread.sleep(200);
-      } catch (Exception ex) {
-      }
+      LifecycleHelper.waitQuietly(200);
     }
-    
-    try {
-      Thread.sleep(1500);
-    } catch (Exception ex) {
-    }
-    
+    LifecycleHelper.waitQuietly(1500);
     assertTrue(restartStrategy.requiresRestart());
   }
 }

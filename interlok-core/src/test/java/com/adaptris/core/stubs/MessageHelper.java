@@ -23,8 +23,12 @@ import java.io.IOException;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMessageFactory;
+import com.adaptris.core.MultiPayloadAdaptrisMessage;
+import com.adaptris.core.MultiPayloadMessageFactory;
 import com.adaptris.core.lms.FileBackedMessage;
 import com.adaptris.util.stream.StreamUtil;
+
+import static org.junit.Assert.assertNotNull;
 
 public class MessageHelper {
 
@@ -43,4 +47,18 @@ public class MessageHelper {
     return createMessage(new DefaultMessageFactory(), filename);
   }
 
+  public static MultiPayloadAdaptrisMessage createMultiPayloadMessage(String payloadId, String filename) throws IOException {
+    return createMultiPayloadMessage(payloadId, filename, null);
+  }
+
+  public static MultiPayloadAdaptrisMessage createMultiPayloadMessage(String payloadId, String filename, String encoding) throws IOException {
+    MultiPayloadMessageFactory factory = new MultiPayloadMessageFactory();
+    factory.setDefaultPayloadId(payloadId);
+    if (encoding != null) {
+      factory.setDefaultCharEncoding(encoding);
+    }
+    MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage)factory.newMessage();
+    StreamUtil.copyAndClose(new FileInputStream(new File(filename)), message.getOutputStream(payloadId));
+    return message;
+  }
 }

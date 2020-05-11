@@ -2,6 +2,8 @@ package com.adaptris.core;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import com.adaptris.annotation.InputFieldHint;
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +39,7 @@ public class AddPayloadService extends ServiceImp {
 
   @Valid
   @NotNull
+  @InputFieldHint(expression=true)
   private String newPayloadId;
 
   @Valid

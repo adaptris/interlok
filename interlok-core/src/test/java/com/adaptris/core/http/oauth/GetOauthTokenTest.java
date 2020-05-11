@@ -23,7 +23,6 @@ import static org.junit.Assert.fail;
 import java.util.Date;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.http.HttpServiceExample;
@@ -46,7 +45,7 @@ public class GetOauthTokenTest extends HttpServiceExample {
       LifecycleHelper.init(service);
       fail();
     }
-    catch (CoreException expected) {
+    catch (Exception expected) {
 
     }
     service.setAccessTokenBuilder(new DummyAccessTokenBuilder());
@@ -54,13 +53,12 @@ public class GetOauthTokenTest extends HttpServiceExample {
   }
 
   @Test
-  public void testService_WithExpiry() throws Exception {
+  public void testService_Legacy_WithExpiry() throws Exception {
     long now = System.currentTimeMillis();
     String expiryDate = DateFormatUtil.format(new Date(now));
 
     AccessToken t = new AccessToken(getName(), now);
-    GetOauthToken service = new GetOauthToken();
-    service.setTokenExpiryKey("expiry");
+    GetOauthToken service = new GetOauthToken().withTokenExpiryKey("expiry");
     service.setAccessTokenBuilder(new DummyAccessTokenBuilder(t));
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
     try {
@@ -77,7 +75,7 @@ public class GetOauthTokenTest extends HttpServiceExample {
   }
 
   @Test
-  public void testService_WithError() throws Exception {
+  public void testService_Legacy_WithError() throws Exception {
     long now = System.currentTimeMillis();
     String expiryDate = DateFormatUtil.format(new Date(now));
 
@@ -96,10 +94,9 @@ public class GetOauthTokenTest extends HttpServiceExample {
   }
 
   @Test
-  public void testService_WithExpiry_NoAccessTokenExpiry() throws Exception {
+  public void testService_Legacy_WithExpiry_NoAccessTokenExpiry() throws Exception {
     AccessToken t = new AccessToken(getName());
-    GetOauthToken service = new GetOauthToken();
-    service.setTokenExpiryKey("expiry");
+    GetOauthToken service = new GetOauthToken().withTokenExpiryKey("expiry");
     service.setAccessTokenBuilder(new DummyAccessTokenBuilder(t));
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
     try {
@@ -115,17 +112,19 @@ public class GetOauthTokenTest extends HttpServiceExample {
   }
 
   @Test
-  public void testService_NoExpiry() throws Exception {
+  public void testService() throws Exception {
     long now = System.currentTimeMillis();
     String expiryDate = DateFormatUtil.format(new Date(now));
 
     AccessToken t = new AccessToken(getName(), now);
-    GetOauthToken service = new GetOauthToken();
+    GetOauthToken service =
+        new GetOauthToken().withAccessTokenWriter(new MetadataAccessTokenWriter().withTokenKey("Authorization"));
     service.setAccessTokenBuilder(new DummyAccessTokenBuilder(t));
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
     try {
       execute(service, msg);
-
+      assertTrue(msg.headersContainsKey("Authorization"));
+      assertEquals("Bearer " + getName(), msg.getMetadataValue("Authorization"));
     }
     finally {
 
@@ -135,10 +134,48 @@ public class GetOauthTokenTest extends HttpServiceExample {
     assertFalse(msg.headersContainsKey("expiry"));
   }
 
+  @Test
+  public void testService_Legacy_WithRefreshToken() throws Exception {
+    AccessToken t = new AccessToken(getName()).withRefreshToken("refreshToken");
+    GetOauthToken service = new GetOauthToken().withTokenKey("Authorization").withRefreshTokenKey("refreshTokenKey")
+        .withAccessTokenBuilder(new DummyAccessTokenBuilder(t));
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
+    try {
+      execute(service, msg);
+
+    } finally {
+
+    }
+    assertTrue(msg.headersContainsKey("Authorization"));
+    assertEquals("Bearer " + getName(), msg.getMetadataValue("Authorization"));
+    assertFalse(msg.headersContainsKey("expiry"));
+    assertEquals("refreshToken", msg.getMetadataValue("refreshTokenKey"));
+  }
+
+  @Test
+  public void testService_Legacy_RefreshToken_NoToken() throws Exception {
+    AccessToken t = new AccessToken(getName());
+    GetOauthToken service = new GetOauthToken().withTokenKey("Authorization").withRefreshTokenKey("refreshTokenKey")
+        .withAccessTokenBuilder(new DummyAccessTokenBuilder(t));
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
+    try {
+      execute(service, msg);
+
+    } finally {
+
+    }
+    assertTrue(msg.headersContainsKey("Authorization"));
+    assertEquals("Bearer " + getName(), msg.getMetadataValue("Authorization"));
+    assertFalse(msg.headersContainsKey("expiry"));
+    assertFalse(msg.headersContainsKey("refreshTokenKey"));
+  }
+
+
+
   @Override
   protected GetOauthToken retrieveObjectForSampleConfig() {
-    GetOauthToken service = new GetOauthToken();
-    service.setAccessTokenBuilder(new DummyAccessTokenBuilder());
+    GetOauthToken service = new GetOauthToken().withAccessTokenWriter(new MetadataAccessTokenWriter())
+        .withAccessTokenBuilder(new DummyAccessTokenBuilder());
     return service;
   }
 
