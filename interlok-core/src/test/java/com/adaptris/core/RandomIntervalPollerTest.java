@@ -22,7 +22,14 @@ import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.util.TimeInterval;
 
+
+
+
 public class RandomIntervalPollerTest extends BaseCase {
+  
+  private long tenMillis = 10L;
+  private long hundredMillis = 100L;
+  private int listenerCount = 1;
 
   @Override
   public boolean isAnnotatedForJunit4() {
@@ -32,13 +39,13 @@ public class RandomIntervalPollerTest extends BaseCase {
   @Test
   public void testSetConstructors() throws Exception {
     RandomIntervalPoller p = new RandomIntervalPoller();
-    p = new RandomIntervalPoller(new TimeInterval(10L, TimeUnit.SECONDS));
+    p = new RandomIntervalPoller(new TimeInterval(tenMillis, TimeUnit.SECONDS));
   }
 
   @Test
   public void testLifecycle() throws Exception {
     PollingTrigger consumer = new PollingTrigger();
-    consumer.setPoller(new RandomIntervalPoller(new TimeInterval(100L, TimeUnit.MILLISECONDS)));
+    consumer.setPoller(new RandomIntervalPoller(new TimeInterval(hundredMillis, TimeUnit.MILLISECONDS)));
     MockMessageProducer producer = new MockMessageProducer();
 
     MockChannel channel = new MockChannel();
@@ -49,19 +56,19 @@ public class RandomIntervalPollerTest extends BaseCase {
     try {
       channel.requestClose();
       channel.requestStart();
-      waitForMessages(producer, 1);
+      waitForMessages(producer, listenerCount);
 
       channel.requestStop();
       producer.getMessages().clear();
 
       channel.requestStart();
-      waitForMessages(producer, 1);
+      waitForMessages(producer, listenerCount);
 
       channel.requestClose();
       producer.getMessages().clear();
 
       channel.requestStart();
-      waitForMessages(producer, 1);
+      waitForMessages(producer, listenerCount);
     }
     finally {
       channel.requestClose();
