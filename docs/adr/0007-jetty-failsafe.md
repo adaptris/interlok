@@ -4,7 +4,7 @@ title: 0007-jetty-failsafe
 ---
 # Allow jetty management component to run w/o any configuration
 
-* Status: Draft
+* Status: Accepted
 * Deciders: Aaron McGrath, Lewin Chan
 * Date: 2020-05-13
 
@@ -50,6 +50,7 @@ So the problem is that we need to be able to start up the jetty management compo
 
 ## Decision Outcome
 
+Embed the jetty.xml into interlok-common.jar and use it if jetty is enabled but no other settings are defined.
 
 ## Pros and Cons of the Options
 
