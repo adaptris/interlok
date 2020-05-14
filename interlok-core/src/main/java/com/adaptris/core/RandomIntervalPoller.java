@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Adaptris Ltd.
+ * Copyright 2020 Adaptris Ltd.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,12 +12,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -49,7 +53,10 @@ public class RandomIntervalPoller extends FixedIntervalPoller {
     if (executor != null && !executor.isShutdown()) {
       long delay = ThreadLocalRandom.current().nextLong(pollInterval());
       pollerTask = executor.schedule(new MyPollerTask(), delay, TimeUnit.MILLISECONDS);
-      log.trace("Next Execution scheduled in {}ms", delay);
+      Calendar currentTime = Calendar.getInstance();
+      currentTime.add(Calendar.MILLISECOND, (int)delay);
+      SimpleDateFormat approxFormat = new SimpleDateFormat("HH:mm");
+      log.trace("Next Execution scheduled in {} approx {}", DurationFormatUtils.formatDurationWords(delay, true, true), approxFormat.format(currentTime.getTime()));
     }
   }
 
