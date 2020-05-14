@@ -24,7 +24,7 @@ import org.junit.Test;
 import com.adaptris.core.BaseCase;
 import com.adaptris.core.ClosedState;
 import com.adaptris.core.PortManager;
-import com.adaptris.core.management.jetty.WebServerProperties.WebServerPropertiesEnum;
+import com.adaptris.core.management.jetty.ServerBuilder;
 
 public class ManagementComponentFactoryTest extends BaseCase {
 
@@ -57,7 +57,7 @@ public class ManagementComponentFactoryTest extends BaseCase {
     final int port = PortManager.nextUnusedPort(5555);
     try {
       p.setProperty(Constants.CFG_KEY_MANAGEMENT_COMPONENT, "jetty");
-      p.setProperty(WebServerPropertiesEnum.PORT.getOverridingBootstrapPropertyKey(), String.valueOf(port));
+      p.setProperty(ServerBuilder.WEB_SERVER_PORT_CFG_KEY, String.valueOf(port));
       final List<ManagementComponentInfo> list = ManagementComponentFactory.create(p);
       assertEquals(1, list.size());
       // assertEquals(JettyServerComponent.class, list.get(0).getClass());

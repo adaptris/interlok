@@ -53,7 +53,9 @@ import org.slf4j.LoggerFactory;
  */
 public class JettyServerManager implements ServerManager {
 
-  private static final String DEFAULT_DESCRIPTOR_XML = "com/adaptris/core/management/webserver/jetty-webdefault-failsafe.xml";
+  public static final String DEFAULT_DESCRIPTOR_XML = "com/adaptris/core/management/webserver/jetty-webdefault-failsafe.xml";
+  public static final String DEFAULT_JETTY_XML = "com/adaptris/core/management/webserver/jetty-failsafe.xml";
+
   private static final String OVERRIDE_DESCRIPTOR_XML = "jetty-webdefault.xml";
 
   /**
