@@ -72,7 +72,7 @@ public abstract class ServerBuilder {
   private static List<Builder> FACTORIES = Collections
       .unmodifiableList(Arrays.asList(Builder.XML, Builder.PROPERTIES, Builder.FAILSAFE));
 
-  protected static Logger log = LoggerFactory.getLogger(JettyServerComponent.class);
+  protected static final Logger log = LoggerFactory.getLogger(JettyServerComponent.class);
   private Properties initialProperties;
 
   protected ServerBuilder(Properties p) {
