@@ -22,4 +22,18 @@
     <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty\.orbit/javax\.security\.auth\.message@.*$</packageUrl>
     <cpe>cpe:/a:apache:geronimo</cpe>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+    javax.websocket-api != Java-WebSocket (INTERLOK-3284)
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/javax\.websocket/javax\.websocket\-api@.*$</packageUrl>
+    <cve>CVE-2020-11050</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    javax.websocket-client-api != Java-WebSocket (INTERLOK-3284)
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/javax\.websocket/javax\.websocket\-client\-api@.*$</packageUrl>
+    <cve>CVE-2020-11050</cve>
+  </suppress>
 </suppressions>
