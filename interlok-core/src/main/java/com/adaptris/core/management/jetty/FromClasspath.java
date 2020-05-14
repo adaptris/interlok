@@ -36,6 +36,7 @@ public final class FromClasspath extends FromXmlConfig {
   @Override
   protected Resource getJettyConfigResource() throws Exception {
     URL jettyFailsafe = getClass().getClassLoader().getResource(JettyServerManager.DEFAULT_JETTY_XML);
+    log.trace("Connecting to configured URL {}", jettyFailsafe.toString());
     return Resource.newResource(jettyFailsafe);
   }
 
