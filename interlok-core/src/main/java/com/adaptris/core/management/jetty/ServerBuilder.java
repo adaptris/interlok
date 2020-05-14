@@ -82,7 +82,7 @@ public abstract class ServerBuilder {
   protected abstract Server build() throws Exception;
 
   protected static final Server build(final Properties config) throws Exception {
-    return FACTORIES.stream().filter((b) -> b.canBuild(config)).findFirst().get().builder(config).build();
+    return configure(FACTORIES.stream().filter((b) -> b.canBuild(config)).findFirst().get().builder(config).build(), config);
   }
 
   private static Server configure(final Server server, final Properties config) throws Exception {
