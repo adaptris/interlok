@@ -187,7 +187,8 @@ subprojects { subproject ->
 
   dependencyCheck  {
     suppressionFiles= [ "$rootDir/gradle/owasp-exclude.xml" ]
-    skipConfigurations = [ "antSql" ]
+    skipConfigurations = [ "antSql", "spotbugs", "umlDoclet", "offlineJavadocPackages", "javadoc" ]
+    failBuildOnCVSS = 7.0
   }
 
 }
