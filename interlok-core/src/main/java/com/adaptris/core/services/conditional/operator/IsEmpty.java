@@ -1,13 +1,14 @@
 package com.adaptris.core.services.conditional.operator;
 
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.services.conditional.Condition;
 import com.adaptris.core.services.conditional.Operator;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * <p>
@@ -27,6 +28,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Tests that a value is null or empty", tag = "conditional,operator")
 public class IsEmpty implements Operator {
 
+  @InputFieldDefault(value = "false")
   private Boolean ignoreWhitespace;
 
   @Override
@@ -35,14 +37,10 @@ public class IsEmpty implements Operator {
     if (StringUtils.isEmpty(contentItem)) {
       return true;
     }
-    if (isIgnoreWhitespace() && StringUtils.isBlank(contentItem)) {
+    if (ignoreWhitespace() && StringUtils.isBlank(contentItem)) {
       return true;
     }
     return false;
-  }
-
-  private boolean isIgnoreWhitespace() {
-    return BooleanUtils.toBooleanDefaultIfNull(ignoreWhitespace, false);
   }
 
   public Boolean getIgnoreWhitespace() {
@@ -51,5 +49,9 @@ public class IsEmpty implements Operator {
 
   public void setIgnoreWhitespace(Boolean ignoreWhitespace) {
     this.ignoreWhitespace = ignoreWhitespace;
+  }
+
+  private boolean ignoreWhitespace() {
+    return BooleanUtils.toBooleanDefaultIfNull(getIgnoreWhitespace(), false);
   }
 }
