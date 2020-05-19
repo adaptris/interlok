@@ -36,11 +36,5 @@
     <packageUrl regex="true">^pkg:maven/javax\.websocket/javax\.websocket\-client\-api@.*$</packageUrl>
     <cve>CVE-2020-11050</cve>
   </suppress>
-  <suppress>
-    <notes><![CDATA[
-    file name: log4j-1.2.17.jar, suppress log4j1.2 entirely because it should be filtered out at runtime.
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/log4j/log4j@.*$</packageUrl>
-    <cpe>cpe:/a:apache:log4j</cpe>
-  </suppress>
+
 </suppressions>
