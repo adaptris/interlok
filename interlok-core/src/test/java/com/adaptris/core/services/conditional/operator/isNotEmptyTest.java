@@ -1,0 +1,77 @@
+package com.adaptris.core.services.conditional.operator;
+
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.DefaultMessageFactory;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public class isNotEmptyTest {
+
+  private IsNotEmpty operator;
+
+  private AdaptrisMessage message;
+
+  @Before
+  public void setUp() throws Exception {
+    operator = new IsNotEmpty();
+    message = DefaultMessageFactory.getDefaultInstance().newMessage();
+    operator.setIgnoreWhitespace(false);
+  }
+
+  @Test
+  public void testStringNotEmpty() {
+    assertTrue(operator.apply(message, "string"));
+  }
+  @Test
+  public void testStringEmpty() {
+    assertFalse(operator.apply(message, ""));;
+  }
+
+  @Test
+  public void testStringEmptyWithSpace() {
+    assertTrue(operator.apply(message, " "));
+  }
+
+  @Test
+  public void testStringNull() {
+    assertFalse(operator.apply(message, null));
+  }
+
+  @Test
+  public void testStringNotEmptyWithSpace() {
+    assertTrue(operator.apply(message, "  string"));
+  }
+
+  @Test
+  public void testMixedStringNotEmpty() {
+    assertTrue(operator.apply(message, " string "));
+  }
+
+  @Test
+  public void testIgnorewhitespaceWithEmptyString() {
+    operator.setIgnoreWhitespace(true);
+    assertFalse(operator.apply(message, " "));
+  }
+
+  @Test
+  public void testIgnorewhitespaceWithLeadingSpace() {
+    operator.setIgnoreWhitespace(true);
+    assertTrue(operator.apply(message, "  string"));
+  }
+
+  @Test
+  public void testIgnorewhitespaceWithString() {
+    operator.setIgnoreWhitespace(true);
+    assertTrue(operator.apply(message, "string"));
+  }
+
+  @Test
+  public void testIgnorewhitespaceWithMixedString() {
+    operator.setIgnoreWhitespace(true);
+    assertTrue(operator.apply(message, " string "));
+  }
+
+}
