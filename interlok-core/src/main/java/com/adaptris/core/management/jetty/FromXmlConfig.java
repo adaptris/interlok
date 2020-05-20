@@ -27,6 +27,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.xml.XmlConfiguration;
 import com.adaptris.interlok.util.Args;
+import com.adaptris.interlok.util.ResourceLocator;
 
 /**
  * Build a jetty server from xml.
@@ -64,39 +65,8 @@ class FromXmlConfig extends ServerBuilder {
   protected Resource getJettyConfigResource() throws Exception {
     // if we get here, and WEB_SERVER_CONFIG_FILE_NAME_CGF_KEY is null, we're in trouble
     String jettyConfigUrl = Args.notBlank(getConfigItem(WEB_SERVER_CONFIG_FILE_NAME_CGF_KEY), WEB_SERVER_CONFIG_FILE_NAME_CGF_KEY);
-    final URL url = createUrlFromString(jettyConfigUrl);
+    final URL url = ResourceLocator.toURL(jettyConfigUrl);
     log.trace("Connecting to configured URL {}", url.toString());
     return Resource.newResource(url);
-  }
-
-  protected static URL createUrlFromString(String s) throws Exception {
-    String destToConvert = s.replace('\\', '/');
-    URI configuredUri = null;
-    try {
-      configuredUri = new URI(destToConvert);
-    }
-    catch (URISyntaxException e) {
-      // Specifically here to cope with file:///c:/ (which is
-      // technically illegal according to RFC2396 but we need
-      // to support it
-      if (destToConvert.split(":").length >= 3) {
-        configuredUri = new URI(URLEncoder.encode(destToConvert, "UTF-8"));
-      }
-      else {
-        throw e;
-      }
-    }
-    return configuredUri.getScheme() == null ? relativeConfig(configuredUri) : new URL(configuredUri.toString());
-  }
-
-  private static URL relativeConfig(URI uri) throws Exception {
-    String pwd = backslashToSlash(Args.notNull(System.getProperty("user.dir"), "user.dir"));
-    String path = pwd + "/" + uri;
-    URL result = new URL("file:///" + new URI(null, path, null).toASCIIString());
-    return result;
-  }
-
-  private static String backslashToSlash(String url) {
-    return url.replace('\\', '/');
   }
 }

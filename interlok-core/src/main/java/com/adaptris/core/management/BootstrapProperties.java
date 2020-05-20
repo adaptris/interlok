@@ -305,9 +305,7 @@ public class BootstrapProperties extends Properties {
       String loggingUrl = getPropertyIgnoringCase(this, CFG_KEY_LOGGING_URL, legacy);
       if (!StringUtils.isEmpty(loggingUrl)) {
         log.trace("Attempting Logging reconfiguration using {}", loggingUrl);
-        if (LoggingConfigurator.newConfigurator().initialiseFrom(loggingUrl)) {
-          log.trace("Successfully reconfigured logging using {}", loggingUrl);
-        }
+        LoggingConfigurator.newConfigurator().initialiseFrom(loggingUrl);
       }
     }
   }

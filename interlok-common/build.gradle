@@ -14,6 +14,13 @@ dependencies {
   compile ("org.apache.commons:commons-pool2:2.8.0")
 
   compile ("org.slf4j:slf4j-api:$slf4jVersion")
+  compile "org.slf4j:jcl-over-slf4j:$slf4jVersion", optional
+  compile "org.slf4j:jul-to-slf4j:$slf4jVersion", optional
+  compile "org.apache.logging.log4j:log4j-core:$log4j2Version", optional
+  compile "org.apache.logging.log4j:log4j-api:$log4j2Version", optional
+  compile "org.apache.logging.log4j:log4j-slf4j-impl:$log4j2Version", optional
+  compile "org.apache.logging.log4j:log4j-1.2-api:$log4j2Version", optional
+
   compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.28.v20200408")
   compile ("javax.servlet:javax.servlet-api:4.0.1")
 
