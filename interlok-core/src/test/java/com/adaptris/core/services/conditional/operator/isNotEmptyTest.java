@@ -74,4 +74,26 @@ public class isNotEmptyTest {
     assertTrue(operator.apply(message, " string "));
   }
 
+  @Test
+  public void testMatchWhitespaceString() {
+    assertTrue(operator.apply(message, "     \t"));
+  }
+
+  @Test
+  public void testMatchMixedString() {
+    assertTrue(operator.apply(message, " string "));
+  }
+
+  @Test
+  public void testMatchIgnoreFlagWhitespaceString() {
+    operator.setIgnoreWhitespace(true);
+    assertFalse(operator.apply(message, "     \t"));
+  }
+
+  @Test
+  public void testMatchIgnoreFlagWhitespaceMixedString() {
+    operator.setIgnoreWhitespace(true);
+    assertTrue(operator.apply(message, " string \t"));
+  }
+
 }
