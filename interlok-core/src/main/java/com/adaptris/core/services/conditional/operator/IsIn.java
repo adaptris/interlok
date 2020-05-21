@@ -4,9 +4,12 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.adaptris.core.services.conditional.Operator;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
+
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,18 +33,19 @@ public class IsIn implements Operator {
 
 	@InputFieldHint
 	@XStreamImplicit(itemFieldName = "value")
-	private List<String> isIn = new ArrayList<>();
+  @Size (min = 1)
+	private List<String> values = new ArrayList<>();
 
 	@Override
 	public boolean apply(AdaptrisMessage message, String object) {
-		return getIsIn().contains(message.resolve(object));
+		return getValues().contains(message.resolve(object));
 	}
 
-		public List<String> getIsIn() {
-			return isIn;
-		}
-
-		public void setIsIn(List<String> isIn) {
-			this.isIn = isIn;
-		}
+	public List<String> getValues() {
+	  return values;
+	}
+	
+	public void setValues(List<String> values) {
+	  this.values =  Args.notNull(values,"values");
+	}
 }

@@ -26,36 +26,41 @@ public class IsInTest {
   @Test
   public void testIsIn() {
     List<String> isInList = Arrays.asList("abc", "def", "ghi");
-    operator.setIsIn(isInList);
+    operator.setValues(isInList);
     assertTrue(operator.apply(message, "abc"));
   }
 
   @Test
   public void testNotIn() {
     List<String> isInList = Arrays.asList("abc", "def", "ghi");
-    operator.setIsIn(isInList);
+    operator.setValues(isInList);
     assertFalse(operator.apply(message, "xyz"));
   }
 
   @Test
   public void testNotInTrailingSpace() {
     List<String> isInList = Arrays.asList("abc", "def", "ghi");
-    operator.setIsIn(isInList);
+    operator.setValues(isInList);
     assertFalse(operator.apply(message, "def "));
   }
 
   @Test
   public void testNotInLeadingSpace() {
     List<String> isInList = Arrays.asList("abc", "def", "ghi");
-    operator.setIsIn(isInList);
+    operator.setValues(isInList);
     assertFalse(operator.apply(message, " ghi"));
   }
   @Test
   public void testNotInEmpty() {
     List<String> isInList = Arrays.asList("abc", "def", "ghi");
-    operator.setIsIn(isInList);
+    operator.setValues(isInList);
     assertFalse(operator.apply(message, " "));
   }
+  @Test
+  public void testNotInEmptyArray() {
+    assertFalse(operator.apply(message, "xyz"));
+  }
+
 
 
 }
