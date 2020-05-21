@@ -71,16 +71,7 @@ public abstract class ResourceLocator {
   private static URI toURI(String s) throws Exception {
     String destToConvert = backslashToSlash(Args.notNull(s, "uri"));
     URI configuredUri = null;
-    try {
-      configuredUri = new URI(destToConvert);
-    } catch (URISyntaxException e) {
-      if (destToConvert.split(":").length >= 3) {
-        configuredUri = new URI(URLEncoder.encode(destToConvert, "UTF-8"));
-      } else {
-        throw e;
-      }
-    }
-    return configuredUri;
+    return new URI(destToConvert);
   }
 
   private static URL localResource(URI uri) throws Exception {

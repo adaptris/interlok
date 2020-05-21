@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import org.apache.commons.io.FileCleaningTracker;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.junit.Test;
@@ -18,11 +19,17 @@ public class ResourceLocatorTest extends ResourceLocator {
     assertNotNull(toURL("./config/jetty.xml"));
     assertNotNull(toURL("file:////absolute/path/to/jetty/jetty.xml"));
     assertNotNull(toURL("file:///c:/absolute/path/to/jetty.xml"));
+    assertNotNull(toURL("file://localhost/c:/absolute/path/to/jetty.xml"));
     assertNotNull(toURL("\\absolute\\path\\to\\jetty.xml"));
-    assertNotNull(toURL("https://github.com/adaptris/interlok"));    
+    assertNotNull(toURL("https://github.com/adaptris/interlok"));  
     assertNotNull(toURL(JettyServerManager.DEFAULT_JETTY_XML));
   }
 
+  @Test(expected=URISyntaxException.class)
+  public void testToURL_URISyntax() throws Exception {
+    toURL("file://localhost/c:/Program Files/Microsoft/Teams");
+  }
+  
   @Test
   public void testLocalResolver() throws Exception {
     File tempFile = createTrackedFile(this);
