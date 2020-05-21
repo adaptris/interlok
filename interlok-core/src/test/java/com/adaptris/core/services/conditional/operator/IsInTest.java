@@ -60,7 +60,4 @@ public class IsInTest {
   public void testNotInEmptyArray() {
     assertFalse(operator.apply(message, "xyz"));
   }
-
-
-
 }

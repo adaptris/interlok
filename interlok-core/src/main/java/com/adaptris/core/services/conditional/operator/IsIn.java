@@ -31,21 +31,21 @@ import java.util.List;
 @ComponentProfile(summary = "Test whether a specified value matches any value in a list", tag = "conditional,operator")
 public class IsIn implements Operator {
 
-	@InputFieldHint
-	@XStreamImplicit(itemFieldName = "value")
+  @InputFieldHint
+  @XStreamImplicit(itemFieldName = "value")
   @Size (min = 1)
-	private List<String> values = new ArrayList<>();
+  private List<String> values = new ArrayList<>();
 
-	@Override
-	public boolean apply(AdaptrisMessage message, String object) {
-		return getValues().contains(message.resolve(object));
-	}
+  @Override
+  public boolean apply(AdaptrisMessage message, String object) {
+    return getValues().contains(message.resolve(object));
+  }
 
-	public List<String> getValues() {
-	  return values;
-	}
-	
-	public void setValues(List<String> values) {
-	  this.values =  Args.notNull(values,"values");
-	}
+  public List<String> getValues() {
+    return values;
+  }
+
+  public void setValues(List<String> values) {
+    this.values =  Args.notNull(values,"values");
+  }
 }
