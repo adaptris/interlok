@@ -9,7 +9,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class isEmptyTest {
+public class IsEmptyTest {
 
   private Operator operator;
 

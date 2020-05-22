@@ -8,15 +8,15 @@ import org.junit.Test;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class isNotEmptyTest {
+public class NotEmptyTest {
 
-  private IsNotEmpty operator;
+  private NotEmpty operator;
 
   private AdaptrisMessage message;
 
   @Before
   public void setUp() throws Exception {
-    operator = new IsNotEmpty();
+    operator = new NotEmpty();
     message = DefaultMessageFactory.getDefaultInstance().newMessage();
     operator.setIgnoreWhitespace(false);
   }

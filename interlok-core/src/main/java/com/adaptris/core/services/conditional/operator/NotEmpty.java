@@ -13,18 +13,18 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * This {@link Operator} simply tests that the given value does not evaluate to null or an empty string.
  * </p>
  * <p>
- * The value used in the isNotEmpty test is the {@link Condition} that this {@link Operator} is
+ * The value used in the NotEmpty test is the {@link Condition} that this {@link Operator} is
  * configured for; which could be the message payload or a metadata item for example. <br/>
  * </p>
  *
- * @config is-not-empty
+ * @config not-empty
  * @author raney
  *
  */
-@XStreamAlias("is-not-empty")
+@XStreamAlias("not-empty")
 @AdapterComponent
 @ComponentProfile(summary = "Tests that a value is not null or not empty", tag = "conditional,operator")
-public class IsNotEmpty extends IsEmpty {
+public class NotEmpty extends IsEmpty {
 
   @Override
   public boolean apply(AdaptrisMessage message, String object) {
