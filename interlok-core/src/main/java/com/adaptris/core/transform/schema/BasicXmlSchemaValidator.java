@@ -70,7 +70,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("basic-xml-schema-validator")
 @DisplayOrder(order = {"schema", "schemaCache"})
 @ComponentProfile(summary = "Validate an XML document against a schema",
-    recommended = {CacheConnection.class}, since = "3.10.2")
+    recommended = {CacheConnection.class}, since = "3.10.2", tag="xml,schema")
 public class BasicXmlSchemaValidator extends XmlSchemaValidatorImpl {
 
   @Override
