@@ -19,8 +19,6 @@ import static com.adaptris.core.ServiceCase.execute;
 import static com.adaptris.core.transform.XmlValidationServiceTest.KEY_INPUT_FILE;
 import static com.adaptris.core.transform.XmlValidationServiceTest.KEY_WILL_NOT_VALIDATE;
 import static com.adaptris.core.transform.XmlValidationServiceTest.KEY_WILL_VALIDATE_SCHEMA;
-import static com.adaptris.core.transform.schema.XmlSchemaValidatorImpl.*;
-import static org.junit.Assert.*;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;

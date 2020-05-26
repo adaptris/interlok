@@ -4,7 +4,8 @@ import static com.adaptris.core.transform.schema.ViolationHandlerImpl.DEFAULT_KE
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import java.util.Arrays;
@@ -15,8 +16,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.XStreamMarshaller;
-import com.adaptris.core.stubs.DefectiveMessageFactory;
-import com.adaptris.core.stubs.DefectiveMessageFactory.WhenToBreak;
 
 public class ViolationHandlerTest {
 
