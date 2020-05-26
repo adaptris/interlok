@@ -22,6 +22,7 @@ import java.io.StringWriter;
 import java.util.Map;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.DefaultMarshaller;
+import com.adaptris.core.management.config.ConfigurationCheckRunner;
 import com.adaptris.core.management.logging.LoggingConfigurator;
 import com.adaptris.core.runtime.AdapterManagerMBean;
 import com.adaptris.core.util.LifecycleHelper;
@@ -110,16 +111,12 @@ abstract class CmdLineBootstrap {
       launchAdapter(bootstrap, startQuietly);
     }
     else {
-      // This seems a bit cheaty, but we're going to exit anyway, so
-      // calling prepare probably makes no difference.
-      Adapter clonedAdapter = (Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(bootstrap.createAdapter().getConfiguration());
-      LifecycleHelper.prepare(clonedAdapter);
-
-      // INTERLOK-1455 Shutdown the logging subsystem if we're only just doing a config check.
+      new ConfigurationCheckRunner().runChecks(bootProperties, bootstrap);
+      
+   // INTERLOK-1455 Shutdown the logging subsystem if we're only just doing a config check.
       LoggingConfigurator.newConfigurator().requestShutdown();
-      // No starting an adapter, so just terminate.
-      logClasspathIssues();
-      System.err.println("Config check only; terminating");
+      
+      System.err.println("\nConfig check only; terminating");
     }
   }
 
