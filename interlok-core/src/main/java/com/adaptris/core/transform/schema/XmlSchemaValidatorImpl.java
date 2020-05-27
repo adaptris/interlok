@@ -72,6 +72,7 @@ public abstract class XmlSchemaValidatorImpl extends MessageValidatorImpl {
   public void init() throws CoreException {
     super.init();
     Args.notBlank(getSchema(), "schema");
+    LifecycleHelper.init(schemaCacheConnection);
     schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
   }
 
