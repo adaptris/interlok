@@ -140,14 +140,6 @@ public class JettyMgmtComponentTest {
     }
   }
 
-  @Test
-  public void testXmlConfig_createURL() throws Exception {
-    assertNotNull(FromXmlConfig.createUrlFromString("./config/jetty.xml"));
-    assertNotNull(FromXmlConfig.createUrlFromString("file:////absolute/path/to/jetty/jetty.xml"));
-    assertNotNull(FromXmlConfig.createUrlFromString("file:///c:/absolute/path/to/jetty.xml"));
-    assertNotNull(FromXmlConfig.createUrlFromString("/absolute/path/to/jetty.xml"));
-  }
-
   private void stopAndDestroy(JettyServerComponent c) {
     try {
       if (c != null) {
