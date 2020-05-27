@@ -76,6 +76,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 {
     CacheConnection.class
 })
+@Deprecated
+@Removal(version = "3.12.0", message="Use basic-xml-schema-validator or extended-xml-schema-validator instead")
 public class XmlSchemaValidator extends MessageValidatorImpl {
 
   private static final int DEFAULT_CACHE_SIZE = 16;
@@ -98,6 +100,7 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
   // transient
   private transient SchemaFactory schemaFactory;
   private transient boolean warningLogged;
+  private transient boolean classWarningLogged;
   private transient AdaptrisConnection schemaCacheConnection;
 
   public XmlSchemaValidator() {
@@ -132,6 +135,10 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
 
   @Override
   public void prepare() throws CoreException {
+    LoggingHelper.logWarning(classWarningLogged, () -> {
+      classWarningLogged = true;
+    }, "Use basic-xml-schema-validator or extended-xml-schema-validator instead");
+    
     schemaCacheConnection = ObjectUtils.defaultIfNull(getSchemaCache(), new CacheConnection(
         new ExpiringMapCache().withExpiration(DEFAULT_CACHE_TTL).withMaxEntries(DEFAULT_CACHE_SIZE)));
     LifecycleHelper.prepare(schemaCacheConnection);
