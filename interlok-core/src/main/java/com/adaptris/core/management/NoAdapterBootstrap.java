@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Entry point into an adapter from the command line.
  *
- * Basically the same as {@SimpleBootstrap} but without the Adapter being started.
+ * Basically the same as {@link SimpleBootstrap} but without the Adapter being started.
  *
  * @author aanderson
  */

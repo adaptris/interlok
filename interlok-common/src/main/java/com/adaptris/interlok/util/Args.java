@@ -36,7 +36,7 @@ public abstract class Args {
 
   /**
    * Convenience to throw an {@link IllegalArgumentException} if the associated argument is the
-   * empty string (or null) as defined by {@link StringUtils#isEmpty(String)}.
+   * empty string (or null) as defined by {@code org.apache.commons.lang3.StringUtils#isEmpty(String)}.
    * 
    * @param argument the argument.
    * @param member the member name associated with this argument.
@@ -51,7 +51,7 @@ public abstract class Args {
 
   /**
    * Convenience to throw an {@link IllegalArgumentException} if the associated argument is the
-   * blank string as defined by {@link StringUtils#isBlank(String)}.
+   * blank string as defined by {@code org.apache.commons.lang3.StringUtils#isBlank(String)}.
    * 
    * @param argument the argument.
    * @param member the member name associated with this argument.

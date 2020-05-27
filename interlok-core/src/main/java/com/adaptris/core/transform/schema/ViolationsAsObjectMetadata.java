@@ -53,7 +53,7 @@ public class ViolationsAsObjectMetadata extends ViolationHandlerImpl {
    * The object metadata key.
    * 
    * <p>
-   * If not explicitly specified defaults to {@value #DEFAULT_KEY}
+   * If not explicitly specified defaults to {@value com.adaptris.core.transform.schema.ViolationHandlerImpl#DEFAULT_KEY}
    * </p>
    */
   public void setObjectMetadataKey(String s) {

@@ -45,7 +45,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * Use as part of a {@link BranchingServiceCollection} to branch based on the jetty URI and method.
  * 
  * <p>
- * Takes the metadata values associated with {@link CoreConstants#HTTP_METHOD} and {@link CoreConstants#JETTY_URI} and matches them
+ * Takes the metadata values associated with {@link CoreConstants#HTTP_METHOD} and {@link JettyConstants#JETTY_URI} and matches them
  * against a list of configured routes. If a route matches the URI and the http method (if specified) then the next service id is
  * set appropriately.
  * </p>

@@ -46,7 +46,6 @@ public class ByteArrayIterator extends MultipartIterator implements Iterator<byt
    *           MimeMultiPart
    * @throws IOException if there was an IOException
    * @throws MessagingException if an underlying javax.mail exception occurred
-   * @see MultiPartInput#MultiPartInput(InputStream, boolean)
    */
   public ByteArrayIterator(InputStream in) throws IOException, MessagingException {
     super(in);
@@ -61,7 +60,6 @@ public class ByteArrayIterator extends MultipartIterator implements Iterator<byt
    * @throws IOException if there was an IOException
    * @throws MessagingException if the bytes did not contain a valid
    *           MimeMultiPart
-   * @see MultiPartInput#MultiPartInput(byte[], boolean)
    */
   public ByteArrayIterator(byte[] bytes) throws IOException, MessagingException {
     super(bytes);

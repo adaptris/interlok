@@ -11,7 +11,7 @@ import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Version of {@link RetrieveFromCacheService} that doesn't use {@link CacheEntryEvaluators}.
+ * Version of {@link RetrieveFromCacheService} that doesn't use {@link CacheEntryEvaluator}.
  * 
  * <p>
  * Most of the time, you only want to retrieve a single item to the cache rather than a list of

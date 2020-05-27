@@ -67,7 +67,7 @@ public class ViolationsAsMetadata extends ViolationHandlerImpl {
    * The metadata key.
    * 
    * <p>
-   * If not explicitly specified defaults to {@value #DEFAULT_KEY}
+   * If not explicitly specified defaults to {@value com.adaptris.core.transform.schema.ViolationHandlerImpl#DEFAULT_KEY}
    * </p>
    */
   public void setMetadataKey(String metadataKey) {

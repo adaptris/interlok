@@ -13,48 +13,19 @@
  */
 package com.adaptris.core.transform.schema;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import javax.validation.Valid;
-import javax.xml.XMLConstants;
 import javax.xml.transform.sax.SAXSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import org.apache.commons.collections4.IterableUtils;
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.annotation.Removal;
-import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.SharedConnection;
-import com.adaptris.core.cache.Cache;
-import com.adaptris.core.cache.ExpiringMapCache;
-import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.services.cache.CacheConnection;
-import com.adaptris.core.util.Args;
+import com.adaptris.core.transform.XmlValidationService;
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.core.util.LoggingHelper;
-import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**

@@ -40,7 +40,7 @@ public class RemoteBlob {
   }
 
   /**
-   * Wrap it as a {@link RemoteFile} for standard {@link FileFilter} operations.
+   * Wrap it as a {@link RemoteFile} for standard {@link java.io.FileFilter} operations.
    * 
    */
   public RemoteFile toFile() {

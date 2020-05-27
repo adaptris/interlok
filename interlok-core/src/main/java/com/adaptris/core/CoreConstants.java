@@ -406,7 +406,7 @@ public abstract class CoreConstants {
   /**
    * Object metadata that stores the on success callback.
    * 
-   * @see Workflow#onAdaptrisMessage(AdaptrisMessage, java.util.function.Consumer, java.util.function.Consumer)
+   * @see Workflow#onAdaptrisMessage(AdaptrisMessage, java.util.function.Consumer)
    */
   public static final String OBJ_METADATA_ON_SUCCESS_CALLBACK = "_onSuccessCallback";
 

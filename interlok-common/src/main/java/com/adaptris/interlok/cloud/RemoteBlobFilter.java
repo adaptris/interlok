@@ -1,7 +1,7 @@
 package com.adaptris.interlok.cloud;
 
 /**
- * Similar to {@link FileFilter} allowing you filter a remote blob
+ * Similar to {@link java.io.FileFilter} allowing you filter a remote blob
  * 
  */
 @FunctionalInterface
