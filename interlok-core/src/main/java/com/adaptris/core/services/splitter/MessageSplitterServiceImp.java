@@ -21,12 +21,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -35,6 +32,7 @@ import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.util.CloseableIterable;
 
 /**
  * <p>
@@ -63,8 +61,7 @@ public abstract class MessageSplitterServiceImp extends ServiceImp {
   @Override
   public final void doService(AdaptrisMessage msg) throws ServiceException {
     List<Future> tasks = new ArrayList<Future>();
-    try (com.adaptris.core.util.CloseableIterable<AdaptrisMessage> messages = com.adaptris.core.util.CloseableIterable
-        .ensureCloseable(splitter.splitMessage(msg))) {
+    try (CloseableIterable<AdaptrisMessage> messages = CloseableIterable.ensureCloseable(splitter.splitMessage(msg))) {
       long count = 0;
       for (AdaptrisMessage splitMessage : messages) {
         count++;

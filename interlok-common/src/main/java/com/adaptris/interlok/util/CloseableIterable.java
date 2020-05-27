@@ -14,24 +14,20 @@
  * limitations under the License.
 */
 
-package com.adaptris.core.util;
+package com.adaptris.interlok.util;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.Iterator;
-import com.adaptris.annotation.Removal;
 
 /**
- * @deprecated since 3.10.2 moved to com.adaptris.interlok.util package.
+ * This Iterable exists for the purpose of being able to iterate over a list of indeterminate size
+ * (possibly too large for memory), while still guaranteeing that whatever resource is being held (like 
+ * a Stream) will be closed when iteration finishes (or it goes out of scope).
+ * 
  */
-@Deprecated
-@Removal(version="3.12.0") 
-public interface CloseableIterable<E> extends com.adaptris.interlok.util.CloseableIterable<E> {
+public interface CloseableIterable<E> extends Closeable, Iterable<E> {
 
-  /**
-   * @deprecated since 3.10.2 use {@link com.adaptris.interlok.util.CloseableIterable#ensureCloseable(Iterable)} instead.
-   */
-  @Deprecated
-  @Removal(version="3.12.0") 
   static <E> CloseableIterable<E> ensureCloseable(final Iterable<E> iter) {
     if (iter instanceof CloseableIterable) {
       return (CloseableIterable<E>) iter;
