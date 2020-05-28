@@ -52,6 +52,7 @@ import com.adaptris.core.Adapter;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.management.logging.LoggingConfigurator;
 import com.adaptris.core.util.PropertyHelper;
+import com.adaptris.util.URLHelper;
 import com.adaptris.util.URLString;
 
 /**
@@ -181,10 +182,13 @@ public class BootstrapProperties extends Properties {
   public synchronized Adapter createAdapter() throws Exception {
     // First of all make sure the the config manager has made the default marshaller correct.
     getConfigManager();
-    Adapter result = (Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(new URLString(findAdapterResource()));
+    Adapter result = (Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(this.getConfigurationStream());
     log.info("Adapter created");
     return result;
-
+  }
+  
+  public InputStream getConfigurationStream() throws Exception {
+    return URLHelper.connect(new URLString(this.findAdapterResource()));
   }
 
   public String[] getConfigurationUrls() {

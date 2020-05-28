@@ -17,16 +17,15 @@
 package com.adaptris.core.management;
 
 import static com.adaptris.core.management.Constants.CFG_KEY_START_QUIETLY;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Map;
-import com.adaptris.core.Adapter;
-import com.adaptris.core.DefaultMarshaller;
+
 import com.adaptris.core.management.config.ConfigurationCheckRunner;
 import com.adaptris.core.management.logging.LoggingConfigurator;
-import com.adaptris.core.runtime.AdapterManagerMBean;
-import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
+
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.Resource;
 import io.github.classgraph.ResourceList;
@@ -111,7 +110,11 @@ abstract class CmdLineBootstrap {
       launchAdapter(bootstrap, startQuietly);
     }
     else {
-      new ConfigurationCheckRunner().runChecks(bootProperties, bootstrap);
+      new ConfigurationCheckRunner().runChecks(bootProperties, bootstrap).forEach(report -> {
+        System.err.println("\n********************");
+        System.err.println(report.toString());
+        System.err.println("\n");
+      });
       
    // INTERLOK-1455 Shutdown the logging subsystem if we're only just doing a config check.
       LoggingConfigurator.newConfigurator().requestShutdown();

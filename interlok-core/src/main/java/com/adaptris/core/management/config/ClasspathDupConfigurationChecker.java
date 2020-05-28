@@ -3,7 +3,6 @@ package com.adaptris.core.management.config;
 import java.util.Map;
 
 import com.adaptris.core.management.BootstrapProperties;
-import com.adaptris.core.management.Constants;
 import com.adaptris.core.management.UnifiedBootstrap;
 
 import io.github.classgraph.ClassGraph;
@@ -19,23 +18,30 @@ public class ClasspathDupConfigurationChecker implements ConfigurationChecker {
 
   @SuppressWarnings("resource")
   @Override
-  public void performConfigCheck(BootstrapProperties bootProperties, UnifiedBootstrap bootstrapProperties) throws ConfigurationException {
-    if (Constants.DBG) {
-      boolean passed = true;
-      try (ScanResult result = new ClassGraph().scan()) {
-        for (Map.Entry<String, ResourceList> dup : result.getAllResources().classFilesOnly().findDuplicatePaths()) {
-          if (dup.getKey().equalsIgnoreCase("module-info.class")) {
-            continue;
-          }
-          passed = false;
-          System.err.println(String.format("%s has possible duplicates", dup.getKey()));
-          for (Resource res : dup.getValue()) {
-            System.err.println(String.format(" -> Found in %s", res.getURI()));
-          }
+  public ConfigurationCheckReport performConfigCheck(BootstrapProperties bootProperties, UnifiedBootstrap bootstrapProperties) {
+    ConfigurationCheckReport report = new ConfigurationCheckReport();
+    report.setCheckName(this.getFriendlyName());
+    report.setCheckPassed(true);
+    
+    boolean passed = true;
+    try (ScanResult result = new ClassGraph().scan()) {
+      for (Map.Entry<String, ResourceList> dup : result.getAllResources().classFilesOnly().findDuplicatePaths()) {
+        if (dup.getKey().equalsIgnoreCase("module-info.class")) {
+          continue;
+        }
+        passed = false;
+        System.err.println(String.format("%s has possible duplicates", dup.getKey()));
+        for (Resource res : dup.getValue()) {
+          System.err.println(String.format(" -> Found in %s", res.getURI()));
         }
       }
-      if(!passed)  throw new ConfigurationException("Possible duplicates found.");
     }
+    if(!passed) {
+      report.setCheckPassed(false);
+      report.setFailureException(new ConfigurationException("Possible duplicates found."));
+    }
+    
+    return report;
   }
   
   @Override

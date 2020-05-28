@@ -13,15 +13,22 @@ public class DeserializationConfigurationChecker implements ConfigurationChecker
   private static final String DESCRIPTION = "This test will attempt to create an Interlok adapter from your configuration files and then pre-initialize each component.";
 
   @Override
-  public void performConfigCheck(BootstrapProperties bootProperties, UnifiedBootstrap bootstrap) throws ConfigurationException {
+  public ConfigurationCheckReport performConfigCheck(BootstrapProperties bootProperties, UnifiedBootstrap bootstrap) {
+    ConfigurationCheckReport report = new ConfigurationCheckReport();
+    report.setCheckName(this.getFriendlyName());
+    
     // This seems a bit cheaty, but we're going to exit anyway, so
     // calling prepare probably makes no difference.
     try {
       Adapter clonedAdapter = (Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(bootstrap.createAdapter().getConfiguration());
       LifecycleHelper.prepare(clonedAdapter);
+      
+      report.setCheckPassed(true);
     } catch (Exception ex) {
-      throw new ConfigurationException(ex);
+      report.setCheckPassed(false);
+      report.setFailureException(ex);
     }
+    return report;
   }
 
   @Override

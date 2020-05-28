@@ -9,6 +9,6 @@ public interface ConfigurationChecker {
   
   public String getDescription();
   
-  public void performConfigCheck(BootstrapProperties bootProperties, UnifiedBootstrap bootstrapProperties) throws ConfigurationException;
+  public ConfigurationCheckReport performConfigCheck(BootstrapProperties bootProperties, UnifiedBootstrap bootstrapProperties);
   
 }

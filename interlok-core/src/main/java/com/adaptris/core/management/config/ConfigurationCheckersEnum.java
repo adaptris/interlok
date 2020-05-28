@@ -22,8 +22,8 @@ public enum ConfigurationCheckersEnum {
     this.setChecker(configurationChecker);
   }
   
-  public void performCheck(BootstrapProperties bootProperties, UnifiedBootstrap bootstrap) throws ConfigurationException {
-    this.getChecker().performConfigCheck(bootProperties, bootstrap);
+  public ConfigurationCheckReport performCheck(BootstrapProperties bootProperties, UnifiedBootstrap bootstrap) {
+    return this.getChecker().performConfigCheck(bootProperties, bootstrap);
   };
 
   public ConfigurationChecker getChecker() {

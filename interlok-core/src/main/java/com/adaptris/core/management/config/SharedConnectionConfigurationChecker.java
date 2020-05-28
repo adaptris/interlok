@@ -1,11 +1,9 @@
 package com.adaptris.core.management.config;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -13,12 +11,9 @@ import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import com.adaptris.core.management.BootstrapProperties;
 import com.adaptris.core.management.UnifiedBootstrap;
-import com.adaptris.util.URLHelper;
-import com.adaptris.util.URLString;
 
 public class SharedConnectionConfigurationChecker implements ConfigurationChecker {
   
@@ -26,14 +21,17 @@ public class SharedConnectionConfigurationChecker implements ConfigurationChecke
   
   private static final String DESCRIPTION = "This test will scan your configuration for shared connections, making sure each is used and referenced correctly.";
   
-  private static final String XPATH_AVAILABLE_CONNECTIONS = "/adapter/shared-components/connections/*/unique-id";
+  private static final String XPATH_AVAILABLE_CONNECTIONS = "//shared-components/connections/*/unique-id";
   
   private static final String XPATH_REFERENCED_CONSUME_CONNECTIONS = "//consume-connection/lookup-name";
 
   private static final String XPATH_REFERENCED_PRODUCE_CONNECTIONS = "//produce-connection/lookup-name";
 
   @Override
-  public void performConfigCheck(BootstrapProperties bootProperties, UnifiedBootstrap bootstrap) throws ConfigurationException {
+  public ConfigurationCheckReport performConfigCheck(BootstrapProperties bootProperties, UnifiedBootstrap bootstrap) {
+    ConfigurationCheckReport report = new ConfigurationCheckReport();
+    report.setCheckName(this.getFriendlyName());
+    
     try {      
       Document xmlDocument = buildXmlDocument(bootProperties);
       
@@ -76,14 +74,15 @@ public class SharedConnectionConfigurationChecker implements ConfigurationChecke
         }
       }
       
+      report.setCheckPassed(!warningsFound);
       if(warningsFound)
         throw new ConfigurationException(warningText.toString());
       
-    } catch (ConfigurationException configurationException) {
-      throw configurationException;
     } catch (Exception ex) {
-      throw new ConfigurationException(ex);
+      report.setFailureException(ex);
     }
+    
+    return report;
   }
   
   private boolean testReferenceExistsInNodeSets(String searchValue, NodeList listOfNodes) {
@@ -98,9 +97,8 @@ public class SharedConnectionConfigurationChecker implements ConfigurationChecke
     return result;
   }
 
-  private Document buildXmlDocument(BootstrapProperties bootProperties)
-      throws IOException, ParserConfigurationException, SAXException {
-    InputStream configuration = URLHelper.connect(new URLString(bootProperties.findAdapterResource()));
+  private Document buildXmlDocument(BootstrapProperties bootProperties) throws Exception {
+    InputStream configuration = bootProperties.getConfigurationStream();
     
     DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
     DocumentBuilder builder = builderFactory.newDocumentBuilder();
