@@ -20,9 +20,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
-import com.adaptris.security.util.SecurityUtil;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Helper class to manage ports.
@@ -33,22 +32,17 @@ import com.adaptris.security.util.SecurityUtil;
 public class PortManager {
   private static final int PORT_RANGE = 3000;
 
-  private static Random random;
   private static final Set<Integer> usedPorts = Collections.synchronizedSet(new HashSet<Integer>());
 
-  static {
-    random = SecurityUtil.getSecureRandom();
-  }
-
-  public static Integer nextUnusedPort(int offset) {
-    int port = random.nextInt(PORT_RANGE) + offset;
+  public synchronized static Integer nextUnusedPort(int offset) {
+    int port = ThreadLocalRandom.current().nextInt(PORT_RANGE) + offset;
     while (!isPortAvailable(port)) {
-      port = random.nextInt(PORT_RANGE) + offset;
+      port = ThreadLocalRandom.current().nextInt(PORT_RANGE) + offset;
     }
     return port;
   }
 
-  public static void release(Integer port) {
+  public synchronized static void release(Integer port) {
     usedPorts.remove(port);
   }
 

@@ -137,11 +137,11 @@ public class EmbeddedActiveMq {
   }
 
   public JmsConnection getJmsConnection() {
-    return applyCfg(new JmsConnection(), new BasicActiveMqImplementation(), false);
+    return applyCfg(new JmsConnection(), new BasicActiveMqImplementation(), true);
   }
 
   public JmsConnection getJmsConnection(BasicActiveMqImplementation impl) {
-    return applyCfg(new JmsConnection(), impl, false);
+    return applyCfg(new JmsConnection(), impl, true);
   }
 
   public JmsConnection getJmsConnection(BasicActiveMqImplementation impl, boolean useTcp) {
