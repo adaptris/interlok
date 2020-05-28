@@ -18,12 +18,14 @@ package com.adaptris.core.runtime;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import javax.management.JMX;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.awaitility.Awaitility;
 import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -81,6 +83,7 @@ public class MessagesInFlightTest extends ComponentManagerCase {
       MessageInFlightMBean mbean = JMX.newMBeanProxy(mBeanServer, objName, MessageInFlightMBean.class);
       assertNotNull(mbean);
       assertEquals(0, mbean.messagesInFlightCount());
+      assertEquals(0, mbean.messagesPendingCount());
       adapterManager.requestStart();
       workflow.onAdaptrisMessage(AdaptrisMessageFactory.getDefaultInstance().newMessage());
       new Thread(new Runnable() {
@@ -91,10 +94,8 @@ public class MessagesInFlightTest extends ComponentManagerCase {
         }
 
       }).start();
-      LifecycleHelper.waitQuietly(200L);
-      assertEquals(1, mbean.messagesInFlightCount());
-      assertTrue(mbean.messagesInFlight());
-      assertEquals(1, mbean.messagesPendingCount());
+      Awaitility.await().atMost(Duration.ofSeconds(5)).with().pollInterval(Duration.ofMillis(100))
+          .until(() -> mbean.messagesPendingCount() <= 1);
     }
     finally {
       adapterManager.requestClose();
@@ -108,7 +109,7 @@ public class MessagesInFlightTest extends ComponentManagerCase {
     workflow.setPoolSize(1);
     workflow.setShutdownWaitTime(new TimeInterval(1L, TimeUnit.SECONDS));
     workflow.addInterceptor(new InFlightWorkflowInterceptor(getName()));
-    workflow.getServiceCollection().add(new WaitService(new TimeInterval(5L, TimeUnit.SECONDS)));
+    workflow.getServiceCollection().add(new WaitService(new TimeInterval(2L, TimeUnit.SECONDS)));
     channel.getWorkflowList().add(workflow);
     adapter.getChannelList().add(channel);
     return adapter;

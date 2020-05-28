@@ -17,17 +17,16 @@
 package com.adaptris.core.runtime;
 
 import java.io.Serializable;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
 import javax.management.Notification;
 import javax.management.NotificationListener;
+import org.awaitility.Awaitility;
 
 public class SimpleNotificationListener implements NotificationListener, Serializable, SimpleNotificationListenerMBean {
-  private static final long MAX_WAIT = 65000;
-  private static final int DEFAULT_WAIT_INTERVAL = 100;
   private static final long serialVersionUID = 2014031901L;
 
   private List<Notification> notifications = new IgnoreNulls<Notification>();
@@ -48,12 +47,9 @@ public class SimpleNotificationListener implements NotificationListener, Seriali
     return result;
   }
 
-  public void waitForMessages(int count) throws Exception {
-    long totalWaitTime = 0;
-    while (notifications.size() < count && totalWaitTime < MAX_WAIT) {
-      Thread.sleep(DEFAULT_WAIT_INTERVAL);
-      totalWaitTime += DEFAULT_WAIT_INTERVAL;
-    }
+  public void waitForMessages(int count, int maxSeconds) {
+    Awaitility.await().atMost(Duration.ofSeconds(maxSeconds)).with().pollInterval(Duration.ofMillis(100))
+        .until(() -> notifications.size() >= count);
   }
 
   private static class SortBySeqNo implements Comparator<Notification> {
