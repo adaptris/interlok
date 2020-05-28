@@ -17,19 +17,17 @@
 package com.adaptris.core.interceptor;
 
 import static org.junit.Assert.assertEquals;
-
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
-
+import org.awaitility.Awaitility;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
-
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.PoolingWorkflow;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.WorkflowInterceptor;
 import com.adaptris.core.services.WaitService;
 import com.adaptris.core.stubs.MockChannel;
@@ -73,10 +71,8 @@ public class InFlightWorkflowInterceptorTest {
           wf.onAdaptrisMessage(AdaptrisMessageFactory.getDefaultInstance().newMessage());
         }
       }).start();
-      LifecycleHelper.waitQuietly(100);
-      assertEquals(1, interceptor.messagesInFlightCount());
-      assertEquals(1, interceptor.messagesPendingCount());
-      ServiceCase.waitForMessages(prod, 2, 10000);
+      Awaitility.await().atMost(Duration.ofSeconds(5)).with().pollInterval(Duration.ofMillis(100))
+          .until(() -> prod.getMessages().size() >= 2);
     } finally {
       LifecycleHelper.stopAndClose(c);
     }

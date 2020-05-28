@@ -21,8 +21,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
@@ -31,26 +29,22 @@ import com.adaptris.util.TimeInterval;
 
 public class ThrottlingInterceptorTest {
 
-  private ThrottlingInterceptor throttlingInterceptor;
-  private String cacheName = "default";
-
-  @Before
-  public void setUp() throws Exception {
-    throttlingInterceptor = new ThrottlingInterceptor();
-    throttlingInterceptor.setCacheName(cacheName);
-    throttlingInterceptor.setTimeSliceInterval(new TimeInterval(500L, TimeUnit.MILLISECONDS));
-
-    LifecycleHelper.init(throttlingInterceptor);
-    LifecycleHelper.start(throttlingInterceptor);
+  public ThrottlingInterceptor createAndStart(String cacheName) throws Exception {
+    ThrottlingInterceptor i = new ThrottlingInterceptor();
+    i.setCacheName(cacheName);
+    i.setTimeSliceInterval(new TimeInterval(500L, TimeUnit.MILLISECONDS));
+    LifecycleHelper.initAndStart(i);
+    return i;
   }
 
-  @After
-  public void tearDown() throws Exception{
-    ((TimeSliceDefaultCacheProvider)throttlingInterceptor.getCacheProvider()).getPersistence().clear();
+  public void destroy(ThrottlingInterceptor i) throws Exception {
+    ((TimeSliceDefaultCacheProvider) i.getCacheProvider()).getPersistence().clear();
+    LifecycleHelper.stopAndClose(i);
   }
 
   @Test
   public void testThrottleNoDelay() throws Exception {
+    ThrottlingInterceptor throttlingInterceptor = createAndStart("default");
     throttlingInterceptor.setMaximumMessages(6);
 
     long startTimeLong = Calendar.getInstance().getTimeInMillis();
@@ -65,10 +59,12 @@ public class ThrottlingInterceptorTest {
     long endTimeLong = Calendar.getInstance().getTimeInMillis();
     // Make sure we WERE NOT delayed
     assertTrue(startTimeLong + 5000 > endTimeLong);
+    destroy(throttlingInterceptor);
   }
 
   @Test
   public void testThrottleDelay() throws Exception {
+    ThrottlingInterceptor throttlingInterceptor = createAndStart("default");
     throttlingInterceptor.setMaximumMessages(2);
 
     long startTimeLong = Calendar.getInstance().getTimeInMillis();
@@ -81,40 +77,42 @@ public class ThrottlingInterceptorTest {
     long endTimeLong = Calendar.getInstance().getTimeInMillis();
     // Make sure we WERE delayed
     assertFalse(startTimeLong + 500 > endTimeLong);
+    destroy(throttlingInterceptor);
   }
 
   @Test
   public void testMultiThreadedWithSingleInterceptor() throws Exception {
-    throttlingInterceptor.setMaximumMessages(Integer.MAX_VALUE);
+    ThrottlingInterceptor throttle = createAndStart("mp");
+    throttle.setMaximumMessages(Integer.MAX_VALUE);
     
     // Total messages = 50
-    new MetricsInserterThread(10).run();
-    new MetricsInserterThread(10).run();
-    new MetricsInserterThread(10).run();
-    new MetricsInserterThread(10).run();
-    new MetricsInserterThread(10).run();
+    new MetricsInserterThread(10, throttle).run();
+    new MetricsInserterThread(10, throttle).run();
+    new MetricsInserterThread(10, throttle).run();
+    new MetricsInserterThread(10, throttle).run();
+    new MetricsInserterThread(10, throttle).run();
     
     Thread.sleep(200); // allow the interceptors to finish processing
-    
-    int totalMessageCount = throttlingInterceptor.getCacheProvider().get(cacheName).getTotalMessageCount();
+
+    int totalMessageCount = throttle.getCacheProvider().get("mp").getTotalMessageCount();
     assertEquals(50, totalMessageCount);
   }
 
   @Test
   public void testMultiThreadedWithSingleInterceptorMultiTimeSlice() throws Exception {
-    throttlingInterceptor.setMaximumMessages(40);
-    throttlingInterceptor.setCacheName("NewCache");
+    ThrottlingInterceptor throttle = createAndStart("NewCache");
+    throttle.setMaximumMessages(40);
     
     // Total messages = 50
-    new MetricsInserterThread(10).run();
-    new MetricsInserterThread(10).run();
-    new MetricsInserterThread(10).run();
-    new MetricsInserterThread(10).run();
-    new MetricsInserterThread(10).run();
+    new MetricsInserterThread(10, throttle).run();
+    new MetricsInserterThread(10, throttle).run();
+    new MetricsInserterThread(10, throttle).run();
+    new MetricsInserterThread(10, throttle).run();
+    new MetricsInserterThread(10, throttle).run();
     
     // the first 40 messages will be consumed into the first time slice.
     // a second timeslice will be created, which should have the remaining 10 messages (remember we set the max to 40 above...).
-    int totalMessageCount = throttlingInterceptor.getCacheProvider().get("NewCache").getTotalMessageCount();
+    int totalMessageCount = throttle.getCacheProvider().get("NewCache").getTotalMessageCount();
     assertEquals(10, totalMessageCount);
   }
   
@@ -124,16 +122,18 @@ public class ThrottlingInterceptorTest {
    */
   class MetricsInserterThread extends Thread {
     int numMessages;
-    
-    MetricsInserterThread(int numMessages) {
+    ThrottlingInterceptor throttle;
+
+    MetricsInserterThread(int numMessages, ThrottlingInterceptor i) {
       this.numMessages = numMessages;
+      this.throttle = i;
     }
     
     @Override
     public void run() {
       for(int counter = 1; counter <= numMessages; counter ++) {
         AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage();
-        throttlingInterceptor.workflowStart(message);
+        throttle.workflowStart(message);
       }
     }
   }
