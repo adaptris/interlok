@@ -101,6 +101,7 @@ public class SharedConnectionConfigurationChecker implements ConfigurationChecke
     InputStream configuration = bootProperties.getConfigurationStream();
     
     DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+    builderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
     DocumentBuilder builder = builderFactory.newDocumentBuilder();
     Document xmlDocument = builder.parse(configuration);
     return xmlDocument;
