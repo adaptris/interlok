@@ -1,17 +1,14 @@
 package com.adaptris.core.management.config;
 
 import java.io.InputStream;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
-
 import com.adaptris.core.management.BootstrapProperties;
 import com.adaptris.core.management.UnifiedBootstrap;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
@@ -97,7 +94,8 @@ public class SharedConnectionConfigurationChecker implements ConfigurationChecke
     
     DocumentBuilderFactory builderFactory = DocumentBuilderFactoryBuilder.newRestrictedInstance().build();
     DocumentBuilder builder = builderFactory.newDocumentBuilder();
-    Document xmlDocument = builder.parse(configuration);
+    // DocumentBuilderFactoryBuilder.newRestrictedInstance already applies the protection for XXE
+    Document xmlDocument = builder.parse(configuration);  // lgtm [java/xxe]
     return xmlDocument;
   }
   
