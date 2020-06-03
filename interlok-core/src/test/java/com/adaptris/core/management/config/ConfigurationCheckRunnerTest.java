@@ -84,7 +84,7 @@ public class ConfigurationCheckRunnerTest {
     checkRunner.runChecks(mockBootProperties, mockUnifiedBootstrap).forEach(report -> {
       if(report.getCheckName().equals(SHARED_CONN_TEST_FRIENDLY_NAME)) {
         assertFalse(report.isCheckPassed());
-        assertNotNull(report.getFailureException());
+        assertTrue(report.getWarnings().size() > 0);
         assertNotNull(report.toString());
       }
     });

@@ -14,18 +14,19 @@ import org.w3c.dom.NodeList;
 
 import com.adaptris.core.management.BootstrapProperties;
 import com.adaptris.core.management.UnifiedBootstrap;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 
 public class SharedConnectionConfigurationChecker implements ConfigurationChecker {
   
   private static final String FRIENDLY_NAME = "Shared connection check.";
-  
-  private static final String DESCRIPTION = "This test will scan your configuration for shared connections, making sure each is used and referenced correctly.";
-  
+    
   private static final String XPATH_AVAILABLE_CONNECTIONS = "//shared-components/connections/*/unique-id";
   
   private static final String XPATH_REFERENCED_CONSUME_CONNECTIONS = "//consume-connection/lookup-name";
 
   private static final String XPATH_REFERENCED_PRODUCE_CONNECTIONS = "//produce-connection/lookup-name";
+  
+  private static final String XPATH_REFERENCED_SERVICES = "//connection[@class='shared-connection']/lookup-name";
 
   @Override
   public ConfigurationCheckReport performConfigCheck(BootstrapProperties bootProperties, UnifiedBootstrap bootstrap) {
@@ -35,24 +36,16 @@ public class SharedConnectionConfigurationChecker implements ConfigurationChecke
     try {      
       Document xmlDocument = buildXmlDocument(bootProperties);
       
-      NodeList availableConnections = scanForConnections(xmlDocument, XPATH_AVAILABLE_CONNECTIONS);
-      System.err.println("Found " + availableConnections.getLength() + " available connection(s).");
-      
+      NodeList availableConnections = scanForConnections(xmlDocument, XPATH_AVAILABLE_CONNECTIONS);      
       NodeList referencedConsumeConnections = scanForConnections(xmlDocument, XPATH_REFERENCED_CONSUME_CONNECTIONS);
-      System.err.println("Found " + referencedConsumeConnections.getLength() + " referenced consume connection(s).");
-      
       NodeList referencedProduceConnections = scanForConnections(xmlDocument, XPATH_REFERENCED_PRODUCE_CONNECTIONS);
-      System.err.println("Found " + referencedProduceConnections.getLength() + " referenced produce connection(s).");
-      
-      boolean warningsFound = false;
-      StringBuilder warningText = new StringBuilder();
-      
+      NodeList referencedServiceConnections = scanForConnections(xmlDocument, XPATH_REFERENCED_SERVICES);
+            
       // **********************************
       // Check all shared connections are used.
       for(int counter = 0; counter < availableConnections.getLength(); counter ++) {
         if(!this.testReferenceExistsInNodeSets(availableConnections.item(counter).getTextContent(), referencedConsumeConnections)) {
-          warningsFound = true;
-          warningText.append("\nShared connection unused: " + availableConnections.item(counter).getTextContent());
+          report.getWarnings().add("Shared connection unused: " + availableConnections.item(counter).getTextContent());
         }
       }
       
@@ -60,8 +53,7 @@ public class SharedConnectionConfigurationChecker implements ConfigurationChecke
       // Check all consume shared connections exist.
       for(int counter = 0; counter < referencedConsumeConnections.getLength(); counter ++) {
         if(!this.testReferenceExistsInNodeSets(referencedConsumeConnections.item(counter).getTextContent(), availableConnections)) {
-          warningsFound = true;
-          warningText.append("\nConsume shared connection does not exist in shared connections: " + referencedConsumeConnections.item(counter).getTextContent());
+          report.setFailureException(new ConfigurationException("Consume shared connection does not exist in shared connections: " + referencedConsumeConnections.item(counter).getTextContent()));
         }
       }
       
@@ -69,14 +61,17 @@ public class SharedConnectionConfigurationChecker implements ConfigurationChecke
       // Check all produce shared connections exist.
       for(int counter = 0; counter < referencedProduceConnections.getLength(); counter ++) {
         if(!this.testReferenceExistsInNodeSets(referencedProduceConnections.item(counter).getTextContent(), availableConnections)) {
-          warningsFound = true;
-          warningText.append("\nProduce shared connection does not exist in shared connections: " + referencedProduceConnections.item(counter).getTextContent());
+          report.setFailureException(new ConfigurationException("Produce shared connection does not exist in shared connections: " + referencedProduceConnections.item(counter).getTextContent()));
         }
       }
       
-      report.setCheckPassed(!warningsFound);
-      if(warningsFound)
-        throw new ConfigurationException(warningText.toString());
+      // **********************************
+      // Check all produce shared connections exist.
+      for(int counter = 0; counter < referencedServiceConnections.getLength(); counter ++) {
+        if(!this.testReferenceExistsInNodeSets(referencedServiceConnections.item(counter).getTextContent(), availableConnections)) {
+          report.setFailureException(new ConfigurationException("Service shared connection does not exist in shared connections: " + referencedServiceConnections.item(counter).getTextContent()));
+        }
+      }
       
     } catch (Exception ex) {
       report.setFailureException(ex);
@@ -100,8 +95,7 @@ public class SharedConnectionConfigurationChecker implements ConfigurationChecke
   private Document buildXmlDocument(BootstrapProperties bootProperties) throws Exception {
     InputStream configuration = bootProperties.getConfigurationStream();
     
-    DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-    builderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+    DocumentBuilderFactory builderFactory = DocumentBuilderFactoryBuilder.newRestrictedInstance().build();
     DocumentBuilder builder = builderFactory.newDocumentBuilder();
     Document xmlDocument = builder.parse(configuration);
     return xmlDocument;
@@ -115,11 +109,6 @@ public class SharedConnectionConfigurationChecker implements ConfigurationChecke
   @Override
   public String getFriendlyName() {
     return FRIENDLY_NAME;
-  }
-
-  @Override
-  public String getDescription() {
-    return DESCRIPTION;
   }
 
 }

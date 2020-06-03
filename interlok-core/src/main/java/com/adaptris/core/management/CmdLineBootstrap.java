@@ -20,6 +20,8 @@ import static com.adaptris.core.management.Constants.CFG_KEY_START_QUIETLY;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.adaptris.core.management.config.ConfigurationCheckRunner;
@@ -110,32 +112,18 @@ abstract class CmdLineBootstrap {
       launchAdapter(bootstrap, startQuietly);
     }
     else {
+      final List<Exception> fatals = new ArrayList<>();
       new ConfigurationCheckRunner().runChecks(bootProperties, bootstrap).forEach(report -> {
-        System.err.println("\n********************");
-        System.err.println(report.toString());
-        System.err.println("\n");
+        System.err.println("\n" + report.toString());
+        if(report.getFailureException() != null)
+          fatals.add(report.getFailureException());
       });
       
    // INTERLOK-1455 Shutdown the logging subsystem if we're only just doing a config check.
       LoggingConfigurator.newConfigurator().requestShutdown();
       
       System.err.println("\nConfig check only; terminating");
-    }
-  }
-
-  private static void logClasspathIssues() {
-    if (Constants.DBG) {
-      try (ScanResult result = new ClassGraph().scan()) {
-        for (Map.Entry<String, ResourceList> dup : result.getAllResources().classFilesOnly().findDuplicatePaths()) {
-          if (dup.getKey().equalsIgnoreCase("module-info.class")) {
-            continue;
-          }
-          System.err.println(String.format("%s has possible duplicates", dup.getKey()));
-          for (Resource res : dup.getValue()) {
-            System.err.println(String.format(" -> Found in %s", res.getURI()));
-          }
-        }
-      }
+      System.exit(fatals.size() > 0 ? 1 : 0);
     }
   }
 

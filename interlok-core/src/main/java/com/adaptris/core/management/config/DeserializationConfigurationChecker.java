@@ -10,8 +10,6 @@ public class DeserializationConfigurationChecker implements ConfigurationChecker
   
   private static final String FRIENDLY_NAME = "Configuration loading test";
   
-  private static final String DESCRIPTION = "This test will attempt to create an Interlok adapter from your configuration files and then pre-initialize each component.";
-
   @Override
   public ConfigurationCheckReport performConfigCheck(BootstrapProperties bootProperties, UnifiedBootstrap bootstrap) {
     ConfigurationCheckReport report = new ConfigurationCheckReport();
@@ -23,9 +21,7 @@ public class DeserializationConfigurationChecker implements ConfigurationChecker
       Adapter clonedAdapter = (Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(bootstrap.createAdapter().getConfiguration());
       LifecycleHelper.prepare(clonedAdapter);
       
-      report.setCheckPassed(true);
     } catch (Exception ex) {
-      report.setCheckPassed(false);
       report.setFailureException(ex);
     }
     return report;
@@ -34,11 +30,6 @@ public class DeserializationConfigurationChecker implements ConfigurationChecker
   @Override
   public String getFriendlyName() {
     return FRIENDLY_NAME;
-  }
-
-  @Override
-  public String getDescription() {
-    return DESCRIPTION;
   }
 
 }

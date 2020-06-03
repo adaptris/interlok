@@ -3,6 +3,7 @@ package com.adaptris.core.management.config;
 import java.util.Map;
 
 import com.adaptris.core.management.BootstrapProperties;
+import com.adaptris.core.management.Constants;
 import com.adaptris.core.management.UnifiedBootstrap;
 
 import io.github.classgraph.ClassGraph;
@@ -13,15 +14,14 @@ import io.github.classgraph.ScanResult;
 public class ClasspathDupConfigurationChecker implements ConfigurationChecker {
   
   private static final String FRIENDLY_NAME = "Classpath duplication check.";
-  
-  private static final String DESCRIPTION = "This test will scan your libraries checking and reporting on any duplicates found.";
 
+  private boolean debug;
+  
   @SuppressWarnings("resource")
   @Override
   public ConfigurationCheckReport performConfigCheck(BootstrapProperties bootProperties, UnifiedBootstrap bootstrapProperties) {
     ConfigurationCheckReport report = new ConfigurationCheckReport();
     report.setCheckName(this.getFriendlyName());
-    report.setCheckPassed(true);
     
     boolean passed = true;
     try (ScanResult result = new ClassGraph().scan()) {
@@ -30,15 +30,19 @@ public class ClasspathDupConfigurationChecker implements ConfigurationChecker {
           continue;
         }
         passed = false;
-        System.err.println(String.format("%s has possible duplicates", dup.getKey()));
-        for (Resource res : dup.getValue()) {
-          System.err.println(String.format(" -> Found in %s", res.getURI()));
+        if(Constants.DBG || this.isDebug()) {
+          System.err.println(String.format("%s has possible duplicates", dup.getKey()));
+          for (Resource res : dup.getValue()) {
+            System.err.println(String.format(" -> Found in %s", res.getURI()));
+          }
         }
       }
     }
     if(!passed) {
-      report.setCheckPassed(false);
-      report.setFailureException(new ConfigurationException("Possible duplicates found."));
+      if(Constants.DBG || this.isDebug())
+        report.getWarnings().add("Possible duplicates found.  Details above.");
+      else
+        report.getWarnings().add("Possible duplicates found.  Re-run with '-Dinterlok.bootstrap.debug=true' for more details.");
     }
     
     return report;
@@ -49,9 +53,12 @@ public class ClasspathDupConfigurationChecker implements ConfigurationChecker {
     return FRIENDLY_NAME;
   }
 
-  @Override
-  public String getDescription() {
-    return DESCRIPTION;
+  public boolean isDebug() {
+    return debug;
+  }
+
+  public void setDebug(boolean debug) {
+    this.debug = debug;
   }
 
 }

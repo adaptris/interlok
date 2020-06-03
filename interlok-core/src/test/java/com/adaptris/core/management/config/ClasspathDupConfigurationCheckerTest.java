@@ -1,6 +1,7 @@
 package com.adaptris.core.management.config;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
@@ -14,7 +15,7 @@ public class ClasspathDupConfigurationCheckerTest {
   public void setUp() throws Exception {
     checker = new ClasspathDupConfigurationChecker();
     
-    System.setProperty("interlok.bootstrap.debug", "true");
+    checker.setDebug(true);
   }
   
   @After
@@ -27,7 +28,18 @@ public class ClasspathDupConfigurationCheckerTest {
     // this one may actually fail occassionally.
     ConfigurationCheckReport report = checker.performConfigCheck(null, null);
     if(!report.isCheckPassed()) {
-      assertNotNull(report.getFailureException());
+      assertTrue(report.getWarnings().size() > 0);
+    }
+    assertNotNull(report.toString());
+  }
+  
+  @Test
+  public void testDeDupWithNoLogging() throws Exception {
+    // this one may actually fail occassionally.
+    checker.setDebug(false);
+    ConfigurationCheckReport report = checker.performConfigCheck(null, null);
+    if(!report.isCheckPassed()) {
+      assertTrue(report.getWarnings().size() > 0);
     }
     assertNotNull(report.toString());
   }
