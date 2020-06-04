@@ -16,6 +16,8 @@
 
 package com.adaptris.core;
 
+import org.slf4j.Logger;
+
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -29,7 +31,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  */
 @XStreamAlias("heartbeat-event")
-public class HeartbeatEvent extends AdapterLifecycleEvent {
+public class HeartbeatEvent extends AdapterLifecycleEvent implements LoggableEvent {
   private static final long serialVersionUID = 2014012301L;
 
   private long heartbeatTime;
@@ -93,6 +95,11 @@ public class HeartbeatEvent extends AdapterLifecycleEvent {
    */
   public void setAdapterStateSummary(AdapterStateSummary a) {
     this.adapterStateSummary = a;
+  }
+
+  @Override
+  public void logEvent(Logger logger) {
+    logger.trace("Heartbeat created=class {}", this.getClass().getSimpleName());
   }
 
 }
