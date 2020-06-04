@@ -7,7 +7,7 @@ dependencies {
 
   compile project(':interlok-core-apt')
   compile ("com.thoughtworks.xstream:xstream:$xstreamVersion")
-  compile ("commons-io:commons-io:2.6")
+  compile ("commons-io:commons-io:2.7")
   compile ("commons-net:commons-net:3.6")
   compile ("commons-pool:commons-pool:1.6")
   compile ("org.apache.commons:commons-lang3:3.10")
