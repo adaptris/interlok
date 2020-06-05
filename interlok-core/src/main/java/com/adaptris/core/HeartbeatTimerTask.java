@@ -46,7 +46,7 @@ class HeartbeatTimerTask extends TimerTask {
       HeartbeatEvent heartbeat = EventFactory.create(heartbeatEventImp);
       heartbeat.setHeartbeatTime(System.currentTimeMillis());
       heartbeat.extractState(adapter);
-      log.trace("Heartbeat created=" + heartbeatEventImp);
+      heartbeat.logEvent(log);
       adapter.getEventHandler().send(heartbeat);
     }
     catch (Exception e) {
