@@ -2,7 +2,6 @@ package com.adaptris.core.management.config;
 
 import java.util.Arrays;
 import java.util.List;
-
 import com.adaptris.core.management.BootstrapProperties;
 import com.adaptris.core.management.UnifiedBootstrap;
 import com.adaptris.util.XmlUtils;
