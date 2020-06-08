@@ -1,20 +1,11 @@
 package com.adaptris.core.management.config;
 
-import java.io.InputStream;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
+import java.util.Arrays;
+import java.util.List;
 
 import com.adaptris.core.management.BootstrapProperties;
 import com.adaptris.core.management.UnifiedBootstrap;
-import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
+import com.adaptris.util.XmlUtils;
 
 public class SharedConnectionConfigurationChecker implements ConfigurationChecker {
   
@@ -22,88 +13,39 @@ public class SharedConnectionConfigurationChecker implements ConfigurationChecke
     
   private static final String XPATH_AVAILABLE_CONNECTIONS = "//shared-components/connections/*/unique-id";
   
-  private static final String XPATH_REFERENCED_CONSUME_CONNECTIONS = "//consume-connection/lookup-name";
-
-  private static final String XPATH_REFERENCED_PRODUCE_CONNECTIONS = "//produce-connection/lookup-name";
-  
-  private static final String XPATH_REFERENCED_SERVICES = "//connection[@class='shared-connection']/lookup-name";
+  private static final String XPATH_REFERENCED_CONNECTIONS = "//*[@class='shared-connection']/lookup-name";
 
   @Override
   public ConfigurationCheckReport performConfigCheck(BootstrapProperties bootProperties, UnifiedBootstrap bootstrap) {
     ConfigurationCheckReport report = new ConfigurationCheckReport();
     report.setCheckName(this.getFriendlyName());
     
-    try {      
-      Document xmlDocument = buildXmlDocument(bootProperties);
+    try {
+      XmlUtils xmlUtils = new XmlUtils();
+      xmlUtils.setSource(bootProperties.getConfigurationStream());
       
-      NodeList availableConnections = scanForConnections(xmlDocument, XPATH_AVAILABLE_CONNECTIONS);      
-      NodeList referencedConsumeConnections = scanForConnections(xmlDocument, XPATH_REFERENCED_CONSUME_CONNECTIONS);
-      NodeList referencedProduceConnections = scanForConnections(xmlDocument, XPATH_REFERENCED_PRODUCE_CONNECTIONS);
-      NodeList referencedServiceConnections = scanForConnections(xmlDocument, XPATH_REFERENCED_SERVICES);
-            
+      List<String> availableConnections = Arrays.asList(xmlUtils.getMultipleTextItems(XPATH_AVAILABLE_CONNECTIONS));
+      List<String> referencedConnections = Arrays.asList(xmlUtils.getMultipleTextItems(XPATH_REFERENCED_CONNECTIONS));
+      
       // **********************************
       // Check all shared connections are used.
-      for(int counter = 0; counter < availableConnections.getLength(); counter ++) {
-        if(!this.testReferenceExistsInNodeSets(availableConnections.item(counter).getTextContent(), referencedConsumeConnections)) {
-          report.getWarnings().add("Shared connection unused: " + availableConnections.item(counter).getTextContent());
-        }
-      }
+      availableConnections.forEach(connection -> {
+        if(!referencedConnections.contains(connection))
+          report.getWarnings().add("Shared connection unused: " + connection);
+      });
       
       // **********************************
-      // Check all consume shared connections exist.
-      for(int counter = 0; counter < referencedConsumeConnections.getLength(); counter ++) {
-        if(!this.testReferenceExistsInNodeSets(referencedConsumeConnections.item(counter).getTextContent(), availableConnections)) {
-          report.setFailureException(new ConfigurationException("Consume shared connection does not exist in shared connections: " + referencedConsumeConnections.item(counter).getTextContent()));
-        }
-      }
-      
-      // **********************************
-      // Check all produce shared connections exist.
-      for(int counter = 0; counter < referencedProduceConnections.getLength(); counter ++) {
-        if(!this.testReferenceExistsInNodeSets(referencedProduceConnections.item(counter).getTextContent(), availableConnections)) {
-          report.setFailureException(new ConfigurationException("Produce shared connection does not exist in shared connections: " + referencedProduceConnections.item(counter).getTextContent()));
-        }
-      }
-      
-      // **********************************
-      // Check all produce shared connections exist.
-      for(int counter = 0; counter < referencedServiceConnections.getLength(); counter ++) {
-        if(!this.testReferenceExistsInNodeSets(referencedServiceConnections.item(counter).getTextContent(), availableConnections)) {
-          report.setFailureException(new ConfigurationException("Service shared connection does not exist in shared connections: " + referencedServiceConnections.item(counter).getTextContent()));
-        }
-      }
+      // Check all referenced connections exist.
+      referencedConnections.forEach(connection -> {
+        if(!availableConnections.contains(connection))
+          report.getFailureExceptions().add(new ConfigurationException("Shared connection does not exist in shared components: " + connection));
+      });
       
     } catch (Exception ex) {
-      report.setFailureException(ex);
+      report.getFailureExceptions().add(ex);
     }
     
     return report;
-  }
-  
-  private boolean testReferenceExistsInNodeSets(String searchValue, NodeList listOfNodes) {
-    boolean result = false;
-    for(int counter = 0; counter < listOfNodes.getLength(); counter ++) {
-      if(searchValue.equals(listOfNodes.item(counter).getTextContent())) {
-        result = true;
-        break;
-      }
-    }
-    
-    return result;
-  }
-
-  private Document buildXmlDocument(BootstrapProperties bootProperties) throws Exception {
-    InputStream configuration = bootProperties.getConfigurationStream();
-    
-    DocumentBuilderFactory builderFactory = DocumentBuilderFactoryBuilder.newRestrictedInstance().build();
-    DocumentBuilder builder = builderFactory.newDocumentBuilder();
-    Document xmlDocument = builder.parse(configuration);
-    return xmlDocument;
-  }
-  
-  private NodeList scanForConnections(Document xmlDocument, String xpath) throws XPathExpressionException {
-    XPath xPathAvailableConnections = XPathFactory.newInstance().newXPath();
-    return (NodeList) xPathAvailableConnections.compile(xpath).evaluate(xmlDocument, XPathConstants.NODESET);
   }
   
   @Override

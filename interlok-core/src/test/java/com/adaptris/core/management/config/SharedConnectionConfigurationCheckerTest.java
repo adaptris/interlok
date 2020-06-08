@@ -53,7 +53,7 @@ public class SharedConnectionConfigurationCheckerTest {
     
     ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties, null);
     assertFalse(report.isCheckPassed());
-    assertNotNull(report.getFailureException());
+    assertTrue(report.getFailureExceptions().size() > 0);
   }
   
   @Test
@@ -87,7 +87,7 @@ public class SharedConnectionConfigurationCheckerTest {
     
     ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties, null);
     assertFalse(report.isCheckPassed());
-    assertNotNull(report.getFailureException());
+    assertTrue(report.getFailureExceptions().size() > 0);
   }
   
   @Test
@@ -99,7 +99,7 @@ public class SharedConnectionConfigurationCheckerTest {
     
     ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties, null);
     assertFalse(report.isCheckPassed());
-    assertNotNull(report.getFailureException());
+    assertTrue(report.getFailureExceptions().size() > 0);
   }
   
   @Test
@@ -123,7 +123,7 @@ public class SharedConnectionConfigurationCheckerTest {
     
     ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties, null);
     assertFalse(report.isCheckPassed());
-    assertNotNull(report.getFailureException());
+    assertTrue(report.getFailureExceptions().size() > 0);
     assertNotNull(report.toString());
   }
   

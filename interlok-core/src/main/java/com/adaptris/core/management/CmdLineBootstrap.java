@@ -22,16 +22,10 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import com.adaptris.core.management.config.ConfigurationCheckRunner;
 import com.adaptris.core.management.logging.LoggingConfigurator;
 import com.adaptris.core.util.ManagedThreadFactory;
-
-import io.github.classgraph.ClassGraph;
-import io.github.classgraph.Resource;
-import io.github.classgraph.ResourceList;
-import io.github.classgraph.ScanResult;
 
 /**
  * Abstract boostrap that contains standard commandline parsing.
@@ -115,8 +109,8 @@ abstract class CmdLineBootstrap {
       final List<Exception> fatals = new ArrayList<>();
       new ConfigurationCheckRunner().runChecks(bootProperties, bootstrap).forEach(report -> {
         System.err.println("\n" + report.toString());
-        if(report.getFailureException() != null)
-          fatals.add(report.getFailureException());
+        if(report.getFailureExceptions().size() > 0)
+          fatals.addAll(report.getFailureExceptions());
       });
       
    // INTERLOK-1455 Shutdown the logging subsystem if we're only just doing a config check.

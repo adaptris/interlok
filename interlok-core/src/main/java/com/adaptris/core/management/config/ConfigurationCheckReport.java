@@ -9,10 +9,11 @@ public class ConfigurationCheckReport {
     
   private List<String> warnings;
   
-  private Exception failureException;
+  private List<Exception> failureExceptions;
   
   public ConfigurationCheckReport() {
     this.setWarnings(new ArrayList<>());
+    this.setFailureExceptions(new ArrayList<>());
   }
 
   public String getCheckName() {
@@ -24,15 +25,15 @@ public class ConfigurationCheckReport {
   }
 
   public boolean isCheckPassed() {
-    return this.getWarnings().size() == 0 && this.getFailureException() == null;
+    return this.getWarnings().size() == 0 && this.getFailureExceptions().size() == 0;
   }
 
-  public Exception getFailureException() {
-    return failureException;
+  public List<Exception> getFailureExceptions() {
+    return failureExceptions;
   }
 
-  public void setFailureException(Exception failureException) {
-    this.failureException = failureException;
+  public void setFailureExceptions(List<Exception> failureExceptions) {
+    this.failureExceptions = failureExceptions;
   }
   
   public List<String> getWarnings() {
@@ -50,9 +51,11 @@ public class ConfigurationCheckReport {
     buffer.append(": ");
     if(this.isCheckPassed())
       buffer.append("\nPassed.");
-    if(this.getFailureException() != null) {
-      buffer.append("\nFailed with exception: ");
-      buffer.append(this.getFailureException().getMessage());
+    if(this.getFailureExceptions().size() > 0) {
+      buffer.append("\nFailed with exceptions: ");
+      this.getFailureExceptions().forEach(exception -> {
+        buffer.append("\n" + exception.getMessage());
+      });
     }
     if(this.getWarnings().size() > 0) {
       buffer.append("\nWarnings found;");

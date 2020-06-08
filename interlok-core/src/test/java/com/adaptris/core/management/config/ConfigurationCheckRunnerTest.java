@@ -1,8 +1,8 @@
 package com.adaptris.core.management.config;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -69,7 +69,7 @@ public class ConfigurationCheckRunnerTest {
       // The de-dup test might actually fail, so lets test the shared connection test.
       if(report.getCheckName().equals(SHARED_CONN_TEST_FRIENDLY_NAME)) {
         assertTrue(report.isCheckPassed());
-        assertNull(report.getFailureException());
+        assertEquals(0, report.getFailureExceptions().size());
       }
     });
   }

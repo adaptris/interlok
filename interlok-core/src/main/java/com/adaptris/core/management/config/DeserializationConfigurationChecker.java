@@ -22,7 +22,7 @@ public class DeserializationConfigurationChecker implements ConfigurationChecker
       LifecycleHelper.prepare(clonedAdapter);
       
     } catch (Exception ex) {
-      report.setFailureException(ex);
+      report.getFailureExceptions().add(ex);
     }
     return report;
   }
