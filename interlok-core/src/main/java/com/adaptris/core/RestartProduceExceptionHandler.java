@@ -16,13 +16,18 @@
 
 package com.adaptris.core;
 
+import com.adaptris.annotation.Removal;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Implementation of {@link ProduceExceptionHandler} which attempts to restart the {@link Workflow} that had the failure.
  * 
  * @config restart-produce-exception-handler
+ * 
+ * @deprecated since 3.10.2
  */
+@Deprecated
+@Removal(message = "If you need restarting capability use channel-restart-produce-exception-handler or wrap your producer into a standalone-producer and set restart services on failure.", version = "3.11.0")
 @XStreamAlias("restart-produce-exception-handler")
 public class RestartProduceExceptionHandler extends ProduceExceptionHandlerImp {
 
