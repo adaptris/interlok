@@ -5,7 +5,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.net.URL;
 import org.apache.commons.io.FileCleaningTracker;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.junit.Test;
@@ -13,6 +15,8 @@ import com.adaptris.core.management.webserver.JettyServerManager;
 
 public class ResourceLocatorTest extends ResourceLocator {
   private static FileCleaningTracker cleaner = new FileCleaningTracker();
+  private static String relativePath = "./build/tmp";
+  private static File relativeFile = new File(relativePath);
 
   @Test
   public void testToURL() throws Exception {
@@ -21,15 +25,29 @@ public class ResourceLocatorTest extends ResourceLocator {
     assertNotNull(toURL("file:///c:/absolute/path/to/jetty.xml"));
     assertNotNull(toURL("file://localhost/c:/absolute/path/to/jetty.xml"));
     assertNotNull(toURL("\\absolute\\path\\to\\jetty.xml"));
-    assertNotNull(toURL("https://github.com/adaptris/interlok"));  
+    assertNotNull(toURL("https://github.com/adaptris/interlok"));
     assertNotNull(toURL(JettyServerManager.DEFAULT_JETTY_XML));
   }
 
-  @Test(expected=URISyntaxException.class)
+  @Test(expected = URISyntaxException.class)
   public void testToURL_URISyntax() throws Exception {
     toURL("file://localhost/c:/Program Files/Microsoft/Teams");
   }
-  
+
+  @Test
+  public void testToURL_Relative() throws Exception {
+    relativeFile.mkdirs();
+    trackFile(relativeFile, this);
+    File tempFile = createTrackedFile(this, relativeFile);
+    URL url = toURL("file://localhost/" + relativePath + "/" + tempFile.getName());
+    try (InputStream in = url.openStream()) {
+    }
+    URL url2 = toURL("file:///" + relativePath + "/" + tempFile.getName());
+    try (InputStream in = url2.openStream()) {
+    }
+  }
+
+
   @Test
   public void testLocalResolver() throws Exception {
     File tempFile = createTrackedFile(this);
@@ -43,16 +61,20 @@ public class ResourceLocatorTest extends ResourceLocator {
   @Test
   public void testClasspathResolver() throws Exception {
     File tempFile = createTrackedFile(this);
-    
+
     assertFalse(LocalResource.Classpath.canFind(tempFile.getCanonicalPath()));
     assertTrue(LocalResource.Classpath.canFind(JettyServerManager.DEFAULT_JETTY_XML));
     assertNotNull(LocalResource.Classpath.resolve(JettyServerManager.DEFAULT_JETTY_XML));
   }
 
 
-  private static File createTrackedFile(Object tracker) throws IOException {
-    File f = File.createTempFile("ResourceLocatorTest", "");
+  private static File createTrackedFile(Object tracker, File dir) throws IOException {
+    File f = File.createTempFile("ResourceLocatorTest", "", dir);
     return trackFile(f, tracker);
+  }
+
+  private static File createTrackedFile(Object tracker) throws IOException {
+    return createTrackedFile(tracker, null);
   }
 
   private static File trackFile(File f, Object tracker) {

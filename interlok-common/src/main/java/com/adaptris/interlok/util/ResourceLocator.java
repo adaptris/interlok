@@ -5,9 +5,10 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public abstract class ResourceLocator {
 
@@ -22,6 +23,19 @@ public abstract class ResourceLocator {
       @Override
       URL resolve(String path) throws MalformedURLException {
         return new File(path).toURI().toURL();
+      }
+
+    },
+    FileUrl() {
+
+      @Override
+      boolean canFind(String path) {
+        return new File(stripRelativeFileUrl(path)).exists();
+      }
+
+      @Override
+      URL resolve(String path) throws MalformedURLException {
+        return new File(stripRelativeFileUrl(path)).toURI().toURL();
       }
 
     },
@@ -60,17 +74,27 @@ public abstract class ResourceLocator {
   }
 
   private static final List<LocalResource> RESOLVERS =
-      Arrays.asList(LocalResource.Filesystem, LocalResource.Classpath, LocalResource.DefaultBehaviour);
+      Arrays.asList(LocalResource.Filesystem, LocalResource.FileUrl, LocalResource.Classpath,
+          LocalResource.DefaultBehaviour);
 
   public static URL toURL(String s) throws Exception {
     URI configuredUri = toURI(s);
-    return !configuredUri.isAbsolute() ? localResource(configuredUri) : new URL(configuredUri.toString());
+    return isLocal(configuredUri) ? localResource(configuredUri)
+        : new URL(configuredUri.toString());
+  }
+
+  private static boolean isLocal(URI uri) throws Exception {
+    URI uriToParse = Args.notNull(uri, "uri");
+    String scheme = StringUtils.defaultIfEmpty(uriToParse.getScheme(), "");
+    return BooleanUtils.or(new boolean[] {
+        StringUtils.isBlank(scheme),
+        scheme.toLowerCase().startsWith("file")
+    });
   }
 
 
   private static URI toURI(String s) throws Exception {
     String destToConvert = backslashToSlash(Args.notNull(s, "uri"));
-    URI configuredUri = null;
     return new URI(destToConvert);
   }
 
@@ -83,4 +107,11 @@ public abstract class ResourceLocator {
     return url.replace('\\', '/');
   }
 
+  private static String stripRelativeFileUrl(String filepath) {
+    String filename = filepath;
+    if (filename.startsWith("/.")) {
+      filename = filename.substring(1);
+    }
+    return filename;
+  }
 }
