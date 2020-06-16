@@ -4,7 +4,7 @@ title: 0005-remove-produce-destination
 ---
 # Deprecate and ultimately remove Destination
 
-* Status: PROPOSED
+* Status: Accepted
 * Deciders: Lewin Chan, Aaron McGrath, Paul Higginson, Sebastien Belin, Matt Warman
 * Date: 2019-07-30
 
