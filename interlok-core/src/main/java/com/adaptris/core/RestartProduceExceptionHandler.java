@@ -27,7 +27,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @deprecated since 3.10.2
  */
 @Deprecated
-@Removal(message = "If you need restarting capability use channel-restart-produce-exception-handler or wrap your producer into a standalone-producer and set restart services on failure.", version = "3.11.0")
+@Removal(message = "If you need restarting capability use channel-restart-produce-exception-handler or wrap your producer into a standalone-producer and set restart services on failure.", version = "3.12.0")
 @XStreamAlias("restart-produce-exception-handler")
 public class RestartProduceExceptionHandler extends ProduceExceptionHandlerImp {
 
