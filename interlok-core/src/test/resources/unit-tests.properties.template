@@ -227,5 +227,6 @@ junit.urlstring.dir=@BUILD_DIR@/junit/urlstring
 junit.urlstring.serialized=@BASE_DIR@/src/test/resources/urlstring.serialized
 
 junit.urlhelper.local=file://localhost/@BASE_DIR@/src/test/resources/xstream-standard.xml
-junit.urlhelper.remote=https://development.adaptris.net/index.html
+# junit.urlhelper.remote=https://development.adaptris.net/index.html
+junit.urlhelper.remote=https://raw.githubusercontent.com/adaptris-labs/interlok-build-parent/master/build.gradle
 junit.urlhelper.classpath=xstream-standard.xml
