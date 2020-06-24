@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,9 +47,9 @@ import org.slf4j.LoggerFactory;
  * This class only deals with a specific handler structure. The uppermost handler must be a HandlerCollection and we add the
  * deployment to all of it's appropriate childhandlers.
  * </p>
- * 
+ *
  * @author gcsiki
- * 
+ *
  */
 public class JettyServerManager implements ServerManager {
 
@@ -73,10 +73,12 @@ public class JettyServerManager implements ServerManager {
   public static final String SECURITY_CONSTRAINTS = "securityConstraints";
 
   /**
-   * Enable additional debug logging by specifying the system property {@code adp.jetty.debug} to true.
-   * 
+   * Enable additional debug logging by specifying the system property {@code interlok.jetty.debug}
+   * to true.
+   *
    */
-  public static final boolean JETTY_DEBUG = Boolean.getBoolean("adp.jetty.debug");
+  public static final boolean JETTY_DEBUG =
+      Boolean.getBoolean("adp.jetty.debug") || Boolean.getBoolean("interlok.jetty.debug");
   private Logger log = LoggerFactory.getLogger(this.getClass());
 
   /**
@@ -120,7 +122,8 @@ public class JettyServerManager implements ServerManager {
     addServlet(new ServletHolder(servlet), additionalProperties);
   }
 
-  public void addServlet(ServletHolder servlet, HashMap<String, Object> additionalProperties) throws Exception {
+  public synchronized void addServlet(ServletHolder servlet,
+      HashMap<String, Object> additionalProperties) throws Exception {
     boolean addedAtLeastOnce = false;
     for (Server server : servers) {
       WebAppContext rootWar = findRootContext(server, true);
@@ -154,7 +157,8 @@ public class JettyServerManager implements ServerManager {
     rootWar.start();
   }
 
-  private WebAppContext findRootContext(Server server, boolean create) throws Exception {
+  private WebAppContext findRootContext(Server server, boolean create)
+      throws Exception {
     WebAppContext root = rootContextFromHandler(server.getHandler());
     if (root == null && create) {
       log.trace("No ROOT WebAppContext, creating one");
