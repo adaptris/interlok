@@ -167,6 +167,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
       LifecycleHelper.start(produceConnection);
       LifecycleHelper.start(workflowList);
       LifecycleHelper.start(consumeConnection);
+      toggleAvailability(true);
     }
     startTime = new Date();
   }
