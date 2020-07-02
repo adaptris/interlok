@@ -200,15 +200,7 @@ public abstract class BaseCase implements UpgradedToJunit4 {
           slf4jLogger.trace("Explicitly ignoring recursion on " + a.getClass());
           continue;
         }
-        // This is a bit of a hack, but we don't always have object equality
-        // in our config, simply checking the size is a test of the
-        // castor marshall/unmarshall however.
-        if (a instanceof List) {
-          assertEquals(input.getClass() + "." + toCall[i] + "() sizes", ((List) a).size(), ((List) b).size());
-        }
-        else {
-          assertRoundtripEquality(a, b);
-        }
+        assertRoundtripEquality(a, b);
       }
     }
     catch (Exception e) {
@@ -220,16 +212,22 @@ public abstract class BaseCase implements UpgradedToJunit4 {
   // Make sure that lists are in fact lists (but we might be doing ArrayList vs LinkedList, or
   // because of INTERLOK-3342 HashSet vs LinkedHashSet
   public static void lenientClassAssertion(Object input, Object output) {
+    // This is a bit of a hack, but we don't always have object equality
+    // in our config, simply checking the size is a test of the
+    // castor marshall/unmarshall however.
     if (input instanceof Set) {
       assertTrue(output instanceof Set);
+      assertEquals(((Collection) input).size(), ((Collection) output).size());
       return;
     }
     if (input instanceof List) {
       assertTrue(output instanceof List);
+      assertEquals(((Collection) input).size(), ((Collection) output).size());
       return;
     }
     if (input instanceof Collection) {
       assertTrue(output instanceof Collection);
+      assertEquals(((Collection) input).size(), ((Collection) output).size());
       return;
     }
     assertEquals(input.getClass(), output.getClass());
