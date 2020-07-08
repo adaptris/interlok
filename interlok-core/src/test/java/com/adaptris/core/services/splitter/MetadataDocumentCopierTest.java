@@ -29,6 +29,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.stubs.DefectiveMessageFactory;
 import com.adaptris.core.stubs.MockMessageProducer;
+import com.adaptris.interlok.util.CloseableIterable;
 
 @SuppressWarnings("deprecation")
 public class MetadataDocumentCopierTest extends SplitterCase {
@@ -117,7 +118,7 @@ public class MetadataDocumentCopierTest extends SplitterCase {
     msg.addObjectHeader(obj, obj);
     msg.addMetadata(METADATA_KEY, String.valueOf(expectedSplitCount));
     MetadataDocumentCopier splitter = new MetadataDocumentCopier(METADATA_KEY, METADATA_KEY_INDEX);
-    try (com.adaptris.core.util.CloseableIterable<AdaptrisMessage> result = splitter.splitMessage(msg)) {
+    try (CloseableIterable<AdaptrisMessage> result = splitter.splitMessage(msg)) {
       int count = 0;
       for (AdaptrisMessage m : result) {
         assertFalse("No Object Metadata", m.getObjectHeaders().containsKey(obj));
@@ -136,7 +137,7 @@ public class MetadataDocumentCopierTest extends SplitterCase {
     msg.addObjectHeader(obj, obj);
     msg.addMetadata(METADATA_KEY, String.valueOf(expectedSplitCount));
     MetadataDocumentCopier splitter = new MetadataDocumentCopier(METADATA_KEY);
-    try (com.adaptris.core.util.CloseableIterable<AdaptrisMessage> result = splitter.splitMessage(msg)) {
+    try (CloseableIterable<AdaptrisMessage> result = splitter.splitMessage(msg)) {
       int count = 0;
       for (AdaptrisMessage m : result) {
         assertFalse("No Object Metadata", m.getObjectHeaders().containsKey(obj));
@@ -153,7 +154,7 @@ public class MetadataDocumentCopierTest extends SplitterCase {
     String obj = "ABCDEFG";
     msg.addObjectHeader(obj, obj);
     MetadataDocumentCopier splitter = new MetadataDocumentCopier(METADATA_KEY, METADATA_KEY_INDEX);
-    try (com.adaptris.core.util.CloseableIterable<AdaptrisMessage> result = splitter.splitMessage(msg)) {
+    try (CloseableIterable<AdaptrisMessage> result = splitter.splitMessage(msg)) {
       int count = 0;
       for (AdaptrisMessage m : result) {
         assertFalse("No Object Metadata", m.getObjectHeaders().containsKey(obj));
@@ -172,7 +173,7 @@ public class MetadataDocumentCopierTest extends SplitterCase {
     msg.addMetadata(METADATA_KEY, String.valueOf(expectedSplitCount));
     MetadataDocumentCopier splitter = new MetadataDocumentCopier(METADATA_KEY, METADATA_KEY_INDEX);
     splitter.setCopyObjectMetadata(true);
-    try (com.adaptris.core.util.CloseableIterable<AdaptrisMessage> result = splitter.splitMessage(msg)) {
+    try (CloseableIterable<AdaptrisMessage> result = splitter.splitMessage(msg)) {
       int count = 0;
       for (AdaptrisMessage m : result) {
         assertTrue("Object Metadata", m.getObjectHeaders().containsKey(obj));
@@ -202,7 +203,7 @@ public class MetadataDocumentCopierTest extends SplitterCase {
     AdaptrisMessage msg = new DefectiveMessageFactory().newMessage(LINE);
     msg.addMetadata(METADATA_KEY, String.valueOf(expectedSplitCount));
     MetadataDocumentCopier splitter = new MetadataDocumentCopier(METADATA_KEY, METADATA_KEY_INDEX);
-    try (com.adaptris.core.util.CloseableIterable<AdaptrisMessage> result = splitter.splitMessage(msg)) {
+    try (CloseableIterable<AdaptrisMessage> result = splitter.splitMessage(msg)) {
       for (AdaptrisMessage m : result) {
         fail();
       }

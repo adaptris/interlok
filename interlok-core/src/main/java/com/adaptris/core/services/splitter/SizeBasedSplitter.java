@@ -19,12 +19,12 @@ package com.adaptris.core.services.splitter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
+import com.adaptris.interlok.util.CloseableIterable;
 import com.adaptris.util.NumberUtils;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -52,7 +52,7 @@ public class SizeBasedSplitter extends MessageSplitterImp {
 
   public SizeBasedSplitter() {}
 
-  public com.adaptris.core.util.CloseableIterable<AdaptrisMessage> splitMessage(final AdaptrisMessage msg) throws CoreException {
+  public CloseableIterable<AdaptrisMessage> splitMessage(final AdaptrisMessage msg) throws CoreException {
     logR.debug("SizeBasedSplitter splits every {} bytes", splitSizeBytes());
     logExpected(msg);
     try {

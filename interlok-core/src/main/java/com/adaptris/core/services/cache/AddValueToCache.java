@@ -16,7 +16,7 @@ import com.adaptris.util.text.DateFormatUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Version of {@link AddToCacheService} that doesn't use {@link CacheEntryEvaluators}.
+ * Version of {@link AddToCacheService} that doesn't use {@link CacheEntryEvaluator}.
  * 
  * <p>
  * Most of the time, you only want to add a single item to the cache rather than a list of items;

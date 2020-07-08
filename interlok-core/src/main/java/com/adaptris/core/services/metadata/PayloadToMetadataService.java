@@ -42,17 +42,18 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Takes the entire payload and writes it out to metadata (either object or normal metadata).
  * 
- * <p>If storing to {@link MetadataTarget#Object} then the raw byte[] will be stored in object metadata against the specified key.
- * If storing to {@link MetadataTarget#Standard} then the payload will be treated as a String (using the default character set
- * encoding); if storing as standard metadata, then you are encouraged to apply an encoding such as base64 using {@link
- * #setEncoding(Encoding)} to make sure that the payload can be treated as a String. The reason for only using the default charset
- * is to avoid complications when the data is actually XML and the encoding specification does not match the message's character
- * set.
+ * <p>
+ * If storing to {@link MetadataTarget#Object} then the raw byte[] will be stored in object metadata
+ * against the specified key. If storing to {@link MetadataTarget#Standard} then the payload will be
+ * treated as a String (using the default character set encoding); if storing as standard metadata,
+ * then you are encouraged to apply an encoding such as base64 using
+ * {@link #setEncoding(com.adaptris.core.util.EncodingHelper.Encoding)} to make sure that the
+ * payload can be treated as a String. The reason for only using the default charset is to avoid
+ * complications when the data is actually XML and the encoding specification does not match the
+ * message's character set.
  * </p>
  * 
  * @config payload-to-metadata
- * 
- * @author lchan
  *
  */
 @XStreamAlias("payload-to-metadata")

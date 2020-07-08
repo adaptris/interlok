@@ -7,14 +7,20 @@ dependencies {
 
   compile project(':interlok-core-apt')
   compile ("com.thoughtworks.xstream:xstream:$xstreamVersion")
-  compile ("commons-io:commons-io:2.6")
+  compile ("commons-io:commons-io:2.7")
   compile ("commons-net:commons-net:3.6")
   compile ("commons-pool:commons-pool:1.6")
   compile ("org.apache.commons:commons-lang3:3.10")
   compile ("org.apache.commons:commons-pool2:2.8.0")
 
   compile ("org.slf4j:slf4j-api:$slf4jVersion")
-  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.28.v20200408")
+  compile ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
+  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.30.v20200611")
+  compile "org.slf4j:jul-to-slf4j:$slf4jVersion", optional
+  compile "org.apache.logging.log4j:log4j-core:$log4j2Version", optional
+  compile "org.apache.logging.log4j:log4j-api:$log4j2Version", optional
+  compile "org.apache.logging.log4j:log4j-slf4j-impl:$log4j2Version", optional
+  compile "org.apache.logging.log4j:log4j-1.2-api:$log4j2Version", optional
   compile ("javax.servlet:javax.servlet-api:4.0.1")
 
   annotationProcessor project(':interlok-core-apt')

@@ -37,7 +37,7 @@ import com.adaptris.core.ServiceList;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.services.WaitService;
 import com.adaptris.core.stubs.StubMessageFactory;
-import com.adaptris.core.util.CloseableIterable;
+import com.adaptris.interlok.util.CloseableIterable;
 
 public abstract class SplitterCase extends SplitterServiceExample {
 

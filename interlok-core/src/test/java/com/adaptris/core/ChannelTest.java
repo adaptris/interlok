@@ -103,7 +103,17 @@ public class ChannelTest extends ExampleChannelCase {
     c.requestClose();
     assertEquals(ClosedState.getInstance(), c.retrieveComponentState());
   }
-
+  
+  @Test
+  public void channelAvailability_toggleTest() throws Exception {
+  Channel c = new Channel();
+  c.toggleAvailability(false);
+  assertEquals(false, c.isAvailable());
+  c.requestStart();
+  assertEquals(true, c.isAvailable());
+  
+  }
+  
   @Test
   public void testChannel_StateManagedComponentContainerInit() throws Exception {
     Channel channel = new Channel();

@@ -33,6 +33,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.StubMessageFactory;
+import com.adaptris.interlok.util.CloseableIterable;
 
 public class LineCountSplitterTest extends SplitterCase {
 
@@ -224,7 +225,7 @@ public class LineCountSplitterTest extends SplitterCase {
   @Test
   public void testIterator_DoubleProtection() throws Exception {
     MessageSplitterImp splitter = new LineCountSplitter(1);
-    try (com.adaptris.core.util.CloseableIterable<AdaptrisMessage> iterable = com.adaptris.core.util.CloseableIterable.ensureCloseable(splitter.splitMessage(msg))) {
+    try (CloseableIterable<AdaptrisMessage> iterable = CloseableIterable.ensureCloseable(splitter.splitMessage(msg))) {
       Iterator<AdaptrisMessage> first = iterable.iterator();
       try {
         Iterator<AdaptrisMessage> second = iterable.iterator();
@@ -239,7 +240,7 @@ public class LineCountSplitterTest extends SplitterCase {
   @Test
   public void testIterator_Remove() throws Exception {
     MessageSplitterImp splitter = new LineCountSplitter(1);
-    try (com.adaptris.core.util.CloseableIterable<AdaptrisMessage> iterable = com.adaptris.core.util.CloseableIterable
+    try (CloseableIterable<AdaptrisMessage> iterable = CloseableIterable
         .ensureCloseable(splitter.splitMessage(msg))) {
       Iterator<AdaptrisMessage> first = iterable.iterator();
       try {
@@ -256,7 +257,7 @@ public class LineCountSplitterTest extends SplitterCase {
   @Test
   public void testIterator_HasNext() throws Exception {
     MessageSplitterImp splitter = new LineCountSplitter(1);
-    try (com.adaptris.core.util.CloseableIterable<AdaptrisMessage> iterable = com.adaptris.core.util.CloseableIterable
+    try (CloseableIterable<AdaptrisMessage> iterable = CloseableIterable
         .ensureCloseable(splitter.splitMessage(msg))) {
       Iterator<AdaptrisMessage> first = iterable.iterator();
       assertTrue(first.hasNext());

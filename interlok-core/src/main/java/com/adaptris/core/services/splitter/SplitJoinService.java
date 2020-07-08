@@ -48,6 +48,7 @@ import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
+import com.adaptris.interlok.util.CloseableIterable;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -147,8 +148,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
       return (List<AdaptrisMessage>) iter;
     }
     List<AdaptrisMessage> result = new ArrayList<AdaptrisMessage>();
-    try (com.adaptris.core.util.CloseableIterable<AdaptrisMessage> messages = com.adaptris.core.util.CloseableIterable
-        .ensureCloseable(iter)) {
+    try (CloseableIterable<AdaptrisMessage> messages = CloseableIterable.ensureCloseable(iter)) {
       for (AdaptrisMessage msg : messages) {
         result.add(msg);
       }

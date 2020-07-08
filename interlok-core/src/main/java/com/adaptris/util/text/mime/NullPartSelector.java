@@ -57,7 +57,7 @@ public class NullPartSelector implements PartSelector {
 	}
 
   /**
-   * Returns the first part of the {@link MultiPartInput}
+   * Returns the first part of the {@link BodyPartIterator}
    * 
    */
   @Override

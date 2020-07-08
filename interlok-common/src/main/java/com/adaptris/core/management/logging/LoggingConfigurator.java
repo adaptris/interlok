@@ -1,14 +1,17 @@
 package com.adaptris.core.management.logging;
 
-import static com.adaptris.core.management.Constants.DBG;
-import static com.adaptris.core.management.Constants.ENABLE_JUL_LOGGING_BRIDGE;
 
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 public abstract class LoggingConfigurator {
 
-  private static enum AvailableLoggingImpls {
+  // painful code duplication from its original home.
+  protected static final boolean DBG = Boolean.getBoolean("adp.bootstrap.debug") || Boolean.getBoolean("interlok.bootstrap.debug");
+  public static final boolean ENABLE_JUL_LOGGING_BRIDGE = Boolean.getBoolean("jul.log4j.bridge");
+
+  static enum AvailableLoggingImpls {
     LOG4J_2() {
+      @Override
       boolean available() {
         boolean rc = false;
         try {
@@ -20,15 +23,18 @@ public abstract class LoggingConfigurator {
         return rc;
       }
 
+      @Override
       LoggingConfigurator create() {
         return new Log4jConfigurator();
       }
     },
     DEFAULT() {
+      @Override
       boolean available() {
         return true;
       }
 
+      @Override
       LoggingConfigurator create() {
         return new LoggingConfigurator() {
           @Override

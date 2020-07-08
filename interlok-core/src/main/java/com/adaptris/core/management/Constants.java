@@ -16,6 +16,9 @@
 
 package com.adaptris.core.management;
 
+import com.adaptris.annotation.Removal;
+import com.adaptris.core.management.logging.LoggingConfigurator;
+
 /**
  * Constants and lots of them.
  *
@@ -24,7 +27,10 @@ package com.adaptris.core.management;
  */
 public final class Constants {
   public static final boolean DBG = Boolean.getBoolean("adp.bootstrap.debug") || Boolean.getBoolean("interlok.bootstrap.debug");
-  public static final boolean ENABLE_JUL_LOGGING_BRIDGE = Boolean.getBoolean("jul.log4j.bridge");
+
+  @Removal(version = "3.11.0", message="Moved into interlok-commons/LoggingConfigurator")
+  @Deprecated
+  public static final boolean ENABLE_JUL_LOGGING_BRIDGE = LoggingConfigurator.ENABLE_JUL_LOGGING_BRIDGE;
   /**
    * Key representing the name of the file that was used to bootstrap the adapter.
    *
@@ -38,7 +44,7 @@ public final class Constants {
   /**
    * Bootstrap Property containing the name of adapter config that is available on the classpath.
    *
-   * @deprecated use {@link #CFG_KEY_CONFIG_URL} instead.
+   * @deprecated use {@link #CFG_KEY_CONFIG_URL} instead; will be removed w/o warning
    */
   @Deprecated
   public static final String CFG_KEY_CONFIG_RESOURCE = "adapterResourceName";

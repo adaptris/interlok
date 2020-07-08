@@ -24,6 +24,7 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
+import com.adaptris.interlok.util.CloseableIterable;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -60,7 +61,7 @@ public class MetadataDocumentCopier extends MessageCopier {
   }
 
   @Override
-  public com.adaptris.core.util.CloseableIterable<AdaptrisMessage> splitMessage(AdaptrisMessage msg) throws CoreException {
+  public CloseableIterable<AdaptrisMessage> splitMessage(AdaptrisMessage msg) throws CoreException {
     int size = toInteger(msg.getMetadataValue(getMetadataKey()));     
     return new MessageCopierIterator(msg, size, (m, count) -> {
       if (!isEmpty(getIndexMetadataKey())) {

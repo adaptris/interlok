@@ -1,5 +1,13 @@
 package com.adaptris.core.resolver;
 
+import java.io.InputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.xml.XMLConstants;
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.Document;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.interlok.resolver.ResolverImp;
 import com.adaptris.interlok.resolver.UnresolvableException;
@@ -8,16 +16,6 @@ import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
 import com.adaptris.util.text.xml.XPath;
-import org.w3c.dom.Document;
-
-import javax.xml.XMLConstants;
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class FromPayloadUsingXPath extends ResolverImp
 {
@@ -61,9 +59,10 @@ public class FromPayloadUsingXPath extends ResolverImp
     Document document;
     try (InputStream inputStream = target.getInputStream())
     {
-      DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      DocumentBuilderFactory factory =
+          DocumentBuilderFactoryBuilder.newRestrictedInstance().build();
       DocumentBuilder builder = factoryBuilder.newDocumentBuilder(factory);
-      document = builder.parse(inputStream);
+      document = builder.parse(inputStream); // lgtm [java/xxe]
     }
     catch (Exception e)
     {

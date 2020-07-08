@@ -27,7 +27,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  * <p>
  * The use case for this is to simulate the 'default' branch of a {@link Switch} service; add this conditional as the last
- * {@link Case} configuration in your {@link Switch} service to have a default set of services that are executed.
+ * {@link Condition} configuration in your {@link Switch} service to have a default set of services that are executed.
  * </p>
  * 
  * @config case-default
