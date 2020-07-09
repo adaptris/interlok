@@ -20,16 +20,18 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.Topic;
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.jms.JmsDestination.DestinationType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * JMS Consumer implementation that can target queues or topics via an RFC6167 style destination.
@@ -66,13 +68,34 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Listen for JMS messages on the specified queue or topic", tag = "consumer,jms",
     recommended = {JmsConnection.class})
-@DisplayOrder(order = {"destination", "acknowledgeMode", "messageTranslator"})
+@DisplayOrder(
+    order = {"endpoint", "messageSelector", "destination", "acknowledgeMode",
+    "messageTranslator"})
 public class JmsConsumer extends JmsConsumerImpl {
 
+  /**
+   * Set to true if you wish to let the JMS message consumer be delegated by the configured vendor
+   * implementation.
+   * <p>
+   * The default is false such that we use standard JMS 1.1/2.0 methods to create the appropriate
+   * consumers.
+   * </p>
+   */
   @AdvancedConfig(rare = true)
   @AutoPopulated
   @InputFieldDefault(value = "false")
+  @Getter
+  @Setter
   private Boolean deferConsumerCreationToVendor;
+
+  /**
+   * The RFC6167 format topic/queue.
+   *
+   */
+  @Getter
+  @Setter
+  // Needs to be @NotBlank when destination is removed.
+  private String endpoint;
 
   public JmsConsumer() {
   }
@@ -82,15 +105,20 @@ public class JmsConsumer extends JmsConsumerImpl {
     super(transacted);
   }
 
-  public JmsConsumer(ConsumeDestination d) {
-    this();
-    setDestination(d);
+  public JmsConsumer withEndpoint(String s) {
+    setEndpoint(s);
+    return this;
+  }
+
+  @Override
+  protected String configuredEndpoint() {
+    return getEndpoint();
   }
 
   @Override
   protected MessageConsumer createConsumer() throws JMSException, CoreException {
-    String rfc6167 = getDestination().getDestination();
-    String filterExp = getDestination().getFilterExpression();
+    String rfc6167 = endpoint();
+    String filterExp = messageSelector();
 
     VendorImplementation vendor = retrieveConnection(JmsConnection.class).configuredVendorImplementation();
     JmsDestination destination = vendor.createDestination(rfc6167, this);
@@ -134,31 +162,7 @@ public class JmsConsumer extends JmsConsumerImpl {
   }
 
   protected Boolean deferConsumerCreationToVendor() {
-    return this.getDeferConsumerCreationToVendor() == null ? false : this.getDeferConsumerCreationToVendor();
-  }
-
-  /**
-   * <p>
-   * Returns a boolean value which determines if the JMS message consumer should be created by the configured vendor implementation or not.
-   * </p>
-   * <p>
-   * Generally this will be false or null, such is the default.  When false/null a standard JMS message consumer will be created.
-   * </p>
-   */
-  public Boolean getDeferConsumerCreationToVendor() {
-    return deferConsumerCreationToVendor;
-  }
-
-  /**
-   * <p>
-   * Set to true if you wish to let the JMS message consumer be created by the specific vendor implementation.
-   * </p>
-   * <p>
-   * Generally this will be false/null, such is the default.  When false/null a standard JMS message consumer will be created.
-   * </p>
-   */
-  public void setDeferConsumerCreationToVendor(Boolean deferConsumerCreationToVendor) {
-    this.deferConsumerCreationToVendor = deferConsumerCreationToVendor;
+    return BooleanUtils.toBooleanDefaultIfNull(getDeferConsumerCreationToVendor(), false);
   }
 
 }

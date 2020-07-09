@@ -65,9 +65,7 @@ public abstract class ExampleChannelCase extends ExampleConfigCase {
 
   protected Workflow configureWorkflow(WorkflowImp impl) throws CoreException {
     impl.setUniqueId(UUID.randomUUID().toString());
-    ConfiguredConsumeDestination dest = new ConfiguredConsumeDestination("dummy");
     AdaptrisMessageConsumer consumer = new NullMessageConsumer();
-    consumer.setDestination(dest);
     impl.setConsumer(consumer);
     impl.setProducer(new NullMessageProducer());
     impl.setServiceCollection(createServiceCollection());

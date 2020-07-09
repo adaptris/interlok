@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,15 +43,12 @@ public abstract class FailedMessageRetrierCase extends ExampleFailedMessageRetri
     return createWorkflow(new GuidGenerator().getUUID());
   }
 
-  protected StandardWorkflow createWorkflow(String threadName) throws Exception {
+  protected StandardWorkflow createWorkflow(String uniqueId) throws Exception {
     AdaptrisMessageConsumer consumer = new MockMessageConsumer();
-    ConfiguredConsumeDestination d = new ConfiguredConsumeDestination();
-    d.setDestination("dest1");
-    d.setConfiguredThreadName(threadName);
-    consumer.setDestination(d);
     AdaptrisMessageProducer producer = new MockMessageProducer();
 
     StandardWorkflow workflow = new StandardWorkflow();
+    workflow.setUniqueId(uniqueId);
     workflow.setConsumer(consumer);
     workflow.setProducer(producer);
     Channel channel = new MockChannel();

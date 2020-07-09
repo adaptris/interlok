@@ -57,11 +57,6 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
 
   @Test
   public void testNoOpMethods() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     AggregatingJmsConsumeService service = createService(broker);
     try {
@@ -83,11 +78,6 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
 
   @Test
   public void testService() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     AggregatingJmsConsumeService service = createService(broker);
     try {
@@ -108,11 +98,6 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
 
   @Test
   public void testServiceWithTimeout() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     AggregatingJmsConsumeService service = createService(broker);
     try {
@@ -136,11 +121,6 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
 
   @Test
   public void testService_MultipleMessages() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     AggregatingQueueConsumer consumer = new AggregatingQueueConsumer();
     consumer.setMessageAggregator(new IgnoreOriginalMimeAggregator());

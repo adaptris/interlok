@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -67,7 +67,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
 
   /**
    * Key in unit-test.properties that defines where example goes unless overriden {@link #setBaseDir(String)}.
-   * 
+   *
    */
   public static final String BASE_DIR_KEY = "SharedComponentConfig.baseDir";
 
@@ -291,7 +291,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     MockService service1 = new MockService();
     MockService service2 = new MockService();
     service2.setUniqueId(service1.getUniqueId());
-    
+
     Collection<Service> rejected =
         list.addServices(Arrays.asList(new Service[] {service1, service2}));
     assertEquals(1, list.getServices().size());
@@ -475,9 +475,9 @@ public class SharedComponentListTest extends ExampleConfigCase {
   public void testRemoveService_unbindsJNDI() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
-    
+
     MockService mockService = new MockService();
-    
+
     adapter.getSharedComponents().addService(mockService);
     Properties env = new Properties();
     env.put(Context.INITIAL_CONTEXT_FACTORY, JndiContextFactory.class.getName());
@@ -530,7 +530,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
 
     try {
       start(adapter);
-      
+
       MockService mockService = new MockService();
       adapter.getSharedComponents().addService(mockService);
       adapter.getSharedComponents().bindJNDI(mockService.getUniqueId());
@@ -770,22 +770,22 @@ public class SharedComponentListTest extends ExampleConfigCase {
     JmsConnection jmsConnection = createPtpConnection("jms-connection");
 
     adapter.getSharedComponents().addConnection(jmsConnection);
-    
+
     ServiceList serviceList = new ServiceList();
     serviceList.setUniqueId("shared-service-list");
     serviceList.add(new LogMessageService("log-message-service"));
-    
+
     adapter.getSharedComponents().addService(serviceList);
 
     StandardWorkflow wf1 = new StandardWorkflow();
     wf1.setUniqueId("reverent-edison");
-    wf1.setConsumer(new FsConsumer(new ConfiguredConsumeDestination("in-directory")));
+    wf1.setConsumer(new FsConsumer().withBaseDirectoryUrl("in-directory"));
     wf1.setProducer(new FsProducer(new ConfiguredProduceDestination("out-directory")));
     wf1.getServiceCollection().add(new SharedService("shared-service-list"));
-    
+
     StandardWorkflow wf = new StandardWorkflow();
     wf.setUniqueId("pedantic_brown");
-    wf.setConsumer(new JmsConsumer(new ConfiguredConsumeDestination("jms:queue:SampleQueue1")));
+    wf.setConsumer(new JmsConsumer().withEndpoint("jms:queue:SampleQueue1"));
     wf.setProducer(new NullMessageProducer());
     wf.getServiceCollection().add(new StandaloneProducer(new SharedConnection("jms-connection"),
         new JmsProducer(new ConfiguredProduceDestination("jms:topic:MyTopicName"))));

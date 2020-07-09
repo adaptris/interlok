@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -358,9 +358,9 @@ public class AdapterTest extends BaseCase {
     assertEquals(meh2, wf.retrieveActiveMsgErrorHandler());
   }
 
-  private static StandardWorkflow createWorkflow(String destination) {
+  private static StandardWorkflow createWorkflow(String uniqueId) {
     StandardWorkflow wf = new StandardWorkflow();
-    wf.getConsumer().setDestination(new ConfiguredConsumeDestination(destination));
+    wf.setUniqueId(uniqueId);
     return wf;
   }
 
@@ -682,7 +682,7 @@ public class AdapterTest extends BaseCase {
    * <p>
    * Creates a valid Adapter to use in tests. Uese Mock aka Memory MessageConsumer / Producer.
    * </p>
-   * 
+   *
    * @param uniqueId a uniqure identifier for this <code>Adapter</code>
    */
   public static Adapter createAdapter(String uniqueId) throws Exception {
@@ -714,7 +714,7 @@ public class AdapterTest extends BaseCase {
    * <p>
    * Creates a valid Adapter to use in tests. Uese Mock aka Memory MessageConsumer / Producer.
    * </p>
-   * 
+   *
    * @param uniqueId a uniqure identifier for this <code>Adapter</code>
    */
   public static Adapter createRetryingAdapter(String uniqueId) throws Exception {

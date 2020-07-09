@@ -112,7 +112,7 @@ public abstract class WorkflowImp implements Workflow {
   private MessageLogger messageLogger;
   @MarshallingCDATA
   private String comments;
-  
+
   // not marshalled
   private transient Channel channel;
   private transient ProcessingExceptionHandler activeErrorHandler;
@@ -451,15 +451,8 @@ public abstract class WorkflowImp implements Workflow {
       return uniqueId;
     }
     else {
-      if (consumer.getDestination() != null) {
-        // log.warn("Consumer.getDestination() != null " +
-        // consumer.getDestination());
-        uniqueId = consumer.getDestination().getUniqueId();
-      }
-      else {
-        log.warn("consumer has no destination, you may not be able to retry messages that fail in this workflow.");
-        uniqueId = new PlainIdGenerator().create(this);
-      }
+      log.warn("No UniqueID you may not be able to retry messages that fail in this workflow.");
+      uniqueId = new PlainIdGenerator().create(this);
     }
     return uniqueId;
   }
@@ -616,7 +609,7 @@ public abstract class WorkflowImp implements Workflow {
   public void setLogPayload(Boolean b) {
     logPayload = b;
   }
-  
+
   /**
    * @see com.adaptris.core.Workflow#obtainChannel()
    */
@@ -810,22 +803,22 @@ public abstract class WorkflowImp implements Workflow {
    * @since 3.0.3
    */
   public void setDisableDefaultMessageCount(Boolean b) {
-    this.disableDefaultMessageCount = b;
+    disableDefaultMessageCount = b;
   }
 
   @Override
   public boolean disableMessageCount() {
     return BooleanUtils.toBooleanDefaultIfNull(getDisableDefaultMessageCount(), false);
   }
-  
+
   public MessageLogger getMessageLogger() {
     return messageLogger;
   }
 
   public void setMessageLogger(MessageLogger ml) {
-    this.messageLogger = ml;
+    messageLogger = ml;
   }
-  
+
 
   @Override
   public void setComments(String s) {

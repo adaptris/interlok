@@ -1,12 +1,12 @@
 /*
  * Copyright 2016 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,17 +33,23 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumerImp;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ClosedState;
+import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.DestinationHelper;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.FifoMutexLock;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.Setter;
 
 @XStreamAlias("jmx-notification-consumer")
 @AdapterComponent
@@ -65,12 +71,32 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
   @InputFieldDefault(value = "true")
   private Boolean failIfNotFound;
 
+  /**
+   * The consume destination represents the RFC6167 style topic or queue from which we will receive
+   * JMS messages from.
+   *
+   */
+  @Deprecated
+  @Valid
+  @Removal(version = "4.0.0", message = "Use 'object-name' instead")
+  @Getter
+  @Setter
+  private ConsumeDestination destination;
+
+  /**
+   * The object name which we will register as a listener for.
+   *
+   */
+  @Getter
+  @Setter
+  private String objectName;
+
   private transient MBeanServerConnection connection;
   private transient ObjectName actualObjectName;
   private transient ScheduledExecutorService scheduler;
   private transient FifoMutexLock locker;
-  // Not configurable
-  private TimeInterval retryInterval;
+  private transient TimeInterval retryInterval;
+  private transient boolean destinationWarningLogged;
 
   public JmxNotificationConsumer() {
     setSerializer(new SimpleNotificationSerializer());
@@ -78,12 +104,32 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
     changeState(ClosedState.getInstance());
   }
 
+  protected String objectName() {
+    return DestinationHelper.consumeDestination(getObjectName(), getDestination());
+  }
+
+  @Override
+  protected String newThreadName() {
+    return DestinationHelper.threadName(retrieveAdaptrisMessageListener(), getDestination());
+  }
+
+  @Override
+  public void prepare() throws CoreException {
+    if (getDestination() != null) {
+      LoggingHelper.logWarning(destinationWarningLogged, () -> destinationWarningLogged = true,
+          "{} uses destination, use queue-or-topic and message-selector instead",
+          LoggingHelper.friendlyName(this));
+    }
+    DestinationHelper.mustHaveEither(getObjectName(), getDestination());
+  }
+
+
   @Override
   public void init() throws CoreException {
     try {
       scheduler = Executors.newSingleThreadScheduledExecutor(new ManagedThreadFactory(getClass().getSimpleName()));
       connection = retrieveConnection(JmxConnection.class).mbeanServerConnection();
-      actualObjectName = ObjectName.getInstance(getDestination().getDestination());
+      actualObjectName = ObjectName.getInstance(objectName());
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
@@ -114,10 +160,6 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
   public void close() {
     shutdownScheduler();
   }
-
-  @Override
-  public void prepare() throws CoreException {}
-
 
   private AdaptrisMessage createMessage(Notification n) throws CoreException, IOException {
     AdaptrisMessageFactory fac = AdaptrisMessageFactory.defaultIfNull(getMessageFactory());
@@ -162,12 +204,12 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
    * If set to false, and the object is not found, then an attempt will be made periodically to check the MBeanServeConnection for
    * the object instance availability; when it becomes available, the notificaiton listener will be added at that point.
    * </p>
-   * 
-   * 
+   *
+   *
    * @param b the failIfNotFound to set, default is true
    */
   public void setFailIfNotFound(Boolean b) {
-    this.failIfNotFound = b;
+    failIfNotFound = b;
   }
 
   boolean failIfNotFound() {
@@ -222,7 +264,7 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
   }
 
   void setRetryInterval(TimeInterval t) {
-    this.retryInterval = Args.notNull(t, "retryInterval");
+    retryInterval = Args.notNull(t, "retryInterval");
   }
 
   long retryInterval() {
@@ -232,7 +274,7 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
   /**
    * Provides the metadata key '{@value #JMX_NOTIF_SOURCE}' that contains the source of the
    * notifcation.
-   * 
+   *
    * @since 3.9.0
    */
   @Override

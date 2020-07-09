@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -60,7 +60,7 @@ import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.util.TimeInterval;
 
 public class JmsProducerTest extends JmsProducerCase {
-  
+
   @Mock private ProducerSessionFactory mockSessionFactory;
   @Mock private ProducerSession mockProducerSession;
   @Mock private Session mockSession;
@@ -76,7 +76,9 @@ public class JmsProducerTest extends JmsProducerCase {
     return true;
   }
   protected JmsConsumerImpl createConsumer(ConfiguredConsumeDestination dest) {
-    return new PtpConsumer(dest);
+    PtpConsumer ptp = new PtpConsumer();
+    ptp.setDestination(dest);
+    return ptp;
   }
 
   protected BasicJmsProducerCase.QueueLoopback createLoopback(EmbeddedActiveMq mq, String dest) {
@@ -109,12 +111,12 @@ public class JmsProducerTest extends JmsProducerCase {
       .thenReturn(mockSession);
     when(mockSession.getTransacted())
       .thenReturn(true);
-    
-    JmsProducer producer = this.createProducer(new ConfiguredProduceDestination("myDestination"));
+
+    JmsProducer producer = createProducer(new ConfiguredProduceDestination("myDestination"));
     producer.setSessionFactory(mockSessionFactory);
     producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
     producer.commit();
-    
+
     verify(mockSession).commit();
   }
 
@@ -126,12 +128,12 @@ public class JmsProducerTest extends JmsProducerCase {
       .thenReturn(mockSession);
     when(mockSession.getTransacted())
       .thenReturn(false);
-    
-    JmsProducer producer = this.createProducer(new ConfiguredProduceDestination("myDestination"));
+
+    JmsProducer producer = createProducer(new ConfiguredProduceDestination("myDestination"));
     producer.setSessionFactory(mockSessionFactory);
     producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
     producer.commit();
-    
+
     verify(mockSession, times(0)).commit();
   }
 
@@ -143,12 +145,12 @@ public class JmsProducerTest extends JmsProducerCase {
       .thenReturn(mockSession);
     when(mockSession.getTransacted())
       .thenReturn(true);
-    
-    JmsProducer producer = this.createProducer(new ConfiguredProduceDestination("myDestination"));
+
+    JmsProducer producer = createProducer(new ConfiguredProduceDestination("myDestination"));
     producer.setSessionFactory(mockSessionFactory);
     producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
     producer.rollback();
-    
+
     verify(mockSession).rollback();
   }
 
@@ -162,12 +164,12 @@ public class JmsProducerTest extends JmsProducerCase {
       .thenReturn(true);
     doThrow(new JMSException("expected"))
       .when(mockSession).rollback();
-    
-    JmsProducer producer = this.createProducer(new ConfiguredProduceDestination("myDestination"));
+
+    JmsProducer producer = createProducer(new ConfiguredProduceDestination("myDestination"));
     producer.setSessionFactory(mockSessionFactory);
     producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
     producer.rollback();
-    
+
     verify(mockSession).rollback();
   }
 
@@ -179,12 +181,12 @@ public class JmsProducerTest extends JmsProducerCase {
       .thenReturn(mockSession);
     when(mockSession.getTransacted())
       .thenThrow(new JMSException("expected"));
-    
-    JmsProducer producer = this.createProducer(new ConfiguredProduceDestination("myDestination"));
+
+    JmsProducer producer = createProducer(new ConfiguredProduceDestination("myDestination"));
     producer.setSessionFactory(mockSessionFactory);
     producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
     producer.rollback();
-    
+
     verify(mockSession, times(0)).rollback();
   }
 
@@ -196,12 +198,12 @@ public class JmsProducerTest extends JmsProducerCase {
       .thenReturn(mockSession);
     when(mockSession.getTransacted())
       .thenReturn(false);
-    
+
     JmsProducer producer = new JmsProducer(new ConfiguredProduceDestination("myDestination"));
     producer.setSessionFactory(mockSessionFactory);
     producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
     producer.rollback();
-    
+
     verify(mockSession, times(0)).rollback();
   }
 
@@ -213,12 +215,12 @@ public class JmsProducerTest extends JmsProducerCase {
       .thenReturn(mockSession);
     when(mockSession.getTransacted())
       .thenReturn(false);
-  
+
     JmsProducer producer = new JmsProducer(new ConfiguredProduceDestination("myDestination"));
     producer.setSessionFactory(mockSessionFactory);
     producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
     producer.acknowledge(null);
-    
+
     verify(mockMessage, times(0)).acknowledge();
   }
 
@@ -230,12 +232,12 @@ public class JmsProducerTest extends JmsProducerCase {
       .thenReturn(mockSession);
     when(mockSession.getTransacted())
       .thenReturn(false);
-  
+
     JmsProducer producer = new JmsProducer(new ConfiguredProduceDestination("myDestination"));
     producer.setSessionFactory(mockSessionFactory);
     producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
     producer.acknowledge(mockMessage);
-    
+
     verify(mockMessage).acknowledge();
   }
 
@@ -247,12 +249,12 @@ public class JmsProducerTest extends JmsProducerCase {
       .thenReturn(mockSession);
     when(mockSession.getTransacted())
       .thenReturn(true);
-  
+
     JmsProducer producer = new JmsProducer(new ConfiguredProduceDestination("myDestination"));
     producer.setSessionFactory(mockSessionFactory);
     producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
     producer.acknowledge(mockMessage);
-    
+
     verify(mockMessage, times(0)).acknowledge();
   }
 
@@ -264,13 +266,13 @@ public class JmsProducerTest extends JmsProducerCase {
       .thenReturn(mockSession);
     when(mockSession.getTransacted())
       .thenReturn(true);
-  
+
     JmsProducer producer = new JmsProducer(new ConfiguredProduceDestination("myDestination"));
     producer.setSessionFactory(mockSessionFactory);
     producer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
     producer.acknowledge(mockMessage);
-    
+
     verify(mockMessage, times(0)).acknowledge();
   }
 
@@ -282,13 +284,13 @@ public class JmsProducerTest extends JmsProducerCase {
       .thenReturn(mockSession);
     when(mockSession.getTransacted())
       .thenReturn(false);
-  
+
     JmsProducer producer = new JmsProducer(new ConfiguredProduceDestination("myDestination"));
     producer.setSessionFactory(mockSessionFactory);
     producer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
     producer.acknowledge(mockMessage);
-    
+
     verify(mockMessage, times(0)).acknowledge();
   }
 
@@ -300,23 +302,18 @@ public class JmsProducerTest extends JmsProducerCase {
       .thenReturn(mockSession);
     when(mockSession.getTransacted())
       .thenReturn(false);
-  
+
     JmsProducer producer = new JmsProducer(new ConfiguredProduceDestination("myDestination"));
     producer.setSessionFactory(mockSessionFactory);
     producer.setAcknowledgeMode("CLIENT_ACKNOWLEDGE");
     producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
     producer.acknowledge(mockMessage);
-    
+
     verify(mockMessage).acknowledge();
   }
 
   @Test
   public void testProduce_JmsReplyToDestination() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();
@@ -344,11 +341,6 @@ public class JmsProducerTest extends JmsProducerCase {
   @Test
   public void testProduce_CaptureOutgoingMessageDetails() throws Exception {
     String rfc6167 = "jms:queue:" + getName();
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsProducer producer = createProducer(new ConfiguredProduceDestination(rfc6167));
     producer.setCaptureOutgoingMessageDetails(true);
@@ -370,11 +362,6 @@ public class JmsProducerTest extends JmsProducerCase {
 
   @Test
   public void testProduceAndConsume_DeliveryMode() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     String rfc6167 = "jms:queue:" + getName() + "?deliveryMode=PERSISTENT";
 
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
@@ -396,11 +383,6 @@ public class JmsProducerTest extends JmsProducerCase {
 
   @Test
   public void testProduceAndConsume_Priority() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     String rfc6167 = "jms:queue:" + getName() + "?priority=5";
 
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
@@ -422,11 +404,6 @@ public class JmsProducerTest extends JmsProducerCase {
 
   @Test
   public void testProduceAndConsume_TimeToLive() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     String rfc6167 = "jms:queue:" + getName() + "?timeToLive=60000";
 
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
@@ -465,11 +442,6 @@ public class JmsProducerTest extends JmsProducerCase {
 
   @Test
   public void testDefaultSessionFactory() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     String rfc6167 = "jms:queue:" + getName() + "";
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
@@ -498,11 +470,6 @@ public class JmsProducerTest extends JmsProducerCase {
 
   @Test
   public void testPerMessageSession() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     String rfc6167 = "jms:queue:" + getName() + "";
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
@@ -532,11 +499,6 @@ public class JmsProducerTest extends JmsProducerCase {
 
   @Test
   public void testTimedInactivitySession() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     String rfc6167 = "jms:queue:" + getName() + "";
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
@@ -573,11 +535,6 @@ public class JmsProducerTest extends JmsProducerCase {
 
   @Test
   public void testTimedInactivitySession_SessionStillValid() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     String rfc6167 = "jms:queue:" + getName() + "";
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
@@ -612,11 +569,6 @@ public class JmsProducerTest extends JmsProducerCase {
   @Test
   public void testMessageCountSession() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
@@ -651,11 +603,7 @@ public class JmsProducerTest extends JmsProducerCase {
 
   @Test
   public void testMessageCountSession_SessionStillValid() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
+
     String rfc6167 = "jms:queue:" + getName() + "";
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
@@ -689,11 +637,6 @@ public class JmsProducerTest extends JmsProducerCase {
 
   @Test
   public void testMessageSizeSession() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     String rfc6167 = "jms:queue:" + getName() + "";
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
@@ -731,11 +674,6 @@ public class JmsProducerTest extends JmsProducerCase {
 
   @Test
   public void testMessageSizeSession_SessionStillValid() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     String rfc6167 = "jms:queue:" + getName() + "";
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
@@ -768,11 +706,6 @@ public class JmsProducerTest extends JmsProducerCase {
 
   @Test
   public void testMetadataSession() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     String rfc6167 = "jms:queue:" + getName() + "";
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
@@ -817,11 +750,6 @@ public class JmsProducerTest extends JmsProducerCase {
 
   @Test
   public void testMultipleProducersWithSession() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     String rfc6167 = "jms:queue:" + getName() + "";
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
@@ -853,11 +781,6 @@ public class JmsProducerTest extends JmsProducerCase {
 
   @Test
   public void testMultipleRequestorWithSession() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     String rfc6167 = "jms:queue:" + getName() + "";
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     ServiceList serviceList =

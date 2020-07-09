@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,13 +35,19 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.AdaptrisPollingConsumer;
+import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.DestinationHelper;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.util.TimeInterval;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Abstract implementation of {@link AdaptrisPollingConsumer} for queues and topics.
@@ -90,6 +96,31 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
   @Valid
   private TimeInterval receiveTimeout;
 
+  /**
+   * The consume destination represents the endpoint that we will receive JMS messages from.
+   * <p>
+   * Depending on the flavour of the concrete consumer it may be a RFC6167 style string, a queue or
+   * a topic
+   * </p>
+   *
+   * @deprecated since 3.11.0 use the endpoint/queue/topic configuration available on the concrete
+   *             consumer
+   */
+  @Deprecated
+  @Valid
+  @Getter
+  @Setter
+  @Removal(version = "4.0.0",
+      message = "since 3.11.0 use the endpoint/queue/topic configuration available on the concrete consumer")
+  private ConsumeDestination destination;
+
+  /**
+   * The filter expression to use when matching messages to consume
+   */
+  @Getter
+  @Setter
+  private String messageSelector;
+
   private transient Boolean transacted;
   private transient boolean managedTransaction;
   private transient long rollbackTimeout = 30000;
@@ -97,6 +128,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
   private transient Session session;
   private transient MessageConsumer messageConsumer;
   private transient OnMessageHandler messageHandler;
+  private transient boolean destinationWarningLogged = false;
 
 
   public JmsPollingConsumerImpl() {
@@ -108,8 +140,31 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
   }
 
   @Override
-  public void prepareConsumer() throws CoreException {
+  protected void prepareConsumer() throws CoreException {
+    if (getDestination() != null) {
+      LoggingHelper.logWarning(destinationWarningLogged, () -> destinationWarningLogged = true,
+          "{} uses destination, this will be removed in a future release",
+          LoggingHelper.friendlyName(this));
+    }
+    DestinationHelper.mustHaveEither(configuredEndpoint(), getDestination());
   }
+
+  protected String messageSelector() {
+    return DestinationHelper.filterExpression(getMessageSelector(), getDestination());
+  }
+
+
+  protected String endpoint() {
+    return DestinationHelper.consumeDestination(configuredEndpoint(), getDestination());
+  }
+
+  @Override
+  protected String newThreadName() {
+    return DestinationHelper.threadName(retrieveAdaptrisMessageListener(), getDestination());
+  }
+
+
+  protected abstract String configuredEndpoint();
 
   @Override
   public void init() throws CoreException {
@@ -260,7 +315,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
    * <p>
    * Sets the optional JMS client ID. May not be empty, null means don't use client ID.
    * </p>
-   * 
+   *
    * @param s the optional JMS client ID, defaults to null.
    */
   public void setClientId(String s) {
@@ -444,7 +499,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
   public long rollbackTimeout() {
     return rollbackTimeout;
   }
-  
+
   public void setManagedTransaction(boolean managedTransaction) {
     this.managedTransaction = managedTransaction;
   }
@@ -457,7 +512,7 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
   /**
    * Provides the metadata key {@value com.adaptris.core.jms.JmsConstants#JMS_DESTINATION} which
    * will only be populated if {@link MessageTypeTranslatorImp#getMoveJmsHeaders()} is true.
-   * 
+   *
    * @since 3.9.0
    */
   @Override

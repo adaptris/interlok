@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,7 +25,6 @@ import static org.junit.Assert.fail;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
-import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.StandaloneConsumer;
@@ -56,7 +55,7 @@ public abstract class JndiPasProducerCase {
     String topicName = testName.getMethodName() + "_topic";
 
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(broker.getJndiPasConnection(recvVendorImp, false, queueName,
-        topicName), new PasConsumer(new ConfiguredConsumeDestination(topicName)));
+            topicName), new PasConsumer().withTopic(topicName));
     MockMessageListener jms = new MockMessageListener();
 
     standaloneConsumer.registerAdaptrisMessageListener(jms);
@@ -89,7 +88,7 @@ public abstract class JndiPasProducerCase {
 
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(broker.getJndiPasConnection(recvVendorImp, false, queueName,
         topicName),
- new PasConsumer(new ConfiguredConsumeDestination(topicName)));
+        new PasConsumer().withTopic(topicName));
     MockMessageListener jms = new MockMessageListener();
 
     standaloneConsumer.registerAdaptrisMessageListener(jms);
@@ -116,7 +115,7 @@ public abstract class JndiPasProducerCase {
     StandardJndiImplementation sendVendorImp = createVendorImplementation();
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(broker.getJndiPasConnection(recvVendorImp, true, queueName,
         topicName),
- new PasConsumer(new ConfiguredConsumeDestination(topicName)));
+        new PasConsumer().withTopic(topicName));
     MockMessageListener jms = new MockMessageListener();
     standaloneConsumer.registerAdaptrisMessageListener(jms);
     StandaloneProducer standaloneProducer = new StandaloneProducer(broker.getJndiPasConnection(sendVendorImp, true, queueName,

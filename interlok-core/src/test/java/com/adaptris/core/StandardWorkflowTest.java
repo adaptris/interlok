@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -94,16 +94,17 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
     channel.setUniqueId(null);
     channel.prepare();
     StringBuffer result = new StringBuffer(workflow.getConsumer().getClass().getName());
-    assertNotNull(workflow.getConsumer().getDestination());
     result.append("@");
     result.append(workflow.getProducer().getClass().getName());
     result.append("@");
-    result.append(workflow.getConsumer().getDestination().getDestination());
-    // This is now expected as we need to use both filter-expression
-    // and configured Thread name as the unique identifier.
-    result.append("-null");
-    result.append("-null");
-    assertEquals(result.toString(), workflow.obtainWorkflowId());
+    // As part of INTERLOK-3329 Destinations aren't mandatory, which means at this point we
+    // will just have a random-char-sequence
+    // result.append(workflow.getConsumer().getDestination().getDestination());
+    // result.append("-null");
+    // result.append("-null");
+
+    // assertEquals(result.toString(), workflow.obtainWorkflowId());
+    assertTrue(workflow.obtainWorkflowId().startsWith(result.toString()));
   }
 
   @Test
@@ -117,6 +118,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
     }));
     channel.setUniqueId("Channel");
     StandardWorkflow workflow = (StandardWorkflow) channel.getWorkflowList().get(0);
+    workflow.setUniqueId(null);
     channel.prepare();
     assertTrue(workflow.obtainWorkflowId().endsWith("Channel"));
   }
@@ -539,8 +541,8 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
-  
-  @Test 
+
+  @Test
   public void testOnMessage_SuccessCallback() throws Exception {
     AtomicBoolean onSuccess = new AtomicBoolean(false);
     MockChannel channel = createChannel(new MockMessageProducer(), Arrays.asList(new Service[] {new NullService()}));
@@ -555,9 +557,9 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
     } finally {
       stop(channel);
     }
-    
+
   }
-    
+
   @Override
   protected Object retrieveObjectForSampleConfig() {
     Channel c = new Channel();
@@ -572,7 +574,6 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
   protected MockChannel createChannel(AdaptrisMessageProducer producer, List<Service> services) throws Exception {
     MockChannel channel = new MockChannel();
     StandardWorkflow workflow = createWorkflowForGenericTests();
-    workflow.getConsumer().setDestination(new ConfiguredConsumeDestination("dummy"));
     workflow.setProducer(producer);
     workflow.getServiceCollection().addAll(services);
     channel.getWorkflowList().add(workflow);
@@ -591,9 +592,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
 
   private StandardWorkflow createWorkflowForExampleConfig() {
     StandardWorkflow wf = new StandardWorkflow();
-    ConfiguredConsumeDestination dest = new ConfiguredConsumeDestination("dummy-consume-destination");
     NullMessageConsumer consumer = new NullMessageConsumer();
-    consumer.setDestination(dest);
     wf.setConsumer(consumer);
     wf.setProducer(new NullMessageProducer());
     return wf;

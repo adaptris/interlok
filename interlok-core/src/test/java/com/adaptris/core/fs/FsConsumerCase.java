@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -66,7 +66,7 @@ public abstract class FsConsumerCase extends ConsumerCase {
   protected static final String HYPHEN = "-";
   /**
    * Key in unit-test.properties that defines where example goes unless overriden {@link #setBaseDir(String)}.
-   * 
+   *
    */
   public static final String BASE_DIR_KEY = "FsConsumerCase.baseDir";
 
@@ -384,7 +384,7 @@ public abstract class FsConsumerCase extends ConsumerCase {
         // expected
       }
       // test creation of file filter imp...
-      consumer.getDestination().setFilterExpression(".*\\.xml");
+      consumer.setFilterExpression(".*\\.xml");
       consumer.setFileFilterImp(Perl5FilenameFilter.class.getName());
       try {
         LifecycleHelper.init(consumer);
@@ -419,7 +419,7 @@ public abstract class FsConsumerCase extends ConsumerCase {
       consumer.setFileSorter(null);
       fail();
     }
-    catch (IllegalArgumentException expected) {
+    catch (Exception expected) {
 
     }
   }
@@ -476,18 +476,10 @@ public abstract class FsConsumerCase extends ConsumerCase {
   @Test
   public void testSetDestination() {
     FsConsumerImpl consumer = createConsumer();
-
-    // 1 - valid ConfiguredConsumeDestination
+    assertNull(consumer.getDestination());
     ConfiguredConsumeDestination dest = new ConfiguredConsumeDestination("dest");
     consumer.setDestination(dest);
     assertTrue(consumer.getDestination().equals(dest));
-    try {
-      consumer.setDestination(null);
-      fail("no Exc. when dest is null");
-    }
-    catch (IllegalArgumentException e) {
-      // ok
-    }
   }
 
   @Test

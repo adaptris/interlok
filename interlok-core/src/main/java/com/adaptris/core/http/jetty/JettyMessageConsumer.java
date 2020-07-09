@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -64,9 +64,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Note that if you intend for this class to be consumer withing a {@link com.adaptris.core.PoolingWorkflow} then you should
  * consider configuring a {@link JettyPoolingWorkflowInterceptor} as part of that workflow.
  * </p>
- * 
+ *
  * @config jetty-message-consumer
- * 
+ *
  * @author lchan
  * @author $Author: lchan $
  */
@@ -80,7 +80,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 {
     EmbeddedConnection.class, JettyConnection.class
 })
-@DisplayOrder(order = {"destination"})
+@DisplayOrder(order = {"path", "destination", "methods"})
 public class JettyMessageConsumer extends BasicJettyConsumer {
 
   @AutoPopulated
@@ -98,9 +98,9 @@ public class JettyMessageConsumer extends BasicJettyConsumer {
 
   public JettyMessageConsumer() {
     super();
-    
-    this.setParameterHandler(new NoOpParameterHandler());
-    this.setHeaderHandler(new NoOpHeaderHandler());
+
+    setParameterHandler(new NoOpParameterHandler());
+    setHeaderHandler(new NoOpHeaderHandler());
   }
 
 
@@ -135,11 +135,11 @@ public class JettyMessageConsumer extends BasicJettyConsumer {
   }
 
   private void addParamMetadata(AdaptrisMessage msg, HttpServletRequest request) {
-    this.getParameterHandler().handleParameters(msg, request);
+    getParameterHandler().handleParameters(msg, request);
   }
 
   private void addHeaderMetadata(AdaptrisMessage msg, HttpServletRequest request) {
-    this.getHeaderHandler().handleHeaders(msg, request);
+    getHeaderHandler().handleHeaders(msg, request);
   }
 
   public ParameterHandler<HttpServletRequest> getParameterHandler() {
@@ -156,10 +156,6 @@ public class JettyMessageConsumer extends BasicJettyConsumer {
 
   public void setHeaderHandler(HeaderHandler<HttpServletRequest> headerHandler) {
     this.headerHandler = headerHandler;
-  }
-
-  @Override
-  public void prepare() throws CoreException {
   }
 
 }

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,7 +25,7 @@ import com.adaptris.core.PollingTrigger;
 import com.adaptris.util.TimeInterval;
 
 public class FsImmediateEventPollerTest {
-  
+
   private FsConsumer consumer;
   private FsImmediateEventPoller poller;
 
@@ -36,12 +36,12 @@ public class FsImmediateEventPollerTest {
     consumer.setCreateDirs(false);
     consumer.setQuietInterval(new TimeInterval(500L, "MILLISECONDS"));
     poller = new FsImmediateEventPoller();
-    
+
     consumer.setPoller(poller);
   }
-  
+
   public void tearDown() throws Exception {
-    
+
   }
 
   @Test
@@ -50,7 +50,7 @@ public class FsImmediateEventPollerTest {
   }
 
   @Test
-  public void testNoQuitePeriod() throws Exception {
+  public void testNoQuietPeriod() throws Exception {
     try {
       consumer.setQuietInterval(null);
       consumer.init();
@@ -67,7 +67,7 @@ public class FsImmediateEventPollerTest {
       ptConsumer.setPoller(poller);
       ptConsumer.init();
       fail("Should fail, consumer is not a");
-    } catch (CoreException ex) {
+    } catch (Exception ex) {
       //expected.
     }
   }

@@ -38,11 +38,6 @@ public abstract class FailoverJmsConsumerCase extends JmsConsumerCase {
 
   @Test
   public void testBug1012() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     FailoverJmsConnection connection = new FailoverJmsConnection();
     try {

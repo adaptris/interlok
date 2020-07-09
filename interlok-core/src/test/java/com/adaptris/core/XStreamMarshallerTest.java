@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -95,26 +95,26 @@ public class XStreamMarshallerTest extends MarshallingBaseCase {
     XStreamCDataWrapper roundTrip = (XStreamCDataWrapper) xm.unmarshal(xml);
     assertRoundtripEquality(wrapper, roundTrip);
   }
-  
+
 
   // redmineID 2457 - ensures that marshalling/unmarshalling the given files results in no loss of data
   public static void adapterInstanceFieldChecks(Adapter fromXML) {
     assertNotNull(fromXML);
     assertEquals("SimpleAdapterTest", fromXML.getUniqueId());
     assertTrue(fromXML.logHandler() instanceof NullLogHandler);
-    
+
     assertTrue(fromXML.getEventHandler() instanceof DefaultEventHandler);
     assertTrue(((DefaultEventHandler)fromXML.getEventHandler()).getConnection() instanceof NullConnection);
     assertTrue(((DefaultEventHandler)fromXML.getEventHandler()).getProducer() instanceof NullMessageProducer);
     // ShutdownWaitSeconds is now null.
     assertNull(((DefaultEventHandler) fromXML.getEventHandler()).getShutdownWaitSeconds());
-    
+
     assertTrue(fromXML.getMessageErrorHandler() instanceof NullProcessingExceptionHandler);
-    
+
     Channel channel = fromXML.getChannelList().get(0);
     assertTrue(channel.getConsumeConnection() instanceof NullConnection);
     assertTrue(channel.getProduceConnection() instanceof NullConnection);
-    
+
     // Check workflow
     WorkflowList workflowList = channel.getWorkflowList();
     assertNotNull(workflowList);
@@ -124,13 +124,13 @@ public class XStreamMarshallerTest extends MarshallingBaseCase {
     assertNotNull(standardWorkflow);
     assertEquals("workflow1", standardWorkflow.getUniqueId());
     // test workflow consumer
-    AdaptrisMessageConsumer consumer = standardWorkflow.getConsumer();
+    NullMessageConsumer consumer = (NullMessageConsumer) standardWorkflow.getConsumer();
     assertNotNull(consumer);
     ConsumeDestination destination = consumer.getDestination();
     assertNotNull(destination);
     assertTrue(destination instanceof ConfiguredConsumeDestination);
     assertEquals("dummy", destination.getDestination());
-    
+
     // test services
     ServiceCollection serviceCollection = standardWorkflow.getServiceCollection();
     assertNotNull(serviceCollection);
@@ -149,7 +149,7 @@ public class XStreamMarshallerTest extends MarshallingBaseCase {
       assertEquals("val1", metadataElement.getValue());
       break;
     }
-    
+
     // test service 2
     Service service2 = serviceCollection.get(1);
     assertEquals("serviceID2", service2.getUniqueId());
@@ -158,7 +158,7 @@ public class XStreamMarshallerTest extends MarshallingBaseCase {
     assertEquals(1, xpathQueries.size());
     assertEquals(ConfiguredXpathQuery.class, xpathQueries.get(0).getClass());
     assertEquals("/a/b/c", ((ConfiguredXpathQuery)xpathQueries.get(0)).getXpathQuery());
-    
+
     // Test service3
     Service service3 = serviceCollection.get(2);
     assertEquals("serviceID3", service3.getUniqueId());
@@ -167,5 +167,5 @@ public class XStreamMarshallerTest extends MarshallingBaseCase {
     assertFalse(((LogMessageService)service3).getIncludeEvents());
     assertTrue(((LogMessageService)service3).getIncludePayload());
   }
-  
+
 }

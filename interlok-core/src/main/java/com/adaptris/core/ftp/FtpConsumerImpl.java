@@ -18,24 +18,30 @@ package com.adaptris.core.ftp;
 
 import static com.adaptris.core.CoreConstants.FS_CONSUME_DIRECTORY;
 import static com.adaptris.core.ftp.FtpHelper.FORWARD_SLASH;
-
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
-
+import javax.validation.Valid;
+import org.apache.commons.lang3.ObjectUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumer;
 import com.adaptris.core.AdaptrisPollingConsumer;
+import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.fs.FsHelper;
+import com.adaptris.core.util.DestinationHelper;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.util.TimeInterval;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Abstract FTP Implementation of the {@link AdaptrisMessageConsumer} implementation.
@@ -44,14 +50,66 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
   protected static final TimeInterval DEFAULT_OLDER_THAN = new TimeInterval(0L, TimeUnit.MILLISECONDS);
   protected static final String DEFAULT_FILE_FILTER_IMPL = "org.apache.commons.io.filefilter.RegexFileFilter";
 
+  /**
+   * Set the filename filter implementation that will be used for filtering files.
+   * <p>
+   * The expression that is used to filter messages is derived from {@link #getFilterExpression()}
+   * or from the deprecated {@link #getDestination()}.
+   * </p>
+   * <p>
+   * Note that because we working against a remote server, support for additional file attributes
+   * such as size (e.g. via {@link com.adaptris.core.fs.SizeGreaterThan}) or last modified may not
+   * be supported. We encourage you to stick with filtering by filename only.
+   * </p>
+   *
+   * @param s The fileFilterImp to set, if not specified, then the default is
+   *        {@code org.apache.commons.io.filefilter.RegexFileFilter} which uses the java.util
+   *        regular expressions to perform filtering
+   * @see #getFilterExpression()
+   */
   @InputFieldHint(ofType = "java.io.FileFilter")
   @AdvancedConfig
+  @Getter
+  @Setter
   private String fileFilterImp;
   @AdvancedConfig
   private TimeInterval quietInterval;
 
+  /**
+   * The consume destination represents the base-directory on the FTP server where you are consuming
+   * files from.
+   *
+   */
+  @Deprecated
+  @Valid
+  @Removal(version = "4.0.0", message = "Use 'ftp-url' instead")
+  @Getter
+  @Setter
+  private ConsumeDestination destination;
+
+  /**
+   * The FTP server & URL specified as a URL.
+   *
+   */
+  @Getter
+  @Setter
+  // Needs to be @NotBlank when destination is removed.
+  private String ftpUrl;
+
+  /**
+   * The filter expression to use when listing files.
+   * <p>
+   * If not specified then will default in a file filter that matches all files.
+   * </p>
+   */
+  @Getter
+  @Setter
+  private String filterExpression;
+
+
   protected transient FileFilter fileFilter;
   protected transient FileTransferClient ftpClient = null;
+  private transient boolean destinationWarningLogged = false;
 
   public FtpConsumerImpl() {
     setReacquireLockBetweenMessages(true);
@@ -63,7 +121,7 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
   @Override
   public void init() throws CoreException {
     try {
-      fileFilter = FsHelper.createFilter(getDestination().getFilterExpression(), fileFilterImp());
+      fileFilter = FsHelper.createFilter(filterExpression(), fileFilterImp());
       super.init();
     }
     catch (Exception e) {
@@ -105,12 +163,13 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
     int count = 0;
     String pollDirectory;
     FileTransferConnection con = retrieveConnection(FileTransferConnection.class);
+    String hostUrl = ftpURL();
     try {
-      ftpClient = con.connect(getDestination().getDestination());
-      pollDirectory = configureWorkDir(con.getDirectoryRoot(getDestination().getDestination()));
+      ftpClient = con.connect(hostUrl);
+      pollDirectory = configureWorkDir(con.getDirectoryRoot(hostUrl));
     }
     catch (Exception e) {
-      log.error("Failed to connect to [{}]", getDestination().getDestination(), e);
+      log.error("Failed to connect to [{}]", hostUrl, e);
       return 0;
     }
     try {
@@ -166,37 +225,30 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
 
   @Override
   protected void prepareConsumer() throws CoreException {
+    if (destination != null) {
+      LoggingHelper.logWarning(destinationWarningLogged, () -> destinationWarningLogged = true,
+          "{} uses destination, use ftp-url and filter-expression instead",
+          LoggingHelper.friendlyName(this));
+    }
+    DestinationHelper.mustHaveEither(getFtpUrl(), getDestination());
   }
+
+  protected String ftpURL() {
+    return DestinationHelper.consumeDestination(getFtpUrl(), getDestination());
+  }
+
+  protected String filterExpression() {
+    return DestinationHelper.filterExpression(getFilterExpression(), getDestination());
+  }
+
+  @Override
+  protected String newThreadName() {
+    return DestinationHelper.threadName(retrieveAdaptrisMessageListener(), getDestination());
+  }
+
 
   protected String fileFilterImp() {
-    return getFileFilterImp() != null ? getFileFilterImp() : DEFAULT_FILE_FILTER_IMPL;
-  }
-
-  /**
-   * @return Returns the fileFilterImp.
-   */
-  public String getFileFilterImp() {
-    return fileFilterImp;
-  }
-
-  /**
-   * Set the filename filter implementation that will be used for filtering files.
-   * <p>
-   * The <code>String</code> expression that is used to filter messages is obtained from <code>ConsumeDestination</code>.
-   * </p>
-   * <p>
-   * Note that because we working against a remote server, support for additional file attributes such as size (e.g. via
-   * {@link com.adaptris.core.fs.SizeGreaterThan}) or last modified may not be supported. We encourage you to stick with filtering
-   * by filename only.
-   * </p>
-   *
-   * @param s The fileFilterImp to set, if not specified, then the default is
-   *        {@code org.apache.commons.io.filefilter.RegexFileFilter} which uses the
-   *        java.util regular expressions to perform filtering
-   * @see com.adaptris.core.ConsumeDestination#getFilterExpression()
-   */
-  public void setFileFilterImp(String s) {
-    fileFilterImp = s;
+    return ObjectUtils.defaultIfNull(getFileFilterImp(), DEFAULT_FILE_FILTER_IMPL);
   }
 
   protected long olderThanMs() {

@@ -42,11 +42,6 @@ public abstract class FailoverJmsProducerCase extends JmsProducerCase {
 
   @Test
   public void testBug1012() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     FailoverJmsConnection connection = new FailoverJmsConnection();
     try {
@@ -82,11 +77,6 @@ public abstract class FailoverJmsProducerCase extends JmsProducerCase {
 
   @Test
   public void testNeverConnects() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     FailoverJmsConnection connection = new FailoverJmsConnection();
     connection.addConnection(new JmsConnection(new BasicActiveMqImplementation("tcp://localhost:123456")));
@@ -110,11 +100,6 @@ public abstract class FailoverJmsProducerCase extends JmsProducerCase {
 
   @Test
   public void testEventuallyConnects() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     final EmbeddedActiveMq broker = new EmbeddedActiveMq();
     FailoverJmsConnection connection = new FailoverJmsConnection();
     connection.addConnection(new JmsConnection(new BasicActiveMqImplementation("tcp://localhost:123456")));
@@ -148,11 +133,6 @@ public abstract class FailoverJmsProducerCase extends JmsProducerCase {
 
   @Test
   public void testConnectionEquals() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     FailoverJmsConnection connection = new FailoverJmsConnection();
     connection.addConnection(broker.getJmsConnection(new BasicActiveMqImplementation(), true));
@@ -172,11 +152,6 @@ public abstract class FailoverJmsProducerCase extends JmsProducerCase {
 
   @Test
   public void testDelegatedMethods() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     FailoverJmsConnection connection = new FailoverJmsConnection();
     connection.addConnection(broker.getJmsConnection(new BasicActiveMqImplementation(), true));

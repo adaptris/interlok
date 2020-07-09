@@ -163,11 +163,6 @@ public class JmsAsyncProducerTest extends JmsProducerExample {
 
   @Test
   public void testEmbeddedSuccessHandler() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedArtemis broker = new EmbeddedArtemis();
     JmsAsyncProducer producer = new JmsAsyncProducer();
     producer.setAsyncMessageErrorHandler(mockExceptionHandler);
@@ -196,11 +191,6 @@ public class JmsAsyncProducerTest extends JmsProducerExample {
 
   @Test
   public void testEmbeddedJmsException() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedArtemis broker = new EmbeddedArtemis();
     JmsAsyncProducer producer = new JmsAsyncProducer();
     producer.setAsyncMessageErrorHandler(mockExceptionHandler);

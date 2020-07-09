@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,11 +30,11 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.fs.FsException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -81,7 +81,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </tr>
  * </table>
  * @config fs-consumer
- * 
+ *
  */
 @XStreamAlias("fs-consumer")
 @AdapterComponent
@@ -95,7 +95,8 @@ metadata =
   {
       NullConnection.class
   })
-@DisplayOrder(order = {"poller", "createDirs", "fileFilterImp", "fileSorter", "wipSuffix", "resetWipFiles"})
+@DisplayOrder(order = {"baseDirectoryUrl", "poller", "createDirs", "fileFilterImp", "fileSorter",
+    "wipSuffix", "resetWipFiles"})
 public class FsConsumer extends FsConsumerImpl {
 
   @NotBlank
@@ -114,11 +115,6 @@ public class FsConsumer extends FsConsumerImpl {
   public FsConsumer() {
     super();
     setWipSuffix(".wip");
-  }
-
-  public FsConsumer(ConsumeDestination d) {
-    this();
-    setDestination(d);
   }
 
   @Override
@@ -161,27 +157,19 @@ public class FsConsumer extends FsConsumerImpl {
    */
   @Override
   public void init() throws CoreException {
-    if(this.getDestination() == null) {
-      throw new CoreException("Please configure a valid FS consumer destination.");
-    }
     try {
       if (resetWipFiles()) {
         renameWipFiles();
       }
     }
     catch (Exception e) {
-      if (CoreException.class.isAssignableFrom(e.getClass())) {
-        throw (CoreException) e;
-      }
-      else {
-        throw new CoreException(e);
-      }
+      throw ExceptionHelper.wrapCoreException(e);
     }
     super.init();
   }
 
   private void renameWipFiles() throws Exception {
-    URL urlDestination = FsHelper.createUrlFromString(getDestination().getDestination(), true);
+    URL urlDestination = FsHelper.createUrlFromString(baseDirUrl(), true);
     File dir = FsHelper.createFileReference(urlDestination);
     if (!dir.exists()) {
       // No point because it doesn't exist.
@@ -250,7 +238,4 @@ public class FsConsumer extends FsConsumerImpl {
     return BooleanUtils.toBooleanDefaultIfNull(getResetWipFiles(), false);
   }
 
-  @Override
-  protected void prepareConsumer() throws CoreException {
-  }
 }
