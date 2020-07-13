@@ -7,6 +7,7 @@ import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
+import com.adaptris.core.util.LoggingHelper.WarningLoggedCallback;
 
 public class DestinationHelper {
 
@@ -101,4 +102,17 @@ public class DestinationHelper {
     return msg.resolve(configured);
   }
 
+  /**
+   * Log a warning if consume destination is not null.
+   * 
+   * @see LoggingHelper#logWarning(boolean, WarningLoggedCallback, String, Object...)
+   */
+  public static void logConsumeDestinationWarning(boolean alreadyLogged,
+      WarningLoggedCallback callback,
+      ConsumeDestination destination, String text,
+      Object... args) {
+    if (destination != null) {
+      LoggingHelper.logWarning(alreadyLogged, callback, text, args);
+    }
+  }
 }

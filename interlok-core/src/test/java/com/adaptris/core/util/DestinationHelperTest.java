@@ -57,6 +57,12 @@ public class DestinationHelperTest extends DestinationHelper {
   }
 
   @Test
+  public void testConsumeDestinationWarning() {
+    logConsumeDestinationWarning(false, () -> { }, new ConfiguredConsumeDestination(), "{} warning", "this is a");
+    logConsumeDestinationWarning(false, () -> { }, null, "{} warning", "this is a");
+  }
+
+  @Test
   public void testProduceDestination() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     ConfiguredProduceDestination dest = new ConfiguredProduceDestination("dest");

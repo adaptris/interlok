@@ -163,11 +163,9 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
 
   @Override
   public void prepare() throws CoreException {
-    if (getDestination() != null) {
-      LoggingHelper.logWarning(destinationWarningLogged, () -> destinationWarningLogged = true,
-          "{} uses destination, use path + methods instead",
-          LoggingHelper.friendlyName(this));
-    }
+    DestinationHelper.logConsumeDestinationWarning(destinationWarningLogged,
+        () -> destinationWarningLogged = true, getDestination(),
+        "{} uses destination, use path + methods instead", LoggingHelper.friendlyName(this));
     DestinationHelper.mustHaveEither(getPath(), getDestination());
   }
 
