@@ -24,7 +24,7 @@ ext {
   slf4jVersion = '1.7.30'
   log4j2Version = "2.13.3"
   xstreamVersion = '1.4.12'
-  mockitoVersion = '3.3.3'
+  mockitoVersion = '3.4.0'
 }
 
 if (JavaVersion.current().isJava8Compatible()) {
