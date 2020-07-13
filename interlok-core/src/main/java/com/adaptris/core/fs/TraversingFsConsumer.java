@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,7 +25,6 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
@@ -36,9 +35,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <p>
  * Extension of the standard FsConsumer that traverses all subdirectories for files that match the filter expression.
  * </p>
- * 
+ *
  * @config traversing-fs-consumer
- * 
+ *
  */
 @XStreamAlias("traversing-fs-consumer")
 @AdapterComponent
@@ -49,15 +48,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
         CoreConstants.MESSAGE_CONSUME_LOCATION, CoreConstants.FS_CONSUME_PARENT_DIR
 },
     recommended = {NullConnection.class})
-@DisplayOrder(order = {"poller", "createDirs", "fileFilterImp", "fileSorter", "wipSuffix", "resetWipFiles"})
+@DisplayOrder(order = {"baseDirectoryUrl", "poller", "createDirs", "fileFilterImp", "fileSorter",
+    "wipSuffix", "resetWipFiles"})
 public class TraversingFsConsumer extends FsConsumer {
 
   public TraversingFsConsumer() {
     super();
-  }
-
-  public TraversingFsConsumer(ConsumeDestination d) {
-    super(d);
   }
 
   @Override
@@ -69,7 +65,7 @@ public class TraversingFsConsumer extends FsConsumer {
       fileList = Arrays.asList(dir.listFiles());
     }
     catch (Exception e) {
-      log.warn("Exception listing files in [{}], waiting for next scheduled poll", getDestination().getDestination());
+      log.warn("Exception listing files in [{}], waiting for next scheduled poll", baseDirUrl());
       if (logAllExceptions()) {
         log.warn(e.getMessage(), e);
       }

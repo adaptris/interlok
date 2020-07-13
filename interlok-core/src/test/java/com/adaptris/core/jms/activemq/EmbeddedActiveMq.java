@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -48,7 +48,6 @@ import com.adaptris.core.stubs.ExternalResourcesHelper;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.KeyValuePair;
-import com.adaptris.util.PlainIdGenerator;
 
 public class EmbeddedActiveMq {
 
@@ -58,15 +57,7 @@ public class EmbeddedActiveMq {
   private File brokerDataDir;
   private Integer port;
 
-  private static IdGenerator nameGenerator;
-  static {
-    try {
-      nameGenerator = new GuidGenerator();
-    }
-    catch (Exception e) {
-      nameGenerator = new PlainIdGenerator("-");
-    }
-  }
+  private static IdGenerator nameGenerator = new GuidGenerator();;
 
   public EmbeddedActiveMq() throws Exception {
     Assume.assumeTrue(JmsConfig.jmsTestsEnabled());

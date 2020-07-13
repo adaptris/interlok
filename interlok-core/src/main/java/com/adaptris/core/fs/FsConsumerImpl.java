@@ -22,7 +22,6 @@ import static com.adaptris.core.CoreConstants.FS_CONSUME_PARENT_DIR;
 import static com.adaptris.core.CoreConstants.FS_FILE_SIZE;
 import static com.adaptris.core.CoreConstants.ORIGINAL_NAME_KEY;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -30,20 +29,20 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import javax.management.MalformedObjectNameException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.BooleanUtils;
-
+import org.apache.commons.lang3.ObjectUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisPollingConsumer;
+import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.fs.enhanced.FileSorter;
 import com.adaptris.core.fs.enhanced.NoSorting;
@@ -51,11 +50,16 @@ import com.adaptris.core.runtime.ParentRuntimeInfoComponent;
 import com.adaptris.core.runtime.RuntimeInfoComponent;
 import com.adaptris.core.runtime.RuntimeInfoComponentFactory;
 import com.adaptris.core.runtime.WorkflowManager;
-import com.adaptris.core.util.Args;
+import com.adaptris.core.util.DestinationHelper;
+import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.fs.FsException;
 import com.adaptris.fs.FsWorker;
 import com.adaptris.fs.NioWorker;
 import com.adaptris.util.TimeInterval;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 
 /**
  * <p>
@@ -67,22 +71,120 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
   private static final TimeInterval DEFAULT_OLDER_THAN = new TimeInterval(0L, TimeUnit.MILLISECONDS);
   private static final String DEFAULT_FILE_FILTER_IMP = "org.apache.commons.io.filefilter.RegexFileFilter";
 
-  // marshalled
+  /**
+   * Set the filename filter implementation that will be used for filtering files.
+   * <p>
+   * The expression that is used to filter messages is derived from {@link #getFilterExpression()}
+   * or from the deprecated {@link #getDestination()}.
+   * </p>
+   *
+   * @param s The fileFilterImp to set, if not specified, then the default is
+   *        {@code org.apache.commons.io.filefilter.RegexFileFilter} which uses the java.util
+   *        regular expressions to perform filtering
+   * @see #getFilterExpression()
+   */
   @InputFieldHint(ofType = "java.io.FileFilter")
   @AdvancedConfig
+  @Getter
+  @Setter
   private String fileFilterImp;
+  /**
+   * Create missing directories when trying to poll
+   *
+   * <p>
+   * this defaults to false because we consider it a dangerous thing to do especially if you have
+   * bad configuration. The last thing we want is for you to accuse interlok of creating random
+   * directories.
+   * </p>
+   */
   @InputFieldDefault(value = "false")
+  @Getter
+  @Setter
   private Boolean createDirs;
+  /**
+   * Log all the stack traces or not.
+   *
+   */
   @AdvancedConfig
   @InputFieldDefault(value = "true")
+  @Getter
+  @Setter
   private Boolean logAllExceptions;
+  /**
+   * Specify how old a file must be before a file is deemed safe to be processed.
+   * <p>
+   * The purpose of this is to delay processing of files that may be currently being written to by
+   * another process. On certain platforms (e.g. most Unix) it is still possible to obtain an
+   * exclusive lock on the file even though it is being written to by another process.
+   * </p>
+   * <p>
+   * An alternative to specifying a last-modified is to specify {@link CompositeFileFilter} as the
+   * filter implementation and then a combination of {@link OlderThan} along with your actual
+   * filter-implementation.
+   * </p>
+   * <p>
+   * <strong>Note: your mileage may vary when using this setting. The only surefire way is for the
+   * triggering application to write the file to a staging area and use an atomic operation (such as
+   * move) to move the file into the target directory.</strong>
+   * </p>
+   *
+   * @see File#lastModified()
+   * @see CompositeFileFilter
+   * @see #setFileFilterImp(String)
+   */
   @AdvancedConfig
+  @Getter
+  @Setter
   private TimeInterval quietInterval;
+
+  /**
+   * Set the filesorter implementation to use.
+   * <p>
+   * The file sorter is responsible for sorting the list of files that is collected for processing.
+   * The sorted list is then processed.
+   * </p>
+   *
+   */
   @NotNull
   @Valid
   @AutoPopulated
   @AdvancedConfig
+  @Getter
+  @Setter
+  @InputFieldDefault(value = "no-sorting")
+  @NonNull
   private FileSorter fileSorter;
+
+  /**
+   * The consume destination represents the base-directory where you are consuming files from.
+   *
+   */
+  @Getter
+  @Setter
+  @Deprecated
+  @Valid
+  @Removal(version = "4.0.0", message = "Use 'base-directory-url' instead")
+  private ConsumeDestination destination;
+
+  /**
+   * The base directory specified as a URL.
+   *
+   */
+  @Getter
+  @Setter
+  // Needs to be @NotBlank when destination is removed.
+  private String baseDirectoryUrl;
+
+  /**
+   * The filter expression to use when listing files.
+   * <p>
+   * If not specified then will default in a file filter that matches all files.
+   * </p>
+   */
+  @Getter
+  @Setter
+  private String filterExpression;
+
 
   static {
     RuntimeInfoComponentFactory.registerComponentFactory(new JmxFactory());
@@ -91,9 +193,33 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
   // not marshalled
   protected transient FileFilter fileFilter;
   protected transient FsWorker fsWorker = new NioWorker();
+  private transient boolean destinationWarningLogged = false;
 
   public FsConsumerImpl() {
     setFileSorter(new NoSorting());
+  }
+
+  @Override
+  protected void prepareConsumer() throws CoreException {
+    if (getDestination() != null) {
+      LoggingHelper.logWarning(destinationWarningLogged, () -> destinationWarningLogged = true,
+          "{} uses destination, use base-directory-url and filter-expression instead",
+          LoggingHelper.friendlyName(this));
+    }
+    DestinationHelper.mustHaveEither(getBaseDirectoryUrl(), getDestination());
+  }
+
+  protected String baseDirUrl() {
+    return DestinationHelper.consumeDestination(getBaseDirectoryUrl(), getDestination());
+  }
+
+  protected String filterExpression() {
+    return DestinationHelper.filterExpression(getFilterExpression(), getDestination());
+  }
+
+  @Override
+  protected String newThreadName() {
+    return DestinationHelper.threadName(retrieveAdaptrisMessageListener(), getDestination());
   }
 
   /**
@@ -114,7 +240,7 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
       fileList = Arrays.asList(dir.listFiles(fileFilter));
     }
     catch (Exception e) {
-      log.warn("Exception listing files in [{}], waiting for next scheduled poll", getDestination().getDestination());
+      log.warn("Exception listing files in [{}], waiting for next scheduled poll", baseDirUrl());
       if (logAllExceptions()) {
         log.trace(e.getMessage(), e);
       }
@@ -184,17 +310,17 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
   public void init() throws CoreException {
     try {
       verifyDirectory();
-      fileFilter = FsHelper.createFilter(getDestination().getFilterExpression(), fileFilterImp());
+      fileFilter = FsHelper.createFilter(filterExpression(), fileFilterImp());
     }
     catch (Exception e) {
-      throw new CoreException(e);
+      throw ExceptionHelper.wrapCoreException(e);
     }
     super.init();
   }
 
 
   protected File verifyDirectory() throws Exception {
-    File f = FsHelper.createFileReference(FsHelper.createUrlFromString(getDestination().getDestination(), true));
+    File f = FsHelper.createFileReference(FsHelper.createUrlFromString(baseDirUrl(), true));
     if (shouldCreateDirs()) {
       if (!f.exists()) {
         log.trace("Creating non-existent directory {}", f.getCanonicalPath());
@@ -206,27 +332,6 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
           "please check that [" + f.getCanonicalPath() + "] exists and is writeable");
     }
     return f;
-  }
-
-  /**
-   * Specify whether to create directories that do not exist.
-   * <p>
-   * When the ConsumeDestination returns a destination, if this flag has been set, then an attempt to create the directory is made,
-   * if the directory does not exist.
-   *
-   * @param b true to enable directory creation; default false.
-   */
-  public void setCreateDirs(Boolean b) {
-    createDirs = b;
-  }
-
-  /**
-   * Get the flag specifying creation of directories.
-   *
-   * @return true or false.
-   */
-  public Boolean getCreateDirs() {
-    return createDirs;
   }
 
   public boolean shouldCreateDirs() {
@@ -264,50 +369,8 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
     }
   }
 
-
-  // accessors...
-
-
-  /**
-   * Set the filename filter
-   *
-   * @param string the classname of the {@link FileFilter} implementation to use, if not specified, then it defaults to
-   *          {@code org.apache.commons.io.filefilter.RegexFileFilter} which uses {@link java.util.regex.Pattern}.
-   * @see com.adaptris.core.ConsumeDestination#getFilterExpression()
-   */
-  public void setFileFilterImp(String string) {
-    fileFilterImp = string;
-  }
-
-  /**
-   * <p>
-   * Returns the name of the <code>FileFilter</code> being used.
-   * </p>
-   *
-   * @return the name of the <code>FileFilter</code> being used
-   */
-  public String getFileFilterImp() {
-    return fileFilterImp;
-  }
-
   String fileFilterImp() {
-    return getFileFilterImp() != null ? getFileFilterImp() : DEFAULT_FILE_FILTER_IMP;
-  }
-
-  /**
-   * @return the logAllExceptions
-   */
-  public Boolean getLogAllExceptions() {
-    return logAllExceptions;
-  }
-
-  /**
-   * Whether or not to log all stacktraces.
-   *
-   * @param b the logAllExceptions to set, default true
-   */
-  public void setLogAllExceptions(Boolean b) {
-    logAllExceptions = b;
+    return ObjectUtils.defaultIfNull(getFileFilterImp(), DEFAULT_FILE_FILTER_IMP);
   }
 
   public boolean logAllExceptions() {
@@ -318,66 +381,30 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
     return TimeInterval.toMillisecondsDefaultIfNull(getQuietInterval(), DEFAULT_OLDER_THAN);
   }
 
-  public TimeInterval getQuietInterval() {
-    return quietInterval;
-  }
-
-  /**
-   * Specify how old a file must be before a file is deemed safe to be processed.
-   * <p>
-   * The purpose of this is to delay processing of files that may be currently being written to by another process. On certain
-   * platforms (e.g. most Unix) it is still possible to obtain an exclusive lock on the file even though it is being written to by
-   * another process.
-   * </p>
-   * <p>
-   * An alternative to specifying a last-modified is to specify {@link CompositeFileFilter} as the filter implementation and then a
-   * combination of {@link OlderThan} along with your actual filter-implementation.
-   * </p>
-   * <p>
-   * <strong>Note: your mileage may vary when using this setting. The only surefire way is for the triggering application to write
-   * the file to a staging area and use an atomic operation (such as move) to move the file into the target directory.</strong>
-   * </p>
-   *
-   * @param interval the interval to set (default is 0)
-   * @see File#lastModified()
-   * @see CompositeFileFilter
-   * @see #setFileFilterImp(String)
-   */
-  public void setQuietInterval(TimeInterval interval) {
-    quietInterval = interval;
-  }
-
-  public FileSorter getFileSorter() {
-    return fileSorter;
-  }
-
-  /**
-   * Set the filesorter implementation to use.
-   * <p>
-   * The file sorter is responsible for sorting the list of files that is collected for processing. The sorted list is then
-   * processed.
-   * </p>
-   *
-   * @param fs the sorter, default is {@link NoSorting}
-   */
-  public void setFileSorter(FileSorter fs) {
-    fileSorter = Args.notNull(fs, "file sorter");
-  }
-
   int filesRemaining() throws Exception {
-    return verifyDirectory().listFiles(FsHelper.createFilter(getDestination().getFilterExpression(), fileFilterImp())).length;
-
+    return verifyDirectory()
+        .listFiles(FsHelper.createFilter(filterExpression(), fileFilterImp())).length;
   }
 
   /**
    * Provides the metadata key '{@value com.adaptris.core.CoreConstants#FS_CONSUME_DIRECTORY}' that
    * contains the directory (if not null) where the file was read from.
-   * 
+   *
    * @since 3.9.0
    */
   @Override
   public String consumeLocationKey() {
     return FS_CONSUME_DIRECTORY;
+  }
+
+  public <T extends FsConsumerImpl> T withBaseDirectoryUrl(String s) {
+    setBaseDirectoryUrl(s);
+    return (T) this;
+  }
+
+  public <T extends FsConsumerImpl> T withFilterExpression(String s) {
+    setFilterExpression(s);
+    return (T) this;
   }
 
   private static class JmxFactory extends RuntimeInfoComponentFactory {

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,13 +30,18 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessageConsumerImp;
 import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.ClosedState;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.DestinationHelper;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.core.util.LoggingHelper;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * <p>
@@ -57,6 +62,33 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
   @Valid
   @AdvancedConfig
   private CorrelationIdSource correlationIdSource;
+  /**
+   * The consume destination represents the endpoint that we will receive JMS messages from.
+   * <p>
+   * Depending on the flavour of the concrete consumer it may be a RFC6167 style string, a queue or
+   * a topic
+   * </p>
+   *
+   * @deprecated since 3.11.0 use the {@code endpoint/queue/topic} configuration available on the
+   *             concrete consumer
+   */
+  @Deprecated
+  @Valid
+  @Removal(version = "4.0.0",
+      message = "since 3.11.0 use the endpoint/queue/topic configuration available on the concrete consumer")
+  @Getter
+  @Setter
+  private ConsumeDestination destination;
+
+  /**
+   * The message selector to use when matching messages to consume
+   */
+  @Getter
+  @Setter
+  @AdvancedConfig
+  private String messageSelector;
+
+
   // not marshalled
   protected transient MessageConsumer consumer;
   private transient Session session;
@@ -64,6 +96,7 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
   private transient Boolean transacted;
   private transient boolean managedTransaction;
   private transient long rollbackTimeout = 30000;
+  private transient boolean destinationWarningLogged = false;
 
   /**
    * <p>
@@ -83,16 +116,11 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
     this.transacted = Boolean.valueOf(transacted);
   }
 
-  public JmsConsumerImpl(ConsumeDestination d) {
-    this();
-    setDestination(d);
-  }
-
   /**
    * <p>
    * Called by the JMS <code>Session</code> to deliver messages.
    * </p>
-   * 
+   *
    * @param msg a <code>javax.jms.Message</code>
    */
   @Override
@@ -104,8 +132,30 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
 
   @Override
   public void prepare() throws CoreException {
+    if (getDestination() != null) {
+      LoggingHelper.logWarning(destinationWarningLogged, () -> destinationWarningLogged = true,
+          "{} uses destination, this will be removed in a future release",
+          LoggingHelper.friendlyName(this));
+    }
+    DestinationHelper.mustHaveEither(configuredEndpoint(), getDestination());
     LifecycleHelper.prepare(getMessageTranslator());
   }
+
+  protected String messageSelector() {
+    return DestinationHelper.filterExpression(getMessageSelector(), getDestination());
+  }
+
+  protected String endpoint() {
+    return DestinationHelper.consumeDestination(configuredEndpoint(), getDestination());
+  }
+
+  @Override
+  protected String newThreadName() {
+    return DestinationHelper.threadName(retrieveAdaptrisMessageListener(), getDestination());
+  }
+
+  protected abstract String configuredEndpoint();
+
 
   /** @see com.adaptris.core.AdaptrisComponent#init() */
   @Override
@@ -172,7 +222,7 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
 
   /**
    * Not directly configurable, as it is done by JmsTransactedWorkflow.
-   * 
+   *
    * @param l the rollbackTimeout to set
    */
   void setRollbackTimeout(long l) {
@@ -188,7 +238,7 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
    * <p>
    * Sets the MessageTypeTranslator to use.
    * </p>
-   * 
+   *
    * @param translator the MessageTypeTranslator to use
    */
   public void setMessageTranslator(MessageTypeTranslator translator) {
@@ -199,7 +249,7 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
    * <p>
    * Returns the MessageTypeTranslator to use.
    * </p>
-   * 
+   *
    * @return the MessageTypeTranslator to use
    */
   public MessageTypeTranslator getMessageTranslator() {
@@ -214,7 +264,7 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
    * The value may be AUTO_KNOWLEDGE, CLIENT_ACKNOWLEDGE, DUPS_OK_ACKNOWLEDGE or the int values corresponding to the JMS Session
    * Constant
    * </p>
-   * 
+   *
    * @param i the JMS acknowledge mode to use
    */
   public void setAcknowledgeMode(String i) {
@@ -225,7 +275,7 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
    * <p>
    * Returns the JMS acknowledge mode to use.
    * </p>
-   * 
+   *
    * @return the JMS acknowledge mode to use
    */
   public String getAcknowledgeMode() {
@@ -237,7 +287,7 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
    * <p>
    * Returns correlationIdSource.
    * </p>
-   * 
+   *
    * @return correlationIdSource
    */
   public CorrelationIdSource getCorrelationIdSource() {
@@ -248,7 +298,7 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
    * <p>
    * Sets correlationIdSource.
    * </p>
-   * 
+   *
    * @param c the correlationIdSource to set
    */
   public void setCorrelationIdSource(CorrelationIdSource c) {
@@ -284,7 +334,7 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
   public Logger currentLogger() {
     return log;
   }
-  
+
   public void setManagedTransaction(boolean managedTransaction) {
     this.managedTransaction = managedTransaction;
   }
@@ -307,7 +357,7 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
   /**
    * Provides the metadata key {@value com.adaptris.core.jms.JmsConstants#JMS_DESTINATION} which
    * will only be populated if {@link MessageTypeTranslatorImp#getMoveJmsHeaders()} is true.
-   * 
+   *
    * @since 3.9.0
    */
   @Override

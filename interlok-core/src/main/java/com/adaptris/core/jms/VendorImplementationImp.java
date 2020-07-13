@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,7 +29,6 @@ import javax.jms.Session;
 import javax.jms.Topic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.jms.JmsDestination.DestinationType;
 import com.adaptris.util.URLHelper;
@@ -65,7 +64,7 @@ public abstract class VendorImplementationImp implements VendorImplementation {
   }
 
   /**
-   * 
+   *
    * @see VendorImplementation#createQueue(java.lang.String, JmsActorConfig)
    */
   @Override
@@ -74,7 +73,7 @@ public abstract class VendorImplementationImp implements VendorImplementation {
   }
 
   /**
-   * 
+   *
    * @see VendorImplementation#createTopic(java.lang.String, JmsActorConfig)
    */
   @Override
@@ -83,11 +82,11 @@ public abstract class VendorImplementationImp implements VendorImplementation {
   }
 
   @Override
-  public MessageConsumer createQueueReceiver(ConsumeDestination cd, JmsActorConfig c)
+  public MessageConsumer createQueueReceiver(String queue, String filter, JmsActorConfig c)
       throws JMSException {
     Session s = c.currentSession();
-    Queue q = createQueue(cd.getDestination(), c);
-    return s.createConsumer(q, cd.getFilterExpression());
+    Queue q = createQueue(queue, c);
+    return s.createConsumer(q, filter);
   }
 
   @Override
@@ -102,15 +101,15 @@ public abstract class VendorImplementationImp implements VendorImplementation {
   }
 
   @Override
-  public MessageConsumer createTopicSubscriber(ConsumeDestination cd, String subscriptionId,
+  public MessageConsumer createTopicSubscriber(String topic, String filter, String subscriptionId,
       JmsActorConfig c) throws JMSException {
     Session s = c.currentSession();
-    Topic t = createTopic(cd.getDestination(), c);
+    Topic t = createTopic(topic, c);
     MessageConsumer result = null;
     if (!isEmpty(subscriptionId)) {
-      result = s.createDurableSubscriber(t, subscriptionId, cd.getFilterExpression(), false);
+      result = s.createDurableSubscriber(t, subscriptionId, filter, false);
     } else {
-      result = s.createConsumer(t, cd.getFilterExpression());
+      result = s.createConsumer(t, filter);
     }
     return result;
   }
@@ -126,7 +125,7 @@ public abstract class VendorImplementationImp implements VendorImplementation {
   /**
    * Empty implementation that does not apply any session properties. Concrete sub-classes should
    * override this method.
-   * 
+   *
    */
   public void applyVendorSessionProperties(Session s) throws JMSException {}
 
@@ -215,13 +214,13 @@ public abstract class VendorImplementationImp implements VendorImplementation {
 
     private void setTimeToLive(String ttlString) {
       if (!isEmpty(ttlString)) {
-        this.timeToLive = Long.valueOf(ttlString);
+        timeToLive = Long.valueOf(ttlString);
       }
     }
 
     private void setPriority(String priorityString) {
       if (!isEmpty(priorityString)) {
-        this.priority = Integer.valueOf(priorityString);
+        priority = Integer.valueOf(priorityString);
       }
     }
 
@@ -256,7 +255,7 @@ public abstract class VendorImplementationImp implements VendorImplementation {
     public String sharedConsumerId() {
       return sharedConsumerId;
     }
-    
+
     private void setSharedConsumerId(String sharedConsumerId) {
       this.sharedConsumerId = sharedConsumerId;
     }

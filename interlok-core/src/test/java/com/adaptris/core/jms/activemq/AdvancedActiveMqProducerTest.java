@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,11 +20,9 @@ import static com.adaptris.core.jms.activemq.AdvancedActiveMqImplementationTest.
 import org.apache.activemq.ActiveMQPrefetchPolicy;
 import org.apache.activemq.RedeliveryPolicy;
 import org.junit.Test;
-import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
-import com.adaptris.core.jms.JmsConfig;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.PtpConsumer;
 import com.adaptris.core.jms.PtpProducer;
@@ -47,15 +45,10 @@ public class AdvancedActiveMqProducerTest extends BasicActiveMqProducerTest {
 
   @Test
   public void testQueueProduceAndConsumeWithRedeliveryPolicy() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();
-      PtpConsumer consumer = new PtpConsumer(new ConfiguredConsumeDestination(getName()));
+      PtpConsumer consumer = new PtpConsumer().withQueue(getName());
       consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
 
       StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl(
@@ -76,15 +69,10 @@ public class AdvancedActiveMqProducerTest extends BasicActiveMqProducerTest {
 
   @Test
   public void testQueueProduceAndConsumeWithPrefetch() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();
-      PtpConsumer consumer = new PtpConsumer(new ConfiguredConsumeDestination(getName()));
+      PtpConsumer consumer = new PtpConsumer().withQueue(getName());
       consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
 
       StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl(null,

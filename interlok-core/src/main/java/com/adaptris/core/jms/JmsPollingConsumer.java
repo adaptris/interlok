@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,18 +17,17 @@
 package com.adaptris.core.jms;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.Topic;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.jms.JmsDestination.DestinationType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Concrete {@link JmsPollingConsumerImpl} implementation that can target queues or topics via an
@@ -59,32 +58,41 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <li>jms:topic:MyTopicName?subscriptionId=mySubscriptionId</li>
  * </ul>
  * </p>
- * 
+ *
  * @config jms-poller
- * 
+ *
  */
 @XStreamAlias("jms-poller")
 @AdapterComponent
 @ComponentProfile(summary = "Pickup messages from a JMS broker (queue or topic) by actively polling it", tag = "consumer,jms",
     recommended = {NullConnection.class})
 @DisplayOrder(
-    order = {"poller", "vendorImplementation", "userName", "password", "clientId", "acknowledgeMode", "messageTranslator"})
+    order = {"endpoint", "messageSelector", "poller", "vendorImplementation", "userName",
+        "password", "clientId", "acknowledgeMode", "messageTranslator"})
 public class JmsPollingConsumer extends JmsPollingConsumerImpl {
 
+  /**
+   * The JMS destination in RFC6167 format.
+   *
+   */
+  @Getter
+  @Setter
+  // Needs to be @NotBlank when destination is removed.
+  private String endpoint;
 
   public JmsPollingConsumer() {
     super();
   }
 
-  public JmsPollingConsumer(ConsumeDestination d) {
-    this();
-    setDestination(d);
+  public JmsPollingConsumer withEndpoint(String s) {
+    setEndpoint(s);
+    return this;
   }
 
   @Override
   protected MessageConsumer createConsumer() throws JMSException {
-    String rfc6167 = getDestination().getDestination();
-    String filterExp = getDestination().getFilterExpression();
+    String rfc6167 = endpoint();
+    String filterExp = messageSelector();
     MessageConsumer consumer = null;
 
     VendorImplementation vendor = configuredVendorImplementation();
@@ -101,4 +109,10 @@ public class JmsPollingConsumer extends JmsPollingConsumerImpl {
     }
     return consumer;
   }
+
+  @Override
+  protected String configuredEndpoint() {
+    return getEndpoint();
+  }
+
 }

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,7 +35,6 @@ import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
-import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
@@ -592,8 +591,9 @@ public class ActiveMqJmsTransactedWorkflowTest {
     workflow.setWaitPeriodAfterRollback(new TimeInterval(10L, TimeUnit.MILLISECONDS.name()));
 
     workflow.setProducer(new MockMessageProducer());
-    JmsConsumerImpl jmsCons = isPtp ? new PtpConsumer(new ConfiguredConsumeDestination(target, null, threadName)) : new PasConsumer(
-        new ConfiguredConsumeDestination(target, null, threadName));
+
+    JmsConsumerImpl jmsCons =
+        isPtp ? new PtpConsumer().withQueue(target) : new PasConsumer().withTopic(target);
     jmsCons.setMessageTranslator(new TextMessageTranslator().withMoveJmsHeaders(true));
     workflow.setConsumer(jmsCons);
     return workflow;
@@ -604,7 +604,7 @@ public class ActiveMqJmsTransactedWorkflowTest {
     workflow.setProducer(new MockMessageProducer());
     workflow.setWaitPeriodAfterRollback(new TimeInterval(10L, TimeUnit.MILLISECONDS.name()));
 
-    JmsPollingConsumerImpl jmsCons = new PtpPollingConsumer(new ConfiguredConsumeDestination(target, null, threadName));
+    JmsPollingConsumerImpl jmsCons = new PtpPollingConsumer().withQueue(target);
     jmsCons.setReacquireLockBetweenMessages(true);
     jmsCons.setAdditionalDebug(true);
     jmsCons.setPoller(new FixedIntervalPoller(new TimeInterval(2L, TimeUnit.SECONDS)));

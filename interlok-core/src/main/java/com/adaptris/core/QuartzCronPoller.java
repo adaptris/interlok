@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -45,6 +46,7 @@ import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.NonBlockingQuartzThreadPool;
 import com.adaptris.core.util.PropertyHelper;
 import com.adaptris.util.FifoMutexLock;
+import com.adaptris.util.GuidGenerator;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -75,7 +77,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * </p> Cron expressions are comprised of 6 required fields and one optional field separated by white space. The fields respectively
  * are described as follows:
- * 
+ *
  * <table cellspacing="8">
  * <tr>
  * <th align="left">Field Name</th>
@@ -83,7 +85,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <th align="left">Allowed Values</th>
  * <th align="left">&nbsp;</th>
  * <th align="left">Allowed Special Characters</th>
- * 
+ *
  * </tr>
  * <tr>
  * <td align="left"><code>Seconds</code></td>
@@ -91,7 +93,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <td align="left"><code>0-59</code></td>
  * <td align="left">&nbsp;</td>
  * <td align="left"><code>, - * /</code></td>
- * 
+ *
  * </tr>
  * <tr>
  * <td align="left"><code>Minutes</code></td>
@@ -99,7 +101,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <td align="left"><code>0-59</code></td>
  * <td align="left">&nbsp;</td>
  * <td align="left"><code>, - * /</code></td>
- * 
+ *
  * </tr>
  * <tr>
  * <td align="left"><code>Hours</code></td>
@@ -107,7 +109,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <td align="left"><code>0-23</code></td>
  * <td align="left">&nbsp;</td>
  * <td align="left"><code>, - * /</code></td>
- * 
+ *
  * </tr>
  * <tr>
  * <td align="left"><code>Day-of-month</code></td>
@@ -115,7 +117,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <td align="left"><code>1-31</code></td>
  * <td align="left">&nbsp;</td>
  * <td align="left"><code>, - * ? / L W C</code></td>
- * 
+ *
  * </tr>
  * <tr>
  * <td align="left"><code>Month</code></td>
@@ -123,7 +125,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <td align="left"><code>1-12 or JAN-DEC</code></td>
  * <td align="left">&nbsp;</td>
  * <td align="left"><code>, - * /</code></td>
- * 
+ *
  * </tr>
  * <tr>
  * <td align="left"><code>Day-of-Week</code></td>
@@ -131,7 +133,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <td align="left"><code>1-7 or SUN-SAT</code></td>
  * <td align="left">&nbsp;</td>
  * <td align="left"><code>, - * ? / L #</code></td>
- * 
+ *
  * </tr>
  * <tr>
  * <td align="left"><code>Year (Optional)</code></td>
@@ -195,10 +197,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Support for specifying both a day-of-week and a day-of-month value is not complete (you'll need to use the '?' character in on of
  * these fields).
  * </p>
- * 
+ *
  * @config quartz-cron-poller
- * 
- * 
+ *
+ *
  */
 @XStreamAlias("quartz-cron-poller")
 @DisplayOrder(order = {"cronExpression", "useCustomThreadPool", "quartzId", "schedulerGroup"})
@@ -221,6 +223,7 @@ public class QuartzCronPoller extends PollerImp {
   private Boolean useCustomThreadPool;
 
   private static final transient FifoMutexLock lock = new FifoMutexLock();
+  private static final transient GuidGenerator guid = new GuidGenerator();
 
   /**
    * <p>
@@ -258,7 +261,7 @@ public class QuartzCronPoller extends PollerImp {
       factory = new StdSchedulerFactory(createQuartzProperties());
       scheduler = createAndStartScheduler(factory);
       registeredQuartzId = generateQuartzId();
-      log.trace("Using QuartzId [" + registeredQuartzId + "]");
+      log.trace("Using QuartzId [{}]", registeredQuartzId);
       registeredSchedulerGroup = generateSchedulerGroup();
 
       // Create the job
@@ -275,7 +278,7 @@ public class QuartzCronPoller extends PollerImp {
       scheduler.scheduleJob(jobDetail, cronTrigger);
       scheduler.pauseJob(getJobKey());
 
-      log.trace("[" + registeredQuartzId + "] scheduled in group [" + registeredSchedulerGroup + "]");
+      log.trace("[{}] scheduled in group [{}]", registeredQuartzId, registeredSchedulerGroup);
     }
     catch (Exception e) {
       throw new CoreException(e);
@@ -289,12 +292,9 @@ public class QuartzCronPoller extends PollerImp {
       result = getQuartzId();
     }
     else {
-      if (retrieveConsumer().getDestination() != null) {
-        result = retrieveConsumer().getDestination().getUniqueId() + "@" + Integer.toHexString(hashCode());
-      }
-      else {
-        result = "NoDestination@" + Integer.toHexString(hashCode());
-      }
+      // No configured QuartzID so we have to generate one.
+      result = StringUtils.defaultIfEmpty(retrieveConsumer().getUniqueId(), guid.safeUUID()) + "@"
+          + Integer.toHexString(hashCode());
     }
     return result;
   }
@@ -326,7 +326,7 @@ public class QuartzCronPoller extends PollerImp {
   public void start() throws CoreException {
     try {
       scheduler.resumeJob(getJobKey());
-      log.trace("[" + registeredQuartzId + "] resumed in group [" + registeredSchedulerGroup + "]");
+      log.trace("[{}] resumed in group [{}]", registeredQuartzId, registeredSchedulerGroup);
     }
     catch (Exception e) {
       throw new CoreException(e);
@@ -372,7 +372,7 @@ public class QuartzCronPoller extends PollerImp {
    * <p>
    * Return the <i>cron</i> expression to use.
    * </p>
-   * 
+   *
    * @return the <i>cron</i> expression to use
    */
   public String getCronExpression() {
@@ -383,7 +383,7 @@ public class QuartzCronPoller extends PollerImp {
    * <p>
    * Sets the <i>cron</i> expression to use.
    * </p>
-   * 
+   *
    * @param s the <i>cron</i> expression to use
    */
   public void setCronExpression(String s) {
@@ -404,7 +404,7 @@ public class QuartzCronPoller extends PollerImp {
    * The quartz id acts as the name of the job, the name of the trigger, and the name of the triggerlistener. You should not need to
    * configure this unless you are customising quartz.properties heavily; it is included for completeness.
    * </p>
-   * 
+   *
    * @param s the quartz id; if null or empty, then one will be generated for you.
    */
   public void setQuartzId(String s) {
@@ -421,7 +421,7 @@ public class QuartzCronPoller extends PollerImp {
    * The 'group' feature may be useful for creating logical groupings or categorizations of Jobs. You should not need to configure
    * this but is included for completeness.
    * </p>
-   * 
+   *
    * @param s the scheduler group; if null or empty, then {@link Scheduler#DEFAULT_GROUP} is used ('DEFAULT')
    */
   public void setSchedulerGroup(String s) {
@@ -430,7 +430,7 @@ public class QuartzCronPoller extends PollerImp {
 
   /**
    * Creates a job key that encapsulates the job name and group name. This is used for the various Scheduler methods
-   * 
+   *
    * @return new JobKey Instance
    */
   protected JobKey getJobKey() {
@@ -510,11 +510,11 @@ public class QuartzCronPoller extends PollerImp {
    * If set to false, then the default {@code quartz.properties} are not modified when initialising the {@link StdSchedulerFactory};
    * however, mixing and matching thread pools between different instances is discouraged and may lead to undefined behaviour.
    * </p>
-   * 
+   *
    * @param b false to disable our own thread pool, default true.
    */
   public void setUseCustomThreadPool(Boolean b) {
-    this.useCustomThreadPool = b;
+    useCustomThreadPool = b;
   }
 
   protected boolean useCustomThreadPool() {

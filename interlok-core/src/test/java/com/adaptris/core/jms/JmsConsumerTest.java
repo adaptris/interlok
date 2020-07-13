@@ -32,7 +32,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
@@ -76,7 +75,7 @@ public class JmsConsumerTest extends JmsConsumerCase {
     try {
       activeMqBroker.start();
 
-      JmsConsumer consumer = new JmsConsumer(new ConfiguredConsumeDestination(rfc6167));
+      JmsConsumer consumer = new JmsConsumer().withEndpoint(rfc6167);
       consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
       consumer.setDeferConsumerCreationToVendor(true);
 
@@ -119,7 +118,7 @@ public class JmsConsumerTest extends JmsConsumerCase {
     try {
       activeMqBroker.start();
 
-      JmsConsumer consumer = new JmsConsumer(new ConfiguredConsumeDestination(rfc6167));
+      JmsConsumer consumer = new JmsConsumer().withEndpoint(rfc6167);
       consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
 //      consumer.setDeferConsumerCreationToVendor(true);
 
@@ -154,7 +153,7 @@ public class JmsConsumerTest extends JmsConsumerCase {
     try {
       activeMqBroker.start();
 
-      JmsConsumer consumer = new JmsConsumer(new ConfiguredConsumeDestination(rfc6167));
+      JmsConsumer consumer = new JmsConsumer().withEndpoint(rfc6167);
       consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
       StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
 
@@ -182,7 +181,7 @@ public class JmsConsumerTest extends JmsConsumerCase {
     try {
       activeMqBroker.start();
 
-      JmsConsumer consumer = new JmsConsumer(new ConfiguredConsumeDestination(rfc6167));
+      JmsConsumer consumer = new JmsConsumer().withEndpoint(rfc6167);
       consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
       StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
 
@@ -210,7 +209,7 @@ public class JmsConsumerTest extends JmsConsumerCase {
     try {
       activeMqBroker.start();
 
-      JmsConsumer consumer = new JmsConsumer(new ConfiguredConsumeDestination(rfc6167));
+      JmsConsumer consumer = new JmsConsumer().withEndpoint(rfc6167);
       consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
       StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
 
@@ -238,7 +237,7 @@ public class JmsConsumerTest extends JmsConsumerCase {
     try {
       activeMqBroker.start();
 
-      JmsConsumer consumer = new JmsConsumer(new ConfiguredConsumeDestination(rfc6167));
+      JmsConsumer consumer = new JmsConsumer().withEndpoint(rfc6167);;
       consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
       StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
 
@@ -265,7 +264,7 @@ public class JmsConsumerTest extends JmsConsumerCase {
 
     try {
       activeMqBroker.start();
-      JmsConsumer consumer = new JmsConsumer(new ConfiguredConsumeDestination(rfc6167));
+      JmsConsumer consumer = new JmsConsumer().withEndpoint(rfc6167);
       consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
       StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
 
@@ -315,11 +314,11 @@ public class JmsConsumerTest extends JmsConsumerCase {
 
   protected StandaloneConsumer retrieveSampleConfig(boolean destQueue) {
     JmsConnection c = new JmsConnection(new BasicActiveMqImplementation("tcp://localhost:61616"));
-    ConfiguredConsumeDestination dest = new ConfiguredConsumeDestination("jms:topic:MyTopicName?subscriptionId=mySubscriptionId");
+    String dest = "jms:topic:MyTopicName?subscriptionId=mySubscriptionId";
     if (destQueue) {
-      dest = new ConfiguredConsumeDestination("jms:queue:MyQueueName");
+      dest = "jms:queue:MyQueueName";
     }
-    JmsConsumer pc = new JmsConsumer(dest);
+    JmsConsumer pc = new JmsConsumer().withEndpoint(dest);
     c.setConnectionErrorHandler(new JmsConnectionErrorHandler());
     StandaloneConsumer result = new StandaloneConsumer(c, pc);
     return result;
