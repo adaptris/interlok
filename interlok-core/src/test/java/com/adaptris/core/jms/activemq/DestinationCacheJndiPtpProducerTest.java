@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,6 @@ import javax.jms.Queue;
 import javax.jms.Topic;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.MetadataDestination;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.PtpProducer;
@@ -51,7 +50,7 @@ public class DestinationCacheJndiPtpProducerTest extends JndiPtpProducerCase {
     String topicName = testName.getMethodName() + "_topic";
 
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJndiPtpConnection(sendVendorImp, false,
-        queueName, topicName), new PtpProducer(new ConfiguredProduceDestination(queueName)));
+            queueName, topicName), new PtpProducer().withQueue((queueName)));
     try {
       activeMqBroker.start();
       start(standaloneProducer);
@@ -67,6 +66,7 @@ public class DestinationCacheJndiPtpProducerTest extends JndiPtpProducerCase {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testProduceWithCacheExceeded() throws Exception {
 
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
@@ -78,8 +78,9 @@ public class DestinationCacheJndiPtpProducerTest extends JndiPtpProducerCase {
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
 
-    StandaloneProducer sp1 = new StandaloneProducer(broker.getJndiPtpConnection(jv, false, queueName, topicName), new PtpProducer(
-        dest));
+    StandaloneProducer sp1 =
+        new StandaloneProducer(broker.getJndiPtpConnection(jv, false, queueName, topicName),
+            new PtpProducer().withDestination(dest));
     jv.setUseJndiForQueues(true);
     jv.getJndiParams().addKeyValuePair(new KeyValuePair("queue.testProduceWithCacheExceeded1", "testProduceWithCacheExceeded1"));
     jv.getJndiParams().addKeyValuePair(new KeyValuePair("queue.testProduceWithCacheExceeded2", "testProduceWithCacheExceeded2"));

@@ -45,9 +45,8 @@ public class PasProducerTest extends BasicJmsProducerCase {
 
   private StandaloneProducer retrieveSampleConfig() {
 
-    PasProducer p = new PasProducer();
+    PasProducer p = new PasProducer().withTopic("topicName");
     JmsConnection c = new JmsConnection(new BasicActiveMqImplementation("tcp://localhost:61616"));
-    p.setDestination(new ConfiguredProduceDestination("destination"));
     c.setConnectionErrorHandler(new JmsConnectionErrorHandler());
     NullCorrelationIdSource mcs = new NullCorrelationIdSource();
     p.setCorrelationIdSource(mcs);
@@ -62,11 +61,13 @@ public class PasProducerTest extends BasicJmsProducerCase {
 
 
   @Override
+  @SuppressWarnings("deprecation")
   protected DefinedJmsProducer createProducer(ConfiguredProduceDestination dest) {
-    return new PasProducer(dest);
+    return new PasProducer().withDestination(dest);
   }
 
   @Override
+  @SuppressWarnings("deprecation")
   protected JmsConsumerImpl createConsumer(ConfiguredConsumeDestination dest) {
     PasConsumer pas = new PasConsumer();
     pas.setDestination(dest);

@@ -760,6 +760,7 @@ public class AdapterTest extends BaseCase {
 
   }
 
+  @SuppressWarnings("deprecation")
   private static WorkflowList createQuartzWorkflowList(String prefix, int count) throws Exception {
     WorkflowList wf = new WorkflowList();
     for (int i = 0; i < count; i++) {

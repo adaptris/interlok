@@ -5,15 +5,21 @@ import org.apache.commons.lang3.StringUtils;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.ConsumeDestination;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
+import com.adaptris.core.ProduceException;
 import com.adaptris.core.util.LoggingHelper.WarningLoggedCallback;
 
 public class DestinationHelper {
 
   public static void mustHaveEither(String configured, ConsumeDestination legacy) {
     if (legacy == null && configured == null) {
-      throw new IllegalArgumentException("Must have some configuration for consumers");
+      throw new IllegalArgumentException("Must have string configuration or ConsumeDestination");
+    }
+  }
+
+  public static void mustHaveEither(String configured, ProduceDestination legacy) {
+    if (legacy == null && configured == null) {
+      throw new IllegalArgumentException("Must either string configuration or ProduceDestination");
     }
   }
 
@@ -92,26 +98,44 @@ public class DestinationHelper {
    * @return {@code legacy.getDestination(msg)} if legacy is non-null;
    *         {@code msg.resolve(configured)} otherwise.
    */
-  public static String produceDestination(String configured, ProduceDestination legacy,
-      AdaptrisMessage msg) throws CoreException {
+  public static String resolveProduceDestination(String configured, ProduceDestination legacy,
+      AdaptrisMessage msg) throws ProduceException {
     // I feel a little sad I can't use Optional, and SneakyThrows doesn't made the code more
     // readable.
-    if (legacy != null) {
-      return legacy.getDestination(msg);
+    try {
+      if (legacy != null) {
+        return legacy.getDestination(msg);
+      }
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapProduceException(e);
     }
     return msg.resolve(configured);
   }
 
   /**
    * Log a warning if consume destination is not null.
-   * 
+   *
    * @see LoggingHelper#logWarning(boolean, WarningLoggedCallback, String, Object...)
+   * @deprecated use
+   *             {@link #logWarningIfNotNull(boolean, WarningLoggedCallback, Object, String, Object...)}
+   *             instead.
    */
+  @Deprecated
   public static void logConsumeDestinationWarning(boolean alreadyLogged,
       WarningLoggedCallback callback,
-      ConsumeDestination destination, String text,
+      ConsumeDestination d, String text,
       Object... args) {
-    if (destination != null) {
+    logWarningIfNotNull(alreadyLogged, callback, d, text, args);
+  }
+
+  /**
+   * Log a warning if the supplied object is not null.
+   *
+   * @see LoggingHelper#logWarning(boolean, WarningLoggedCallback, String, Object...)
+   */
+  public static void logWarningIfNotNull(boolean alreadyLogged,
+      WarningLoggedCallback callback, Object d, String text, Object... args) {
+    if (d != null) {
       LoggingHelper.logWarning(alreadyLogged, callback, text, args);
     }
   }

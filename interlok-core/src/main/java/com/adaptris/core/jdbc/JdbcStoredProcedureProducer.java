@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,28 +16,31 @@
 
 package com.adaptris.core.jdbc;
 
+import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
+import static com.adaptris.core.util.DestinationHelper.mustHaveEither;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.RequestReplyProducerImp;
 import com.adaptris.core.services.jdbc.ResultSetTranslator;
+import com.adaptris.core.util.DestinationHelper;
 import com.adaptris.core.util.JdbcUtil;
+import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.jdbc.CallableStatementCreator;
 import com.adaptris.jdbc.CallableStatementExecutor;
 import com.adaptris.jdbc.DefaultStatementCreator;
@@ -48,10 +51,12 @@ import com.adaptris.jdbc.StoredProcedure;
 import com.adaptris.jdbc.StoredProcedureParameter;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * StoredProcedure Producer implementation; executes a stored procedure within your chosen database vendor.
- * 
+ *
  * <p>
  * To specify your chosen database vendor, you will set the {@link com.adaptris.jdbc.CallableStatementCreator} to one of the
  * following
@@ -94,21 +99,22 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Finally, the default timeout set for the database operation is 0 (i.e. no timeout). You can override this by configuring the
  * "timeout" field with a {@link TimeInterval}
  * </p>
- * 
+ *
  * @config jdbc-stored-procedure-producer
- * 
+ *
  * @author Aaron McGrath
- * 
+ *
  */
 @XStreamAlias("jdbc-stored-procedure-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Execute a stored procedure via JDBC", tag = "producer,jdbc", recommended = {DatabaseConnection.class})
-@DisplayOrder(order = {"statementCreator", "statementExecutor", "inParameters", "outParameters", "inOutParameters",
+@DisplayOrder(order = {"procedureName", "statementCreator", "statementExecutor", "inParameters",
+    "outParameters", "inOutParameters",
     "resultSetTranslator", "timeout"})
 public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
 
   private static final long DEFAULT_TIMEOUT_MS = 0;
-  
+
   @NotNull
   @AutoPopulated
   @Valid
@@ -137,6 +143,27 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
   @AdvancedConfig
   private TimeInterval timeout;
 
+  /**
+   * The ProduceDestination is the name of the stored procedure that will be executed.
+   */
+  @Getter
+  @Setter
+  @Deprecated
+  @Valid
+  @Removal(version = "4.0.0", message = "Use 'procedure-name' instead")
+  private ProduceDestination destination;
+
+  /**
+   * The name of the stored procedure.
+   */
+  @InputFieldHint(expression = true)
+  @Getter
+  @Setter
+  // Needs to be @NotBlank when destination is removed.
+  private String procedureName;
+
+  private transient boolean destWarning;
+
   public JdbcStoredProcedureProducer() {
     setInParameters(new InParameters());
     setOutParameters(new OutParameters());
@@ -146,7 +173,8 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
   }
 
   @Override
-  protected AdaptrisMessage doRequest(AdaptrisMessage msg, ProduceDestination destination, long timeout) throws ProduceException {
+  protected AdaptrisMessage doRequest(AdaptrisMessage msg, String endpoint, long timeout)
+      throws ProduceException {
     Connection connection = null;
     JdbcResult results = null;
     try {
@@ -154,11 +182,11 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
 
       StoredProcedure storedProcedure = new StoredProcedure();
       storedProcedure.setConnection(connection);
-      storedProcedure.setName(destination.getDestination(msg));
+      storedProcedure.setName(endpoint);
       storedProcedure.setStatementCreator(getStatementCreator());
       storedProcedure.setParameters(parseInParameters(msg));
       storedProcedure.setStatementExecutor(getStatementExecutor());
-      storedProcedure.setTimeout(this.defaultTimeout());
+      storedProcedure.setTimeout(defaultTimeout());
       storedProcedure.setAdaptrisMessage(msg);
       storedProcedure.setResultSetTranslator(getResultSetTranslator());
 
@@ -178,10 +206,10 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
     }
     return msg;
   }
-  
+
   @Override
-  public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
-    this.doRequest(msg, destination, this.defaultTimeout());
+  protected void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException {
+    doRequest(msg, endpoint, defaultTimeout());
   }
 
   /**
@@ -274,23 +302,10 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
   }
 
   @Override
-  public void init() throws CoreException {
-  }
-
-  @Override
-  public void start() throws CoreException {
-  }
-
-  @Override
-  public void stop() {
-  }
-
-  @Override
-  public void close() {
-  }
-
-  @Override
   public void prepare() throws CoreException {
+    logWarningIfNotNull(destWarning, () -> destWarning = true, getDestination(),
+        "{} uses destination, use 'topic' instead if possible", LoggingHelper.friendlyName(this));
+    mustHaveEither(getProcedureName(), getDestination());
   }
 
   public InParameters getInParameters() {
@@ -352,6 +367,11 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
 
   public void setTimeout(TimeInterval timeout) {
     this.timeout = timeout;
+  }
+
+  @Override
+  public String endpoint(AdaptrisMessage msg) throws ProduceException {
+    return DestinationHelper.resolveProduceDestination(getProcedureName(), getDestination(), msg);
   }
 
 }

@@ -42,9 +42,7 @@ public class DefaultFailedMessageRetrierTest extends FailedMessageRetrierCase {
     Adapter result = null;
     try {
       DefaultFailedMessageRetrier fmr = new DefaultFailedMessageRetrier();
-      FsConsumer consumer = new FsConsumer();
-      consumer.setDestination(new ConfiguredConsumeDestination(
-          "/path/to/retry-directory"));
+      FsConsumer consumer = new FsConsumer().withBaseDirectoryUrl("/path/to/retry-directory");
       StandaloneConsumer c = new StandaloneConsumer();
       c.setConsumer(consumer);
       fmr.setStandaloneConsumer(c);

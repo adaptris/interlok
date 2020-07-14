@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
@@ -47,8 +46,8 @@ public class ActiveMqPtpPollingConsumerTest {
 
     int msgCount = 5;
     final EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    final StandaloneProducer sender = new StandaloneProducer(broker.getJmsConnection(), new PtpProducer(
-            new ConfiguredProduceDestination(testName.getMethodName())));
+    final StandaloneProducer sender = new StandaloneProducer(broker.getJmsConnection(),
+        new PtpProducer().withQueue((testName.getMethodName())));
     final StandaloneConsumer receiver =
         createConsumer(broker, "testProduceConsume", testName.getMethodName());
     try {

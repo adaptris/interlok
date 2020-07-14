@@ -38,6 +38,7 @@ import javax.jms.Session;
 import javax.jms.Topic;
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQSession;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -57,6 +58,7 @@ import com.adaptris.core.jms.BasicJmsProducerCase.Loopback;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 import com.adaptris.core.stubs.MockMessageListener;
+import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.util.TimeInterval;
 
 public class JmsProducerTest extends JmsProducerCase {
@@ -66,15 +68,24 @@ public class JmsProducerTest extends JmsProducerCase {
   @Mock private Session mockSession;
   @Mock private Message mockMessage;
 
+  private AutoCloseable openMocks;
+
   @Before
   public void setUp() throws Exception {
-    MockitoAnnotations.initMocks(this);
+    openMocks = MockitoAnnotations.openMocks(this);
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    JdbcUtil.closeQuietly(openMocks);
   }
 
   @Override
   public boolean isAnnotatedForJunit4() {
     return true;
   }
+
+  @SuppressWarnings("deprecation")
   protected JmsConsumerImpl createConsumer(ConfiguredConsumeDestination dest) {
     PtpConsumer ptp = new PtpConsumer();
     ptp.setDestination(dest);
@@ -86,8 +97,11 @@ public class JmsProducerTest extends JmsProducerCase {
   }
 
 
+  @SuppressWarnings("deprecation")
   protected JmsProducer createProducer(ProduceDestination dest) {
-    return new JmsProducer(dest);
+    JmsProducer p = new JmsProducer();
+    p.setDestination(dest);
+    return p;
   }
 
   private AdaptrisMessage createMessage(Destination d) throws Exception {
@@ -199,7 +213,7 @@ public class JmsProducerTest extends JmsProducerCase {
     when(mockSession.getTransacted())
       .thenReturn(false);
 
-    JmsProducer producer = new JmsProducer(new ConfiguredProduceDestination("myDestination"));
+    JmsProducer producer = new JmsProducer().withEndpoint("myDestination");
     producer.setSessionFactory(mockSessionFactory);
     producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
     producer.rollback();
@@ -216,7 +230,7 @@ public class JmsProducerTest extends JmsProducerCase {
     when(mockSession.getTransacted())
       .thenReturn(false);
 
-    JmsProducer producer = new JmsProducer(new ConfiguredProduceDestination("myDestination"));
+    JmsProducer producer = new JmsProducer().withEndpoint("myDestination");
     producer.setSessionFactory(mockSessionFactory);
     producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
     producer.acknowledge(null);
@@ -233,7 +247,7 @@ public class JmsProducerTest extends JmsProducerCase {
     when(mockSession.getTransacted())
       .thenReturn(false);
 
-    JmsProducer producer = new JmsProducer(new ConfiguredProduceDestination("myDestination"));
+    JmsProducer producer = new JmsProducer().withEndpoint("myDestination");
     producer.setSessionFactory(mockSessionFactory);
     producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
     producer.acknowledge(mockMessage);
@@ -250,7 +264,7 @@ public class JmsProducerTest extends JmsProducerCase {
     when(mockSession.getTransacted())
       .thenReturn(true);
 
-    JmsProducer producer = new JmsProducer(new ConfiguredProduceDestination("myDestination"));
+    JmsProducer producer = new JmsProducer().withEndpoint("myDestination");
     producer.setSessionFactory(mockSessionFactory);
     producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
     producer.acknowledge(mockMessage);
@@ -267,7 +281,7 @@ public class JmsProducerTest extends JmsProducerCase {
     when(mockSession.getTransacted())
       .thenReturn(true);
 
-    JmsProducer producer = new JmsProducer(new ConfiguredProduceDestination("myDestination"));
+    JmsProducer producer = new JmsProducer().withEndpoint("myDestination");
     producer.setSessionFactory(mockSessionFactory);
     producer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
@@ -285,7 +299,7 @@ public class JmsProducerTest extends JmsProducerCase {
     when(mockSession.getTransacted())
       .thenReturn(false);
 
-    JmsProducer producer = new JmsProducer(new ConfiguredProduceDestination("myDestination"));
+    JmsProducer producer = new JmsProducer().withEndpoint("myDestination");
     producer.setSessionFactory(mockSessionFactory);
     producer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
@@ -303,7 +317,7 @@ public class JmsProducerTest extends JmsProducerCase {
     when(mockSession.getTransacted())
       .thenReturn(false);
 
-    JmsProducer producer = new JmsProducer(new ConfiguredProduceDestination("myDestination"));
+    JmsProducer producer = new JmsProducer().withEndpoint("myDestination");
     producer.setSessionFactory(mockSessionFactory);
     producer.setAcknowledgeMode("CLIENT_ACKNOWLEDGE");
     producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
@@ -840,11 +854,11 @@ public class JmsProducerTest extends JmsProducerCase {
 
   private StandaloneProducer retrieveSampleConfig(boolean useQueue) {
     JmsConnection c = new JmsConnection(new BasicActiveMqImplementation("tcp://localhost:61616"));
-    ConfiguredProduceDestination dest = new ConfiguredProduceDestination("jms:topic:myTopicName?priority=4");
+    String dest = "jms:topic:myTopicName?priority=4";
     if (useQueue) {
-      dest = new ConfiguredProduceDestination("jms:queue:myQueueName?priority=4");
+      dest = "jms:queue:myQueueName?priority=4";
     }
-    JmsProducer p = new JmsProducer(dest);
+    JmsProducer p = new JmsProducer().withEndpoint(dest);
     c.setConnectionErrorHandler(new JmsConnectionErrorHandler());
     NullCorrelationIdSource mcs = new NullCorrelationIdSource();
     p.setCorrelationIdSource(mcs);

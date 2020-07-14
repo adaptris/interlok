@@ -130,6 +130,7 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testWorkflow_ReplyProducerFailure() throws Exception {
     Channel channel = new MockChannel();
     RequestReplyWorkflow workflow = new RequestReplyWorkflow();
@@ -169,6 +170,7 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testWorkflow_NullReply() throws Exception {
     Channel channel = new MockChannel();
     RequestReplyWorkflow workflow = new RequestReplyWorkflow();
@@ -331,6 +333,7 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
   }
 
   @Override
+  @SuppressWarnings("deprecation")
   protected Object retrieveObjectForSampleConfig() {
     Channel c = new Channel();
     try {
@@ -339,8 +342,8 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
       RequestReplyWorkflow workflow = new RequestReplyWorkflow();
       workflow.getServiceCollection().addService(new Base64DecodeService());
       workflow.setConsumer(new PtpConsumer().withQueue("inputQueue"));
-      workflow.setProducer(new PtpProducer(new ConfiguredProduceDestination("outputQueue")));
-      workflow.setReplyProducer(new PtpProducer(new JmsReplyToDestination()));
+      workflow.setProducer(new PtpProducer().withQueue("outputQueue"));
+      workflow.setReplyProducer(new PtpProducer().withDestination(new JmsReplyToDestination()));
       workflow.getReplyServiceCollection().addService(new Base64EncodeService());
       c.getWorkflowList().add(workflow);
       c.setUniqueId(UUID.randomUUID().toString());

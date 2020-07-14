@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -64,7 +64,7 @@ public abstract class EventHandlerBase implements EventHandler {
    * <p>
    * Creates a new instance.
    * </p>
-   * 
+   *
    */
   public EventHandlerBase() {
     changeState(ClosedState.getInstance());
@@ -90,12 +90,12 @@ public abstract class EventHandlerBase implements EventHandler {
 
   @Override
   public void send(Event evt, Map<String, String> properties) throws CoreException {
-    eventProducerDelegate.produce(retrieveProducer(), createMessage(evt, properties), null);
+    eventProducerDelegate.produce(retrieveProducer(), createMessage(evt, properties));
   }
-  
+
   /**
    * Set the {@link AdaptrisMarshaller} implementation to use when sending events.
-   * 
+   *
    * @param m the implementation to use, if null then {@link DefaultMarshaller#getDefaultMarshaller()} is used.
    */
   public void setMarshaller(AdaptrisMarshaller m) {
@@ -106,7 +106,7 @@ public abstract class EventHandlerBase implements EventHandler {
     return marshaller;
   }
 
-  protected AdaptrisMarshaller currentMarshaller() {    
+  protected AdaptrisMarshaller currentMarshaller() {
     return DefaultMarshaller.defaultIfNull(getMarshaller());
   }
 
@@ -156,10 +156,10 @@ public abstract class EventHandlerBase implements EventHandler {
   int shutdownWaitSeconds() {
     return NumberUtils.toIntDefaultIfNull(getShutdownWaitSeconds(), DEFAULT_SHUTDOWN_WAIT);
   }
-  
+
   /**
    * Set the number of seconds to wait when shutting down any internal threads.
-   * 
+   *
    * @param i the number of seconds, default if not specified is 60
    */
   public void setShutdownWaitSeconds(Integer i) {
@@ -280,7 +280,7 @@ public abstract class EventHandlerBase implements EventHandler {
     protected EventEmissary() {
     }
 
-    public void produce(final AdaptrisMessageSender producer, final AdaptrisMessage msg, final ProduceDestination dest) {
+    public void produce(final AdaptrisMessageSender producer, final AdaptrisMessage msg) {
       executor.execute(new Thread() {
         @Override
         public void run() {
@@ -288,13 +288,7 @@ public abstract class EventHandlerBase implements EventHandler {
           Thread.currentThread().setName("EventProducerThread");
           String eventClass = msg.getMetadataValue(CoreConstants.EVENT_CLASS);
           try {
-            // should access to this producer be synchronized?
-            // The null check here stops bug:844
-            if (dest != null) {
-              producer.produce(msg, dest);
-            } else {
-              producer.produce(msg);
-            }
+            producer.produce(msg);
           } catch (Exception e) {
             if (logAllExceptions()) {
               log.error("Failed to produce event [{}] to destination. Results dependent on this event may not be accurate.",

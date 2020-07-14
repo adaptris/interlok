@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,8 @@
 
 package com.adaptris.core.http.client.net;
 
+import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
+import static com.adaptris.core.util.DestinationHelper.mustHaveEither;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.util.Iterator;
@@ -28,6 +30,8 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
@@ -41,11 +45,15 @@ import com.adaptris.core.http.client.RequestMethodProvider;
 import com.adaptris.core.http.client.RequestMethodProvider.RequestMethod;
 import com.adaptris.core.http.client.ResponseHeaderHandler;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.DestinationHelper;
+import com.adaptris.core.util.LoggingHelper;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * 
+ *
  * @author lchan
- * 
+ *
  */
 public abstract class HttpProducer<A, B> extends RequestReplyProducerImp {
 
@@ -80,28 +88,36 @@ public abstract class HttpProducer<A, B> extends RequestReplyProducerImp {
   @InputFieldDefault(value = "true")
   private Boolean allowRedirect;
 
+  /**
+   * The ProduceDestination contains the url we will access.
+   *
+   */
+  @Getter
+  @Setter
+  @Deprecated
+  @Valid
+  @Removal(version = "4.0.0", message = "Use 'url' instead")
+  private ProduceDestination destination;
+
+  /**
+   * The URL endpoint to access.
+   */
+  @InputFieldHint(expression = true)
+  @Getter
+  @Setter
+  // Needs to be @NotBlank when destination is removed.
+  private String url;
+
+  private transient boolean destWarning;
+
   public HttpProducer() {
     super();
     setContentTypeProvider(new ConfiguredContentTypeProvider());
     setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethod.POST));
   }
 
-  @Override
-  public void start() throws CoreException {}
-
-  @Override
-  public void stop() {}
-
-  @Override
-  public void close() {}
-
-  @Override
-  public void init() throws CoreException {
-  }
-
-
   /**
-   * 
+   *
    * @see com.adaptris.core.RequestReplyProducerImp#defaultTimeout()
    */
   @Override
@@ -110,18 +126,14 @@ public abstract class HttpProducer<A, B> extends RequestReplyProducerImp {
   }
 
 
-  /**
-   * 
-   * @see RequestReplyProducerImp#produce(AdaptrisMessage, ProduceDestination)
-   */
   @Override
-  public void produce(AdaptrisMessage msg, ProduceDestination dest) throws ProduceException {
+  protected void doProduce(AdaptrisMessage msg, String dest) throws ProduceException {
     doRequest(msg, dest, defaultTimeout());
   }
 
   /**
    * Specify whether to automatically handle redirection.
-   * 
+   *
    * @param b true or false, default is null (true)
    */
   public void setAllowRedirect(Boolean b) {
@@ -134,7 +146,7 @@ public abstract class HttpProducer<A, B> extends RequestReplyProducerImp {
 
   /**
    * Get the handle redirection flag.
-   * 
+   *
    * @return true or false.
    */
   public Boolean getAllowRedirect() {
@@ -143,7 +155,7 @@ public abstract class HttpProducer<A, B> extends RequestReplyProducerImp {
 
   /**
    * Get the currently configured flag for ignoring server response code.
-   * 
+   *
    * @return true or false
    * @see #setIgnoreServerResponseCode(Boolean)
    */
@@ -165,7 +177,7 @@ public abstract class HttpProducer<A, B> extends RequestReplyProducerImp {
    * In all cases the metadata key {@link com.adaptris.core.CoreConstants#HTTP_PRODUCER_RESPONSE_CODE} is populated with the last
    * server response.
    * </p>
-   * 
+   *
    * @see com.adaptris.core.CoreConstants#HTTP_PRODUCER_RESPONSE_CODE
    * @param b true
    */
@@ -179,7 +191,7 @@ public abstract class HttpProducer<A, B> extends RequestReplyProducerImp {
 
   /**
    * Specify the Content-Type header associated with the HTTP operation.
-   * 
+   *
    * @param ctp
    */
   public void setContentTypeProvider(ContentTypeProvider ctp) {
@@ -193,7 +205,7 @@ public abstract class HttpProducer<A, B> extends RequestReplyProducerImp {
 
   /**
    * Specify how we handle headers from the HTTP response.
-   * 
+   *
    * @param handler the handler, default is a {@link DiscardResponseHeaders}.
    */
   public void setResponseHeaderHandler(ResponseHeaderHandler<B> handler) {
@@ -206,7 +218,7 @@ public abstract class HttpProducer<A, B> extends RequestReplyProducerImp {
 
   /**
    * Specify how we want to generate the initial set of HTTP Headers.
-   * 
+   *
    * @param handler the handler, default is a {@link NoRequestHeaders}
    */
   public void setRequestHeaderProvider(RequestHeaderProvider<A> handler) {
@@ -220,7 +232,7 @@ public abstract class HttpProducer<A, B> extends RequestReplyProducerImp {
 
   /**
    * Specify how the HTTP Request Method is generated.
-   * 
+   *
    * @param p the request method provider.
    */
   public void setMethodProvider(RequestMethodProvider p) {
@@ -246,4 +258,22 @@ public abstract class HttpProducer<A, B> extends RequestReplyProducerImp {
     }
   }
 
+  @Override
+  public void prepare() throws CoreException {
+    logWarningIfNotNull(destWarning, () -> destWarning = true, getDestination(),
+        "{} uses destination, use 'url' instead", LoggingHelper.friendlyName(this));
+    mustHaveEither(getUrl(), getDestination());
+    registerEncoderMessageFactory();
+  }
+
+
+  @Override
+  public String endpoint(AdaptrisMessage msg) throws ProduceException {
+    return DestinationHelper.resolveProduceDestination(getUrl(), getDestination(), msg);
+  }
+
+  public <T extends HttpProducer> T withURL(String s) {
+    setUrl(s);
+    return (T) this;
+  }
 }

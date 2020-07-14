@@ -39,7 +39,6 @@ import org.apache.activemq.ActiveMQSession;
 import org.apache.activemq.ActiveMQTopicPublisher;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.MimeEncoder;
 import com.adaptris.core.ServiceCase;
 import com.adaptris.core.StandaloneConsumer;
@@ -96,10 +95,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
 
     JmsConnection connection = new JmsConnection();
     PtpProducer producer = new PtpProducer();
-    ConfiguredProduceDestination dest = new ConfiguredProduceDestination();
-    dest.setDestination("destination");
-
-    producer.setDestination(dest);
+    producer.setQueue("queueName");
     UrlVendorImplementation vendorImpl = createImpl();
     vendorImpl.setBrokerUrl(BasicActiveMqImplementationTest.PRIMARY);
     connection.setUserName("BrokerUsername");
@@ -121,7 +117,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       activeMqBroker.start();
       echo.start();
       StandaloneRequestor standaloneProducer = new StandaloneRequestor(activeMqBroker.getJmsConnection(createVendorImpl()),
-          new PasProducer(new ConfiguredProduceDestination(getName())));
+              new PasProducer().withTopic(getName()));
       AdaptrisMessage msg = createMessage();
       ServiceCase.execute(standaloneProducer, msg);
       echo.waitFor(DEFAULT_TIMEOUT);
@@ -142,7 +138,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     try {
       broker.start();
       echo.start();
-      PasProducer producer = new PasProducer(new ConfiguredProduceDestination(getName()));
+      PasProducer producer = new PasProducer().withTopic(getName());
       producer.setMessageTranslator(new BytesMessageTranslator());
       StandaloneRequestor req = new StandaloneRequestor(broker.getJmsConnection(createVendorImpl()), producer);
       AdaptrisMessage msg = createMessage();
@@ -165,7 +161,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       activeMqBroker.start();
       echo.start();
       StandaloneRequestor standaloneProducer = new StandaloneRequestor(activeMqBroker.getJmsConnection(createVendorImpl()),
-          new PtpProducer(new ConfiguredProduceDestination(getName())));
+              new PtpProducer().withQueue((getName())));
       AdaptrisMessage msg = createMessage();
       ServiceCase.execute(standaloneProducer, msg);
       echo.waitFor(DEFAULT_TIMEOUT);
@@ -186,7 +182,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     try {
       activeMqBroker.start();
       echo.start();
-      PtpProducer producer = new PtpProducer(new ConfiguredProduceDestination(getName()));
+      PtpProducer producer = new PtpProducer().withQueue((getName()));
       producer.setMessageTranslator(new BytesMessageTranslator());
       StandaloneRequestor standaloneProducer = new StandaloneRequestor(activeMqBroker.getJmsConnection(createVendorImpl()),
           producer);
@@ -211,7 +207,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       activeMqBroker.start();
       echo.start();
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
-          new PasProducer(new ConfiguredProduceDestination(getName())));
+              new PasProducer().withTopic(getName()));
       AdaptrisMessage msg = EmbeddedActiveMq.createMessage(null);
       msg.addMetadata(JmsConstants.JMS_ASYNC_STATIC_REPLY_TO, getName() + "_reply");
       ServiceCase.execute(standaloneProducer, msg);
@@ -234,7 +230,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       activeMqBroker.start();
       echo.start();
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
-          new PtpProducer(new ConfiguredProduceDestination(getName())));
+              new PtpProducer().withQueue(getName()));
       AdaptrisMessage msg = EmbeddedActiveMq.createMessage(null);
       msg.addMetadata(JmsConstants.JMS_ASYNC_STATIC_REPLY_TO, getName() + "_reply");
       ServiceCase.execute(standaloneProducer, msg);
@@ -256,7 +252,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     try {
       activeMqBroker.start();
       echo.start();
-      PasProducer pasProducer = new PasProducer(new ConfiguredProduceDestination(getName()));
+      PasProducer pasProducer = new PasProducer().withTopic(getName());
       pasProducer.setDeliveryMode(String.valueOf(DeliveryMode.PERSISTENT));
       pasProducer.setPriority(LOWEST_PRIORITY);
       pasProducer.setTtl(0L);
@@ -282,7 +278,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     try {
       activeMqBroker.start();
       echo.start();
-      PasProducer pasProducer = new PasProducer(new ConfiguredProduceDestination(getName()));
+      PasProducer pasProducer = new PasProducer().withTopic(getName());
       pasProducer.setDeliveryMode(String.valueOf(DeliveryMode.PERSISTENT));
       pasProducer.setPriority(LOWEST_PRIORITY);
       pasProducer.setTtl(0L);
@@ -314,7 +310,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       standaloneConsumer.registerAdaptrisMessageListener(jms);
 
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
-          new PasProducer(new ConfiguredProduceDestination(getName())));
+              new PasProducer().withTopic(getName()));
       execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
       assertMessages(jms, 1);
     }
@@ -337,7 +333,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       standaloneConsumer.registerAdaptrisMessageListener(jms);
 
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
-          new PasProducer(new ConfiguredProduceDestination(getName())));
+              new PasProducer().withTopic(getName()));
       execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
       assertMessages(jms, 1);
       assertEquals(AdaptrisMessageStub.class, jms.getMessages().get(0).getClass());
@@ -359,7 +355,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
 
       MockMessageListener jms = new MockMessageListener();
       standaloneConsumer.registerAdaptrisMessageListener(jms);
-      PasProducer producer = new PasProducer(new ConfiguredProduceDestination(getName()));
+      PasProducer producer = new PasProducer().withTopic(getName());
       producer.setEncoder(new MimeEncoder());
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), producer);
       execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
@@ -390,7 +386,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       stop(standaloneConsumer);
 
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
-          new PasProducer(new ConfiguredProduceDestination(getName())));
+              new PasProducer().withTopic(getName()));
 
       int count = 10;
       for (int i = 0; i < count; i++) {
@@ -420,7 +416,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       standaloneConsumer.registerAdaptrisMessageListener(jms);
 
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
-          new PasProducer(new ConfiguredProduceDestination(getName())));
+              new PasProducer().withTopic(getName()));
       execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
       assertMessages(jms, 1);
     }
@@ -442,7 +438,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       standaloneConsumer.registerAdaptrisMessageListener(jms);
 
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
-          new PtpProducer(new ConfiguredProduceDestination(getName())));
+              new PtpProducer().withQueue((getName())));
 
       execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
       assertMessages(jms, 1);
@@ -466,7 +462,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       standaloneConsumer.registerAdaptrisMessageListener(jms);
 
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
-          new PtpProducer(new ConfiguredProduceDestination(getName())));
+              new PtpProducer().withQueue((getName())));
 
       execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
       assertMessages(jms, 1);
@@ -490,7 +486,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       MockMessageListener jms = new MockMessageListener();
       standaloneConsumer.registerAdaptrisMessageListener(jms);
 
-      PtpProducer producer = new PtpProducer(new ConfiguredProduceDestination(getName()));
+      PtpProducer producer = new PtpProducer().withQueue((getName()));
       producer.setEncoder(new MimeEncoder());
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), producer);
 
@@ -515,7 +511,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       standaloneConsumer.registerAdaptrisMessageListener(jms);
 
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
-          new PtpProducer(new ConfiguredProduceDestination(getName())));
+              new PtpProducer().withQueue((getName())));
 
       execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
       assertMessages(jms, 1);
@@ -543,7 +539,8 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       conn = broker.getJmsConnection(createVendorImpl());
       conn.setUserName(RequiresCredentialsBroker.DEFAULT_USERNAME);
       conn.setPassword(RequiresCredentialsBroker.DEFAULT_PASSWORD);
-      StandaloneProducer standaloneProducer = new StandaloneProducer(conn, new PtpProducer(new ConfiguredProduceDestination(
+      StandaloneProducer standaloneProducer =
+          new StandaloneProducer(conn, new PtpProducer().withQueue((
           RequiresCredentialsBroker.DEFAULT_PREFIX + "queue")));
 
       execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
@@ -572,7 +569,8 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       conn = broker.getJmsConnection(createVendorImpl());
       conn.setUserName(RequiresCredentialsBroker.DEFAULT_USERNAME);
       conn.setPassword(RequiresCredentialsBroker.DEFAULT_PASSWORD);
-      StandaloneProducer standaloneProducer = new StandaloneProducer(conn, new PtpProducer(new ConfiguredProduceDestination(
+      StandaloneProducer standaloneProducer =
+          new StandaloneProducer(conn, new PtpProducer().withQueue((
           RequiresCredentialsBroker.DEFAULT_PREFIX + "queue")));
 
       execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
@@ -595,7 +593,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       MockMessageListener jms = new MockMessageListener();
       standaloneConsumer.registerAdaptrisMessageListener(jms);
 
-      PtpProducer producer = new PtpProducer(new ConfiguredProduceDestination(getName()));
+      PtpProducer producer = new PtpProducer().withQueue((getName()));
       producer.setMessageTranslator(new TextMessageTranslator());
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), producer);
 
@@ -623,7 +621,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       MockMessageListener jms = new MockMessageListener();
       standaloneConsumer.registerAdaptrisMessageListener(jms);
 
-      PtpProducer producer = new PtpProducer(new ConfiguredProduceDestination(getName()));
+      PtpProducer producer = new PtpProducer().withQueue((getName()));
       producer.setMessageTranslator(new BlobMessageTranslator("blobUrl"));
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), producer);
 
@@ -651,7 +649,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       MockMessageListener jms = new MockMessageListener();
       standaloneConsumer.registerAdaptrisMessageListener(jms);
 
-      PtpProducer producer = new PtpProducer(new ConfiguredProduceDestination(getName()));
+      PtpProducer producer = new PtpProducer().withQueue((getName()));
       producer.setMessageTranslator(new BlobMessageTranslator("blobUrl"));
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), producer);
 
@@ -672,7 +670,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       activeMqBroker.start();
       echo.start();
       StandaloneRequestor standaloneProducer = new StandaloneRequestor(activeMqBroker.getJmsConnection(createVendorImpl()),
-          new PasProducer(new ConfiguredProduceDestination(getName())));
+              new PasProducer().withTopic(getName()));
       AdaptrisMessage msg = createMessage();
       msg.addMetadata(JmsConstants.JMS_ASYNC_STATIC_REPLY_TO, getName() + "_reply");
       ServiceCase.execute(standaloneProducer, msg);
@@ -695,7 +693,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       activeMqBroker.start();
       echo.start();
       StandaloneRequestor standaloneProducer = new StandaloneRequestor(activeMqBroker.getJmsConnection(createVendorImpl()),
-          new PtpProducer(new ConfiguredProduceDestination(getName())));
+              new PtpProducer().withQueue((getName())));
       AdaptrisMessage msg = createMessage();
       msg.addMetadata(JmsConstants.JMS_ASYNC_STATIC_REPLY_TO, getName() + "_reply");
       ServiceCase.execute(standaloneProducer, msg);

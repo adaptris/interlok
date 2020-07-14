@@ -4,7 +4,6 @@ import javax.jms.CompletionListener;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -37,24 +36,26 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * <p>
  * <b>NOTE:</b> Once this producer has sent a message it is assumed to have succeeded, at least until a success or failure callback is received. <br />
- * This means that if this producer is one of your workflow producers, the workflow itself will immediately deem this 
+ * This means that if this producer is one of your workflow producers, the workflow itself will immediately deem this
  * message to have been processed and will move onto the next available message. <br/>
- * Generally this may not be an issue, however if processing a message triggers a form of transaction committing or JMS acknowledging, 
+ * Generally this may not be an issue, however if processing a message triggers a form of transaction committing or JMS acknowledging,
  * then the commit or ack could be completed regardless if the sent JMS message eventually succeeds or fails.
  * </p>
- * 
+ *
  * @config jms-async-producer
- * 
+ *
  */
 @XStreamAlias("jms-async-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Place message on a JMS queue or topic asynchronously", tag = "producer,jms", recommended = {JmsConnection.class})
-@DisplayOrder(order = {"destination", "asyncMessageErrorHandler", "messageTypeTranslator", "deliveryMode", "priority", "ttl", "acknowledgeMode"})
+@DisplayOrder(order = {"endpoint", "destination", "asyncMessageErrorHandler",
+    "messageTypeTranslator", "deliveryMode", "priority", "ttl", "acknowledgeMode"})
 public class JmsAsyncProducer extends JmsProducer implements CompletionListener {
-  
+
   @NotNull
   private StandardProcessingExceptionHandler asyncMessageErrorHandler;
 
+  @Override
   protected void produce(AdaptrisMessage msg, JmsDestination jmsDest) throws JMSException, CoreException {
     try {
       setupSession(msg);
@@ -87,9 +88,9 @@ public class JmsAsyncProducer extends JmsProducer implements CompletionListener 
   @Override
   public void onException(Message message, Exception exception) {
     log.error("Async Message failed.", exception);
-    
+
     try {
-      this.getAsyncMessageErrorHandler().handleProcessingException(this.getMessageTranslator().translate(message));
+      getAsyncMessageErrorHandler().handleProcessingException(getMessageTranslator().translate(message));
     } catch (JMSException e) {
       log.error("Failed to translate the failed JMS message to execute the exception handler.", e);
     }

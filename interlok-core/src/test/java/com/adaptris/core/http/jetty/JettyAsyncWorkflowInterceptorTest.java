@@ -1,12 +1,12 @@
 /*
  * Copyright Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -155,7 +155,7 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
       LifecycleHelper.initAndStart(httpService);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
       ServiceCase.execute(httpService, msg);
-      assertEquals("hello world", msg.getContent());      
+      assertEquals("hello world", msg.getContent());
       waitForMessages(producer, 1);
       // Grab the message that the standardWorkflow handled; and check the msgId.
       // Should be removed from the static cache.
@@ -254,8 +254,8 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
     }
 
     @Override
-    public void produce(AdaptrisMessage msg) throws ProduceException {
-      super.produce(msg);
+    protected void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException {
+      super.doProduce(msg, endpoint);
       workflow.onAdaptrisMessage(msg);
     }
   }

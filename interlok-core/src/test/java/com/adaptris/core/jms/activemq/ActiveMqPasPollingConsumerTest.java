@@ -29,7 +29,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 import com.adaptris.core.AdaptrisPollingConsumer;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.RandomIntervalPoller;
 import com.adaptris.core.StandaloneConsumer;
@@ -111,8 +110,8 @@ public class ActiveMqPasPollingConsumerTest {
 
     int msgCount = 5;
     final EmbeddedActiveMq activeBroker = new EmbeddedActiveMq();
-    final StandaloneProducer sender = new StandaloneProducer(activeBroker.getJmsConnection(), new PasProducer(
-            new ConfiguredProduceDestination(testName.getMethodName())));
+    final StandaloneProducer sender = new StandaloneProducer(activeBroker.getJmsConnection(),
+        new PasProducer().withTopic(testName.getMethodName()));
     final StandaloneConsumer receiver =
         createStandalone(activeBroker, "testProduceConsume", testName.getMethodName());
     activeBroker.start();

@@ -218,6 +218,7 @@ public class QuartzCronPollerTest extends BaseCase {
     assertEquals("No. Produced messages = 0", 0, mock2.getMessages().size());
   }
 
+  @SuppressWarnings("deprecation")
   private StandardWorkflow createWorkflow(ConsumeDestination d, QuartzCronPoller poller, AdaptrisMessageProducer prod) {
     PollingTrigger trigger = new PollingTrigger(poller, new StaticPollingTemplate(PAYLOAD));
     if (d != null) {

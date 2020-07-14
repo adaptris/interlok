@@ -27,11 +27,11 @@ import org.junit.rules.TestName;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.NullConnectionErrorHandler;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.StandaloneRequestor;
+import com.adaptris.core.jms.JmsReplyToDestination;
 import com.adaptris.core.jms.JmsReplyToWorkflow;
 import com.adaptris.core.jms.PasConsumer;
 import com.adaptris.core.jms.PasProducer;
@@ -67,8 +67,8 @@ public class JmsReplyToWorkflowTest {
     Channel channel = createChannel(broker);
     channel.getWorkflowList().add(workflow);
     try {
-      channel.prepare();
-      channel.requestInit();
+      LifecycleHelper.prepare(channel);
+      LifecycleHelper.init(channel);
       fail("shouldn't init without JMS Producer & Consumer");
     }
     catch (Exception e) {
@@ -92,9 +92,10 @@ public class JmsReplyToWorkflowTest {
         .setConsumer(new PtpConsumer().withQueue(testName.getMethodName()));
     channel.getWorkflowList().add(workflow);
     try {
-      channel.prepare();
-      channel.requestInit();
-      fail("shouldn't init without JMS MessageConsumer");
+      LifecycleHelper.prepare(channel);
+      LifecycleHelper.init(channel);
+
+      fail("shouldn't init without JMS Producer");
     }
     catch (Exception e) {
       // do nothing
@@ -116,8 +117,9 @@ public class JmsReplyToWorkflowTest {
     workflow.setProducer(new PtpProducer());
     channel.getWorkflowList().add(workflow);
     try {
-      channel.prepare();
-      channel.requestInit();
+      LifecycleHelper.prepare(channel);
+      LifecycleHelper.init(channel);
+
       fail("shouldn't init without JMS Producer");
     }
     catch (Exception e) {
@@ -138,11 +140,12 @@ public class JmsReplyToWorkflowTest {
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
     Channel channel = createChannel(broker);
     channel.setProduceConnection(broker.getJmsConnection());
-    workflow.setProducer(new PasProducer());
+    workflow.setProducer(new PasProducer().withTopic(testName.getMethodName()));
     channel.getWorkflowList().add(workflow);
     try {
-      channel.prepare();
-      channel.requestInit();
+      LifecycleHelper.prepare(channel);
+      LifecycleHelper.init(channel);
+
       fail("shouldn't init with a Pas Producer / Ptp Consumer");
     }
     catch (Exception e) {
@@ -162,13 +165,11 @@ public class JmsReplyToWorkflowTest {
     broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
     Channel channel = createChannel(broker);
-    workflow.setProducer(new PtpProducer());
-    workflow
-        .setConsumer(new PtpConsumer().withQueue(testName.getMethodName()));
+    workflow.setProducer(new PtpProducer().withDestination(new JmsReplyToDestination()));
+    workflow.setConsumer(new PtpConsumer().withQueue(testName.getMethodName()));
     channel.getWorkflowList().add(workflow);
     try {
-      channel.prepare();
-      channel.requestInit();
+      LifecycleHelper.initAndStart(channel);
     }
     finally {
       LifecycleHelper.stopAndClose(channel);
@@ -183,13 +184,12 @@ public class JmsReplyToWorkflowTest {
     broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
     Channel channel = createChannel(broker);
-    workflow.setProducer(new PtpProducer());
-    workflow
-        .setConsumer(new PtpConsumer().withQueue(testName.getMethodName()));
+    workflow.setProducer(new PtpProducer().withDestination(new JmsReplyToDestination()));
+    workflow.setConsumer(new PtpConsumer().withQueue(testName.getMethodName()));
     workflow.setServiceCollection(createServiceList());
     channel.getWorkflowList().add(workflow);
-    StandaloneRequestor sender = new StandaloneRequestor(broker.getJmsConnection(), new PtpProducer(
-        new ConfiguredProduceDestination(testName.getMethodName())));
+    StandaloneRequestor sender = new StandaloneRequestor(broker.getJmsConnection(),
+        new PtpProducer().withQueue(testName.getMethodName()));
     try {
       sender.setReplyTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
       start(channel, sender);
@@ -210,13 +210,12 @@ public class JmsReplyToWorkflowTest {
     broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
     Channel channel = createChannel(broker);
-    workflow.setProducer(new PasProducer());
-    workflow
-        .setConsumer(new PasConsumer().withTopic(testName.getMethodName()));
+    workflow.setProducer(new PasProducer().withDestination(new JmsReplyToDestination()));
+    workflow.setConsumer(new PasConsumer().withTopic(testName.getMethodName()));
     workflow.setServiceCollection(createServiceList());
     channel.getWorkflowList().add(workflow);
-    StandaloneRequestor sender = new StandaloneRequestor(broker.getJmsConnection(), new PasProducer(
-        new ConfiguredProduceDestination(testName.getMethodName())));
+    StandaloneRequestor sender = new StandaloneRequestor(broker.getJmsConnection(),
+        new PasProducer().withTopic(testName.getMethodName()));
     try {
       sender.setReplyTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
       start(channel, sender);
@@ -236,15 +235,15 @@ public class JmsReplyToWorkflowTest {
     broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
     Channel channel = createChannel(broker);
-    workflow.setProducer(new PtpProducer());
+    workflow.setProducer(new PtpProducer().withDestination(new JmsReplyToDestination()));
     workflow.setConsumer(new PtpConsumer().withQueue(testName.getMethodName()));
 
     workflow.getServiceCollection().add(new PayloadFromTemplateService().withTemplate(REPLY_TEXT));
     workflow.getServiceCollection().add(new MockSkipProducerService());
     channel.getWorkflowList().add(workflow);
     channel.prepare();
-    StandaloneRequestor sender = new StandaloneRequestor(broker.getJmsConnection(), new PtpProducer(
-        new ConfiguredProduceDestination(testName.getMethodName())));
+    StandaloneRequestor sender = new StandaloneRequestor(broker.getJmsConnection(),
+        new PtpProducer().withQueue(testName.getMethodName()));
     try {
       sender.setReplyTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
       start(channel, sender);
@@ -267,13 +266,12 @@ public class JmsReplyToWorkflowTest {
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
     workflow.addInterceptor(interceptor);
     Channel channel = createChannel(broker);
-    workflow.setProducer(new PasProducer());
-    workflow
-        .setConsumer(new PasConsumer().withTopic(testName.getMethodName()));
+    workflow.setProducer(new PasProducer().withDestination(new JmsReplyToDestination()));
+    workflow.setConsumer(new PasConsumer().withTopic(testName.getMethodName()));
     workflow.setServiceCollection(createServiceList());
     channel.getWorkflowList().add(workflow);
-    StandaloneRequestor sender = new StandaloneRequestor(broker.getJmsConnection(), new PasProducer(
-        new ConfiguredProduceDestination(testName.getMethodName())));
+    StandaloneRequestor sender = new StandaloneRequestor(broker.getJmsConnection(),
+        new PasProducer().withTopic(testName.getMethodName()));
     try {
       sender.setReplyTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
       start(channel, sender);
@@ -283,8 +281,7 @@ public class JmsReplyToWorkflowTest {
       assertEquals(1, interceptor.messageCount());
     }
     finally {
-      channel.requestClose();
-      stop(sender);
+      stop(channel, sender);
       broker.destroy();
     }
   }
@@ -296,7 +293,7 @@ public class JmsReplyToWorkflowTest {
     broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
     Channel channel = createChannel(broker);
-    workflow.setProducer(new PtpProducer());
+    workflow.setProducer(new PtpProducer().withDestination(new JmsReplyToDestination()));
     workflow.setConsumer(new PtpConsumer().withQueue(testName.getMethodName()));
     channel.getWorkflowList().add(workflow);
     try {

@@ -425,6 +425,7 @@ public abstract class FsConsumerCase extends ConsumerCase {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testSetFileFilterImp() throws Exception {
 
     String subdir = new GuidGenerator().safeUUID();
@@ -474,6 +475,7 @@ public abstract class FsConsumerCase extends ConsumerCase {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testSetDestination() {
     FsConsumerImpl consumer = createConsumer();
     assertNull(consumer.getDestination());
@@ -539,7 +541,7 @@ public abstract class FsConsumerCase extends ConsumerCase {
     fs.setCreateDirs(false);
     try {
       LifecycleHelper.init(fs);
-      fail("Should not have been able to init with [" + fs.getDestination().getDestination() + "] w/o creating the directory");
+      fail("Should fail since dir can't exist");
     }
     catch (CoreException e) {
       ;// Expected
@@ -608,8 +610,10 @@ public abstract class FsConsumerCase extends ConsumerCase {
       for (Poller poller : POLLER_LIST) {
         for (FileSortImplementation sort : FileSortImplementation.values()) {
           StandaloneConsumer sc = new StandaloneConsumer(createConsumer(null));
+          ConsumeDestination cd = filter.createDestination();
           ((FsConsumerImpl) sc.getConsumer()).setPoller(poller);
-          ((FsConsumerImpl) sc.getConsumer()).setDestination(filter.createDestination());
+          ((FsConsumerImpl) sc.getConsumer()).setBaseDirectoryUrl(cd.getDestination());
+          ((FsConsumerImpl) sc.getConsumer()).setFilterExpression(cd.getFilterExpression());
           ((FsConsumerImpl) sc.getConsumer()).setFileFilterImp(filter.getImpl());
           ((FsConsumerImpl) sc.getConsumer()).setFileSorter(sort.getImplementation());
 

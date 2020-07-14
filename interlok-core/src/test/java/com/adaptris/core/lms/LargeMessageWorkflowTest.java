@@ -25,10 +25,8 @@ import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.MetadataElement;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceList;
@@ -99,12 +97,7 @@ public class LargeMessageWorkflowTest extends StandardWorkflowTest {
 
     MockMessageProducer producer = new MockMessageProducer() {
       @Override
-      public void produce(AdaptrisMessage msg) throws ProduceException {
-        throw new ProduceException();
-      }
-
-      @Override
-      public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
+      protected void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException {
         throw new ProduceException();
       }
     };
@@ -149,14 +142,10 @@ public class LargeMessageWorkflowTest extends StandardWorkflowTest {
 
     MockMessageProducer producer = new MockMessageProducer() {
       @Override
-      public void produce(AdaptrisMessage msg) throws ProduceException {
+      protected void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException {
         throw new RuntimeException();
       }
 
-      @Override
-      public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
-        throw new RuntimeException();
-      }
     };
     ;
     MockMessageProducer meh = new MockMessageProducer();
@@ -199,7 +188,8 @@ public class LargeMessageWorkflowTest extends StandardWorkflowTest {
     LargeMessageWorkflow workflow = new LargeMessageWorkflow();
     workflow.setConsumer(
         new LargeFsConsumer().withBaseDirectoryUrl("file:////path/to/consume/directory"));
-    workflow.setProducer(new LargeFsProducer(new ConfiguredProduceDestination("file:////path/to/produce/directory")));
+    workflow.setProducer(
+        new LargeFsProducer().withBaseDirectoryUrl("file:////path/to/produce/directory"));
     c.getWorkflowList().add(workflow);
     c.setUniqueId(UUID.randomUUID().toString());
     workflow.setUniqueId(UUID.randomUUID().toString());

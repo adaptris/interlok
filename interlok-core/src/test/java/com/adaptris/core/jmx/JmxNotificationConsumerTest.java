@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,7 +30,6 @@ import org.junit.Test;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessageConsumer;
 import com.adaptris.core.AdaptrisMessageListener;
-import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConsumerCase;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.StandaloneConsumer;
@@ -61,7 +60,7 @@ public class JmxNotificationConsumerTest extends ConsumerCase {
     StubNotificationBroadcaster broadcast = new StubNotificationBroadcaster();
     MockMessageListener listener = new MockMessageListener();
     JmxNotificationConsumer consumer = new JmxNotificationConsumer();
-    consumer.setDestination(new ConfiguredConsumeDestination(myObjectName));
+    consumer.setObjectName(myObjectName);
     StandaloneConsumer sc = wrap(new JmxConnection(), consumer, listener);
 
     try {
@@ -80,7 +79,7 @@ public class JmxNotificationConsumerTest extends ConsumerCase {
     StubNotificationBroadcaster broadcast = new StubNotificationBroadcaster();
     MockMessageListener listener = new MockMessageListener();
     JmxNotificationConsumer consumer = new JmxNotificationConsumer();
-    consumer.setDestination(new ConfiguredConsumeDestination(myObjectName));
+    consumer.setObjectName(myObjectName);
     StandaloneConsumer sc = wrap(new JmxConnection(), consumer, listener);
 
     try {
@@ -102,7 +101,7 @@ public class JmxNotificationConsumerTest extends ConsumerCase {
     StubNotificationBroadcaster broadcast = new StubNotificationBroadcaster();
     MockMessageListener listener = new MockMessageListener();
     JmxNotificationConsumer consumer = new JmxNotificationConsumer();
-    consumer.setDestination(new ConfiguredConsumeDestination(myObjectName));
+    consumer.setObjectName(myObjectName);
     StandaloneConsumer sc = wrap(new JmxConnection(), consumer, listener);
 
     try {
@@ -126,7 +125,7 @@ public class JmxNotificationConsumerTest extends ConsumerCase {
     JmxNotificationConsumer consumer = new JmxNotificationConsumer();
     consumer.setFailIfNotFound(false);
     consumer.setRetryInterval(new TimeInterval(1L, TimeUnit.SECONDS));
-    consumer.setDestination(new ConfiguredConsumeDestination(myObjectName));
+    consumer.setObjectName(myObjectName);
     StandaloneConsumer sc = wrap(new JmxConnection(), consumer, listener);
     ScheduledExecutorService scheduler = Executors
         .newSingleThreadScheduledExecutor(new ManagedThreadFactory(getClass().getSimpleName()));
@@ -162,8 +161,8 @@ public class JmxNotificationConsumerTest extends ConsumerCase {
     conn.setJmxServiceUrl("service:jmx:jmxmp://localhost:5555");
     conn.setUsername("jmxUsername");
     conn.setPassword("jmxPassword");
-    consumer.setDestination(
-        new ConfiguredConsumeDestination("com.adaptris:type=Notifications,adapter=MyAdapter,channel=C1,workflow=W1,id=Name"));
+    consumer.setObjectName(
+        "com.adaptris:type=Notifications,adapter=MyAdapter,channel=C1,workflow=W1,id=Name");
     consumer.setSerializer(new XmlNotificationSerializer());
     return new StandaloneConsumer(conn, consumer);
   }

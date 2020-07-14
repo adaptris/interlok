@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -396,12 +396,7 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     MockMessageProducer meh = new MockMessageProducer();
     MockMessageProducer prod = new MockMessageProducer() {
       @Override
-      public void produce(AdaptrisMessage msg) throws ProduceException {
-        throw new ProduceException();
-      }
-
-      @Override
-      public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
+      protected void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException {
         throw new ProduceException();
       }
     };
@@ -453,14 +448,10 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     MockMessageProducer meh = new MockMessageProducer();
     MockMessageProducer prod = new MockMessageProducer() {
       @Override
-      public void produce(AdaptrisMessage msg) throws ProduceException {
+      protected void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException {
         throw new RuntimeException();
       }
 
-      @Override
-      public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
-        throw new RuntimeException();
-      }
     };
     wf.setProducer(prod);
     channel.setMessageErrorHandler(new StandardProcessingExceptionHandler(
@@ -573,8 +564,8 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
       stop(channel);
     }
   }
-    
-  @Test 
+
+  @Test
   public void testOnMessage_SuccessCallback() throws Exception {
     AtomicBoolean onSuccess = new AtomicBoolean(false);
     MockChannel channel = createChannel();
@@ -591,9 +582,9 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     } finally {
       stop(channel);
     }
-    
+
   }
-  
+
   private void submitMessages(PoolingWorkflow wf, int number) throws Exception {
     MockMessageConsumer m = (MockMessageConsumer) wf.getConsumer();
     for (int i = 0; i < number; i++) {
@@ -637,7 +628,7 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     channel.getWorkflowList().add(wf);
     return channel;
   }
-  
+
   private MockChannel createAndPrepareChannel(List<Service> services) throws Exception {
     MockChannel channel = buildChannel(services);
     LifecycleHelper.prepare(channel);

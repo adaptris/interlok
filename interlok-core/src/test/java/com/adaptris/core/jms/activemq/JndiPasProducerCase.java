@@ -25,7 +25,6 @@ import static org.junit.Assert.fail;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
@@ -60,7 +59,7 @@ public abstract class JndiPasProducerCase {
 
     standaloneConsumer.registerAdaptrisMessageListener(jms);
     StandaloneProducer standaloneProducer = new StandaloneProducer(broker.getJndiPasConnection(sendVendorImp, false, queueName,
-        topicName), new PasProducer(new ConfiguredProduceDestination(topicName)));
+            topicName), new PasProducer().withTopic(topicName));
     try {
       broker.start();
       execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
@@ -94,7 +93,7 @@ public abstract class JndiPasProducerCase {
     standaloneConsumer.registerAdaptrisMessageListener(jms);
     StandaloneProducer standaloneProducer = new StandaloneProducer(broker.getJndiPasConnection(sendVendorImp, false, queueName,
         topicName),
- new PasProducer(new ConfiguredProduceDestination(topicName)));
+        new PasProducer().withTopic(topicName));
     try {
       broker.start();
       execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
@@ -120,7 +119,7 @@ public abstract class JndiPasProducerCase {
     standaloneConsumer.registerAdaptrisMessageListener(jms);
     StandaloneProducer standaloneProducer = new StandaloneProducer(broker.getJndiPasConnection(sendVendorImp, true, queueName,
         topicName),
- new PasProducer(new ConfiguredProduceDestination(topicName)));
+        new PasProducer().withTopic(topicName));
     try {
       broker.start();
       execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
@@ -141,7 +140,7 @@ public abstract class JndiPasProducerCase {
     StandardJndiImplementation sendVendorImp = createVendorImplementation();
     StandaloneProducer standaloneProducer = new StandaloneProducer(broker.getJndiPasConnection(sendVendorImp, true, queueName,
         topicName),
-        new PasProducer(new ConfiguredProduceDestination(this.getClass().getSimpleName())));
+        new PasProducer().withTopic(this.getClass().getSimpleName()));
     try {
       broker.start();
       start(standaloneProducer);

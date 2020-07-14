@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,10 +17,10 @@
 package com.adaptris.core.stubs;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
-
 import java.util.ArrayList;
 import java.util.List;
-
+import javax.validation.Valid;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageProducerImp;
 import com.adaptris.core.CoreException;
@@ -31,6 +31,8 @@ import com.adaptris.core.ProduceException;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.PlainIdGenerator;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * <p>
@@ -47,6 +49,16 @@ public class MockNonStandardRequestReplyProducer extends
   private List producedMessages;
 
   private static IdGenerator uniqueIdGenerator;
+  /**
+   * The consume destination represents the base-directory where you are consuming files from.
+   *
+   */
+  @Getter
+  @Setter
+  @Deprecated
+  @Valid
+  @Removal(version = "4.0.0", message = "Use 'base-directory-url' instead")
+  private ProduceDestination destination;
 
   static {
     try {
@@ -87,6 +99,7 @@ public class MockNonStandardRequestReplyProducer extends
   /**
    * @see com.adaptris.core.AdaptrisMessageProducerImp #produce(AdaptrisMessage)
    */
+  @Override
   public void produce(AdaptrisMessage msg) throws ProduceException {
     produce(msg, getDestination());
   }
@@ -94,6 +107,7 @@ public class MockNonStandardRequestReplyProducer extends
   /**
    * @see com.adaptris.core.AdaptrisMessageProducerImp#request(AdaptrisMessage)
    */
+  @Override
   public AdaptrisMessage request(AdaptrisMessage msg) throws ProduceException {
     return request(msg, getDestination(), defaultTimeout());
   }
@@ -101,6 +115,7 @@ public class MockNonStandardRequestReplyProducer extends
   /**
    * @see com.adaptris.core.AdaptrisMessageProducerImp#request(AdaptrisMessage, long)
    */
+  @Override
   public AdaptrisMessage request(AdaptrisMessage msg, long timeout)
       throws ProduceException {
     return request(msg, getDestination(), timeout);
@@ -110,6 +125,7 @@ public class MockNonStandardRequestReplyProducer extends
    * @see com.adaptris.core.AdaptrisMessageProducerImp
    *      #request(AdaptrisMessage,ProduceDestination)
    */
+  @Override
   public AdaptrisMessage request(AdaptrisMessage msg,
                                  ProduceDestination destination)
       throws ProduceException {
@@ -121,6 +137,7 @@ public class MockNonStandardRequestReplyProducer extends
    *      (com.adaptris.core.AdaptrisMessage,
    *      com.adaptris.core.ProduceDestination)
    */
+  @Override
   public void produce(AdaptrisMessage msg, ProduceDestination destination)
       throws ProduceException {
     request(msg, destination);
@@ -130,6 +147,7 @@ public class MockNonStandardRequestReplyProducer extends
    * @see com.adaptris.core.AdaptrisMessageProducerImp #request(AdaptrisMessage,
    *      ProduceDestination, long)
    */
+  @Override
   public AdaptrisMessage request(AdaptrisMessage msg,
                                  ProduceDestination destination, long timeout)
       throws ProduceException {
@@ -147,27 +165,12 @@ public class MockNonStandardRequestReplyProducer extends
     return reply;
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
-  public void init() throws CoreException {
-    // do nothing
-  }
-
-  /** @see com.adaptris.core.AdaptrisComponent#start() */
-  public void start() throws CoreException {
-    // do nothing
-  }
-
-  /** @see com.adaptris.core.AdaptrisComponent#stop() */
-  public void stop() {
-    // do nothing
-  }
-
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  public void close() {
-    // do nothing - could empty List?
-  }
-
   protected long defaultTimeout() {
     return 0;
+  }
+
+  @Override
+  public String endpoint(AdaptrisMessage msg) throws ProduceException {
+    return null;
   }
 }

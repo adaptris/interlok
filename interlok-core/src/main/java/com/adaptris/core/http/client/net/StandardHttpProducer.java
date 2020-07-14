@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,10 +47,8 @@ import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageImp;
 import com.adaptris.core.CoreConstants;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.NullConnection;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.common.InputStreamWithEncoding;
 import com.adaptris.core.common.PayloadStreamInputParameter;
@@ -71,7 +69,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Default {@link HttpProducer} implementation that uses {@link HttpURLConnection} available in a standard java runtime.
- * 
+ *
  * <p>
  * This uses {@code com.adaptris.core.http.client} interfaces to manage request and response headers and also the
  * {@link DataInputParameter} and {@link DataOutputParameter} interfaces to source the HTTP body and to handle the HTTP response
@@ -87,9 +85,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * "https://docs.oracle.com/javase/8/docs/technotes/guides/security/jsse/JSSERefGuide.html#InstallationAndCustomization">Oracles
  * JSSE documentation</a> for a full discussion of the required system properties.
  * </p>
- * 
+ *
  * @config standard-http-producer
- * 
+ *
  * @author lchan
  */
 @XStreamAlias("standard-http-producer")
@@ -105,7 +103,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
     })
 @DisplayOrder(order =
 {
-    "authenticator", "allowRedirect", "ignoreServerResponseCode", "alwaysSendPayload", "methodProvider",
+    "url", "authenticator", "allowRedirect", "ignoreServerResponseCode", "alwaysSendPayload",
+    "methodProvider",
     "contentTypeProvider", "requestHeaderProvider", "requestBody", "responseHeaderHandler", "responseBody"})
 public class StandardHttpProducer extends HttpProducer<HttpURLConnection, HttpURLConnection> {
 
@@ -154,25 +153,22 @@ public class StandardHttpProducer extends HttpProducer<HttpURLConnection, HttpUR
     Authenticator.setDefault(AdapterResourceAuthenticator.getInstance());
   }
 
-  public StandardHttpProducer(ProduceDestination d) {
-    this();
-    setDestination(d);
-  }
-
   @Override
-  public void produce(AdaptrisMessage msg, ProduceDestination dest) throws ProduceException {
+  protected void doProduce(AdaptrisMessage msg, String dest) throws ProduceException {
     doRequest(msg, dest, defaultTimeout(), defaultIfNull(getMessageFactory()).newMessage());
   }
 
   @Override
-  protected AdaptrisMessage doRequest(AdaptrisMessage msg, ProduceDestination destination, long timeout) throws ProduceException {
-    return doRequest(msg, destination, timeout, msg);
+  protected AdaptrisMessage doRequest(AdaptrisMessage msg, String endpointUrl, long timeout)
+      throws ProduceException {
+    return doRequest(msg, endpointUrl, timeout, msg);
   }
 
-  private AdaptrisMessage doRequest(AdaptrisMessage msg, ProduceDestination destination, long timeout, AdaptrisMessage reply)
+  private AdaptrisMessage doRequest(AdaptrisMessage msg, String endpointUrl, long timeout,
+      AdaptrisMessage reply)
       throws ProduceException {
     try {
-      URL url = new URL(destination.getDestination(msg));
+      URL url = new URL(endpointUrl);
       authenticator.setup(url.toString(), msg, null);
       HttpURLConnection http = configure(configureTimeouts((HttpURLConnection) url.openConnection(), timeout), msg);
       if (authenticator instanceof HttpURLConnectionAuthenticator) {
@@ -306,15 +302,13 @@ public class StandardHttpProducer extends HttpProducer<HttpURLConnection, HttpUR
     return requestBody;
   }
 
-
-
   /**
    * Set where the HTTP Request body is going to come from.
-   * 
+   *
    * @param input the input; default is {@link PayloadStreamInputParameter} which is the only implementation currently.
    */
   public void setRequestBody(DataInputParameter<InputStream> input) {
-    this.requestBody = Args.notNull(input, "data input");
+    requestBody = Args.notNull(input, "data input");
   }
 
   private DataInputParameter<InputStream> requestBody() {
@@ -331,20 +325,17 @@ public class StandardHttpProducer extends HttpProducer<HttpURLConnection, HttpUR
    * Note that if you have configured an {@link com.adaptris.core.AdaptrisMessageEncoder} via
    * {@link #setEncoder(com.adaptris.core.AdaptrisMessageEncoder)} (such as for AS2) then this may have no effect.
    * </p>
-   * 
+   *
    * @param output the output; default is {@link PayloadStreamOutputParameter}.
    */
   public void setResponseBody(DataOutputParameter<InputStreamWithEncoding> output) {
-    this.responseBody = Args.notNull(output, "data output");
+    responseBody = Args.notNull(output, "data output");
   }
 
 
   private DataOutputParameter<InputStreamWithEncoding> responseBody() {
     return getResponseBody() != null ? getResponseBody() : defaultResponse;
   }
-
-  @Override
-  public void prepare() throws CoreException {}
 
   public HttpAuthenticator getAuthenticator() {
     return authenticator;
@@ -370,11 +361,11 @@ public class StandardHttpProducer extends HttpProducer<HttpURLConnection, HttpUR
    * Only the TRACE method explicitly forbids an entity body; other methods are technically unrestricted. However, best practice
    * suggests that entity bodies are only included for the POST/PUT/(PATCH) methods.
    * </p>
-   * 
+   *
    * @param b set this to true to always attempt to send a body (apart from TRACE), default false.
    */
   public void setAlwaysSendPayload(Boolean b) {
-    this.alwaysSendPayload = b;
+    alwaysSendPayload = b;
   }
 
   boolean alwaysSendPayload() {
@@ -387,11 +378,11 @@ public class StandardHttpProducer extends HttpProducer<HttpURLConnection, HttpUR
 
   /**
    * Set the connect timeout.
-   * 
+   *
    * @param t the timeout (will be used for {@link HttpURLConnection#setConnectTimeout(int)})
    */
   public void setConnectTimeout(TimeInterval t) {
-    this.connectTimeout = t;
+    connectTimeout = t;
   }
 
   public TimeInterval getReadTimeout() {
@@ -404,10 +395,10 @@ public class StandardHttpProducer extends HttpProducer<HttpURLConnection, HttpUR
    * Note that any read timeout will be overridden by the timeout value passed in via the {{@link #request(AdaptrisMessage, long)}
    * method; if it is not the same as {@value com.adaptris.core.http.HttpConstants#DEFAULT_SOCKET_TIMEOUT}
    * </p>
-   * 
+   *
    * @param t the timeout (will be used for {@link HttpURLConnection#setReadTimeout(int)})
    */
   public void setReadTimeout(TimeInterval t) {
-    this.readTimeout = t;
+    readTimeout = t;
   }
 }

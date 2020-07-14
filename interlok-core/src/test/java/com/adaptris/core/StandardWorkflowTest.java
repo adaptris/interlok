@@ -367,12 +367,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
   public void testProduceException() throws Exception {
     MockMessageProducer producer = new MockMessageProducer() {
       @Override
-      public void produce(AdaptrisMessage msg) throws ProduceException {
-        throw new ProduceException();
-      }
-
-      @Override
-      public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
+      protected void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException {
         throw new ProduceException();
       }
     };
@@ -411,12 +406,7 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
   public void testRuntimeException() throws Exception {
     MockMessageProducer producer = new MockMessageProducer() {
       @Override
-      public void produce(AdaptrisMessage msg) throws ProduceException {
-        throw new RuntimeException();
-      }
-
-      @Override
-      public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
+      protected void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException {
         throw new RuntimeException();
       }
     };

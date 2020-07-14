@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.Poller;
 import com.adaptris.core.StandaloneConsumer;
@@ -68,7 +67,7 @@ public class ActiveMqJmsPollingConsumerTest {
     String rfc6167 = "jms:queue:" + testName.getMethodName();
     final EmbeddedActiveMq broker = new EmbeddedActiveMq();
     final StandaloneProducer sender =
-        new StandaloneProducer(broker.getJmsConnection(), new JmsProducer(new ConfiguredProduceDestination(rfc6167)));
+        new StandaloneProducer(broker.getJmsConnection(), new JmsProducer().withEndpoint(rfc6167));
     final StandaloneConsumer receiver =
         createStandaloneConsumer(broker, testName.getMethodName(), rfc6167);
     try {
@@ -95,7 +94,7 @@ public class ActiveMqJmsPollingConsumerTest {
         "jms:topic:" + testName.getMethodName() + "?subscriptionId=" + testName.getMethodName();
     final EmbeddedActiveMq broker = new EmbeddedActiveMq();
     final StandaloneProducer sender =
-        new StandaloneProducer(broker.getJmsConnection(), new JmsProducer(new ConfiguredProduceDestination(rfc6167)));
+        new StandaloneProducer(broker.getJmsConnection(), new JmsProducer().withEndpoint(rfc6167));
     Sometime poller = new Sometime();
     JmsPollingConsumer consumer = createConsumer(broker, testName.getMethodName(), rfc6167, poller);
     final StandaloneConsumer receiver = new StandaloneConsumer(consumer);

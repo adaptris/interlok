@@ -82,19 +82,30 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
    */
   @Deprecated
   @Valid
-  @Removal(version = "4.0.0", message = "Use 'ftp-url' instead")
+  @Removal(version = "4.0.0", message = "Use 'ftp-endpoint' instead")
   @Getter
   @Setter
   private ConsumeDestination destination;
 
   /**
-   * The FTP server & URL specified as a URL.
-   *
+   * The FTP endpoint where we will retrieve files files.
+   * <p>
+   * Although nominally a URL, you can configure the following styles
+   * <ul>
+   * <li>Just the server name / IP Address (e.g. 10.0.0.1) in which case the username and password
+   * from the corresponding {@link FileTransferConnection} will be used to supply the username and
+   * password. You will be working off directly off the perceived root filesystem which will be a
+   * problem if you aren't in a chroot jail.</li>
+   * <li>A FTP style URL {@code ftp://10.0.0.1/path/to/dir}, the username and password will be taken
+   * from the corresponding connection. The working directory start with {@code /path/to/dir}</li>
+   * <li>A FTP style URL with a username/password {@code ftp://user:password@10.0.0.1/path/to/dir}.
+   * The working directory will start with {@code /path/to/dir}</li>
+   * </ul>
    */
   @Getter
   @Setter
   // Needs to be @NotBlank when destination is removed.
-  private String ftpUrl;
+  private String ftpEndpoint;
 
   /**
    * The filter expression to use when listing files.
@@ -230,11 +241,11 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
           "{} uses destination, use ftp-url and filter-expression instead",
           LoggingHelper.friendlyName(this));
     }
-    DestinationHelper.mustHaveEither(getFtpUrl(), getDestination());
+    DestinationHelper.mustHaveEither(getFtpEndpoint(), getDestination());
   }
 
   protected String ftpURL() {
-    return DestinationHelper.consumeDestination(getFtpUrl(), getDestination());
+    return DestinationHelper.consumeDestination(getFtpEndpoint(), getDestination());
   }
 
   protected String filterExpression() {

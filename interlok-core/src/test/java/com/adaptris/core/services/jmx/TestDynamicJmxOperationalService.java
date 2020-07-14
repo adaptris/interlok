@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -44,7 +44,7 @@ import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.GuidGenerator;
 
 public class TestDynamicJmxOperationalService extends ServiceCase {
-  
+
   private static GuidGenerator guid = new GuidGenerator();
 
   private static final String BASE_DIR_KEY = "JmxServiceExamples.baseDir";
@@ -57,7 +57,7 @@ public class TestDynamicJmxOperationalService extends ServiceCase {
 
   @Mock
   private JmxOperationInvoker<Object> mockInvoker;
-  
+
   public TestDynamicJmxOperationalService() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
@@ -103,7 +103,7 @@ public class TestDynamicJmxOperationalService extends ServiceCase {
 
   @Test
   public void testService() throws Exception {
-    ObjectName objName = ObjectName.getInstance("com.adaptris.junit:testname=" + this.getName());
+    ObjectName objName = ObjectName.getInstance("com.adaptris.junit:testname=" + getName());
     HelloWorld hb = new HelloWorld(objName);
     hb.register();
     try {
@@ -190,7 +190,7 @@ public class TestDynamicJmxOperationalService extends ServiceCase {
   public void testService_Mocked_InvokerException() throws Exception {
     when(mockInvoker.invoke((MBeanServerConnection) any(), anyString(), anyString(), any(Object[].class), any(String[].class)))
       .thenThrow(new MBeanException(new Exception(), "Expected"));
-    
+
     DynamicJmxOperationService service = new DynamicJmxOperationService();
     service.setInvoker(mockInvoker);
     service.setObjectName(DEFAULT_OBJECTNAME);
@@ -203,7 +203,7 @@ public class TestDynamicJmxOperationalService extends ServiceCase {
       //expected
     }
   }
-  
+
   @Override
   protected Object retrieveObjectForSampleConfig() {
 
@@ -211,14 +211,14 @@ public class TestDynamicJmxOperationalService extends ServiceCase {
     service.setJmxServiceUrl(DEFAULT_JMX_SERVICEURL);
     service.setObjectName(DEFAULT_OBJECTNAME);
     service.setOperationName("myMethodToInvoke");
-    
+
     return service;
   }
 
   private static class JmxComponentWrapper {
     JmxRemoteComponent jmx;
     Integer port;
-    
+
     JmxComponentWrapper() {
       port = PortManager.nextUnusedPort(5555);
     }

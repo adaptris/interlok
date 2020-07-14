@@ -26,7 +26,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import com.adaptris.core.Channel;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ExampleWorkflowCase;
 import com.adaptris.core.NullProcessingExceptionHandler;
@@ -198,7 +197,7 @@ public class JmsTransactedWorkflowTest extends ExampleWorkflowCase {
       workflow.setWaitPeriodAfterRollback(new TimeInterval(30L, TimeUnit.SECONDS.name()));
       workflow.getServiceCollection().addService(new WaitService());
       workflow.getServiceCollection().addService(new ThrowExceptionService(new ConfiguredException("Fail")));
-      workflow.setProducer(new FsProducer(new ConfiguredProduceDestination("file:////path/to/directory")));
+      workflow.setProducer(new FsProducer().withBaseDirectoryUrl("file:////path/to/directory"));
       c.getWorkflowList().add(workflow);
     }
     catch (CoreException e) {

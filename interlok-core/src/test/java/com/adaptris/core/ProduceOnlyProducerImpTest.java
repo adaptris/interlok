@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,13 +37,12 @@ public class ProduceOnlyProducerImpTest extends BaseCase {
     String destinationString = "/tgt";
     String baseString = PROPERTIES.getProperty(FsMessageProducerTest.BASE_KEY);
     // create producer
-    producer = new FsProducer();
-    producer.setDestination(new ConfiguredProduceDestination(baseString
-        + destinationString));
+    producer = new FsProducer().withBaseDirectoryUrl(baseString + destinationString);
     ((FsProducer) producer).setCreateDirs(true);
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testRequestThrowsException() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance()
         .newMessage("dummy");
