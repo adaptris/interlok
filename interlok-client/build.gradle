@@ -1,5 +1,6 @@
 ext {
   componentName='Interlok Client API'
+  delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -29,6 +30,13 @@ dependencies {
   javadoc project(':interlok-core-apt')
 }
 
+task deleteGeneratedFiles(type: Delete) {
+  delete delombokTargetDir
+}
+
+delombok {
+  target = delombokTargetDir
+}
 
 artifacts {
     archives javadocJar
@@ -54,3 +62,4 @@ uploadArchives {
 }
 
 publish.dependsOn uploadArchives
+clean.dependsOn deleteGeneratedFiles

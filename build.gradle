@@ -165,6 +165,17 @@ subprojects { subproject ->
     }
   }
 
+
+  task lgtmCompile(type: JavaCompile, dependsOn: delombok) {
+    group 'Build'
+    description 'Compile for lgtm'
+
+    source = sourceSets.main.extensions.delombokTask
+    destinationDir = sourceSets.main.java.outputDir
+    classpath = project.sourceSets.main.compileClasspath
+  }
+
+
   spotbugsMain {
     effort = "max"
     reportLevel = "high"

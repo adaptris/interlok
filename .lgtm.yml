@@ -3,6 +3,8 @@ extraction:
     index:
       gradle:
         version: 5.6.3
+      build_command:
+        - ./gradlew --no-daemon -S lgtmCompile
 
 path_classifiers:
   docs:
@@ -16,3 +18,7 @@ path_classifiers:
     - ".circleci"
     - ".dependabot"
     - ".github"
+    - ".lgtm.yml"
+    - ".gitlab-ci.yml"
+  generated:
+    exclude: "**/*.java"
