@@ -95,6 +95,8 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
     Channel channel = JettyHelper.createChannel(new EmbeddedConnection(),
         JettyHelper.createConsumer("http://localhost:8080" + URL_TO_POST_TO), mockProducer);
     try {
+      // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
+      LifecycleHelper.prepare(channel);
       channel.requestStart();
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");

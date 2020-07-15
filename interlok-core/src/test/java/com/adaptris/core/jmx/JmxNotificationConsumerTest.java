@@ -35,6 +35,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.util.JmxHelper;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.TimeInterval;
 
@@ -106,6 +107,8 @@ public class JmxNotificationConsumerTest extends ConsumerCase {
 
     try {
       mbeanServer.registerMBean(broadcast, ObjectName.getInstance(myObjectName));
+      // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
+      LifecycleHelper.prepare(sc);
       start(sc);
       broadcast.sendNotification(getName(), new Object());
       waitForMessages(listener, 1);

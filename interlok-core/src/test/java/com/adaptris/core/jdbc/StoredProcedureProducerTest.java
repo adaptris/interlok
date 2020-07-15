@@ -44,6 +44,7 @@ import com.adaptris.core.services.jdbc.AllRowsMetadataTranslator;
 import com.adaptris.core.services.jdbc.FirstRowMetadataTranslator;
 import com.adaptris.core.services.jdbc.JdbcServiceList;
 import com.adaptris.core.services.jdbc.XmlPayloadTranslator;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.jdbc.ExecuteQueryCallableStatementExecutor;
 import com.adaptris.jdbc.MysqlStatementCreator;
 import com.adaptris.jdbc.ParameterValueType;
@@ -192,6 +193,8 @@ public class StoredProcedureProducerTest extends ProducerCase {
       spp.setOutParameters(outParameters);
       StandaloneProducer producer = configureForTests(spp, true);
       try {
+        // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
+        LifecycleHelper.prepare(producer);
         start(producer);
         assertEquals(0, message.getMetadata().size());
         producer.doService(message);

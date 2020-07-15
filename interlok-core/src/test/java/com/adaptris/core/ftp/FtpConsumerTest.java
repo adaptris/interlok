@@ -50,6 +50,7 @@ import com.adaptris.core.PollerImp;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.lms.FileBackedMessageFactory;
 import com.adaptris.core.stubs.MockMessageListener;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.ftp.ClientSettings;
 import com.adaptris.ftp.FtpDataMode;
 import com.adaptris.util.KeyValuePair;
@@ -116,6 +117,8 @@ public class FtpConsumerTest extends FtpConsumerCase {
       FtpConsumer ftpConsumer = createForTests(listener, "testBasicConsume");
       FtpConnection consumeConnection = create(server);
       sc = new StandaloneConsumer(consumeConnection, ftpConsumer);
+      // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
+      LifecycleHelper.prepare(sc);
       start(sc);
       waitForMessages(listener, count);
       helper.assertMessages(listener.getMessages(), count);

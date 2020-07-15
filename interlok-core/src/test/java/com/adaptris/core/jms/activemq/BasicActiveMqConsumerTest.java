@@ -52,6 +52,7 @@ import com.adaptris.core.stubs.ExternalResourcesHelper;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.stubs.MockMessageProducer;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.GuidGenerator;
 
 public class BasicActiveMqConsumerTest extends JmsConsumerCase {
@@ -113,6 +114,9 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
 
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
               new PasProducer().withTopic(getName()));
+      // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
+      LifecycleHelper.prepare(standaloneConsumer);
+      LifecycleHelper.prepare(standaloneProducer);
       execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
       assertMessages(jms, 1);
       AdaptrisMessage consumed = jms.getMessages().get(0);
@@ -265,6 +269,9 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
 
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
               new PtpProducer().withQueue((getName())));
+      // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
+      LifecycleHelper.prepare(standaloneConsumer);
+      LifecycleHelper.prepare(standaloneProducer);
 
       execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
       assertMessages(jms, 1);

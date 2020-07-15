@@ -73,6 +73,7 @@ import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.services.WaitService;
 import com.adaptris.core.services.metadata.PayloadFromTemplateService;
 import com.adaptris.core.stubs.MockMessageProducer;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.security.password.Password;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.TimeInterval;
@@ -152,6 +153,8 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     msg.addMetadata(getName(), getName());
     try {
       c.requestStart();
+      // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
+      LifecycleHelper.prepare(producer);
       start(producer);
       producer.doService(msg);
       waitForMessages(mock, 1);

@@ -169,6 +169,9 @@ public class JmsConsumerTest extends JmsConsumerCase {
 
       StandaloneProducer standaloneProducer =
           new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), new JmsProducer().withEndpoint(rfc6167));
+      // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
+      LifecycleHelper.prepare(standaloneConsumer);
+      LifecycleHelper.prepare(standaloneProducer);
       execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
       assertMessages(jms, 1);
     } finally {
@@ -280,6 +283,9 @@ public class JmsConsumerTest extends JmsConsumerCase {
       StandaloneProducer producer =
           new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
               new JmsProducer().withEndpoint(rfc6167));
+      // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
+      LifecycleHelper.prepare(standaloneConsumer);
+      LifecycleHelper.prepare(producer);
       execute(standaloneConsumer, producer, createMessage(null), jms);
       assertMessages(jms, 1);
     } finally {

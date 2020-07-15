@@ -56,6 +56,7 @@ import com.adaptris.core.services.metadata.AddMetadataService;
 import com.adaptris.core.services.metadata.PayloadFromMetadataService;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.text.mime.MultiPartOutput;
 
@@ -83,6 +84,8 @@ public class StandardResponseProducerTest extends HttpProducerExample {
     StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.OK_200);
     StandaloneProducer p = new StandaloneProducer(responder);
     try {
+      // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
+      LifecycleHelper.prepare(p);
       start(p);
       AdaptrisMessage msg = createMessage();
       p.doService(msg);

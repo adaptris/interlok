@@ -35,6 +35,7 @@ import com.adaptris.core.jms.JmsPollingConsumer;
 import com.adaptris.core.jms.JmsProducer;
 import com.adaptris.core.jms.activemq.ActiveMqPasPollingConsumerTest.Sometime;
 import com.adaptris.core.stubs.MockMessageListener;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.TimeInterval;
 
@@ -74,6 +75,9 @@ public class ActiveMqJmsPollingConsumerTest {
       broker.start();
       MockMessageListener jms = new MockMessageListener();
       receiver.registerAdaptrisMessageListener(jms);
+      // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
+      LifecycleHelper.prepare(sender);
+      LifecycleHelper.prepare(receiver);
       start(receiver);
       start(sender);
       for (int i = 0; i < msgCount; i++) {

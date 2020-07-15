@@ -48,6 +48,7 @@ import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandaloneRequestor;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
 public class FtpProducerTest extends FtpProducerCase {
@@ -139,6 +140,8 @@ public class FtpProducerTest extends FtpProducerCase {
       FtpProducer ftpProducer = createForTests();
       FtpConnection produceConnection = create(server);
       StandaloneProducer sp = new StandaloneProducer(produceConnection, ftpProducer);
+      // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
+      LifecycleHelper.prepare(sp);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD);
       ServiceCase.execute(sp, msg);
       assertEquals(1, filesystem.listFiles(DEFAULT_WORK_DIR_CANONICAL).size());

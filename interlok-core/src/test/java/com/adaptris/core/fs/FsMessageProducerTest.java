@@ -39,6 +39,7 @@ import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ServiceCase;
 import com.adaptris.core.StandaloneProducer;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.fs.AppendingFsWorker;
 import com.adaptris.fs.FsWorker;
 import com.adaptris.fs.NioWorker;
@@ -249,6 +250,8 @@ public class FsMessageProducerTest extends FsProducerExample {
     try {
       File dir = new File(parentDir, subdir);
       StandaloneProducer sp = new StandaloneProducer(createProducer(subdir));
+      // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
+      LifecycleHelper.prepare(sp);
       AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
       ServiceCase.execute(sp, msg);
       assertEquals(1, dir.listFiles().length);
