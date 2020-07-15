@@ -200,7 +200,7 @@ public class FsMessageProducerTest extends FsProducerExample {
       producer.setFilenameCreator(null);
       fail();
     }
-    catch (IllegalArgumentException expected) {
+    catch (IllegalArgumentException | NullPointerException expected) {
 
     }
     producer.setFilenameCreator(new EmptyFileNameCreator());
@@ -220,7 +220,7 @@ public class FsMessageProducerTest extends FsProducerExample {
       producer.setFsWorker(null);
       fail();
     }
-    catch (IllegalArgumentException expected) {
+    catch (IllegalArgumentException | NullPointerException expected) {
 
     }
     assertEquals(OverwriteIfExistsWorker.class, producer.getFsWorker().getClass());
@@ -432,26 +432,6 @@ public class FsMessageProducerTest extends FsProducerExample {
       FileUtils.deleteQuietly(new File(parentDir, subdir));
       FileUtils.deleteQuietly(new File(parentDir, override));
 
-    }
-  }
-
-  @Test
-  public void testProduceWithNullOverride() throws Exception {
-    String subdir = new GuidGenerator().safeUUID();
-    FsProducer producer = createProducer(subdir);
-    File parentDir = FsHelper.createFileReference(FsHelper.createUrlFromString(PROPERTIES.getProperty(BASE_KEY), true));
-    try {
-      File dir = new File(parentDir, subdir);
-      start(producer);
-      producer.produce(new DefaultMessageFactory().newMessage(TEXT), null);
-      fail();
-    }
-    catch (ProduceException expected) {
-      ;
-    }
-    finally {
-      stop(producer);
-      FileUtils.deleteQuietly(new File(parentDir, subdir));
     }
   }
 
