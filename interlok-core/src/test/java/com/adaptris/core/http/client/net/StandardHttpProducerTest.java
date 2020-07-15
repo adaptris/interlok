@@ -119,7 +119,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   public void testProduceWithContentTypeMetadata() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock);
-    StandardHttpProducer stdHttp = new StandardHttpProducer();
+    StandardHttpProducer stdHttp = new StandardHttpProducer().withURL(HttpHelper.createURL(c));
     stdHttp.setContentTypeProvider(new MetadataContentTypeProvider(HttpHelper.CONTENT_TYPE));
     StandaloneProducer producer = new StandaloneProducer(stdHttp);
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
@@ -127,7 +127,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     try {
       c.requestStart();
       start(producer);
-      producer.produce(msg, HttpHelper.createProduceDestination(c));
+      producer.produce(msg);
       waitForMessages(mock, 1);
     }
     finally {
@@ -504,7 +504,8 @@ public class StandardHttpProducerTest extends HttpProducerExample {
 
     HttpAuthenticator auth = getAuthenticator(getName(), getName());
 
-    StandardHttpProducer stdHttp = new StandardHttpProducer();
+    StandardHttpProducer stdHttp =
+        new StandardHttpProducer().withURL(HttpHelper.createURL(channel));
     stdHttp.setIgnoreServerResponseCode(false);
     stdHttp.registerConnection(new NullConnection());
     stdHttp.setAuthenticator(auth);
@@ -512,7 +513,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
       start(channel);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
       start(stdHttp);
-      AdaptrisMessage reply = stdHttp.request(msg, HttpHelper.createProduceDestination(channel));
+      AdaptrisMessage reply = stdHttp.request(msg);
       waitForMessages(mockProducer, 1);
       assertEquals(TEXT, mockProducer.getMessages().get(0).getContent());
     }
@@ -547,7 +548,8 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     auth.setUsernameMetadataKey("user-key");
     auth.setPasswordMetadataKey("pass-key");
 
-    StandardHttpProducer stdHttp = new StandardHttpProducer();
+    StandardHttpProducer stdHttp =
+        new StandardHttpProducer().withURL(HttpHelper.createURL(channel));
     stdHttp.setIgnoreServerResponseCode(false);
     stdHttp.registerConnection(new NullConnection());
     stdHttp.setAuthenticator(auth);
@@ -557,7 +559,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
       msg.addMetadata("user-key", getName());
       msg.addMetadata("pass-key", getName());
       start(stdHttp);
-      AdaptrisMessage reply = stdHttp.request(msg, HttpHelper.createProduceDestination(channel));
+      AdaptrisMessage reply = stdHttp.request(msg);
       waitForMessages(mockProducer, 1);
       assertEquals(TEXT, mockProducer.getMessages().get(0).getContent());
     }
@@ -590,7 +592,8 @@ public class StandardHttpProducerTest extends HttpProducerExample {
 
     HttpAuthenticator auth = getAuthenticator(getName(), getName());
 
-    StandardHttpProducer stdHttp = new StandardHttpProducer();
+    StandardHttpProducer stdHttp =
+        new StandardHttpProducer().withURL(HttpHelper.createURL(channel));
     stdHttp.setIgnoreServerResponseCode(false);
     stdHttp.registerConnection(new NullConnection());
     stdHttp.setAuthenticator(auth);
@@ -598,7 +601,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
       start(channel);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
       start(stdHttp);
-      AdaptrisMessage reply = stdHttp.request(msg, HttpHelper.createProduceDestination(channel));
+      AdaptrisMessage reply = stdHttp.request(msg);
       fail();
     }
     catch (ProduceException expected) {
@@ -635,7 +638,8 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     String password = Password.encode(getName(), Password.PORTABLE_PASSWORD);
     HttpAuthenticator auth = new DynamicBasicAuthorizationHeader(getName(), password);
 
-    StandardHttpProducer stdHttp = new StandardHttpProducer();
+    StandardHttpProducer stdHttp =
+        new StandardHttpProducer().withURL(HttpHelper.createURL(channel));
     stdHttp.setIgnoreServerResponseCode(false);
     stdHttp.registerConnection(new NullConnection());
     stdHttp.setAuthenticator(auth);
@@ -643,7 +647,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
       start(channel);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
       start(stdHttp);
-      AdaptrisMessage reply = stdHttp.request(msg, HttpHelper.createProduceDestination(channel));
+      AdaptrisMessage reply = stdHttp.request(msg);
       waitForMessages(mockProducer, 1);
       assertEquals(TEXT, mockProducer.getMessages().get(0).getContent());
     } finally {
