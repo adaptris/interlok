@@ -183,12 +183,6 @@ public abstract class HttpProducer<A, B> extends RequestReplyProducerImp {
     return DEFAULT_TIMEOUT;
   }
 
-
-  @Override
-  protected void doProduce(AdaptrisMessage msg, String dest) throws ProduceException {
-    doRequest(msg, dest, defaultTimeout());
-  }
-
   protected boolean handleRedirection() {
     return BooleanUtils.toBooleanDefaultIfNull(getAllowRedirect(), true);
   }
