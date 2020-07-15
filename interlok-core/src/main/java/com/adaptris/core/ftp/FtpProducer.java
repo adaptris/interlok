@@ -88,12 +88,10 @@ import lombok.Setter;
  *
  * @config ftp-producer
  *
- * @see CoreConstants#FTP_REPLYTO_NAME
  * @see FileNameCreator
  * @see FtpConnection
  * @see FileTransferConnection
  * @see ProduceDestination
- * @author lchan
  */
 @XStreamAlias("ftp-producer")
 @AdapterComponent
@@ -109,13 +107,58 @@ public class FtpProducer extends RequestReplyProducerImp {
 
   private String destDirectory;
   private String buildDirectory;
+  /**
+   * Once a file is deposited wait for a reply to appear in the specified directory.
+   * <p>
+   * This is a legacy feature that was enabled for certain customers that thought it would be a
+   * really good idea to try and do request reply via FTP.
+   * </p>
+   *
+   * @see CoreConstants#FTP_REPLYTO_NAME
+   * @see CoreConstants#PRODUCED_NAME_KEY
+   */
   @AdvancedConfig(rare = true)
+  @Getter
+  @Setter
+  @Deprecated
+  @Removal(version = "4.0.0",
+      message = "We strongly discourage anyone from trying to implement request reply using FTP")
   private String replyDirectory = null;
+  /**
+   * Once the reply has been handled move it here.
+   * <p>
+   * This is a legacy feature that was enabled for certain customers that thought it would be a
+   * really good idea to try and do request reply via FTP.
+   * </p>
+   *
+   */
   @AdvancedConfig(rare = true)
+  @Getter
+  @Setter
+  @Deprecated
+  @Removal(version = "4.0",
+      message = "We strongly discourage anyone from trying to implement request reply using FTP")
   private String replyProcDirectory = null;
+
+  /**
+   * Whether or not the reply will be encoded.
+   * <p>
+   * This is a legacy feature that was enabled for certain customers that thought it would be a
+   * really good idea to try and do request reply via FTP.
+   * </p>
+   * <p>
+   * The default is true, because otherwise how else can you transfer metadata?
+   * </p>
+   */
   @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "true")
+  @Getter
+  @Setter
+  @Deprecated
+  @Removal(version = "4.0",
+      message = "We strongly discourage anyone from trying to implement request reply using FTP")
   private Boolean replyUsesEncoder;
+
   @Valid
   private FileNameCreator filenameCreator;
   /**
@@ -126,7 +169,7 @@ public class FtpProducer extends RequestReplyProducerImp {
   @Setter
   @Deprecated
   @Valid
-  @Removal(version = "4.0.0", message = "Use 'ftp-endpoint' instead")
+  @Removal(version = "4.0", message = "Use 'ftp-endpoint' instead")
   private ProduceDestination destination;
 
   /**
@@ -151,6 +194,8 @@ public class FtpProducer extends RequestReplyProducerImp {
   // Needs to be @NotBlank when destination is removed.
   private String ftpEndpoint;
   private transient boolean destWarning;
+  private transient boolean requestReplyWarning;
+
 
   /**
    * Default Constructor with the following defaults.
@@ -162,14 +207,6 @@ public class FtpProducer extends RequestReplyProducerImp {
   public FtpProducer() {
     setDestDirectory("/work");
     setBuildDirectory("/build");
-  }
-
-  /**
-   *
-   * @see com.adaptris.core.AdaptrisComponent#close()
-   */
-  @Override
-  public void close() {
   }
 
   /**
@@ -321,6 +358,9 @@ public class FtpProducer extends RequestReplyProducerImp {
   public void prepare() throws CoreException {
     logWarningIfNotNull(destWarning, () -> destWarning = true, getDestination(),
         "{} uses destination, use 'ftp-url' instead", LoggingHelper.friendlyName(this));
+    logWarningIfNotNull(requestReplyWarning, () -> requestReplyWarning = true, getReplyDirectory(),
+        "{} uses reply-directory, request reply via FTP will be removed without warning",
+        LoggingHelper.friendlyName(this));
     mustHaveEither(getFtpEndpoint(), getDestination());
     registerEncoderMessageFactory();
   }
@@ -362,59 +402,10 @@ public class FtpProducer extends RequestReplyProducerImp {
     destDirectory = string;
   }
 
-  /**
-   * Get the Reply Directory.
-   *
-   * @return string the Reply Directory
-   */
-  public String getReplyDirectory() {
-    return replyDirectory;
-  }
-
-  /**
-   * Set the Reply Directory.
-   *
-   * @param string the reply directory.
-   */
-  public void setReplyDirectory(String string) {
-    replyDirectory = string;
-  }
-
-  /**
-   * Get the ReplyProc Directory.
-   *
-   * @return string the ReplyProc Directory
-   */
-  public String getReplyProcDirectory() {
-    return replyProcDirectory;
-  }
-
-  /**
-   * Set the ReplyProc Directory.
-   *
-   * @param string the reply proc directory.
-   */
-  public void setReplyProcDirectory(String string) {
-    replyProcDirectory = string;
-  }
-
+  @Deprecated
+  @Removal(version = "4.0")
   public boolean replyUsesEncoder() {
     return BooleanUtils.toBooleanDefaultIfNull(getReplyUsesEncoder(), true);
-  }
-  /**
-   * @return Returns the replyUsesEncoder.
-   */
-  public Boolean getReplyUsesEncoder() {
-    return replyUsesEncoder;
-  }
-
-  /**
-   * Set whether to use any configured encoder to parse the reply.
-   *
-   * @param b true or false; default true.
-   */
-  public void setReplyUsesEncoder(Boolean b) {
-    replyUsesEncoder = b;
   }
 
   public FileNameCreator getFilenameCreator() {

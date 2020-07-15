@@ -175,7 +175,7 @@ public abstract class CoreConstants {
 
   /**
    * Metadata key specifying the email subject.
-   * 
+   *
    * @deprecated since 3.9.0 check the optional mail package for the appropriate value.
    */
   @Deprecated
@@ -184,7 +184,7 @@ public abstract class CoreConstants {
 
   /**
    * Metadata key that specifies the name of the attachment.
-   * 
+   *
    * @deprecated since 3.9.0 check the optional mail package for the appropriate value.
    */
   @Deprecated
@@ -193,7 +193,7 @@ public abstract class CoreConstants {
 
   /**
    * Metadata key that specifies the content-type of the attachment.
-   * 
+   *
    * @deprecated since 3.9.0 check the optional mail package for the appropriate value.
    */
   @Deprecated
@@ -202,7 +202,7 @@ public abstract class CoreConstants {
 
   /**
    * Metadata key that specifies the total number of attachments.
-   * 
+   *
    * @deprecated since 3.9.0 check the optional mail package for the appropriate value.
    */
   @Deprecated
@@ -211,7 +211,7 @@ public abstract class CoreConstants {
 
   /**
    * Metadata key that specifies the cc list for sending.
-   * 
+   *
    * @deprecated since 3.9.0 check the optional mail package for the appropriate value.
    */
   @Deprecated
@@ -220,7 +220,7 @@ public abstract class CoreConstants {
 
   /**
    * Metadata key specifying the email message container from whence a payload may have spawned.
-   * 
+   *
    * @deprecated since 3.9.0 check the optional mail package for the appropriate value.
    */
   @Deprecated
@@ -230,7 +230,7 @@ public abstract class CoreConstants {
   /**
    * Metadata key specifying the email body. This is only used if the <code>SmtpProducer</code> is
    * configured to send the document as an attachment.
-   * 
+   *
    * @deprecated since 3.9.0 check the optional mail package for the appropriate value.
    */
   @Deprecated
@@ -245,7 +245,7 @@ public abstract class CoreConstants {
 
   /**
    * Metadata key containing the OFTP destination.
-   * 
+   *
    * @deprecated since 3.9.0 check the optional oftp package for the appropriate value.
    */
   @Deprecated
@@ -259,7 +259,7 @@ public abstract class CoreConstants {
 
   /**
    * Metadata key containing the OFTP message id.
-   * 
+   *
    * @deprecated since 3.9.0 check the optional oftp package for the appropriate value.
    */
   @Deprecated
@@ -271,7 +271,7 @@ public abstract class CoreConstants {
    * <p>
    * This is the date in the form "yyyy-MM-dd HH:mm:ss zzz".
    * </p>
-   * 
+   *
    * @deprecated since 3.9.0 check the optional oftp package for the appropriate value.
    */
   @Deprecated
@@ -280,7 +280,7 @@ public abstract class CoreConstants {
 
   /**
    * Metadata key specifying the message should be treated as an EERP.
-   * 
+   *
    * @deprecated since 3.9.0 check the optional oftp package for the appropriate value.
    */
   @Deprecated
@@ -289,7 +289,7 @@ public abstract class CoreConstants {
 
   /**
    * Metadata key that is used to key the object metadata that contains the raw socket.
-   * 
+   *
    * @deprecated since 3.9.0 check the optional socket package for the appropriate value.
    */
   @Deprecated
@@ -298,12 +298,16 @@ public abstract class CoreConstants {
 
   /**
    * Metadata key for the FTP reply to name override.
+   * 
+   * @deprecated since 3.11.0 if you're using FTP to do request reply, then please don't.
    */
+  @Deprecated
+  @Removal(version = "4.0")
   public static final String FTP_REPLYTO_NAME = "ftpreplytoname";
 
   /**
    * Metadata key for the transaction id sent to and from the business connector.
-   * 
+   *
    * @deprecated since 3.9.0 check the optional SAP package for the appropriate value.
    */
   @Deprecated
@@ -398,14 +402,14 @@ public abstract class CoreConstants {
    * Note that this metadata key may not always be populated and is reliant on the
    * {@link AdaptrisMessageConsumer#consumeLocationKey()} returning a non-null value.
    * </p>
-   * 
+   *
    * @since 3.9.0
    */
   public static final String MESSAGE_CONSUME_LOCATION = "_interlokMessageConsumedFrom";
 
   /**
    * Object metadata that stores the on success callback.
-   * 
+   *
    * @see Workflow#onAdaptrisMessage(AdaptrisMessage, java.util.function.Consumer)
    */
   public static final String OBJ_METADATA_ON_SUCCESS_CALLBACK = "_onSuccessCallback";
