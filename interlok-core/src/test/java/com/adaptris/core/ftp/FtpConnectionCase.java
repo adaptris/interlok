@@ -37,7 +37,7 @@ public abstract class FtpConnectionCase extends BaseCase {
 
   public FtpConnectionCase() {}
 
-  protected static boolean areTestsEnabled() {
+  protected boolean areTestsEnabled() {
     return Boolean.parseBoolean(PROPERTIES.getProperty("ftp.tests.enabled", "false"));
   }
 
