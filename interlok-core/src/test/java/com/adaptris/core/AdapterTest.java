@@ -724,7 +724,7 @@ public class AdapterTest extends BaseCase {
     JmsConnection produce = new JmsConnection(new BasicActiveMqImplementation("tcp://localhost:5000"));
     produce.setConnectionRetryInterval(new TimeInterval(1L, TimeUnit.SECONDS.name()));
     produce.setConnectionAttempts(20);
-    AdaptrisMessageProducer producer1 = new PtpProducer();
+    AdaptrisMessageProducer producer1 = new PtpProducer().withQueue("dummyQueue");
 
     StandardWorkflow workflow1 = new StandardWorkflow();
     workflow1.setProducer(producer1);
