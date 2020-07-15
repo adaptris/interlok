@@ -16,72 +16,86 @@
 
 package com.adaptris.core;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import org.junit.Before;
 import org.junit.Test;
-import com.adaptris.core.fs.FsMessageProducerTest;
-import com.adaptris.core.fs.FsProducer;
+import com.adaptris.core.stubs.MockMessageProducer;
+import com.adaptris.core.util.LifecycleHelper;
 
-public class ProduceOnlyProducerImpTest extends BaseCase {
+public class ProduceOnlyProducerImpTest {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
+  private MockMessageProducer createAndStart() throws Exception {
+    return LifecycleHelper.initAndStart(new MockMessageProducer());
   }
 
-
-  private ProduceOnlyProducerImp producer;
-
-  @Before
-  public void setUp() throws Exception {
-    String destinationString = "/tgt";
-    String baseString = PROPERTIES.getProperty(FsMessageProducerTest.BASE_KEY);
-    // create producer
-    producer = new FsProducer().withBaseDirectoryUrl(baseString + destinationString);
-    ((FsProducer) producer).setCreateDirs(true);
+  @Test
+  public void testProduce_Message() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
+    MockMessageProducer mock = createAndStart();
+    try {
+      mock.produce(msg);
+      assertEquals(1, mock.getMessages().size());
+    } finally {
+      LifecycleHelper.stopAndClose(mock);
+    }
   }
 
   @Test
   @SuppressWarnings("deprecation")
-  public void testRequestThrowsException() throws Exception {
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance()
-        .newMessage("dummy");
-    start(producer);
+  public void testProduce_Message_ProduceDestination() throws Exception {
+    MockMessageProducer mock = createAndStart();
     try {
-      try {
-        producer.request(msg);
-        fail("Request reply succeeded");
-      }
-      catch (UnsupportedOperationException expected) {
-        assertEquals("Request Reply is not supported", expected.getMessage());
-      }
-      try {
-        producer.request(msg, 10000L);
-        fail("Request reply succeeded");
-      }
-      catch (UnsupportedOperationException expected) {
-        assertEquals("Request Reply is not supported", expected.getMessage());
-      }
-      try {
-        producer.request(msg, new ConfiguredProduceDestination(PROPERTIES
-            .getProperty(FsMessageProducerTest.BASE_KEY)));
-        fail("Request reply succeeded");
-      }
-      catch (UnsupportedOperationException expected) {
-        assertEquals("Request Reply is not supported", expected.getMessage());
-      }
-      try {
-        producer.request(msg, new ConfiguredProduceDestination(PROPERTIES
-            .getProperty(FsMessageProducerTest.BASE_KEY)), 10000L);
-        fail("Request reply succeeded");
-      }
-      catch (UnsupportedOperationException expected) {
-        assertEquals("Request Reply is not supported", expected.getMessage());
-      }
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
+      mock.produce(msg, (m) -> null);
+      assertEquals(1, mock.getMessages().size());
+    } finally {
+      LifecycleHelper.stopAndClose(mock);
     }
-    finally {
-      stop(producer);
-    }
+  }
 
+  @Test(expected = UnsupportedOperationException.class)
+  @SuppressWarnings("deprecation")
+  public void testRequest_Message() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
+    MockMessageProducer mock = createAndStart();
+    try {
+      mock.request(msg);
+    } finally {
+      LifecycleHelper.stopAndClose(mock);
+    }
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  @SuppressWarnings("deprecation")
+  public void testRequest_Message_Long() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
+    MockMessageProducer mock = createAndStart();
+    try {
+      mock.request(msg, 100L);
+    } finally {
+      LifecycleHelper.stopAndClose(mock);
+    }
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  @SuppressWarnings("deprecation")
+  public void testRequest_Message_Destination() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
+    MockMessageProducer mock = createAndStart();
+    try {
+      mock.request(msg, (m) -> null);
+    } finally {
+      LifecycleHelper.stopAndClose(mock);
+    }
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  @SuppressWarnings("deprecation")
+  public void testRequest_Message_Destination_Long() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
+    MockMessageProducer mock = createAndStart();
+    try {
+      mock.request(msg, (m) -> null, 100L);
+    } finally {
+      LifecycleHelper.stopAndClose(mock);
+    }
   }
 }
