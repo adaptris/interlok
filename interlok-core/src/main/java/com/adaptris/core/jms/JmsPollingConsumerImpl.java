@@ -141,11 +141,10 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
 
   @Override
   protected void prepareConsumer() throws CoreException {
-    if (getDestination() != null) {
-      LoggingHelper.logWarning(destinationWarningLogged, () -> destinationWarningLogged = true,
+    DestinationHelper.logWarningIfNotNull(destinationWarningLogged,
+        () -> destinationWarningLogged = true, getDestination(),
           "{} uses destination, this will be removed in a future release",
           LoggingHelper.friendlyName(this));
-    }
     DestinationHelper.mustHaveEither(configuredEndpoint(), getDestination());
   }
 

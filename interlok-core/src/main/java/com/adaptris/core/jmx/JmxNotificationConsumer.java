@@ -56,7 +56,7 @@ import lombok.Setter;
 @ComponentProfile(summary = "Listen for notifications against the specified ObjectName", tag = "consumer,jmx",
     metadata = {com.adaptris.core.jmx.JmxNotificationConsumer.JMX_NOTIF_SOURCE},
     recommended = {JmxConnection.class})
-@DisplayOrder(order = {"serializer"})
+@DisplayOrder(order = {"objectName", "serializer"})
 public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implements NotificationListener {
 
   public static final String JMX_NOTIF_SOURCE = "jmxNotificationSource";
@@ -72,8 +72,7 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
   private Boolean failIfNotFound;
 
   /**
-   * The consume destination represents the RFC6167 style topic or queue from which we will receive
-   * JMS messages from.
+   * The consume destination is the ObjectName that we listen for notifications from.
    *
    */
   @Deprecated
@@ -115,11 +114,10 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
 
   @Override
   public void prepare() throws CoreException {
-    if (getDestination() != null) {
-      LoggingHelper.logWarning(destinationWarningLogged, () -> destinationWarningLogged = true,
-          "{} uses destination, use queue-or-topic and message-selector instead",
+    DestinationHelper.logWarningIfNotNull(destinationWarningLogged,
+        () -> destinationWarningLogged = true, getDestination(),
+        "{} uses destination, use objectName instead",
           LoggingHelper.friendlyName(this));
-    }
     DestinationHelper.mustHaveEither(getObjectName(), getDestination());
   }
 

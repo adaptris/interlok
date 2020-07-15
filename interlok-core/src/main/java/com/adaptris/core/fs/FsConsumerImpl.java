@@ -201,11 +201,9 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
 
   @Override
   protected void prepareConsumer() throws CoreException {
-    if (getDestination() != null) {
-      LoggingHelper.logWarning(destinationWarningLogged, () -> destinationWarningLogged = true,
-          "{} uses destination, use base-directory-url and filter-expression instead",
-          LoggingHelper.friendlyName(this));
-    }
+    DestinationHelper.logWarningIfNotNull(destinationWarningLogged, () -> destinationWarningLogged = true, getDestination(),
+        "{} uses destination, use base-directory-url and filter-expression instead",
+        LoggingHelper.friendlyName(this));
     DestinationHelper.mustHaveEither(getBaseDirectoryUrl(), getDestination());
   }
 

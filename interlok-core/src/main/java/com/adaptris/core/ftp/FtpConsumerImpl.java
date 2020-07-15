@@ -236,11 +236,10 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
 
   @Override
   protected void prepareConsumer() throws CoreException {
-    if (destination != null) {
-      LoggingHelper.logWarning(destinationWarningLogged, () -> destinationWarningLogged = true,
-          "{} uses destination, use ftp-url and filter-expression instead",
-          LoggingHelper.friendlyName(this));
-    }
+    DestinationHelper.logWarningIfNotNull(destinationWarningLogged,
+        () -> destinationWarningLogged = true, getDestination(),
+        "{} uses destination, use ftp-url and filter-expression instead",
+        LoggingHelper.friendlyName(this));
     DestinationHelper.mustHaveEither(getFtpEndpoint(), getDestination());
   }
 
