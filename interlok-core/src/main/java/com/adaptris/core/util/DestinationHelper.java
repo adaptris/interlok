@@ -130,6 +130,11 @@ public class DestinationHelper {
 
   /**
    * Log a warning if the supplied object is not null.
+   * <p>
+   * Note that regardless of whether the object is null
+   * {@link WarningLoggedCallback#warningLogged()} is always executed since we have checked to see
+   * if we need to log a warning.
+   * </p>
    *
    * @see LoggingHelper#logWarning(boolean, WarningLoggedCallback, String, Object...)
    */
@@ -137,6 +142,8 @@ public class DestinationHelper {
       WarningLoggedCallback callback, Object d, String text, Object... args) {
     if (d != null) {
       LoggingHelper.logWarning(alreadyLogged, callback, text, args);
+    } else {
+      callback.warningLogged();
     }
   }
 }
