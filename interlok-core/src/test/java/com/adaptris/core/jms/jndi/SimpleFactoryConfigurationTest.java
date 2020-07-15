@@ -26,7 +26,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import com.adaptris.core.BaseCase;
-import com.adaptris.core.util.JdbcUtil;
+import com.adaptris.interlok.util.Closer;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
@@ -68,7 +68,7 @@ public class SimpleFactoryConfigurationTest extends BaseCase {
 
   @After
   public void tearDown() throws Exception {
-    JdbcUtil.closeQuietly(openMocks);
+    Closer.closeQuietly(openMocks);
   }
   @Override
   public boolean isAnnotatedForJunit4() {

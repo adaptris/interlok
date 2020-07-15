@@ -58,7 +58,7 @@ import com.adaptris.core.jms.BasicJmsProducerCase.Loopback;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 import com.adaptris.core.stubs.MockMessageListener;
-import com.adaptris.core.util.JdbcUtil;
+import com.adaptris.interlok.util.Closer;
 import com.adaptris.util.TimeInterval;
 
 public class JmsProducerTest extends JmsProducerCase {
@@ -77,7 +77,7 @@ public class JmsProducerTest extends JmsProducerCase {
 
   @After
   public void tearDown() throws Exception {
-    JdbcUtil.closeQuietly(openMocks);
+    Closer.closeQuietly(openMocks);
   }
 
   @Override

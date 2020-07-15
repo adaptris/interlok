@@ -26,8 +26,8 @@ import com.adaptris.core.StandardProcessingExceptionHandler;
 import com.adaptris.core.fs.FsProducer;
 import com.adaptris.core.jms.activemq.EmbeddedArtemis;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
-import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.util.Closer;
 import com.adaptris.util.KeyValuePair;
 
 public class JmsAsyncProducerTest extends JmsProducerExample {
@@ -76,7 +76,7 @@ public class JmsAsyncProducerTest extends JmsProducerExample {
 
   @After
   public void tearDown() throws Exception {
-    JdbcUtil.closeQuietly(openMocks);
+    Closer.closeQuietly(openMocks);
   }
 
   @Override

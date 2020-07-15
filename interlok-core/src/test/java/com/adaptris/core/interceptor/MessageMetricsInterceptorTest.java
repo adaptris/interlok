@@ -33,8 +33,8 @@ import com.adaptris.core.CoreConstants;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.StandaloneProducer;
-import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.util.Closer;
 import com.adaptris.util.TimeInterval;
 
 public class MessageMetricsInterceptorTest {
@@ -59,7 +59,7 @@ public class MessageMetricsInterceptorTest {
   public void tearDown() throws Exception {
     LifecycleHelper.stop(metricsInterceptor);
     LifecycleHelper.close(metricsInterceptor);
-    JdbcUtil.closeQuietly(openMocks);
+    Closer.closeQuietly(openMocks);
   }
 
   @Test

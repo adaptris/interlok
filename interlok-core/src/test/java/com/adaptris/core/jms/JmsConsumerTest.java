@@ -39,8 +39,8 @@ import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 import com.adaptris.core.jms.activemq.EmbeddedArtemis;
 import com.adaptris.core.stubs.MockMessageListener;
-import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.util.Closer;
 
 public class JmsConsumerTest extends JmsConsumerCase {
 
@@ -55,7 +55,7 @@ public class JmsConsumerTest extends JmsConsumerCase {
 
   @After
   public void tearDown() throws Exception {
-    JdbcUtil.closeQuietly(openMocks);
+    Closer.closeQuietly(openMocks);
   }
 
   @Override
