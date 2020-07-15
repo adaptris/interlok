@@ -14,10 +14,12 @@
 
 package com.adaptris.core;
 
+import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
 import javax.validation.Valid;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.Removal;
+import com.adaptris.core.util.LoggingHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
 import lombok.Setter;
@@ -47,6 +49,8 @@ public class NullMessageProducer extends AdaptrisMessageProducerImp {
   private ProduceDestination destination;
 
 
+  private transient boolean destWarning;
+
   public NullMessageProducer() {
     setMessageFactory(null);
   }
@@ -62,6 +66,8 @@ public class NullMessageProducer extends AdaptrisMessageProducerImp {
   }
 
   @Override
+  @Deprecated
+  @Removal(version = "4.0.0")
   public AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination destination)
       throws ProduceException {
 
@@ -69,13 +75,18 @@ public class NullMessageProducer extends AdaptrisMessageProducerImp {
   }
 
   @Override
+  @Deprecated
+  @Removal(version = "4.0.0")
   public AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination destination, long timeout)
       throws ProduceException {
     return null;
   }
 
   @Override
-  public void prepare() throws CoreException {}
+  public void prepare() throws CoreException {
+    logWarningIfNotNull(destWarning, () -> destWarning = true, getDestination(),
+        "{} uses destination, it has no meaning", LoggingHelper.friendlyName(this));
+  }
 
   @Override
   public String endpoint(AdaptrisMessage msg) throws ProduceException {
@@ -87,6 +98,8 @@ public class NullMessageProducer extends AdaptrisMessageProducerImp {
   }
 
   @Override
+  @Deprecated
+  @Removal(version = "4.0.0")
   public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
   }
 

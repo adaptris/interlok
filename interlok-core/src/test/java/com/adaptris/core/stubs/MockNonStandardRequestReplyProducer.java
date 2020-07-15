@@ -28,6 +28,7 @@ import com.adaptris.core.MetadataElement;
 import com.adaptris.core.MleMarker;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
+import com.adaptris.interlok.util.Args;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.PlainIdGenerator;
@@ -49,15 +50,12 @@ public class MockNonStandardRequestReplyProducer extends
   private List producedMessages;
 
   private static IdGenerator uniqueIdGenerator;
-  /**
-   * The consume destination represents the base-directory where you are consuming files from.
-   *
-   */
+
   @Getter
   @Setter
   @Deprecated
   @Valid
-  @Removal(version = "4.0.0", message = "Use 'base-directory-url' instead")
+  @Removal(version = "4.0.0")
   private ProduceDestination destination;
 
   static {
@@ -96,73 +94,51 @@ public class MockNonStandardRequestReplyProducer extends
 
   // nothing to see below here...
 
-  /**
-   * @see com.adaptris.core.AdaptrisMessageProducerImp #produce(AdaptrisMessage)
-   */
   @Override
   public void produce(AdaptrisMessage msg) throws ProduceException {
-    produce(msg, getDestination());
+    request(msg);
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisMessageProducerImp#request(AdaptrisMessage)
-   */
   @Override
   public AdaptrisMessage request(AdaptrisMessage msg) throws ProduceException {
-    return request(msg, getDestination(), defaultTimeout());
-  }
-
-  /**
-   * @see com.adaptris.core.AdaptrisMessageProducerImp#request(AdaptrisMessage, long)
-   */
-  @Override
-  public AdaptrisMessage request(AdaptrisMessage msg, long timeout)
-      throws ProduceException {
-    return request(msg, getDestination(), timeout);
-  }
-
-  /**
-   * @see com.adaptris.core.AdaptrisMessageProducerImp
-   *      #request(AdaptrisMessage,ProduceDestination)
-   */
-  @Override
-  public AdaptrisMessage request(AdaptrisMessage msg,
-                                 ProduceDestination destination)
-      throws ProduceException {
-    return request(msg, destination, defaultTimeout());
-  }
-
-  /**
-   * @see com.adaptris.core.AdaptrisMessageProducer#produce
-   *      (com.adaptris.core.AdaptrisMessage,
-   *      com.adaptris.core.ProduceDestination)
-   */
-  @Override
-  public void produce(AdaptrisMessage msg, ProduceDestination destination)
-      throws ProduceException {
-    request(msg, destination);
-  }
-
-  /**
-   * @see com.adaptris.core.AdaptrisMessageProducerImp #request(AdaptrisMessage,
-   *      ProduceDestination, long)
-   */
-  @Override
-  public AdaptrisMessage request(AdaptrisMessage msg,
-                                 ProduceDestination destination, long timeout)
-      throws ProduceException {
-    if (msg == null) {
-      throw new ProduceException("param is null");
-    }
+    Args.notNull(msg, "message");
     AdaptrisMessage reply = defaultIfNull(getMessageFactory()).newMessage();
     reply.setUniqueId(msg.getUniqueId());
     log.trace("Produced [" + msg.getUniqueId() + "]");
     producedMessages.add(msg);
     reply.setPayload(msg.getPayload());
-    reply.addMetadata(new MetadataElement(REPLY_METADATA_KEY,
-        REPLY_METADATA_VALUE));
-    reply.getMessageLifecycleEvent().addMleMarker(new MleMarker("DummyMarker", true, 99, uniqueIdGenerator.create(new Object())));
+    reply.addMetadata(new MetadataElement(REPLY_METADATA_KEY, REPLY_METADATA_VALUE));
+    reply.getMessageLifecycleEvent().addMleMarker(
+        new MleMarker("DummyMarker", true, 99, uniqueIdGenerator.create(new Object())));
     return reply;
+  }
+
+  @Override
+  public AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException {
+    return request(msg);
+  }
+
+  @Override
+  @Deprecated
+  @Removal(version = "4.0")
+  public AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination destination)
+      throws ProduceException {
+    return request(msg);
+  }
+
+  @Override
+  @Deprecated
+  @Removal(version = "4.0")
+  public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
+    request(msg);
+  }
+
+  @Override
+  @Deprecated
+  @Removal(version = "4.0")
+  public AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination destination, long timeout)
+      throws ProduceException {
+    return request(msg);
   }
 
   protected long defaultTimeout() {

@@ -16,11 +16,13 @@
 
 package com.adaptris.core;
 
+import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
 import javax.validation.Valid;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.DestinationHelper;
+import com.adaptris.core.util.LoggingHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
 import lombok.Setter;
@@ -49,12 +51,17 @@ public class NullMessageConsumer extends AdaptrisMessageConsumerImp {
   @Removal(version = "4.0.0")
   private ConsumeDestination destination;
 
+  private transient boolean destWarning;
+
+
   public NullMessageConsumer() {
     setMessageFactory(null);
   }
 
   @Override
   public void prepare() throws CoreException {
+    logWarningIfNotNull(destWarning, () -> destWarning = true, getDestination(),
+        "{} uses destination, it has no meaning", LoggingHelper.friendlyName(this));
   }
 
   @Override
