@@ -51,6 +51,7 @@ import com.adaptris.core.StandaloneRequestor;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
+@SuppressWarnings("deprecation")
 public class FtpProducerTest extends FtpProducerCase {
 
   private static final TimeInterval DEFAULT_TIMEOUT = new TimeInterval(100L, TimeUnit.MILLISECONDS);
