@@ -59,7 +59,7 @@ public abstract class RequestReplyProducerBase extends AdaptrisMessageProducerIm
   }
 
 
-  protected boolean shouldIgnoreReplyMetadata() {
+  private boolean shouldIgnoreReplyMetadata() {
     return BooleanUtils.toBooleanDefaultIfNull(getIgnoreReplyMetadata(), false);
   }
 }

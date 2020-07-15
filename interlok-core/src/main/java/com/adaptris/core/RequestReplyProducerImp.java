@@ -39,12 +39,12 @@ public abstract class RequestReplyProducerImp extends RequestReplyProducerBase {
 
   @Override
   public final AdaptrisMessage request(AdaptrisMessage msg) throws ProduceException {
-    return doRequest(msg, endpoint(msg), defaultTimeout());
+    return request(msg, endpoint(msg), defaultTimeout());
   }
 
   @Override
   public final AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException {
-    return doRequest(msg, endpoint(msg), timeout);
+    return request(msg, endpoint(msg), timeout);
   }
 
   @Override
