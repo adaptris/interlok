@@ -290,10 +290,6 @@ public class FtpProducer extends RequestReplyProducerImp {
     }
   }
 
-  /**
-   *
-   * @see RequestReplyProducerImp#doRequest(AdaptrisMessage, ProduceDestination, long)
-   */
   @Override
   protected AdaptrisMessage doRequest(AdaptrisMessage msg, String endpoint, long timeout)
       throws ProduceException {

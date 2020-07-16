@@ -117,7 +117,7 @@ public class DestinationHelper {
    *
    * @see LoggingHelper#logWarning(boolean, WarningLoggedCallback, String, Object...)
    * @deprecated use
-   *             {@link #logWarningIfNotNull(boolean, WarningLoggedCallback, Object, String, Object...)}
+   *             {@code logWarningIfNotNull(boolean, WarningLoggedCallback, Object, String, Object...)}
    *             instead.
    */
   @Deprecated
