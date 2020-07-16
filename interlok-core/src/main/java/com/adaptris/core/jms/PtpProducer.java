@@ -101,7 +101,7 @@ import lombok.Setter;
 @XStreamAlias("jms-queue-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Place message on a JMS Queue", tag = "producer,jms", recommended = {JmsConnection.class})
-@DisplayOrder(order = {"queue", "destination", "messageTypeTranslator", "deliveryMode", "priority",
+@DisplayOrder(order = {"queue", "destination", "messageTranslator", "deliveryMode", "priority",
     "ttl", "acknowledgeMode"})
 @NoArgsConstructor
 public class PtpProducer extends DefinedJmsProducer {

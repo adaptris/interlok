@@ -100,7 +100,7 @@ import lombok.Setter;
 @XStreamAlias("jms-topic-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Place message on a JMS Topic", tag = "producer,jms", recommended = {JmsConnection.class})
-@DisplayOrder(order = {"topic", "destination", "messageTypeTranslator", "deliveryMode", "priority",
+@DisplayOrder(order = {"topic", "destination", "messageTranslator", "deliveryMode", "priority",
     "ttl", "acknowledgeMode"})
 @NoArgsConstructor
 public class PasProducer extends DefinedJmsProducer {

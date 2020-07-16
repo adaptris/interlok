@@ -49,7 +49,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Place message on a JMS queue or topic asynchronously", tag = "producer,jms", recommended = {JmsConnection.class})
 @DisplayOrder(order = {"endpoint", "destination", "asyncMessageErrorHandler",
-    "messageTypeTranslator", "deliveryMode", "priority", "ttl", "acknowledgeMode"})
+    "messageTranslator", "deliveryMode", "priority", "ttl", "acknowledgeMode"})
 public class JmsAsyncProducer extends JmsProducer implements CompletionListener {
 
   @NotNull
