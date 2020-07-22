@@ -1,8 +1,9 @@
 package com.adaptris.core.management;
 
 import com.adaptris.core.ComponentState;
+import java.io.Serializable;
 
-public class ManagementComponentInfo {
+public class ManagementComponentInfo implements Serializable {
   
   private String name;
     
@@ -10,7 +11,7 @@ public class ManagementComponentInfo {
   
   private ComponentState state;
   
-  private ManagementComponent instance;
+  private transient ManagementComponent instance;
   
   public ManagementComponentInfo() {
   }
