@@ -724,7 +724,7 @@ public class AdapterTest extends BaseCase {
     JmsConnection produce = new JmsConnection(new BasicActiveMqImplementation("tcp://localhost:5000"));
     produce.setConnectionRetryInterval(new TimeInterval(1L, TimeUnit.SECONDS.name()));
     produce.setConnectionAttempts(20);
-    AdaptrisMessageProducer producer1 = new PtpProducer();
+    AdaptrisMessageProducer producer1 = new PtpProducer().withQueue("dummyQueue");
 
     StandardWorkflow workflow1 = new StandardWorkflow();
     workflow1.setProducer(producer1);
@@ -760,6 +760,7 @@ public class AdapterTest extends BaseCase {
 
   }
 
+  @SuppressWarnings("deprecation")
   private static WorkflowList createQuartzWorkflowList(String prefix, int count) throws Exception {
     WorkflowList wf = new WorkflowList();
     for (int i = 0; i < count; i++) {

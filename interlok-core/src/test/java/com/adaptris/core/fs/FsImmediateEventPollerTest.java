@@ -30,6 +30,7 @@ public class FsImmediateEventPollerTest {
   private FsImmediateEventPoller poller;
 
   @Before
+  @SuppressWarnings("deprecation")
   public void setUp() throws Exception {
     consumer = new FsConsumer();
     consumer.setDestination(new ConfiguredConsumeDestination("."));

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -56,6 +56,7 @@ import com.adaptris.core.services.metadata.AddMetadataService;
 import com.adaptris.core.services.metadata.PayloadFromMetadataService;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.text.mime.MultiPartOutput;
 
@@ -83,6 +84,8 @@ public class StandardResponseProducerTest extends HttpProducerExample {
     StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.OK_200);
     StandaloneProducer p = new StandaloneProducer(responder);
     try {
+      // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
+      LifecycleHelper.prepare(p);
       start(p);
       AdaptrisMessage msg = createMessage();
       p.doService(msg);
@@ -422,13 +425,18 @@ public class StandardResponseProducerTest extends HttpProducerExample {
     return c;
   }
 
+  @Deprecated
   protected static ConfiguredProduceDestination createProduceDestination(int port) {
-    ConfiguredProduceDestination d = new ConfiguredProduceDestination("http://localhost:" + port + URL_TO_POST_TO);
-    return d;
+    return new ConfiguredProduceDestination(createURL(port));
   }
 
+  protected static String createURL(int port) {
+    return "http://localhost:" + port + URL_TO_POST_TO;
+  }
+
+
   protected static StandaloneRequestor createRequestor(int port) {
-    StandardHttpProducer producer = new StandardHttpProducer(createProduceDestination(port));
+    StandardHttpProducer producer = new StandardHttpProducer().withURL(createURL(port));
     producer.setContentTypeProvider(new MetadataContentTypeProvider(CONTENT_TYPE));
     producer.setResponseHeaderHandler(new ResponseHeadersAsMetadata());
     return new StandaloneRequestor(producer);

@@ -27,12 +27,12 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.jms.MessageConsumer;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
@@ -40,15 +40,22 @@ import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 import com.adaptris.core.jms.activemq.EmbeddedArtemis;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.util.Closer;
 
 public class JmsConsumerTest extends JmsConsumerCase {
 
   @Mock private BasicActiveMqImplementation mockVendor;
   @Mock MessageConsumer mockMessageConsumer;
 
+  private AutoCloseable openMocks;
   @Before
   public void setUp() throws Exception {
-    MockitoAnnotations.initMocks(this);
+    openMocks = MockitoAnnotations.openMocks(this);
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    Closer.closeQuietly(openMocks);
   }
 
   @Override
@@ -161,8 +168,10 @@ public class JmsConsumerTest extends JmsConsumerCase {
       standaloneConsumer.registerAdaptrisMessageListener(jms);
 
       StandaloneProducer standaloneProducer =
-          new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), new JmsProducer(
-              new ConfiguredProduceDestination(rfc6167)));
+          new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), new JmsProducer().withEndpoint(rfc6167));
+      // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
+      LifecycleHelper.prepare(standaloneConsumer);
+      LifecycleHelper.prepare(standaloneProducer);
       execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
       assertMessages(jms, 1);
     } finally {
@@ -189,8 +198,8 @@ public class JmsConsumerTest extends JmsConsumerCase {
       standaloneConsumer.registerAdaptrisMessageListener(jms);
 
       StandaloneProducer standaloneProducer =
-          new StandaloneProducer(activeMqBroker.getJmsConnection(), new JmsProducer(
-              new ConfiguredProduceDestination(rfc6167)));
+          new StandaloneProducer(activeMqBroker.getJmsConnection(),
+              new JmsProducer().withEndpoint(rfc6167));
       execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
       assertMessages(jms, 1);
     } finally {
@@ -217,8 +226,8 @@ public class JmsConsumerTest extends JmsConsumerCase {
       standaloneConsumer.registerAdaptrisMessageListener(jms);
 
       StandaloneProducer standaloneProducer =
-          new StandaloneProducer(activeMqBroker.getJmsConnection(), new JmsProducer(
-              new ConfiguredProduceDestination(rfc6167)));
+          new StandaloneProducer(activeMqBroker.getJmsConnection(),
+              new JmsProducer().withEndpoint(rfc6167));
       execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
       assertMessages(jms, 1);
     } finally {
@@ -245,8 +254,8 @@ public class JmsConsumerTest extends JmsConsumerCase {
       standaloneConsumer.registerAdaptrisMessageListener(jms);
 
       StandaloneProducer standaloneProducer =
-          new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), new JmsProducer(
-              new ConfiguredProduceDestination(rfc6167)));
+          new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
+              new JmsProducer().withEndpoint(rfc6167));
       execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
       assertMessages(jms, 1);
     } finally {
@@ -272,8 +281,11 @@ public class JmsConsumerTest extends JmsConsumerCase {
       standaloneConsumer.registerAdaptrisMessageListener(jms);
 
       StandaloneProducer producer =
-          new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), new JmsProducer(
-              new ConfiguredProduceDestination(rfc6167)));
+          new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
+              new JmsProducer().withEndpoint(rfc6167));
+      // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
+      LifecycleHelper.prepare(standaloneConsumer);
+      LifecycleHelper.prepare(producer);
       execute(standaloneConsumer, producer, createMessage(null), jms);
       assertMessages(jms, 1);
     } finally {

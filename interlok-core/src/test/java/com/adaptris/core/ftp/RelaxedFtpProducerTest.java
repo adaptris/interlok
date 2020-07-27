@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,6 +35,7 @@ import com.adaptris.core.MetadataFileNameCreator;
 import com.adaptris.core.MimeEncoder;
 import com.adaptris.core.ServiceCase;
 import com.adaptris.core.StandaloneProducer;
+import com.adaptris.core.util.LifecycleHelper;
 
 public class RelaxedFtpProducerTest extends RelaxedFtpProducerCase {
 
@@ -80,6 +81,8 @@ public class RelaxedFtpProducerTest extends RelaxedFtpProducerCase {
           + DEFAULT_WORK_DIR_NAME));
       FtpConnection produceConnection = create(server);
       StandaloneProducer sp = new StandaloneProducer(produceConnection, ftpProducer);
+      // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
+      LifecycleHelper.prepare(sp);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD);
       ServiceCase.execute(sp, msg);
       assertEquals(1, filesystem.listFiles(DEFAULT_WORK_DIR_CANONICAL).size());
@@ -139,6 +142,7 @@ public class RelaxedFtpProducerTest extends RelaxedFtpProducerCase {
     return consumeConnection;
   }
 
+  @SuppressWarnings("deprecation")
   private RelaxedFtpProducer createForTests(ConfiguredProduceDestination dest) {
     RelaxedFtpProducer ftpProducer = new RelaxedFtpProducer();
     ftpProducer.setDestination(dest);

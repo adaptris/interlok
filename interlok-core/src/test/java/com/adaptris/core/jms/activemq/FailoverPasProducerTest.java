@@ -22,7 +22,6 @@ import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.PasConsumer;
@@ -43,8 +42,9 @@ public class FailoverPasProducerTest {
             new PasConsumer().withTopic(testName.getMethodName()));
     MockMessageListener jms = new MockMessageListener();
     standaloneConsumer.registerAdaptrisMessageListener(jms);
-    StandaloneProducer standaloneProducer = new StandaloneProducer(broker.getFailoverJmsConnection(false), new PasProducer(
-            new ConfiguredProduceDestination(testName.getMethodName())));
+    StandaloneProducer standaloneProducer =
+        new StandaloneProducer(broker.getFailoverJmsConnection(false),
+            new PasProducer().withTopic(testName.getMethodName()));
     try {
       broker.start();
       execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);

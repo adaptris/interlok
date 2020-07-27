@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,24 +18,34 @@ package com.adaptris.core.jms;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import static com.adaptris.core.jms.JmsConstants.JMS_ASYNC_STATIC_REPLY_TO;
+import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
+import static com.adaptris.core.util.DestinationHelper.mustHaveEither;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
+import java.util.Optional;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
-
+import javax.validation.Valid;
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
+import com.adaptris.core.util.DestinationHelper;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.core.util.LoggingHelper;
+import com.adaptris.interlok.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * JMS Producer implementation that can target queues or topics via an RFC6167 style destination.
@@ -61,48 +71,72 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * As the RFC6167 string can specify priority, timeToLive and deliveryMode; this producer defaults
  * {@link #getPerMessageProperties()} to be true.
  * </p>
- * 
+ *
  * @config jms-producer
- * 
+ *
  */
 @XStreamAlias("jms-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Place message on a JMS queue or topic", tag = "producer,jms", recommended = {JmsConnection.class})
-@DisplayOrder(order = {"destination", "messageTypeTranslator", "deliveryMode", "priority", "ttl", "acknowledgeMode"})
+@DisplayOrder(order = {"endpoint", "destination", "messageTranslator", "deliveryMode",
+    "priority", "ttl", "acknowledgeMode"})
+@NoArgsConstructor
 public class JmsProducer extends JmsProducerImpl {
 
-
-  public JmsProducer() {
-    super();
-  }
-
-  public JmsProducer(ProduceDestination d) {
-    this();
-    setDestination(d);
-  }
-
+  /**
+   * The ProduceDestination is the JMS Endpoint to write to.
+   * <p>
+   * Note that this is deprecated, but you may need to use something like
+   * {@link JmsReplyToDestination} until support is available directly using string expressions.
+   * </p>
+   */
+  @Getter
+  @Setter
+  @Deprecated
+  @Valid
+  @Removal(version = "4.0.0", message = "Use 'endpoint' instead if possible")
+  private ProduceDestination destination;
 
   /**
-   * @see com.adaptris.core.AdaptrisMessageProducer#produce(AdaptrisMessage, ProduceDestination)
+   * The JMS Endpoint defined in an RFC6167 manner.
    */
+  @InputFieldHint(expression = true)
+  @Getter
+  @Setter
+  // Needs to be @NotBlank when destination is removed.
+  private String endpoint;
+
+  private transient boolean destWarning;
+
   @Override
-  public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
+  public void prepare() throws CoreException {
+    logWarningIfNotNull(destWarning, () -> destWarning = true, getDestination(),
+        "{} uses destination, use 'topic' instead if possible", LoggingHelper.friendlyName(this));
+    mustHaveEither(getEndpoint(), getDestination());
+    super.prepare();
+  }
+
+  @Override
+  @Deprecated
+  @Removal(version = "4.0")
+  public void produce(AdaptrisMessage msg, ProduceDestination dest) throws ProduceException {
     try {
       setupSession(msg);
       MyJmsDestination target = null;
       // First of all try and get a jms destination directory from the produce destination
       // (JmsReplyToDestination)
-      Destination jmsDest = createDestination(destination, msg);
+      Destination jmsDest = createDestination(dest, msg);
       if (jmsDest != null) {
         target = new MyJmsDestination(jmsDest);
       } else {
         // Otherwise it's a normal producer with nothing special.
         VendorImplementation vendorImp =
             retrieveConnection(JmsConnection.class).configuredVendorImplementation();
-        String destString = destination.getDestination(msg);
+        String destString = dest.getDestination(msg);
         target = new MyJmsDestination(vendorImp.createDestination(destString, this));
         target.setReplyTo(createReplyTo(msg, target, false));
       }
+      Args.notNull(target, "destination");
       produce(msg, target);
     } catch (Exception e) {
       logLinkedException("", e);
@@ -129,7 +163,9 @@ public class JmsProducer extends JmsProducerImpl {
   }
 
   @Override
-  protected AdaptrisMessage doRequest(AdaptrisMessage msg, ProduceDestination dest, long timeout)
+  @Deprecated
+  @Removal(version = "4.0")
+  public AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination dest, long timeout)
       throws ProduceException {
 
     AdaptrisMessage translatedReply = defaultIfNull(getMessageFactory()).newMessage();
@@ -146,12 +182,10 @@ public class JmsProducer extends JmsProducerImpl {
       receiver = currentSession().createConsumer(replyTo);
       produce(msg, target);
       Message jmsReply = receiver.receive(timeout);
+      translatedReply =
+          Optional.ofNullable(MessageTypeTranslatorImp.translate(getMessageTranslator(), jmsReply))
+              .orElseThrow(() -> new JMSException("No Reply Received within " + timeout + "ms"));
 
-      if (jmsReply != null) {
-        translatedReply = MessageTypeTranslatorImp.translate(getMessageTranslator(), jmsReply);
-      } else {
-        throw new JMSException("No Reply Received within " + timeout + "ms");
-      }
       acknowledge(jmsReply);
       // BUG#915
       commit();
@@ -180,10 +214,35 @@ public class JmsProducer extends JmsProducerImpl {
     }
     return replyTo;
   }
-  
+
+  @Override
+  public AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException {
+    ProduceDestination dest = Optional.ofNullable(getDestination())
+        .orElse(new ConfiguredProduceDestination(endpoint(msg)));
+    return request(msg, dest, timeout);
+  }
+
+  @Override
+  public void produce(AdaptrisMessage msg) throws ProduceException {
+    ProduceDestination dest = Optional.ofNullable(getDestination())
+        .orElse(new ConfiguredProduceDestination(endpoint(msg)));
+    produce(msg, dest);
+  }
+
+  @Override
+  public String endpoint(AdaptrisMessage msg) throws ProduceException {
+    return DestinationHelper.resolveProduceDestination(getEndpoint(), getDestination(), msg);
+  }
+
   @Override
   protected boolean perMessageProperties() {
     return BooleanUtils.toBooleanDefaultIfNull(getPerMessageProperties(), true);
+  }
+
+  @SuppressWarnings("deprecation")
+  public <T extends JmsProducer> T withEndpoint(String s) {
+    setEndpoint(s);
+    return (T) this;
   }
 
   private class MyJmsDestination implements JmsDestination {
@@ -261,6 +320,7 @@ public class JmsProducer extends JmsProducerImpl {
       return noLocal;
     }
 
+    @Override
     public String toString() {
       return getDestination().toString();
     }
@@ -270,4 +330,5 @@ public class JmsProducer extends JmsProducerImpl {
       return sharedConsumerId;
     }
   }
+
 }

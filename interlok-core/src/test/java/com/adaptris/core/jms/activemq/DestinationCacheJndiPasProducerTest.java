@@ -22,7 +22,6 @@ import static com.adaptris.core.BaseCase.waitForMessages;
 import static com.adaptris.core.jms.JmsProducerCase.assertMessages;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
 import org.junit.Test;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.PasConsumer;
@@ -53,7 +52,7 @@ public class DestinationCacheJndiPasProducerTest extends JndiPasProducerCase {
 
     standaloneConsumer.registerAdaptrisMessageListener(jms);
     StandaloneProducer standaloneProducer = new StandaloneProducer(broker.getJndiPasConnection(sendVendorImp, false, queueName,
-        topicName), new PasProducer(new ConfiguredProduceDestination(topicName)));
+            topicName), new PasProducer().withTopic(topicName));
     try {
       broker.start();
       start(standaloneConsumer);

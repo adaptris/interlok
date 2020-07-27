@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,15 +16,29 @@
 
 package com.adaptris.core.jms;
 
+import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
+import static com.adaptris.core.util.DestinationHelper.mustHaveEither;
+import java.util.Optional;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Topic;
-
+import javax.validation.Valid;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.annotation.Removal;
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.ConfiguredProduceDestination;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
+import com.adaptris.core.ProduceException;
+import com.adaptris.core.util.DestinationHelper;
+import com.adaptris.core.util.LoggingHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * {@link com.adaptris.core.AdaptrisMessageProducer} implementation for Topic based JMS.
@@ -80,21 +94,48 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * the message, and can either be an long value specifying when the message expires, or a string
  * value in the form "yyyy-MM-dd'T'HH:mm:ssZ". It will be used to calculate the correct TTL.</li>
  * </ul>
- * 
+ *
  * @config jms-topic-producer
  */
 @XStreamAlias("jms-topic-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Place message on a JMS Topic", tag = "producer,jms", recommended = {JmsConnection.class})
-@DisplayOrder(order = {"destination", "messageTypeTranslator", "deliveryMode", "priority", "ttl", "acknowledgeMode"})
+@DisplayOrder(order = {"topic", "destination", "messageTranslator", "deliveryMode", "priority",
+    "ttl", "acknowledgeMode"})
+@NoArgsConstructor
 public class PasProducer extends DefinedJmsProducer {
 
-  public PasProducer() {
-    super();
-  }
+  /**
+   * The ProduceDestination is the topic to write to.
+   * <p>
+   * Note that this is deprecated, but you may need to use something like
+   * {@link JmsReplyToDestination} until support is available directly using string expressions.
+   * </p>
+   */
+  @Getter
+  @Setter
+  @Deprecated
+  @Valid
+  @Removal(version = "4.0.0", message = "Use 'topic' instead if possible")
+  private ProduceDestination destination;
 
-  public PasProducer(ProduceDestination d) {
-    super(d);
+  /**
+   * The JMS Topic
+   */
+  @InputFieldHint(expression = true)
+  @Getter
+  @Setter
+  // Needs to be @NotBlank when destination is removed.
+  private String topic;
+
+  private transient boolean destWarning;
+
+  @Override
+  public void prepare() throws CoreException {
+    logWarningIfNotNull(destWarning, () -> destWarning = true, getDestination(),
+        "{} uses destination, use 'topic' instead if possible", LoggingHelper.friendlyName(this));
+    mustHaveEither(getTopic(), getDestination());
+    super.prepare();
   }
 
   @Override
@@ -107,4 +148,35 @@ public class PasProducer extends DefinedJmsProducer {
     return JmsDestination.DestinationType.TOPIC.createTemporaryDestination(currentSession());
   }
 
+  @Override
+  @SuppressWarnings("deprecation")
+  public AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException {
+    ProduceDestination dest = Optional.ofNullable(getDestination())
+        .orElse(new ConfiguredProduceDestination(endpoint(msg)));
+    return request(msg, dest, timeout);
+  }
+
+  @Override
+  @SuppressWarnings("deprecation")
+  public void produce(AdaptrisMessage msg) throws ProduceException {
+    ProduceDestination dest = Optional.ofNullable(getDestination())
+        .orElse(new ConfiguredProduceDestination(endpoint(msg)));
+    produce(msg, dest);
+  }
+
+  @Override
+  public String endpoint(AdaptrisMessage msg) throws ProduceException {
+    return DestinationHelper.resolveProduceDestination(getTopic(), getDestination(), msg);
+  }
+
+  public PasProducer withTopic(String t) {
+    setTopic(t);
+    return this;
+  }
+
+  @Deprecated
+  public PasProducer withDestination(ProduceDestination t) {
+    setDestination(t);
+    return this;
+  }
 }

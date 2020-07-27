@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,7 @@
 
 package com.adaptris.core;
 
+import com.adaptris.annotation.Removal;
 
 /**
  * New interface so that we can re-use producer style functionality without all the additional requirements surrounds
@@ -27,19 +28,23 @@ package com.adaptris.core;
 public interface AdaptrisMessageSender extends ComponentLifecycle {
   /**
    * Produces the {@link com.adaptris.core.AdaptrisMessage} to the default destination.
-   * 
+   *
    * @param msg the @link AdaptrisMessage} to produce
    * @throws ProduceException wrapping any underlying Exceptions
    */
   void produce(AdaptrisMessage msg) throws ProduceException;
 
   /**
-   * Produce the {@link com.adaptris.core.AdaptrisMessage} to the supplied {@link ProduceDestination} , over-riding any configured destinations.
+   * Produce the {@link com.adaptris.core.AdaptrisMessage} to the supplied
+   * {@link ProduceDestination} , over-riding any configured destinations.
    *
    * @param msg the {@link com.adaptris.core.AdaptrisMessage} to produce
    * @param destination the {@link ProduceDestination} to produce to
    * @throws ProduceException wrapping any underlying Exceptions
+   * @deprecated since 3.11.0 {@link ProduceDestination} is deprecated
    */
+  @Deprecated
+  @Removal(version = "4.0")
   void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException;
 
 }

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,40 +18,37 @@ package com.adaptris.core.jms;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import static com.adaptris.core.jms.JmsConstants.JMS_ASYNC_STATIC_REPLY_TO;
-
+import java.util.Optional;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
-
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.interlok.util.Args;
 
 /**
  * <p>
  * Contains behaviour common to PTP and PAS JMS message producers.
  * </p>
  */
+// Note because we have JmsReplyToDestination, we have specialised behaviour here since
+// we want to make sure that we actually use the JMSReplyTo if it's available.
+// This is why DefinedJmsProducer doesn't extend RequestReplyProducer as normal, and
+// this is an edge case that isn't that edgy!
 public abstract class DefinedJmsProducer extends JmsProducerImpl {
-
 
   public DefinedJmsProducer() {
     super();
   }
 
-  public DefinedJmsProducer(ProduceDestination d) {
-    this();
-    setDestination(d);
-  }
-
-
-  /**
-   * @see com.adaptris.core.AdaptrisMessageProducer#produce(AdaptrisMessage, ProduceDestination)
-   */
   @Override
+  @Deprecated
+  @Removal(version = "4.0")
   public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
     try {
       setupSession(msg);
@@ -67,47 +64,35 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
     }
   }
 
-  /*
-   */
-  private void doProduce(AdaptrisMessage msg, ProduceDestination dest, Destination replyTo) throws ProduceException {
+  protected void doProduce(AdaptrisMessage msg, ProduceDestination dest, Destination replyTo)
+      throws ProduceException {
 
     Destination jmsDest = null;
-
     try {
-      if (dest != null) { // overloaded
-        // First of all directly try to get a Destination object if available.
-        jmsDest = createDestination(dest, msg);
-        if (jmsDest == null) {
-          String d = dest.getDestination(msg);
-          if (d != null) {
-            jmsDest = createDestination(d);
-          }
-        }
-        if (jmsDest != null) {
-          this.produce(msg, jmsDest, replyTo);
-        }
-        else {
-          throw new ProduceException("No destination available from " + getDestination() + " to produce to");
+      Args.notNull(dest, "destination");
+      // First of all directly try to get a Destination object if available.
+      jmsDest = createDestination(dest, msg);
+
+      if (jmsDest == null) {
+        String d = dest.getDestination(msg);
+        if (d != null) {
+          jmsDest = createDestination(d);
         }
       }
-      else {
-        throw new ProduceException("Could not produce to null destination");
-      }
+      Args.notNull(jmsDest, "destination");
+      doProduce(msg, jmsDest, replyTo);
       commit();
     }
-    catch (JMSException e) {
-      log.warn("Error producing to destination [{}]", getDestination());
+    catch (Exception e) {
+      log.warn("Error producing to destination [{}]", dest);
       logLinkedException("Produce", e);
       rollback();
-      throw new ProduceException(e);
-
-    }
-    catch (CoreException e) {
       throw ExceptionHelper.wrapProduceException(e);
     }
   }
 
-  protected void produce(AdaptrisMessage msg, Destination destination, Destination replyTo) throws JMSException, CoreException {
+  protected void doProduce(AdaptrisMessage msg, Destination destination, Destination replyTo)
+      throws JMSException, CoreException {
     setupSession(msg);
     Message jmsMsg = translate(msg, replyTo);
     if (!perMessageProperties()) {
@@ -123,22 +108,11 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
     log.info("msg produced to destination [{}]", destination);
   }
 
-  /**
-   * <p>
-   * Pseudo-synchronous JMS implementation of <code>request</code>. Works by i) setting a temporary queue as the
-   * <code>JMSReplyTo</code> header on the message ii) setting up a temporary consumer on this reply-to queue. The message is then
-   * sent normally using <code>produce</code>. If the temporary reply listener receives a reply before the timeout, it will create
-   * and return a new <code>AdaptrisMessage</code>. Otherwise returns null.
-   * </p>
-   * 
-   * @param msg the request messages
-   * @param timeout the period to wait for a reply
-   * @param dest the <code>ProduceDestination</code> to use
-   * @return the reply or <code>null</code> if the timeout period expires
-   * @throws ProduceException wrapping any underlying <code>Exception</code>s
-   */
   @Override
-  protected AdaptrisMessage doRequest(AdaptrisMessage msg, ProduceDestination dest, long timeout) throws ProduceException {
+  @Deprecated
+  @Removal(version = "4.0")
+  public AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination dest, long timeout)
+      throws ProduceException {
 
     AdaptrisMessage translatedReply = defaultIfNull(getMessageFactory()).newMessage();
     Destination replyTo = null;
@@ -155,18 +129,15 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
       receiver = currentSession().createConsumer(replyTo);
       doProduce(msg, dest, replyTo);
       Message jmsReply = receiver.receive(timeout);
-
-      if (jmsReply != null) {
-        translatedReply = MessageTypeTranslatorImp.translate(getMessageTranslator(), jmsReply);
-      }
-      else {
-        throw new JMSException("No Reply Received within " + timeout + "ms");
-      }
+      translatedReply =
+          Optional.ofNullable(MessageTypeTranslatorImp.translate(getMessageTranslator(), jmsReply))
+              .orElseThrow(
+                  () -> new JMSException("No Reply Received within " + timeout + "ms"));
       acknowledge(jmsReply);
       // BUG#915
       commit();
     }
-    catch (JMSException e) {
+    catch (Exception e) {
       logLinkedException("", e);
       rollback();
       throw new ProduceException(e);
@@ -175,10 +146,8 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
       JmsUtils.closeQuietly(receiver);
       JmsUtils.deleteTemporaryDestination(replyTo);
     }
-    return translatedReply;
+    return mergeReply(translatedReply, msg);
   }
-
-
 
   protected abstract Destination createDestination(String name) throws JMSException;
 

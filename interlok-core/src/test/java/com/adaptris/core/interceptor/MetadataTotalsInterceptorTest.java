@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,6 +35,7 @@ import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.util.Closer;
 import com.adaptris.util.TimeInterval;
 
 public class MetadataTotalsInterceptorTest {
@@ -44,14 +45,15 @@ public class MetadataTotalsInterceptorTest {
   private static final TimeInterval TIME_INTERVAL = new TimeInterval(1500L, TimeUnit.MILLISECONDS);
 
   private MetadataTotalsInterceptor metricsInterceptor;
-  
+
   @Mock private StandaloneProducer mockStandaloneProducer;
   @Mock private AdaptrisMarshaller mockMarshaller;
+  private AutoCloseable openMocks;
 
   @Before
   public void setUp() throws Exception {
-    MockitoAnnotations.initMocks(this);
-    
+    openMocks = MockitoAnnotations.openMocks(this);
+
     metricsInterceptor = new MetadataTotalsInterceptor(new ArrayList<String>(Arrays.asList(new String[]
     {
         COUNTER_1, COUNTER_2, this.getClass().getSimpleName()
@@ -64,6 +66,7 @@ public class MetadataTotalsInterceptorTest {
   public void tearDown() throws Exception {
     LifecycleHelper.stop(metricsInterceptor);
     LifecycleHelper.close(metricsInterceptor);
+    Closer.closeQuietly(openMocks);
   }
 
   @Test
@@ -87,9 +90,9 @@ public class MetadataTotalsInterceptorTest {
     ProducingStatisticManager producingStatisticManager = new ProducingStatisticManager();
     producingStatisticManager.setMarshaller(mockMarshaller);
     producingStatisticManager.setProducer(mockStandaloneProducer);
-    
+
     metricsInterceptor.setStatisticManager(producingStatisticManager);
-    
+
     LifecycleHelper.init(metricsInterceptor);
     LifecycleHelper.start(metricsInterceptor);
 
@@ -97,7 +100,7 @@ public class MetadataTotalsInterceptorTest {
 
     // A minus time will expire the time slice immediately after the first message
     metricsInterceptor.setTimesliceDuration(new TimeInterval(-1L, TimeUnit.SECONDS));
-    
+
     assertEquals(0, metricsInterceptor.getStats().size());
     submitMessage(message);
 
@@ -112,9 +115,9 @@ public class MetadataTotalsInterceptorTest {
     ProducingStatisticManager producingStatisticManager = new ProducingStatisticManager();
     producingStatisticManager.setMarshaller(mockMarshaller);
     producingStatisticManager.setProducer(mockStandaloneProducer);
-    
+
     metricsInterceptor.setStatisticManager(producingStatisticManager);
-    
+
     LifecycleHelper.init(metricsInterceptor);
     LifecycleHelper.start(metricsInterceptor);
 
@@ -122,7 +125,7 @@ public class MetadataTotalsInterceptorTest {
 
     // A minus time will expire the time slice immediately after the first message
     metricsInterceptor.setTimesliceDuration(new TimeInterval(-1L, TimeUnit.SECONDS));
-    
+
     assertEquals(0, metricsInterceptor.getStats().size());
     submitMessage(message);
 
@@ -137,7 +140,7 @@ public class MetadataTotalsInterceptorTest {
   public void testCreatesNewTimeSliceAfterTimeDelay() throws Exception {
     LifecycleHelper.init(metricsInterceptor);
     LifecycleHelper.start(metricsInterceptor);
-    
+
     // A negative number will expire the timeslice immediately after the first message
     metricsInterceptor.setTimesliceDuration(new TimeInterval(-1L, TimeUnit.SECONDS));
 
@@ -145,13 +148,13 @@ public class MetadataTotalsInterceptorTest {
 
     assertEquals(0, metricsInterceptor.getStats().size());
     submitMessage(message);
-    
+
     assertEquals(1, metricsInterceptor.getStats().size());
     assertEquals(10, ((MetadataStatistic) metricsInterceptor.getStats().get(0)).getValue(COUNTER_1));
     assertEquals(10, ((MetadataStatistic) metricsInterceptor.getStats().get(0)).getValue(COUNTER_2));
-    
+
     metricsInterceptor.setTimesliceDuration(new TimeInterval(1L, TimeUnit.SECONDS));
-    
+
     submitMessage(message);
     submitMessage(message);
 
@@ -165,10 +168,10 @@ public class MetadataTotalsInterceptorTest {
   @Test
   public void testDoesNotCreateMoreHistoryThanSpecified() throws Exception {
     metricsInterceptor.setStatisticManager(new StandardStatisticManager());
-    
+
     LifecycleHelper.init(metricsInterceptor);
     LifecycleHelper.start(metricsInterceptor);
-    
+
     // A negative number will expire the timeslice immediately after the first message
     metricsInterceptor.setTimesliceDuration(new TimeInterval(-1L, TimeUnit.SECONDS));
 

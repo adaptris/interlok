@@ -156,7 +156,7 @@ public final class JmsReplyToWorkflow extends StandardWorkflow {
       Destination jmsDestination =
           Args.notNull((Destination) msg.getObjectHeaders().get(JmsConstants.OBJ_JMS_REPLY_TO_KEY),
               "jmsreplyto");
-      ((DefinedJmsProducer) getProducer()).produce(msg, producerType.validate(jmsDestination), null);
+      ((DefinedJmsProducer) getProducer()).doProduce(msg, producerType.validate(jmsDestination), null);
     } catch (Exception e) {
       throw ExceptionHelper.wrapProduceException(e);
     }

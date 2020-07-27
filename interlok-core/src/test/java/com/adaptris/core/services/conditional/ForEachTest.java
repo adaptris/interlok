@@ -1,5 +1,17 @@
 package com.adaptris.core.services.conditional;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMessageFactory;
@@ -12,21 +24,6 @@ import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.LogMessageService;
 import com.adaptris.util.GuidGenerator;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
 
 public class ForEachTest extends ConditionalServiceExample
 {
@@ -92,10 +89,11 @@ public class ForEachTest extends ConditionalServiceExample
 	}
 
 	@Test
+  @SuppressWarnings("serial")
 	public void testNonCloneableMessage() throws Exception
 	{
 		forEach.doService(new MultiPayloadAdaptrisMessageImp("bacon", new GuidGenerator(), DefaultMessageFactory.getDefaultInstance(), PAYLOAD_1) {
-			@Override
+      @Override
 			public MessageLifecycleEvent getMessageLifecycleEvent()
 			{
 				return new MessageLifecycleEvent()

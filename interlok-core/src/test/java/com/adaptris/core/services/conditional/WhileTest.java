@@ -42,11 +42,11 @@ public class WhileTest extends ConditionalServiceExample {
   private While logicalExpression;
 
   private AdaptrisMessage message;
-  
+
   private ThenService thenService;
-  
+
   @Mock private Service mockService;
-  
+
   @Mock private Condition mockCondition;
   @Override
   public boolean isAnnotatedForJunit4() {
@@ -56,21 +56,21 @@ public class WhileTest extends ConditionalServiceExample {
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
-    
+
     thenService = new ThenService();
     thenService.setService(mockService);
-    
+
     logicalExpression = new While().withThen(thenService).withCondition(mockCondition);
-    
+
     message = DefaultMessageFactory.getDefaultInstance().newMessage();
-    
-    this.startMe(logicalExpression);
+
+    startMe(logicalExpression);
 
   }
-  
+
   @After
   public void tearDown() throws Exception {
-    this.StopMe(logicalExpression);
+    StopMe(logicalExpression);
   }
 
   @Test
@@ -78,9 +78,9 @@ public class WhileTest extends ConditionalServiceExample {
     when(mockCondition.evaluate(message))
         .thenReturn(true)
         .thenReturn(false);
-    
+
     logicalExpression.doService(message);
-    
+
     verify(mockService, times(1)).doService(message);
   }
 
@@ -88,9 +88,9 @@ public class WhileTest extends ConditionalServiceExample {
   public void testShouldRunServiceMaxDefault() throws Exception {
     when(mockCondition.evaluate(message))
         .thenReturn(true);
-    
+
     logicalExpression.doService(message);
-    
+
     verify(mockService, times(10)).doService(message);
   }
 
@@ -98,13 +98,13 @@ public class WhileTest extends ConditionalServiceExample {
   public void testShouldRunServiceConfiguredFive() throws Exception {
     when(mockCondition.evaluate(message))
         .thenReturn(true);
-    
+
     logicalExpression.setMaxLoops(5);
     logicalExpression.doService(message);
-    
+
     verify(mockService, times(5)).doService(message);
   }
-  
+
 
   @Test
   public void testMaxLoops_ThenFail() throws Exception {
@@ -128,11 +128,11 @@ public class WhileTest extends ConditionalServiceExample {
         .thenReturn(true)
         .thenReturn(true)
         .thenReturn(false);
-    
+
     logicalExpression.setMaxLoops(0); // loop forever
     logicalExpression.doService(message);
-    
-    
+
+
     verify(mockService, times(5)).doService(message);
   }
 
@@ -140,9 +140,9 @@ public class WhileTest extends ConditionalServiceExample {
   public void testShouldNotRunService() throws Exception {
     when(mockCondition.evaluate(message))
         .thenReturn(false);
-    
+
     logicalExpression.doService(message);
-    
+
     verify(mockService, times(0)).doService(message);
   }
 
@@ -153,7 +153,7 @@ public class WhileTest extends ConditionalServiceExample {
     doThrow(new ServiceException())
         .when(mockService)
         .doService(message);
-    
+
     try {
       logicalExpression.doService(message);
       fail("Expected a service exception");
@@ -171,14 +171,14 @@ public class WhileTest extends ConditionalServiceExample {
     } catch (CoreException ex) {
       // expected
     }
-    
+
   }
-  
+
   private void startMe(Service service) throws Exception {
     LifecycleHelper.init(service);
     LifecycleHelper.start(service);
   }
-  
+
   private void StopMe(Service service) throws Exception {
     LifecycleHelper.stop(service);
     LifecycleHelper.close(service);
@@ -189,26 +189,26 @@ public class WhileTest extends ConditionalServiceExample {
     ConditionMetadata condition = new ConditionMetadata();
     condition.setMetadataKey("key1");
     condition.setOperator(new NotNull());
-    
+
     ConditionMetadata condition2 = new ConditionMetadata();
     condition2.setMetadataKey("key2");
     condition2.setOperator(new IsNull());
-    
+
     ConditionOr conditionOr = new ConditionOr();
     conditionOr.getConditions().add(condition);
     conditionOr.getConditions().add(condition2);
-    
+
     ThenService thenSrvc = new ThenService();
     thenSrvc.setService(new LogMessageService());
-    
+
     logicalExpression.setCondition(conditionOr);
     logicalExpression.setThen(thenSrvc);
-    
+
     // We init and start the service in the setup, lets stop it.
     try {
-      this.StopMe(logicalExpression);
+      StopMe(logicalExpression);
     } catch (Exception e) {}
-    
+
     return logicalExpression;
   }
 }

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,6 +35,7 @@ import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.util.Closer;
 import com.adaptris.util.TimeInterval;
 
 public class MetadataCountInterceptorTest {
@@ -46,14 +47,15 @@ public class MetadataCountInterceptorTest {
   private static final String METADATA_KEY = "key";
 
   private MetadataCountInterceptor metricsInterceptor;
-  
+
   @Mock private StandaloneProducer mockStandaloneProducer;
   @Mock private AdaptrisMarshaller mockMarshaller;
+  private AutoCloseable openMocks;
 
   @Before
   public void setUp() throws Exception {
-    MockitoAnnotations.initMocks(this);
-    
+    openMocks = MockitoAnnotations.openMocks(this);
+
     metricsInterceptor = new MetadataCountInterceptor(METADATA_KEY);
     metricsInterceptor.setTimesliceDuration(TIME_INTERVAL);
     metricsInterceptor.setTimesliceHistoryCount(2);
@@ -63,6 +65,7 @@ public class MetadataCountInterceptorTest {
   public void tearDown() throws Exception {
     LifecycleHelper.stop(metricsInterceptor);
     LifecycleHelper.close(metricsInterceptor);
+    Closer.closeQuietly(openMocks);
   }
 
   @Test
@@ -108,9 +111,9 @@ public class MetadataCountInterceptorTest {
     ProducingStatisticManager producingStatisticManager = new ProducingStatisticManager();
     producingStatisticManager.setMarshaller(mockMarshaller);
     producingStatisticManager.setProducer(mockStandaloneProducer);
-    
+
     metricsInterceptor.setStatisticManager(producingStatisticManager);
-    
+
     LifecycleHelper.init(metricsInterceptor);
     LifecycleHelper.start(metricsInterceptor);
 
@@ -118,7 +121,7 @@ public class MetadataCountInterceptorTest {
 
     // A minus time will expire the time slice immediately after the first message
     metricsInterceptor.setTimesliceDuration(new TimeInterval(-1L, TimeUnit.SECONDS));
-    
+
     assertEquals(0, metricsInterceptor.getStats().size());
     submitMessage(message);
 
@@ -133,9 +136,9 @@ public class MetadataCountInterceptorTest {
     ProducingStatisticManager producingStatisticManager = new ProducingStatisticManager();
     producingStatisticManager.setMarshaller(mockMarshaller);
     producingStatisticManager.setProducer(mockStandaloneProducer);
-    
+
     metricsInterceptor.setStatisticManager(producingStatisticManager);
-    
+
     LifecycleHelper.init(metricsInterceptor);
     LifecycleHelper.start(metricsInterceptor);
 
@@ -143,7 +146,7 @@ public class MetadataCountInterceptorTest {
 
     // A minus time will expire the time slice immediately after the first message
     metricsInterceptor.setTimesliceDuration(new TimeInterval(-1L, TimeUnit.SECONDS));
-    
+
     assertEquals(0, metricsInterceptor.getStats().size());
     submitMessage(message);
 
@@ -168,9 +171,9 @@ public class MetadataCountInterceptorTest {
     assertEquals(1, metricsInterceptor.getStats().size());
     assertEquals(1, ((MetadataStatistic) metricsInterceptor.getStats().get(0)).getValue(COUNTER_1));
     assertEquals(0, ((MetadataStatistic) metricsInterceptor.getStats().get(0)).getValue(COUNTER_2));
-    
+
     metricsInterceptor.setTimesliceDuration(new TimeInterval(1L, TimeUnit.SECONDS));
-    
+
     submitMessage(message);
     submitMessage(message);
 
@@ -187,7 +190,7 @@ public class MetadataCountInterceptorTest {
     LifecycleHelper.start(metricsInterceptor);
 
     metricsInterceptor.setTimesliceDuration(new TimeInterval(-1L, TimeUnit.SECONDS));
-    
+
     AdaptrisMessage message = createMessage(COUNTER_1);
 
     assertEquals(0, metricsInterceptor.getStats().size());

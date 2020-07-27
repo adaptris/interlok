@@ -1,5 +1,6 @@
 ext {
   componentName='Interlok Common Classes'
+  delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 }
 
 // In this section you declare the dependencies for your production and test code
@@ -51,6 +52,14 @@ javadoc {
   }
 }
 
+delombok {
+  target = delombokTargetDir
+}
+
+task deleteGeneratedFiles(type: Delete) {
+  delete delombokTargetDir
+}
+
 uploadArchives {
   repositories {
     mavenDeployer {
@@ -70,3 +79,4 @@ uploadArchives {
 }
 
 publish.dependsOn uploadArchives
+clean.dependsOn deleteGeneratedFiles

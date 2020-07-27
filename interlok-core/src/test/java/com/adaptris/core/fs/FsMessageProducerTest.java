@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,6 +39,7 @@ import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ServiceCase;
 import com.adaptris.core.StandaloneProducer;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.fs.AppendingFsWorker;
 import com.adaptris.fs.FsWorker;
 import com.adaptris.fs.NioWorker;
@@ -200,7 +201,7 @@ public class FsMessageProducerTest extends FsProducerExample {
       producer.setFilenameCreator(null);
       fail();
     }
-    catch (IllegalArgumentException expected) {
+    catch (IllegalArgumentException | NullPointerException expected) {
 
     }
     producer.setFilenameCreator(new EmptyFileNameCreator());
@@ -220,7 +221,7 @@ public class FsMessageProducerTest extends FsProducerExample {
       producer.setFsWorker(null);
       fail();
     }
-    catch (IllegalArgumentException expected) {
+    catch (IllegalArgumentException | NullPointerException expected) {
 
     }
     assertEquals(OverwriteIfExistsWorker.class, producer.getFsWorker().getClass());
@@ -249,6 +250,8 @@ public class FsMessageProducerTest extends FsProducerExample {
     try {
       File dir = new File(parentDir, subdir);
       StandaloneProducer sp = new StandaloneProducer(createProducer(subdir));
+      // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
+      LifecycleHelper.prepare(sp);
       AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
       ServiceCase.execute(sp, msg);
       assertEquals(1, dir.listFiles().length);
@@ -436,26 +439,6 @@ public class FsMessageProducerTest extends FsProducerExample {
   }
 
   @Test
-  public void testProduceWithNullOverride() throws Exception {
-    String subdir = new GuidGenerator().safeUUID();
-    FsProducer producer = createProducer(subdir);
-    File parentDir = FsHelper.createFileReference(FsHelper.createUrlFromString(PROPERTIES.getProperty(BASE_KEY), true));
-    try {
-      File dir = new File(parentDir, subdir);
-      start(producer);
-      producer.produce(new DefaultMessageFactory().newMessage(TEXT), null);
-      fail();
-    }
-    catch (ProduceException expected) {
-      ;
-    }
-    finally {
-      stop(producer);
-      FileUtils.deleteQuietly(new File(parentDir, subdir));
-    }
-  }
-
-  @Test
   public void testProduceWithTempDir() throws Exception {
     String subdir = new GuidGenerator().safeUUID();
     String tmpDir = new GuidGenerator().safeUUID();
@@ -532,7 +515,7 @@ public class FsMessageProducerTest extends FsProducerExample {
   private FsProducer createProducer(String subDir) {
     String baseString = PROPERTIES.getProperty(BASE_KEY);
     // create producer
-    FsProducer producer = new FsProducer(new ConfiguredProduceDestination(baseString + "/" + subDir));
+    FsProducer producer = new FsProducer().withBaseDirectoryUrl(baseString + "/" + subDir);
     producer.setCreateDirs(true);
     return producer;
   }

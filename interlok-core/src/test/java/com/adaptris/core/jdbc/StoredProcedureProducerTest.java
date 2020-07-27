@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,12 +27,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.xml.xpath.XPathExpressionException;
+import org.apache.commons.lang3.BooleanUtils;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ComponentLifecycle;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ProducerCase;
 import com.adaptris.core.Service;
@@ -43,6 +44,7 @@ import com.adaptris.core.services.jdbc.AllRowsMetadataTranslator;
 import com.adaptris.core.services.jdbc.FirstRowMetadataTranslator;
 import com.adaptris.core.services.jdbc.JdbcServiceList;
 import com.adaptris.core.services.jdbc.XmlPayloadTranslator;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.jdbc.ExecuteQueryCallableStatementExecutor;
 import com.adaptris.jdbc.MysqlStatementCreator;
 import com.adaptris.jdbc.ParameterValueType;
@@ -56,7 +58,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   /**
    * Key in unit-test.properties that defines where example goes unless overriden {@link #setBaseDir(String)}.
-   * 
+   *
    */
   public static final String BASE_DIR_KEY = "JdbcProducerExamples.baseDir";
   public static final String JDBC_STOREDPROC_TESTS_ENABLED = "jdbc.storedproc.tests.enabled";
@@ -68,8 +70,6 @@ public class StoredProcedureProducerTest extends ProducerCase {
   private static final String XML_PAYLOAD = "<head>" + "<body>" + "<element1>" + "Sold" + "</element1>" + "<element2>"
       + "SomeValue" + "</element2>" + "</body>" + "</head>";
 
-  private boolean testsEnabled = false;
-
   public StoredProcedureProducerTest() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
@@ -80,13 +80,15 @@ public class StoredProcedureProducerTest extends ProducerCase {
   public boolean isAnnotatedForJunit4() {
     return true;
   }
+
   @Before
   public void setUp() throws Exception {
-    if (Boolean.parseBoolean(PROPERTIES.getProperty(JDBC_STOREDPROC_TESTS_ENABLED, "false"))) {
-      testsEnabled = true;
-    }
+    Assume.assumeTrue(areTestsEnabled());
   }
 
+  private static boolean areTestsEnabled() {
+    return BooleanUtils.toBoolean(PROPERTIES.getProperty(JDBC_STOREDPROC_TESTS_ENABLED, "false"));
+  }
 
   private StandaloneProducer configureForTests(JdbcStoredProcedureProducer p, boolean addConnection) {
     if (PROPERTIES.getProperty(JDBC_VENDOR).equals("mysql")) p.setStatementCreator(new MysqlStatementCreator());
@@ -113,9 +115,9 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testOneMetadataParamIn() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
-      spp.setDestination(new ConfiguredProduceDestination("one_in"));
+      spp.setProcedureName(("one_in"));
 
       JdbcMetadataParameter inParameter = new JdbcMetadataParameter();
       inParameter.setMetadataKey("xType");
@@ -137,10 +139,10 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testOneMetadataParamInOut() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
 
-      spp.setDestination(new ConfiguredProduceDestination("one_inout"));
+      spp.setProcedureName(("one_inout"));
 
       JdbcMetadataParameter inParameter = new JdbcMetadataParameter();
       inParameter.setMetadataKey("xSomeAmount");
@@ -165,10 +167,10 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testMultipleExecutions() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
 
-      spp.setDestination(new ConfiguredProduceDestination("one_in_one_out"));
+      spp.setProcedureName(("one_in_one_out"));
       AdaptrisMessage message = createMessage(XML_PAYLOAD);
       AdaptrisMessage message2 = createMessage(XML_PAYLOAD);
       JdbcXPathParameter inParameter = new JdbcXPathParameter();
@@ -191,6 +193,8 @@ public class StoredProcedureProducerTest extends ProducerCase {
       spp.setOutParameters(outParameters);
       StandaloneProducer producer = configureForTests(spp, true);
       try {
+        // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
+        LifecycleHelper.prepare(producer);
         start(producer);
         assertEquals(0, message.getMetadata().size());
         producer.doService(message);
@@ -212,7 +216,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
   public void testConnectionInObjectMetadata() throws Exception {
     JdbcServiceList serviceList = new JdbcServiceList();
     try {
-      if (testsEnabled) {
+      if (areTestsEnabled()) {
         JdbcConnection jdbcConnection = new JdbcConnection(PROPERTIES.getProperty(JDBC_URL), PROPERTIES.getProperty(JDBC_DRIVER));
         jdbcConnection.setUsername(PROPERTIES.getProperty(JDBC_USER));
         jdbcConnection.setPassword(PROPERTIES.getProperty(JDBC_PASSWORD));
@@ -221,7 +225,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
         if (PROPERTIES.getProperty(JDBC_VENDOR).equals("mysql")) myStoredProc.setStatementCreator(new MysqlStatementCreator());
         else if (PROPERTIES.getProperty(JDBC_VENDOR).equals("sqlserver"))
           myStoredProc.setStatementCreator(new SqlServerStatementCreator());
-        myStoredProc.setDestination(new ConfiguredProduceDestination("one_in_one_out"));
+        myStoredProc.setProcedureName(("one_in_one_out"));
 
         serviceList.add(new StandaloneProducer(myStoredProc));
         start(serviceList);
@@ -263,10 +267,10 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testOneConstantParamInOneMetadataOut() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
 
-      spp.setDestination(new ConfiguredProduceDestination("one_in_one_out"));
+      spp.setProcedureName(("one_in_one_out"));
 
       JdbcConstantParameter inParameter = new JdbcConstantParameter();
       inParameter.setConstant("Sold");
@@ -304,10 +308,10 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testOneXpathParamInOneMetadataOut() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
 
-      spp.setDestination(new ConfiguredProduceDestination("one_in_one_out"));
+      spp.setProcedureName(("one_in_one_out"));
 
       AdaptrisMessage message = createMessage(XML_PAYLOAD);
 
@@ -346,10 +350,10 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testOneConstantParamInOut() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
 
-      spp.setDestination(new ConfiguredProduceDestination("one_inout"));
+      spp.setProcedureName(("one_inout"));
 
       JdbcConstantParameter inParameter = new JdbcConstantParameter();
       inParameter.setName("xSomeAmount");
@@ -380,10 +384,10 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testOneConstantParamOut() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
 
-      spp.setDestination(new ConfiguredProduceDestination("one_out"));
+      spp.setProcedureName(("one_out"));
 
       JdbcConstantParameter inParameter = new JdbcConstantParameter();
       inParameter.setName("xSomeAmount");
@@ -414,9 +418,9 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testOneMetadataParamOutAndOneResultSet() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
-      spp.setDestination(new ConfiguredProduceDestination("one_resultset_one_out"));
+      spp.setProcedureName(("one_resultset_one_out"));
       spp.setResultSetTranslator(new FirstRowMetadataTranslator());
 
       JdbcMetadataParameter outParameter = new JdbcMetadataParameter();
@@ -446,10 +450,10 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testOneXPathParamInOut() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
 
-      spp.setDestination(new ConfiguredProduceDestination("one_inout"));
+      spp.setProcedureName(("one_inout"));
 
       JdbcXPathParameter inParameter = new JdbcXPathParameter();
       inParameter.setName("xSomeAmount");
@@ -480,10 +484,10 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testOneXPathParamOut() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
 
-      spp.setDestination(new ConfiguredProduceDestination("one_out"));
+      spp.setProcedureName(("one_out"));
 
       JdbcXPathParameter inParameter = new JdbcXPathParameter();
       inParameter.setName("xSomeAmount");
@@ -514,10 +518,10 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testOneMetadataParamInButDoesntExist() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
 
-      spp.setDestination(new ConfiguredProduceDestination("one_in"));
+      spp.setProcedureName(("one_in"));
 
       JdbcMetadataParameter inParameter = new JdbcMetadataParameter();
       inParameter.setMetadataKey("xType");
@@ -548,9 +552,9 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testOneMetadataParamOut() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
-      spp.setDestination(new ConfiguredProduceDestination("one_out"));
+      spp.setProcedureName(("one_out"));
 
       JdbcMetadataParameter outParameter = new JdbcMetadataParameter();
       outParameter.setMetadataKey("transferCount");
@@ -579,10 +583,10 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testManyMetadataParametersOut() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
 
-      spp.setDestination(new ConfiguredProduceDestination("many_out"));
+      spp.setProcedureName(("many_out"));
 
       JdbcMetadataParameter outParameter1 = new JdbcMetadataParameter();
       outParameter1.setMetadataKey("numberSold");
@@ -624,10 +628,10 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testOneObjectMetadataParamIn() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
 
-      spp.setDestination(new ConfiguredProduceDestination("one_in"));
+      spp.setProcedureName(("one_in"));
 
       JdbcObjectMetadataParameter inParameter = new JdbcObjectMetadataParameter();
       inParameter.setMetadataKey("xType");
@@ -661,9 +665,9 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testOneObjectMetadataParamInOut() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
-      spp.setDestination(new ConfiguredProduceDestination("one_inout"));
+      spp.setProcedureName(("one_inout"));
 
       JdbcObjectMetadataParameter inOutParameter = new JdbcObjectMetadataParameter();
       inOutParameter.setMetadataKey("xSomeAmount");
@@ -697,10 +701,10 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testOneObjectMetadataParamInButDoesntExist() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
 
-      spp.setDestination(new ConfiguredProduceDestination("one_in"));
+      spp.setProcedureName(("one_in"));
 
       JdbcObjectMetadataParameter inParameter = new JdbcObjectMetadataParameter();
       inParameter.setMetadataKey("xType");
@@ -730,10 +734,10 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testOneObjectMetadataParamOut() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
 
-      spp.setDestination(new ConfiguredProduceDestination("one_out"));
+      spp.setProcedureName(("one_out"));
 
       JdbcObjectMetadataParameter outParameter = new JdbcObjectMetadataParameter();
       outParameter.setMetadataKey("transferCount");
@@ -767,10 +771,10 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testManyObjectMetadataParametersOut() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
 
-      spp.setDestination(new ConfiguredProduceDestination("many_out"));
+      spp.setProcedureName(("many_out"));
 
       JdbcObjectMetadataParameter outParameter1 = new JdbcObjectMetadataParameter();
       outParameter1.setMetadataKey("numberSold");
@@ -819,10 +823,10 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testOneMetadataInOneOutOneInOut() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
 
-      spp.setDestination(new ConfiguredProduceDestination("one_inout_one_in_one_out"));
+      spp.setProcedureName(("one_inout_one_in_one_out"));
 
       JdbcMetadataParameter inParameter = new JdbcMetadataParameter();
       inParameter.setMetadataKey("managersName");
@@ -874,10 +878,10 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testOneResultSetMetadataTranslator() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
 
-      spp.setDestination(new ConfiguredProduceDestination("one_resultset"));
+      spp.setProcedureName(("one_resultset"));
       spp.setResultSetTranslator(new AllRowsMetadataTranslator());
       AdaptrisMessage message = createMessage();
 
@@ -896,10 +900,10 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testMultipleResultSetsMetadataTranslator() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
 
-      spp.setDestination(new ConfiguredProduceDestination("many_resultsets"));
+      spp.setProcedureName(("many_resultsets"));
       spp.setResultSetTranslator(new AllRowsMetadataTranslator());
       AdaptrisMessage message = createMessage();
 
@@ -918,10 +922,10 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testOneResultSetFirstRowMetadataTranslator() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
 
-      spp.setDestination(new ConfiguredProduceDestination("one_resultset"));
+      spp.setProcedureName(("one_resultset"));
       spp.setResultSetTranslator(new FirstRowMetadataTranslator());
       AdaptrisMessage message = createMessage();
 
@@ -940,10 +944,10 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testMultipleResultSetsFirstRowMetadataTranslator() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
 
-      spp.setDestination(new ConfiguredProduceDestination("many_resultsets"));
+      spp.setProcedureName(("many_resultsets"));
       spp.setResultSetTranslator(new FirstRowMetadataTranslator());
       AdaptrisMessage message = createMessage();
 
@@ -962,10 +966,10 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testOneResultSetXmlTranslator() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
 
-      spp.setDestination(new ConfiguredProduceDestination("one_resultset"));
+      spp.setProcedureName(("one_resultset"));
       XmlPayloadTranslator xmlPayloadTranslator = new XmlPayloadTranslator();
       xmlPayloadTranslator.setPreserveOriginalMessage(true);
       spp.setResultSetTranslator(xmlPayloadTranslator);
@@ -992,10 +996,10 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testMultiResultSetXmlTranslator() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
 
-      spp.setDestination(new ConfiguredProduceDestination("many_resultsets"));
+      spp.setProcedureName(("many_resultsets"));
       XmlPayloadTranslator xmlPayloadTranslator = new XmlPayloadTranslator();
       xmlPayloadTranslator.setPreserveOriginalMessage(true);
       spp.setResultSetTranslator(xmlPayloadTranslator);
@@ -1026,10 +1030,10 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testStringPayloadParamIn() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
 
-      spp.setDestination(new ConfiguredProduceDestination("one_in"));
+      spp.setProcedureName(("one_in"));
 
       JdbcStringPayloadParameter inParameter = new JdbcStringPayloadParameter();
       inParameter.setName("xType");
@@ -1056,7 +1060,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     int maxServices = 5;
     final int iterations = 5;
     int poolsize = maxServices - 1;
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       List<Service> serviceList = new ArrayList<Service>();
       String name = Thread.currentThread().getName();
       Thread.currentThread().setName(getName());
@@ -1068,7 +1072,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
       try {
         for (int i = 0; i < maxServices; i++) {
           JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
-          spp.setDestination(new ConfiguredProduceDestination("one_in"));
+          spp.setProcedureName(("one_in"));
           JdbcStringPayloadParameter inParameter = new JdbcStringPayloadParameter();
           inParameter.setName("xType");
           inParameter.setType(ParameterValueType.VARCHAR);
@@ -1105,7 +1109,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     int maxServices = 5;
     final int iterations = 5;
     int poolsize = maxServices - 1;
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       List<Service> serviceList = new ArrayList<Service>();
       String name = Thread.currentThread().getName();
       Thread.currentThread().setName(getName());
@@ -1117,7 +1121,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
       try {
         for (int i = 0; i < maxServices; i++) {
           JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
-          spp.setDestination(new ConfiguredProduceDestination("one_in"));
+          spp.setProcedureName(("one_in"));
           JdbcStringPayloadParameter inParameter = new JdbcStringPayloadParameter();
           inParameter.setName("xType");
           inParameter.setType(ParameterValueType.VARCHAR);
@@ -1151,10 +1155,10 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testStringPayloadParamOut() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
 
-      spp.setDestination(new ConfiguredProduceDestination("one_out"));
+      spp.setProcedureName(("one_out"));
 
       JdbcStringPayloadParameter param = new JdbcStringPayloadParameter();
       param.setName("transferCount");
@@ -1183,10 +1187,10 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testBytePayloadParamIn() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
 
-      spp.setDestination(new ConfiguredProduceDestination("one_in"));
+      spp.setProcedureName(("one_in"));
 
       JdbcBytePayloadParameter inParameter = new JdbcBytePayloadParameter();
       inParameter.setName("xType");
@@ -1210,10 +1214,10 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
   @Test
   public void testBytePayloadParamOut() throws Exception {
-    if (testsEnabled) {
+    if (areTestsEnabled()) {
       JdbcStoredProcedureProducer spp = new JdbcStoredProcedureProducer();
 
-      spp.setDestination(new ConfiguredProduceDestination("one_out"));
+      spp.setProcedureName(("one_out"));
 
       JdbcBytePayloadParameter param = new JdbcBytePayloadParameter();
       param.setName("transferCount");
@@ -1246,7 +1250,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
     JdbcStoredProcedureProducer exampleProducer = new JdbcStoredProcedureProducer();
     exampleProducer.setStatementCreator(new MysqlStatementCreator());
     exampleProducer.setStatementExecutor(new ExecuteQueryCallableStatementExecutor());
-    exampleProducer.setDestination(new ConfiguredProduceDestination("The Stored Procedure to call"));
+    exampleProducer.setProcedureName("The Stored Procedure to call");
     TimeInterval timeout = new TimeInterval(10L, TimeUnit.SECONDS);
     exampleProducer.setTimeout(timeout);
 

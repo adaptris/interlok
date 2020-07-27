@@ -110,8 +110,9 @@ public interface VendorImplementationBase
    *
    * @param dest the destination
    * @param c the configuration.
-   * @implNote The default implementation just calls {@link createQueueReceiver(String, String,
-   *           JmsActorConfig)} with the destination and filter expression from the destination.
+   * @implNote The default implementation just calls
+   *           {@link #createQueueReceiver(String, String, JmsActorConfig)} with the destination and
+   *           filter expression from the destination.
    * @deprecated since 3.11.0 since {@link ConsumeDestination} is considered deprecated.
    */
   @Deprecated
@@ -137,9 +138,9 @@ public interface VendorImplementationBase
    *
    * @param dest the destination
    * @param c the configuration.
-   * @implNote The default implementation just calls {@link createTopicSubscriber(String, String,
-   *           String, JmsActorConfig)} with the destination and filter expression from the
-   *           destination.
+   * @implNote The default implementation just calls
+   *           {@link #createTopicSubscriber(String, String, String, JmsActorConfig)} with the
+   *           destination and filter expression from the destination.
    * @deprecated since 3.11.0 since {@link ConsumeDestination} is considered deprecated.
    */
   @Deprecated

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,7 +36,6 @@ import javax.jms.JMSException;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
@@ -165,7 +164,6 @@ public abstract class JmsProducerCase extends JmsProducerExample {
   }
 
   protected static DefinedJmsProducer configureForExamples(DefinedJmsProducer p) {
-    p.setDestination(new ConfiguredProduceDestination("SampleQ1"));
     MetadataCorrelationIdSource mcs = new MetadataCorrelationIdSource();
     mcs.setMetadataKey("MetadataKey_ForCorrelation");
     p.setCorrelationIdSource(mcs);
@@ -180,18 +178,40 @@ public abstract class JmsProducerCase extends JmsProducerExample {
     }
 
     @Override
-    protected void produce(AdaptrisMessage msg, Destination dest, Destination replyTo) throws JMSException, CoreException {
+    protected void doProduce(AdaptrisMessage msg, Destination dest, Destination replyTo)
+        throws JMSException, CoreException {
       throw new ProduceException();
     }
 
     @Override
-    protected AdaptrisMessage doRequest(AdaptrisMessage msg, ProduceDestination dest, long timeout) throws ProduceException {
+    public AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination dest, long timeout)
+        throws ProduceException {
       throw new ProduceException();
     }
 
     @Override
     protected Destination createTemporaryDestination() throws JMSException {
       throw new JMSException("NO!");
+    }
+
+    @Override
+    public AdaptrisMessage request(AdaptrisMessage msg) throws ProduceException {
+      throw new ProduceException();
+    }
+
+    @Override
+    public void produce(AdaptrisMessage msg) throws ProduceException {
+      throw new ProduceException();
+    }
+
+    @Override
+    public String endpoint(AdaptrisMessage msg) throws ProduceException {
+      return null;
+    }
+
+    @Override
+    public AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException {
+      throw new ProduceException();
     }
 
   }

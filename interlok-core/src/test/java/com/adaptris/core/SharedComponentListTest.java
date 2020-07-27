@@ -780,7 +780,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     StandardWorkflow wf1 = new StandardWorkflow();
     wf1.setUniqueId("reverent-edison");
     wf1.setConsumer(new FsConsumer().withBaseDirectoryUrl("in-directory"));
-    wf1.setProducer(new FsProducer(new ConfiguredProduceDestination("out-directory")));
+    wf1.setProducer(new FsProducer().withBaseDirectoryUrl("out-directory"));
     wf1.getServiceCollection().add(new SharedService("shared-service-list"));
 
     StandardWorkflow wf = new StandardWorkflow();
@@ -788,7 +788,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
     wf.setConsumer(new JmsConsumer().withEndpoint("jms:queue:SampleQueue1"));
     wf.setProducer(new NullMessageProducer());
     wf.getServiceCollection().add(new StandaloneProducer(new SharedConnection("jms-connection"),
-        new JmsProducer(new ConfiguredProduceDestination("jms:topic:MyTopicName"))));
+        new JmsProducer().withEndpoint("jms:topic:MyTopicName")));
     Channel channel = new Channel();
     channel.setUniqueId("quirky_shannon");
     channel.setConsumeConnection(new SharedConnection("jms-connection"));

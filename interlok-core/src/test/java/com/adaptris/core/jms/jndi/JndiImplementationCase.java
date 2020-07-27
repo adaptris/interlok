@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.JmsConnectionConfig;
@@ -155,17 +154,17 @@ public abstract class JndiImplementationCase {
     }
     assertEquals(set, jv.getJndiParams());
   }
-  
+
   @Test
   public void testInitialiseDefaultArtemisBroker() throws Exception {
 
     EmbeddedArtemis broker = new EmbeddedArtemis();
     String topicName = testName.getMethodName() + "_topic";
-    
-    PasProducer producer = new PasProducer(new ConfiguredProduceDestination(topicName));
+
+    PasProducer producer = new PasProducer().withTopic(topicName);
     JmsConnection c = broker.getJmsConnection();
     StandaloneProducer standaloneProducer = new StandaloneProducer(c, producer);
-    
+
     try {
       broker.start();
       LifecycleHelper.init(standaloneProducer);
@@ -182,7 +181,7 @@ public abstract class JndiImplementationCase {
     RequiresCredentialsBroker broker = new RequiresCredentialsBroker();
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
-    PasProducer producer = new PasProducer(new ConfiguredProduceDestination(topicName));
+    PasProducer producer = new PasProducer().withTopic(topicName);;
     StandardJndiImplementation jv = createVendorImplementation();
     JmsConnection c = broker.getJndiPasConnection(jv, false, queueName, topicName);
 
@@ -205,7 +204,7 @@ public abstract class JndiImplementationCase {
     RequiresCredentialsBroker broker = new RequiresCredentialsBroker();
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
-    PasProducer producer = new PasProducer(new ConfiguredProduceDestination(queueName));
+    PasProducer producer = new PasProducer().withTopic(queueName);
     StandardJndiImplementation jv = createVendorImplementation();
     JmsConnection c = broker.getJndiPasConnection(jv, false, queueName, topicName);
 
@@ -230,7 +229,7 @@ public abstract class JndiImplementationCase {
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
     RequiresCredentialsBroker broker = new RequiresCredentialsBroker();
-    PasProducer producer = new PasProducer(new ConfiguredProduceDestination(queueName));
+    PasProducer producer = new PasProducer().withTopic(queueName);
     StandardJndiImplementation jv = createVendorImplementation();
     JmsConnection c = broker.getJndiPasConnection(jv, false, queueName, topicName);
 
@@ -256,7 +255,7 @@ public abstract class JndiImplementationCase {
     RequiresCredentialsBroker broker = new RequiresCredentialsBroker();
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
-    PasProducer producer = new PasProducer(new ConfiguredProduceDestination(queueName));
+    PasProducer producer = new PasProducer().withTopic(queueName);
     StandardJndiImplementation jv = createVendorImplementation();
     JmsConnection c = broker.getJndiPasConnection(jv, false, queueName, topicName);
     jv.getJndiParams().addKeyValuePair(new KeyValuePair("UserName", RequiresCredentialsBroker.DEFAULT_USERNAME));
@@ -282,7 +281,7 @@ public abstract class JndiImplementationCase {
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
-    PasProducer producer = new PasProducer(new ConfiguredProduceDestination(queueName));
+    PasProducer producer = new PasProducer().withTopic(queueName);
     StandardJndiImplementation jv = createVendorImplementation();
     JmsConnection c = broker.getJndiPasConnection(jv, false, queueName, topicName);
     c.setConnectionAttempts(1);
@@ -308,7 +307,7 @@ public abstract class JndiImplementationCase {
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
-    PasProducer producer = new PasProducer(new ConfiguredProduceDestination(topicName));
+    PasProducer producer = new PasProducer().withTopic((topicName));
     StandardJndiImplementation jv = createVendorImplementation();
     JmsConnection c = broker.getJndiPtpConnection(jv, false, queueName, topicName);
     c.setConnectionAttempts(1);

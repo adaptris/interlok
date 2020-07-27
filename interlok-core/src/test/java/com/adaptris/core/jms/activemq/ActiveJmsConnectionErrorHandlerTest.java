@@ -27,7 +27,6 @@ import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ClosedState;
 import com.adaptris.core.ComponentState;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.ServiceCase;
 import com.adaptris.core.SharedConnection;
 import com.adaptris.core.StandaloneProducer;
@@ -312,7 +311,7 @@ public class ActiveJmsConnectionErrorHandlerTest extends ActiveJmsConnectionErro
   private StandaloneProducer createProducer(EmbeddedActiveMq mq, String dest) {
     JmsConnection conn = mq.getJmsConnection(new BasicActiveMqImplementation(), true);
     conn.setConnectionErrorHandler(createErrorHandler());
-    PasProducer producer = new PasProducer(new ConfiguredProduceDestination(dest));
+    PasProducer producer = new PasProducer().withTopic(dest);
     return new StandaloneProducer(conn, producer);
   }
 

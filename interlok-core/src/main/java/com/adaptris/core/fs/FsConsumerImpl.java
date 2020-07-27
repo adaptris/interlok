@@ -74,13 +74,16 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
   /**
    * Set the filename filter implementation that will be used for filtering files.
    * <p>
+   * The file filter implementation that is used in conjunction with the
+   * {@link #getFilterExpression()}, if not specified, then the default is
+   * {@code org.apache.commons.io.filefilter.RegexFileFilter} which uses the java.util regular
+   * expressions to perform filtering
+   * </p>
+   * <p>
    * The expression that is used to filter messages is derived from {@link #getFilterExpression()}
    * or from the deprecated {@link #getDestination()}.
    * </p>
    *
-   * @param s The fileFilterImp to set, if not specified, then the default is
-   *        {@code org.apache.commons.io.filefilter.RegexFileFilter} which uses the java.util
-   *        regular expressions to perform filtering
    * @see #getFilterExpression()
    */
   @InputFieldHint(ofType = "java.io.FileFilter")
@@ -201,11 +204,9 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
 
   @Override
   protected void prepareConsumer() throws CoreException {
-    if (getDestination() != null) {
-      LoggingHelper.logWarning(destinationWarningLogged, () -> destinationWarningLogged = true,
-          "{} uses destination, use base-directory-url and filter-expression instead",
-          LoggingHelper.friendlyName(this));
-    }
+    DestinationHelper.logWarningIfNotNull(destinationWarningLogged, () -> destinationWarningLogged = true, getDestination(),
+        "{} uses destination, use base-directory-url and filter-expression instead",
+        LoggingHelper.friendlyName(this));
     DestinationHelper.mustHaveEither(getBaseDirectoryUrl(), getDestination());
   }
 

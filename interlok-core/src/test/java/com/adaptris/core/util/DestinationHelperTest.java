@@ -7,21 +7,36 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
+import com.adaptris.core.ConsumeDestination;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.ProduceDestination;
+import com.adaptris.core.ProduceException;
 import com.adaptris.core.stubs.MockMessageListener;
 
 public class DestinationHelperTest extends DestinationHelper {
 
   @Test
-  public void testMustHaveEither() {
-    mustHaveEither("x", null);
+  public void testMustHaveEither_ConsumeDestination() {
+    mustHaveEither("x", (ConsumeDestination) null);
     mustHaveEither(null, new ConfiguredConsumeDestination("hello"));
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testMustHaveEither_Illegal() {
-    mustHaveEither(null, null);
+  public void testMustHaveEither_ConsumeDestination_Illegal() {
+    mustHaveEither(null, (ConsumeDestination) null);
   }
 
+
+  @Test
+  public void testMustHaveEither_ProduceDestination() {
+    mustHaveEither("x", (ProduceDestination) null);
+    mustHaveEither(null, new ConfiguredProduceDestination("hello"));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testMustHaveEither_ConfiguredProduceDestination_Illegal() {
+    mustHaveEither(null, (ConfiguredProduceDestination) null);
+  }
 
   @Test
   public void testConsumeDestination() {
@@ -57,19 +72,35 @@ public class DestinationHelperTest extends DestinationHelper {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testConsumeDestinationWarning() {
     logConsumeDestinationWarning(false, () -> { }, new ConfiguredConsumeDestination(), "{} warning", "this is a");
     logConsumeDestinationWarning(false, () -> { }, null, "{} warning", "this is a");
   }
 
   @Test
+  public void testLogWarningIfNotNull() {
+    logWarningIfNotNull(false, () -> { }, new Object(), "{} warning", "this is a");
+    logWarningIfNotNull(false, () -> { }, null, "{} warning", "this is a");
+  }
+
+
+  @Test
   public void testProduceDestination() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     ConfiguredProduceDestination dest = new ConfiguredProduceDestination("dest");
-    assertNull(produceDestination(null, null, msg));
-    assertEquals("x", produceDestination("x", null, msg));
-    assertEquals("dest", produceDestination(null, dest, msg));
-    assertEquals("dest", produceDestination("x", dest, msg));
+    assertNull(resolveProduceDestination(null, null, msg));
+    assertEquals("x", resolveProduceDestination("x", null, msg));
+    assertEquals("dest", resolveProduceDestination(null, dest, msg));
+    assertEquals("dest", resolveProduceDestination("x", dest, msg));
+  }
+
+  @Test(expected = ProduceException.class)
+  public void testProduceDestination_WithException() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    resolveProduceDestination(null, (m) -> {
+      throw new CoreException();
+    }, msg);
   }
 
 }

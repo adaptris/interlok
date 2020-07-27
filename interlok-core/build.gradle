@@ -10,6 +10,7 @@ ext {
   classesToTest = project.hasProperty("junit.test.classes") ? project.getProperty("junit.test.classes") : "**/*Test*"
   maxThreads = project.hasProperty("junit.threads") ? project.getProperty("junit.threads") : 1
   interlokCommonsOfflineJavadocDir = project.rootDir.getCanonicalPath() + "/interlok-common/build/docs/javadoc"
+  delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 
 }
 
@@ -262,6 +263,7 @@ task deleteGeneratedFiles(type: Delete) {
   delete file(testResourcesDir() + '/security.properties')
   delete file('derby.log')
   delete 'activemq-data'
+  delete delombokTargetDir
 }
 
 
@@ -348,6 +350,10 @@ uploadUnitTestStubs {
 
     }
   }
+}
+
+delombok {
+  target = delombokTargetDir
 }
 
 check.dependsOn jacocoTestReport

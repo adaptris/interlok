@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -53,6 +53,7 @@ public class GetOauthTokenTest extends HttpServiceExample {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testService_Legacy_WithExpiry() throws Exception {
     long now = System.currentTimeMillis();
     String expiryDate = DateFormatUtil.format(new Date(now));
@@ -75,6 +76,7 @@ public class GetOauthTokenTest extends HttpServiceExample {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testService_Legacy_WithError() throws Exception {
     long now = System.currentTimeMillis();
     String expiryDate = DateFormatUtil.format(new Date(now));
@@ -94,6 +96,7 @@ public class GetOauthTokenTest extends HttpServiceExample {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testService_Legacy_WithExpiry_NoAccessTokenExpiry() throws Exception {
     AccessToken t = new AccessToken(getName());
     GetOauthToken service = new GetOauthToken().withTokenExpiryKey("expiry");
@@ -112,6 +115,7 @@ public class GetOauthTokenTest extends HttpServiceExample {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testService() throws Exception {
     long now = System.currentTimeMillis();
     String expiryDate = DateFormatUtil.format(new Date(now));
@@ -135,6 +139,7 @@ public class GetOauthTokenTest extends HttpServiceExample {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testService_Legacy_WithRefreshToken() throws Exception {
     AccessToken t = new AccessToken(getName()).withRefreshToken("refreshToken");
     GetOauthToken service = new GetOauthToken().withTokenKey("Authorization").withRefreshTokenKey("refreshTokenKey")
@@ -153,6 +158,7 @@ public class GetOauthTokenTest extends HttpServiceExample {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testService_Legacy_RefreshToken_NoToken() throws Exception {
     AccessToken t = new AccessToken(getName());
     GetOauthToken service = new GetOauthToken().withTokenKey("Authorization").withRefreshTokenKey("refreshTokenKey")

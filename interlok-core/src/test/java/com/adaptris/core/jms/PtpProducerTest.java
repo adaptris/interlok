@@ -46,17 +46,22 @@ public class PtpProducerTest extends BasicJmsProducerCase {
   private StandaloneProducer retrieveSampleConfig() {
     JmsConnection c = configureForExamples(new JmsConnection(new BasicActiveMqImplementation("tcp://localhost:61616")));
     c.setClientId(null);
-    StandaloneProducer result = new StandaloneProducer(c, configureForExamples(new PtpProducer()));
+    StandaloneProducer result =
+        new StandaloneProducer(c, configureForExamples(new PtpProducer().withQueue("SampleQ1")));
     return result;
   }
 
   @Override
-  protected DefinedJmsProducer createProducer(ConfiguredProduceDestination dest) {
-    return new PtpProducer(dest);
+  @SuppressWarnings("deprecation")
+  protected PtpProducer createProducer(ConfiguredProduceDestination dest) {
+    PtpProducer p = new PtpProducer();
+    p.setDestination(dest);
+    return p;
   }
 
   @Override
-  protected JmsConsumerImpl createConsumer(ConfiguredConsumeDestination dest) {
+  @SuppressWarnings("deprecation")
+  protected PtpConsumer createConsumer(ConfiguredConsumeDestination dest) {
     PtpConsumer ptp = new PtpConsumer();
     ptp.setDestination(dest);
     return ptp;

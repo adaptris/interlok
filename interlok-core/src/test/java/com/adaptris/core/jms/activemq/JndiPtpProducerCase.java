@@ -25,7 +25,6 @@ import static org.junit.Assert.fail;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
@@ -57,7 +56,7 @@ public abstract class JndiPtpProducerCase {
     MockMessageListener jms = new MockMessageListener();
     standaloneConsumer.registerAdaptrisMessageListener(jms);
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJndiPtpConnection(sendVendorImp, false,
-        queueName, topicName), new PtpProducer(new ConfiguredProduceDestination(queueName)));
+            queueName, topicName), new PtpProducer().withQueue((queueName)));
     try {
       activeMqBroker.start();
       execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
@@ -87,7 +86,7 @@ public abstract class JndiPtpProducerCase {
     MockMessageListener jms = new MockMessageListener();
     standaloneConsumer.registerAdaptrisMessageListener(jms);
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJndiPtpConnection(sendVendorImp, false,
-        queueName, topicName), new PtpProducer(new ConfiguredProduceDestination(queueName)));
+            queueName, topicName), new PtpProducer().withQueue((queueName)));
     try {
       activeMqBroker.start();
       execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
@@ -113,7 +112,7 @@ public abstract class JndiPtpProducerCase {
     MockMessageListener jms = new MockMessageListener();
     standaloneConsumer.registerAdaptrisMessageListener(jms);
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJndiPtpConnection(sendVendorImp, true,
-        queueName, topicName), new PtpProducer(new ConfiguredProduceDestination(queueName)));
+            queueName, topicName), new PtpProducer().withQueue((queueName)));
     try {
       activeMqBroker.start();
       execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
@@ -133,7 +132,7 @@ public abstract class JndiPtpProducerCase {
     String topicName = testName.getMethodName() + "_topic";
     StandardJndiImplementation sendVendorImp = createVendorImplementation();
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJndiPtpConnection(sendVendorImp, true,
-        queueName, topicName), new PtpProducer(new ConfiguredProduceDestination(this.getClass().getSimpleName())));
+            queueName, topicName), new PtpProducer().withQueue((this.getClass().getSimpleName())));
     try {
       activeMqBroker.start();
       start(standaloneProducer);

@@ -20,7 +20,6 @@ import static com.adaptris.core.jms.activemq.AdvancedActiveMqImplementationTest.
 import org.apache.activemq.ActiveMQPrefetchPolicy;
 import org.apache.activemq.RedeliveryPolicy;
 import org.junit.Test;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.JmsConnection;
@@ -57,7 +56,7 @@ public class AdvancedActiveMqProducerTest extends BasicActiveMqProducerTest {
       standaloneConsumer.registerAdaptrisMessageListener(jms);
 
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl(
-          createRedelivery(), null)), new PtpProducer(new ConfiguredProduceDestination(getName())));
+              createRedelivery(), null)), new PtpProducer().withQueue((getName())));
 
       execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
       assertMessages(jms, 1);
@@ -81,7 +80,7 @@ public class AdvancedActiveMqProducerTest extends BasicActiveMqProducerTest {
       standaloneConsumer.registerAdaptrisMessageListener(jms);
 
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl(null,
-          createPrefetch())), new PtpProducer(new ConfiguredProduceDestination(getName())));
+              createPrefetch())), new PtpProducer().withQueue((getName())));
 
       execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
       assertMessages(jms, 1);
@@ -96,10 +95,7 @@ public class AdvancedActiveMqProducerTest extends BasicActiveMqProducerTest {
 
     JmsConnection connection = new JmsConnection();
     PtpProducer producer = new PtpProducer();
-    ConfiguredProduceDestination dest = new ConfiguredProduceDestination();
-    dest.setDestination("destination");
-
-    producer.setDestination(dest);
+    producer.setQueue("destination");
     UrlVendorImplementation vendorImpl = createImpl();
     vendorImpl.setBrokerUrl(BasicActiveMqImplementationTest.PRIMARY);
     connection.setUserName("BrokerUsername");
