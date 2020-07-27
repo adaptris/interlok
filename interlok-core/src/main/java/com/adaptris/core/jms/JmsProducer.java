@@ -197,11 +197,11 @@ public class JmsProducer extends JmsProducerImpl {
       JmsUtils.closeQuietly(receiver);
       JmsUtils.deleteTemporaryDestination(replyTo);
     }
-    return translatedReply;
+    return mergeReply(translatedReply, msg);
   }
 
-
-  private Destination createReplyTo(AdaptrisMessage msg, JmsDestination target, boolean alwaysCreate)
+  protected Destination createReplyTo(AdaptrisMessage msg, JmsDestination target,
+      boolean alwaysCreate)
       throws JMSException {
     Destination replyTo = null;
     VendorImplementation vendorImp = retrieveConnection(JmsConnection.class).configuredVendorImplementation();

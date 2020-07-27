@@ -123,7 +123,7 @@ public class FsProducer extends ProduceOnlyProducerImp {
   @Setter
   private FileNameCreator filenameCreator;
   /**
-   * The consume destination represents the base-directory where you are consuming files from.
+   * The destination represents the base-directory where you are producing files to.
    *
    */
   @Getter
