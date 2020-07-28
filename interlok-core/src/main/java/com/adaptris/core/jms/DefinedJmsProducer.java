@@ -102,9 +102,7 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
       producerSession.getProducer().send(destination, jmsMsg, calculateDeliveryMode(msg, getDeliveryMode()),
           calculatePriority(msg, getPriority()), calculateTimeToLive(msg, timeToLive()));
     }
-    if (captureOutgoingMessageDetails()) {
-      captureOutgoingMessageDetails(jmsMsg, msg);
-    }
+    captureOutgoingMessageDetails(jmsMsg, msg);
     log.info("msg produced to destination [{}]", destination);
   }
 

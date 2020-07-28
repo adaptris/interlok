@@ -3,6 +3,7 @@ package com.adaptris.core.jms;
 import javax.jms.CompletionListener;
 import javax.jms.JMSException;
 import javax.jms.Message;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
@@ -53,6 +54,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class JmsAsyncProducer extends JmsProducer implements CompletionListener {
 
   @NotNull
+  @Valid
   private StandardProcessingExceptionHandler asyncMessageErrorHandler;
 
   @Override
@@ -69,9 +71,7 @@ public class JmsAsyncProducer extends JmsProducer implements CompletionListener 
             calculateTimeToLive(msg, jmsDest.timeToLive()),
             this);
       }
-      if (captureOutgoingMessageDetails()) {
-        captureOutgoingMessageDetails(jmsMsg, msg);
-      }
+      captureOutgoingMessageDetails(jmsMsg, msg);
       log.info("msg produced to destination [{}]", jmsDest);
     } catch (Throwable ex) {
       throw new CoreException("JMS runtime exception", ex);

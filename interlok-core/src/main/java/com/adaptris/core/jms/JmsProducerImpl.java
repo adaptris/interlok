@@ -613,16 +613,19 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
   }
 
   protected void captureOutgoingMessageDetails(Message jmsMsg, AdaptrisMessage msg) {
-    String objectMetadataPrefix = Message.class.getCanonicalName() + ".";
-    Map<String, String> jmsDetails = new HashMap<String, String>();
-    for (MetadataHandler.JmsPropertyHandler handler : MetadataHandler.JmsPropertyHandler.values()) {
-      try {
-        jmsDetails.put(objectMetadataPrefix + handler.getKey(), handler.getValue(jmsMsg));
-      } catch (JMSException ignore) {
+    if (captureOutgoingMessageDetails()) {
+      String objectMetadataPrefix = Message.class.getCanonicalName() + ".";
+      Map<String, String> jmsDetails = new HashMap<String, String>();
+      for (MetadataHandler.JmsPropertyHandler handler : MetadataHandler.JmsPropertyHandler
+          .values()) {
+        try {
+          jmsDetails.put(objectMetadataPrefix + handler.getKey(), handler.getValue(jmsMsg));
+        } catch (JMSException ignore) {
 
+        }
       }
+      msg.getObjectHeaders().putAll(jmsDetails);
     }
-    msg.getObjectHeaders().putAll(jmsDetails);
   }
 
   public ProducerSessionFactory getSessionFactory() {

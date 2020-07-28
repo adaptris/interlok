@@ -122,20 +122,7 @@ public class JmsProducer extends JmsProducerImpl {
   public void produce(AdaptrisMessage msg, ProduceDestination dest) throws ProduceException {
     try {
       setupSession(msg);
-      MyJmsDestination target = null;
-      // First of all try and get a jms destination directory from the produce destination
-      // (JmsReplyToDestination)
-      Destination jmsDest = createDestination(dest, msg);
-      if (jmsDest != null) {
-        target = new MyJmsDestination(jmsDest);
-      } else {
-        // Otherwise it's a normal producer with nothing special.
-        VendorImplementation vendorImp =
-            retrieveConnection(JmsConnection.class).configuredVendorImplementation();
-        String destString = dest.getDestination(msg);
-        target = new MyJmsDestination(vendorImp.createDestination(destString, this));
-        target.setReplyTo(createReplyTo(msg, target, false));
-      }
+      JmsDestination target = buildDestination(dest, msg, false);
       Args.notNull(target, "destination");
       produce(msg, target);
     } catch (Exception e) {
@@ -156,9 +143,7 @@ public class JmsProducer extends JmsProducerImpl {
           calculatePriority(msg, jmsDest.priority()),
           calculateTimeToLive(msg, jmsDest.timeToLive()));
     }
-    if (captureOutgoingMessageDetails()) {
-      captureOutgoingMessageDetails(jmsMsg, msg);
-    }
+    captureOutgoingMessageDetails(jmsMsg, msg);
     log.info("msg produced to destination [{}]", jmsDest);
   }
 
@@ -173,20 +158,13 @@ public class JmsProducer extends JmsProducerImpl {
     MessageConsumer receiver = null;
     try {
       setupSession(msg);
-      VendorImplementation vendorImp =
-          retrieveConnection(JmsConnection.class).configuredVendorImplementation();
       String destString = dest.getDestination(msg);
-      MyJmsDestination target = new MyJmsDestination(vendorImp.createDestination(destString, this));
-      replyTo = createReplyTo(msg, target, true);
-      target.setReplyTo(replyTo);
+      JmsDestination target = buildDestination(dest, msg, true);
+      replyTo = target.getReplyToDestination();
+      // Listen for the reply.
       receiver = currentSession().createConsumer(replyTo);
       produce(msg, target);
-      Message jmsReply = receiver.receive(timeout);
-      translatedReply =
-          Optional.ofNullable(MessageTypeTranslatorImp.translate(getMessageTranslator(), jmsReply))
-              .orElseThrow(() -> new JMSException("No Reply Received within " + timeout + "ms"));
-
-      acknowledge(jmsReply);
+      translatedReply = waitForReply(receiver, timeout);
       // BUG#915
       commit();
     } catch (Exception e) {
@@ -200,8 +178,63 @@ public class JmsProducer extends JmsProducerImpl {
     return mergeReply(translatedReply, msg);
   }
 
+  /**
+   * Wait for a reply.
+   *
+   * @param receiver the {@code MessageConsumer}
+   * @param timeout the timeout (ms)
+   * @return an AdaptrisMessage translated by the configured MessageTranslator
+   * @throws JMSException on Exception (including a timeout exception).
+   */
+  protected AdaptrisMessage waitForReply(MessageConsumer receiver, long timeout) throws JMSException {
+    Message jmsReply = receiver.receive(timeout);
+    AdaptrisMessage translatedReply =
+        Optional.ofNullable(MessageTypeTranslatorImp.translate(getMessageTranslator(), jmsReply))
+            .orElseThrow(() -> new JMSException("No Reply Received within " + timeout + "ms"));
+    acknowledge(jmsReply);
+    return translatedReply;
+  }
+
+
+  /**
+   * Build a JMSDestination.
+   *
+   * @param dest the ProduceDestination
+   * @param msg the message
+   * @param createReplyTo - passed through to
+   *        {@link #createReplyTo(AdaptrisMessage, JmsDestination, boolean)}
+   * @return a JMSDestination instanced.
+   */
+  protected JmsDestination buildDestination(ProduceDestination dest, AdaptrisMessage msg, boolean createReplyTo)
+      throws JMSException, CoreException {
+    MyJmsDestination target = null;
+    // First of all try and get a jms destination directory from the produce destination
+    // (JmsReplyToDestination)
+    Destination jmsDest = createDestination(dest, msg);
+    if (jmsDest != null) {
+      target = new MyJmsDestination(jmsDest);
+    } else {
+      VendorImplementation vendorImp =
+          retrieveConnection(JmsConnection.class).configuredVendorImplementation();
+      String destString = dest.getDestination(msg);
+      target = new MyJmsDestination(vendorImp.createDestination(destString, this));
+      target.setReplyTo(createReplyTo(msg, target, true));
+    }
+    return target;
+  }
+
+
+  /**
+   * Create a Destination for JMSReplyTo if one doesn't already exist or if
+   * {@code JMS_ASYNC_STATIC_REPLY_TO} exists as metadata.
+   *
+   * @param msg the message (which will be checked for {@code JMS_ASYNC_STATIC_REPLY_TO}.
+   * @param createTmpDest - create a temporary destination if {@code JMS_ASYNC_STATIC_REPLY_TO}
+   *        isn't available.
+   * @return a javax.jms.Destination
+   */
   protected Destination createReplyTo(AdaptrisMessage msg, JmsDestination target,
-      boolean alwaysCreate)
+      boolean createTmpDest)
       throws JMSException {
     Destination replyTo = null;
     VendorImplementation vendorImp = retrieveConnection(JmsConnection.class).configuredVendorImplementation();
@@ -209,7 +242,7 @@ public class JmsProducer extends JmsProducerImpl {
       if (msg.headersContainsKey(JMS_ASYNC_STATIC_REPLY_TO)) {
         replyTo = target.destinationType().create(vendorImp, this, msg.getMetadataValue(JMS_ASYNC_STATIC_REPLY_TO));
       } else {
-        replyTo = alwaysCreate ? target.destinationType().createTemporaryDestination(currentSession()) : null;
+        replyTo = createTmpDest ? target.destinationType().createTemporaryDestination(currentSession()) : null;
       }
     }
     return replyTo;
@@ -257,7 +290,7 @@ public class JmsProducer extends JmsProducerImpl {
     private boolean noLocal;
     private JmsDestination.DestinationType destType;
 
-    MyJmsDestination(JmsDestination orig) {
+    private MyJmsDestination(JmsDestination orig) {
       destination = orig.getDestination();
       replyTo = orig.getReplyToDestination();
       deliveryMode = isEmpty(orig.deliveryMode()) ? getDeliveryMode() : orig.deliveryMode();
@@ -269,7 +302,7 @@ public class JmsProducer extends JmsProducerImpl {
       sharedConsumerId = orig.sharedConsumerId();
     }
 
-    MyJmsDestination(Destination d) {
+    private MyJmsDestination(Destination d) {
       destination = d;
       deliveryMode = getDeliveryMode();
       timeToLive = timeToLive();
