@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,10 +17,7 @@
 package com.adaptris.core;
 
 import static com.adaptris.core.AdaptrisMessageImp.copyPayload;
-
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -29,7 +26,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * StandaloneProducer extension that allows request reply functionality within a service
- * 
+ *
  * @config standalone-requestor
  */
 @XStreamAlias("standalone-requestor")
@@ -38,7 +35,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"connection", "producer", "replyTimeout"})
 public class StandaloneRequestor extends StandaloneProducer {
 
-  private static final TimeInterval DEFAULT_TIMEOUT = new TimeInterval(-1L, TimeUnit.MILLISECONDS);
+  private static final long DEFAULT_TIMEOUT = -1L;
   private TimeInterval replyTimeout;
 
   public StandaloneRequestor() {
@@ -73,7 +70,7 @@ public class StandaloneRequestor extends StandaloneProducer {
       // now enforces the return type to be the same object that was passed in
       // I suppose we can't guarantee that ppl haven't implemented their
       // own.
-      
+
       if (reply != null && m != null && reply != m) {
         log.trace("Copying reply message into original message");
         copy(reply, m);
@@ -119,6 +116,6 @@ public class StandaloneRequestor extends StandaloneProducer {
    * @param timeoutOverride the override, default is -1, which will use the underlying producers default timeout.
    */
   public void setReplyTimeout(TimeInterval timeoutOverride) {
-    this.replyTimeout = timeoutOverride;
+    replyTimeout = timeoutOverride;
   }
 }
