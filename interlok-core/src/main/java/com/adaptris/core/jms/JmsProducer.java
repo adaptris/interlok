@@ -127,6 +127,7 @@ public class JmsProducer extends JmsProducerImpl {
       produce(msg, target);
       commit();
     } catch (Exception e) {
+      rollback();
       logLinkedException("", e);
       throw ExceptionHelper.wrapProduceException(e);
     }
