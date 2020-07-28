@@ -125,6 +125,7 @@ public class JmsProducer extends JmsProducerImpl {
       JmsDestination target = buildDestination(dest, msg, false);
       Args.notNull(target, "destination");
       produce(msg, target);
+      commit();
     } catch (Exception e) {
       logLinkedException("", e);
       throw ExceptionHelper.wrapProduceException(e);
