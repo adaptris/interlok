@@ -63,9 +63,9 @@ public class JmsAsyncProducer extends JmsProducer implements CompletionListener 
       setupSession(msg);
       Message jmsMsg = translate(msg, jmsDest.getReplyToDestination());
       if (!perMessageProperties()) {
-        producerSession.getProducer().send(jmsDest.getDestination(), jmsMsg, this);
+        producerSession().getProducer().send(jmsDest.getDestination(), jmsMsg, this);
       } else {
-        producerSession.getProducer().send(jmsDest.getDestination(), jmsMsg,
+        producerSession().getProducer().send(jmsDest.getDestination(), jmsMsg,
             calculateDeliveryMode(msg, jmsDest.deliveryMode()),
             calculatePriority(msg, jmsDest.priority()),
             calculateTimeToLive(msg, jmsDest.timeToLive()),

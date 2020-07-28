@@ -96,10 +96,11 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
     setupSession(msg);
     Message jmsMsg = translate(msg, replyTo);
     if (!perMessageProperties()) {
-      producerSession.getProducer().send(destination, jmsMsg);
+      producerSession().getProducer().send(destination, jmsMsg);
     }
     else {
-      producerSession.getProducer().send(destination, jmsMsg, calculateDeliveryMode(msg, getDeliveryMode()),
+      producerSession().getProducer().send(destination, jmsMsg,
+          calculateDeliveryMode(msg, getDeliveryMode()),
           calculatePriority(msg, getPriority()), calculateTimeToLive(msg, timeToLive()));
     }
     captureOutgoingMessageDetails(jmsMsg, msg);
@@ -117,7 +118,7 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
     MessageConsumer receiver = null;
     try {
       setupSession(msg);
-      getMessageTranslator().registerSession(producerSession.getSession());
+      getMessageTranslator().registerSession(producerSession().getSession());
       if (msg.headersContainsKey(JMS_ASYNC_STATIC_REPLY_TO)) {
         replyTo = createDestination(msg.getMetadataValue(JMS_ASYNC_STATIC_REPLY_TO));
       }

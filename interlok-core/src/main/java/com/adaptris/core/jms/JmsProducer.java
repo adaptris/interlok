@@ -136,9 +136,9 @@ public class JmsProducer extends JmsProducerImpl {
     setupSession(msg);
     Message jmsMsg = translate(msg, jmsDest.getReplyToDestination());
     if (!perMessageProperties()) {
-      producerSession.getProducer().send(jmsDest.getDestination(), jmsMsg);
+      producerSession().getProducer().send(jmsDest.getDestination(), jmsMsg);
     } else {
-      producerSession.getProducer().send(jmsDest.getDestination(), jmsMsg,
+      producerSession().getProducer().send(jmsDest.getDestination(), jmsMsg,
           calculateDeliveryMode(msg, jmsDest.deliveryMode()),
           calculatePriority(msg, jmsDest.priority()),
           calculateTimeToLive(msg, jmsDest.timeToLive()));
@@ -213,10 +213,8 @@ public class JmsProducer extends JmsProducerImpl {
     if (jmsDest != null) {
       target = new MyJmsDestination(jmsDest);
     } else {
-      VendorImplementation vendorImp =
-          retrieveConnection(JmsConnection.class).configuredVendorImplementation();
       String destString = dest.getDestination(msg);
-      target = new MyJmsDestination(vendorImp.createDestination(destString, this));
+      target = new MyJmsDestination(vendorImplementation().createDestination(destString, this));
       target.setReplyTo(createReplyTo(msg, target, createReplyTo));
     }
     return target;
@@ -236,10 +234,10 @@ public class JmsProducer extends JmsProducerImpl {
       boolean createTmpDest)
       throws JMSException {
     Destination replyTo = null;
-    VendorImplementation vendorImp = retrieveConnection(JmsConnection.class).configuredVendorImplementation();
     if (target.getReplyToDestination() == null) {
       if (msg.headersContainsKey(JMS_ASYNC_STATIC_REPLY_TO)) {
-        replyTo = target.destinationType().create(vendorImp, this, msg.getMetadataValue(JMS_ASYNC_STATIC_REPLY_TO));
+        replyTo = target.destinationType().create(vendorImplementation(), this,
+            msg.getMetadataValue(JMS_ASYNC_STATIC_REPLY_TO));
       } else {
         replyTo = createTmpDest ? target.destinationType().createTemporaryDestination(currentSession()) : null;
       }
@@ -247,6 +245,10 @@ public class JmsProducer extends JmsProducerImpl {
       replyTo = target.getReplyToDestination();
     }
     return replyTo;
+  }
+
+  protected <T extends VendorImplementationBase> T vendorImplementation() {
+    return retrieveConnection(JmsConnectionConfig.class).configuredVendorImplementation();
   }
 
   @Override
@@ -269,7 +271,7 @@ public class JmsProducer extends JmsProducerImpl {
   }
 
   @Override
-  protected boolean perMessageProperties() {
+  public boolean perMessageProperties() {
     return BooleanUtils.toBooleanDefaultIfNull(getPerMessageProperties(), true);
   }
 
@@ -279,7 +281,7 @@ public class JmsProducer extends JmsProducerImpl {
     return (T) this;
   }
 
-  private class MyJmsDestination implements JmsDestination {
+  protected class MyJmsDestination implements JmsDestination {
 
     private Destination destination;
     private String deliveryMode;

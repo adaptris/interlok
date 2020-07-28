@@ -23,8 +23,6 @@ import com.adaptris.core.ComponentLifecycle;
 /**
  * Handles the creation of a JMS Session and MessageProducer for {@link JmsProducerImpl} instances.
  * 
- * @author lchan
- * 
  */
 public interface ProducerSessionFactory extends ComponentLifecycle {
 
