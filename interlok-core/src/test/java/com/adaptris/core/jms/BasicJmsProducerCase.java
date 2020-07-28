@@ -76,9 +76,9 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
       start(standaloneProducer);
       AdaptrisMessage msg = createMessage();
       standaloneProducer.doService(msg);
-      assertNotNull(producer.producerSession);
+      assertNotNull(producer.producerSession());
       stop(standaloneProducer);
-      assertNull(producer.producerSession);
+      assertNull(producer.producerSession());
     } finally {
       stop(standaloneProducer);
       activeMqBroker.destroy();

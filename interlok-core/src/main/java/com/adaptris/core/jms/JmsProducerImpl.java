@@ -108,7 +108,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
   private ProducerSessionFactory sessionFactory;
 
 
-  protected transient ProducerSession producerSession;
+  private transient ProducerSession producerSession;
 
   private transient Boolean transactedSession;
   private transient long rollbackTimeout = 30000;
@@ -347,7 +347,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
     priority = i;
   }
 
-  protected int messagePriority() {
+  public int messagePriority() {
     return NumberUtils.toIntDefaultIfNull(getPriority(), DEFAULT_PRIORITY);
   }
 
@@ -362,7 +362,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
     return ttl;
   }
 
-  protected long timeToLive() {
+  public long timeToLive() {
     return NumberUtils.toLongDefaultIfNull(getTtl(), 0);
   }
 
@@ -469,12 +469,12 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
     perMessageProperties = b;
   }
 
-  protected boolean perMessageProperties() {
+  public boolean perMessageProperties() {
     return BooleanUtils.toBooleanDefaultIfNull(getPerMessageProperties(), false);
   }
 
   // BUG#915
-  protected void commit() throws JMSException {
+  public void commit() throws JMSException {
     if (currentSession().getTransacted()) {
       currentLogger().trace("Committing transacted session");
       currentSession().commit();
@@ -482,7 +482,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
   }
 
   // BUG#915
-  protected void rollback() {
+  public void rollback() {
     boolean tryRollback = false;
     try {
       tryRollback = currentSession().getTransacted();
@@ -497,6 +497,10 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
         currentLogger().trace("Error encountered rolling back transaction : {}", f.getMessage());
       }
     }
+  }
+
+  protected ProducerSession producerSession() {
+    return producerSession;
   }
 
   protected void acknowledge(Message msg) throws JMSException {
@@ -554,7 +558,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
     transactedSession = b;
   }
 
-  boolean transactedSession() {
+  public boolean transactedSession() {
     return BooleanUtils.toBooleanDefaultIfNull(getTransactedSession(), false);
   }
 
