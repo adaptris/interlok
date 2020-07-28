@@ -158,7 +158,6 @@ public class JmsProducer extends JmsProducerImpl {
     MessageConsumer receiver = null;
     try {
       setupSession(msg);
-      String destString = dest.getDestination(msg);
       JmsDestination target = buildDestination(dest, msg, true);
       replyTo = target.getReplyToDestination();
       // Listen for the reply.
@@ -218,7 +217,7 @@ public class JmsProducer extends JmsProducerImpl {
           retrieveConnection(JmsConnection.class).configuredVendorImplementation();
       String destString = dest.getDestination(msg);
       target = new MyJmsDestination(vendorImp.createDestination(destString, this));
-      target.setReplyTo(createReplyTo(msg, target, true));
+      target.setReplyTo(createReplyTo(msg, target, createReplyTo));
     }
     return target;
   }
@@ -244,6 +243,8 @@ public class JmsProducer extends JmsProducerImpl {
       } else {
         replyTo = createTmpDest ? target.destinationType().createTemporaryDestination(currentSession()) : null;
       }
+    } else {
+      replyTo = target.getReplyToDestination();
     }
     return replyTo;
   }

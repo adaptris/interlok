@@ -50,6 +50,7 @@ import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceCase;
+import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
@@ -822,6 +823,72 @@ public class JmsProducerTest extends JmsProducerCase {
       activeMqBroker.destroy();
     }
   }
+
+
+  @Test
+  public void testRequest_AsyncReplyTo_Metadata() throws Exception {
+    String rfc6167 = "jms:queue:" + getName() + "";
+    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
+    StandaloneRequestor serviceList = new StandaloneRequestor(activeMqBroker.getJmsConnection(),
+        createProducer(new ConfiguredProduceDestination(rfc6167)),
+        new TimeInterval(1L, TimeUnit.SECONDS));
+    Loopback echo = createLoopback(activeMqBroker, getName());
+    try {
+      echo.start();
+      activeMqBroker.start();
+      start(serviceList);
+      AdaptrisMessage msg = createMessage();
+      msg.addMetadata(JmsConstants.JMS_ASYNC_STATIC_REPLY_TO, getName() + "_reply");
+      serviceList.doService(msg);
+      assertEquals(DEFAULT_PAYLOAD.toUpperCase(), msg.getContent());
+    } finally {
+      stop(serviceList);
+      echo.stop();
+      activeMqBroker.destroy();
+    }
+  }
+
+  @Test
+  public void testRequest_DefinedReplyTo() throws Exception {
+    String rfc6167 = String.format("jms:queue:%1$s?replyToName=%1$s_reply", getName());
+    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
+    StandaloneRequestor serviceList = new StandaloneRequestor(activeMqBroker.getJmsConnection(),
+        createProducer(new ConfiguredProduceDestination(rfc6167)),
+        new TimeInterval(1L, TimeUnit.SECONDS));
+    Loopback echo = createLoopback(activeMqBroker, getName());
+    try {
+      echo.start();
+      activeMqBroker.start();
+      start(serviceList);
+      AdaptrisMessage msg = createMessage();
+      serviceList.doService(msg);
+      assertEquals(DEFAULT_PAYLOAD.toUpperCase(), msg.getContent());
+    } finally {
+      stop(serviceList);
+      echo.stop();
+      activeMqBroker.destroy();
+    }
+  }
+
+  @Test(expected = ServiceException.class)
+  public void testRequest_Timeout() throws Exception {
+    String rfc6167 = "jms:queue:" + getName() + "";
+    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
+    JmsProducer producer = createProducer(new ConfiguredProduceDestination(rfc6167));
+    producer.setPerMessageProperties(false);
+    StandaloneRequestor serviceList = new StandaloneRequestor(activeMqBroker.getJmsConnection(),
+        producer, new TimeInterval(1L, TimeUnit.SECONDS));
+    try {
+      activeMqBroker.start();
+      start(serviceList);
+      AdaptrisMessage msg1 = createMessage();
+      serviceList.doService(msg1);
+    } finally {
+      stop(serviceList);
+      activeMqBroker.destroy();
+    }
+  }
+
 
 
   @Override
