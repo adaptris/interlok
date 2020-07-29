@@ -16,8 +16,6 @@
 
 package com.adaptris.core;
 
-import com.adaptris.annotation.Removal;
-
 /**
  * <p>
  * Implemented by classes which generate <i> message lifecycle events</i>.
@@ -26,17 +24,6 @@ import com.adaptris.annotation.Removal;
  * </p>
  */
 public interface MessageEventGenerator {
-
-  /**
-   * <p>
-   * Metadata key for confirmation ID.
-   * </p>
-   * 
-   * @deprecated since 3.6.2 since {@code MessageEventGenerator#isConfirmation()} is deprecated
-   */
-  @Deprecated
-  @Removal(version = "3.11.0", message = "Removed w/o replacement")
-  String CONFIRMATION_ID_KEY = "adp.confirmation.id";
 
   /**
    * Create a name for any {@link MleMarker} that is generated.

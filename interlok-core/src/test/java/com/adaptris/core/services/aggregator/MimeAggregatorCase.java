@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,14 +51,8 @@ public abstract class MimeAggregatorCase extends AggregatorCase {
   public void testSetters() throws Exception {
     MimeAggregator aggr = createAggregatorForTests();
     assertNull(aggr.getEncoding());
-    assertNull(aggr.getPartContentIdMetadataKey());
-    assertNull(aggr.getPartContentTypeMetadataKey());
     aggr.setEncoding("base64");
     assertEquals("base64", aggr.getEncoding());
-    aggr.setPartContentIdMetadataKey("myMetadataKey");
-    assertEquals("myMetadataKey", aggr.getPartContentIdMetadataKey());
-    aggr.setPartContentTypeMetadataKey("myMetadataKey");
-    assertEquals("myMetadataKey", aggr.getPartContentTypeMetadataKey());
   }
 
   @Test
@@ -96,7 +90,7 @@ public abstract class MimeAggregatorCase extends AggregatorCase {
   @Test
   public void testJoinMessage_ContentType() throws Exception {
     MimeAggregator aggr = createAggregatorForTests();
-    aggr.setPartContentTypeMetadataKey("MyContentType");
+    aggr.setPartContentType("%message{MyContentType}");
     Set<MetadataElement> metadata = new HashSet<>();
     metadata.add(new MetadataElement("MyContentType", "application/xml"));
     AdaptrisMessage original = AdaptrisMessageFactory.getDefaultInstance().newMessage("<envelope/>", null, new HashSet<>(metadata));
@@ -134,12 +128,12 @@ public abstract class MimeAggregatorCase extends AggregatorCase {
   @Test
   public void testJoinMessage_ContentId() throws Exception {
     MimeAggregator aggr = createAggregatorForTests();
-    aggr.setPartContentIdMetadataKey("MyContentId");
+    aggr.setPartContentId("%message{MyContentId}");
     AdaptrisMessage original = AdaptrisMessageFactory.getDefaultInstance().newMessage("<envelope/>", null,
         new HashSet<>(Arrays.asList(new MetadataElement[] {
             new MetadataElement("MyContentId", getName() + "_original")
         })));
-    
+
     original.addMetadata("originalKey", "originalValue");
     AdaptrisMessage s1 = AdaptrisMessageFactory.getDefaultInstance().newMessage("<document>hello</document>", null,
         new HashSet<>(Arrays.asList(new MetadataElement[] {
@@ -164,7 +158,7 @@ public abstract class MimeAggregatorCase extends AggregatorCase {
   @Test
   public void testJoinMessage_ContentIdExpression() throws Exception {
     MimeAggregator aggr = createAggregatorForTests().withPartContentId("%message{MyContentId}");
-    aggr.setPartContentIdMetadataKey("MyContentId");
+    aggr.setPartContentId("%message{MyContentId}");
     AdaptrisMessage original = AdaptrisMessageFactory.getDefaultInstance().newMessage("<envelope/>",
         null, new HashSet<>(Arrays.asList(
             new MetadataElement[] {new MetadataElement("MyContentId", getName() + "_original")})));

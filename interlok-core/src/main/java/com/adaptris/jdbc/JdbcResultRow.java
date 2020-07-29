@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.adaptris.annotation.Removal;
 
 public class JdbcResultRow {
   private static final Map<Integer, ParameterValueType> TYPE_MAP;
@@ -59,17 +58,6 @@ public class JdbcResultRow {
   private void setFieldValues(List<Object> fieldValues) {
     this.fieldValues = fieldValues;
   }
-
-  /**
-   * @deprecated since 3.8.3 use {@link #setFieldValue(String, Object, Integer)} instead to add
-   *             additional Type information.
-   */
-  @Deprecated
-  @Removal(version = "3.11.0", message = "Use #setFieldValue(String, Object, Integer) instead")
-  public void setFieldValue(String fieldName, Object fieldValue) {
-    setFieldValue(fieldName, fieldValue, (ParameterValueType) null);
-  }
-
 
   /**
    * Set the field value.

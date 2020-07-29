@@ -24,7 +24,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import java.util.List;
 import org.junit.Test;
-import com.adaptris.core.stubs.ObjectUtils;
 import com.adaptris.core.util.LifecycleHelper;
 
 /**
@@ -229,27 +228,6 @@ public abstract class ServiceCase extends ExampleConfigCase {
     }
   }
 
-  @Test
-  public void testLookupName() throws Exception {
-    Object input = retrieveObjectForCastorRoundTrip();
-    if (input != null) {
-      assertLookupName((Service) input);
-    } else {
-      retrieveObjectsForSampleConfig().forEach(e -> assertLookupName((Service) e));
-    }
-  }
-
-  @SuppressWarnings("deprecation")
-  // If it has get/set Lookupname lets test it.
-  private void assertLookupName(Service s) {
-    try {
-      ObjectUtils.invokeSetter(s, s.getClass(), "setLookupName", "getLookupName", "myLookupName");
-      assertEquals("myLookupName", s.getLookupName());
-    } catch (Exception e) {
-      // method probably doesn't exist; so it's not ServiceImp?
-
-    }
-  }
 
   public void assertMessageEventGeneratorQualifier(Service s) {
     s.setUniqueId("");

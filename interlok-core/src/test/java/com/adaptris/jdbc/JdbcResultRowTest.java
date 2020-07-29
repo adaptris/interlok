@@ -2,24 +2,10 @@ package com.adaptris.jdbc;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-
 import java.sql.Types;
-
 import org.junit.Test;
 
 public class JdbcResultRowTest {
-
-  @Test
-  @SuppressWarnings("deprecation")
-  public void testSetFieldValue_Deprecated() {
-    JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", Integer.valueOf(1));
-    assertEquals(1, row.getFieldCount());
-    assertEquals(1, row.getFieldNames().size());
-    assertEquals(1, row.getFieldTypes().size());
-    assertEquals(1, row.getFieldValue(0));
-    assertNull(row.getFieldType(0));
-  }
 
   @Test
   public void testSetFieldValue() {

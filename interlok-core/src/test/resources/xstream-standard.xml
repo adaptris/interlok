@@ -33,14 +33,11 @@
               <service class="log-message-service">
                 <unique-id>serviceID3</unique-id>
                 <log-prefix></log-prefix>
-                <include-payload>true</include-payload>
-                <include-events>false</include-events>
               </service>
             </services>
           </service-collection>
           <producer class="null-message-producer" />
           <send-events>true</send-events>
-          <log-payload>false</log-payload>
           <produce-exception-handler class="null-produce-exception-handler" />
         </standard-workflow>
       </workflow-list>

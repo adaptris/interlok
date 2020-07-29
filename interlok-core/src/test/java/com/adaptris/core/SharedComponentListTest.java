@@ -84,7 +84,6 @@ public class SharedComponentListTest extends ExampleConfigCase {
       @SuppressWarnings("deprecation")
       AdaptrisConnection build() {
         FtpConnection c = new FtpConnection("goofy_edison");
-        c.setLookupName("adapter:comp/env/optional-lookup-name");
         c.setCacheConnection(true);
         return c;
       }
@@ -553,7 +552,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
 
     try {
       start(adapter);
-      adapter.getSharedComponents().setTransactionManager(new DummyTransactionManager(getName(), null));
+      adapter.getSharedComponents().setTransactionManager(new DummyTransactionManager(getName()));
       adapter.getSharedComponents().bindJNDI(getName());
       TransactionManager lookedup = (TransactionManager) initialContext.lookup("adapter:comp/env/" + getName());
       assertNotNull(lookedup);
@@ -582,7 +581,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
   public void testSharedTransactionManager_StandardLookup() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
-    adapter.getSharedComponents().setTransactionManager(new DummyTransactionManager(getName(), getName()));
+    adapter.getSharedComponents().setTransactionManager(new DummyTransactionManager(getName()));
     try {
       start(adapter);
       SharedTransactionManager conn = new SharedTransactionManager(getName());
@@ -597,7 +596,7 @@ public class SharedComponentListTest extends ExampleConfigCase {
   public void testSharedTransactionManager_CompEnvLookupName() throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
-    adapter.getSharedComponents().setTransactionManager(new DummyTransactionManager(getName(), null));
+    adapter.getSharedComponents().setTransactionManager(new DummyTransactionManager(getName()));
     try {
       start(adapter);
       SharedTransactionManager conn = new SharedTransactionManager("comp/env/" + getName());
@@ -628,7 +627,6 @@ public class SharedComponentListTest extends ExampleConfigCase {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(getName());
     NullConnection nc = new NullConnection(getName());
-    nc.setLookupName(getName());
     adapter.getSharedComponents().addConnection(nc);
     try {
       start(adapter);

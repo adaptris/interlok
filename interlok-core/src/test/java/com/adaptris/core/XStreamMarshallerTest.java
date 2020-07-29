@@ -16,7 +16,6 @@
 
 package com.adaptris.core;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -164,8 +163,6 @@ public class XStreamMarshallerTest extends MarshallingBaseCase {
     assertEquals("serviceID3", service3.getUniqueId());
     assertTrue(service3 instanceof LogMessageService);
     assertTrue(StringUtils.isBlank(((LogMessageService)service3).getLogPrefix()));
-    assertFalse(((LogMessageService)service3).getIncludeEvents());
-    assertTrue(((LogMessageService)service3).getIncludePayload());
   }
 
 }

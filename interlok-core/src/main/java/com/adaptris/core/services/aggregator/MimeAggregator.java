@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,7 +36,6 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -44,13 +43,12 @@ import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.metadata.MetadataFilter;
 import com.adaptris.core.metadata.RemoveAllMetadataFilter;
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.util.text.mime.MultiPartOutput;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * {@link MessageAggregator} implementation that creates a new mime part for each message that needs to be joined up.
- * 
+ *
  * <p>
  * The pre-split message is always treated as the first part of the resulting multipart message; the payloads from the split
  * messages form the second and subsequent parts. If the split message contains a specific metadata key (as configured by
@@ -68,11 +66,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * As a result of this join operation, the message will be marked as MIME encoded using {@link com.adaptris.core.CoreConstants#MSG_MIME_ENCODED}
  * metadata.
  * </p>
- * 
+ *
  * @config mime-aggregator
  * @see CoreConstants#MSG_MIME_ENCODED
  * @author lchan
- * 
+ *
  */
 @XStreamAlias("mime-aggregator")
 @DisplayOrder(order = {"encoding", "mimeContentSubType", "mimeHeaderFilter", "overwriteMetadata",
@@ -89,12 +87,6 @@ public class MimeAggregator extends MessageAggregatorImpl {
   @InputFieldHint(expression = true)
   @InputFieldDefault(value = DEFAULT_SUB_TYPE)
   private String mimeContentSubType;
-  @Deprecated
-  @Removal(version = "3.11.0", message = "use an expression based part-content-id instead")
-  private String partContentIdMetadataKey;
-  @Deprecated
-  @Removal(version = "3.11.0", message = "use an expression based part-content-type instead")
-  private String partContentTypeMetadataKey;
 
   @AdvancedConfig
   @InputFieldHint(expression = true)
@@ -112,9 +104,6 @@ public class MimeAggregator extends MessageAggregatorImpl {
   @InputFieldDefault(value = "RemoveAllMetadata")
   @AdvancedConfig(rare = true)
   private MetadataFilter mimeHeaderFilter;
-
-  private transient boolean contentTypeWarning;
-  private transient boolean contentIdWarning;
 
   @Override
   public void joinMessage(AdaptrisMessage original, Collection<AdaptrisMessage> messages) throws CoreException {
@@ -165,32 +154,11 @@ public class MimeAggregator extends MessageAggregatorImpl {
 
   /**
    * Set the encoding to be used for the content.
-   * 
+   *
    * @param s the encoding to set, defaults to no-encoding (null)
    */
   public void setEncoding(String s) {
-    this.encoding = s;
-  }
-
-  /**
-   * @deprecated since 3.9.0; use an expression based part-content-id instead
-   */
-  @Deprecated
-  @Removal(version = "3.11.0", message = "use an expression based part-content-id instead")
-  public String getPartContentIdMetadataKey() {
-    return partContentIdMetadataKey;
-  }
-
-  /**
-   * Set the content ID for a given mime part based on a metadata key.
-   * 
-   * @param s the partContentIdMetadataKey to set
-   * @deprecated since 3.9.0; use an expression based part-content-id instead
-   */
-  @Deprecated
-  @Removal(version = "3.11.0", message = "use an expression based part-content-id instead")
-  public void setPartContentIdMetadataKey(String s) {
-    this.partContentIdMetadataKey = s;
+    encoding = s;
   }
 
   private static byte[] encodeData(byte[] data, String encoding, InternetHeaders hdrs) throws MessagingException, IOException {
@@ -203,34 +171,12 @@ public class MimeAggregator extends MessageAggregatorImpl {
     }
   }
 
-  /**
-   * @return the partContentTypeMetadataKey
-   * @deprecated since 3.9.0 use an expression based part-content-type instead
-   */
-  @Deprecated
-  @Removal(version = "3.11.0", message = "use an expression based part-content-type instead")
-  public String getPartContentTypeMetadataKey() {
-    return partContentTypeMetadataKey;
-  }
-
-  /**
-   * The key to derive the content-type.
-   * 
-   * @param s the partContentTypeMetadataKey to set
-   * @deprecated since 3.9.0 use an expression based part-content-type instead
-   */
-  @Deprecated
-  @Removal(version = "3.11.0", message = "use an expression based part-content-type instead")
-  public void setPartContentTypeMetadataKey(String s) {
-    this.partContentTypeMetadataKey = s;
-  }
-
   public String getMimeContentSubType() {
     return mimeContentSubType;
   }
 
   public void setMimeContentSubType(String s) {
-    this.mimeContentSubType = s;
+    mimeContentSubType = s;
   }
 
   public String getPartContentId() {
@@ -239,11 +185,11 @@ public class MimeAggregator extends MessageAggregatorImpl {
 
   /**
    * Set the content type for each part.
-   * 
+   *
    * @param s the content id; supports the {@code %message{}} syntax to resolve metadata.
    */
   public void setPartContentId(String s) {
-    this.partContentId = s;
+    partContentId = s;
   }
 
   public String getPartContentType() {
@@ -252,11 +198,11 @@ public class MimeAggregator extends MessageAggregatorImpl {
 
   /**
    * Set the content-type for each part.
-   * 
+   *
    * @param s the content-type; supports the {@code %message{}} syntax to resolve metadata.
    */
   public void setPartContentType(String s) {
-    this.partContentType = s;
+    partContentType = s;
   }
 
   public MetadataFilter getPartHeaderFilter() {
@@ -265,12 +211,12 @@ public class MimeAggregator extends MessageAggregatorImpl {
 
   /**
    * Set a metadata filter which will be applied to generate headers for each part.
-   * 
+   *
    * @param filter the filter; defaults to {@link RemoveAllMetadataFilter} if not
    *        specified.
    */
   public void setPartHeaderFilter(MetadataFilter filter) {
-    this.partHeaderFilter = filter;
+    partHeaderFilter = filter;
   }
 
 
@@ -280,20 +226,20 @@ public class MimeAggregator extends MessageAggregatorImpl {
 
   /**
    * Set a metadata filter which be applied to generate the root level mime headers.
-   * 
+   *
    * @param filter
    */
   public void setMimeHeaderFilter(MetadataFilter filter) {
-    this.mimeHeaderFilter = filter;
+    mimeHeaderFilter = filter;
   }
 
   public <T extends MimeAggregator> T withPartHeaderFilter(MetadataFilter filter) {
-    this.setPartHeaderFilter(filter);
+    setPartHeaderFilter(filter);
     return (T) this;
   }
 
   public <T extends MimeAggregator> T withMimeHeaderFilter(MetadataFilter filter) {
-    this.setMimeHeaderFilter(filter);
+    setMimeHeaderFilter(filter);
     return (T) this;
   }
 
@@ -332,29 +278,11 @@ public class MimeAggregator extends MessageAggregatorImpl {
   }
 
   protected String contentType(AdaptrisMessage msg) {
-    String type = null;
-    if (!isBlank(getPartContentTypeMetadataKey())) {
-      LoggingHelper.logWarning(contentTypeWarning, () -> {
-        contentTypeWarning = true;
-      }, "part-content-type-metadata-key is deprecated; use an expression based part-content-type instead");
-      type = msg.getMetadataValue(getPartContentTypeMetadataKey());
-    } else {
-      type = msg.resolve(getPartContentType());
-    }
-    return defaultIfBlank(type, DEFAULT_CONTENT_TYPE);
+    return defaultIfBlank(msg.resolve(getPartContentType()), DEFAULT_CONTENT_TYPE);
   }
 
   protected String contentId(AdaptrisMessage msg) {
-    String id = null;
-    if (!isBlank(getPartContentIdMetadataKey())) {
-      LoggingHelper.logWarning(contentIdWarning, () -> {
-        contentIdWarning = true;
-      }, "part-content-id-metadata-key is deprecated; use an expression based part-content-id instead");
-      id = msg.getMetadataValue(getPartContentIdMetadataKey());
-    } else {
-      id = msg.resolve(getPartContentType());
-    }
-    return defaultIfBlank(id, msg.getUniqueId());
+    return defaultIfBlank(msg.resolve(getPartContentId()), msg.getUniqueId());
   }
 
 

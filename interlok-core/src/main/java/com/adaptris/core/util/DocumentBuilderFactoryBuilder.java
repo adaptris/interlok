@@ -13,7 +13,6 @@ import org.xml.sax.EntityResolver;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.annotation.Removal;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -161,55 +160,13 @@ public class DocumentBuilderFactoryBuilder {
         .addFeature(DISABLE_DOCTYP, Boolean.TRUE);
   }
 
-  /**
-   * Convenient method for null protection.
-   * 
-   * @param b an existing DocumentBuilderFactoryBuilder instance (or null)
-   * @return a new instance or the passed parameter.]
-   * @deprecated since 3.9.1 this is poorly named, use
-   *             {@link #newInstanceIfNull(DocumentBuilderFactoryBuilder)} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.11.0")
-  public static final DocumentBuilderFactoryBuilder newInstance(DocumentBuilderFactoryBuilder b) {
-    return newInstanceIfNull(b);
-  }
-
   public static final DocumentBuilderFactoryBuilder newInstanceIfNull(DocumentBuilderFactoryBuilder b) {
     return ObjectUtils.defaultIfNull(b, newInstance());
-  }
-
-  /**
-   * Convenient method for null protection.
-   * 
-   * @param b an existing DocumentBuilderFactoryBuilder instance (or null)
-   * @return a new instance or the passed parameter.
-   * @see #newRestrictedInstance()
-   * @deprecated since 3.9.1 this is poorly named, use
-   *             {@link #newRestrictedInstanceIfNull(DocumentBuilderFactoryBuilder)} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.11.0")
-  public static final DocumentBuilderFactoryBuilder newRestrictedInstance(DocumentBuilderFactoryBuilder b) {
-    return newRestrictedInstanceIfNull(b);
   }
 
   public static final DocumentBuilderFactoryBuilder newRestrictedInstanceIfNull(DocumentBuilderFactoryBuilder b) {
     return ObjectUtils.defaultIfNull(b, newRestrictedInstance());
   }
-
-  /**
-   * Convenient method for null protection.
-   * 
-   * @deprecated since 3.9.1 this is poorly named, use
-   *             {@link #newInstanceIfNull(DocumentBuilderFactoryBuilder, NamespaceContext)} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.11.0")
-  public static final DocumentBuilderFactoryBuilder newInstance(DocumentBuilderFactoryBuilder b, NamespaceContext ctx) {
-    return newInstanceIfNull(b, ctx);
-  }
-
 
   public static final DocumentBuilderFactoryBuilder newInstanceIfNull(DocumentBuilderFactoryBuilder b, NamespaceContext ctx) {
     if (b != null) {
@@ -314,7 +271,7 @@ public class DocumentBuilderFactoryBuilder {
    * Maps to {@link DocumentBuilderFactory#setValidating(boolean)}.
    */
   public void setValidating(Boolean validate) {
-    this.validating = validate;
+    validating = validate;
   }
 
   public DocumentBuilderFactoryBuilder withValidating(Boolean b) {
@@ -436,7 +393,7 @@ public class DocumentBuilderFactoryBuilder {
   }
 
   public void setEntityResolver(EntityResolver e) {
-    this.entityResolver = e;
+    entityResolver = e;
   }
 
   public DocumentBuilderFactoryBuilder withEntityResolver(EntityResolver e) {

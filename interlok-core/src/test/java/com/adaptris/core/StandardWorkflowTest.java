@@ -462,21 +462,6 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
-  @Test
-  public void testOnMessage_LogPayload() throws Exception {
-    MockMessageProducer producer = new MockMessageProducer();
-    MockChannel channel = createChannel(producer, Arrays.asList(new Service[] {new NullService()}));
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD_1);
-    StandardWorkflow workflow = (StandardWorkflow) channel.getWorkflowList().get(0);
-    workflow.setLogPayload(true);
-    try {
-      start(channel);
-      workflow.onAdaptrisMessage(msg);
-      assertEquals(1, producer.messageCount());
-    } finally {
-      stop(channel);
-    }
-  }
 
   @Test
   public void testOnMessage_MessageLogger() throws Exception {
