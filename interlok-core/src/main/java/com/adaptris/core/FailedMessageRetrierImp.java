@@ -60,10 +60,15 @@ public abstract class FailedMessageRetrierImp implements FailedMessageRetrier {
 
   @Override
   public synchronized void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success) {
+    onAdaptrisMessage(msg, success, null);
+  }
+  
+  @Override
+  public synchronized void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success, Consumer<AdaptrisMessage> failure) {
     try {
       Workflow workflow = getWorkflow(msg);
       updateRetryCountMetadata(msg);
-      workflow.onAdaptrisMessage(msg, success); // workflow.onAM is sync'd...
+      workflow.onAdaptrisMessage(msg, success, failure); // workflow.onAM is sync'd...
     }
     catch (Exception e) { // inc. runtime, exc. Workflow
       log.error("exception retrying message", e);

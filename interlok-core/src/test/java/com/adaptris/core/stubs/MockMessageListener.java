@@ -46,12 +46,17 @@ public class MockMessageListener implements AdaptrisMessageListener, MessageCoun
 
   @Override
   public void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success) {
-    ListenerCallbackHelper.prepare(msg, success);
+    onAdaptrisMessage(msg, success, null);
+  }
+  
+  @Override
+  public void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success, Consumer<AdaptrisMessage> failure) {
+    ListenerCallbackHelper.prepare(msg, success, failure);
     try {
       producer.produce(msg);
-      ListenerCallbackHelper.handleSuccessCallback(msg);
-    }
-    catch (ProduceException e) {
+    } catch (ProduceException e) {
+    } finally {
+      ListenerCallbackHelper.handleCallback(msg);
     }
     if (waitTime != -1) {
       try {

@@ -308,7 +308,12 @@ public class PoolingWorkflow extends WorkflowImp {
    */
   @Override
   public void onAdaptrisMessage(final AdaptrisMessage msg, Consumer<AdaptrisMessage> success) {
-    ListenerCallbackHelper.prepare(msg, success);
+    onAdaptrisMessage(msg, success, (f) -> {});
+  }
+
+  @Override
+  public void onAdaptrisMessage(final AdaptrisMessage msg, Consumer<AdaptrisMessage> success, Consumer<AdaptrisMessage> failure) {
+    ListenerCallbackHelper.prepare(msg, success, failure);
     if (!obtainChannel().isAvailable()) {
       handleChannelUnavailable(msg);
     }
@@ -316,7 +321,7 @@ public class PoolingWorkflow extends WorkflowImp {
       onMessage(msg);
     }
   }
-
+  
   /**
    *
    * @see WorkflowImp#resubmitMessage(com.adaptris.core.AdaptrisMessage)

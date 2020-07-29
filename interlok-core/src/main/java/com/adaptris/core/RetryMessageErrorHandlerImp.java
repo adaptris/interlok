@@ -77,6 +77,8 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
 
   @Override
   public synchronized void handleProcessingException(AdaptrisMessage msg) {
+    // we will only set this to true if our retries fail.
+    msg.getObjectHeaders().put(CoreConstants.OBJ_METADATA_MESSAGE_FAILED, false);
     if (shouldFail(msg) || failAll) {
       failMessage(msg);
     }
@@ -203,6 +205,7 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
       log.error(e.getMessage(), e);
     }
     super.handleProcessingException(msg);
+    msg.getObjectHeaders().put(CoreConstants.OBJ_METADATA_MESSAGE_FAILED, true);
   }
 
   protected void scheduleNextRun(AdaptrisMessage msg) {

@@ -73,7 +73,12 @@ public abstract class StandardWorkflowImpl extends WorkflowImp {
 
   @Override
   public void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success) {
-    ListenerCallbackHelper.prepare(msg, success);
+    this.onAdaptrisMessage(msg, success, (f) -> {});
+  }
+  
+  @Override
+  public void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success, Consumer<AdaptrisMessage> failure) {
+    ListenerCallbackHelper.prepare(msg, success, failure);
     if (!obtainChannel().isAvailable()) {
       handleChannelUnavailable(msg); // make pluggable?
     } else {
@@ -104,9 +109,6 @@ public abstract class StandardWorkflowImpl extends WorkflowImp {
       wip.addEvent(getConsumer(), true); // initial receive event
       getServiceCollection().doService(wip);
       doProduce(wip);
-      // handle success callback here.
-      // failure callback will be handled by the message-error-handler that's configured...
-      ListenerCallbackHelper.handleSuccessCallback(wip);
       logSuccess(wip, start);
     } catch (ServiceException e) {
       handleBadMessage("Exception from ServiceCollection", e, copyExceptionHeaders(wip, msg));
@@ -118,6 +120,8 @@ public abstract class StandardWorkflowImpl extends WorkflowImp {
       handleBadMessage("Exception processing message", e, copyExceptionHeaders(wip, msg));
     } finally {
       sendMessageLifecycleEvent(wip);
+   // handle success or failure callback here.
+      ListenerCallbackHelper.handleCallback(wip);
     }
     workflowEnd(msg, wip);
   }

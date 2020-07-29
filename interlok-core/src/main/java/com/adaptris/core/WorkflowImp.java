@@ -17,6 +17,7 @@
 package com.adaptris.core;
 
 import static com.adaptris.core.CoreConstants.KEY_WORKFLOW_SKIP_PRODUCER;
+import static com.adaptris.core.CoreConstants.OBJ_METADATA_MESSAGE_FAILED;
 import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION;
 import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION_CAUSE;
 import static com.adaptris.core.CoreConstants.UNIQUE_ID_JMX_PATTERN;
@@ -757,6 +758,7 @@ public abstract class WorkflowImp implements Workflow {
       log.error(logMsg, e);
     }
     msg.addObjectHeader(OBJ_METADATA_EXCEPTION, e);
+    msg.addObjectHeader(OBJ_METADATA_MESSAGE_FAILED, e);
     handleBadMessage(msg);
   }
 

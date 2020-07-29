@@ -16,6 +16,8 @@
 
 package com.adaptris.core.jms;
 
+import java.util.function.Consumer;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
@@ -168,8 +170,7 @@ public class OnMessageHandler {
       // this might throw an exception, if it does, we don't care.
     }
 
-    try {
-      msgListener.onAdaptrisMessage(adaptrisMessage);
+    Consumer<AdaptrisMessage> successCallback = message -> {
       try {
         acknowledge(msg);
       }
@@ -177,6 +178,14 @@ public class OnMessageHandler {
         logR.error("Exception acknowledging/committing JMS message", e);
         rollback(msg);
       }
+    };
+    
+    Consumer<AdaptrisMessage> failureCallback = message -> {
+      rollback(msg);
+    };
+    
+    try {
+      msgListener.onAdaptrisMessage(adaptrisMessage, successCallback, failureCallback);
     }
     catch (Throwable e) { // impossible if AML is StandardWorkflow
       logR.error("Unexpected Throwable from AdaptrisMessageListener", e);
