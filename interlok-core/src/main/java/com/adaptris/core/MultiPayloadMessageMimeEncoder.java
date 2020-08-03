@@ -52,7 +52,7 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  */
 
 @ComponentProfile(summary = "A multi-payload message MIME encoder/decoder", tag = "multi-payload,MIME,encode,decode", since="3.9.3")
-public class MultiPayloadMessageMimeEncoder extends MimeEncoderImpl {
+public class MultiPayloadMessageMimeEncoder extends MimeEncoderImpl<OutputStream, InputStream> {
 
   public MultiPayloadMessageMimeEncoder() {
     super();
@@ -60,11 +60,8 @@ public class MultiPayloadMessageMimeEncoder extends MimeEncoderImpl {
   }
 
   @Override
-  public void writeMessage(AdaptrisMessage msg, Object target) throws CoreException {
+  public void writeMessage(AdaptrisMessage msg, OutputStream target) throws CoreException {
     try {
-      if (!(target instanceof OutputStream)) {
-        throw new IllegalArgumentException("MultiPayloadMessageMimeEncoder can only encode to an OutputStream");
-      }
       MultiPartOutput output = new MultiPartOutput(msg.getUniqueId());
       if (msg instanceof MultiPayloadAdaptrisMessage) {
         MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage)msg;
@@ -79,7 +76,7 @@ public class MultiPayloadMessageMimeEncoder extends MimeEncoderImpl {
       if (msg.getObjectHeaders().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION)) {
         output.addPart(asMimePart((Exception) msg.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION)), EXCEPTION_CONTENT_ID);
       }
-      output.writeTo((OutputStream)target);
+      output.writeTo(target);
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
@@ -95,13 +92,10 @@ public class MultiPayloadMessageMimeEncoder extends MimeEncoderImpl {
   }
 
   @Override
-  public AdaptrisMessage readMessage(Object source) throws CoreException {
+  public AdaptrisMessage readMessage(InputStream source) throws CoreException {
     try {
-      if (!(source instanceof InputStream)) {
-        throw new IllegalArgumentException("MultiPayloadMessageMimeEncoder can only decode from an OutputStream");
-      }
       MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage)currentMessageFactory().newMessage();
-      BodyPartIterator input = new BodyPartIterator((InputStream)source);
+      BodyPartIterator input = new BodyPartIterator(source);
       boolean deleteDefault = addPartsToMessage(input, message);
       if (deleteDefault) {
         message.deletePayload(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID); // delete the unused default

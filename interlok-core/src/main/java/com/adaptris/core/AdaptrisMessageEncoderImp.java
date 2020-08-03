@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * Partial implementation of behaviour commom to all {@link com.adaptris.core.AdaptrisMessageEncoder} instances.
  * </p>
  */
-public abstract class AdaptrisMessageEncoderImp implements AdaptrisMessageEncoder {
+public abstract class AdaptrisMessageEncoderImp<T, S> implements AdaptrisMessageEncoder<T, S> {
 
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 

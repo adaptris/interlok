@@ -85,28 +85,6 @@ public class MimeEncoderTest {
   }
 
   @Test
-  public void testEncode_NonOutputStream() throws Exception {
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
-    msg.addMetadata(METADATA_KEY, METADATA_VALUE);
-    try {
-      mimeEncoder.writeMessage(msg, new StringWriter());
-      fail();
-    }
-    catch (CoreException e) {
-    }
-  }
-
-  @Test
-  public void testDecode_NonInputStream() throws Exception {
-    try {
-      mimeEncoder.readMessage(new StringWriter());
-      fail();
-    }
-    catch (CoreException e) {
-    }
-  }
-
-  @Test
   public void testRoundTrip_WithOddChars() throws Exception {
 
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD_NON_JUST_ALPHA);

@@ -95,28 +95,6 @@ public class MultiPayloadMessageMimeEncoderTest {
   }
 
   @Test
-  public void testEncodeNonOutputStream() {
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD[0]);
-    msg.addMetadata(METADATA_KEY, METADATA_VALUE);
-    try {
-      mimeEncoder.writeMessage(msg, new StringWriter());
-      fail();
-    } catch (CoreException e) {
-      /* expected; do nothing */
-    }
-  }
-
-  @Test
-  public void testDecodeNonInputStream() {
-    try {
-      mimeEncoder.readMessage(new StringWriter());
-      fail();
-    } catch (CoreException e) {
-      /* expected; do nothing */
-    }
-  }
-
-  @Test
   public void testRoundTripWithException() throws Exception {
     AdaptrisMessage message = messageFactory.newMessage(PAYLOAD_ID[0], STANDARD_PAYLOAD[0], ENCODING);
     message.addMetadata(METADATA_KEY, METADATA_VALUE);

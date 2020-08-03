@@ -46,7 +46,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("mime-encoder")
 @DisplayOrder(order = {"payloadEncoding", "metadataEncoding", "retainUniqueId"})
-public class MimeEncoder extends MimeEncoderImpl {
+public class MimeEncoder extends MimeEncoderImpl<OutputStream, InputStream> {
 
   public MimeEncoder() {
     super();
@@ -60,12 +60,8 @@ public class MimeEncoder extends MimeEncoderImpl {
   }
 
   @Override
-  public void writeMessage(AdaptrisMessage msg, Object target) throws CoreException {
+  public void writeMessage(AdaptrisMessage msg, OutputStream target) throws CoreException {
     try {
-      if (!(target instanceof OutputStream)) {
-        throw new IllegalArgumentException("MimeEncoder can only encode to an OutputStream");
-      }
-      OutputStream encodedOutput = (OutputStream) target;
       // Use the message unique id as the message id.
       MultiPartOutput output = new MultiPartOutput(msg.getUniqueId());
       output.addPart(payloadAsMimePart(msg), PAYLOAD_CONTENT_ID);
@@ -74,24 +70,20 @@ public class MimeEncoder extends MimeEncoderImpl {
         output.addPart(asMimePart((Exception) msg.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION)),
             EXCEPTION_CONTENT_ID);
       }
-      output.writeTo(encodedOutput);
-      encodedOutput.flush();
+      output.writeTo(target);
+      target.flush();
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
   @Override
-  public AdaptrisMessage readMessage(Object source) throws CoreException {
+  public AdaptrisMessage readMessage(InputStream source) throws CoreException {
     AdaptrisMessage msg = null;
 
     try {
       msg = currentMessageFactory().newMessage();
-      if (!(source instanceof InputStream)) {
-        throw new IllegalArgumentException("MimeEncoder can only decode from an OutputStream");
-      }
-      InputStream encodedInput = (InputStream) source;
-      BodyPartIterator input = new BodyPartIterator(encodedInput);
+      BodyPartIterator input = new BodyPartIterator(source);
       addPartsToMessage(input, msg);
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
