@@ -47,24 +47,25 @@ import com.adaptris.util.text.mime.MultiPartOutput;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * {@link MessageAggregator} implementation that creates a new mime part for each message that needs to be joined up.
+ * {@link MessageAggregator} implementation that creates a new mime part for each message that needs
+ * to be joined up.
  *
  * <p>
- * The pre-split message is always treated as the first part of the resulting multipart message; the payloads from the split
- * messages form the second and subsequent parts. If the split message contains a specific metadata key (as configured by
- * {@link #setPartContentIdMetadataKey(String)}) then the corresponding value will be used as that parts <code>Content-Id</code>. If
- * the metadata key does not exist, or is not configured, then the split message's unique-id will be used. If the same
- * <code>Content-Id</code> is observed for multiple split messages then results are undefined. The most likely situation is that
- * parts will be lost and only one preserved.
+ * The pre-split message is always treated as the first part of the resulting multipart message; the
+ * payloads from the split messages form the second and subsequent parts. f an explicit Content-Id
+ * (expression or otherwise) has been specified then this will be resolved and used as that parts
+ * {@code Content-ID} otherwise the split message's unique-id will be used. If the same
+ * {@code Content-ID} is re-used for multiple split messages then results are undefined. The most
+ * likely situation is that parts will be lost and only one preserved.
  * </p>
  * <p>
- * Note that the first part's <code>Content-Id</code> will always be the original messages unique-id. Also, if the original message
- * was a Multipart message, then this will be added as a single part to the resulting multipart message (giving you a nested
- * multipart as the first part).
+ * Note that the first part's <code>Content-Id</code> will always be the original messages
+ * unique-id. Also, if the original message was a Multipart message, then this will be added as a
+ * single part to the resulting multipart message (giving you a nested multipart as the first part).
  * </p>
  * <p>
- * As a result of this join operation, the message will be marked as MIME encoded using {@link com.adaptris.core.CoreConstants#MSG_MIME_ENCODED}
- * metadata.
+ * As a result of this join operation, the message will be marked as MIME encoded using
+ * {@link com.adaptris.core.CoreConstants#MSG_MIME_ENCODED} metadata.
  * </p>
  *
  * @config mime-aggregator
