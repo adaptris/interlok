@@ -16,10 +16,18 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 
 /**
  * Allows simple configuration of a {@link DocumentBuilderFactory}.
- * 
+ *
+ * <p>
+ * Note that unless explicitly specified then the corresponding {@link DocumentBuilderFactory} will
+ * not have its corresponding setter called.
+ * </p>
+ *
  * @config xml-document-builder-configuration
  * @author lchan
  *
@@ -33,25 +41,83 @@ public class DocumentBuilderFactoryBuilder {
   public static final String DISABLE_DOCTYP =
       "http://apache.org/xml/features/disallow-doctype-decl";
 
+  /**
+   * Calls {@link DocumentBuilderFactory#setFeature(String, boolean)} for each value defined.
+   * <p>
+   * No validation of the features is done and are passed as-is through to the underlying
+   * DocumentBuilderFactory.
+   * </p>
+   */
   @NotNull
   @AutoPopulated
   @AdvancedConfig
+  @Getter
+  @Setter
+  @NonNull
   private KeyValuePairSet features;
+  /**
+   * Calls {@link DocumentBuilderFactory#setValidating(boolean)} if non-null
+   *
+   */
   @AdvancedConfig
+  @Getter
+  @Setter
   private Boolean validating;
+  /**
+   * Calls {@link DocumentBuilderFactory#setNamespaceAware(boolean)} if non null
+   *
+   */
   @AdvancedConfig
+  @Getter
+  @Setter
   private Boolean namespaceAware;
+  /**
+   * Calls {@link DocumentBuilderFactory#setIgnoringElementContentWhitespace(boolean)} if non-null
+   *
+   */
   @AdvancedConfig
+  @Getter
+  @Setter
   private Boolean ignoreWhitespace;
+  /**
+   * Calls {@link DocumentBuilderFactory#setExpandEntityReferences(boolean)} if non-null
+   *
+   */
   @AdvancedConfig
+  @Getter
+  @Setter
   private Boolean expandEntityReferences;
+  /**
+   * Calls {@link DocumentBuilderFactory#setIgnoringComments(boolean)} if non-null
+   *
+   */
   @AdvancedConfig
+  @Getter
+  @Setter
   private Boolean ignoreComments;
+  /**
+   * Calls {@link DocumentBuilderFactory#setCoalescing(boolean)} if non-null
+   *
+   */
   @AdvancedConfig
+  @Getter
+  @Setter
   private Boolean coalescing;
+  /**
+   * Calls {@link DocumentBuilderFactory#setXIncludeAware(boolean)} if non-null
+   *
+   */
   @AdvancedConfig
+  @Getter
+  @Setter
   private Boolean xincludeAware;
 
+  /**
+   * Calls {@link DocumentBuilder#setEntityResolver(EntityResolver)} if non-null.
+   *
+   */
+  @Getter
+  @Setter
   @AdvancedConfig
   @Valid
   private EntityResolver entityResolver;
@@ -141,7 +207,7 @@ public class DocumentBuilderFactoryBuilder {
 
   /**
    * Create a new instance that is namespace aware.
-   * 
+   *
    * @return a new instance.
    */
   public static final DocumentBuilderFactoryBuilder newInstance() {
@@ -152,7 +218,7 @@ public class DocumentBuilderFactoryBuilder {
    * Create a New instance that disables Entityrefs and also mitigates against XXE via
    * {@code http://apache.org/xml/features/disallow-doctype-decl = true}. This is added as a convenience so you don't have to keep
    * configuring it if XXE is a bit of a bother for you.
-   * 
+   *
    * @return a new instance.
    */
   public static final DocumentBuilderFactoryBuilder newRestrictedInstance() {
@@ -178,7 +244,7 @@ public class DocumentBuilderFactoryBuilder {
 
   /**
    * Configure a document builder factory
-   * 
+   *
    * @param f
    * @return a reconfigured document builder factory
    */
@@ -191,7 +257,7 @@ public class DocumentBuilderFactoryBuilder {
 
   /**
    * Configure a document builder.
-   * 
+   *
    * @param db
    * @return a reconfigured document builder
    */
@@ -204,7 +270,7 @@ public class DocumentBuilderFactoryBuilder {
 
   /**
    * Convenience to create a new {@code DocumentBuilder} instance.
-   * 
+   *
    * @param f a DocumentBuilderFactory
    * @return a configured DocumentBuilder
    * @throws ParserConfigurationException
@@ -217,7 +283,7 @@ public class DocumentBuilderFactoryBuilder {
 
   /**
    * Create a {@link DocumentBuilderFactory}.
-   * 
+   *
    * <p>
    * If all you're doing is creating a {@link DocumentBuilder} straight after calling this method,
    * don't forget to call {@link #configure(DocumentBuilder)} to make sure you configure the
@@ -228,29 +294,13 @@ public class DocumentBuilderFactoryBuilder {
     return configure(DocumentBuilderFactory.newInstance());
   }
 
-  public KeyValuePairSet getFeatures() {
-    return features;
-  }
-
-
-  /**
-   * Set the features.
-   * 
-   * @param features the features.
-   */
-  public void setFeatures(KeyValuePairSet features) {
-    this.features = Args.notNull(features, "Features");
-  }
-
-
   public DocumentBuilderFactoryBuilder withFeatures(Map<String, Boolean> f) {
     Map<String, Boolean> featureList = Args.notNull(f, "features");
     KeyValuePairSet newFeatures = new KeyValuePairSet();
     for (Map.Entry<String, Boolean> entry : featureList.entrySet()) {
       newFeatures.add(new KeyValuePair(entry.getKey(), String.valueOf(entry.getValue())));
     }
-    setFeatures(newFeatures);
-    return this;
+    return withFeatures(newFeatures);
   }
 
   public DocumentBuilderFactoryBuilder withFeatures(KeyValuePairSet v) {
@@ -263,33 +313,11 @@ public class DocumentBuilderFactoryBuilder {
     return this;
   }
 
-  public Boolean getValidating() {
-    return validating;
-  }
-
-  /**
-   * Maps to {@link DocumentBuilderFactory#setValidating(boolean)}.
-   */
-  public void setValidating(Boolean validate) {
-    validating = validate;
-  }
-
   public DocumentBuilderFactoryBuilder withValidating(Boolean b) {
     setValidating(b);
     return this;
   }
 
-  public Boolean getNamespaceAware() {
-    return namespaceAware;
-  }
-
-
-  /**
-   * Maps to {@link DocumentBuilderFactory#setNamespaceAware(boolean)}.
-   */
-  public void setNamespaceAware(Boolean namespaceAware) {
-    this.namespaceAware = namespaceAware;
-  }
 
   public DocumentBuilderFactoryBuilder withNamespaceAware(Boolean b) {
     setNamespaceAware(b);
@@ -301,17 +329,6 @@ public class DocumentBuilderFactoryBuilder {
     return this;
   }
 
-  public Boolean getIgnoreWhitespace() {
-    return ignoreWhitespace;
-  }
-
-
-  /**
-   * Maps to {@link DocumentBuilderFactory#setIgnoringElementContentWhitespace(boolean)}.
-   */
-  public void setIgnoreWhitespace(Boolean ignoreWhitespace) {
-    this.ignoreWhitespace = ignoreWhitespace;
-  }
 
   public DocumentBuilderFactoryBuilder withIgnoreWhitespace(Boolean b) {
     setIgnoreWhitespace(b);
@@ -319,50 +336,15 @@ public class DocumentBuilderFactoryBuilder {
   }
 
 
-  public Boolean getExpandEntityReferences() {
-    return expandEntityReferences;
-  }
-
-
-  /**
-   * Maps to {@link DocumentBuilderFactory#setExpandEntityReferences(boolean)}.
-   */
-  public void setExpandEntityReferences(Boolean expandEntityReferences) {
-    this.expandEntityReferences = expandEntityReferences;
-  }
-
   public DocumentBuilderFactoryBuilder withExpandEntityReferences(Boolean b) {
     setExpandEntityReferences(b);
     return this;
   }
 
-  public Boolean getIgnoreComments() {
-    return ignoreComments;
-  }
-
-
-  /**
-   * Maps to {@link DocumentBuilderFactory#setIgnoringComments(boolean)}.
-   */
-  public void setIgnoreComments(Boolean ignoreComments) {
-    this.ignoreComments = ignoreComments;
-  }
 
   public DocumentBuilderFactoryBuilder withIgnoreComments(Boolean b) {
     setIgnoreComments(b);
     return this;
-  }
-
-  public Boolean getCoalescing() {
-    return coalescing;
-  }
-
-
-  /**
-   * Maps to {@link DocumentBuilderFactory#setCoalescing(boolean)}.
-   */
-  public void setCoalescing(Boolean coalescing) {
-    this.coalescing = coalescing;
   }
 
   public DocumentBuilderFactoryBuilder withCoalescing(Boolean b) {
@@ -370,30 +352,9 @@ public class DocumentBuilderFactoryBuilder {
     return this;
   }
 
-
-  public Boolean getXincludeAware() {
-    return xincludeAware;
-  }
-
-
-  /**
-   * Maps to {@link DocumentBuilderFactory#setXIncludeAware(boolean)}.
-   */
-  public void setXincludeAware(Boolean xincludeAware) {
-    this.xincludeAware = xincludeAware;
-  }
-
   public DocumentBuilderFactoryBuilder withXIncludeAware(Boolean b) {
     setXincludeAware(b);
     return this;
-  }
-
-  public EntityResolver getEntityResolver() {
-    return entityResolver;
-  }
-
-  public void setEntityResolver(EntityResolver e) {
-    entityResolver = e;
   }
 
   public DocumentBuilderFactoryBuilder withEntityResolver(EntityResolver e) {
