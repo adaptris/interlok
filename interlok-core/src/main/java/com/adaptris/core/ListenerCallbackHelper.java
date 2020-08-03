@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 public class ListenerCallbackHelper {
   
-  protected static Logger log = LoggerFactory.getLogger(ListenerCallbackHelper.class.getName());
+  protected static final Logger log = LoggerFactory.getLogger(ListenerCallbackHelper.class.getName());
   
   public static AdaptrisMessage prepare(AdaptrisMessage msg, Consumer<AdaptrisMessage> onSuccess) {
     return prepare(msg, onSuccess, null);

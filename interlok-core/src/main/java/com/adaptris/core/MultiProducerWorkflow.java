@@ -82,6 +82,20 @@ public class MultiProducerWorkflow extends StandardWorkflow {
       onMessage(msg);
     }
   }
+  
+  /**
+   * @see AdaptrisMessageListener#onAdaptrisMessage(AdaptrisMessage)
+   */
+  @Override
+  public synchronized void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success, Consumer<AdaptrisMessage> failure) {
+    ListenerCallbackHelper.prepare(msg, success, failure);
+    if (!obtainChannel().isAvailable()) {
+      handleChannelUnavailable(msg); // make pluggable?
+    }
+    else {
+      onMessage(msg);
+    }
+  }
 
   @Override
   protected void resubmitMessage(AdaptrisMessage msg) {
@@ -101,7 +115,6 @@ public class MultiProducerWorkflow extends StandardWorkflow {
       getServiceCollection().doService(wip);
       doProduce(wip);
       sendProcessedMessage(wip, msg); // only if produce succeeds
-      ListenerCallbackHelper.handleSuccessCallback(wip);
       logSuccess(msg, start);
     }
     catch (ServiceException e) {
@@ -117,6 +130,8 @@ public class MultiProducerWorkflow extends StandardWorkflow {
     }
     finally {
       sendMessageLifecycleEvent(wip);
+      
+      ListenerCallbackHelper.handleCallback(wip);
     }
     workflowEnd(msg, wip);
   }
