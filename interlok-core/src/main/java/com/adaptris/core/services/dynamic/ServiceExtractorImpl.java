@@ -32,7 +32,6 @@ public abstract class ServiceExtractorImpl implements ServiceExtractor {
 
   // We intentionally override getInputStream() since it's deprecated, so that
   // if people choose to extend this class, they don't get broken.
-  @Override
   public abstract InputStream getInputStream(AdaptrisMessage msg) throws Exception;
 
   @Override

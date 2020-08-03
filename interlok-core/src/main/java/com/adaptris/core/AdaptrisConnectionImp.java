@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.LifecycleHelper;
 
 /**
@@ -38,10 +37,6 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
 
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
-  @AdvancedConfig(rare = true)
-  @Deprecated
-  @Removal(version = "3.11.0", message = "Will be removed to avoid JNDI ambiguity")
-  private String lookupName;
   @AdvancedConfig
   @Valid
   private ConnectionErrorHandler connectionErrorHandler;
@@ -325,24 +320,6 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
   @Override
   public ComponentState retrieveComponentState() {
     return state;
-  }
-
-  @Override
-  @Deprecated
-  @Removal(version = "3.11.0", message = "Will be removed to avoid JNDI ambiguity")
-  public String getLookupName() {
-    return lookupName;
-  }
-
-  /**
-   * 
-   * @deprecated since 3.9.1 with no replacement; and will be removed to avoid JNDI ambiguity
-   * 
-   */
-  @Deprecated
-  @Removal(version = "3.11.0", message = "Will be removed to avoid JNDI ambiguity")
-  public void setLookupName(String jndiName) {
-    this.lookupName = jndiName;
   }
 
   @Override

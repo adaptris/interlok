@@ -37,7 +37,6 @@ public class SharedTransactionManager extends SharedComponent implements Transac
 
 
 
-  @Override
   public String getLookupName() {
     return lookupName;
   }
@@ -127,9 +126,9 @@ public class SharedTransactionManager extends SharedComponent implements Transac
   public TransactionManager proxiedTransactionManager() {
     if (proxiedTransactionManager == null)
       try {
-        setProxiedTransactionManager((TransactionManager) triggerJndiLookup(this.getLookupName()));
+        setProxiedTransactionManager((TransactionManager) triggerJndiLookup(getLookupName()));
       } catch (CoreException e) {
-        log.error("Cannot look-up shared transaction manager with name: " + this.getLookupName());
+        log.error("Cannot look-up shared transaction manager with name: " + getLookupName());
       }
     return proxiedTransactionManager;
   }

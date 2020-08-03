@@ -33,7 +33,6 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.MarshallingCDATA;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
@@ -49,11 +48,6 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
 
   private static final OutOfStateHandler DEFAULT_STATE_HANDLER = new RaiseExceptionOutOfStateHandler();
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
-
-  @AdvancedConfig(rare = true)
-  @Deprecated
-  @Removal(version = "3.11.0", message = "Will be removed to avoid JNDI ambiguity")
-  private String lookupName;
   
   private String uniqueId;
   @InputFieldDefault(value = "false")
@@ -206,7 +200,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   public final void doService(AdaptrisMessage msg) throws ServiceException {
     try {
       lock.acquire();
-      this.checkServiceStates();
+      checkServiceStates();
       applyServices(msg);
     }
     catch (InterruptedException e) {
@@ -222,7 +216,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
 
   private void checkServiceStates() throws OutOfStateException {
     OutOfStateHandler handler = outOfStateHandler();
-    for(Service service : this.getServices()) {
+    for(Service service : getServices()) {
       try {
         if (!handler.isInCorrectState(service)) {
           handler.handleOutOfState(service);
@@ -577,29 +571,11 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
    * @param handler if not specified defaults to {@link RaiseExceptionOutOfStateHandler}.
    */
   public void setOutOfStateHandler(OutOfStateHandler handler) {
-    this.outOfStateHandler = handler;
+    outOfStateHandler = handler;
   }
 
   private OutOfStateHandler outOfStateHandler() {
     return getOutOfStateHandler() != null ? getOutOfStateHandler() : DEFAULT_STATE_HANDLER;
-  }
-
-  @Override
-  @Deprecated
-  @Removal(version = "3.11.0", message = "Will be removed to avoid JNDI ambiguity")
-  public String getLookupName() {
-    return lookupName;
-  }
-
-  /**
-   * 
-   * @deprecated since 3.9.1 with no replacement; and will be removed to avoid JNDI ambiguity
-   * 
-   */
-  @Deprecated
-  @Removal(version = "3.11.0", message = "Will be removed to avoid JNDI ambiguity")
-  public void setLookupName(String lookupName) {
-    this.lookupName = lookupName;
   }
 
   public <T extends ServiceCollection> T withServices(Service... services) {

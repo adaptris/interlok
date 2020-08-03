@@ -109,25 +109,6 @@ public abstract class ExampleWorkflowCase extends ExampleConfigCase {
   }
 
   @Test
-  public void testSetLogPayload() throws Exception {
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    WorkflowImp wf = createWorkflowForGenericTests();
-    assertNull(wf.getLogPayload());
-    wf.setLogPayload(Boolean.TRUE);
-    assertNotNull(wf.getLogPayload());
-    assertEquals(Boolean.TRUE, wf.getLogPayload());
-    assertNotNull(wf.messageLogger());
-    assertNotSame(DefaultMessageLogger.class, wf.messageLogger().getClass());
-    assertNotNull(wf.messageLogger().toString(msg));
-    wf.setLogPayload(null);
-    assertNull(wf.getLogPayload());
-
-    assertNotNull(wf.messageLogger());
-    assertEquals(DefaultMessageLogger.class, wf.messageLogger().getClass());
-    assertNotNull(wf.messageLogger().toString(msg));
-  }
-
-  @Test
   public void testSetMessageLogger() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     WorkflowImp wf = createWorkflowForGenericTests();

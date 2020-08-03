@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.Args;
 import com.adaptris.util.GuidGenerator;
 
@@ -41,10 +40,6 @@ public abstract class ServiceImp implements Service {
   private transient ComponentState serviceState;
   private transient boolean prepared = false;
   
-  @AdvancedConfig(rare = true)
-  @Deprecated
-  @Removal(version = "3.11.0", message = "Will be removed to avoid JNDI ambiguity")
-  private String lookupName;
   private String uniqueId;
   private transient boolean isBranching; // defaults to false
   @AdvancedConfig
@@ -220,28 +215,6 @@ public abstract class ServiceImp implements Service {
   @Override
   public void requestClose() {
     serviceState.requestClose(this);
-  }
-
-  @Override
-  @Deprecated
-  @Removal(version = "3.11.0", message = "Will be removed to avoid JNDI ambiguity")
-  public String getLookupName() {
-    return lookupName;
-  }
-
-  /**
-   * Specify the lookup name (if required) when adding this service as a shared component.
-   * <p>
-   * If you don't know what to fill in here, leave it blank, and the adapter will use the unique-id instead.
-   * </p>
-   * 
-   * @param lookupName the lookup name.
-   * @deprecated since 3.9.1 with no replacement; and will be removed to avoid JNDI ambiguity
-   */
-  @Deprecated
-  @Removal(version = "3.11.0", message = "Will be removed to avoid JNDI ambiguity")
-  public void setLookupName(String lookupName) {
-    this.lookupName = lookupName;
   }
 
 }

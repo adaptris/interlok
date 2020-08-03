@@ -52,12 +52,7 @@ public class CreateQueryStringFromMetadataTest extends MetadataServiceExample {
     service.setSeparator(",");
     assertEquals(",", service.separator());
     assertEquals(",", service.getSeparator());
-
     service.setSeparator(null);
-    service.setQuerySeparator(",");
-
-    assertEquals(",", service.separator());
-    service.setQuerySeparator(null);
     assertEquals("&", service.separator());
   }
 

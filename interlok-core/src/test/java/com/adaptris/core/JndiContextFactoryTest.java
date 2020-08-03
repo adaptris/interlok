@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -220,33 +220,6 @@ public class JndiContextFactoryTest {
   }
 
   @Test
-  public void testLoadWithNonUniqueObjectIdsUsingLookupName() throws Exception {
-    NullConnection connection1 = new NullConnection();
-    connection1.setLookupName("connection1");
-    JmsConnection connection2 = new JmsConnection();
-    connection2.setLookupName("connection1");
-    JmsConnection connection3 = new JmsConnection();
-    connection3.setLookupName("connection1");
-
-    ArrayList<AdaptrisConnection> connectionList = new ArrayList<AdaptrisConnection>();
-    connectionList.add(connection1);
-    connectionList.add(connection2);
-    connectionList.add(connection3);
-    InitialContext ctx = new InitialContext(env);
-
-    try {
-      JndiHelper.bind(connectionList);
-      fail();
-    }
-    catch (CoreException expected) {
-
-    }
-    finally {
-      JndiHelper.unbindQuietly(ctx, connectionList, false);
-    }
-  }
-
-  @Test
   public void testWithFullContextAdapterSchemeDefaultInitialContext() throws Exception {
     SystemPropertiesUtil.addJndiProperties(bootstrapProps);
 
@@ -275,7 +248,7 @@ public class JndiContextFactoryTest {
     SystemPropertiesUtil.addJndiProperties(bootstrapProps);
 
     NullConnection connection = new NullConnection();
-    connection.setLookupName("adapter:comp/env/connection7");
+    connection.setUniqueId("connection7");
     ArrayList<AdaptrisConnection> connectionList = new ArrayList<AdaptrisConnection>();
     connectionList.add(connection);
 
@@ -286,7 +259,7 @@ public class JndiContextFactoryTest {
     try {
       connectionObject = (AdaptrisConnectionImp) ctx.lookup("adapter:comp/env/connection7");
       assertTrue(connectionObject instanceof NullConnection);
-      assertEquals("adapter:comp/env/connection7", connectionObject.getLookupName());
+      assertEquals("connection7", connectionObject.getUniqueId());
 
     }
     finally {
@@ -312,30 +285,6 @@ public class JndiContextFactoryTest {
       connectionObject = (AdaptrisConnectionImp) ctx.lookup("adapter:comp/env/connection8");
       assertTrue(connectionObject instanceof NullConnection);
       assertEquals("adapter:connection8", connectionObject.getUniqueId());
-
-    }
-    finally {
-      JndiHelper.unbindQuietly(ctx, connectionList, false);
-    }
-
-  }
-
-  @Test
-  public void testWithAdapterSchemeDefaultInitialContextLookupName() throws Exception {
-    SystemPropertiesUtil.addJndiProperties(bootstrapProps);
-
-    NullConnection connection = new NullConnection();
-    connection.setLookupName("adapter:connection9");
-    ArrayList<AdaptrisConnection> connectionList = new ArrayList<AdaptrisConnection>();
-    connectionList.add(connection);
-
-    AdaptrisConnectionImp connectionObject = null;
-    InitialContext ctx = new InitialContext();
-    try {
-      JndiHelper.bind(connectionList);
-      connectionObject = (AdaptrisConnectionImp) ctx.lookup("adapter:connection9");
-      assertTrue(connectionObject instanceof NullConnection);
-      assertEquals("adapter:connection9", connectionObject.getLookupName());
 
     }
     finally {
@@ -396,29 +345,6 @@ public class JndiContextFactoryTest {
       // The initial context isn't "ours" it's likely to be Jetty's so let's remove
       // connection12 explicitly from the context.
       envSubcontext.unbind("connection12");
-    }
-  }
-
-  @Test
-  public void testWithDefaultInitialContextLookupName() throws Exception {
-    SystemPropertiesUtil.addJndiProperties(bootstrapProps);
-
-    NullConnection connection = new NullConnection();
-    connection.setLookupName("connection11");
-    ArrayList<AdaptrisConnection> connectionList = new ArrayList<AdaptrisConnection>();
-    connectionList.add(connection);
-
-    AdaptrisConnectionImp connectionObject = null;
-    InitialContext ctx = new InitialContext();
-    try {
-      JndiHelper.bind(connectionList);
-      connectionObject = (AdaptrisConnectionImp) ctx.lookup("adapter:connection11");
-      assertTrue(connectionObject instanceof NullConnection);
-      assertEquals("connection11", connectionObject.getLookupName());
-
-    }
-    finally {
-      JndiHelper.unbindQuietly(ctx, connectionList, true);
     }
   }
 

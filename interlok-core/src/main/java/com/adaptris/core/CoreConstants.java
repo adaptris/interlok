@@ -174,127 +174,9 @@ public abstract class CoreConstants {
   public static final String RETRY_COUNT_KEY = "previousretrycount";
 
   /**
-   * Metadata key specifying the email subject.
-   *
-   * @deprecated since 3.9.0 check the optional mail package for the appropriate value.
-   */
-  @Deprecated
-  @Removal(version = "3.11.0")
-  public static final String EMAIL_SUBJECT = "emailsubject";
-
-  /**
-   * Metadata key that specifies the name of the attachment.
-   *
-   * @deprecated since 3.9.0 check the optional mail package for the appropriate value.
-   */
-  @Deprecated
-  @Removal(version = "3.11.0")
-  public static final String EMAIL_ATTACH_FILENAME = "emailattachmentfilename";
-
-  /**
-   * Metadata key that specifies the content-type of the attachment.
-   *
-   * @deprecated since 3.9.0 check the optional mail package for the appropriate value.
-   */
-  @Deprecated
-  @Removal(version = "3.11.0")
-  public static final String EMAIL_ATTACH_CONTENT_TYPE = "emailattachment" + "contenttype";
-
-  /**
-   * Metadata key that specifies the total number of attachments.
-   *
-   * @deprecated since 3.9.0 check the optional mail package for the appropriate value.
-   */
-  @Deprecated
-  @Removal(version = "3.11.0")
-  public static final String EMAIL_TOTAL_ATTACHMENTS = "emailtotalattachments";
-
-  /**
-   * Metadata key that specifies the cc list for sending.
-   *
-   * @deprecated since 3.9.0 check the optional mail package for the appropriate value.
-   */
-  @Deprecated
-  @Removal(version = "3.11.0")
-  public static final String EMAIL_CC_LIST = "emailcc";
-
-  /**
-   * Metadata key specifying the email message container from whence a payload may have spawned.
-   *
-   * @deprecated since 3.9.0 check the optional mail package for the appropriate value.
-   */
-  @Deprecated
-  @Removal(version = "3.11.0")
-  public static final String EMAIL_MESSAGE_ID = "emailmessageid";
-
-  /**
-   * Metadata key specifying the email body. This is only used if the <code>SmtpProducer</code> is
-   * configured to send the document as an attachment.
-   *
-   * @deprecated since 3.9.0 check the optional mail package for the appropriate value.
-   */
-  @Deprecated
-  @Removal(version = "3.11.0")
-
-  public static final String EMAIL_TEMPLATE_BODY = "emailtemplatebody";
-
-  /**
    * Metadata key specifying that security has been encrypted using v1 encryption compability mode.
    */
   public static final String SECURITY_V1_COMPATIBILITY = "v1encryption" + "compatibility";
-
-  /**
-   * Metadata key containing the OFTP destination.
-   *
-   * @deprecated since 3.9.0 check the optional oftp package for the appropriate value.
-   */
-  @Deprecated
-  @Removal(version = "3.11.0")
-  public static final String OFTP_DESTINATION = "oftpdestination";
-
-  /**
-   * Metadata key containing the OFTP source.
-   */
-  public static final String OFTP_SOURCE = "oftpsource";
-
-  /**
-   * Metadata key containing the OFTP message id.
-   *
-   * @deprecated since 3.9.0 check the optional oftp package for the appropriate value.
-   */
-  @Deprecated
-  @Removal(version = "3.11.0")
-  public static final String OFTP_MESSAGE_ID = "oftpmessageid";
-
-  /**
-   * Metadata key containing the date from the OFTP sfid.
-   * <p>
-   * This is the date in the form "yyyy-MM-dd HH:mm:ss zzz".
-   * </p>
-   *
-   * @deprecated since 3.9.0 check the optional oftp package for the appropriate value.
-   */
-  @Deprecated
-  @Removal(version = "3.11.0")
-  public static final String OFTP_DATE = "oftpdate";
-
-  /**
-   * Metadata key specifying the message should be treated as an EERP.
-   *
-   * @deprecated since 3.9.0 check the optional oftp package for the appropriate value.
-   */
-  @Deprecated
-  @Removal(version = "3.11.0")
-  public static final String OFTP_IS_ACKNOWLEDGEMENT = "oftpack";
-
-  /**
-   * Metadata key that is used to key the object metadata that contains the raw socket.
-   *
-   * @deprecated since 3.9.0 check the optional socket package for the appropriate value.
-   */
-  @Deprecated
-  @Removal(version = "3.11.0")
-  public static final String SOCKET_OBJECT_KEY = "socketobject";
 
   /**
    * Metadata key for the FTP reply to name override.
@@ -304,15 +186,6 @@ public abstract class CoreConstants {
   @Deprecated
   @Removal(version = "4.0")
   public static final String FTP_REPLYTO_NAME = "ftpreplytoname";
-
-  /**
-   * Metadata key for the transaction id sent to and from the business connector.
-   *
-   * @deprecated since 3.9.0 check the optional SAP package for the appropriate value.
-   */
-  @Deprecated
-  @Removal(version = "3.11.0")
-  public static final String SAPBC_TID = "sapbctid";
 
   /**
    * Metadata key that allows override of the transform services.
@@ -348,18 +221,6 @@ public abstract class CoreConstants {
    *
    */
   public static final String HTTP_PRODUCER_RESPONSE_CODE = "adphttpresponse";
-
-  /**
-   * Metadata key that contains the IDoc type.
-   * <p>
-   * This is the value of the field <code>IDOCTYP</code>.
-   * </p>
-   *
-   * @deprecated since 3.9.0 check the optional SAP package for the appropriate value.
-   */
-  @Deprecated
-  @Removal(version = "3.11.0")
-  public static final String JCO_IDOCTYP = "jcoidoctyp";
 
   /**
    * <p>

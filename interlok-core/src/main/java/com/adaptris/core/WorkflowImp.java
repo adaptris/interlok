@@ -39,10 +39,8 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.MarshallingCDATA;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.util.PlainIdGenerator;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -86,11 +84,6 @@ public abstract class WorkflowImp implements Workflow {
   @AdvancedConfig
   @InputFieldDefault(value = "true")
   private Boolean sendEvents;
-  @AdvancedConfig
-  @InputFieldDefault(value = "false")
-  @Deprecated
-  @Removal(version = "3.11.0", message="use a message-logger instead")
-  private Boolean logPayload;
   @NotNull
   @AutoPopulated
   @Valid
@@ -121,8 +114,6 @@ public abstract class WorkflowImp implements Workflow {
   protected transient Date startTime;
   protected transient Date stopTime;
   private transient boolean prepared = false;
-  private transient boolean warningLogged;
-
   /**
    * <p>
    * Creates a new instance with defaults to prevent NullPointerExceptions.
@@ -582,33 +573,6 @@ public abstract class WorkflowImp implements Workflow {
     return BooleanUtils.toBooleanDefaultIfNull(getSendEvents(), true);
   }
 
-  /**
-   * <p>
-   * Returns true if payload should be logged.
-   * </p>
-   *
-   * @return true if payload should be logged
-   * @deprecated since 3.8.4 use {@link #setMessageLogger(MessageLogger)} instead.
-   */
-  @Deprecated
-  @Removal(version="3.11.0")
-  public Boolean getLogPayload() {
-    return logPayload;
-  }
-
-  /**
-   * <p>
-   * Sets whether payload should be logged.
-   * </p>
-   *
-   * @param b true if payload should be logged
-   * @deprecated since 3.8.4 use {@link #setMessageLogger(MessageLogger)} instead.
-   */
-  @Deprecated
-  @Removal(version="3.11.0")
-  public void setLogPayload(Boolean b) {
-    logPayload = b;
-  }
 
   /**
    * @see com.adaptris.core.Workflow#obtainChannel()
@@ -832,14 +796,6 @@ public abstract class WorkflowImp implements Workflow {
 
   @SuppressWarnings("deprecation")
   public MessageLogger messageLogger() {
-    if (getLogPayload() != null) {
-      LoggingHelper.logWarning(warningLogged, () -> {
-        warningLogged = true;
-      }, "Use message-logger instead of log-payload");
-      return (m) -> {
-        return m.toString(BooleanUtils.toBooleanDefaultIfNull(getLogPayload(), false));
-      };
-    }
     return ObjectUtils.defaultIfNull(getMessageLogger(), DEFAULT_MSG_LOGGER);
   }
 

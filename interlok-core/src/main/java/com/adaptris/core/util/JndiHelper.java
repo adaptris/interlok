@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,19 +19,15 @@ package com.adaptris.core.util;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Properties;
-
 import javax.naming.CompositeName;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.InvalidNameException;
 import javax.naming.NamingException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.JndiBindable;
 import com.adaptris.core.JndiContextFactory;
 import com.adaptris.core.jdbc.DatabaseConnection;
 
@@ -41,14 +37,9 @@ public class JndiHelper {
   private static transient Logger log = LoggerFactory.getLogger(JndiHelper.class);
 
   public static String createJndiName(AdaptrisComponent object) throws InvalidNameException {
-    String jndiName = null;
-    if (((JndiBindable) object).getLookupName() != null) jndiName = ((JndiBindable) object).getLookupName();
-    else
-      return createJndiName(object.getUniqueId());
-
-    return jndiName;
+    return createJndiName(object.getUniqueId());
   }
-  
+
   private static String createJndiName(String lookupId) throws InvalidNameException {
     String jndiName = null;
     int indexOfSchemeMarker = lookupId.indexOf(":"); // remove the scheme
@@ -66,22 +57,18 @@ public class JndiHelper {
 
   private static String createJndiJdbcName(AdaptrisComponent object) throws InvalidNameException {
     CompositeName configuredCompositeName = null;
-    if (((JndiBindable) object).getLookupName() != null) configuredCompositeName = new CompositeName(((JndiBindable) object).getLookupName());
-    else {
       int indexOfSchemeMarker = object.getUniqueId().indexOf(":"); // remove the scheme
       if (indexOfSchemeMarker > 0) configuredCompositeName = new CompositeName(object.getUniqueId().substring(
           indexOfSchemeMarker + 1));
       else
         configuredCompositeName = new CompositeName(object.getUniqueId());
-
-    }
     return "comp/env/jdbc/" + configuredCompositeName.get(configuredCompositeName.size() - 1);
   }
 
   public static void bind(Collection<? extends AdaptrisComponent> components) throws CoreException {
     bind(createContext(), components, false);
   }
-  
+
   public static void bind(AdaptrisComponent adaptrisComponent) throws CoreException {
     bind(createContext(), adaptrisComponent, false);
   }
@@ -89,7 +76,7 @@ public class JndiHelper {
   public static void bind(Collection<? extends AdaptrisComponent> components, boolean debug) throws CoreException {
     bind(createContext(), components, debug);
   }
-  
+
   public static void bind(AdaptrisComponent adaptrisComponent, boolean debug) throws CoreException {
     bind(createContext(), adaptrisComponent, debug);
   }
@@ -99,7 +86,7 @@ public class JndiHelper {
       bind(ctx, concomponent, debug);
     }
   }
-  
+
   public static void bind(Context ctx, AdaptrisComponent component, boolean debug) throws CoreException {
     try {
       if (component == null) {

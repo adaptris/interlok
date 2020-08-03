@@ -86,28 +86,6 @@ public class CloneMessageServiceListTest extends ServiceCollectionCase {
       LifecycleHelper.stopAndClose(service);
     }
   }
-
-  @Test
-  @SuppressWarnings("deprecation")
-  public void testNormalOperation_NoPreserveKeys_LegacyMode() throws Exception {
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    CloneMessageServiceList service = createServiceList();
-    service.setOverrideMetadata(false);
-    MarkerService marker = new MarkerService();
-    service.getServices().add(marker);
-    try {
-      LifecycleHelper.initAndStart(service);
-      service.doService(msg);
-
-      // md not present because Service applied to a clone
-      assertTrue(msg.getMetadataValue(KEY1) == null);
-      assertTrue(marker.hasTriggered);
-    }
-    finally {
-      LifecycleHelper.stopAndClose(service);
-    }
-  }
-
   
   @Test
   public void testHaltProcessing() throws Exception {
@@ -123,29 +101,6 @@ public class CloneMessageServiceListTest extends ServiceCollectionCase {
       // md not present because Service applied to a clone
       assertTrue(msg.getMetadataValue(KEY1) == null);
       assertFalse(marker.hasTriggered);
-    }
-    finally {
-      LifecycleHelper.stopAndClose(service);
-    }
-  }
-
-  @Test
-  @SuppressWarnings("deprecation")
-  public void testNormalOperationPreserveKey_LegacyMode() throws Exception {
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    CloneMessageServiceList service = createServiceList();
-    RegexMetadataFilter rmf = new RegexMetadataFilter();
-    rmf.addIncludePattern(KEY1);
-    service.setOverrideMetadata(true);
-    service.setOverrideMetadataFilter(rmf);
-    try {
-      LifecycleHelper.initAndStart(service);
-
-      service.doService(msg);
-
-      // md not present because Service applied to a clone
-      assertNotNull(msg.getMetadataValue(KEY1));
-      assertEquals(VAL1, msg.getMetadataValue(KEY1));
     }
     finally {
       LifecycleHelper.stopAndClose(service);
@@ -223,7 +178,6 @@ public class CloneMessageServiceListTest extends ServiceCollectionCase {
     result.addService(new NullService());
     result.addService(new NullService());
     result.addService(new NullService());
-    result.setOverrideMetadata(false);
     return result;
   }
 

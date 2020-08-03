@@ -18,8 +18,6 @@ package com.adaptris.core;
 
 import java.util.Map;
 import java.util.Set;
-
-import com.adaptris.annotation.Removal;
 import com.adaptris.interlok.types.InterlokMessage;
 
 /**
@@ -316,34 +314,6 @@ public interface AdaptrisMessage extends InterlokMessage {
     return getObjectHeaders();
   }
 
-  /**
-   * <p>
-   * Overloaded <code>toString</code> method which allows client to specify whether payload is
-   * logged. (NB by default standard <code>toString</code> does not log the payload).
-   * </p>
-   *
-   * @param includePayload true if payload should be included in return
-   * @return a String representation of the message
-   * @deprecated since 3.8.4 use {@link MessageLogger#toString(AdaptrisMessage)} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.11.0")
-  String toString(boolean includePayload);
-
-  /**
-   * <p>
-   * Overloaded <code>toString</code> method which allows client to specify whether payload is
-   * logged. (NB by default standard <code>toString</code> does log the payload).
-   * </p>
-   *
-   * @param includePayload true if payload should be included in return
-   * @param includeEvents true if the events should be included.
-   * @return a String representation of the message
-   * @deprecated since 3.8.4 use {@link MessageLogger#toString(AdaptrisMessage)} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.11.0")
-  String toString(boolean includePayload, boolean includeEvents);
 
   default String getPayloadForLogging() {
     return getContent();

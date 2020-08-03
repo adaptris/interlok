@@ -22,7 +22,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.validation.Valid;
 import com.adaptris.annotation.ComponentProfile;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConnectedService;
@@ -135,41 +134,6 @@ public abstract class JdbcService extends ServiceImp implements ConnectedService
    */
   protected Connection getConnection(AdaptrisMessage msg) throws SQLException {
     return JdbcUtil.getConnection(msg, getConnection());
-  }
-
-  /**
-   * Rollback to the stored savepoint.
-   * <p>
-   * If a database connection exists in the AdaptrisMessage object metadata then you don't want to rollback, you want to let the
-   * parent (presumably a {@link com.adaptris.core.services.jdbc.JdbcServiceList}) to do it for you.
-   * </p>
-   *
-   * @param sqlConnection the database connection.
-   * @param msg the AdaptrisMessage
-   * @deprecated use {@link JdbcUtil#rollback(Connection, AdaptrisMessage)} instead, will be removed in 3.11.0
-   */
-  @Deprecated
-  @Removal(version = "3.11.0")
-  protected void rollback(Connection sqlConnection, AdaptrisMessage msg) {
-    JdbcUtil.rollback(sqlConnection, msg);
-  }
-
-  /**
-   * Commit the connection
-   * <p>
-   * If a database connection exists in the AdaptrisMessage object metadata then you don't want to rollback, you want to let the
-   * parent (presumably a {@link com.adaptris.core.services.jdbc.JdbcServiceList}) to do it for you.
-   * </p>
-   *
-   * @param sqlConnection the SQL Connection
-   * @param msg the AdaptrisMessage currently being processed.
-   * @throws SQLException if the commit fails.
-   * @deprecated use {@link JdbcUtil#commit(Connection, AdaptrisMessage)} instead, will be removed in 3.11.0
-   */
-  @Deprecated
-  @Removal(version = "3.11.0")
-  protected void commit(Connection sqlConnection, AdaptrisMessage msg) throws SQLException {
-    JdbcUtil.commit(sqlConnection, msg);
   }
 
   public TimeInterval getStatementTimeout() {

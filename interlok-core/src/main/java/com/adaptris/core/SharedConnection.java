@@ -170,7 +170,6 @@ public class SharedConnection extends SharedComponent implements AdaptrisConnect
     return (T) getProxiedConnection();
   }
 
-  @Override
   public String getLookupName() {
     return lookupName;
   }
@@ -181,7 +180,7 @@ public class SharedConnection extends SharedComponent implements AdaptrisConnect
    * @param jndiName the name
    */
   public void setLookupName(String jndiName) {
-    this.lookupName = jndiName;
+    lookupName = jndiName;
   }
 
   @Override

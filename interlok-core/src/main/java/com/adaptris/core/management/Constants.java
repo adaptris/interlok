@@ -16,9 +16,6 @@
 
 package com.adaptris.core.management;
 
-import com.adaptris.annotation.Removal;
-import com.adaptris.core.management.logging.LoggingConfigurator;
-
 /**
  * Constants and lots of them.
  *
@@ -28,9 +25,6 @@ import com.adaptris.core.management.logging.LoggingConfigurator;
 public final class Constants {
   public static final boolean DBG = Boolean.getBoolean("adp.bootstrap.debug") || Boolean.getBoolean("interlok.bootstrap.debug");
 
-  @Removal(version = "3.11.0", message="Moved into interlok-commons/LoggingConfigurator")
-  @Deprecated
-  public static final boolean ENABLE_JUL_LOGGING_BRIDGE = LoggingConfigurator.ENABLE_JUL_LOGGING_BRIDGE;
   /**
    * Key representing the name of the file that was used to bootstrap the adapter.
    *
