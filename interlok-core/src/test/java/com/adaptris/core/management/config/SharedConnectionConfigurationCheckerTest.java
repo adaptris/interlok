@@ -3,14 +3,8 @@ package com.adaptris.core.management.config;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
-import java.io.InputStream;
-import org.fusesource.hawtbuf.ByteArrayInputStream;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.Channel;
@@ -21,36 +15,19 @@ import com.adaptris.core.SharedConnection;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.management.BootstrapProperties;
-import com.adaptris.interlok.util.Closer;
 
 public class SharedConnectionConfigurationCheckerTest {
 
   private SharedConnectionConfigurationChecker checker;
 
-  private InputStream configurationStream;
-
-  @Mock private BootstrapProperties mockBootProperties;
-  private AutoCloseable openMocks;
-
   @Before
   public void setUp() throws Exception {
-    openMocks = MockitoAnnotations.openMocks(this);
     checker = new SharedConnectionConfigurationChecker();
-
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    Closer.closeQuietly(openMocks);
   }
 
   @Test
   public void testCompleteFailureBadXml() throws Exception {
-    configurationStream = new ByteArrayInputStream("bad-data".getBytes());
-
-    when(mockBootProperties.getConfigurationStream())
-        .thenReturn(configurationStream);
-
+    BootstrapProperties mockBootProperties = new MockBootProperties("bad-data");
     ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties, null);
     assertFalse(report.isCheckPassed());
     assertTrue(report.getFailureExceptions().size() > 0);
@@ -58,32 +35,25 @@ public class SharedConnectionConfigurationCheckerTest {
 
   @Test
   public void testNoConnections() throws Exception {
-    configurationStream = createAdapterConfig(null, null, null, null);
-
-    when(mockBootProperties.getConfigurationStream())
-        .thenReturn(configurationStream);
-
+    BootstrapProperties mockBootProperties =
+        new MockBootProperties(createAdapterConfig(null, null, null, null));
     ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties, null);
     assertTrue(report.isCheckPassed());
   }
 
   @Test
   public void testSharedNotUsed() throws Exception {
-    configurationStream = createAdapterConfig(new NullConnection("SharedNullConnection"), null, null, null);
-
-    when(mockBootProperties.getConfigurationStream())
-        .thenReturn(configurationStream);
-
+    BootstrapProperties mockBootProperties =
+        new MockBootProperties(
+            createAdapterConfig(new NullConnection("SharedNullConnection"), null, null, null));
     ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties, null);
     assertFalse(report.isCheckPassed());
   }
 
   @Test
   public void testConsumeConnectionNoShared() throws Exception {
-    configurationStream = createAdapterConfig(null, new SharedConnection("DoesNotExist"), null, null);
-
-    when(mockBootProperties.getConfigurationStream())
-        .thenReturn(configurationStream);
+    BootstrapProperties mockBootProperties = new MockBootProperties(
+        createAdapterConfig(null, new SharedConnection("DoesNotExist"), null, null));
 
     ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties, null);
     assertFalse(report.isCheckPassed());
@@ -92,11 +62,8 @@ public class SharedConnectionConfigurationCheckerTest {
 
   @Test
   public void testProduceConnectionNoShared() throws Exception {
-    configurationStream = createAdapterConfig(null, null, new SharedConnection("DoesNotExist"), null);
-
-    when(mockBootProperties.getConfigurationStream())
-        .thenReturn(configurationStream);
-
+    BootstrapProperties mockBootProperties = new MockBootProperties(
+        createAdapterConfig(null, null, new SharedConnection("DoesNotExist"), null));
     ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties, null);
     assertFalse(report.isCheckPassed());
     assertTrue(report.getFailureExceptions().size() > 0);
@@ -104,10 +71,10 @@ public class SharedConnectionConfigurationCheckerTest {
 
   @Test
   public void testProduceAndConsumeConnectionsExist() throws Exception {
-    configurationStream = createAdapterConfig(new NullConnection("SharedNullConnection"), new SharedConnection("SharedNullConnection"), new SharedConnection("SharedNullConnection"), null);
-
-    when(mockBootProperties.getConfigurationStream())
-        .thenReturn(configurationStream);
+    BootstrapProperties mockBootProperties =
+        new MockBootProperties(createAdapterConfig(new NullConnection("SharedNullConnection"),
+            new SharedConnection("SharedNullConnection"),
+            new SharedConnection("SharedNullConnection"), null));
 
     ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties, null);
     assertTrue(report.isCheckPassed());
@@ -116,18 +83,19 @@ public class SharedConnectionConfigurationCheckerTest {
 
   @Test
   public void testServiceConnectionDoesNotExist() throws Exception {
-    configurationStream = createAdapterConfig(new NullConnection("SharedNullConnection"), null, null, new SharedConnection("DoesNotExist"));
-
-    when(mockBootProperties.getConfigurationStream())
-        .thenReturn(configurationStream);
-
+    BootstrapProperties mockBootProperties =
+        new MockBootProperties(createAdapterConfig(new NullConnection("SharedNullConnection"), null,
+            null, new SharedConnection("DoesNotExist")));
     ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties, null);
     assertFalse(report.isCheckPassed());
     assertTrue(report.getFailureExceptions().size() > 0);
     assertNotNull(report.toString());
   }
 
-  private InputStream createAdapterConfig(AdaptrisConnection sharedComponent, AdaptrisConnection consumeConnection, AdaptrisConnection produceConnection, AdaptrisConnection serviceConnection) throws Exception {
+  private static String createAdapterConfig(AdaptrisConnection sharedComponent,
+      AdaptrisConnection consumeConnection, AdaptrisConnection produceConnection,
+      AdaptrisConnection serviceConnection) throws Exception {
+
     Adapter adapter = new Adapter();
     if(sharedComponent != null)
       adapter.getSharedComponents().addConnection(sharedComponent);
@@ -144,10 +112,8 @@ public class SharedConnectionConfigurationCheckerTest {
       channel.getWorkflowList().add(standardWorkflow);
 
     }
-
     adapter.getChannelList().add(channel);
-    String marshalledConfig = DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
-    return new ByteArrayInputStream(marshalledConfig.getBytes());
+    return DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
   }
 
 }
