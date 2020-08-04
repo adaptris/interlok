@@ -172,6 +172,7 @@ public class OnMessageHandler {
 
     Consumer<AdaptrisMessage> successCallback = message -> {
       try {
+        logR.trace("Commiting/Ack'ing message with id {}", msg.getJMSMessageID());
         acknowledge(msg);
       }
       catch (JMSException e) {
@@ -181,7 +182,13 @@ public class OnMessageHandler {
     };
     
     Consumer<AdaptrisMessage> failureCallback = message -> {
-      rollback(msg);
+      try {
+        logR.trace("Rolling back/not Ack'ing message with id {}", msg.getJMSMessageID());
+        rollback(msg);
+      } catch (JMSException e) {
+        logR.error("Exception rolling back JMS message", e);
+      }
+      
     };
     
     try {
