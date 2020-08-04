@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,9 +18,7 @@ package com.adaptris.core.services;
 
 import java.io.Reader;
 import java.io.StringReader;
-
 import org.apache.commons.lang3.StringUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -31,27 +29,29 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Supports arbitary scripting languges that are supported by JSR223.
  * <p>
- * You should take care when configuring this class; it can present an audit trail issue when used in combination with
- * {@link com.adaptris.core.services.dynamic.DynamicServiceLocator} or
- * {@link com.adaptris.core.services.dynamic.DynamicServiceExecutor} if your script executes arbitrary system commands. In that
- * situation, all commands will be executed with the current users permissions and may be subject to the virtual machines security
- * manager.
+ * You should take care when configuring this class; it can present an audit trail issue when used
+ * in combination with
+ *
+ * {@link com.adaptris.core.services.dynamic.DynamicServiceExecutor} if your script executes
+ * arbitrary system commands. In that situation, all commands will be executed with the current
+ * users permissions and may be subject to the virtual machines security manager.
  * </p>
  * <p>
- * The script is executed and the AdaptrisMessage that is due to be processed is bound against the key "message" and an instance
- * of org.slf4j.Logger is also bound to key "log". These can be used as a standard variable within the script.
+ * The script is executed and the AdaptrisMessage that is due to be processed is bound against the
+ * key "message" and an instance of org.slf4j.Logger is also bound to key "log". These can be used
+ * as a standard variable within the script.
  * </p>
  * <p>
- * Note that this class can be used as the selector as part of a {@link BranchingServiceCollection}. If used as such, then you need
- * to remember to invoke {@link com.adaptris.core.AdaptrisMessage#setNextServiceId(String)} as part of the script and
- * {@link #setBranchingEnabled(Boolean)}
- * should be true.
+ * Note that this class can be used as the selector as part of a {@link BranchingServiceCollection}.
+ * If used as such, then you need to remember to invoke
+ * {@link com.adaptris.core.AdaptrisMessage#setNextServiceId(String)} as part of the script and
+ * {@link #setBranchingEnabled(Boolean)} should be true.
  * <p>
- * 
+ *
  * @config embedded-scripting-service
- * 
+ *
  * @author lchan
- * 
+ *
  */
 @XStreamAlias("embedded-scripting-service")
 @AdapterComponent
