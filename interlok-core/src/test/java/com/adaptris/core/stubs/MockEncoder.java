@@ -16,26 +16,21 @@
 
 package com.adaptris.core.stubs;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import org.apache.commons.io.IOUtils;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageEncoderImp;
 import com.adaptris.core.CoreException;
+import org.apache.commons.io.IOUtils;
 
-public class MockEncoder extends AdaptrisMessageEncoderImp {
+import java.io.InputStream;
+import java.io.OutputStream;
 
-  public void writeMessage(AdaptrisMessage msg, Object target) throws CoreException {
+public class MockEncoder extends AdaptrisMessageEncoderImp<OutputStream, InputStream> {
+
+  public void writeMessage(AdaptrisMessage msg, OutputStream target) throws CoreException {
 
     try {
-      if (!(target instanceof OutputStream)) {
-        throw new IllegalArgumentException("MockEncoder can only encode to an OutputStream");
-      }
-      OutputStream encodedOutput = (OutputStream) target;
-      encodedOutput.write(msg.getPayload());
-      encodedOutput.flush();
+      target.write(msg.getPayload());
+      target.flush();
     }
     catch (Exception e) {
       throw new CoreException("Could not encode the AdaptrisMessage object", e);
@@ -50,15 +45,12 @@ public class MockEncoder extends AdaptrisMessageEncoderImp {
    *
    * @see com.adaptris.core.AdaptrisMessageEncoder#readMessage(java.lang.Object)
    */
-  public AdaptrisMessage readMessage(Object source) throws CoreException {
+  public AdaptrisMessage readMessage(InputStream source) throws CoreException {
     AdaptrisMessage msg = null;
     try {
       msg = currentMessageFactory().newMessage();
-      if (!(source instanceof InputStream)) {
-        throw new IllegalArgumentException("MockEncoder can only decode from an InputStream");
-      }
       try (OutputStream out = msg.getOutputStream()) {
-        IOUtils.copy((InputStream) source, out);
+        IOUtils.copy(source, out);
       }
     }
     catch (Exception e) {

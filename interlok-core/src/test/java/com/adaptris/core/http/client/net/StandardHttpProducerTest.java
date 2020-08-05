@@ -886,13 +886,12 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     return result;
   }
 
-  private class UrlConnectionEncoder extends AdaptrisMessageEncoderImp {
+  private class UrlConnectionEncoder extends AdaptrisMessageEncoderImp<HttpURLConnection, HttpURLConnection> {
 
     @Override
-    public void writeMessage(AdaptrisMessage msg, Object target) throws CoreException {
+    public void writeMessage(AdaptrisMessage msg, HttpURLConnection target) throws CoreException {
       try {
-        HttpURLConnection http = (HttpURLConnection) target;
-        copyAndClose(msg.getInputStream(), http.getOutputStream());
+        copyAndClose(msg.getInputStream(), target.getOutputStream());
       }
       catch (IOException e) {
         throw new CoreException(e);
@@ -900,11 +899,10 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     }
 
     @Override
-    public AdaptrisMessage readMessage(Object source) throws CoreException {
+    public AdaptrisMessage readMessage(HttpURLConnection source) throws CoreException {
       AdaptrisMessage msg = currentMessageFactory().newMessage();
       try {
-        HttpURLConnection http = (HttpURLConnection) source;
-        copyAndClose(http.getInputStream(), msg.getOutputStream());
+        copyAndClose(source.getInputStream(), msg.getOutputStream());
       }
       catch (IOException e) {
         throw new CoreException(e);

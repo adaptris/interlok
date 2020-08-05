@@ -39,7 +39,7 @@ import java.io.OutputStream;
  */
 @XStreamAlias("file-backed-mime-encoder")
 @DisplayOrder(order = {"payloadEncoding", "metadataEncoding", "retainUniqueId"})
-public class FileBackedMimeEncoder extends MimeEncoderImpl {
+public class FileBackedMimeEncoder extends MimeEncoderImpl<File, File> {
 
   public FileBackedMimeEncoder() {
     super();
@@ -47,9 +47,8 @@ public class FileBackedMimeEncoder extends MimeEncoderImpl {
   }
 
   @Override
-  public void writeMessage(AdaptrisMessage msg, Object target) throws CoreException {
+  public void writeMessage(AdaptrisMessage msg, File target) throws CoreException {
     try {
-      File baseFile = asFile(target);
       // Use the message unique id as the message id.
       MultiPartOutput output = new MultiPartOutput(msg.getUniqueId());
       AdaptrisMessageFactory factory = currentMessageFactory();
@@ -59,7 +58,7 @@ public class FileBackedMimeEncoder extends MimeEncoderImpl {
         output.addPart(asMimePart((Exception) msg.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION)),
             EXCEPTION_CONTENT_ID);
       }
-      try (OutputStream out = new FileOutputStream(baseFile)) {
+      try (OutputStream out = new FileOutputStream(target)) {
         // If we are file backed, then lets assume we're large, and we stream to disk first...
         if (factory instanceof FileBackedMessageFactory) {
           output.writeTo(out, ((FileBackedMessageFactory) factory).createTempFile(msg));
@@ -73,23 +72,15 @@ public class FileBackedMimeEncoder extends MimeEncoderImpl {
   }
 
   @Override
-  public AdaptrisMessage readMessage(Object source) throws CoreException {
+  public AdaptrisMessage readMessage(File source) throws CoreException {
     try {
       AdaptrisMessage msg = currentMessageFactory().newMessage();
-      File baseFile = asFile(source);
-      MultiPartFileInput input = new MultiPartFileInput(baseFile);
+      MultiPartFileInput input = new MultiPartFileInput(source);
       addPartsToMessage(input, msg);
       return msg;
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
-  }
-
-  private File asFile(Object o) {
-    if (!(o instanceof File)) {
-      throw new IllegalArgumentException("FileBackedMimeEncoder can only encode/decode from a File");
-    }
-    return (File) o;
   }
 
 }

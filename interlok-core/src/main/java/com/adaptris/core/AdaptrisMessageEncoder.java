@@ -26,7 +26,7 @@ package com.adaptris.core;
  * decoded messages may retain the original unique ID or get a new one.
  * </p>
  */
-public interface AdaptrisMessageEncoder extends AdaptrisMessageTranslator {
+public interface AdaptrisMessageEncoder<T, S> extends AdaptrisMessageTranslator {
 
   /**
    * Encode the <code>AdaptrisMessage</code> object and write it to the supplied
@@ -36,7 +36,7 @@ public interface AdaptrisMessageEncoder extends AdaptrisMessageTranslator {
    * @param target the destination to write to.
    * @throws CoreException wrapping any underlying Exceptions that may occur
    */
-  void writeMessage(AdaptrisMessage msg, Object target) throws CoreException;
+  void writeMessage(AdaptrisMessage msg, T target) throws CoreException;
 
   /**
    * Decode the supplied Object into an <code>AdaptrisMessage</code> object.
@@ -45,7 +45,7 @@ public interface AdaptrisMessageEncoder extends AdaptrisMessageTranslator {
    * @return an <code>AdaptrisMessage</code> created from the object.
    * @throws CoreException wrapping any underlying Exceptions that may occur
    */
-  AdaptrisMessage readMessage(Object source) throws CoreException;
+  AdaptrisMessage readMessage(S source) throws CoreException;
 
   
 }

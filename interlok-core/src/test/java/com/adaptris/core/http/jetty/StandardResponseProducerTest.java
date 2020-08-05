@@ -448,16 +448,15 @@ public class StandardResponseProducerTest extends HttpProducerExample {
     return msg;
   }
 
-  public class MyMimeEncoder extends AdaptrisMessageEncoderImp {
+  public class MyMimeEncoder extends AdaptrisMessageEncoderImp<HttpServletResponse, Object> {
 
     @Override
-    public void writeMessage(AdaptrisMessage msg, Object target) throws CoreException {
-      HttpServletResponse response = (HttpServletResponse) target;
+    public void writeMessage(AdaptrisMessage msg, HttpServletResponse target) throws CoreException {
       try {
         MultiPartOutput output = new MultiPartOutput(msg.getUniqueId());
         output.addPart(msg.getPayload(), "quoted-printable", "payload");
         output.addPart(serializeMetadata(msg.getMetadata()), "quoted-printable", "metadata");
-        try (OutputStream out = new BufferedOutputStream(response.getOutputStream())) {
+        try (OutputStream out = new BufferedOutputStream(target.getOutputStream())) {
           out.write(output.getBytes());
         }
       } catch (Exception e) {
