@@ -95,6 +95,21 @@ public class MultiPayloadMessageMimeEncoderTest {
   }
 
   @Test
+  public void testRoundTripWithEncoding() throws Exception {
+    MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage)messageFactory.newMessage(PAYLOAD_ID[0], STANDARD_PAYLOAD[0], ENCODING);
+    mimeEncoder.setPayloadEncoding("8bit");
+    message.addMetadata(METADATA_KEY, METADATA_VALUE);
+    message.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception(testName.getMethodName()));
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    mimeEncoder.writeMessage(message, out);
+    AdaptrisMessage result = mimeEncoder.readMessage(new ByteArrayInputStream(out.toByteArray()));
+    assertEquals(METADATA_VALUE, result.getMetadataValue(METADATA_KEY));
+    assertEquals(STANDARD_PAYLOAD[0], result.getContent());
+    assertTrue(MessageDigest.isEqual(STANDARD_PAYLOAD[0].getBytes(), result.getPayload()));
+    assertFalse(result.getObjectHeaders().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION));
+  }
+
+  @Test
   public void testRoundTripWithException() throws Exception {
     AdaptrisMessage message = messageFactory.newMessage(PAYLOAD_ID[0], STANDARD_PAYLOAD[0], ENCODING);
     message.addMetadata(METADATA_KEY, METADATA_VALUE);
@@ -109,6 +124,22 @@ public class MultiPayloadMessageMimeEncoderTest {
   }
 
   @Test
+  public void testRoundTripWithReadException() throws Exception {
+    try {
+      AdaptrisMessage message = messageFactory.newMessage(PAYLOAD_ID[0], STANDARD_PAYLOAD[0], ENCODING);
+      message.addMetadata(METADATA_KEY, METADATA_VALUE);
+      message.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception(testName.getMethodName()));
+      ByteArrayOutputStream out = new ByteArrayOutputStream();
+      mimeEncoder.writeMessage(message, out);
+      byte[] bytes = new byte[out.toByteArray().length];
+      mimeEncoder.readMessage(new ByteArrayInputStream(bytes));
+      fail();
+    } catch (Exception e) {
+      /* expected */
+    }
+  }
+
+  @Test
   public void testRoundTripWithNull() throws Exception {
     try{
       AdaptrisMessage message = messageFactory.newMessage(PAYLOAD_ID[0], STANDARD_PAYLOAD[0], ENCODING);
@@ -117,7 +148,7 @@ public class MultiPayloadMessageMimeEncoderTest {
       mimeEncoder.writeMessage(message, null);
       fail();
     } catch (CoreException e) {
-      /* epxected */
+      /* expected */
     }
   }
 }
