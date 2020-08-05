@@ -79,16 +79,15 @@ public class MimeEncoder extends MimeEncoderImpl<OutputStream, InputStream> {
 
   @Override
   public AdaptrisMessage readMessage(InputStream source) throws CoreException {
-    AdaptrisMessage msg = null;
 
     try {
-      msg = currentMessageFactory().newMessage();
+      AdaptrisMessage msg = currentMessageFactory().newMessage();
       BodyPartIterator input = new BodyPartIterator(source);
       addPartsToMessage(input, msg);
+      return msg;
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
-    return msg;
   }
 
   /**
@@ -114,16 +113,10 @@ public class MimeEncoder extends MimeEncoderImpl<OutputStream, InputStream> {
    * @throws CoreException wrapping any underyling exception.
    */
   public AdaptrisMessage decode(byte[] bytes) throws CoreException {
-    AdaptrisMessage msg = null;
-    ByteArrayInputStream in = null;
-    try {
-      in = new ByteArrayInputStream(bytes);
-      msg = readMessage(in);
-      in.close();
-    } catch (IOException e) {
+    try (ByteArrayInputStream in = new ByteArrayInputStream(bytes)) {
+      return readMessage(in);
+    } catch (Exception e) {
       throw new CoreException(e);
     }
-    return msg;
   }
-
 }
