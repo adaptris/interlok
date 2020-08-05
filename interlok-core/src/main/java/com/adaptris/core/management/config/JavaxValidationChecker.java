@@ -1,8 +1,8 @@
 package com.adaptris.core.management.config;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -35,12 +35,11 @@ public class JavaxValidationChecker extends AdapterConfigurationChecker {
     return FRIENDLY_NAME;
   }
 
+
   private List<Exception> violationsToException(Set<ConstraintViolation<Adapter>> violations) {
-    List<Exception> result = new ArrayList<>();
-    for (ConstraintViolation v : violations) {
-      result.add(new CoreException(String.format("Interlok Validation Error: [%1$s]=[%2$s]",
-          v.getPropertyPath(), v.getMessage())));
-    }
-    return result;
+    return violations.stream().map((v) -> new CoreException(String
+        .format("Interlok Validation Error: [%1$s]=[%2$s]", v.getPropertyPath(), v.getMessage())))
+        .collect(Collectors.toList());
   }
+
 }
