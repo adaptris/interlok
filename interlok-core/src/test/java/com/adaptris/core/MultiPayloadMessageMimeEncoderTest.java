@@ -107,4 +107,17 @@ public class MultiPayloadMessageMimeEncoderTest {
     assertTrue(MessageDigest.isEqual(STANDARD_PAYLOAD[0].getBytes(), result.getPayload()));
     assertFalse(result.getObjectHeaders().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION));
   }
+
+  @Test
+  public void testRoundTripWithNull() throws Exception {
+    try{
+      AdaptrisMessage message = messageFactory.newMessage(PAYLOAD_ID[0], STANDARD_PAYLOAD[0], ENCODING);
+      message.addMetadata(METADATA_KEY, METADATA_VALUE);
+      message.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception(testName.getMethodName()));
+      mimeEncoder.writeMessage(message, null);
+      fail();
+    } catch (CoreException e) {
+      /* epxected */
+    }
+  }
 }
