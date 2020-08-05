@@ -4,26 +4,28 @@ import com.adaptris.core.management.BootstrapProperties;
 import com.adaptris.core.management.UnifiedBootstrap;
 
 public enum ConfigurationCheckersEnum {
-  
+
   // **************
   // Available checkers
 
   DESERIALIZATION (new DeserializationConfigurationChecker()),
-  
+
   CLASSPATH_DUPLICATION (new ClasspathDupConfigurationChecker()),
-  
-  SHARED_CONNECTION_USAGE (new SharedConnectionConfigurationChecker());
-  
+
+  JAVAX_VALIDATION(new JavaxValidationChecker()),
+
+  SHARED_CONNECTION_USAGE(new SharedConnectionConfigurationChecker());
+
 //**************
-  
+
   private ConfigurationChecker checker;
-  
+
   ConfigurationCheckersEnum(ConfigurationChecker configurationChecker) {
-    this.setChecker(configurationChecker);
+    setChecker(configurationChecker);
   }
-  
+
   public ConfigurationCheckReport performCheck(BootstrapProperties bootProperties, UnifiedBootstrap bootstrap) {
-    return this.getChecker().performConfigCheck(bootProperties, bootstrap);
+    return getChecker().performConfigCheck(bootProperties, bootstrap);
   };
 
   public ConfigurationChecker getChecker() {

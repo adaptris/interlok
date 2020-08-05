@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,25 +14,21 @@
  * limitations under the License.
 */
 package com.adaptris.core.management;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Properties;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
-
 import com.adaptris.core.Adapter;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.stubs.TempFileUtils;
@@ -56,7 +52,7 @@ public class BootstrapPropertiesTest {
     Object marker = new Object();
     File filename = TempFileUtils.createTrackedFile(testName.getMethodName(), null, marker);
     try (OutputStream o = new FileOutputStream(filename)) {
-      createTestSample().store(o, testName.getMethodName());     
+      createTestSample().store(o, testName.getMethodName());
     }
     BootstrapProperties boot = new BootstrapProperties(filename.getCanonicalPath());
     new BootstrapProperties();
@@ -117,11 +113,9 @@ public class BootstrapPropertiesTest {
   @Test
   public void testIsEnabled() {
     BootstrapProperties boot = new BootstrapProperties(createTestSample());
-    
-    assertFalse(boot.isEnabled(Constants.CFG_XSTREAM_BEAUTIFIED_OUTPUT));
+
     assertTrue(boot.isEnabled(Constants.CFG_KEY_PROXY_AUTHENTICATOR));
     assertTrue(boot.isEnabled(Constants.CFG_KEY_USE_MANAGEMENT_FACTORY_FOR_JMX));
-    assertFalse(boot.isEnabled(Constants.CFG_KEY_VALIDATE_CONFIG));
     assertTrue(boot.isEnabled(Constants.CFG_KEY_LOGGING_RECONFIGURE));
     assertTrue(boot.isEnabled(Constants.CFG_KEY_START_QUIETLY));
     assertFalse(boot.isEnabled(Constants.CFG_KEY_JNDI_SERVER));
@@ -129,31 +123,6 @@ public class BootstrapPropertiesTest {
     assertFalse(boot.isEnabled(Constants.CFG_KEY_LOGGING_RECONFIGURE));
     assertFalse(boot.isEnabled("blahblahblah"));
     assertTrue(BootstrapProperties.isEnabled(createTestSample(), Constants.CFG_KEY_USE_MANAGEMENT_FACTORY_FOR_JMX));
-  }
-
-  @Test
-  public void testGetPropertySubsetPropertiesString() {
-    Properties p = BootstrapProperties.getPropertySubset(createTestSample(), "a");
-    assertEquals(2, p.size());
-  }
-
-  @Test
-  public void testGetPropertySubsetPropertiesStringBoolean() {
-    Properties p = BootstrapProperties.getPropertySubset(createTestSample(), "A", true);
-    assertEquals(2, p.size());
-  }
-
-  @Test
-  public void testGetPropertyIgnoringCasePropertiesStringString() {
-    assertEquals("a.value", BootstrapProperties.getPropertyIgnoringCase(createTestSample(), "A.KEY", "defaultValue"));
-    assertEquals("defaultValue", BootstrapProperties.getPropertyIgnoringCase(createTestSample(), "BLAH", "defaultValue"));
-  }
-
-
-  @Test
-  public void testGetPropertyIgnoringCasePropertiesString() {
-    assertEquals("a.value", BootstrapProperties.getPropertyIgnoringCase(createTestSample(), "A.KEY"));
-    assertNull(BootstrapProperties.getPropertyIgnoringCase(createTestSample(), "BLAH"));
   }
 
   private Properties createTestSample() {

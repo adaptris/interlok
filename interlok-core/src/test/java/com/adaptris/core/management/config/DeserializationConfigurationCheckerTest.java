@@ -19,8 +19,6 @@ public class DeserializationConfigurationCheckerTest {
 
   private DeserializationConfigurationChecker checker;
 
-  @Mock private BootstrapProperties mockBootProperties;
-
   @Mock private AdapterManagerMBean mockAdapterMBean;
 
   @Mock private UnifiedBootstrap mockUnifiedBootstrap;
@@ -32,12 +30,8 @@ public class DeserializationConfigurationCheckerTest {
     openMocks = MockitoAnnotations.openMocks(this);
 
     checker = new DeserializationConfigurationChecker();
-
-    when(mockUnifiedBootstrap.createAdapter())
-        .thenReturn(mockAdapterMBean);
-
-    when(mockAdapterMBean.getConfiguration())
-        .thenReturn(createAdapterConfig());
+    when(mockUnifiedBootstrap.createAdapter()).thenReturn(mockAdapterMBean);
+    when(mockAdapterMBean.getConfiguration()).thenReturn(createAdapterConfig());
   }
 
   @After
@@ -47,15 +41,14 @@ public class DeserializationConfigurationCheckerTest {
 
   @Test
   public void testUnmarshallSuccess() throws Exception {
+    BootstrapProperties mockBootProperties = new MockBootProperties(createAdapterConfig());
     ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties, mockUnifiedBootstrap);
     assertTrue(report.isCheckPassed());
   }
 
   @Test
   public void testUnmarshallFailureBadXml() throws Exception {
-    when(mockAdapterMBean.getConfiguration())
-        .thenReturn("xxx");
-
+    BootstrapProperties mockBootProperties = new MockBootProperties("xxx");
     ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties, mockUnifiedBootstrap);
     assertFalse(report.isCheckPassed());
   }
