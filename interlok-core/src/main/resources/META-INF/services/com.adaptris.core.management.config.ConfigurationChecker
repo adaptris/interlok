@@ -1,0 +1,4 @@
+com.adaptris.core.management.config.DeserializationConfigurationChecker
+com.adaptris.core.management.config.ClasspathDupConfigurationChecker
+com.adaptris.core.management.config.JavaxValidationChecker
+com.adaptris.core.management.config.SharedConnectionConfigurationChecker

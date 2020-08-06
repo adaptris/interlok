@@ -12,7 +12,7 @@ import io.github.classgraph.ScanResult;
 
 public class ClasspathDupConfigurationChecker implements ConfigurationChecker {
 
-  private static final String FRIENDLY_NAME = "Classpath duplication check.";
+  private static final String FRIENDLY_NAME = "Classpath duplication check";
 
   private boolean debug;
 
