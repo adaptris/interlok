@@ -3,8 +3,10 @@ package com.adaptris.core.management.config;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
 import org.junit.Before;
 import org.junit.Test;
+
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.Channel;
@@ -97,14 +99,17 @@ public class SharedConnectionConfigurationCheckerTest {
       AdaptrisConnection serviceConnection) throws Exception {
 
     Adapter adapter = new Adapter();
-    if(sharedComponent != null)
+    if(sharedComponent != null) {
       adapter.getSharedComponents().addConnection(sharedComponent);
+    }
 
     Channel channel = new Channel();
-    if(consumeConnection != null)
+    if(consumeConnection != null) {
       channel.setConsumeConnection(consumeConnection);
-    if(produceConnection != null)
+    }
+    if(produceConnection != null) {
       channel.setProduceConnection(produceConnection);
+    }
     if(serviceConnection != null) {
       StandardWorkflow standardWorkflow = new StandardWorkflow();
       StandaloneProducer sp = new StandaloneProducer(serviceConnection, new NullMessageProducer());

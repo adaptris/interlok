@@ -6,14 +6,15 @@ import java.util.List;
 public class ConfigurationCheckReport {
 
   private String checkName;
-    
+  private String checkerClassName;
+
   private List<String> warnings;
-  
+
   private List<Exception> failureExceptions;
-  
+
   public ConfigurationCheckReport() {
-    this.setWarnings(new ArrayList<>());
-    this.setFailureExceptions(new ArrayList<>());
+    setWarnings(new ArrayList<>());
+    setFailureExceptions(new ArrayList<>());
   }
 
   public String getCheckName() {
@@ -24,8 +25,16 @@ public class ConfigurationCheckReport {
     this.checkName = checkName;
   }
 
+  public String getCheckClassName() {
+    return checkerClassName;
+  }
+
+  public void setCheckClassName(String checkerClassName) {
+    this.checkerClassName = checkerClassName;
+  }
+
   public boolean isCheckPassed() {
-    return this.getWarnings().size() == 0 && this.getFailureExceptions().size() == 0;
+    return getWarnings().isEmpty() && getFailureExceptions().isEmpty();
   }
 
   public List<Exception> getFailureExceptions() {
@@ -35,7 +44,7 @@ public class ConfigurationCheckReport {
   public void setFailureExceptions(List<Exception> failureExceptions) {
     this.failureExceptions = failureExceptions;
   }
-  
+
   public List<String> getWarnings() {
     return warnings;
   }
@@ -44,27 +53,29 @@ public class ConfigurationCheckReport {
     this.warnings = warnings;
   }
 
+  @Override
   public String toString() {
     StringBuffer buffer = new StringBuffer();
-    
-    buffer.append(this.getCheckName());
+
+    buffer.append(getCheckName());
     buffer.append(": ");
-    if(this.isCheckPassed())
+    if(isCheckPassed()) {
       buffer.append("\nPassed.");
-    if(this.getFailureExceptions().size() > 0) {
+    }
+    if(getFailureExceptions().size() > 0) {
       buffer.append("\nFailed with exceptions: ");
-      this.getFailureExceptions().forEach(exception -> {
+      getFailureExceptions().forEach(exception -> {
         buffer.append("\n" + exception.getMessage());
       });
     }
-    if(this.getWarnings().size() > 0) {
+    if(getWarnings().size() > 0) {
       buffer.append("\nWarnings found;");
-      this.getWarnings().forEach(warningText -> {
+      getWarnings().forEach(warningText -> {
         buffer.append("\n" + warningText);
       });
     }
-    
+
     return buffer.toString();
   }
-  
+
 }

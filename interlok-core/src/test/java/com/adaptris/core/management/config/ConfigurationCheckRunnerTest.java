@@ -5,12 +5,17 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
+
 import java.util.List;
+import java.util.ServiceLoader;
+import java.util.stream.StreamSupport;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.Channel;
@@ -24,7 +29,9 @@ import com.adaptris.interlok.util.Closer;
 
 public class ConfigurationCheckRunnerTest {
 
-  private static final String SHARED_CONN_TEST_FRIENDLY_NAME = "Shared connection check.";
+  private static final String SHARED_CONN_TEST_FRIENDLY_NAME = "Shared connection check";
+
+  private static ServiceLoader<ConfigurationChecker> configurationCheckers = ServiceLoader.load(ConfigurationChecker.class);
 
   private ConfigurationCheckRunner checkRunner;
 
@@ -40,10 +47,10 @@ public class ConfigurationCheckRunnerTest {
     checkRunner = new ConfigurationCheckRunner();
 
     when(mockUnifiedBootstrap.createAdapter())
-        .thenReturn(mockAdapterMBean);
+    .thenReturn(mockAdapterMBean);
 
     when(mockAdapterMBean.getConfiguration())
-        .thenReturn(createAdapterConfig());
+    .thenReturn(createAdapterConfig());
 
     System.setProperty("interlok.bootstrap.debug", "true");
   }
@@ -61,7 +68,7 @@ public class ConfigurationCheckRunnerTest {
     BootstrapProperties mockProp = new MockBootProperties(xml);
     List<ConfigurationCheckReport> reports =
         checkRunner.runChecks(mockProp, mockUnifiedBootstrap);
-    assertEquals(ConfigurationCheckersEnum.values().length, reports.size());
+    assertEquals(configurationCheckersCount(), reports.size());
     for (ConfigurationCheckReport report : reports) {
       if (report.getCheckName().equals(SHARED_CONN_TEST_FRIENDLY_NAME)) {
         assertTrue(report.isCheckPassed());
@@ -76,7 +83,7 @@ public class ConfigurationCheckRunnerTest {
         this.createAdapterConfig(new NullConnection("SharedNullConnection"), null, null);
     BootstrapProperties mockProp = new MockBootProperties(xml);
     List<ConfigurationCheckReport> reports = checkRunner.runChecks(mockProp, mockUnifiedBootstrap);
-    assertEquals(ConfigurationCheckersEnum.values().length, reports.size());
+    assertEquals(configurationCheckersCount(), reports.size());
 
     for (ConfigurationCheckReport report : reports) {
       if(report.getCheckName().equals(SHARED_CONN_TEST_FRIENDLY_NAME)) {
@@ -90,14 +97,17 @@ public class ConfigurationCheckRunnerTest {
   private String createAdapterConfig(AdaptrisConnection sharedComponent,
       AdaptrisConnection consumeConnection, AdaptrisConnection produceConnection) throws Exception {
     Adapter adapter = new Adapter();
-    if(sharedComponent != null)
+    if(sharedComponent != null) {
       adapter.getSharedComponents().addConnection(sharedComponent);
+    }
 
     Channel channel = new Channel();
-    if(consumeConnection != null)
+    if(consumeConnection != null) {
       channel.setConsumeConnection(consumeConnection);
-    if(produceConnection != null)
+    }
+    if(produceConnection != null) {
       channel.setProduceConnection(produceConnection);
+    }
 
     adapter.getChannelList().add(channel);
     return DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
@@ -107,5 +117,9 @@ public class ConfigurationCheckRunnerTest {
     Adapter adapter = new Adapter();
     adapter.setUniqueId("MyAdapter");
     return DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
+  }
+
+  public long configurationCheckersCount() {
+    return StreamSupport.stream(configurationCheckers.spliterator(), false).count();
   }
 }
