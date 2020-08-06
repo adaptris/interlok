@@ -16,10 +16,8 @@ public class SharedConnectionConfigurationChecker implements ConfigurationChecke
   private static final String XPATH_REFERENCED_CONNECTIONS = "//*[@class='shared-connection']/lookup-name";
 
   @Override
-  public ConfigurationCheckReport performConfigCheck(BootstrapProperties bootProperties, UnifiedBootstrap bootstrap) {
-    ConfigurationCheckReport report = new ConfigurationCheckReport();
-    report.setCheckName(getFriendlyName());
-
+  public ConfigurationCheckReport performConfigCheck(ConfigurationCheckReport report, BootstrapProperties bootProperties,
+      UnifiedBootstrap bootstrap) {
     try {
       XmlUtils xmlUtils = new XmlUtils();
       xmlUtils.setSource(bootProperties.getConfigurationStream());

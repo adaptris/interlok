@@ -3,11 +3,13 @@ package com.adaptris.core.management.config;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import com.adaptris.core.Adapter;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.management.BootstrapProperties;

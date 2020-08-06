@@ -1,10 +1,13 @@
 package com.adaptris.core.management.config;
 
 import java.util.Map;
+
 import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.core.management.BootstrapProperties;
 import com.adaptris.core.management.Constants;
 import com.adaptris.core.management.UnifiedBootstrap;
+
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.Resource;
 import io.github.classgraph.ResourceList;
@@ -18,10 +21,8 @@ public class ClasspathDupConfigurationChecker implements ConfigurationChecker {
 
   @SuppressWarnings("resource")
   @Override
-  public ConfigurationCheckReport performConfigCheck(BootstrapProperties bootProperties, UnifiedBootstrap bootstrapProperties) {
-    ConfigurationCheckReport report = new ConfigurationCheckReport();
-    report.setCheckName(getFriendlyName());
-
+  public ConfigurationCheckReport performConfigCheck(ConfigurationCheckReport report, BootstrapProperties bootProperties,
+      UnifiedBootstrap bootstrapProperties) {
     boolean passed = true;
     try (ScanResult result = new ClassGraph().scan()) {
       for (Map.Entry<String, ResourceList> dup : result.getAllResources().classFilesOnly().findDuplicatePaths()) {
@@ -38,10 +39,11 @@ public class ClasspathDupConfigurationChecker implements ConfigurationChecker {
       }
     }
     if(!passed) {
-      if (debugMode())
+      if (debugMode()) {
         report.getWarnings().add("Possible duplicates found.  Details above.");
-      else
+      } else {
         report.getWarnings().add("Possible duplicates found.  Re-run with '-Dinterlok.bootstrap.debug=true' for more details.");
+      }
     }
 
     return report;
