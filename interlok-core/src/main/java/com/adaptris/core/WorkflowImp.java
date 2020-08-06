@@ -758,7 +758,6 @@ public abstract class WorkflowImp implements Workflow {
       log.error(logMsg, e);
     }
     msg.addObjectHeader(OBJ_METADATA_EXCEPTION, e);
-    msg.addObjectHeader(OBJ_METADATA_MESSAGE_FAILED, Boolean.TRUE);
     handleBadMessage(msg);
   }
 

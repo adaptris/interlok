@@ -16,6 +16,9 @@
 
 package com.adaptris.core;
 
+import static com.adaptris.core.CoreConstants.OBJ_METADATA_MESSAGE_FAILED;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+
 import java.util.function.Consumer;
 import com.adaptris.core.util.LifecycleHelper;
 
@@ -110,19 +113,28 @@ public abstract class StandardWorkflowImpl extends WorkflowImp {
       getServiceCollection().doService(wip);
       doProduce(wip);
       logSuccess(wip, start);
+      ListenerCallbackHelper.handleSuccessCallback(wip);
     } catch (ServiceException e) {
       handleBadMessage("Exception from ServiceCollection", e, copyExceptionHeaders(wip, msg));
+      handleFailureCallback(msg);
     } catch (ProduceException e) {
       wip.addEvent(getProducer(), false); // generate event
       handleBadMessage("Exception producing msg", e, copyExceptionHeaders(wip, msg));
       handleProduceException();
+      handleFailureCallback(msg);
     } catch (Exception e) { // all other Exc. inc. runtime
       handleBadMessage("Exception processing message", e, copyExceptionHeaders(wip, msg));
+      handleFailureCallback(msg);
     } finally {
       sendMessageLifecycleEvent(wip);
-   // handle success or failure callback here.
-      ListenerCallbackHelper.handleCallback(wip);
     }
     workflowEnd(msg, wip);
+  }
+
+  private void handleFailureCallback(AdaptrisMessage msg) {
+    // Some message error handlers may not deem a message as failed immediately, like the retry handler.
+    if(defaultIfNull((Boolean) msg.getObjectHeaders().get(OBJ_METADATA_MESSAGE_FAILED), Boolean.FALSE)) {
+      ListenerCallbackHelper.handleFailureCallback(msg);
+    }    
   }
 }

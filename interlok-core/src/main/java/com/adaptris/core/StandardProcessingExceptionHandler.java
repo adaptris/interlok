@@ -73,6 +73,7 @@ public class StandardProcessingExceptionHandler extends RootProcessingExceptionH
    */
   @Override
   public synchronized void handleProcessingException(AdaptrisMessage msg) {
+    msg.getObjectHeaders().put(CoreConstants.OBJ_METADATA_MESSAGE_FAILED, true);
     try {
       if (getProcessingExceptionService() != null) {
         getProcessingExceptionService().doService(msg);

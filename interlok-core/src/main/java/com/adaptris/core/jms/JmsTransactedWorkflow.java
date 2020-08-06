@@ -113,13 +113,14 @@ public final class JmsTransactedWorkflow extends StandardWorkflow {
     else {
       log.error(logMsg, e);
     }
-    if (!(retrieveActiveMsgErrorHandler() instanceof NullProcessingExceptionHandler)) {
-      msg.getObjectHeaders().put(CoreConstants.OBJ_METADATA_EXCEPTION, e);
-      handleBadMessage(msg);
-      if (!isStrict()) {
-        LAST_MSG_FAILED.set(Boolean.FALSE);
-      }
+    msg.getObjectHeaders().put(CoreConstants.OBJ_METADATA_EXCEPTION, e);
+    handleBadMessage(msg);
+    if (!isStrict()) {
+      LAST_MSG_FAILED.set(Boolean.FALSE);
+      // If we want the message to pass (even though the workflow thinks it's failed) then lets stick the success callback into the failure callback.
+      msg.getObjectHeaders().put(CoreConstants.OBJ_METADATA_ON_FAILURE_CALLBACK, msg.getObjectHeaders().get(CoreConstants.OBJ_METADATA_ON_SUCCESS_CALLBACK));
     }
+    
   }
 
   boolean lastMessageFailed() {

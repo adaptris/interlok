@@ -54,9 +54,11 @@ public class MockMessageListener implements AdaptrisMessageListener, MessageCoun
     ListenerCallbackHelper.prepare(msg, success, failure);
     try {
       producer.produce(msg);
+      ListenerCallbackHelper.handleSuccessCallback(msg);
     } catch (ProduceException e) {
+      ListenerCallbackHelper.handleFailureCallback(msg);
     } finally {
-      ListenerCallbackHelper.handleCallback(msg);
+      
     }
     if (waitTime != -1) {
       try {

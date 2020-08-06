@@ -20,6 +20,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -29,11 +31,12 @@ import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.awaitility.Awaitility;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.adaptris.core.services.AlwaysFailService;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.core.services.metadata.AddMetadataService;
@@ -640,6 +643,12 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
           (m) -> {
             onSuccess.set(false);
           });
+      
+      Awaitility.await()
+        .atMost(Duration.ofSeconds(2))
+      .with()
+        .pollInterval(Duration.ofMillis(100))
+        .until(onSuccess::get);
       
       assertTrue(onSuccess.get());
     } finally {

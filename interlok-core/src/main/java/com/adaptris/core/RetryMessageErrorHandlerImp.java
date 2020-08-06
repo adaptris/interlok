@@ -16,6 +16,9 @@
 
 package com.adaptris.core;
 
+import static com.adaptris.core.CoreConstants.OBJ_METADATA_ON_FAILURE_CALLBACK;
+import static com.adaptris.core.CoreConstants.OBJ_METADATA_ON_SUCCESS_CALLBACK;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,6 +33,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+
 import javax.management.MalformedObjectNameException;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.runtime.ParentRuntimeInfoComponent;
@@ -77,8 +82,6 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
 
   @Override
   public synchronized void handleProcessingException(AdaptrisMessage msg) {
-    // we will only set this to true if our retries fail.
-    msg.getObjectHeaders().put(CoreConstants.OBJ_METADATA_MESSAGE_FAILED, false);
     if (shouldFail(msg) || failAll) {
       failMessage(msg);
     }
@@ -253,7 +256,9 @@ public abstract class RetryMessageErrorHandlerImp extends StandardProcessingExce
         Workflow workflow = filterStarted(registeredWorkflows()).get(msg.getMetadataValue(Workflow.WORKFLOW_ID_KEY));
         if (workflow != null) {
           log.trace("Retrying message [{}] in workflow [{}]", msg.getUniqueId(), workflow.obtainWorkflowId());
-          workflow.onAdaptrisMessage(msg);
+          workflow.onAdaptrisMessage(msg,
+              defaultIfNull((Consumer) msg.getObjectHeaders().get(OBJ_METADATA_ON_SUCCESS_CALLBACK), (o) -> {   }),
+              defaultIfNull((Consumer) msg.getObjectHeaders().get(OBJ_METADATA_ON_FAILURE_CALLBACK), (o) -> {   }));
         }
         else {
           log.warn("Workflow [{}] not registered, or not started, failing message", msg.getMetadataValue(Workflow.WORKFLOW_ID_KEY));
