@@ -17,7 +17,6 @@
 package com.adaptris.core.http.client.net;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Test;
@@ -48,7 +47,6 @@ public class BranchingHttpRequestServiceTest extends HttpServiceExample {
   public void testIsBranching() throws Exception {
     BranchingHttpRequestService service = new BranchingHttpRequestService();
     assertTrue(service.isBranching());
-    assertNull(service.getDefaultServiceId());
   }
 
   @Test
@@ -57,7 +55,7 @@ public class BranchingHttpRequestServiceTest extends HttpServiceExample {
     Channel c = HttpHelper.createAndStartChannel(mock);
     BranchingHttpRequestService service =
         new BranchingHttpRequestService(HttpHelper.createURL(c))
-            .withDefaultServiceId("DefaultServiceId").withContentType("text/complicated");
+            .withContentType("text/complicated");
     AdaptrisMessage msg = new DefectiveMessageFactory().newMessage(TEXT);
     try {
       c.requestStart();
@@ -81,7 +79,6 @@ public class BranchingHttpRequestServiceTest extends HttpServiceExample {
             .withUrl(HttpHelper.createProduceDestination(c).getDestination())
             .withContentType("text/complicated");
 
-    service.setDefaultServiceId("DefaultServiceId");
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
     try {
       c.requestStart();
@@ -94,6 +91,52 @@ public class BranchingHttpRequestServiceTest extends HttpServiceExample {
     assertEquals(1, mock.messageCount());
     assertEquals("DefaultServiceId", msg.getNextServiceId());
   }
+
+  @Test
+  public void testService_BlankServiceId() throws Exception {
+    MockMessageProducer mock = new MockMessageProducer();
+    Channel c = HttpHelper.createAndStartChannel(mock);
+    BranchingHttpRequestService service =
+        new BranchingHttpRequestService()
+            .withUrl(HttpHelper.createProduceDestination(c).getDestination())
+            .withContentType("text/complicated");
+
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
+    msg.setNextServiceId("should-be-overriden");
+    try {
+      c.requestStart();
+      execute(service, msg);
+      waitForMessages(mock, 1);
+    } finally {
+      HttpHelper.stopChannelAndRelease(c);
+    }
+    assertEquals(1, mock.messageCount());
+    assertEquals("", msg.getNextServiceId());
+  }
+
+  @Test
+  public void testService_NullServiceId() throws Exception {
+    MockMessageProducer mock = new MockMessageProducer();
+    Channel c = HttpHelper.createAndStartChannel(mock);
+
+    BranchingHttpRequestService service = new BranchingHttpRequestService()
+        .withDefaultServiceId(null)
+        .withUrl(HttpHelper.createProduceDestination(c).getDestination())
+        .withContentType("text/complicated");
+
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
+    msg.setNextServiceId("should-not-be-overriden");
+    try {
+      c.requestStart();
+      execute(service, msg);
+      waitForMessages(mock, 1);
+    } finally {
+      HttpHelper.stopChannelAndRelease(c);
+    }
+    assertEquals(1, mock.messageCount());
+    assertEquals("should-not-be-overriden", msg.getNextServiceId());
+  }
+
 
   @Test
   public void testService_ExactMatch() throws Exception {
