@@ -17,7 +17,9 @@
 package com.adaptris.core.jms;
 
 import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -28,7 +30,6 @@ import com.adaptris.core.AdaptrisMessageConsumer;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullMessageConsumer;
-import com.adaptris.core.NullProcessingExceptionHandler;
 import com.adaptris.core.NullProduceExceptionHandler;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ProduceExceptionHandler;

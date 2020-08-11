@@ -71,20 +71,6 @@ public class MultiProducerWorkflow extends StandardWorkflow {
     super();
     standaloneProducers = new ArrayList<StandaloneProducer>();
   }
-
-  /**
-   * @see AdaptrisMessageListener#onAdaptrisMessage(AdaptrisMessage)
-   */
-  @Override
-  public synchronized void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success) {
-    ListenerCallbackHelper.prepare(msg, success);
-    if (!obtainChannel().isAvailable()) {
-      handleChannelUnavailable(msg); // make pluggable?
-    }
-    else {
-      onMessage(msg);
-    }
-  }
   
   /**
    * @see AdaptrisMessageListener#onAdaptrisMessage(AdaptrisMessage)

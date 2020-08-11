@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageListener;
+import com.adaptris.core.Channel;
 import com.adaptris.core.ListenerCallbackHelper;
 import com.adaptris.core.ProduceException;
 
@@ -31,7 +32,10 @@ import com.adaptris.core.ProduceException;
  * @author $Author: $
  */
 public class MockMessageListener implements AdaptrisMessageListener, MessageCounter {
+  
   private MockMessageProducer producer;
+  
+  private Channel channel;
 
   private long waitTime = -1;
 
@@ -84,5 +88,13 @@ public class MockMessageListener implements AdaptrisMessageListener, MessageCoun
   @Override
   public String friendlyName() {
     return "MockMessageListener";
+  }
+
+  public Channel obtainChannel() {
+    return channel;
+  }
+
+  public void setChannel(Channel channel) {
+    this.channel = channel;
   }
 }
