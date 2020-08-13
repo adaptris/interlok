@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,19 +17,17 @@
 package com.adaptris.core.management;
 
 import static com.adaptris.core.management.Constants.CFG_KEY_START_QUIETLY;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-
 import com.adaptris.core.management.config.ConfigurationCheckRunner;
 import com.adaptris.core.management.logging.LoggingConfigurator;
 import com.adaptris.core.util.ManagedThreadFactory;
 
 /**
  * Abstract boostrap that contains standard commandline parsing.
- * 
+ *
  * @author lchan
  */
 abstract class CmdLineBootstrap {
@@ -49,15 +47,9 @@ abstract class CmdLineBootstrap {
       "-file", "--file"
   };
 
-  private static final String[] ARG_JETTY_ONLY = new String[]
-  {
-          "-jettyonly", "--jettyonly", "-jetty-only", "--jetty-only"
-  };
-
   private transient String bootstrapResource;
   private transient ArgUtil arguments;
   private transient boolean configCheckOnly = false;
-  private transient boolean jettyOnly = false;
 
   protected boolean configCheckOnly() {
     return configCheckOnly;
@@ -89,6 +81,7 @@ abstract class CmdLineBootstrap {
     SystemPropertiesUtil.addSystemProperties(bootProperties);
     SystemPropertiesUtil.addJndiProperties(bootProperties);
     ProxyAuthenticator.register(bootProperties);
+    bootProperties.reconfigureLogging();
     startAdapter(bootProperties);
   }
 
@@ -96,12 +89,7 @@ abstract class CmdLineBootstrap {
     boolean startQuietly = bootProperties.isEnabled(CFG_KEY_START_QUIETLY);
     final UnifiedBootstrap bootstrap = new UnifiedBootstrap(bootProperties);
     if (!configCheckOnly()) {
-      if (jettyOnly) {
-        System.err.println("Starting Jetty/UI without a local adapter");
-        bootstrap.init(null);
-      } else {
-        bootstrap.init(bootstrap.createAdapter());
-      }
+      bootstrap.init(bootstrap.createAdapter());
       Runtime.getRuntime().addShutdownHook(new ShutdownHandler(bootProperties));
       launchAdapter(bootstrap, startQuietly);
     }
@@ -112,10 +100,10 @@ abstract class CmdLineBootstrap {
         if(report.getFailureExceptions().size() > 0)
           fatals.addAll(report.getFailureExceptions());
       });
-      
+
    // INTERLOK-1455 Shutdown the logging subsystem if we're only just doing a config check.
       LoggingConfigurator.newConfigurator().requestShutdown();
-      
+
       System.err.println("\nConfig check only; terminating");
       System.exit(fatals.size() > 0 ? 1 : 0);
     }
@@ -136,7 +124,6 @@ abstract class CmdLineBootstrap {
       }
       configCheckOnly = true;
     }
-    jettyOnly = arguments.hasArgument(ARG_JETTY_ONLY);
   }
 
   /**
