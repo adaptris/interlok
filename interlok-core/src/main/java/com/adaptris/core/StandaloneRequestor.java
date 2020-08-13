@@ -16,11 +16,11 @@
 
 package com.adaptris.core;
 
-import static com.adaptris.core.AdaptrisMessageImp.copyPayload;
-import java.io.IOException;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.core.util.MessageHelper;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -76,29 +76,23 @@ public class StandaloneRequestor extends StandaloneProducer {
         copy(reply, m);
       }
     }
-    catch (CoreException e) {
-      throw new ServiceException(e);
+    catch (Exception e) {
+      throw ExceptionHelper.wrapServiceException(e);
     }
   }
 
-  private void copy(AdaptrisMessage src, AdaptrisMessage dest)
-      throws CoreException {
-    try {
-      dest.setContentEncoding(src.getContentEncoding());
-      copyPayload(src, dest);
-      dest.getObjectHeaders().putAll(src.getObjectHeaders());
-      // Well the thing we shouldn't need to do is set the unique Id I guess.
-      //
-      dest.setUniqueId(src.getUniqueId());
-      for (Object md : src.getMetadata()) {
-        dest.addMetadata((MetadataElement) md);
-      }
-      for (Object marker : src.getMessageLifecycleEvent().getMleMarkers()) {
-        dest.getMessageLifecycleEvent().addMleMarker((MleMarker) marker);
-      }
+  private void copy(AdaptrisMessage src, AdaptrisMessage dest) throws Exception {
+    dest.setContentEncoding(src.getContentEncoding());
+    MessageHelper.copyPayload(src, dest);
+    dest.getObjectHeaders().putAll(src.getObjectHeaders());
+    // Well the thing we shouldn't need to do is set the unique Id I guess.
+    //
+    dest.setUniqueId(src.getUniqueId());
+    for (Object md : src.getMetadata()) {
+      dest.addMetadata((MetadataElement) md);
     }
-    catch (IOException e) {
-      throw new CoreException(e);
+    for (Object marker : src.getMessageLifecycleEvent().getMleMarkers()) {
+      dest.getMessageLifecycleEvent().addMleMarker((MleMarker) marker);
     }
   }
 

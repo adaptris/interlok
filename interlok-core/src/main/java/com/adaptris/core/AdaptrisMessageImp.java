@@ -33,15 +33,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.MessageHelper;
 import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.util.IdGenerator;
-import com.adaptris.util.stream.StreamUtil;
 
 /**
  * <p>
@@ -490,17 +489,12 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   /**
    * Copy the payload from one AdaptrisMessage to another.
    *
-   * @param src the source adaptris message
-   * @param dest the destination adaptris message
-   * @throws IOException on exception
+   * @deprecated since 3.11.0 use MessageHelper#copyPayload(AdaptrisMessage, AdaptrisMessage)
+   *             instead.
    */
-  public static void copyPayload(AdaptrisMessage src, AdaptrisMessage dest) throws IOException {
-    StreamUtil.copyAndClose(src.getInputStream(), dest.getOutputStream());
-  }
-
   @Deprecated
-  protected static boolean areEqual(String s1, String s2) {
-    return StringUtils.equals(s1, s2);
+  public static void copyPayload(AdaptrisMessage src, AdaptrisMessage dest) throws IOException {
+    MessageHelper.copyPayload(src, dest);
   }
 
   private String getValue(String key) {

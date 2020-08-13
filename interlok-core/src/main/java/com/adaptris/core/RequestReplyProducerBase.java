@@ -18,9 +18,8 @@ import java.util.Optional;
 import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.core.lms.FileBackedMessage;
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.util.stream.StreamUtil;
+import com.adaptris.core.util.MessageHelper;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -49,13 +48,7 @@ public abstract class RequestReplyProducerBase extends AdaptrisMessageProducerIm
   protected void copyReplyContents(AdaptrisMessage reply, AdaptrisMessage original)
       throws ProduceException {
     try {
-      if (reply instanceof FileBackedMessage && original instanceof FileBackedMessage) {
-        ((FileBackedMessage) original).initialiseFrom(((FileBackedMessage) reply).currentSource());
-        // INTERLOK-2189 stop the reply from going out of scope.
-        ((FileBackedMessage) original).addObjectHeader(reply.getUniqueId(), reply);
-      } else {
-        StreamUtil.copyAndClose(reply.getInputStream(), original.getOutputStream());
-      }
+      MessageHelper.copyPayload(reply, original);
     } catch (Exception e) {
       throw ExceptionHelper.wrapProduceException(e);
     }
