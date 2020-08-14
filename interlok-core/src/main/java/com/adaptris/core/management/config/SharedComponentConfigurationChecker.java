@@ -24,23 +24,23 @@ public abstract class SharedComponentConfigurationChecker implements Configurati
       XmlUtils xmlUtils = new XmlUtils();
       xmlUtils.setSource(bootProperties.getConfigurationStream());
 
-      List<String> availableConnections = Arrays.asList(xmlUtils.getMultipleTextItems(xpathAvailableComponents));
-      List<String> referencedConnections = Arrays.asList(xmlUtils.getMultipleTextItems(xpathReferencedComponents));
+      List<String> availableComponents = Arrays.asList(xmlUtils.getMultipleTextItems(xpathAvailableComponents));
+      List<String> referencedComponents = Arrays.asList(xmlUtils.getMultipleTextItems(xpathReferencedComponents));
 
       // **********************************
-      // Check all shared connections are used.
-      availableConnections.forEach(connection -> {
-        if(!referencedConnections.contains(connection)) {
-          report.getWarnings().add("Shared " + componentType + " unused: " + connection);
+      // Check all shared components are used.
+      availableComponents.forEach(component -> {
+        if (!referencedComponents.contains(component)) {
+          report.getWarnings().add("Shared " + componentType + " unused: " + component);
         }
       });
 
       // **********************************
-      // Check all referenced connections exist.
-      referencedConnections.forEach(connection -> {
-        if(!availableConnections.contains(connection)) {
+      // Check all referenced components exist.
+      referencedComponents.forEach(component -> {
+        if(!availableComponents.contains(component)) {
           report.getFailureExceptions()
-              .add(new ConfigurationException("Shared " + componentType + " does not exist in shared components: " + connection));
+          .add(new ConfigurationException("Shared " + componentType + " does not exist in shared components: " + component));
         }
       });
 
