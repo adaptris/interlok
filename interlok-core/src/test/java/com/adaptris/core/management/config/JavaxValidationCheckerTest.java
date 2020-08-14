@@ -20,7 +20,7 @@ public class JavaxValidationCheckerTest {
 
     BootstrapProperties mockBootProperties =
         new MockBootProperties(toString(createAdapterConfig(true)));
-    ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties, null);
+    ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties);
     assertTrue(report.isCheckPassed());
   }
 

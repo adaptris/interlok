@@ -10,7 +10,6 @@ import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.config.ConfigPreProcessorLoader;
 import com.adaptris.core.config.DefaultPreProcessorLoader;
 import com.adaptris.core.management.BootstrapProperties;
-import com.adaptris.core.management.UnifiedBootstrap;
 
 import lombok.NoArgsConstructor;
 
@@ -20,8 +19,7 @@ public abstract class AdapterConfigurationChecker implements ConfigurationChecke
   private transient ConfigPreProcessorLoader loader = new DefaultPreProcessorLoader();
 
   @Override
-  public ConfigurationCheckReport performConfigCheck(ConfigurationCheckReport report, BootstrapProperties config,
-      UnifiedBootstrap bootstrap) {
+  public ConfigurationCheckReport performConfigCheck(ConfigurationCheckReport report, BootstrapProperties config) {
     try {
       String xml = loader.load(config).process(readAdapterXml(config));
       Adapter adapter = (Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(xml);

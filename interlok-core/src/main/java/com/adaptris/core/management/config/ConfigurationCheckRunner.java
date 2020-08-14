@@ -14,7 +14,7 @@ public class ConfigurationCheckRunner {
   public List<ConfigurationCheckReport> runChecks(BootstrapProperties bootProperties, UnifiedBootstrap bootstrap) {
     List<ConfigurationCheckReport> reports = new ArrayList<>();
     configurationCheckers.forEach(checker -> {
-      reports.add(checker.performConfigCheck(bootProperties, bootstrap));
+      reports.add(checker.performConfigCheck(bootProperties));
     });
 
     return reports;

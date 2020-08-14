@@ -6,7 +6,6 @@ import org.apache.commons.lang3.BooleanUtils;
 
 import com.adaptris.core.management.BootstrapProperties;
 import com.adaptris.core.management.Constants;
-import com.adaptris.core.management.UnifiedBootstrap;
 
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.Resource;
@@ -21,8 +20,7 @@ public class ClasspathDupConfigurationChecker implements ConfigurationChecker {
 
   @SuppressWarnings("resource")
   @Override
-  public ConfigurationCheckReport performConfigCheck(ConfigurationCheckReport report, BootstrapProperties bootProperties,
-      UnifiedBootstrap bootstrapProperties) {
+  public ConfigurationCheckReport performConfigCheck(ConfigurationCheckReport report, BootstrapProperties bootProperties) {
     boolean passed = true;
     try (ScanResult result = new ClassGraph().scan()) {
       for (Map.Entry<String, ResourceList> dup : result.getAllResources().classFilesOnly().findDuplicatePaths()) {

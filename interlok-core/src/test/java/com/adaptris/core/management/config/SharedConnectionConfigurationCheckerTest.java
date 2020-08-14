@@ -30,7 +30,7 @@ public class SharedConnectionConfigurationCheckerTest {
   @Test
   public void testCompleteFailureBadXml() throws Exception {
     BootstrapProperties mockBootProperties = new MockBootProperties("bad-data");
-    ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties, null);
+    ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties);
     assertFalse(report.isCheckPassed());
     assertTrue(report.getFailureExceptions().size() > 0);
   }
@@ -39,7 +39,7 @@ public class SharedConnectionConfigurationCheckerTest {
   public void testNoConnections() throws Exception {
     BootstrapProperties mockBootProperties =
         new MockBootProperties(createAdapterConfig(null, null, null, null));
-    ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties, null);
+    ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties);
     assertTrue(report.isCheckPassed());
   }
 
@@ -48,7 +48,7 @@ public class SharedConnectionConfigurationCheckerTest {
     BootstrapProperties mockBootProperties =
         new MockBootProperties(
             createAdapterConfig(new NullConnection("SharedNullConnection"), null, null, null));
-    ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties, null);
+    ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties);
     assertFalse(report.isCheckPassed());
   }
 
@@ -57,7 +57,7 @@ public class SharedConnectionConfigurationCheckerTest {
     BootstrapProperties mockBootProperties = new MockBootProperties(
         createAdapterConfig(null, new SharedConnection("DoesNotExist"), null, null));
 
-    ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties, null);
+    ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties);
     assertFalse(report.isCheckPassed());
     assertTrue(report.getFailureExceptions().size() > 0);
   }
@@ -66,7 +66,7 @@ public class SharedConnectionConfigurationCheckerTest {
   public void testProduceConnectionNoShared() throws Exception {
     BootstrapProperties mockBootProperties = new MockBootProperties(
         createAdapterConfig(null, null, new SharedConnection("DoesNotExist"), null));
-    ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties, null);
+    ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties);
     assertFalse(report.isCheckPassed());
     assertTrue(report.getFailureExceptions().size() > 0);
   }
@@ -78,7 +78,7 @@ public class SharedConnectionConfigurationCheckerTest {
             new SharedConnection("SharedNullConnection"),
             new SharedConnection("SharedNullConnection"), null));
 
-    ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties, null);
+    ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties);
     assertTrue(report.isCheckPassed());
     assertNotNull(report.toString());
   }
@@ -88,7 +88,7 @@ public class SharedConnectionConfigurationCheckerTest {
     BootstrapProperties mockBootProperties =
         new MockBootProperties(createAdapterConfig(new NullConnection("SharedNullConnection"), null,
             null, new SharedConnection("DoesNotExist")));
-    ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties, null);
+    ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties);
     assertFalse(report.isCheckPassed());
     assertTrue(report.getFailureExceptions().size() > 0);
     assertNotNull(report.toString());
