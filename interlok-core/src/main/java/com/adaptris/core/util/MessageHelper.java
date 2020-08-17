@@ -1,16 +1,22 @@
 package com.adaptris.core.util;
 
+import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.UnsupportedCharsetException;
+import java.util.Optional;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.lms.FileBackedMessage;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public class MessageHelper {
 
   /**
@@ -45,6 +51,32 @@ public class MessageHelper {
     try (InputStream in = src.getInputStream(); OutputStream out = dest.getOutputStream()) {
       IOUtils.copy(in,  out);
     }
+  }
+
+
+  /**
+   * Check the character set and apply it as the ContentEncoding on the message.
+   *
+   * @param msg the message
+   * @param charEnc the characterEncoding
+   * @param passthru if true then just call {@link AdaptrisMessage#setContentEncoding(String)}.
+   */
+  public static AdaptrisMessage checkCharsetAndApply(final AdaptrisMessage msg, String charEnc,
+      final boolean passthru) {
+    // we can use a consumer here, because CharsetException is a runtime...
+    Optional.ofNullable(charEnc).ifPresent((charsetName) -> {
+      if (!passthru) {
+        if (Charset.isSupported(charsetName)) {
+          msg.setContentEncoding(charsetName);
+        } else {
+          log.trace("'{}' is not supported, using default, and marking", charsetName);
+          msg.addObjectHeader(OBJ_METADATA_EXCEPTION, new UnsupportedCharsetException(charsetName));
+        }
+      } else {
+        msg.setContentEncoding(charsetName);
+      }
+    });
+    return msg;
   }
 
 }

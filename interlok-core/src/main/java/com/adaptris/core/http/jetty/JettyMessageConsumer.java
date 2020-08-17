@@ -17,28 +17,35 @@
 package com.adaptris.core.http.jetty;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
+import static com.adaptris.core.util.MessageHelper.checkCharsetAndApply;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
-import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.http.server.HeaderHandler;
 import com.adaptris.core.http.server.ParameterHandler;
 import com.adaptris.util.stream.StreamUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * This is the standard class that receives documents via HTTP.
@@ -80,29 +87,63 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 {
     EmbeddedConnection.class, JettyConnection.class
 })
-@DisplayOrder(order = {"path", "destination", "methods"})
+@DisplayOrder(
+    order = {"path", "destination", "methods", "checkCharset", "parameterHandler", "headerHandler"})
+@NoArgsConstructor
 public class JettyMessageConsumer extends BasicJettyConsumer {
 
-  @AutoPopulated
+  /**
+   * What to do with any parameters that are part of the request.
+   * <p>
+   * The default if not explicitly specified is to ignore any parameters and discard them
+   * </p>
+   */
   @Valid
-  @NotNull
   @AdvancedConfig
   @AffectsMetadata
+  @Getter
+  @Setter
+  @InputFieldDefault(value = "ignore-http-parameters")
   private ParameterHandler<HttpServletRequest> parameterHandler;
-  @AutoPopulated
+  /**
+   * What to do with any HTTP headers
+   * <p>
+   * The default if not explicitly specified is to ignore http headers and discard them
+   * </p>
+   */
   @Valid
-  @NotNull
   @AdvancedConfig
   @AffectsMetadata
+  @Getter
+  @Setter
+  @InputFieldDefault(value = "ignore-http-headers")
   private HeaderHandler<HttpServletRequest> headerHandler;
 
-  public JettyMessageConsumer() {
-    super();
-
-    setParameterHandler(new NoOpParameterHandler());
-    setHeaderHandler(new NoOpHeaderHandler());
-  }
-
+  /**
+   * Whether or not to check the character encoding on the request
+   * <p>
+   * This defaults to change <strong>true</strong> if not explicitly specified. If set to true, then
+   * this is the defined behaviour
+   * <ul>
+   * <li>If the {@code HttpServletRequest#getCharacterEncoding()} is valid (according to
+   * {@link Charset#forName(String)} then it is used.</li>
+   * <li>If the {@code HttpServletRequest#getCharacterEncoding} is not supported then the default
+   * content encoding is used, based on your settings for the {@link AdaptrisMessageFactory}
+   * instance and {@link CoreConstants#OBJ_METADATA_EXCEPTION} object metadata is populated with a
+   * {@code UnsupportedCharsetException} exception.
+   * </ul>
+   * </p>
+   * <p>
+   * If set to false, then {@link AdaptrisMessage#setContentEncoding(String)} is just invoked with
+   * {@code HttpServletRequest#getCharacterEncoding()} which may cause failures when receiving data
+   * from poorly configured clients.
+   * </p>
+   */
+  @Getter
+  @Setter
+  @InputFieldDefault(value = "true")
+  @AdvancedConfig
+  private Boolean checkCharset;
 
   @Override
   public AdaptrisMessage createMessage(HttpServletRequest request,
@@ -124,7 +165,7 @@ public class JettyMessageConsumer extends BasicJettyConsumer {
           }
         }
       }
-      msg.setContentEncoding(request.getCharacterEncoding());
+      checkCharsetAndApply(msg, request.getCharacterEncoding(), !checkCharset());
       addParamMetadata(msg, request);
       addHeaderMetadata(msg, request);
     }
@@ -135,27 +176,23 @@ public class JettyMessageConsumer extends BasicJettyConsumer {
   }
 
   private void addParamMetadata(AdaptrisMessage msg, HttpServletRequest request) {
-    getParameterHandler().handleParameters(msg, request);
+    parameterHandler().handleParameters(msg, request);
   }
 
   private void addHeaderMetadata(AdaptrisMessage msg, HttpServletRequest request) {
-    getHeaderHandler().handleHeaders(msg, request);
+    headerHandler().handleHeaders(msg, request);
   }
 
-  public ParameterHandler<HttpServletRequest> getParameterHandler() {
-    return parameterHandler;
+  private HeaderHandler<HttpServletRequest> headerHandler() {
+    return ObjectUtils.defaultIfNull(getHeaderHandler(), new NoOpHeaderHandler());
   }
 
-  public void setParameterHandler(ParameterHandler<HttpServletRequest> parameterHandler) {
-    this.parameterHandler = parameterHandler;
+  private ParameterHandler<HttpServletRequest> parameterHandler() {
+    return ObjectUtils.defaultIfNull(getParameterHandler(), new NoOpParameterHandler());
   }
 
-  public HeaderHandler<HttpServletRequest> getHeaderHandler() {
-    return headerHandler;
-  }
-
-  public void setHeaderHandler(HeaderHandler<HttpServletRequest> headerHandler) {
-    this.headerHandler = headerHandler;
+  private boolean checkCharset() {
+    return BooleanUtils.toBooleanDefaultIfNull(getCheckCharset(), true);
   }
 
 }
