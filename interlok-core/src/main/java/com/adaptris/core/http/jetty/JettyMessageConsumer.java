@@ -126,7 +126,7 @@ public class JettyMessageConsumer extends BasicJettyConsumer {
    * this is the defined behaviour
    * <ul>
    * <li>If the {@code HttpServletRequest#getCharacterEncoding()} is valid (according to
-   * {@link Charset#forName(String)} then it is used.</li>
+   * {@link Charset#forName(String)}) then it is used.</li>
    * <li>If the {@code HttpServletRequest#getCharacterEncoding} is not supported then the default
    * content encoding is used, based on your settings for the {@link AdaptrisMessageFactory}
    * instance and {@link CoreConstants#OBJ_METADATA_EXCEPTION} object metadata is populated with a
@@ -136,7 +136,7 @@ public class JettyMessageConsumer extends BasicJettyConsumer {
    * <p>
    * If set to false, then {@link AdaptrisMessage#setContentEncoding(String)} is just invoked with
    * {@code HttpServletRequest#getCharacterEncoding()} which may cause failures when receiving data
-   * from poorly configured clients.
+   * from clients where the supported character sets differs.
    * </p>
    */
   @Getter
