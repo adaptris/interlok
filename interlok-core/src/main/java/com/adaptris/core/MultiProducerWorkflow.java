@@ -16,6 +16,9 @@
 
 package com.adaptris.core;
 
+import static com.adaptris.core.CoreConstants.OBJ_METADATA_MESSAGE_FAILED;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -68,13 +71,13 @@ public class MultiProducerWorkflow extends StandardWorkflow {
     super();
     standaloneProducers = new ArrayList<StandaloneProducer>();
   }
-
+  
   /**
    * @see AdaptrisMessageListener#onAdaptrisMessage(AdaptrisMessage)
    */
   @Override
-  public synchronized void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success) {
-    ListenerCallbackHelper.prepare(msg, success);
+  public synchronized void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success, Consumer<AdaptrisMessage> failure) {
+    ListenerCallbackHelper.prepare(msg, success, failure);
     if (!obtainChannel().isAvailable()) {
       handleChannelUnavailable(msg); // make pluggable?
     }
@@ -101,24 +104,34 @@ public class MultiProducerWorkflow extends StandardWorkflow {
       getServiceCollection().doService(wip);
       doProduce(wip);
       sendProcessedMessage(wip, msg); // only if produce succeeds
-      ListenerCallbackHelper.handleSuccessCallback(wip);
       logSuccess(msg, start);
+      ListenerCallbackHelper.handleSuccessCallback(wip);
     }
     catch (ServiceException e) {
       handleBadMessage("Exception from ServiceCollection", e, copyExceptionHeaders(wip, msg));
+      handleFailureCallback(msg);
     }
     catch (ProduceException e) {
       wip.addEvent(getProducer(), false); // generate event
       handleBadMessage("Exception producing msg", e, copyExceptionHeaders(wip, msg));
       handleProduceException();
+      handleFailureCallback(msg);
     }
     catch (Exception e) { // all other Exc. inc. runtime
       handleBadMessage("Exception processing message", e, copyExceptionHeaders(wip, msg));
+      handleFailureCallback(msg);
     }
     finally {
       sendMessageLifecycleEvent(wip);
     }
     workflowEnd(msg, wip);
+  }
+  
+  private void handleFailureCallback(AdaptrisMessage msg) {
+    // Some message error handlers may not deem a message as failed immediately, like the retry handler.
+    if(defaultIfNull((Boolean) msg.getObjectHeaders().get(OBJ_METADATA_MESSAGE_FAILED), Boolean.FALSE)) {
+      ListenerCallbackHelper.handleFailureCallback(msg);
+    }    
   }
 
   private void sendProcessedMessage(AdaptrisMessage wip, AdaptrisMessage msg) {

@@ -16,6 +16,8 @@
 
 package com.adaptris.core.jms;
 
+import java.util.function.Consumer;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
@@ -168,15 +170,29 @@ public class OnMessageHandler {
       // this might throw an exception, if it does, we don't care.
     }
 
-    try {
-      msgListener.onAdaptrisMessage(adaptrisMessage);
+    Consumer<AdaptrisMessage> successCallback = message -> {
       try {
+        logR.trace("Commiting/Ack'ing message with id {}", msg.getJMSMessageID());
         acknowledge(msg);
       }
       catch (JMSException e) {
         logR.error("Exception acknowledging/committing JMS message", e);
         rollback(msg);
       }
+    };
+    
+    Consumer<AdaptrisMessage> failureCallback = message -> {
+      try {
+        logR.trace("Rolling back/not Ack'ing message with id {}", msg.getJMSMessageID());
+        rollback(msg);
+      } catch (JMSException e) {
+        logR.error("Exception rolling back JMS message", e);
+      }
+      
+    };
+    
+    try {
+      msgListener.onAdaptrisMessage(adaptrisMessage, successCallback, failureCallback);
     }
     catch (Throwable e) { // impossible if AML is StandardWorkflow
       logR.error("Unexpected Throwable from AdaptrisMessageListener", e);

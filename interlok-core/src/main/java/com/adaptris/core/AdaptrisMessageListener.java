@@ -45,16 +45,25 @@ public interface AdaptrisMessageListener {
    * @implNote the default implementation just calls {@link #onAdaptrisMessage(AdaptrisMessage, Consumer)}.
    */
   default void onAdaptrisMessage(AdaptrisMessage msg) {
-    onAdaptrisMessage(msg, (s) -> {});
+    onAdaptrisMessage(msg, (s) -> {}, (f) -> {});
   }
 
   /**
-   * Handle a message with call back actions if a message is successful or failed.
+   * Handle a message with a call back action if a message is successful.
    * 
    * @param msg the message
    * @param success called on success
    */
   void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success);
+  
+  /**
+   * Handle a message with call back actions if a message is successful or failed.
+   * 
+   * @param msg the message
+   * @param success called on success
+   * @param failure called on failure
+   */
+  void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success, Consumer<AdaptrisMessage> failure);
 
   /**
    * Get the friendly name for this component.

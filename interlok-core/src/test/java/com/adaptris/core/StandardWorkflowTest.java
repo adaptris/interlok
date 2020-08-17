@@ -20,6 +20,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -29,9 +31,12 @@ import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.awaitility.Awaitility;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.core.services.metadata.AddMetadataService;
@@ -39,6 +44,7 @@ import com.adaptris.core.services.metadata.PayloadFromMetadataService;
 import com.adaptris.core.stubs.EventHandlerAwareConsumer;
 import com.adaptris.core.stubs.EventHandlerAwareProducer;
 import com.adaptris.core.stubs.EventHandlerAwareService;
+import com.adaptris.core.stubs.FailFirstMockMessageProducer;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.MockSkipProducerService;
@@ -533,6 +539,131 @@ public class StandardWorkflowTest extends ExampleWorkflowCase {
       stop(channel);
     }
 
+  }
+  
+  @Test
+  public void testOnMessage_ServiceFailsFailureCallback() throws Exception {
+    AtomicBoolean onSuccess = new AtomicBoolean(false);
+    MockChannel channel = createChannel(new MockMessageProducer(), Arrays.asList(new Service[] {new ThrowExceptionService(new ConfiguredException("expected"))}));
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD_1);
+    StandardWorkflow workflow = (StandardWorkflow) channel.getWorkflowList().get(0);
+    try {
+      start(channel);
+      workflow.onAdaptrisMessage(msg, 
+          (m) -> {
+            onSuccess.set(true);
+          },
+          (m) -> {
+            onSuccess.set(false);
+          });
+      
+      assertFalse(onSuccess.get());
+    } finally {
+      stop(channel);
+    }
+  }
+  
+  @Test
+  public void testOnMessage_ServiceFailsWithRetryHandlerFailureCallback() throws Exception {
+    AtomicBoolean onSuccess = new AtomicBoolean(false);
+    MockChannel channel = createChannel(new MockMessageProducer(), Arrays.asList(new Service[] {new ThrowExceptionService(new ConfiguredException("expected"))}));
+    
+    channel.setMessageErrorHandler(new RetryMessageErrorHandler(3, new TimeInterval(100l, TimeUnit.MILLISECONDS), new NullService()));
+    
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD_1);
+    StandardWorkflow workflow = (StandardWorkflow) channel.getWorkflowList().get(0);
+    try {
+      start(channel);
+      workflow.onAdaptrisMessage(msg, 
+          (m) -> {
+            onSuccess.set(true);
+          },
+          (m) -> {
+            onSuccess.set(false);
+          });
+      
+      assertFalse(onSuccess.get());
+    } finally {
+      stop(channel);
+    }
+  }
+  
+  @Test
+  public void testOnMessage_ProducerFailsFailureCallback() throws Exception {
+    AtomicBoolean onSuccess = new AtomicBoolean(false);
+    MockChannel channel = createChannel(new FailFirstMockMessageProducer(1), Arrays.asList(new Service[] {new NullService()}));
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD_1);
+    StandardWorkflow workflow = (StandardWorkflow) channel.getWorkflowList().get(0);
+    try {
+      start(channel);
+      workflow.onAdaptrisMessage(msg, 
+          (m) -> {
+            onSuccess.set(true);
+          },
+          (m) -> {
+            onSuccess.set(false);
+          });
+      
+      assertFalse(onSuccess.get());
+    } finally {
+      stop(channel);
+    }
+  }
+  
+  @Test
+  public void testOnMessage_ProducerFailsWithRetryHandlerSuccessCallback() throws Exception {
+    AtomicBoolean onSuccess = new AtomicBoolean(false);
+    MockChannel channel = createChannel(new FailFirstMockMessageProducer(1), Arrays.asList(new Service[] {new NullService()}));
+    
+    channel.setMessageErrorHandler(new RetryMessageErrorHandler(2, new TimeInterval(100l, TimeUnit.MILLISECONDS), new NullService()));
+    
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD_1);
+    StandardWorkflow workflow = (StandardWorkflow) channel.getWorkflowList().get(0);
+    try {
+      start(channel);
+      workflow.onAdaptrisMessage(msg, 
+          (m) -> {
+            onSuccess.set(true);
+          },
+          (m) -> {
+            onSuccess.set(false);
+          });
+      
+      Awaitility.await()
+        .atMost(Duration.ofSeconds(2))
+      .with()
+        .pollInterval(Duration.ofMillis(100))
+        .until(onSuccess::get);
+      
+      assertTrue(onSuccess.get());
+    } finally {
+      stop(channel);
+    }
+  }
+  
+  @Test
+  public void testOnMessage_ProducerFailsWithRetryHandlerFailureCallback() throws Exception {
+    AtomicBoolean onSuccess = new AtomicBoolean(false);
+    MockChannel channel = createChannel(new FailFirstMockMessageProducer(5), Arrays.asList(new Service[] {new NullService()}));
+    
+    channel.setMessageErrorHandler(new RetryMessageErrorHandler(4, new TimeInterval(100l, TimeUnit.MILLISECONDS), new NullService()));
+    
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD_1);
+    StandardWorkflow workflow = (StandardWorkflow) channel.getWorkflowList().get(0);
+    try {
+      start(channel);
+      workflow.onAdaptrisMessage(msg, 
+          (m) -> {
+            onSuccess.set(true);
+          },
+          (m) -> {
+            onSuccess.set(false);
+          });
+      
+      assertFalse(onSuccess.get());
+    } finally {
+      stop(channel);
+    }
   }
 
   @Override
