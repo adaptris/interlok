@@ -8,23 +8,22 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.adaptris.core.Adapter;
-import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.Channel;
 import com.adaptris.core.DefaultMarshaller;
-import com.adaptris.core.NullConnection;
-import com.adaptris.core.NullMessageProducer;
-import com.adaptris.core.SharedConnection;
-import com.adaptris.core.StandaloneProducer;
+import com.adaptris.core.NullService;
+import com.adaptris.core.Service;
+import com.adaptris.core.ServiceList;
+import com.adaptris.core.SharedService;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.management.BootstrapProperties;
 
-public class SharedConnectionConfigurationCheckerTest {
+public class SharedServiceConfigurationCheckerTest {
 
-  private SharedConnectionConfigurationChecker checker;
+  private SharedServiceConfigurationChecker checker;
 
   @Before
   public void setUp() throws Exception {
-    checker = new SharedConnectionConfigurationChecker();
+    checker = new SharedServiceConfigurationChecker();
   }
 
   @Test
@@ -36,9 +35,9 @@ public class SharedConnectionConfigurationCheckerTest {
   }
 
   @Test
-  public void testNoConnections() throws Exception {
+  public void testNoService() throws Exception {
     BootstrapProperties mockBootProperties =
-        new MockBootProperties(createAdapterConfig(null, null, null, null));
+        new MockBootProperties(createAdapterConfig(null, null));
     ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties);
     assertTrue(report.isCheckPassed());
   }
@@ -47,15 +46,15 @@ public class SharedConnectionConfigurationCheckerTest {
   public void testSharedNotUsed() throws Exception {
     BootstrapProperties mockBootProperties =
         new MockBootProperties(
-            createAdapterConfig(new NullConnection("SharedNullConnection"), null, null, null));
+            createAdapterConfig(new NullService("SharedNullService"), null));
     ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties);
     assertFalse(report.isCheckPassed());
   }
 
   @Test
-  public void testConsumeConnectionNoShared() throws Exception {
+  public void testServiceNoShared() throws Exception {
     BootstrapProperties mockBootProperties = new MockBootProperties(
-        createAdapterConfig(null, new SharedConnection("DoesNotExist"), null, null));
+        createAdapterConfig(null, new SharedService("DoesNotExist")));
 
     ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties);
     assertFalse(report.isCheckPassed());
@@ -63,20 +62,32 @@ public class SharedConnectionConfigurationCheckerTest {
   }
 
   @Test
-  public void testProduceConnectionNoShared() throws Exception {
-    BootstrapProperties mockBootProperties = new MockBootProperties(
-        createAdapterConfig(null, null, new SharedConnection("DoesNotExist"), null));
-    ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties);
-    assertFalse(report.isCheckPassed());
-    assertTrue(report.getFailureExceptions().size() > 0);
-  }
-
-  @Test
-  public void testProduceAndConsumeConnectionsExist() throws Exception {
+  public void testServiceExist() throws Exception {
     BootstrapProperties mockBootProperties =
-        new MockBootProperties(createAdapterConfig(new NullConnection("SharedNullConnection"),
-            new SharedConnection("SharedNullConnection"),
-            new SharedConnection("SharedNullConnection"), null));
+        new MockBootProperties(createAdapterConfig(new NullService("SharedNullService"),
+            new SharedService("SharedNullService")));
+
+    ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties);
+    assertTrue(report.isCheckPassed());
+    assertNotNull(report.toString());
+  }
+
+  @Test
+  public void testServiceCollectionExist() throws Exception {
+    ServiceList sharedComponent = new ServiceList();
+    sharedComponent.setUniqueId("SharedNullService");
+    BootstrapProperties mockBootProperties = new MockBootProperties(
+        createAdapterConfig(sharedComponent, new SharedService("SharedNullService")));
+
+    ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties);
+    assertTrue(report.isCheckPassed());
+    assertNotNull(report.toString());
+  }
+
+  @Test
+  public void testServiceInServiceCollectionExist() throws Exception {
+    BootstrapProperties mockBootProperties = new MockBootProperties(
+        createAdapterConfig(new NullService("SharedNullService"), new ServiceList(new SharedService("SharedNullService"))));
 
     ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties);
     assertTrue(report.isCheckPassed());
@@ -86,38 +97,27 @@ public class SharedConnectionConfigurationCheckerTest {
   @Test
   public void testServiceConnectionDoesNotExist() throws Exception {
     BootstrapProperties mockBootProperties =
-        new MockBootProperties(createAdapterConfig(new NullConnection("SharedNullConnection"), null,
-            null, new SharedConnection("DoesNotExist")));
+        new MockBootProperties(createAdapterConfig(new NullService("SharedNullConnection"), new SharedService("DoesNotExist")));
     ConfigurationCheckReport report = checker.performConfigCheck(mockBootProperties);
     assertFalse(report.isCheckPassed());
     assertTrue(report.getFailureExceptions().size() > 0);
     assertNotNull(report.toString());
   }
 
-  private static String createAdapterConfig(AdaptrisConnection sharedComponent,
-      AdaptrisConnection consumeConnection, AdaptrisConnection produceConnection,
-      AdaptrisConnection serviceConnection) throws Exception {
-
+  private static String createAdapterConfig(Service sharedComponent, Service service) throws Exception {
     Adapter adapter = new Adapter();
     if(sharedComponent != null) {
-      adapter.getSharedComponents().addConnection(sharedComponent);
+      adapter.getSharedComponents().addService(sharedComponent);
     }
 
     Channel channel = new Channel();
-    if(consumeConnection != null) {
-      channel.setConsumeConnection(consumeConnection);
-    }
-    if(produceConnection != null) {
-      channel.setProduceConnection(produceConnection);
-    }
-    if(serviceConnection != null) {
-      StandardWorkflow standardWorkflow = new StandardWorkflow();
-      StandaloneProducer sp = new StandaloneProducer(serviceConnection, new NullMessageProducer());
-      standardWorkflow.getServiceCollection().add(sp);
-      channel.getWorkflowList().add(standardWorkflow);
-
-    }
+    StandardWorkflow standardWorkflow = new StandardWorkflow();
+    channel.getWorkflowList().add(standardWorkflow);
     adapter.getChannelList().add(channel);
+
+    if (service != null) {
+      standardWorkflow.getServiceCollection().add(service);
+    }
     return DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
   }
 
