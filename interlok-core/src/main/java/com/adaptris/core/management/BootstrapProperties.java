@@ -117,7 +117,7 @@ public class BootstrapProperties extends Properties {
     super();
   }
 
-  public BootstrapProperties(String resourceName) throws Exception {
+  public BootstrapProperties(String resourceName) {
     this();
     putAll(overrideWithSystemProperties(createProperties(resourceName)));
     setProperty(BOOTSTRAP_PROPERTIES_RESOURCE_KEY, resourceName);
@@ -128,7 +128,7 @@ public class BootstrapProperties extends Properties {
     putAll(overrideWithSystemProperties(p));
   }
 
-  private static Properties createProperties(final String resourceName) throws Exception {
+  private static Properties createProperties(final String resourceName) {
     String propertiesFile = StringUtils.defaultIfBlank(resourceName, DEFAULT_PROPS_RESOURCE);
     log.trace("Properties resource is [{}]", propertiesFile);
     Properties config = PropertyHelper.loadQuietly(() -> {

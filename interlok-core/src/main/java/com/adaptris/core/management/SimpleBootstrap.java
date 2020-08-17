@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,7 +24,6 @@ import com.adaptris.core.management.logging.LoggingConfigurator;
  * Basically the same as StandardBootstrap but without the classpath initialization.
  * </p>
  *
- * @author gcsiki
  */
 public class SimpleBootstrap extends CmdLineBootstrap {
 
@@ -48,12 +47,16 @@ public class SimpleBootstrap extends CmdLineBootstrap {
    * @throws Exception upon some unrecoverable error.
    */
   public static void main(String[] argv) throws Exception {
+    SimpleBootstrap simpleBoot = new SimpleBootstrap(argv);
     try {
-      new SimpleBootstrap(argv).boot();
+      simpleBoot.boot();
     }
     catch (Exception e) {
+      if (!simpleBoot.startQuietly()) {
+        e.printStackTrace();
+        System.exit(1);
+      }
       LoggingConfigurator.newConfigurator().requestShutdown();
-      throw e;
     }
   }
 }
