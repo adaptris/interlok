@@ -14,7 +14,7 @@ public class ListenerCallbackHelper {
   protected static final Logger log = LoggerFactory.getLogger(ListenerCallbackHelper.class.getName());
   
   public static AdaptrisMessage prepare(AdaptrisMessage msg, Consumer<AdaptrisMessage> onSuccess) {
-    return prepare(msg, onSuccess, null);
+    return prepare(msg, onSuccess, (message) -> {});
   }
   
   public static AdaptrisMessage prepare(AdaptrisMessage msg, Consumer<AdaptrisMessage> onSuccess, Consumer<AdaptrisMessage> onFailure) {
