@@ -42,19 +42,18 @@ public class NoAdapterBootstrap extends CmdLineBootstrap {
     logVersionInformation();
     // standard boot
     LoggingConfigurator.newConfigurator().defaultInitialisation();
-    BootstrapProperties bootProperties = new BootstrapProperties(getBootstrapResource());
-    SystemPropertiesUtil.addSystemProperties(bootProperties);
-    SystemPropertiesUtil.addJndiProperties(bootProperties);
-    ProxyAuthenticator.register(bootProperties);
+    SystemPropertiesUtil.addSystemProperties(bootProperties());
+    SystemPropertiesUtil.addJndiProperties(bootProperties());
+    ProxyAuthenticator.register(bootProperties());
 
     // don't start adapter
-    bootProperties.reconfigureLogging();
-    ManagementComponentFactory.create(bootProperties);
-    ManagementComponentFactory.initCreated(bootProperties);
-    Runtime.getRuntime().addShutdownHook(new ShutdownHandler(bootProperties));
+    bootProperties().reconfigureLogging();
+    ManagementComponentFactory.create(bootProperties());
+    ManagementComponentFactory.initCreated(bootProperties());
+    Runtime.getRuntime().addShutdownHook(new ShutdownHandler(bootProperties()));
 
     // don't launch adapter
-    ManagementComponentFactory.startCreated(bootProperties);
+    ManagementComponentFactory.startCreated(bootProperties());
   }
 
   /**
