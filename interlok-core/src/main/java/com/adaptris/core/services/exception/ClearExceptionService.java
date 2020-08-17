@@ -26,7 +26,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Clears any exception stored against
- * {@value com.adaptris.core.CoreConstants#OBJ_METADATA_EXCEPTION}.
+ * {@link com.adaptris.core.CoreConstants#OBJ_METADATA_EXCEPTION}.
  *
  * @config clear-exception-service
  */
