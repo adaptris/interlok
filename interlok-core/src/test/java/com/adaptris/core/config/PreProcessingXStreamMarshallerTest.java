@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,13 +24,13 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.DefaultMarshaller;
-import com.adaptris.core.MarshallingBaseCase;
 import com.adaptris.core.XStreamMarshaller;
 import com.adaptris.core.management.BootstrapProperties;
 import com.adaptris.util.KeyValuePairSet;
 
 
-public class PreProcessingXStreamMarshallerTest extends MarshallingBaseCase {
+public class PreProcessingXStreamMarshallerTest
+    extends com.adaptris.interlok.junit.scaffolding.MarshallingBaseCase {
 
   private static final String XSTREAM_STANDARD_XML = "xstream-standard.xml";
   private static final String XSTREAM_BEAUTIFIED_XML = "xstream-beautified.xml";

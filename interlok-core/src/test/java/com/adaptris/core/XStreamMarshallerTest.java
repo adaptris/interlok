@@ -39,7 +39,8 @@ import com.adaptris.util.text.xml.XPath;
 
 
 @SuppressWarnings("deprecation")
-public class XStreamMarshallerTest extends MarshallingBaseCase {
+public class XStreamMarshallerTest
+    extends com.adaptris.interlok.junit.scaffolding.MarshallingBaseCase {
 
   private static final String XSTREAM_STANDARD_XML = "xstream-standard.xml";
 

@@ -148,7 +148,7 @@ task unitTestStubsJar(type: Jar, dependsOn: compileTestJava) {
   include   '**/core/ConsumerCase*'
   include   '**/core/ServiceCase*'
   include   '**/core/ServiceCollection*'
-  // include   '**/core/MarshallingBaseCase*'
+  include   '**/core/MarshallingBaseCase*'
   include   '**/core/jms/JmsConsumerCase*'
   include   '**/core/jms/JmsProducerCase*'
   include   '**/core/jms/JmsProducerExample*'

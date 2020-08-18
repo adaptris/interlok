@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,13 +21,14 @@ import org.junit.Test;
 import com.adaptris.core.AdapterMarshallerFactory.MarshallingOutput;
 import com.thoughtworks.xstream.XStream;
 
-public class XStreamJsonMarshallerTest extends MarshallingBaseCase {
+public class XStreamJsonMarshallerTest
+    extends com.adaptris.interlok.junit.scaffolding.MarshallingBaseCase {
 
   private static final String XSTREAM_STANDARD_JSON   = "xstream-standard.json";
   private static final String XSTREAM_STANDARD_XML    = "xstream-standard.xml";
-  
+
   AdapterMarshallerFactory marshallerFactory = AdapterXStreamMarshallerFactory.getInstance();
-  
+
   @Override
   protected XStreamJsonMarshaller createMarshaller() throws Exception {
     return (XStreamJsonMarshaller)marshallerFactory.createMarshaller(MarshallingOutput.JSON);
@@ -37,8 +38,8 @@ public class XStreamJsonMarshallerTest extends MarshallingBaseCase {
   protected String getClasspathXmlFilename() {
     return "xstream.json";
   }
-  
-  
+
+
   @Test
   public void testXStreamFullConfigMarshall() throws Exception {
     try {
@@ -69,6 +70,6 @@ public class XStreamJsonMarshallerTest extends MarshallingBaseCase {
       AdapterXStreamMarshallerFactory.reset();
     }
   }
-  
+
 }
 
