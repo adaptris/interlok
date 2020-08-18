@@ -155,6 +155,7 @@ task unitTestStubsJar(type: Jar, dependsOn: compileTestJava) {
   include   '**/core/jms/MockJmsConnectionErrorHandler*'
   include   '**/core/jms/MessageTypeTranslatorCase*'
   include   '**/core/jms/JmsConfig*'
+  include   '**/core/jms/MockProducer*'
   include   '**/core/http/HttpProducer.class'
   include   '**/core/jms/**/JndiImplementationCase*'
   include   '**/core/jms/ActiveJmsConnectionErrorHandlerCase*'
