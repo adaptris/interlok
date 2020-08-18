@@ -71,7 +71,7 @@ public abstract class EventHandlerBase implements EventHandler {
     eventProducerDelegate = new EventEmissary();
   }
 
-  protected abstract AdaptrisMessageSender retrieveProducer() throws CoreException;
+  public abstract AdaptrisMessageSender retrieveProducer() throws CoreException;
 
   private AdaptrisMessage createMessage(Event evt, Map<String, String> metadata) throws CoreException {
     evt.setSourceId(retrieveSourceId());
@@ -106,7 +106,7 @@ public abstract class EventHandlerBase implements EventHandler {
     return marshaller;
   }
 
-  protected AdaptrisMarshaller currentMarshaller() {
+  public AdaptrisMarshaller currentMarshaller() {
     return DefaultMarshaller.defaultIfNull(getMarshaller());
   }
 
@@ -121,7 +121,7 @@ public abstract class EventHandlerBase implements EventHandler {
     return sourceId;
   }
 
-  protected AdaptrisMessageFactory currentMessageFactory() throws CoreException {
+  public AdaptrisMessageFactory currentMessageFactory() throws CoreException {
     return getMessageFactory() != null ? getMessageFactory() : AdaptrisMessageFactory.getDefaultInstance();
   }
 
@@ -153,7 +153,7 @@ public abstract class EventHandlerBase implements EventHandler {
     return shutdownWaitSeconds;
   }
 
-  int shutdownWaitSeconds() {
+  public int shutdownWaitSeconds() {
     return NumberUtils.toIntDefaultIfNull(getShutdownWaitSeconds(), DEFAULT_SHUTDOWN_WAIT);
   }
 

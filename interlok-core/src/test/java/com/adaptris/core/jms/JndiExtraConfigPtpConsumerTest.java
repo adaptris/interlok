@@ -21,14 +21,9 @@ import static com.adaptris.core.jms.JndiExtraConfigPtpProducerTest.DEFAULT_XML_C
 import static com.adaptris.core.jms.JndiExtraConfigPtpProducerTest.createJndiVendorImpExample;
 import com.adaptris.core.StandaloneConsumer;
 
-public class JndiExtraConfigPtpConsumerTest extends JmsConsumerCase {
+public class JndiExtraConfigPtpConsumerTest
+    extends com.adaptris.interlok.junit.scaffolding.jms.JmsConsumerCase {
 
-
-
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected Object retrieveObjectForSampleConfig() {

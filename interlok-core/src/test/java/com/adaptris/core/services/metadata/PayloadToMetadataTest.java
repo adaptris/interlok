@@ -36,10 +36,6 @@ public class PayloadToMetadataTest extends MetadataServiceExample {
   private static final String DEFAULT_PAYLOAD = "zzzzzzzz";
   private static final String DEFAULT_METADATA_KEY = "helloMetadataKey";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   private PayloadToMetadataService createService(MetadataTarget target) {
     return new PayloadToMetadataService(DEFAULT_METADATA_KEY, target);

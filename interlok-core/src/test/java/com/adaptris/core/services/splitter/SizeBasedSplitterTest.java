@@ -30,10 +30,6 @@ public class SizeBasedSplitterTest extends SplitterCase {
   private static final String METADATA_KEY = "hello";
   private static final String OBJ_KEY = "blah";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
 
   @Override

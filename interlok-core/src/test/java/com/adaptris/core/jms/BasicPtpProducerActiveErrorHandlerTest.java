@@ -22,12 +22,9 @@ import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 import com.adaptris.util.TimeInterval;
 
-public class BasicPtpProducerActiveErrorHandlerTest extends JmsProducerCase {
+public class BasicPtpProducerActiveErrorHandlerTest
+    extends com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase {
   static final String DEFAULT_FILE_SUFFIX = "-JNDI";
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected Object retrieveObjectForSampleConfig() {

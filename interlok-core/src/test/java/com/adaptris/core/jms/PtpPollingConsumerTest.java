@@ -24,10 +24,6 @@ import com.adaptris.util.TimeInterval;
 public class PtpPollingConsumerTest extends PollingJmsConsumerCase {
   private static final long DEFAULT_WAIT = 100;
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected Object retrieveObjectForSampleConfig() {

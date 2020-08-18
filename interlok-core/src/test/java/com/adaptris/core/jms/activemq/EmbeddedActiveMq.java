@@ -16,11 +16,11 @@
 
 package com.adaptris.core.jms.activemq;
 
-import static com.adaptris.core.PortManager.nextUnusedPort;
-import static com.adaptris.core.PortManager.release;
-import static com.adaptris.core.jms.JmsConfig.DEFAULT_PAYLOAD;
-import static com.adaptris.core.jms.JmsConfig.DEFAULT_TTL;
-import static com.adaptris.core.jms.JmsConfig.HIGHEST_PRIORITY;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.DEFAULT_PAYLOAD;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.DEFAULT_TTL;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.HIGHEST_PRIORITY;
+import static com.adaptris.interlok.junit.scaffolding.util.PortManager.nextUnusedPort;
+import static com.adaptris.interlok.junit.scaffolding.util.PortManager.release;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
@@ -40,11 +40,11 @@ import org.junit.Assume;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.jms.FailoverJmsConnection;
-import com.adaptris.core.jms.JmsConfig;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.JmsConstants;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.core.stubs.ExternalResourcesHelper;
+import com.adaptris.interlok.junit.scaffolding.jms.JmsConfig;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.KeyValuePair;

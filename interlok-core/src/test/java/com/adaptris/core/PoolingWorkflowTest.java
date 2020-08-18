@@ -51,16 +51,13 @@ import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
-public class PoolingWorkflowTest extends ExampleWorkflowCase {
+public class PoolingWorkflowTest
+    extends com.adaptris.interlok.junit.scaffolding.ExampleWorkflowCase {
   /**
    *
    */
   private static final String COUNT = "Count";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
 
   @Test

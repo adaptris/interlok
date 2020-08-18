@@ -8,6 +8,7 @@ import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.cache.Cache;
+import com.adaptris.interlok.junit.scaffolding.services.BasicCacheExampleGenerator;
 
 public class RemoveFromCacheServiceTest extends RetrieveFromCacheServiceTest {
 

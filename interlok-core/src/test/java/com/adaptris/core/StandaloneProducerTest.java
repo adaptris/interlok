@@ -27,10 +27,6 @@ import com.adaptris.core.util.LifecycleHelper;
 
 public class StandaloneProducerTest extends GeneralServiceExample {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testDoService() throws Exception {

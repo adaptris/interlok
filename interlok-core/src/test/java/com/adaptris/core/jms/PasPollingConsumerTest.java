@@ -23,10 +23,6 @@ import com.adaptris.util.TimeInterval;
 
 public class PasPollingConsumerTest extends PollingJmsConsumerCase {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected Object retrieveObjectForSampleConfig() {

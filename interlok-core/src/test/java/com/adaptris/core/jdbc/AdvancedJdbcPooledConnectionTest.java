@@ -19,17 +19,15 @@ import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.TimeInterval;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
-public class AdvancedJdbcPooledConnectionTest extends DatabaseConnectionCase<AdvancedJdbcPooledConnection> {
+public class AdvancedJdbcPooledConnectionTest
+    extends
+    com.adaptris.interlok.junit.scaffolding.DatabaseConnectionCase<AdvancedJdbcPooledConnection> {
 
   private static final GuidGenerator GUID = new GuidGenerator();
 
   public AdvancedJdbcPooledConnectionTest() {
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected AdvancedJdbcPooledConnection createConnection() {
@@ -108,7 +106,7 @@ public class AdvancedJdbcPooledConnectionTest extends DatabaseConnectionCase<Adv
       .with()
       .pollInterval(Duration.ofMillis(100))
       .until(() ->con.retrieveComponentState().equals(StartedState.getInstance()));
-      
+
       ComboPooledDataSource poolDs = ((C3P0PooledDataSource) con.asDataSource()).wrapped();
       assertEquals(0, poolDs.getNumBusyConnections());
       Connection c0 = null;
@@ -123,7 +121,7 @@ public class AdvancedJdbcPooledConnectionTest extends DatabaseConnectionCase<Adv
       .with()
       .pollInterval(Duration.ofMillis(100))
       .until(() ->poolDs.getNumBusyConnections() == 0);
-      
+
       Connection c1 = poolDs.getConnection();
       slf4jLogger.info("1 get (again): NumConnections={}, NumBusyConnnections={}, NumIdleConnections={}", poolDs.getNumConnections() ,poolDs.getNumBusyConnections(), poolDs.getNumIdleConnections());
       Connection c2 = poolDs.getConnection();
@@ -144,7 +142,7 @@ public class AdvancedJdbcPooledConnectionTest extends DatabaseConnectionCase<Adv
         .atMost(Duration.ofSeconds(5))
         .with()
         .pollInterval(Duration.ofMillis(100))
-        .until(() ->poolDs.getNumBusyConnections() == 0);     
+        .until(() ->poolDs.getNumBusyConnections() == 0);
       slf4jLogger.info("closed: NumConnections={}, NumBusyConnnections={}, NumIdleConnections={}", poolDs.getNumConnections() ,poolDs.getNumBusyConnections(), poolDs.getNumIdleConnections());
       assertEquals(0, poolDs.getNumBusyConnections());
     } finally {

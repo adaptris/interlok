@@ -34,10 +34,7 @@ import com.adaptris.util.TimeInterval;
 
 @SuppressWarnings("deprecation")
 public abstract class FtpConsumerCase extends FtpConsumerExample {
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
+
 
   @Override
   protected Object retrieveObjectForSampleConfig() {

@@ -36,10 +36,6 @@ public class DuplicateMessageRoutingServiceTest extends SyntaxRoutingServiceExam
   private static final String UNIQUE_KEY = "uniqueKey";
   private static final String KEY_DUPLICATE_STORE = "DuplicateMessageRoutingService.store";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
 
   @Before

@@ -36,10 +36,6 @@ public class TrimMetadataServiceTest extends MetadataServiceExample {
     return msg;
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testService_NoKey() throws Exception {

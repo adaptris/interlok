@@ -38,21 +38,17 @@ import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.JmsConstants;
 import com.adaptris.core.jms.JmsProducer;
-import com.adaptris.core.jms.JmsProducerExample;
 import com.adaptris.core.jms.JmsProducerImpl;
 import com.adaptris.core.jms.MessageTypeTranslatorImp;
 
 
-public class BlobMessageTranslatorTest extends JmsProducerExample {
+public class BlobMessageTranslatorTest
+    extends com.adaptris.interlok.junit.scaffolding.jms.JmsProducerExample {
 
   private transient Log log = LogFactory.getLog(this.getClass());
 
   private static final String INPUT = "Quick zephyrs blow, vexing daft Jim";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   private Message createMessage(Session session) throws Exception {
     return ((ActiveMQSession) session).createBlobMessage(new ByteArrayInputStream(INPUT.getBytes()));

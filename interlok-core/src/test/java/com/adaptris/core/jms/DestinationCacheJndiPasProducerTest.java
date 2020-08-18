@@ -22,12 +22,9 @@ import static com.adaptris.core.jms.JndiPtpProducerTest.createJndiVendorImpExamp
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.jndi.CachedDestinationJndiImplementation;
 
-public class DestinationCacheJndiPasProducerTest extends JmsProducerCase {
+public class DestinationCacheJndiPasProducerTest
+    extends com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
   @Override
   protected Object retrieveObjectForSampleConfig() {
     return new StandaloneProducer(createJndiVendorImpExample(new CachedDestinationJndiImplementation(), new JmsConnection()),

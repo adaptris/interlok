@@ -45,10 +45,6 @@ public class RegexpMetadataServiceTest extends MetadataServiceExample {
     return service;
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testService() throws Exception {

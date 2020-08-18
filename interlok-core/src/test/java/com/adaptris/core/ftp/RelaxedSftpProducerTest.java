@@ -32,10 +32,6 @@ public class RelaxedSftpProducerTest extends RelaxedFtpProducerCase {
     }
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected FileTransferConnection createConnectionForExamples() {

@@ -32,10 +32,6 @@ import com.adaptris.util.text.DateFormatUtil;
 public class GetOauthTokenTest extends HttpServiceExample {
   private static final String TEXT = "ABCDEFG";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testService_Lifecycle() throws Exception {

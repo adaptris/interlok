@@ -37,11 +37,6 @@ public class AddMetadataServiceTest extends MetadataServiceExample {
   private MetadataElement m2;
 
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
   @Before
   public void setUp() {
     m1 = new MetadataElement("key1", "val1");

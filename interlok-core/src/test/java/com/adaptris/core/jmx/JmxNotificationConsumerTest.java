@@ -30,16 +30,16 @@ import org.junit.Test;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessageConsumer;
 import com.adaptris.core.AdaptrisMessageListener;
-import com.adaptris.core.ConsumerCase;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.util.JmxHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
+import com.adaptris.interlok.junit.scaffolding.ExampleConsumerCase;
 import com.adaptris.util.TimeInterval;
 
-public class JmxNotificationConsumerTest extends ConsumerCase {
+public class JmxNotificationConsumerTest extends ExampleConsumerCase {
 
   private static final String BASE_DIR_KEY = "JmxConsumerExamples.baseDir";
 
@@ -49,10 +49,6 @@ public class JmxNotificationConsumerTest extends ConsumerCase {
     }
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testNotFound() throws Exception {

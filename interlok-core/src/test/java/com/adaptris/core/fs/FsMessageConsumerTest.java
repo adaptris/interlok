@@ -53,10 +53,6 @@ public class FsMessageConsumerTest extends FsConsumerCase {
    */
   public static final String EXAMPLE_BASEDIR = "FsConsumerExample.baseDir";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected void configureExampleConfigBaseDir() {

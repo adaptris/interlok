@@ -54,10 +54,6 @@ public class DefaultFailedMessageRetrierJmxTest extends ComponentManagerCase {
   public DefaultFailedMessageRetrierJmxTest() {
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testExistsInAdapterManager() throws Exception {

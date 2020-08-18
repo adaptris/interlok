@@ -28,10 +28,6 @@ public class FailoverPtpProducerTest extends FailoverJmsProducerCase {
 
   private static final Log LOG = LogFactory.getLog(FailoverPtpProducerTest.class);
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testBug845() throws Exception {

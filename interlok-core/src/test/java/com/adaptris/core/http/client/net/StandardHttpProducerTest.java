@@ -82,10 +82,6 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   private static final String TEXT = "ABCDEFG";
   private static final String ALT_TEXT = "HIJKLMNOP";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
 
   @Test

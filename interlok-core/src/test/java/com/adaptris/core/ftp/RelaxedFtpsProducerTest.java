@@ -28,10 +28,6 @@ public class RelaxedFtpsProducerTest extends RelaxedFtpProducerCase {
     }
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
 
   @Override

@@ -21,10 +21,6 @@ import com.adaptris.core.StandaloneProducer;
 
 public class FailoverPasProducerTest extends FailoverJmsProducerCase {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected Object retrieveObjectForSampleConfig() {

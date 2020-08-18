@@ -40,11 +40,6 @@ public class MetadataFilterServiceTest extends MetadataServiceExample {
   private static final String REG_EXP = "JMS[^M]\\w+";
 
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
   @Test
   public void testSetFilter() {
     MetadataFilterService service = new MetadataFilterService();

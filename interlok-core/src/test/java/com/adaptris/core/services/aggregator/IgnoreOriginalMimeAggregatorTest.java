@@ -35,10 +35,6 @@ import com.adaptris.util.text.mime.BodyPartIterator;
 @SuppressWarnings("deprecation")
 public class IgnoreOriginalMimeAggregatorTest extends MimeAggregatorCase {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testService_ContentEncoding() throws Exception {

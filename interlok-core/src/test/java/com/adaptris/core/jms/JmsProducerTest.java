@@ -16,8 +16,8 @@
 
 package com.adaptris.core.jms;
 
-import static com.adaptris.core.jms.JmsConfig.DEFAULT_PAYLOAD;
-import static com.adaptris.core.jms.JmsConfig.MESSAGE_TRANSLATOR_LIST;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.DEFAULT_PAYLOAD;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.MESSAGE_TRANSLATOR_LIST;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -49,7 +49,6 @@ import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.Service;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.StandaloneConsumer;
@@ -59,10 +58,11 @@ import com.adaptris.core.jms.BasicJmsProducerCase.Loopback;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 import com.adaptris.core.stubs.MockMessageListener;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 import com.adaptris.interlok.util.Closer;
 import com.adaptris.util.TimeInterval;
 
-public class JmsProducerTest extends JmsProducerCase {
+public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase {
 
   @Mock private ProducerSessionFactory mockSessionFactory;
   @Mock private ProducerSession mockProducerSession;
@@ -81,10 +81,6 @@ public class JmsProducerTest extends JmsProducerCase {
     Closer.closeQuietly(openMocks);
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @SuppressWarnings("deprecation")
   protected JmsConsumerImpl createConsumer(ConfiguredConsumeDestination dest) {
@@ -340,7 +336,7 @@ public class JmsProducerTest extends JmsProducerCase {
       producer.setCaptureOutgoingMessageDetails(true);
       StandaloneProducer sp = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
 
-      ServiceCase.execute(sp, msg);
+      ExampleServiceCase.execute(sp, msg);
       Map objMd = msg.getObjectHeaders();
       String prefix = Message.class.getCanonicalName() + ".";
       assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_MESSAGE_ID));
@@ -363,7 +359,7 @@ public class JmsProducerTest extends JmsProducerCase {
     try {
       activeMqBroker.start();
       AdaptrisMessage msg = createMessage();
-      ServiceCase.execute(standaloneProducer, msg);
+      ExampleServiceCase.execute(standaloneProducer, msg);
       Map objectMetadata = msg.getObjectHeaders();
       assertTrue(objectMetadata.containsKey(Message.class.getCanonicalName() + "." + JmsConstants.JMS_MESSAGE_ID));
       assertTrue(objectMetadata.containsKey(Message.class.getCanonicalName() + "." + JmsConstants.JMS_DESTINATION));

@@ -22,7 +22,8 @@ import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
-public class JndiExtraConfigPtpProducerTest extends JmsProducerCase {
+public class JndiExtraConfigPtpProducerTest
+    extends com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase {
 
   static final String DEFAULT_FILE_SUFFIX = "-ExtraConfig-JNDI";
   static final String DEFAULT_XML_COMMENT = "<!-- " + "\nNote that using StandardJndiImplementation means that"
@@ -32,10 +33,6 @@ public class JndiExtraConfigPtpProducerTest extends JmsProducerCase {
       + "\nafter it has been retrieved from JNDI, by using an ExtraFactoryConfiguration"
       + "\nimplementation. Check the javadocs for more details." + "\n-->\n";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   static JmsConnection createJndiVendorImpExample(JmsConnection c) {
     return createJndiVendorImpExample(new StandardJndiImplementation(), c);

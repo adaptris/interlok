@@ -16,8 +16,8 @@
 
 package com.adaptris.core.jms.activemq;
 
-import static com.adaptris.core.BaseCase.MAX_WAIT;
-import static com.adaptris.core.BaseCase.waitForMessages;
+import static com.adaptris.interlok.junit.scaffolding.BaseCase.MAX_WAIT;
+import static com.adaptris.interlok.junit.scaffolding.BaseCase.waitForMessages;
 import static org.junit.Assert.assertEquals;
 import java.security.SecureRandom;
 import java.util.Random;
@@ -27,23 +27,24 @@ import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ClosedState;
 import com.adaptris.core.ComponentState;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.SharedConnection;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.StartedState;
 import com.adaptris.core.Workflow;
 import com.adaptris.core.jms.ActiveJmsConnectionErrorHandler;
-import com.adaptris.core.jms.ActiveJmsConnectionErrorHandlerCase;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.PasConsumer;
 import com.adaptris.core.jms.PasProducer;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 import com.adaptris.util.TimeInterval;
 
-public class ActiveJmsConnectionErrorHandlerTest extends ActiveJmsConnectionErrorHandlerCase {
+public class ActiveJmsConnectionErrorHandlerTest
+    extends com.adaptris.interlok.junit.scaffolding.jms.ActiveJmsConnectionErrorHandlerCase {
+
 
   private Random random = new SecureRandom();
 
@@ -176,7 +177,7 @@ public class ActiveJmsConnectionErrorHandlerTest extends ActiveJmsConnectionErro
       adapter.requestStart();
       assertEquals(StartedState.getInstance(), channel.retrieveComponentState());
       // Now try and send a message
-      ServiceCase.execute(createProducer(activeMqBroker, testName.getMethodName()),
+      ExampleServiceCase.execute(createProducer(activeMqBroker, testName.getMethodName()),
           AdaptrisMessageFactory.getDefaultInstance().newMessage("ABC"));
       waitForMessages(producer, 1);
 
@@ -194,7 +195,7 @@ public class ActiveJmsConnectionErrorHandlerTest extends ActiveJmsConnectionErro
       assertEquals(StartedState.getInstance(), channel.retrieveComponentState());
 
       // Now try and send a message
-      ServiceCase.execute(createProducer(activeMqBroker, testName.getMethodName()),
+      ExampleServiceCase.execute(createProducer(activeMqBroker, testName.getMethodName()),
           AdaptrisMessageFactory.getDefaultInstance().newMessage("ABC"));
       waitForMessages(producer, 2);
 
@@ -229,7 +230,7 @@ public class ActiveJmsConnectionErrorHandlerTest extends ActiveJmsConnectionErro
       assertEquals(StartedState.getInstance(), started.retrieveComponentState());
       assertEquals(ClosedState.getInstance(), neverStarted.retrieveComponentState());
       // Now try and send a message
-      ServiceCase.execute(createProducer(activeMqBroker, testName.getMethodName()),
+      ExampleServiceCase.execute(createProducer(activeMqBroker, testName.getMethodName()),
           AdaptrisMessageFactory.getDefaultInstance().newMessage("ABC"));
       waitForMessages(producer, 1);
 
@@ -247,7 +248,7 @@ public class ActiveJmsConnectionErrorHandlerTest extends ActiveJmsConnectionErro
       assertEquals(StartedState.getInstance(), started.retrieveComponentState());
 
       // Now try and send a message
-      ServiceCase.execute(createProducer(activeMqBroker, testName.getMethodName()),
+      ExampleServiceCase.execute(createProducer(activeMqBroker, testName.getMethodName()),
           AdaptrisMessageFactory.getDefaultInstance().newMessage("ABC"));
       waitForMessages(producer, 2);
       assertEquals(ClosedState.getInstance(), neverStarted.retrieveComponentState());

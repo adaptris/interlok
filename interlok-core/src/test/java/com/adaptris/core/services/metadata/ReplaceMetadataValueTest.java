@@ -59,10 +59,6 @@ public class ReplaceMetadataValueTest extends MetadataServiceExample {
     return m;
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testInit() throws Exception {

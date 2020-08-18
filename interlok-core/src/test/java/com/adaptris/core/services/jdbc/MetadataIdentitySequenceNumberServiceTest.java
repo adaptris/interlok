@@ -51,10 +51,6 @@ public class MetadataIdentitySequenceNumberServiceTest extends SequenceNumberCas
     }
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testMessageHasNoIdentityMetadata() throws Exception {

@@ -16,11 +16,11 @@
 
 package com.adaptris.core.jms.activemq;
 
-import static com.adaptris.core.jms.JmsConfig.DEFAULT_PAYLOAD;
-import static com.adaptris.core.jms.JmsConfig.HIGHEST_PRIORITY;
-import static com.adaptris.core.jms.JmsConfig.LOWEST_PRIORITY;
 import static com.adaptris.core.jms.activemq.AdvancedActiveMqImplementationTest.createImpl;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.addBlobUrlRef;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.DEFAULT_PAYLOAD;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.HIGHEST_PRIORITY;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.LOWEST_PRIORITY;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import javax.jms.DeliveryMode;
@@ -40,14 +40,12 @@ import org.apache.activemq.ActiveMQTopicPublisher;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MimeEncoder;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandaloneRequestor;
 import com.adaptris.core.jms.BytesMessageTranslator;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.JmsConstants;
-import com.adaptris.core.jms.JmsProducerCase;
 import com.adaptris.core.jms.PasConsumer;
 import com.adaptris.core.jms.PasProducer;
 import com.adaptris.core.jms.PtpConsumer;
@@ -59,10 +57,12 @@ import com.adaptris.core.stubs.AdaptrisMessageStub;
 import com.adaptris.core.stubs.ExternalResourcesHelper;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.stubs.StubMessageFactory;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 import com.adaptris.security.password.Password;
 import com.adaptris.util.GuidGenerator;
 
-public class BasicActiveMqProducerTest extends JmsProducerCase {
+public class BasicActiveMqProducerTest
+    extends com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase {
 
   private static final int DEFAULT_TIMEOUT = 5000;
 
@@ -78,11 +78,6 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
     catch (Exception e) {
       throw new RuntimeException(e);
     }
-  }
-
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
   }
 
   @Override
@@ -119,7 +114,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       StandaloneRequestor standaloneProducer = new StandaloneRequestor(activeMqBroker.getJmsConnection(createVendorImpl()),
               new PasProducer().withTopic(getName()));
       AdaptrisMessage msg = createMessage();
-      ServiceCase.execute(standaloneProducer, msg);
+      ExampleServiceCase.execute(standaloneProducer, msg);
       echo.waitFor(DEFAULT_TIMEOUT);
       assertNotNull(echo.getLastMessage());
       assertNotNull(echo.getLastMessage().getJMSReplyTo());
@@ -142,7 +137,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       producer.setMessageTranslator(new BytesMessageTranslator());
       StandaloneRequestor req = new StandaloneRequestor(broker.getJmsConnection(createVendorImpl()), producer);
       AdaptrisMessage msg = createMessage();
-      ServiceCase.execute(req, msg);
+      ExampleServiceCase.execute(req, msg);
       echo.waitFor(DEFAULT_TIMEOUT);
       assertNotNull(echo.getLastMessage());
       assertNotNull(echo.getLastMessage().getJMSReplyTo());
@@ -163,7 +158,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       StandaloneRequestor standaloneProducer = new StandaloneRequestor(activeMqBroker.getJmsConnection(createVendorImpl()),
               new PtpProducer().withQueue((getName())));
       AdaptrisMessage msg = createMessage();
-      ServiceCase.execute(standaloneProducer, msg);
+      ExampleServiceCase.execute(standaloneProducer, msg);
       echo.waitFor(DEFAULT_TIMEOUT);
       assertNotNull(echo.getLastMessage());
       assertNotNull(echo.getLastMessage().getJMSReplyTo());
@@ -187,7 +182,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       StandaloneRequestor standaloneProducer = new StandaloneRequestor(activeMqBroker.getJmsConnection(createVendorImpl()),
           producer);
       AdaptrisMessage msg = createMessage();
-      ServiceCase.execute(standaloneProducer, msg);
+      ExampleServiceCase.execute(standaloneProducer, msg);
       echo.waitFor(DEFAULT_TIMEOUT);
       assertNotNull(echo.getLastMessage());
       assertNotNull(echo.getLastMessage().getJMSReplyTo());
@@ -210,7 +205,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
               new PasProducer().withTopic(getName()));
       AdaptrisMessage msg = EmbeddedActiveMq.createMessage(null);
       msg.addMetadata(JmsConstants.JMS_ASYNC_STATIC_REPLY_TO, getName() + "_reply");
-      ServiceCase.execute(standaloneProducer, msg);
+      ExampleServiceCase.execute(standaloneProducer, msg);
       echo.waitFor(DEFAULT_TIMEOUT);
       assertNotNull(echo.getLastMessage());
       assertNotNull(echo.getLastMessage().getJMSReplyTo());
@@ -233,7 +228,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
               new PtpProducer().withQueue(getName()));
       AdaptrisMessage msg = EmbeddedActiveMq.createMessage(null);
       msg.addMetadata(JmsConstants.JMS_ASYNC_STATIC_REPLY_TO, getName() + "_reply");
-      ServiceCase.execute(standaloneProducer, msg);
+      ExampleServiceCase.execute(standaloneProducer, msg);
       echo.waitFor(DEFAULT_TIMEOUT);
       assertNotNull(echo.getLastMessage());
       assertNotNull(echo.getLastMessage().getJMSReplyTo());
@@ -259,7 +254,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       pasProducer.setPerMessageProperties(false);
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
           pasProducer);
-      ServiceCase.execute(standaloneProducer, createMessage());
+      ExampleServiceCase.execute(standaloneProducer, createMessage());
       echo.waitFor(DEFAULT_TIMEOUT);
       assertNotNull(echo.getLastMessage());
       assertEquals(LOWEST_PRIORITY, echo.getLastMessage().getJMSPriority());
@@ -285,7 +280,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
       pasProducer.setPerMessageProperties(true);
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
           pasProducer);
-      ServiceCase.execute(standaloneProducer, createMessage());
+      ExampleServiceCase.execute(standaloneProducer, createMessage());
       echo.waitFor(DEFAULT_TIMEOUT);
       assertNotNull(echo.getLastMessage());
       assertEquals(HIGHEST_PRIORITY, echo.getLastMessage().getJMSPriority());
@@ -390,7 +385,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
 
       int count = 10;
       for (int i = 0; i < count; i++) {
-        ServiceCase.execute(standaloneProducer, createMessage());
+        ExampleServiceCase.execute(standaloneProducer, createMessage());
       }
 
       start(standaloneConsumer);
@@ -673,7 +668,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
               new PasProducer().withTopic(getName()));
       AdaptrisMessage msg = createMessage();
       msg.addMetadata(JmsConstants.JMS_ASYNC_STATIC_REPLY_TO, getName() + "_reply");
-      ServiceCase.execute(standaloneProducer, msg);
+      ExampleServiceCase.execute(standaloneProducer, msg);
       echo.waitFor(DEFAULT_TIMEOUT);
       assertNotNull(echo.getLastMessage());
       assertNotNull(echo.getLastMessage().getJMSReplyTo());
@@ -696,7 +691,7 @@ public class BasicActiveMqProducerTest extends JmsProducerCase {
               new PtpProducer().withQueue((getName())));
       AdaptrisMessage msg = createMessage();
       msg.addMetadata(JmsConstants.JMS_ASYNC_STATIC_REPLY_TO, getName() + "_reply");
-      ServiceCase.execute(standaloneProducer, msg);
+      ExampleServiceCase.execute(standaloneProducer, msg);
       echo.waitFor(DEFAULT_TIMEOUT);
       assertNotNull(echo.getLastMessage());
       assertNotNull(echo.getLastMessage().getJMSReplyTo());

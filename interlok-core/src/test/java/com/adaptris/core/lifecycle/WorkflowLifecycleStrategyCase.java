@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,7 +19,6 @@ package com.adaptris.core.lifecycle;
 import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
-import com.adaptris.core.BaseCase;
 import com.adaptris.core.Channel;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.StandardWorkflow;
@@ -32,15 +31,12 @@ import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.PlainIdGenerator;
 
-public abstract class WorkflowLifecycleStrategyCase extends BaseCase {
+public abstract class WorkflowLifecycleStrategyCase
+    extends com.adaptris.interlok.junit.scaffolding.BaseCase {
 
   protected IdGenerator idGenerator;
   protected Logger log = Logger.getLogger(this.getClass());
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Before
   public void setUp() throws Exception {

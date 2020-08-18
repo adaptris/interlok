@@ -36,10 +36,6 @@ import com.adaptris.util.KeyValuePairSet;
 
 public class VerifyIdentityServiceTest extends SecurityServiceExample {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testDefaultService() throws Exception {

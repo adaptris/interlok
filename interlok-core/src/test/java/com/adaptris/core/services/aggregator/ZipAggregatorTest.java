@@ -24,11 +24,6 @@ import com.adaptris.core.stubs.DefectiveMessageFactory;
 public class ZipAggregatorTest extends AggregatingServiceExample {
 
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
   @Test
   public void testJoinMessage() throws Exception {
     ZipAggregator aggr = new ZipAggregator();

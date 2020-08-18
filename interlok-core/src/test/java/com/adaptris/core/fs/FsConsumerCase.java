@@ -40,7 +40,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.Channel;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConsumeDestination;
-import com.adaptris.core.ConsumerCase;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.Poller;
@@ -58,10 +57,11 @@ import com.adaptris.core.fs.enhanced.SizeDescending;
 import com.adaptris.core.runtime.AdapterManager;
 import com.adaptris.core.util.JmxHelper;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.junit.scaffolding.ExampleConsumerCase;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.TimeInterval;
 
-public abstract class FsConsumerCase extends ConsumerCase {
+public abstract class FsConsumerCase extends ExampleConsumerCase {
   protected static final String COLON = ":";
   protected static final String HYPHEN = "-";
   /**

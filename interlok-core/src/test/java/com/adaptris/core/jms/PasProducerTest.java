@@ -24,10 +24,6 @@ import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 
 public class PasProducerTest extends BasicJmsProducerCase {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   /**
    * @see com.adaptris.core.ExampleConfigCase#retrieveObjectForSampleConfig()

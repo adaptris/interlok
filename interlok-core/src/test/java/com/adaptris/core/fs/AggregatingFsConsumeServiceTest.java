@@ -42,11 +42,6 @@ public class AggregatingFsConsumeServiceTest extends AggregatingServiceExample {
   protected static final String DATA_PAYLOAD = "Pack my box with five dozen liquor jugs";
   protected static final String INITIAL_PAYLOAD = "Glib jocks quiz nymph to vex dwarf";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
   @Test
   public void testService() throws Exception {
     Object o = new Object();

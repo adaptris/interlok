@@ -25,15 +25,9 @@ import org.quartz.Scheduler;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
 
-public class QuartzCronPollerTest extends BaseCase {
+public class QuartzCronPollerTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
 
   private static final String PAYLOAD = "The Quick Brown Fox Jumps Over The Lazy Dog";
-
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
 
   @Test
   public void testSchedulerGroup() throws Exception {

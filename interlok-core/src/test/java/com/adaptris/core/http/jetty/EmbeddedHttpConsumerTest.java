@@ -61,10 +61,6 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
 
   protected StandardHttpProducer httpProducer;
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Before
   public void setUp() throws Exception {

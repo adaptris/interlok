@@ -30,10 +30,6 @@ public class RetryOnceStandaloneProducerTest extends GeneralServiceExample {
 
   private RetryOnceStandaloneProducer service;
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Before
   public void setUp() throws Exception {
@@ -95,7 +91,7 @@ public class RetryOnceStandaloneProducerTest extends GeneralServiceExample {
 	  StaticCounterFailFirstMockMessageProducer producer = new StaticCounterFailFirstMockMessageProducer();
 	  producer.setFailUntilCount(0);
 	  producer.resetCount();
-    this.service.setProducer(producer);
+    service.setProducer(producer);
 
     try {
       service.doService(AdaptrisMessageFactory.getDefaultInstance().newMessage());
@@ -136,7 +132,7 @@ public class RetryOnceStandaloneProducerTest extends GeneralServiceExample {
 	  StaticCounterFailFirstMockMessageProducer producer = new StaticCounterFailFirstMockMessageProducer();
 	  producer.setFailUntilCount(0);
 	  producer.resetCount();
-    this.service.setProducer(producer);
+    service.setProducer(producer);
 
     try {
       service.doService(AdaptrisMessageFactory.getDefaultInstance().newMessage());

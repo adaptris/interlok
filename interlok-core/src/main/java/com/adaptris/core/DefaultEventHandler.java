@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,9 +29,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <p>
  * Basic implementation of <code>EventHandler</code>.
  * </p>
- * 
+ *
  * @config default-event-handler
- * 
+ *
  */
 @XStreamAlias("default-event-handler")
 @AdapterComponent
@@ -61,7 +61,7 @@ public class DefaultEventHandler extends EventHandlerBase {
   }
 
   @Override
-  protected AdaptrisMessageSender retrieveProducer() {
+  public AdaptrisMessageSender retrieveProducer() {
     return producer;
   }
 
@@ -99,7 +99,7 @@ public class DefaultEventHandler extends EventHandlerBase {
    * <p>
    * Sets the <code>AdaptrisConnection</code> to use. May not be null.
    * </p>
-   * 
+   *
    * @param c the <code>AdaptrisConnection</code> to use
    */
   public void setConnection(AdaptrisConnection c) {
@@ -113,7 +113,7 @@ public class DefaultEventHandler extends EventHandlerBase {
    * <p>
    * Returns the <code>AdaptrisConnection</code> to use.
    * </p>
-   * 
+   *
    * @return the <code>AdaptrisConnection</code> to use
    */
   public AdaptrisConnection getConnection() {
@@ -124,7 +124,7 @@ public class DefaultEventHandler extends EventHandlerBase {
    * <p>
    * Sets the <code>AdaptrisMessageProducer</code> to use. May not be null.
    * </p>
-   * 
+   *
    * @param p the <code>AdaptrisMessageProducer</code> to use
    */
   public void setProducer(AdaptrisMessageProducer p) {
@@ -138,7 +138,7 @@ public class DefaultEventHandler extends EventHandlerBase {
    * <p>
    * Returns the <code>AdaptrisMessageProducer</code> to use.
    * </p>
-   * 
+   *
    * @return the <code>AdaptrisMessageProducer</code> to use
    */
   public AdaptrisMessageProducer getProducer() {

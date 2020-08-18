@@ -31,11 +31,6 @@ import com.adaptris.util.KeyValuePair;
 
 public class AdvancedActiveMqProducerTest extends BasicActiveMqProducerTest {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
 
   @Override
   protected String createBaseFileName(Object object) {

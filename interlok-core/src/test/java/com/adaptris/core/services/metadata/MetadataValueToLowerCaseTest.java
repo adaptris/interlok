@@ -23,10 +23,6 @@ import com.adaptris.core.AdaptrisMessageFactory;
 
 public class MetadataValueToLowerCaseTest extends MetadataServiceExample {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   private AdaptrisMessage createMessage() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("asdfghjk");

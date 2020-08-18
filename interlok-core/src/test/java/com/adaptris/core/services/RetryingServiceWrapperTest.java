@@ -44,10 +44,6 @@ public class RetryingServiceWrapperTest extends GeneralServiceExample {
   private RetryingServiceWrapper retryingServiceWrapper;
   private Service wrappedService;
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Before
   public void setUp() throws Exception {

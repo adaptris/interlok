@@ -23,13 +23,7 @@ import com.adaptris.core.stubs.MockMessageProducer;
 
 
 @SuppressWarnings("deprecation")
-public class ProduceExceptionHandlerTest extends BaseCase {
-
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
+public class ProduceExceptionHandlerTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
 
   @Test
   public void testNullProduceExceptionHandler() throws Exception {

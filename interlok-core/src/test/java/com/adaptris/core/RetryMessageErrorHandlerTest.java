@@ -36,17 +36,15 @@ import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
+import com.adaptris.interlok.junit.scaffolding.BaseCase;
 import com.adaptris.util.SimpleIdGenerator;
 import com.adaptris.util.TimeInterval;
 
-public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
+public class RetryMessageErrorHandlerTest
+    extends com.adaptris.interlok.junit.scaffolding.ExampleErrorHandlerCase {
 
   private static final TimeInterval DEFAULT_RETRY_INTERVAL = new TimeInterval(100L, TimeUnit.MILLISECONDS);
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   private RetryMessageErrorHandler createMessageErrorHandler(AdaptrisMessageProducer p) throws Exception {
     return configure(new RetryMessageErrorHandler(), p);

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,7 +36,7 @@ import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.PlainIdGenerator;
 import com.adaptris.util.TimeInterval;
 
-public class ServiceListTest extends ServiceCollectionCase {
+public class ServiceListTest extends com.adaptris.interlok.junit.scaffolding.services.ServiceCollectionCase {
 
   private static final String VAL4 = "val4";
   private static final String KEY4 = "key4";
@@ -47,10 +47,6 @@ public class ServiceListTest extends ServiceCollectionCase {
   private static final String VAL1 = "val1";
   private static final String KEY1 = "key1";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
   @Override
   public ServiceList createServiceCollection() {
     return new ServiceList();
@@ -134,7 +130,7 @@ public class ServiceListTest extends ServiceCollectionCase {
 
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata(CoreConstants.STOP_PROCESSING_KEY, CoreConstants.STOP_PROCESSING_VALUE);
-    
+
     execute(services, msg);
 
     // Test that services have not been applied
@@ -499,7 +495,7 @@ public class ServiceListTest extends ServiceCollectionCase {
     }
 
     public void setException(Exception e) {
-      this.exception = e;
+      exception = e;
     }
   }
 

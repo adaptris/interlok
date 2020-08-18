@@ -24,9 +24,10 @@ import org.junit.Test;
 import com.adaptris.core.services.EmbeddedScriptingService;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
+import com.adaptris.interlok.junit.scaffolding.BaseCase;
+import com.adaptris.interlok.junit.scaffolding.ExampleConsumerCase;
 import com.adaptris.util.TimeInterval;
-
-public class PollingTriggerTest extends ConsumerCase {
+public class PollingTriggerTest extends ExampleConsumerCase {
 
   private static final String PAYLOAD = "The Quick Brown Fox Jumps Over The Lazy Dog";
 
@@ -46,10 +47,6 @@ public class PollingTriggerTest extends ConsumerCase {
 
   private static final List<Poller> POLLER_LIST = Arrays.asList(POLLERS);
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
   @Test
   public void testTriggerWithStaticTemplate() throws Exception {
     Trigger trigger = new Trigger();

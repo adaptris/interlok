@@ -20,7 +20,8 @@ import static com.adaptris.core.jms.JndiPtpProducerTest.createJndiVendorImpExamp
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.jms.jndi.CachedDestinationJndiImplementation;
 
-public class DestinationCacheJndiPtpConsumerTest extends JmsConsumerCase {
+public class DestinationCacheJndiPtpConsumerTest
+    extends com.adaptris.interlok.junit.scaffolding.jms.JmsConsumerCase {
 
   static final String DEFAULT_XML_COMMENT = "<!-- Note that using CachedDestinationJndiImplementation means that \n"
       + "\nthe JmsConnection fields broker-host, broker-url, port are ignored."
@@ -29,10 +30,6 @@ public class DestinationCacheJndiPtpConsumerTest extends JmsConsumerCase {
 
   static final String DEFAULT_FILE_SUFFIX = "-CachedDestination-JNDI";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
 
   @Override

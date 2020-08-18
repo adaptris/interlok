@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -52,7 +52,8 @@ import net.sf.saxon.serialize.MessageWarner;
 import net.sf.saxon.trans.UncheckedXPathException;
 
 @SuppressWarnings("deprecation")
-public class XmlTransformServiceTest extends TransformServiceExample {
+public class XmlTransformServiceTest
+    extends com.adaptris.interlok.junit.scaffolding.services.TransformServiceExample {
 
   static final String KEY_XML_NODE_TRANSFORM_URL = "XmlTransformService.outputNodeTransform";
 
@@ -100,7 +101,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     XmlTransformerFactory factory;
 
     FactoryConfig(XmlTransformerFactory fac) {
-      this.factory = fac;
+      factory = fac;
     }
 
     XmlTransformService configure(XmlTransformService s) {
@@ -134,10 +135,6 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     }
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testRemoveNamespaceMapping() throws Exception {
@@ -414,7 +411,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
       stop(service);
     }
   }
-  
+
   // INTERLOK-3113
 
   @Test
@@ -433,7 +430,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
       assertNotNull(service.getTransforms().get(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL)).getParameter("myKey"));
       service.doService(m2);
       assertNull(service.getTransforms().get(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL)).getParameter("myKey"));
-      
+
     }
     finally {
       stop(service);
@@ -528,7 +525,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     finally {
       Thread.currentThread().setName(oldName);
     }
-    
+
   }
 
   @Test
@@ -747,7 +744,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     ByteArrayInputStream in = new ByteArrayInputStream(bytes);
     return newDocumentBuilder().parse(new InputSource(in));
   }
-  
+
   // INTERLOK-3101, Saxon-9.9.1-4 onwards throws a different Exception.
   private void assertExceptionCause(Exception e, Class...classes) {
     assertNotNull(e.getCause());
@@ -755,7 +752,7 @@ public class XmlTransformServiceTest extends TransformServiceExample {
     Throwable t = e.getCause();
     boolean matches  = validClasses.stream().anyMatch((clazz) -> {
       return t.getClass().isAssignableFrom(clazz);
-    }); 
+    });
     assertTrue("Exception cause is expected", matches);
   }
 

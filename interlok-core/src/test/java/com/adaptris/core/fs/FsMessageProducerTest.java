@@ -50,10 +50,6 @@ import com.adaptris.util.GuidGenerator;
 @SuppressWarnings("deprecation")
 public class FsMessageProducerTest extends FsProducerExample {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   public static final String BASE_KEY = "FsMessageProducerTest.baseUrl";
   public static final String BASE_TEMP_DIR = "FsMessageProducerTest.tempDirUrl";

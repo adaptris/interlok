@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,11 +39,7 @@ import com.adaptris.util.XmlUtils;
 public class SplittingXmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlResults {
 
   private MockMessageProducer producer;
-  
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
+
 
   @Before
   public void setUp() throws Exception {
@@ -56,7 +52,7 @@ public class SplittingXmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlRe
     List<AdapterTypeVersion> dbItems = generate(10);
     AdapterTypeVersion entry = dbItems.get(0);
 
-    
+
     populateDatabase(dbItems, false);
     JdbcDataQueryService s = createMetadataService();
     s.setResultSetTranslator(createPayloadTranslator());
@@ -110,7 +106,7 @@ public class SplittingXmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlRe
     assertNull("Xpath /Results/OriginalMessage", xu.getSingleNode("/results/originalmessage"));
     assertNotNull("/Results/Row", xu.getSingleNode("/results/row"));
   }
-  
+
   @Override
   public void testDoService_WithEncoding() throws Exception {
     createDatabase();
@@ -123,7 +119,7 @@ public class SplittingXmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlRe
     s.setResultSetTranslator(translator);
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    
+
     AdaptrisMessage outputMessage = producer.getMessages().get(0);
     logMessage(getName(), outputMessage);
     assertEquals("UTF-8", outputMessage.getContentEncoding());
@@ -140,12 +136,12 @@ public class SplittingXmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlRe
     s.setResultSetTranslator(translator);
     AdaptrisMessage msg = createMessage(AdaptrisMessageFactory.getDefaultInstance(), null, entry);
     execute(s, msg);
-    
+
     AdaptrisMessage outputMessage = producer.getMessages().get(0);
     logMessage(getName(), outputMessage);
     assertEquals("UTF-8", outputMessage.getContentEncoding());
   }
-  
+
   @Override
   public void testDoService_IllegalXmlCharacters() throws Exception {
     createDatabase();
@@ -159,7 +155,7 @@ public class SplittingXmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlRe
     s.setResultSetTranslator(translator);
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    
+
     AdaptrisMessage outputMessage = producer.getMessages().get(0);
     logMessage(getName(), outputMessage);
     try {
@@ -175,7 +171,7 @@ public class SplittingXmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlRe
     createDatabase();
     List<AdapterTypeVersion> dbItems = generate(11);
     AdapterTypeVersion entry = dbItems.get(0);
-    
+
     populateDatabase(dbItems, false);
     JdbcDataQueryService s = createMultiService();
     SplittingXmlPayloadTranslator translator = createPayloadTranslator().withMaxRowsPerMessage(2);
@@ -184,7 +180,7 @@ public class SplittingXmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlRe
     execute(s, msg);
     assertTrue(msg.headersContainsKey(ADAPTER_ID_KEY));
     assertFalse(msg.headersContainsKey(JdbcDataQueryService.class.getCanonicalName()));
-    
+
     List<AdaptrisMessage> outputMessages = producer.getMessages();
     assertEquals(6, outputMessages.size());
 
@@ -192,7 +188,7 @@ public class SplittingXmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlRe
     for(AdaptrisMessage outputMessage: outputMessages) {
       XmlUtils xu = XmlHelper.createXmlUtils(outputMessage);
       assertNull("Xpath /Results/OriginalMessage", xu.getSingleNode("/Results/OriginalMessage"));
-      assertEquals("/Results/Row", count<5 ? 2 : 1, 
+      assertEquals("/Results/Row", count<5 ? 2 : 1,
           xu.getNodeList("/Results/Row").getLength());
       assertFalse(outputMessage.headersContainsKey(ADAPTER_ID_KEY));
       count++;

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,20 +38,15 @@ import java.net.URLStreamHandler;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
+import com.adaptris.interlok.junit.scaffolding.util.Os;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.URLString;
-import com.adaptris.util.system.Os;
 
-public abstract class MarshallingBaseCase extends BaseCase {
+public abstract class MarshallingBaseCase extends com.adaptris.interlok.junit.scaffolding.BaseCase {
 
   private static final String TEST_DIR = "MarshallerTest.dir";
 
   protected File testOutputDir;
-
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Before
   public void beforeMyTests() throws Exception {

@@ -35,11 +35,6 @@ public class SizeBasedBranchingServiceTest extends BranchingServiceExample {
   private static final int DEFAULT_SIZE_CRITERIA = 30;
 
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
   private SizeBasedBranchingService setupForTests() {
     SizeBasedBranchingService s = new SizeBasedBranchingService();
     s.setSizeCriteriaBytes(DEFAULT_SIZE_CRITERIA);

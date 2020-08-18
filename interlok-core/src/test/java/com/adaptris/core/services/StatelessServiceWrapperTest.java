@@ -39,10 +39,6 @@ import com.adaptris.core.util.LifecycleHelper;
 
 public class StatelessServiceWrapperTest extends GeneralServiceExample {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
   @Test
   public void testNoWrappedService() throws Exception {
     StatelessServiceWrapper ws = new StatelessServiceWrapper();

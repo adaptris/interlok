@@ -27,7 +27,6 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import com.adaptris.core.Channel;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.ExampleWorkflowCase;
 import com.adaptris.core.NullProcessingExceptionHandler;
 import com.adaptris.core.RestartProduceExceptionHandler;
 import com.adaptris.core.Service;
@@ -43,14 +42,11 @@ import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.TimeInterval;
 
-public class JmsTransactedWorkflowTest extends ExampleWorkflowCase {
+public class JmsTransactedWorkflowTest
+    extends com.adaptris.interlok.junit.scaffolding.ExampleWorkflowCase {
 
   private static Log logR = LogFactory.getLog(JmsTransactedWorkflowTest.class);
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testSetStrict() throws Exception {

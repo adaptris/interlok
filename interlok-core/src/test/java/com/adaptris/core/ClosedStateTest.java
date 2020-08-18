@@ -27,11 +27,6 @@ public class ClosedStateTest extends ComponentStateCase {
   public ClosedStateTest() {
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
   @Test
   public void testInstance() throws Exception {
     ClosedState one = ClosedState.getInstance();

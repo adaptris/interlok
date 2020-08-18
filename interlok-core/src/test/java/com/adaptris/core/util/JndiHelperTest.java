@@ -26,7 +26,6 @@ import javax.naming.InitialContext;
 import org.junit.Before;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisConnection;
-import com.adaptris.core.BaseCase;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.JndiContextFactory;
 import com.adaptris.core.NullConnection;
@@ -36,14 +35,8 @@ import com.adaptris.core.transaction.TransactionManager;
 import com.adaptris.util.GuidGenerator;
 
 @SuppressWarnings("deprecation")
-public class JndiHelperTest extends BaseCase {
+public class JndiHelperTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
   private Properties env = new Properties();
-
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
 
   @Before
   public void setUp() throws Exception {

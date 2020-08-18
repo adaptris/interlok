@@ -25,11 +25,6 @@ import com.adaptris.core.services.exception.ExceptionServiceExample;
 @SuppressWarnings("deprecation")
 public class AlwaysFailServiceTest extends ExceptionServiceExample {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
   @Test
   public void testService() throws Exception {
     try {

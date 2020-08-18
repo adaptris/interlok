@@ -42,10 +42,6 @@ public abstract class MimeAggregatorCase extends AggregatorCase {
 
   protected static final String PAYLOAD = "Pack my box with five dozen liquor jugs.";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testSetters() throws Exception {

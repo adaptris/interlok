@@ -19,12 +19,8 @@ package com.adaptris.core.jms;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 
-public class PtpConsumerTest extends JmsConsumerCase {
+public class PtpConsumerTest extends com.adaptris.interlok.junit.scaffolding.jms.JmsConsumerCase {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   /**
    * @see com.adaptris.core.ExampleConfigCase#retrieveObjectForSampleConfig()

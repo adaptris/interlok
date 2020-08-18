@@ -30,10 +30,6 @@ public class MetadataAppenderServiceTest extends MetadataServiceExample {
   private String resultKey;
   private AdaptrisMessage msg;
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Before
   public void setUp() throws Exception {

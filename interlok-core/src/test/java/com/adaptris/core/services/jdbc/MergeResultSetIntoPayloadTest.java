@@ -32,10 +32,6 @@ import com.adaptris.util.text.xml.InsertNode;
 @SuppressWarnings("deprecation")
 public class MergeResultSetIntoPayloadTest extends JdbcQueryServiceCaseXmlResults {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   @Test

@@ -16,11 +16,11 @@
 
 package com.adaptris.core.services.mime;
 
-import static com.adaptris.core.services.mime.MimeJunitHelper.PART3_CONTENT_ID;
-import static com.adaptris.core.services.mime.MimeJunitHelper.PAYLOAD_1;
-import static com.adaptris.core.services.mime.MimeJunitHelper.PAYLOAD_2;
-import static com.adaptris.core.services.mime.MimeJunitHelper.PAYLOAD_3;
-import static com.adaptris.core.services.mime.MimeJunitHelper.create;
+import static com.adaptris.interlok.junit.scaffolding.util.MimeJunitHelper.PART3_CONTENT_ID;
+import static com.adaptris.interlok.junit.scaffolding.util.MimeJunitHelper.PAYLOAD_1;
+import static com.adaptris.interlok.junit.scaffolding.util.MimeJunitHelper.PAYLOAD_2;
+import static com.adaptris.interlok.junit.scaffolding.util.MimeJunitHelper.PAYLOAD_3;
+import static com.adaptris.interlok.junit.scaffolding.util.MimeJunitHelper.create;
 import static com.adaptris.util.text.mime.MimeConstants.HEADER_CONTENT_ENCODING;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -55,10 +55,6 @@ public class MimePartChooserTest extends MimeServiceExample {
       new com.adaptris.util.text.mime.SelectByHeader("Content-Type", "text/xml")
   };
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   // overriding to use the list alternative...
   @Override

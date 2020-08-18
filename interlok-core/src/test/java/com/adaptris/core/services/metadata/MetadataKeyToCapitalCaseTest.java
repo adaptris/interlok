@@ -34,10 +34,6 @@ public class MetadataKeyToCapitalCaseTest extends MetadataKeyCaseChanger {
   private static final String HELLO_WORLD = "Hello World";
   private static final String METADATA_VALUE = "VALUE";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected void addMetadata(AdaptrisMessage msg) {

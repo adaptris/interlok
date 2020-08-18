@@ -42,7 +42,7 @@ public class MockJmsConnectionErrorHandler extends ActiveJmsConnectionErrorHandl
       idForLogging = loggingId;
     }
     else {
-      idForLogging = abbreviate(retrieveConnection(JmsConnection.class).getBrokerDetailsForLogging(), 20);
+      idForLogging = abbreviate(retrieveConnection(JmsConnection.class).brokerDetailsForLogging(), 20);
     }
     try {
       String s = "MockJmsConnectionErrorHandler";

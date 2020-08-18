@@ -23,7 +23,6 @@ import com.adaptris.core.Channel;
 import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.PortManager;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.StandaloneProducer;
@@ -36,6 +35,7 @@ import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.services.metadata.PayloadFromTemplateService;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.junit.scaffolding.util.PortManager;
 
 public class HttpHelper {
   public static final String CONTENT_TYPE = "content.type";

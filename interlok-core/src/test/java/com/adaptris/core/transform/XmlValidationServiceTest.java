@@ -37,7 +37,8 @@ import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
 @SuppressWarnings("deprecation")
-public class XmlValidationServiceTest extends TransformServiceExample {
+public class XmlValidationServiceTest
+    extends com.adaptris.interlok.junit.scaffolding.services.TransformServiceExample {
 
   public static final String KEY_WILL_VALIDATE_SCHEMA = "XmlValidationServiceTest.schemaUrl";
   public static final String KEY_WILL_NOT_VALIDATE = "XmlValidationServiceTest.schemaUrl2";
@@ -45,10 +46,6 @@ public class XmlValidationServiceTest extends TransformServiceExample {
 
   public static final String KEY_INPUT_FILE = "XmlValidationServiceTest.input.xml";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testSchemaValidator_SetUrl() {

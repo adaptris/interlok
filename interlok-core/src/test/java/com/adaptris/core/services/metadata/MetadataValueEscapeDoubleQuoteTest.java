@@ -23,10 +23,6 @@ import com.adaptris.core.AdaptrisMessageFactory;
 
 public class MetadataValueEscapeDoubleQuoteTest extends MetadataServiceExample {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   private AdaptrisMessage createMessage() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("The quick brown fox jumps over the lazy dog");

@@ -30,12 +30,12 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.jmx.JmxConnection;
 import com.adaptris.util.TimeInterval;
 
-public class JmxWaitServiceTest extends ServiceCase {
+public class JmxWaitServiceTest
+    extends com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase {
 
   private static final String BASE_DIR_KEY = "JmxServiceExamples.baseDir";
 
@@ -48,10 +48,6 @@ public class JmxWaitServiceTest extends ServiceCase {
     }
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Before
   public void setUp() throws Exception {

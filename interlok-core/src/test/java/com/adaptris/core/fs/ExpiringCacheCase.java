@@ -25,10 +25,6 @@ import com.adaptris.util.TimeInterval;
 
 public abstract class ExpiringCacheCase extends ItemCacheCase {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testSetAgeBeforeEviction() throws Exception {

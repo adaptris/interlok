@@ -128,9 +128,4 @@ public class ForEachTest extends ConditionalServiceExample
 		return forEach;
 	}
 
-	@Override
-	public boolean isAnnotatedForJunit4()
-	{
-		return true;
-	}
 }

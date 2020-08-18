@@ -22,7 +22,6 @@ import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.command.ActiveMQTopic;
 import org.junit.Test;
 import com.adaptris.core.Channel;
-import com.adaptris.core.ExampleWorkflowCase;
 import com.adaptris.core.ProduceException;
 
 /**
@@ -31,12 +30,9 @@ import com.adaptris.core.ProduceException;
  * </p>
  */
 @SuppressWarnings("deprecation")
-public class JmsReplyToWorkflowTest extends ExampleWorkflowCase {
+public class JmsReplyToWorkflowTest
+    extends com.adaptris.interlok.junit.scaffolding.ExampleWorkflowCase {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
 
   @Test(expected = ProduceException.class)
