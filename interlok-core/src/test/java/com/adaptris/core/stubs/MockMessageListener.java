@@ -47,11 +47,6 @@ public class MockMessageListener implements AdaptrisMessageListener, MessageCoun
     this();
     this.waitTime = waitTime;
   }
-
-  @Override
-  public void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success) {
-    onAdaptrisMessage(msg, success, null);
-  }
   
   @Override
   public void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success, Consumer<AdaptrisMessage> failure) {

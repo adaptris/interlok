@@ -301,16 +301,9 @@ public class PoolingWorkflow extends WorkflowImp {
    * sent directly to the configured MessageErrorHandler.
    * </p>
    *
-   * @see AdaptrisMessageListener#onAdaptrisMessage(AdaptrisMessage)
    * @see WorkflowImp#handleBadMessage(AdaptrisMessage)
    *
-   * @param msg the AdaptrisMessage.
    */
-  @Override
-  public void onAdaptrisMessage(final AdaptrisMessage msg, Consumer<AdaptrisMessage> success) {
-    onAdaptrisMessage(msg, success, (f) -> {});
-  }
-
   @Override
   public void onAdaptrisMessage(final AdaptrisMessage msg, Consumer<AdaptrisMessage> success, Consumer<AdaptrisMessage> failure) {
     ListenerCallbackHelper.prepare(msg, success, failure);
@@ -567,7 +560,7 @@ public class PoolingWorkflow extends WorkflowImp {
    * @param t the initWaitTime to set, default if not specified is 1 minute
    */
   public void setInitWaitTime(TimeInterval t) {
-    this.initWaitTime = t;
+    initWaitTime = t;
   }
 
   public long initWaitTimeMs() {

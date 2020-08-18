@@ -18,7 +18,6 @@ package com.adaptris.core;
 
 import static com.adaptris.core.CoreConstants.OBJ_METADATA_MESSAGE_FAILED;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-
 import java.util.function.Consumer;
 import com.adaptris.core.util.LifecycleHelper;
 
@@ -72,11 +71,6 @@ public abstract class StandardWorkflowImpl extends WorkflowImp {
   @Override
   protected void prepareWorkflow() throws CoreException {
     // Consumers / services / producers already prepared.
-  }
-
-  @Override
-  public void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success) {
-    this.onAdaptrisMessage(msg, success, (f) -> {});
   }
   
   @Override
