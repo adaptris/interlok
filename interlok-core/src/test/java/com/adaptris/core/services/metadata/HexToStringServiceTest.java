@@ -33,10 +33,6 @@ public class HexToStringServiceTest extends MetadataServiceExample {
   public static final String SOURCE_METADATA_KEY = "sourceMetadataKey";
   public static final String BAD_METADATA_KEY = "badMetadataKey";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   private static AdaptrisMessage createMessage() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();

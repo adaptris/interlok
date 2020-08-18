@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -44,9 +44,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * In the adapter configuration file this class is aliased as <b>jms-connection</b> which is the preferred alternative to the fully
  * qualified classname when building your configuration.
  * </p>
- * 
+ *
  * @config jms-connection
- * 
+ *
  */
 @XStreamAlias("jms-connection")
 @AdapterComponent
@@ -89,7 +89,7 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
   }
 
   /**
-   * 
+   *
    * @see com.adaptris.core.AdaptrisConnectionImp#initConnection()
    */
   @Override
@@ -112,7 +112,7 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
   }
 
   /**
-   * 
+   *
    * @see com.adaptris.core.AdaptrisConnectionImp#startConnection()
    */
   @Override
@@ -146,7 +146,7 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
    * <p>
    * Creates a new <code>Session</code> on the underlying JMS <code>Connection</code>.
    * </p>
-   * 
+   *
    * @param transacted true if transacted
    * @param acknowledgeMode acknowledge mode
    * @return a new <code>Session</code>
@@ -167,7 +167,7 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
       try {
         attemptCount++;
         if (additionalDebug()) {
-          log.trace("Attempting connection to [{}]", getBrokerDetailsForLogging());
+          log.trace("Attempting connection to [{}]", brokerDetailsForLogging());
         }
         ConnectionFactory factory = obtainConnectionFactory();
         createConnection(factory);
@@ -175,7 +175,7 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
       catch (Exception e) {
         if (attemptCount == 1) {
           if (logWarning(attemptCount)) {
-            log.warn("Connection attempt [{}] failed for {}", attemptCount, getBrokerDetailsForLogging(), e);
+            log.warn("Connection attempt [{}] failed for {}", attemptCount, brokerDetailsForLogging(), e);
           }
           if (e instanceof JMSException) {
             if (((JMSException) e).getLinkedException() != null && additionalDebug()) {
@@ -185,11 +185,11 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
         }
 
         if (connectionAttempts() != -1 && attemptCount >= connectionAttempts()) {
-          log.error("Failed to connect to broker [{}]", getBrokerDetailsForLogging(), e);
+          log.error("Failed to connect to broker [{}]", brokerDetailsForLogging(), e);
           throw e;
         }
         else {
-          log.warn("Attempt [{}] failed for broker [{}], retrying", attemptCount, getBrokerDetailsForLogging());
+          log.warn("Attempt [{}] failed for broker [{}], retrying", attemptCount, brokerDetailsForLogging());
           log.info(createLoggingStatement(attemptCount));
           Thread.sleep(connectionRetryInterval());
           continue;
@@ -201,7 +201,7 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
     }
   }
 
-  String getBrokerDetailsForLogging() {
+  public String brokerDetailsForLogging() {
     String result = configuredVendorImplementation() != null
         ? configuredVendorImplementation().retrieveBrokerDetailsForLogging()
         : null;
@@ -225,14 +225,14 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
 
   @Override
   public boolean connectionEquals(JmsConnection connection) {
-    return this.getVendorImplementation().connectionEquals(connection.getVendorImplementation());
+    return getVendorImplementation().connectionEquals(connection.getVendorImplementation());
   }
 
   /**
    * <p>
    * Returns the broker user name.
    * </p>
-   * 
+   *
    * @return the broker user name
    */
   public String getUserName() {
@@ -243,7 +243,7 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
    * <p>
    * Sets the broker user name.
    * </p>
-   * 
+   *
    * @param s the broker user name
    */
   public void setUserName(String s) {
@@ -254,7 +254,7 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
    * <p>
    * Sets the broker password.
    * </p>
-   * 
+   *
    * @return the broker password
    */
   public String getPassword() {
@@ -268,7 +268,7 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
    * <p>
    * In additional to plain text passwords, the passwords can also be encoded using the appropriate {@link com.adaptris.security.password.Password}
    * </p>
-   * 
+   *
    * @param s the broker password
    */
   public void setPassword(String s) {
@@ -279,7 +279,7 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
    * <p>
    * Sets the broker connection client ID.
    * </p>
-   * 
+   *
    * @return the broker connection client ID
    */
   public String getClientId() {
@@ -290,7 +290,7 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
    * <p>
    * Returns the broker connection client ID.
    * </p>
-   * 
+   *
    * @param s the broker connection client ID
    */
   public void setClientId(String s) {
@@ -301,7 +301,7 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
    * <p>
    * Sets the <code>VendorImplementation</code> to use.
    * </p>
-   * 
+   *
    * @return the <code>VendorImplementation</code> to use
    */
   public VendorImplementation getVendorImplementation() {
@@ -312,7 +312,7 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
    * <p>
    * Returns the <code>VendorImplementation</code> to use.
    * </p>
-   * 
+   *
    * @param imp the <code>VendorImplementation</code> to use
    */
   public void setVendorImplementation(VendorImplementation imp) {
@@ -325,7 +325,7 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
 
   /**
    * Whether or not to generate additional TRACE level debug when attempting connections.
-   * 
+   *
    * @param b true to enable additional logging; default false.
    */
   public void setAdditionalDebug(Boolean b) {

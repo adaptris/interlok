@@ -25,10 +25,6 @@ import com.adaptris.core.GeneralServiceExample;
 
 public class RemoveLoggingContextTest extends GeneralServiceExample {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected RemoveLoggingContext retrieveObjectForSampleConfig() {

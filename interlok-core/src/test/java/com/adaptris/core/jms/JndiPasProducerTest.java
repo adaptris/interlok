@@ -22,15 +22,12 @@ import static com.adaptris.core.jms.JndiPtpProducerTest.createJndiVendorImpExamp
 import org.junit.Before;
 import com.adaptris.core.StandaloneProducer;
 
-public class JndiPasProducerTest extends JmsProducerCase {
+public class JndiPasProducerTest
+    extends com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase {
 
   private JmsConnection connection;
   private PasProducer producer;
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Before
   public void setUp() throws Exception {

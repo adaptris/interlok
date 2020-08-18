@@ -10,7 +10,6 @@ import java.util.Collections;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.BaseCase;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
@@ -18,7 +17,7 @@ import com.adaptris.core.services.cache.CacheEntryEvaluator.NullCacheValueTransl
 import com.adaptris.core.services.cache.translators.MetadataCacheValueTranslator;
 import com.adaptris.core.services.cache.translators.StaticCacheValueTranslator;
 
-public class CacheEntryEvaluatorTest extends BaseCase {
+public class CacheEntryEvaluatorTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
   private static final String DEFAULT_VALUE = "value";
   private static final String DEFAULT_METADATA_KEY = "key";
 
@@ -268,8 +267,4 @@ public class CacheEntryEvaluatorTest extends BaseCase {
     return msg;
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 }

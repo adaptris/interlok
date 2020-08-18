@@ -29,10 +29,6 @@ import com.adaptris.core.util.PayloadMessageLogger;
 public class LogMessageServiceTest extends GeneralServiceExample {
 
   @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-  @Override
   protected Object retrieveObjectForSampleConfig() {
     return new LogMessageService(LoggingLevel.DEBUG);
   }

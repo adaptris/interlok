@@ -31,10 +31,6 @@ public class GzipServiceTest extends GeneralServiceExample {
 
   public static final String LINE = "The quick brown fox jumps over the lazy dog";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testZipService() throws Exception {

@@ -48,10 +48,7 @@ public class WhileTest extends ConditionalServiceExample {
   @Mock private Service mockService;
 
   @Mock private Condition mockCondition;
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
+
 
   @Before
   public void setUp() throws Exception {

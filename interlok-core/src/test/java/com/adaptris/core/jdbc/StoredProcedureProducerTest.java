@@ -35,9 +35,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.DefaultMessageFactory;
-import com.adaptris.core.ProducerCase;
 import com.adaptris.core.Service;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.services.jdbc.AllRowsMetadataTranslator;
@@ -45,6 +43,8 @@ import com.adaptris.core.services.jdbc.FirstRowMetadataTranslator;
 import com.adaptris.core.services.jdbc.JdbcServiceList;
 import com.adaptris.core.services.jdbc.XmlPayloadTranslator;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.junit.scaffolding.ExampleProducerCase;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 import com.adaptris.jdbc.ExecuteQueryCallableStatementExecutor;
 import com.adaptris.jdbc.MysqlStatementCreator;
 import com.adaptris.jdbc.ParameterValueType;
@@ -54,7 +54,7 @@ import com.adaptris.util.XmlUtils;
 import com.adaptris.util.text.xml.XPath;
 
 @SuppressWarnings("unchecked")
-public class StoredProcedureProducerTest extends ProducerCase {
+public class StoredProcedureProducerTest extends ExampleProducerCase {
 
   /**
    * Key in unit-test.properties that defines where example goes unless overriden {@link #setBaseDir(String)}.
@@ -76,10 +76,6 @@ public class StoredProcedureProducerTest extends ProducerCase {
     }
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Before
   public void setUp() throws Exception {
@@ -132,7 +128,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
       spp.setInParameters(inParameters);
 
       assertEquals(1, message.getMetadata().size());
-      ServiceCase.execute(configureForTests(spp, true), message);
+      ExampleServiceCase.execute(configureForTests(spp, true), message);
       assertEquals(1, message.getMetadata().size());
     }
   }
@@ -159,7 +155,7 @@ public class StoredProcedureProducerTest extends ProducerCase {
 
       assertEquals(1, message.getMetadata().size());
       assertEquals("100", message.getMetadataValue("xSomeAmount"));
-      ServiceCase.execute(configureForTests(spp, true), message);
+      ExampleServiceCase.execute(configureForTests(spp, true), message);
       assertEquals(1, message.getMetadata().size());
       assertEquals("105", message.getMetadataValue("xSomeAmount"));
     }

@@ -21,12 +21,9 @@ import static com.adaptris.core.jms.JndiPtpProducerTest.DEFAULT_XML_COMMENT;
 import static com.adaptris.core.jms.JndiPtpProducerTest.createJndiVendorImpExample;
 import com.adaptris.core.StandaloneConsumer;
 
-public class JndiPasConsumerTest extends JmsConsumerCase {
+public class JndiPasConsumerTest
+    extends com.adaptris.interlok.junit.scaffolding.jms.JmsConsumerCase {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
   @Override
   protected Object retrieveObjectForSampleConfig() {
     return new StandaloneConsumer(

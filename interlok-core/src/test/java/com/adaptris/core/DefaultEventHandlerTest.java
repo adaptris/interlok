@@ -28,12 +28,9 @@ import com.adaptris.core.stubs.FailFirstMockMessageProducer;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
 
-public class DefaultEventHandlerTest extends ExampleEventHandlerCase<DefaultEventHandler> {
+public class DefaultEventHandlerTest
+    extends com.adaptris.interlok.junit.scaffolding.ExampleEventHandlerCase<DefaultEventHandler> {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected DefaultEventHandler newEventHandler(String uniqueId) throws CoreException {

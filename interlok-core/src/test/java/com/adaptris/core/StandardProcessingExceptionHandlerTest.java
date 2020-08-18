@@ -30,12 +30,9 @@ import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
 
 @SuppressWarnings("deprecation")
-public class StandardProcessingExceptionHandlerTest extends ExampleErrorHandlerCase {
+public class StandardProcessingExceptionHandlerTest
+    extends com.adaptris.interlok.junit.scaffolding.ExampleErrorHandlerCase {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testNoServices() throws Exception {

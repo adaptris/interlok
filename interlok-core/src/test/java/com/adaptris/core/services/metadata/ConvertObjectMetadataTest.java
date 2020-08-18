@@ -27,10 +27,6 @@ import com.adaptris.core.util.LifecycleHelper;
 @SuppressWarnings("deprecation")
 public class ConvertObjectMetadataTest extends MetadataServiceExample {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testDoService() throws Exception {

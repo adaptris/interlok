@@ -111,9 +111,4 @@ public class MultiPayloadMessageSplitterTest extends SplitterCase
 		return createExamples(createSplitterForTests());
 	}
 
-	@Override
-	public boolean isAnnotatedForJunit4()
-	{
-		return true;
-	}
 }

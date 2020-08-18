@@ -42,10 +42,6 @@ public class LargeFsMessageProducerTest extends FsProducerExample {
 
   private File baseDir, tempDir, destDir;
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Before
   public void setUp() throws Exception {

@@ -19,16 +19,10 @@ package com.adaptris.core.services;
 import static org.junit.Assert.assertNull;
 import org.junit.Test;
 import org.slf4j.MDC;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
 
 public class ClearLoggingContextTest extends GeneralServiceExample {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected ClearLoggingContext retrieveObjectForSampleConfig() {

@@ -52,11 +52,6 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
     return Boolean.parseBoolean(PROPERTIES.getProperty("sftp.tests.enabled", "false"));
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
   @Test
   public void testSocketTimeout() throws Exception {
     StandardSftpConnection conn = new StandardSftpConnection();

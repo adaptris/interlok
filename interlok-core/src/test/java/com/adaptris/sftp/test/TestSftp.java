@@ -38,10 +38,6 @@ public class TestSftp extends FtpCase {
   private static final String SFTP_PASSWORD = "sftp.password";
   private static final String SFTP_USERNAME = "sftp.username";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testListBadDirectory() throws Exception {

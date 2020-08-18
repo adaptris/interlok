@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,8 +36,9 @@ import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.TimeInterval;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
-public class JdbcPooledConnectionTest extends DatabaseConnectionCase<JdbcPooledConnection> {
-  
+public class JdbcPooledConnectionTest
+    extends com.adaptris.interlok.junit.scaffolding.DatabaseConnectionCase<JdbcPooledConnection> {
+
   private static final GuidGenerator GUID = new GuidGenerator();
 
   public JdbcPooledConnectionTest() {}
@@ -45,10 +46,7 @@ public class JdbcPooledConnectionTest extends DatabaseConnectionCase<JdbcPooledC
   protected JdbcPooledConnection createConnection() {
     return new JdbcPooledConnection();
   }
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
+
 
   @Override
   protected JdbcPooledConnection configure(JdbcPooledConnection conn1) throws Exception {
@@ -132,7 +130,7 @@ public class JdbcPooledConnectionTest extends DatabaseConnectionCase<JdbcPooledC
   @Test
   public void testConnectionDataSource_Poolsize() throws Exception {
     String originalThread = Thread.currentThread().getName();
-    Thread.currentThread().setName("testConnectionDataSource_Poolsize");    
+    Thread.currentThread().setName("testConnectionDataSource_Poolsize");
 
     JdbcPooledConnection con = configure(createConnection());
     con.setTestStatement("");
@@ -177,13 +175,13 @@ public class JdbcPooledConnectionTest extends DatabaseConnectionCase<JdbcPooledC
       .atMost(Duration.ofSeconds(5))
       .with()
       .pollInterval(Duration.ofMillis(100))
-      .until(() ->poolDs.getNumBusyConnections() == 0);   
+      .until(() ->poolDs.getNumBusyConnections() == 0);
       log.info("closed: NumConnections=" + poolDs.getNumConnections() + ", NumBusyConnnections=" + poolDs.getNumBusyConnections() + ", NumIdleConnections" + poolDs.getNumIdleConnections());
 
       assertEquals(0, poolDs.getNumBusyConnections());
     }
     finally {
-      Thread.currentThread().setName(originalThread);   
+      Thread.currentThread().setName(originalThread);
       LifecycleHelper.stop(con);
       LifecycleHelper.close(con);
     }

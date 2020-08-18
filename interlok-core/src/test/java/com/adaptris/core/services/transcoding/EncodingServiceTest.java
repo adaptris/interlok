@@ -16,11 +16,6 @@ import com.adaptris.core.util.LifecycleHelper;
 
 public class EncodingServiceTest extends TranscodingServiceCase {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
   @Test
   public void testInit() throws Exception {
     EncodingService service = new EncodingService();

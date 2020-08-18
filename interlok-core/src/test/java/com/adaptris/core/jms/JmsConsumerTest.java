@@ -16,9 +16,9 @@
 
 package com.adaptris.core.jms;
 
-import static com.adaptris.core.jms.JmsConfig.MESSAGE_TRANSLATOR_LIST;
-import static com.adaptris.core.jms.JmsProducerCase.assertMessages;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.MESSAGE_TRANSLATOR_LIST;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase.assertMessages;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -40,9 +40,10 @@ import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 import com.adaptris.core.jms.activemq.EmbeddedArtemis;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.junit.scaffolding.jms.JmsConfig;
 import com.adaptris.interlok.util.Closer;
 
-public class JmsConsumerTest extends JmsConsumerCase {
+public class JmsConsumerTest extends com.adaptris.interlok.junit.scaffolding.jms.JmsConsumerCase {
 
   @Mock private BasicActiveMqImplementation mockVendor;
   @Mock MessageConsumer mockMessageConsumer;
@@ -58,10 +59,6 @@ public class JmsConsumerTest extends JmsConsumerCase {
     Closer.closeQuietly(openMocks);
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testDeferConsumerCreationToVendor() throws Exception {

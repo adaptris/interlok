@@ -42,10 +42,6 @@ public class MovingDeletingFsConsumerTest extends FsConsumerCase {
    */
   public static final String EXAMPLE_BASEDIR = "NonDeletingFsConsumerExample.baseDir";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected void configureExampleConfigBaseDir() {

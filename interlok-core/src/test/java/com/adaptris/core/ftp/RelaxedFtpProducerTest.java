@@ -33,9 +33,9 @@ import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.FormattedFilenameCreator;
 import com.adaptris.core.MetadataFileNameCreator;
 import com.adaptris.core.MimeEncoder;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 
 public class RelaxedFtpProducerTest extends RelaxedFtpProducerCase {
 
@@ -47,10 +47,6 @@ public class RelaxedFtpProducerTest extends RelaxedFtpProducerCase {
     }
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected FtpConnection createConnectionForExamples() {
@@ -84,7 +80,7 @@ public class RelaxedFtpProducerTest extends RelaxedFtpProducerCase {
       // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
       LifecycleHelper.prepare(sp);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD);
-      ServiceCase.execute(sp, msg);
+      ExampleServiceCase.execute(sp, msg);
       assertEquals(1, filesystem.listFiles(DEFAULT_WORK_DIR_CANONICAL).size());
     }
     finally {
@@ -104,7 +100,7 @@ public class RelaxedFtpProducerTest extends RelaxedFtpProducerCase {
       produceConnection.setAdditionalDebug(false);
       StandaloneProducer sp = new StandaloneProducer(produceConnection, ftpProducer);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD);
-      ServiceCase.execute(sp, msg);
+      ExampleServiceCase.execute(sp, msg);
       assertEquals(1, filesystem.listFiles(DEFAULT_WORK_DIR_CANONICAL).size());
     }
     finally {
@@ -124,7 +120,7 @@ public class RelaxedFtpProducerTest extends RelaxedFtpProducerCase {
       FtpConnection produceConnection = create(server);
       StandaloneProducer sp = new StandaloneProducer(produceConnection, ftpProducer);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD);
-      ServiceCase.execute(sp, msg);
+      ExampleServiceCase.execute(sp, msg);
       assertEquals(1, filesystem.listFiles(DEFAULT_WORK_DIR_CANONICAL).size());
     }
     finally {

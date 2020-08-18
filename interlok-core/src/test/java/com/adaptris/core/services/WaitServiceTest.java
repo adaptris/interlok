@@ -30,10 +30,6 @@ import com.adaptris.util.TimeInterval;
 
 public class WaitServiceTest extends GeneralServiceExample {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected Object retrieveObjectForSampleConfig() {

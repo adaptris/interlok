@@ -191,10 +191,6 @@ public class DynamicServiceExecutorTest extends DynamicServiceExample {
     abstract String getExampleCommentHeader() throws Exception;
   };
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
 
   @Override

@@ -22,7 +22,8 @@ import org.junit.Test;
 import com.adaptris.core.fs.FsConsumer;
 import com.adaptris.core.stubs.StubEventHandler;
 
-public class DefaultFailedMessageRetrierTest extends FailedMessageRetrierCase {
+public class DefaultFailedMessageRetrierTest
+    extends com.adaptris.interlok.junit.scaffolding.FailedMessageRetrierCase {
 
   @Test
   public void testDuplicateWorkflows() throws Exception {

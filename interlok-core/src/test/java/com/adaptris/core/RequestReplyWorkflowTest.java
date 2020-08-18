@@ -42,7 +42,9 @@ import com.adaptris.core.stubs.MockRequestReplyProducer;
 import com.adaptris.core.stubs.MockSkipProducerService;
 import com.adaptris.core.stubs.MockWorkflowInterceptor;
 import com.adaptris.util.TimeInterval;
-public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
+
+public class RequestReplyWorkflowTest
+    extends com.adaptris.interlok.junit.scaffolding.ExampleWorkflowCase {
 
   public static final String REQUEST_METADATA_VALUE = "RequestMetadataValue";
   public static final String REQUEST_OBJ_METADATA_KEY = "RequestObjectMetadataKey";
@@ -52,11 +54,6 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
   // private MockRequestReplyProducer producer;
   // private MockMessageProducer replyProducer;
 
-
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
 
   private Channel createChannel() throws Exception {

@@ -39,15 +39,12 @@ import com.adaptris.core.stubs.MockWorkflowInterceptor;
 import com.adaptris.core.util.Args;
 import com.adaptris.util.TimeInterval;
 
-public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
+public class MultiProducerWorkflowTest
+    extends com.adaptris.interlok.junit.scaffolding.ExampleWorkflowCase {
 
   private static final String ORIGINAL_PAYLOAD = PAYLOAD_1;
   private static final String MODIFIED_PAYLOAD = PAYLOAD_2;
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testToString() throws Exception {

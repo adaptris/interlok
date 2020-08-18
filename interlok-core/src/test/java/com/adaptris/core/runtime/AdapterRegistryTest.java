@@ -85,10 +85,6 @@ public class AdapterRegistryTest extends ComponentManagerCase {
   public AdapterRegistryTest() {
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
   
   @Before
   public void beforeMyTests() throws Exception {

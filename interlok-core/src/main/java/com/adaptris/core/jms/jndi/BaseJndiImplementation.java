@@ -90,7 +90,7 @@ public abstract class BaseJndiImplementation extends VendorImplementationImp {
     }
     return result;
   }
-  
+
   protected static List<String> asList(String commaSepList, String delim) {
     List<String> result = new ArrayList<String>();
     if (commaSepList != null) {
@@ -110,7 +110,7 @@ public abstract class BaseJndiImplementation extends VendorImplementationImp {
   @Override
   public Queue createQueue(String name, JmsActorConfig c) throws JMSException {
     Queue result = null;
-  
+
     if (!useJndiForQueues()) {
       result = super.createQueue(name, c);
     }
@@ -119,7 +119,7 @@ public abstract class BaseJndiImplementation extends VendorImplementationImp {
     }
     return result;
   }
-  
+
   /**
    *
    * @see VendorImplementation#createTopic(java.lang.String, JmsActorConfig)
@@ -133,7 +133,7 @@ public abstract class BaseJndiImplementation extends VendorImplementationImp {
     else {
       result = (Topic) lookup(name);
     }
-  
+
     return result;
   }
 
@@ -150,7 +150,7 @@ public abstract class BaseJndiImplementation extends VendorImplementationImp {
 
   @Override
   public boolean connectionEquals(VendorImplementationBase vendorImp) {
-    return this.retrieveBrokerDetailsForLogging().equals(vendorImp.retrieveBrokerDetailsForLogging());
+    return retrieveBrokerDetailsForLogging().equals(vendorImp.retrieveBrokerDetailsForLogging());
   }
 
   /**
@@ -222,7 +222,7 @@ public abstract class BaseJndiImplementation extends VendorImplementationImp {
     useJndiForQueues = b;
   }
 
-  protected boolean useJndiForQueues() {
+  public boolean useJndiForQueues() {
     return BooleanUtils.toBooleanDefaultIfNull(getUseJndiForQueues(), false);
   }
 
@@ -247,7 +247,7 @@ public abstract class BaseJndiImplementation extends VendorImplementationImp {
     useJndiForTopics = b;
   }
 
-  protected boolean useJndiForTopics() {
+  public boolean useJndiForTopics() {
     return BooleanUtils.toBooleanDefaultIfNull(getUseJndiForTopics(), false);
   }
 
@@ -273,7 +273,7 @@ public abstract class BaseJndiImplementation extends VendorImplementationImp {
     enableEncodedPasswords = b;
   }
 
-  protected boolean enableEncodedPasswords() {
+  public boolean enableEncodedPasswords() {
     return BooleanUtils.toBooleanDefaultIfNull(getEnableEncodedPasswords(), false);
   }
 
@@ -283,7 +283,7 @@ public abstract class BaseJndiImplementation extends VendorImplementationImp {
 
   /**
    * A comma separated list of keys that will be decoded.
-   * 
+   *
    * @param encodedPasswordKey the keys to decode.
    * @see #setEnableEncodedPasswords(Boolean)
    */
@@ -313,7 +313,7 @@ public abstract class BaseJndiImplementation extends VendorImplementationImp {
     extraFactoryConfiguration = Args.notNull(efc, "extra factory configuration");
   }
 
-  protected boolean newContextOnException() {
+  public boolean newContextOnException() {
     return BooleanUtils.toBooleanDefaultIfNull(getNewContextOnException(), false);
   }
 

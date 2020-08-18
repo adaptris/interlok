@@ -24,12 +24,6 @@ import com.adaptris.core.CoreConstants;
 
 public class ClearExceptionServiceTest extends ExceptionServiceExample {
 
-
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
   @Test
   public void testClearException() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();

@@ -118,10 +118,6 @@ public class MetadataComparisonServiceTest extends MetadataServiceExample {
 
   };
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testInit() throws Exception {

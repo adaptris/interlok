@@ -62,10 +62,7 @@ public class FtpProducerTest extends FtpProducerCase {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
   }
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
+
 
   @Override
   protected FtpConnection createConnectionForExamples() {

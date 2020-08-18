@@ -23,10 +23,6 @@ import static org.junit.Assert.assertNotNull;
 public class NoCacheTest extends ItemCacheCase {
 
   @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-  @Override
   protected void assertCache(ProcessedItemCache cache, int count) {
     assertNotNull(cache);
     assertEquals(0, cache.size());

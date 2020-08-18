@@ -13,10 +13,7 @@ import com.adaptris.core.stubs.DefectiveMessageFactory;
 import com.adaptris.core.stubs.DefectiveMessageFactory.WhenToBreak;
 
 public class RemoveKeyFromCacheTest extends SingleKeyCacheCase {
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
+
 
   @Test
   public void testDoService() throws Exception {
@@ -38,7 +35,7 @@ public class RemoveKeyFromCacheTest extends SingleKeyCacheCase {
 
   @Test
   public void testDoService_WithError() throws Exception {
-    
+
     AdaptrisMessage msg = new DefectiveMessageFactory(EnumSet.of(WhenToBreak.METADATA_GET)).newMessage("Hello World");
     msg.addMetadata("metadataKey", "value");
     Cache cache = createCacheInstanceForTests();

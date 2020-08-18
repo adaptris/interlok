@@ -26,10 +26,6 @@ import com.adaptris.core.StandaloneConsumer;
 
 public abstract class RelaxedFtpConsumerCase extends FtpConsumerExample {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected Object retrieveObjectForSampleConfig() {

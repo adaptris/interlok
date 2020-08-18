@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,13 +37,13 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * {@link com.adaptris.core.ConnectionErrorHandler} implementation that actively attempts messages via JMS to detect outages.
- * 
+ *
  * <p>
  * Implementation of {@link com.adaptris.core.ConnectionErrorHandler} which tests the connection every {@link #getCheckInterval()}
  * interval (default
  * is 5 second) and if the test fails then restarts the Connection's owner and stops the testing thread.
  * </p>
- * 
+ *
  * @config active-jms-connection-error-handler
  */
 @XStreamAlias("active-jms-connection-error-handler")
@@ -109,7 +109,7 @@ public class ActiveJmsConnectionErrorHandler extends JmsConnectionErrorHandlerIm
 
   /**
    * Whether or not to log each attempt at verifying the connection.
-   * 
+   *
    * @param b true to enable trace logging of every attempt to verify the connection status, default is null (false)
    */
   public void setAdditionalLogging(Boolean b) {
@@ -120,7 +120,7 @@ public class ActiveJmsConnectionErrorHandler extends JmsConnectionErrorHandlerIm
     return BooleanUtils.toBooleanDefaultIfNull(getAdditionalLogging(), false);
   }
 
-  long retryInterval() {
+  public long retryInterval() {
     long period =
         TimeInterval.toMillisecondsDefaultIfNull(getCheckInterval(), DEFAULT_CHECK_INTERVAL);
     if (period <= 0) {
@@ -135,7 +135,7 @@ public class ActiveJmsConnectionErrorHandler extends JmsConnectionErrorHandlerIm
 
   /**
    * Set interval between each attempt to veri
-   * 
+   *
    * @param checkInterval the retry interval, if <=0 then the default is assumed (5 seconds).
    */
   public void setCheckInterval(TimeInterval checkInterval) {
@@ -193,11 +193,11 @@ public class ActiveJmsConnectionErrorHandler extends JmsConnectionErrorHandlerIm
       }
     }
 
-    protected void finish() {
+    public void finish() {
       isActive = false;
     }
 
-    protected JmsTemporaryDestination getTemporaryDestination() {
+    public JmsTemporaryDestination getTemporaryDestination() {
       return temporaryDest;
     }
   }
@@ -226,11 +226,11 @@ public class ActiveJmsConnectionErrorHandler extends JmsConnectionErrorHandlerIm
   protected class JmsTemporaryDestination {
     private TemporaryTopic tmpTopic;
 
-    JmsTemporaryDestination() {
+    public JmsTemporaryDestination() {
 
     }
 
-    JmsTemporaryDestination(Session session) throws JMSException {
+    public JmsTemporaryDestination(Session session) throws JMSException {
       tmpTopic = session.createTemporaryTopic();
     }
 

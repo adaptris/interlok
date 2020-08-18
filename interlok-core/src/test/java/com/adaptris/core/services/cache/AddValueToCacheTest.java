@@ -23,10 +23,6 @@ import com.adaptris.util.TimeInterval;
 import com.adaptris.util.text.DateFormatUtil;
 
 public class AddValueToCacheTest extends SingleKeyCacheCase {
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testDoService() throws Exception {

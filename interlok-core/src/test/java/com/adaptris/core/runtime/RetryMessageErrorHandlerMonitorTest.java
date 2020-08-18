@@ -46,12 +46,6 @@ public class RetryMessageErrorHandlerMonitorTest extends ComponentManagerCase {
   public RetryMessageErrorHandlerMonitorTest() {
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
-
   @Before
   public void beforeMyTests() throws Exception {
     env.put(Context.INITIAL_CONTEXT_FACTORY, JndiContextFactory.class.getName());

@@ -16,55 +16,13 @@
 
 package com.adaptris.core;
 
-import com.adaptris.core.stubs.DummyMessageProducer;
+import com.adaptris.annotation.Removal;
+import com.adaptris.core.stubs.UpgradedToJunit4;
 
-/**
- * Generating Examples that contain ProduceDestinations.
- */
-public abstract class ExampleProduceDestinationCase extends ExampleConfigCase {
-
-  /**
-   * Key in unit-test.properties that defines where example goes unless overriden {@link #setBaseDir(String)}.
-   *
-   */
-  public static final String BASE_DIR_KEY = "ProduceDestinationCase.baseDir";
-
-  public ExampleProduceDestinationCase() {
-    super();
-
-    if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
-      setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
-    }
-  }
-
-  @Override
-  protected String createExampleXml(Object object) throws Exception {
-    String result = getExampleCommentHeader(object);
-    StandaloneProducer w = (StandaloneProducer) object;
-    w.getProducer().setMessageFactory(null);
-    result = result + configMarshaller.marshal(w);
-    return result;
-  }
-
-  @Override
-  protected Object retrieveObjectForSampleConfig() {
-    return new StandaloneProducer(new DummyMessageProducer(createDestinationForExamples()));
-  }
-
-  protected abstract ProduceDestination createDestinationForExamples();
-
-  @Override
-  protected String getExampleCommentHeader(Object object) {
-    return "<!--\n\nThis example simply shows the usage for a particular ProduceDestination;"
-        + "\nthe wrapping producer may not be suitable for the destination at all."
-        + "\nAs always, check the javadocs for more information." + "\n\n-->\n";
-  }
-
-  @Override
-  @SuppressWarnings("deprecation")
-  protected String createBaseFileName(Object object) {
-    DummyMessageProducer p = (DummyMessageProducer) ((StandaloneProducer) object).getProducer();
-    return p.getDestination().getClass().getCanonicalName();
-  }
+@Deprecated
+@Removal(version = "4.0.0", message = "moved to com.adaptris.interlok.junit.scaffolding")
+public abstract class ExampleProduceDestinationCase
+    extends com.adaptris.interlok.junit.scaffolding.ExampleProduceDestinationCase
+    implements UpgradedToJunit4 {
 
 }

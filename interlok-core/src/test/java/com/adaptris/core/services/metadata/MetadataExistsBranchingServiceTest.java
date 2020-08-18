@@ -31,10 +31,6 @@ public class MetadataExistsBranchingServiceTest extends BranchingServiceExample 
   private MetadataExistsBranchingService service;
   private AdaptrisMessage msg;
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Before
   public void setUp() throws Exception {

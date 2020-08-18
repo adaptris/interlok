@@ -28,11 +28,6 @@ import com.adaptris.core.GeneralServiceExample;
 public class ChangeCharEncodingServiceTest extends GeneralServiceExample {
 
   @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
-  @Override
   protected Object retrieveObjectForSampleConfig() {
     return new ChangeCharEncodingService(StandardCharsets.ISO_8859_1.name());
   }

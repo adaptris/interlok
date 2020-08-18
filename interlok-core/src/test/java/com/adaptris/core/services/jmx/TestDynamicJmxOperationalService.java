@@ -34,8 +34,7 @@ import org.mockito.MockitoAnnotations;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.PortManager;
-import com.adaptris.core.ServiceCase;
+import com.adaptris.interlok.junit.scaffolding.util.PortManager;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.management.Constants;
 import com.adaptris.core.management.jmx.JmxRemoteComponent;
@@ -43,7 +42,8 @@ import com.adaptris.core.runtime.AdapterComponentMBean;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.GuidGenerator;
 
-public class TestDynamicJmxOperationalService extends ServiceCase {
+public class TestDynamicJmxOperationalService
+    extends com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase {
 
   private static GuidGenerator guid = new GuidGenerator();
 
@@ -64,10 +64,6 @@ public class TestDynamicJmxOperationalService extends ServiceCase {
     }
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Before
   public void setUp() throws Exception {

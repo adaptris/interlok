@@ -16,10 +16,10 @@
 
 package com.adaptris.core.jms.activemq;
 
-import static com.adaptris.core.jms.JmsProducerCase.assertMessages;
 import static com.adaptris.core.jms.activemq.AdvancedActiveMqImplementationTest.createImpl;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.addBlobUrlRef;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase.assertMessages;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import org.junit.Test;
@@ -40,7 +40,6 @@ import com.adaptris.core.jms.AutoConvertMessageTranslator;
 import com.adaptris.core.jms.BytesMessageTranslator;
 import com.adaptris.core.jms.DefinedJmsProducer;
 import com.adaptris.core.jms.JmsConnection;
-import com.adaptris.core.jms.JmsConsumerCase;
 import com.adaptris.core.jms.PasConsumer;
 import com.adaptris.core.jms.PasProducer;
 import com.adaptris.core.jms.PtpConsumer;
@@ -55,7 +54,8 @@ import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.GuidGenerator;
 
-public class BasicActiveMqConsumerTest extends JmsConsumerCase {
+public class BasicActiveMqConsumerTest
+    extends com.adaptris.interlok.junit.scaffolding.jms.JmsConsumerCase {
 
   private static final String MY_CLIENT_ID;
   private static final String MY_SUBSCRIPTION_ID;
@@ -70,10 +70,7 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
       throw new RuntimeException(e);
     }
   }
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
+
 
   @Override
   protected String createBaseFileName(Object object) {

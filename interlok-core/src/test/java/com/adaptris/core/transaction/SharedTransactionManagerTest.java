@@ -25,14 +25,9 @@ import javax.transaction.xa.XAResource;
 import org.junit.Test;
 import org.mockito.Mockito;
 import com.adaptris.core.Adapter;
-import com.adaptris.core.BaseCase;
 
-public class SharedTransactionManagerTest extends BaseCase {
+public class SharedTransactionManagerTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testSharedTransactionManager_StandardLookup() throws Exception {

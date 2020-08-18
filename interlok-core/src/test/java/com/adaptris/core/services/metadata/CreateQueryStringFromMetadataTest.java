@@ -31,10 +31,6 @@ import com.adaptris.core.metadata.RegexMetadataFilter;
 @SuppressWarnings("deprecation")
 public class CreateQueryStringFromMetadataTest extends MetadataServiceExample {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   public CreateQueryStringFromMetadata createService() {
     CreateQueryStringFromMetadata svc = new CreateQueryStringFromMetadata()

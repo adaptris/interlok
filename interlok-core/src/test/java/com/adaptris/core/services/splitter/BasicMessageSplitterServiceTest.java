@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,10 +16,10 @@
 
 package com.adaptris.core.services.splitter;
 
-import static com.adaptris.core.ServiceCase.execute;
 import static com.adaptris.core.services.splitter.MessageSplitterServiceImp.KEY_CURRENT_SPLIT_MESSAGE_COUNT;
 import static com.adaptris.core.services.splitter.SplitterCase.XML_MESSAGE;
 import static com.adaptris.core.services.splitter.SplitterCase.createLineCountMessageInput;
+import static com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase.execute;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -35,9 +35,9 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.NullMessageProducer;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.stubs.MockConnection;
 import com.adaptris.core.stubs.MockMessageProducer;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 
 public class BasicMessageSplitterServiceTest {
 
@@ -149,11 +149,11 @@ public class BasicMessageSplitterServiceTest {
     Object obj = "ABCDEFG";
     ((SimpleRegexpMessageSplitter) service.getSplitter()).setCopyObjectMetadata(true);
     msg.getObjectHeaders().put(obj, obj);
-    ServiceCase.execute(service, msg);
+    ExampleServiceCase.execute(service, msg);
     List<AdaptrisMessage> producedMessages = producer.getMessages();
     assertEquals(4, producedMessages.size());
     assertEquals("splitCount metadata", 4, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
-    
+
     int count = 0;
     for (AdaptrisMessage m : producedMessages) {
       count ++;
@@ -194,7 +194,7 @@ public class BasicMessageSplitterServiceTest {
     List<AdaptrisMessage> producedMessages = producer.getMessages();
     assertTrue(producedMessages.size() == 4);
     assertEquals("splitCount metadata", 4, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
-    
+
     int count = 0;
     for (AdaptrisMessage m : producedMessages) {
       count ++;
@@ -210,7 +210,7 @@ public class BasicMessageSplitterServiceTest {
     AdaptrisMessage msg = createMessage(REGEXP_DATA);
     ((SimpleRegexpMessageSplitter) service.getSplitter())
         .setCopyMetadata(false);
-    ServiceCase.execute(service, msg);
+    ExampleServiceCase.execute(service, msg);
     List<AdaptrisMessage> producedMessages = producer.getMessages();
     assertTrue(producedMessages.size() == 4);
     assertEquals("splitCount metadata", 4, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));

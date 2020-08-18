@@ -55,10 +55,6 @@ import com.adaptris.core.util.LifecycleHelper;
 public class HttpRequestServiceTest extends HttpServiceExample {
   private static final String TEXT = "ABCDEFG";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testService_init() throws Exception {

@@ -30,7 +30,8 @@ import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.interlok.util.Closer;
 import com.adaptris.util.KeyValuePair;
 
-public class JmsAsyncProducerTest extends JmsProducerExample {
+public class JmsAsyncProducerTest
+    extends com.adaptris.interlok.junit.scaffolding.jms.JmsProducerExample {
 
   private JmsAsyncProducer producer;
 
@@ -79,10 +80,6 @@ public class JmsAsyncProducerTest extends JmsProducerExample {
     Closer.closeQuietly(openMocks);
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testSendFails() throws Exception {

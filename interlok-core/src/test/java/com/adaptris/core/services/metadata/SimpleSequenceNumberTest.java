@@ -48,10 +48,6 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
   private static final String DEFAULT_METADATA_KEY = "sequence_number";
   private static final String KEY_BASEDIR = "SimpleSequenceNumberTest.basedir";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Before
   public void setUp() throws Exception {

@@ -36,10 +36,6 @@ public class SplitByMetadataTest extends SplitterCase {
   private static final String SPLIT_METADATA_KEY = "key";
   private static Log logR = LogFactory.getLog(SplitByMetadataTest.class);
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected SplitByMetadata createSplitterForTests() {

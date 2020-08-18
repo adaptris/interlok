@@ -23,7 +23,6 @@ import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreConstants;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.common.ByteArrayFromMetadata;
 import com.adaptris.core.common.ByteArrayFromObjectMetadata;
@@ -31,6 +30,7 @@ import com.adaptris.core.common.ByteArrayFromPayload;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.stubs.DefectiveMessageFactory;
 import com.adaptris.core.stubs.DefectiveMessageFactory.WhenToBreak;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 import com.adaptris.util.GuidGenerator;
 
 public class MultipartMessageBuilderTest extends MimeServiceExample {
@@ -49,10 +49,6 @@ public class MultipartMessageBuilderTest extends MimeServiceExample {
                 new RegexMetadataFilter().withIncludePatterns("Content-Disposition")));
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
   @Test
   public void testService() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello World");
@@ -60,7 +56,7 @@ public class MultipartMessageBuilderTest extends MimeServiceExample {
     MultipartMessageBuilder service =
         new MultipartMessageBuilder().withMimeParts(new InlineMimePartBuilder());
     // default just uses the payload.
-    ServiceCase.execute(service, msg);
+    ExampleServiceCase.execute(service, msg);
     String payload = msg.getContent();
     // The unique-id forms the content-id.
     assertTrue(payload.contains(msg.getUniqueId()));
@@ -77,7 +73,7 @@ public class MultipartMessageBuilderTest extends MimeServiceExample {
     MultipartMessageBuilder service =
         new MultipartMessageBuilder().withMimeParts(new InlineMimePartBuilder())
             .withContentId("%message{customContentId}");
-    ServiceCase.execute(service, msg);
+    ExampleServiceCase.execute(service, msg);
     String payload = msg.getContent();
     assertTrue(payload.contains(msg.getMetadataValue("customContentId")));
   }
@@ -87,7 +83,7 @@ public class MultipartMessageBuilderTest extends MimeServiceExample {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello World");
     MultipartMessageBuilder service = new MultipartMessageBuilder()
         .withMimeParts(new InlineMimePartBuilder()).withMimeContentSubType("form-data");
-    ServiceCase.execute(service, msg);
+    ExampleServiceCase.execute(service, msg);
     String payload = msg.getContent();
     System.err.println(payload);
     assertTrue(payload.contains("multipart/form-data"));
@@ -101,7 +97,7 @@ public class MultipartMessageBuilderTest extends MimeServiceExample {
         new MultipartMessageBuilder().withMimeParts(new InlineMimePartBuilder())
             .withMimeHeaderFilter(new RegexMetadataFilter().withIncludePatterns("X-Interlok.*"));
     // default just uses the payload.
-    ServiceCase.execute(service, msg);
+    ExampleServiceCase.execute(service, msg);
     String payload = msg.getContent();
     // The unique-id forms the content-id.
     assertTrue(payload.contains(msg.getUniqueId()));
@@ -114,7 +110,7 @@ public class MultipartMessageBuilderTest extends MimeServiceExample {
     MultipartMessageBuilder service =
         new MultipartMessageBuilder().withMimeParts(new InlineMimePartBuilder());
     try {
-      ServiceCase.execute(service, msg);
+      ExampleServiceCase.execute(service, msg);
       fail();
     } catch (ServiceException expected) {
 

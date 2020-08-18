@@ -39,10 +39,6 @@ import com.adaptris.core.stubs.MockMessageProducer;
 public class BranchingHttpRequestServiceTest extends HttpServiceExample {
   private static final String TEXT = "ABCDEFG";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
   @Test
   public void testIsBranching() throws Exception {
     BranchingHttpRequestService service = new BranchingHttpRequestService();

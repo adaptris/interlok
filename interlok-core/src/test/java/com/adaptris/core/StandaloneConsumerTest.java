@@ -29,12 +29,8 @@ import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
-public class StandaloneConsumerTest extends BaseCase {
+public class StandaloneConsumerTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testSetAdaptrisMessageListener() throws Exception {

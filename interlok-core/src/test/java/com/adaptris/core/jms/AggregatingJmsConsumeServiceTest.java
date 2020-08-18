@@ -46,10 +46,6 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
   private static final String DEFAULT_FILTER_KEY = "metadataFilterKey";
 
   @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-  @Override
   protected boolean doStateTests() {
     return false;
   }

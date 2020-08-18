@@ -29,10 +29,8 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.ExampleWorkflowCase;
 import com.adaptris.core.PoolingWorkflow;
 import com.adaptris.core.ProduceException;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.WorkflowImp;
@@ -40,9 +38,11 @@ import com.adaptris.core.http.client.net.HttpRequestService;
 import com.adaptris.core.services.metadata.PayloadFromTemplateService;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 import com.adaptris.util.TimeInterval;
 
-public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
+public class JettyAsyncWorkflowInterceptorTest
+    extends com.adaptris.interlok.junit.scaffolding.ExampleWorkflowCase {
 
   static final String DEFAULT_XML_COMMENT = "<!-- This interceptor allows you to handle a single HTTP response\n"
       + "across 2 workflows.\n"
@@ -54,10 +54,6 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
       + "it arrives."
       + "\n-->\n";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testLifecycle() throws Exception {
@@ -117,7 +113,7 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
       start(channel);
       LifecycleHelper.initAndStart(httpService);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
-      ServiceCase.execute(httpService, msg);
+      ExampleServiceCase.execute(httpService, msg);
       assertEquals("hello world", msg.getContent());
       // Should be removed from the static cache.
       waitForMessages(producer, 1);
@@ -154,7 +150,7 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
       start(channel);
       LifecycleHelper.initAndStart(httpService);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
-      ServiceCase.execute(httpService, msg);
+      ExampleServiceCase.execute(httpService, msg);
       assertEquals("hello world", msg.getContent());
       waitForMessages(producer, 1);
       // Grab the message that the standardWorkflow handled; and check the msgId.
@@ -195,7 +191,7 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
       start(channel);
       LifecycleHelper.initAndStart(httpService);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
-      ServiceCase.execute(httpService, msg);
+      ExampleServiceCase.execute(httpService, msg);
       assertEquals("hello world", msg.getContent());
       waitForMessages(producer, 1);
       // Grab the message that the standardWorkflow handled; and check the msgId.

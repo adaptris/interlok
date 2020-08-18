@@ -16,8 +16,8 @@
 
 package com.adaptris.core.jms;
 
-import static com.adaptris.core.jms.JmsConfig.DEFAULT_PAYLOAD;
 import static com.adaptris.core.jms.JmsUtils.closeQuietly;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.DEFAULT_PAYLOAD;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -46,16 +46,17 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.Service;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandaloneRequestor;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 import com.adaptris.core.stubs.MockMessageListener;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 import com.adaptris.util.TimeInterval;
 
-public abstract class BasicJmsProducerCase extends JmsProducerCase {
+public abstract class BasicJmsProducerCase
+    extends com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase {
 
   protected abstract DefinedJmsProducer createProducer(ConfiguredProduceDestination dest);
 
@@ -94,7 +95,7 @@ public abstract class BasicJmsProducerCase extends JmsProducerCase {
     try {
       activeMqBroker.start();
       AdaptrisMessage msg = createMessage();
-      ServiceCase.execute(standaloneProducer, msg);
+      ExampleServiceCase.execute(standaloneProducer, msg);
       Map<Object, Object> objectMetadata = msg.getObjectHeaders();
       assertTrue(objectMetadata.containsKey(Message.class.getCanonicalName() + "." + JmsConstants.JMS_MESSAGE_ID));
       assertTrue(objectMetadata.containsKey(Message.class.getCanonicalName() + "." + JmsConstants.JMS_DESTINATION));

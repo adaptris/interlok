@@ -53,10 +53,6 @@ public class DoWhileTest extends ConditionalServiceExample {
 
   private AutoCloseable openMocks;
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
   @Before
   public void setUp() throws Exception {
     openMocks = MockitoAnnotations.openMocks(this);

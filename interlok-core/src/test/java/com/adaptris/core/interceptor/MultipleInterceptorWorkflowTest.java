@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,11 +19,11 @@ package com.adaptris.core.interceptor;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import com.adaptris.core.Channel;
-import com.adaptris.core.ExampleWorkflowCase;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.util.TimeInterval;
 
-public class MultipleInterceptorWorkflowTest extends ExampleWorkflowCase {
+public class MultipleInterceptorWorkflowTest
+    extends com.adaptris.interlok.junit.scaffolding.ExampleWorkflowCase {
 
   static final String DEFAULT_XML_COMMENT = "<!-- This workflow example simple shows multiple workflow interceptors configured\n"
       + "The MessageMetricsInterceptor exposes statistics about the workflow via JMX under the\n"
@@ -31,10 +31,6 @@ public class MultipleInterceptorWorkflowTest extends ExampleWorkflowCase {
       + "The ThrottlingInterceptor enforces no more than 60 messages per minute goes through the workflow.\n"
       + "Check the Advanced Topics manual for more information" + "\n-->\n";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected Object retrieveObjectForSampleConfig() {

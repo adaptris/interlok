@@ -85,10 +85,6 @@ public class IfElseTest extends ConditionalServiceExample {
     LifecycleHelper.stopAndClose(logicalExpression);
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
   @Test
   public void testNoThenService() throws Exception {
     logicalExpression.getThen().setService(new NullService());

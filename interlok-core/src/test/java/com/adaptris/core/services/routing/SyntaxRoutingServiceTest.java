@@ -35,10 +35,6 @@ public class SyntaxRoutingServiceTest extends SyntaxRoutingServiceExample {
   private static final String POSTCODE_REGEXP_2 = "[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z-[CIKMOV]]{2}";
   private static final String POSTCODE_REGEXP_1 = "[A-Z]{1,2}[0-9R][0-9A-Z]? [0-9][A-Z]{2}";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
 
   @Test

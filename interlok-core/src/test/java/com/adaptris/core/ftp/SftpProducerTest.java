@@ -32,10 +32,7 @@ public class SftpProducerTest extends FtpProducerCase {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
   }
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
+
 
   @Override
   protected FileTransferConnection createConnectionForExamples() {

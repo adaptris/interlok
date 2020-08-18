@@ -41,7 +41,8 @@ import com.adaptris.core.stubs.TestBranchingService;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.interlok.util.Closer;
 
-public class BranchingServiceCollectionTest extends ServiceCollectionCase {
+public class BranchingServiceCollectionTest
+    extends com.adaptris.interlok.junit.scaffolding.services.ServiceCollectionCase {
 
   private static final String BRANCH_LOW = "001";
   private static final String BRANCH_HIGH = "002";
@@ -64,10 +65,6 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
     }
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
   @Before
   public void setUp() throws Exception {
     branchService = new TestBranchingService();

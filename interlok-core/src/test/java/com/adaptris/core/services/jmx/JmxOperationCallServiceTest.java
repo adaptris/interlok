@@ -34,11 +34,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.jmx.JmxConnection;
 
-public class JmxOperationCallServiceTest extends ServiceCase {
+public class JmxOperationCallServiceTest
+    extends com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase {
 
   private static final String BASE_DIR_KEY = "JmxServiceExamples.baseDir";
 
@@ -59,10 +59,6 @@ public class JmxOperationCallServiceTest extends ServiceCase {
     }
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);

@@ -41,7 +41,7 @@ import com.adaptris.core.stubs.StubEventHandler;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
-public class AdapterTest extends BaseCase {
+public class AdapterTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
 
   public AdapterTest() {
   }
@@ -831,9 +831,5 @@ public class AdapterTest extends BaseCase {
     return a;
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
 }

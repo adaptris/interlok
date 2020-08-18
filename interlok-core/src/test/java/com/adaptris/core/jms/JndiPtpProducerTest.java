@@ -22,7 +22,8 @@ import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
-public class JndiPtpProducerTest extends JmsProducerCase {
+public class JndiPtpProducerTest
+    extends com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase {
 
   static final String DEFAULT_XML_COMMENT = "<!-- " + "\nNote that using StandardJndiImplementation means that"
       + "\nthe JmsConnection fields broker-host, broker-url, port are ignored."
@@ -33,10 +34,6 @@ public class JndiPtpProducerTest extends JmsProducerCase {
 
   static final String DEFAULT_FILE_SUFFIX = "-JNDI";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   static JmsConnection createJndiVendorImpExample(JmsConnection c) {
     return createJndiVendorImpExample(new StandardJndiImplementation(), c);

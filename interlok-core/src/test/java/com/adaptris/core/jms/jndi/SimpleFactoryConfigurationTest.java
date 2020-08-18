@@ -25,7 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import com.adaptris.core.BaseCase;
+import com.adaptris.interlok.junit.scaffolding.BaseCase;
 import com.adaptris.interlok.util.Closer;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
@@ -70,10 +70,7 @@ public class SimpleFactoryConfigurationTest extends BaseCase {
   public void tearDown() throws Exception {
     Closer.closeQuietly(openMocks);
   }
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
+
 
   @Test
   public void testApplyTopicConnectionFactoryConfiguration() throws Exception {

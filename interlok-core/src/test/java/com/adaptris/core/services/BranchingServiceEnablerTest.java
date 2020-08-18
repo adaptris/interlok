@@ -39,10 +39,6 @@ public class BranchingServiceEnablerTest extends BranchingServiceExample {
   private static final String OTHER = "other";
 
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
   @Test
   public void testIsBranching() throws Exception {
     BranchingServiceEnabler s = wrap(new NullService());

@@ -74,10 +74,6 @@ public class StandardResponseProducerTest extends HttpProducerExample {
   protected static final String URL_TO_POST_TO = "/url/to/post/to";
   protected static final String TEXT = "ABCDEFG";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testNoObjectMetadata() throws Exception {

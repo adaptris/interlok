@@ -24,10 +24,6 @@ import com.adaptris.util.TimeInterval;
 public class JmsPollingConsumerTest extends PollingJmsConsumerCase {
 
   @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-  @Override
   protected Object retrieveObjectForSampleConfig() {
     JmsPollingConsumer consumer = createConsumer();
     consumer.setPoller(new FixedIntervalPoller(new TimeInterval(1L, TimeUnit.MINUTES)));
