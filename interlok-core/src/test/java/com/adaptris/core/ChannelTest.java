@@ -23,10 +23,10 @@ import java.util.UUID;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import org.junit.Test;
-import com.adaptris.core.jms.MockJmsConnection;
 import com.adaptris.core.jms.MockNoOpConnectionErrorHandler;
 import com.adaptris.core.jms.UrlVendorImplementation;
 import com.adaptris.core.stubs.ConfigCommentHelper;
+import com.adaptris.interlok.junit.scaffolding.jms.MockJmsConnection;
 
 
 public class ChannelTest extends com.adaptris.interlok.junit.scaffolding.ExampleChannelCase {

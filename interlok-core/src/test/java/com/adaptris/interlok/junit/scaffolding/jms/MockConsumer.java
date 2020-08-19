@@ -11,12 +11,12 @@ public class MockConsumer extends JmsConsumerImpl {
   private Session currentSession;;
 
   @Override
-  protected String configuredEndpoint() {
+  public String configuredEndpoint() {
     return null;
   }
 
   @Override
-  protected MessageConsumer createConsumer() throws JMSException, CoreException {
+  public MessageConsumer createConsumer() throws JMSException, CoreException {
     return null;
   }
 

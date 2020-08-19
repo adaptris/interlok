@@ -23,7 +23,9 @@ import com.adaptris.core.NullMessageConsumer;
 import com.adaptris.core.NullMessageProducer;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.stubs.MockMessageListener;
+import com.adaptris.interlok.junit.scaffolding.jms.MockConsumer;
 import com.adaptris.interlok.junit.scaffolding.jms.MockProducer;
+
 public class OnMessageHandlerTest {
 
   private OnMessageHandler handler;
