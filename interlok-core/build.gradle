@@ -12,6 +12,14 @@ ext {
   interlokCommonsOfflineJavadocDir = project.rootDir.getCanonicalPath() + "/interlok-common/build/docs/javadoc"
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 
+  unitTestStubsIncludes = [ '**/core/BaseCase*', '**/core/Example*',  '**/core/PortManager*', '**/core/ProducerCase*', '**/core/ConsumerCase*', '**/core/ServiceCase*',
+                         '**/core/ServiceCollection*', '**/core/MarshallingBaseCase*' ,'**/core/jms/JmsConsumerCase*', '**/core/jms/JmsProducerCase*',
+                         '**/core/jms/JmsProducerExample*','**/core/jms/MockJmsConnectionErrorHandler*',   '**/core/jms/MessageTypeTranslatorCase*',
+                         '**/core/jms/JmsConfig*', '**/core/jms/MockProducer*', '**/core/jms/**/JndiImplementationCase*',
+                         '**/core/jms/ActiveJmsConnectionErrorHandlerCase*', '**/core/transform/TransformServiceExample*',
+                         '**/core/services/cache/*Example*', '**/core/services/mime/MimeJunitHelper*', '**/core/jdbc/JdbcServiceCase*',
+                         '**/core/jdbc/DatabaseConnectionCase*', '**/stubs/**', '**/scaffolding/**', '**/util/system/*', '**/META-INF/**']
+
 }
 
 ext.hostname = { ->
@@ -134,41 +142,22 @@ task examplesJar(type: Jar, dependsOn: test) {
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
-    from sourceSets.main.allSource
+    from sourceSets.main.extensions.delombokTask
 }
 
 task unitTestStubsJar(type: Jar, dependsOn: compileTestJava) {
   from sourceSets.test.output
   baseName "interlok-stubs"
   includeEmptyDirs false
-  include '**/core/BaseCase*'
-  include   '**/core/Example*'
-  include   '**/core/PortManager*'
-  include   '**/core/ProducerCase*'
-  include   '**/core/ConsumerCase*'
-  include   '**/core/ServiceCase*'
-  include   '**/core/ServiceCollection*'
-  include   '**/core/MarshallingBaseCase*'
-  include   '**/core/jms/JmsConsumerCase*'
-  include   '**/core/jms/JmsProducerCase*'
-  include   '**/core/jms/JmsProducerExample*'
-  include   '**/core/jms/MockJmsConnectionErrorHandler*'
-  include   '**/core/jms/MessageTypeTranslatorCase*'
-  include   '**/core/jms/JmsConfig*'
-  include   '**/core/jms/MockProducer*'
-  //  include   '**/core/http/HttpProducer.class'
-  include   '**/core/jms/**/JndiImplementationCase*'
-  include   '**/core/jms/ActiveJmsConnectionErrorHandlerCase*'
-  include   '**/core/transform/TransformServiceExample*'
-  include   '**/core/services/cache/*Example*'
-  include   '**/core/services/mime/MimeJunitHelper*'
-  include   '**/core/jdbc/JdbcServiceCase*'
-  include   '**/core/jdbc/DatabaseConnectionCase*'
-  // include   '**/core/runtime/ComponentManagerCase*'
-  include   '**/stubs/**'
-  include   '**/scaffolding/**'
-  include   '**/util/system/*'
-  include   '**/META-INF/**'
+  include unitTestStubsIncludes
+}
+
+task unitTestStubsSourcesJar(type: Jar, dependsOn: classes) {
+  classifier = 'sources'
+  from sourceSets.test.allSource
+  baseName "interlok-stubs"
+  includeEmptyDirs false
+  include unitTestStubsIncludes
 }
 
 task generateUnitTestProperties {
@@ -274,6 +263,7 @@ artifacts {
   archives examplesJar
   archives sourcesJar
   unitTestStubs unitTestStubsJar
+  unitTestStubs unitTestStubsSourcesJar
 }
 
 javadoc {
