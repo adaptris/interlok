@@ -20,7 +20,6 @@ import static com.adaptris.interlok.junit.scaffolding.util.PortManager.nextUnuse
 import static com.adaptris.interlok.junit.scaffolding.util.PortManager.release;
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import org.apache.activemq.artemis.core.config.Configuration;
@@ -38,75 +37,86 @@ import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.PlainIdGenerator;
 
 public class EmbeddedArtemis {
+  private static final long MAX_WAIT = 20000;
+  private static final int DEFAULT_WAIT_INTERVAL = 100;
 
-//Found in the src/test/resources/broker.xml
- private static final String ARTEMIS_BROKER_NAME = "artemis-embedded-junit";
+  // Found in the src/test/resources/broker.xml
+  private static final String ARTEMIS_BROKER_NAME = "artemis-embedded-junit";
 
- private static final String QUEUE_OBJECT_NAME = "org.apache.activemq.artemis:broker=\"" + ARTEMIS_BROKER_NAME + "\",component=addresses,address=";
+  private static final String QUEUE_OBJECT_NAME = "org.apache.activemq.artemis:broker=\""
+      + ARTEMIS_BROKER_NAME + "\",component=addresses,address=";
 
- private File brokerDataDir;
- private EmbeddedActiveMQ embeddedJMS;
- private Integer port;
+  private File brokerDataDir;
+  private EmbeddedActiveMQ embeddedJMS;
+  private Integer port;
 
- private static IdGenerator nameGenerator;
- static {
-   try {
-     nameGenerator = new GuidGenerator();
-   }
-   catch (Exception e) {
-     nameGenerator = new PlainIdGenerator("-");
-   }
- }
+  private static IdGenerator nameGenerator;
+  static {
+    try {
+      nameGenerator = new GuidGenerator();
+    } catch (Exception e) {
+      nameGenerator = new PlainIdGenerator("-");
+    }
+  }
 
- public EmbeddedArtemis() throws Exception {
+  public EmbeddedArtemis() throws Exception {
     Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
     port = nextUnusedPort(51616);
- }
+  }
 
- public String getName() {
-   return ARTEMIS_BROKER_NAME;
- }
+  public String getName() {
+    return ARTEMIS_BROKER_NAME;
+  }
 
- public void start() throws Exception {
-   brokerDataDir = createTempFile(true);
-   embeddedJMS = createBroker();
-   try {
-     embeddedJMS.start();
-   } catch (Throwable t) {
-     throw new Exception(t);
-   }
-    if (!embeddedJMS.waitClusterForming(1l, TimeUnit.SECONDS, 20, 1)) {
+  public void start() throws Exception {
+    brokerDataDir = createTempFile(true);
+    embeddedJMS = createBroker();
+    try {
+      embeddedJMS.start();
+    } catch (Throwable t) {
+      throw new Exception(t);
+    }
+    waitFor(embeddedJMS, MAX_WAIT);
+  }
+
+  private static void waitFor(EmbeddedActiveMQ broker, long maxWaitMs) throws Exception {
+    long totalWaitTime = 0;
+    while (!broker.getActiveMQServer().isStarted() && totalWaitTime < maxWaitMs) {
+      Thread.sleep(DEFAULT_WAIT_INTERVAL);
+      totalWaitTime += DEFAULT_WAIT_INTERVAL;
+    }
+    if (!broker.getActiveMQServer().isStarted()) {
       throw new Exception(
-          "Got Tired of waiting for broker to start; waited for at least 20 seconds");
-   }
- }
+          "Got Tired of waiting for broker to start; waited for " + totalWaitTime + "ms");
+    }
+  }
 
- private File createTempFile(boolean isDir) throws IOException {
-   File result = File.createTempFile("ARTEMIS-", "");
-   result.delete();
-   if (isDir) {
-     result.mkdirs();
-   }
-   return result;
- }
+  private File createTempFile(boolean isDir) throws IOException {
+    File result = File.createTempFile("ARTEMIS-", "");
+    result.delete();
+    if (isDir) {
+      result.mkdirs();
+    }
+    return result;
+  }
 
- public EmbeddedActiveMQ createBroker() throws Exception {
-   Configuration config = new ConfigurationImpl();
+  public EmbeddedActiveMQ createBroker() throws Exception {
+    Configuration config = new ConfigurationImpl();
 
-   config.setName(ARTEMIS_BROKER_NAME);
-   config.setSecurityEnabled(false);
-   config.addAcceptorConfiguration("in-vm", "vm://0");
-   config.addAcceptorConfiguration("tcp", "tcp://127.0.0.1:" + port);
-   config.setPersistenceEnabled(false);
-   config.setBrokerInstance(brokerDataDir);
+    config.setName(ARTEMIS_BROKER_NAME);
+    config.setSecurityEnabled(false);
+    config.addAcceptorConfiguration("in-vm", "vm://0");
+    config.addAcceptorConfiguration("tcp", "tcp://127.0.0.1:" + port);
+    config.setPersistenceEnabled(false);
+    config.setBrokerInstance(brokerDataDir);
 
-   EmbeddedActiveMQ embeddedActiveMQ = new EmbeddedActiveMQ();
-   embeddedActiveMQ.setConfiguration(config);
-//   embeddedActiveMQ.setConfigResourcePath("junit-broker.xml");
-   return embeddedActiveMQ;
- }
+    EmbeddedActiveMQ embeddedActiveMQ = new EmbeddedActiveMQ();
+    embeddedActiveMQ.setConfiguration(config);
+    // embeddedActiveMQ.setConfigResourcePath("junit-broker.xml");
+    return embeddedActiveMQ;
+  }
 
- public void destroy() {
+  public void destroy() {
     new Thread(new Runnable() {
 
       @Override
@@ -119,14 +129,14 @@ public class EmbeddedArtemis {
         }
       }
     }).start();
- }
+  }
 
- public void stop() throws Exception {
-   if (embeddedJMS != null) {
-     embeddedJMS.stop();
-     FileUtils.deleteDirectory(brokerDataDir);
-   }
- }
+  public void stop() throws Exception {
+    if (embeddedJMS != null) {
+      embeddedJMS.stop();
+      FileUtils.deleteDirectory(brokerDataDir);
+    }
+  }
 
  public JmsConnection getJmsConnection() {
    StandardJndiImplementation standardJndiImplementation = new StandardJndiImplementation("ConnectionFactory");
