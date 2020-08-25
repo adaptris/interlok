@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,7 +32,7 @@ import com.adaptris.security.util.SecurityUtil;
  */
 public class PortManager {
   private static final int PORT_RANGE = 3000;
-
+  private static final int MAX_ATTEMPTS = 100;
   private static Random random;
   private static final Set<Integer> usedPorts = Collections.synchronizedSet(new HashSet<Integer>());
 
@@ -41,9 +41,19 @@ public class PortManager {
   }
 
   public static Integer nextUnusedPort(int offset) {
+    return nextUnusedPort(offset, MAX_ATTEMPTS);
+  }
+
+
+  public static Integer nextUnusedPort(int offset, int max) {
     int port = random.nextInt(PORT_RANGE) + offset;
-    while (!isPortAvailable(port)) {
+    int attemptCount = 0;
+    while (!isPortAvailable(port) && attemptCount < max) {
+      attemptCount++;
       port = random.nextInt(PORT_RANGE) + offset;
+    }
+    if (attemptCount > max) {
+      throw new RuntimeException("Max attempts to find a port reached");
     }
     return port;
   }

@@ -50,6 +50,8 @@ import com.adaptris.util.IdGenerator;
 import com.adaptris.util.KeyValuePair;
 
 public class EmbeddedActiveMq {
+  private static final long MAX_WAIT = 20000;
+  private static final int DEFAULT_WAIT_INTERVAL = 100;
 
   private static final String DEF_URL_PREFIX = "tcp://localhost:";
   private BrokerService broker = null;
@@ -57,7 +59,7 @@ public class EmbeddedActiveMq {
   private File brokerDataDir;
   private Integer port;
 
-  private static IdGenerator nameGenerator = new GuidGenerator();;
+  private static IdGenerator nameGenerator = new GuidGenerator();
 
   public EmbeddedActiveMq() throws Exception {
     Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -73,8 +75,14 @@ public class EmbeddedActiveMq {
     brokerDataDir = createTempFile(true);
     broker = createBroker();
     broker.start();
-    while (!broker.isStarted()) {
-      Thread.sleep(100);
+    waitFor(broker, MAX_WAIT);
+  }
+
+  private static void waitFor(BrokerService broker, long maxWaitMs) throws Exception {
+    long totalWaitTime = 0;
+    while (!broker.isStarted() && totalWaitTime < maxWaitMs) {
+      Thread.sleep(DEFAULT_WAIT_INTERVAL);
+      totalWaitTime += DEFAULT_WAIT_INTERVAL;
     }
   }
 
@@ -108,12 +116,11 @@ public class EmbeddedActiveMq {
 
       @Override
       public void run() {
+        release(port);
         try {
           stop();
-          release(port);
         }
         catch (Exception e) {
-
         }
       }
     }).start();
