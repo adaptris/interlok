@@ -53,7 +53,7 @@ public class EmbeddedActiveMq {
   private static final long MAX_WAIT = 20000;
   private static final int DEFAULT_WAIT_INTERVAL = 100;
 
-  private static final String DEF_URL_PREFIX = "tcp://localhost:";
+  private static final String DEF_URL_PREFIX = "tcp://127.0.0.1:";
   private BrokerService broker = null;
   private String brokerName;
   private File brokerDataDir;
@@ -152,7 +152,7 @@ public class EmbeddedActiveMq {
 
   private JmsConnection applyCfg(JmsConnection con, BasicActiveMqImplementation impl, boolean useTcp) {
     if (useTcp) {
-      impl.setBrokerUrl("tcp://localhost:" + port);
+      impl.setBrokerUrl(DEF_URL_PREFIX + port);
     }
     else {
       impl.setBrokerUrl("vm://" + getName());

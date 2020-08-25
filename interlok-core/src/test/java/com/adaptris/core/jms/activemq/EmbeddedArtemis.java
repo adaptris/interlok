@@ -60,7 +60,7 @@ public class EmbeddedArtemis {
 
  public EmbeddedArtemis() throws Exception {
     Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    port = nextUnusedPort(61616);
+    port = nextUnusedPort(51616);
  }
 
  public String getName() {
@@ -75,7 +75,10 @@ public class EmbeddedArtemis {
    } catch (Throwable t) {
      throw new Exception(t);
    }
-   embeddedJMS.waitClusterForming(1l, TimeUnit.SECONDS, 60, 1);
+    if (!embeddedJMS.waitClusterForming(1l, TimeUnit.SECONDS, 20, 1)) {
+      throw new Exception(
+          "Got Tired of waiting for broker to start; waited for at least 20 seconds");
+   }
  }
 
  private File createTempFile(boolean isDir) throws IOException {
@@ -104,19 +107,18 @@ public class EmbeddedArtemis {
  }
 
  public void destroy() {
-   new Thread(new Runnable() {
+    new Thread(new Runnable() {
 
-     @Override
-     public void run() {
-       try {
-         stop();
-         release(port);
-       }
-       catch (Exception e) {
+      @Override
+      public void run() {
+        release(port);
+        try {
+          stop();
+        } catch (Exception e) {
 
-       }
-     }
-   }).start();
+        }
+      }
+    }).start();
  }
 
  public void stop() throws Exception {
