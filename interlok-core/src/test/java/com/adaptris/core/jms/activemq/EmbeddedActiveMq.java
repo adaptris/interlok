@@ -84,6 +84,10 @@ public class EmbeddedActiveMq {
       Thread.sleep(DEFAULT_WAIT_INTERVAL);
       totalWaitTime += DEFAULT_WAIT_INTERVAL;
     }
+    if (!broker.isStarted()) {
+      throw new Exception(
+          "Got Tired of waiting for broker to start; waited for " + totalWaitTime + "ms");
+    }
   }
 
   public BrokerService createBroker() throws Exception {
