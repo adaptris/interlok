@@ -33,6 +33,8 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.NullMessageProducer;
+import com.adaptris.core.ProduceException;
+import com.adaptris.core.ServiceException;
 import com.adaptris.core.stubs.MockConnection;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
@@ -222,6 +224,16 @@ public class BasicMessageSplitterServiceTest {
   }
 
 
+  @Test(expected = ServiceException.class)
+  public void testService_ProduceException() throws Exception {
+    FailingProducer producer = new FailingProducer();
+    MessageSplitterServiceImp service =
+        createServiceImpl(new XpathMessageSplitter("/envelope/document", "UTF-8"), producer);
+    AdaptrisMessage msg = createMessage(XML_MESSAGE);
+    XpathMessageSplitter splitter = new XpathMessageSplitter("/envelope/document", "UTF-8");
+    execute(service, msg);
+  }
+
   protected MessageSplitterServiceImp createServiceImpl(MessageSplitter splitter, MockMessageProducer producer) {
     BasicMessageSplitterService service = new BasicMessageSplitterService();
     service.setConnection(new NullConnection());
@@ -237,5 +249,13 @@ public class BasicMessageSplitterServiceTest {
   protected AdaptrisMessage createMessage(AdaptrisMessage src) {
     src.addMetadata(METADATA_KEY, METADATA_VALUE);
     return src;
+  }
+
+  private class FailingProducer extends MockMessageProducer {
+    @Override
+    protected void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException {
+      throw new ProduceException();
+    }
+
   }
 }
