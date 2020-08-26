@@ -17,6 +17,7 @@ package com.adaptris.core.services.splitter;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.pool2.impl.GenericObjectPool;
@@ -29,10 +30,14 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.splitter.ServiceWorkerPool.Worker;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
+import com.adaptris.interlok.util.Closer;
 import com.adaptris.util.NumberUtils;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Extension to {@link AdvancedMessageSplitterService} that uses a underlying thread and object pool to execute the service on each
@@ -51,16 +56,47 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Split a message and execute an arbitary number of services on the split message", tag = "service,splitter", since = "3.7.1")
 @DisplayOrder(order =
 {
-    "splitter", "service", "maxThreads", "warmStart", "ignoreSplitMessageFailures", "sendEvents"
+    "splitter", "service", "maxThreads", "warmStart", "waitWhileBusy", "ignoreSplitMessageFailures",
+    "sendEvents"
 })
 public class PoolingMessageSplitterService extends AdvancedMessageSplitterService {
 
+  /**
+   * Set the max number of threads to operate on split messages
+   * <p>
+   * The default is 10 if not explicitly specified
+   * </p>
+   */
   @InputFieldDefault(value = "10")
   @AdvancedConfig
+  @Getter
+  @Setter
   private Integer maxThreads;
+  /**
+   * Specify if the underlying object pool should be warmed up on {@link #start()}.
+   * <p>
+   * The default is false if not specified
+   * </p>
+   */
   @AdvancedConfig
   @InputFieldDefault(value = "false")
+  @Getter
+  @Setter
   private Boolean warmStart;
+  /**
+   * Actively check if the underlying object pool is ready to accept more workers.
+   * <p>
+   * If set to true, then we check that the underlying object pool has enough space for us to submit
+   * more jobs. This means that if you have a large number of split messages, then we don't attempt
+   * to flood the queue with thousands of messages causing possible issues within constrained
+   * environments. It defaults to false if not explicitly specified.
+   * </p>
+   */
+  @AdvancedConfig(rare = true)
+  @InputFieldDefault(value = "false")
+  @Getter
+  @Setter
+  private Boolean waitWhileBusy;
 
   private transient ExecutorService executor;
   private transient ServiceWorkerPool workerFactory;
@@ -69,7 +105,24 @@ public class PoolingMessageSplitterService extends AdvancedMessageSplitterServic
   @Override
   protected void handleSplitMessage(AdaptrisMessage msg, Consumer<Exception> callback)
       throws ServiceException {
-    executor.submit(new ServiceExecutor(msg, callback));
+    if (waitWhileBusy()) {
+      waitAndSubmit(msg, callback);
+    } else {
+      executor.submit(new ServiceExecutor(msg, callback));
+    }
+  }
+
+  private void waitAndSubmit(AdaptrisMessage msg, Consumer<Exception> callback) {
+    // Wait nicely
+    Future<AdaptrisMessage> future = null;
+    int max = maxThreads();
+    do {
+      if (objectPool.getNumActive() < max) {
+        future = executor.submit(new ServiceExecutor(msg, callback));
+      } else {
+        LifecycleHelper.waitQuietly(100l);
+      }
+    } while (future == null);
   }
 
 
@@ -92,37 +145,20 @@ public class PoolingMessageSplitterService extends AdvancedMessageSplitterServic
   @Override
   protected void closeService() {
     ManagedThreadFactory.shutdownQuietly(executor, new TimeInterval());
-    ServiceWorkerPool.closeQuietly(objectPool);
+    Closer.closeQuietly(objectPool);
     super.closeService();
   }
 
-  public Integer getMaxThreads() {
-    return maxThreads;
-  }
-
-  public void setMaxThreads(Integer maxThreads) {
-    this.maxThreads = maxThreads;
-  }
-
-  int maxThreads() {
+  private int maxThreads() {
     return NumberUtils.toIntDefaultIfNull(getMaxThreads(), 10);
   }
 
-  boolean warmStart() {
+  private boolean warmStart() {
     return BooleanUtils.toBooleanDefaultIfNull(getWarmStart(), false);
   }
 
-  public Boolean getWarmStart() {
-    return warmStart;
-  }
-
-  /**
-   * Specify if the underlying object pool should be warmed up on {@link #start()}.
-   *
-   * @param b true or false (default false if not specified).
-   */
-  public void setWarmStart(Boolean b) {
-    warmStart = b;
+  private boolean waitWhileBusy() {
+    return BooleanUtils.toBooleanDefaultIfNull(getWaitWhileBusy(), false);
   }
 
   public PoolingMessageSplitterService withWarmStart(Boolean b) {
@@ -130,6 +166,15 @@ public class PoolingMessageSplitterService extends AdvancedMessageSplitterServic
     return this;
   }
 
+  public PoolingMessageSplitterService withMaxThreads(Integer i) {
+    setMaxThreads(i);
+    return this;
+  }
+
+  public PoolingMessageSplitterService withWaitWhileBusy(Boolean b) {
+    setWaitWhileBusy(b);
+    return this;
+  }
 
   private class ServiceExecutor implements Callable<AdaptrisMessage> {
     private AdaptrisMessage msg;
