@@ -1,5 +1,6 @@
 package com.adaptris.core.jms;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -7,23 +8,25 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import javax.jms.CompletionListener;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageProducer;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ConfiguredProduceDestination;
+import com.adaptris.core.ConnectionErrorHandler;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
-import com.adaptris.core.NullConnection;
+import com.adaptris.core.ListenerCallbackHelper;
+import com.adaptris.core.ProduceException;
 import com.adaptris.core.StandaloneProducer;
-import com.adaptris.core.StandardProcessingExceptionHandler;
-import com.adaptris.core.fs.FsProducer;
 import com.adaptris.core.jms.activemq.EmbeddedArtemis;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.core.util.LifecycleHelper;
@@ -32,6 +35,8 @@ import com.adaptris.util.KeyValuePair;
 
 public class JmsAsyncProducerTest
     extends com.adaptris.interlok.junit.scaffolding.jms.JmsProducerExample {
+  
+  private static final String ID_HEADER = "interlokMessageId";
 
   private JmsAsyncProducer producer;
 
@@ -43,7 +48,8 @@ public class JmsAsyncProducerTest
   @Mock private Message mockMessage;
   @Mock private MessageProducer mockMessageProducer;
   @Mock private JmsDestination mockJmsDestination;
-  @Mock private StandardProcessingExceptionHandler mockExceptionHandler;
+  @Mock private JmsConnection mockConnection;
+  @Mock private ConnectionErrorHandler mockConnectionErrorHandler;
 
   private AutoCloseable openMocks;
 
@@ -52,13 +58,23 @@ public class JmsAsyncProducerTest
     openMocks = MockitoAnnotations.openMocks(this);
 
     adaptrisMessage = DefaultMessageFactory.getDefaultInstance().newMessage();
+    
+    ListenerCallbackHelper.prepare(adaptrisMessage, 
+    (message) -> { try { mockMessage.acknowledge(); } catch (JMSException e) {} },
+    (message) -> { });
 
     producer = new JmsAsyncProducer();
 
     producer.setSessionFactory(mockSessionFactory);
     producer.setMessageTranslator(mockTranslator);
-    producer.setAsyncMessageErrorHandler(mockExceptionHandler);
+    producer.registerConnection(mockConnection);
 
+    when(mockMessage.getJMSMessageID())
+      .thenReturn("messageId");
+    
+    when(mockMessage.getStringProperty(ID_HEADER))
+      .thenReturn("messageId");
+    
     when(mockSessionFactory.createProducerSession(any(), any()))
       .thenReturn(mockSession);
     when(mockSession.getProducer())
@@ -69,10 +85,17 @@ public class JmsAsyncProducerTest
     when(mockJmsDestination.deliveryMode())
       .thenReturn("PERSISTENT");
     when(mockJmsDestination.priority())
-    .thenReturn(1);
+      .thenReturn(1);
     when(mockJmsDestination.timeToLive())
-    .thenReturn(1l);
+      .thenReturn(1l);
+    
+    when(mockConnection.retrieveConnection(JmsConnection.class))
+      .thenReturn(mockConnection);
+    
+    when(mockConnection.getConnectionErrorHandler())
+      .thenReturn(mockConnectionErrorHandler);
 
+    LifecycleHelper.init(producer);
   }
 
   @After
@@ -106,7 +129,7 @@ public class JmsAsyncProducerTest
     producer.setPerMessageProperties(false);
     producer.produce(adaptrisMessage, mockJmsDestination);
 
-    verify(mockMessageProducer).send(any(), eq(mockMessage), any(JmsAsyncProducer.class));
+    verify(mockMessageProducer).send(any(), eq(mockMessage), any(JmsAsyncProducerEventHandler.class));
   }
 
   @Test
@@ -132,15 +155,9 @@ public class JmsAsyncProducerTest
   }
 
   @Test
-  public void testInitWithoutExceptionHandlerFails() throws Exception {
-    producer.setAsyncMessageErrorHandler(null);
-
-    try {
-      LifecycleHelper.init(producer);
-      fail("Should throw core exception without a configured exception handler.");
-    } catch (CoreException ex) {
-      //expected.
-    }
+  public void testInitSetsEventhandlerAccept() throws Exception {
+    LifecycleHelper.init(producer);
+    assertTrue(producer.getEventHandler().getAcceptSuccessCallbacks());
   }
 
   @Test
@@ -154,26 +171,50 @@ public class JmsAsyncProducerTest
 
   @Test
   public void testExceptionHandler() throws Exception {
-    producer.onException(mockMessage, new Exception());
+    producer.getEventHandler().addUnAckedMessage(mockMessage.getJMSMessageID(), adaptrisMessage);
+    producer.getEventHandler().onException(mockMessage, new Exception());
 
-    verify(mockExceptionHandler).handleProcessingException(any());
+    verify(mockMessage, times(0)).acknowledge();
   }
 
   @Test
   public void testSuccessHandler() throws Exception {
-    producer.onCompletion(mockMessage);
+    producer.getEventHandler().addUnAckedMessage(mockMessage.getJMSMessageID(), adaptrisMessage);
+    producer.getEventHandler().onCompletion(mockMessage);
 
-    verify(mockExceptionHandler, times(0)).handleProcessingException(any(AdaptrisMessage.class));
+    verify(mockMessage, times(1)).acknowledge();
+  }
+  
+  @Test
+  public void testExceptionThrown() throws Exception {
+    doThrow(new JMSException("expected"))
+        .when(mockMessageProducer).send(any(), any(), any());
+    try {
+      producer.setPerMessageProperties(false);
+      producer.produce(adaptrisMessage, mockJmsDestination);
+      fail("Should throw produce exception");
+    } catch (ProduceException ex) {
+      // expected
+    }
+  }
+  
+  @Test
+  public void testOnSuccessFails() throws Exception {
+    doThrow(new JMSException("expected"))
+      .when(mockMessage).getStringProperty(ID_HEADER);
+    
+    producer.getEventHandler().addUnAckedMessage(mockMessage.getJMSMessageID(), adaptrisMessage);
+    producer.getEventHandler().onCompletion(mockMessage);
+
+    verify(mockMessage, times(0)).acknowledge();
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testEmbeddedSuccessHandler() throws Exception {
     EmbeddedArtemis broker = new EmbeddedArtemis();
     JmsAsyncProducer producer = new JmsAsyncProducer();
-    producer.setAsyncMessageErrorHandler(mockExceptionHandler);
 
-    producer.setDestination(new ConfiguredProduceDestination("jms:topic:myTopicName?priority=4"));
+    producer.setEndpoint("jms:topic:myTopicName?priority=4");
     AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage("Some message content");
     StandaloneProducer standaloneProducer = new StandaloneProducer();
 
@@ -191,18 +232,14 @@ public class JmsAsyncProducerTest
       LifecycleHelper.stopAndClose(standaloneProducer);
       broker.destroy();
     }
-
-    verify(mockExceptionHandler, times(0)).handleProcessingException(any(AdaptrisMessage.class));
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testEmbeddedJmsException() throws Exception {
     EmbeddedArtemis broker = new EmbeddedArtemis();
     JmsAsyncProducer producer = new JmsAsyncProducer();
-    producer.setAsyncMessageErrorHandler(mockExceptionHandler);
 
-    producer.setDestination(new ConfiguredProduceDestination("{}"));
+    producer.setEndpoint("{}");
     AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage("Some message content");
     StandaloneProducer standaloneProducer = new StandaloneProducer();
 
@@ -225,8 +262,6 @@ public class JmsAsyncProducerTest
       LifecycleHelper.stopAndClose(standaloneProducer);
       broker.destroy();
     }
-
-    verify(mockExceptionHandler, times(0)).handleProcessingException(any(AdaptrisMessage.class));
   }
 
   @Override
@@ -234,10 +269,6 @@ public class JmsAsyncProducerTest
     JmsConnection c = createArtemisConnection();
     JmsAsyncProducer asyncProducer =
         new JmsAsyncProducer().withEndpoint("jms:topic:myTopicName?priority=4");
-    FsProducer fsProducer = new FsProducer().withBaseDirectoryUrl("my-failed-messages-dir");
-    StandaloneProducer fsStandaloneProducer = new StandaloneProducer(new NullConnection(), fsProducer);
-
-    asyncProducer.setAsyncMessageErrorHandler(new StandardProcessingExceptionHandler(fsStandaloneProducer));
 
     c.setConnectionErrorHandler(new JmsConnectionErrorHandler());
     NullCorrelationIdSource mcs = new NullCorrelationIdSource();
