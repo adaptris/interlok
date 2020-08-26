@@ -1,12 +1,12 @@
 /*
  * Copyright 2018 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,14 +15,11 @@
 */
 package com.adaptris.core.services.splitter;
 
-import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-
+import java.util.function.Consumer;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.pool2.impl.GenericObjectPool;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -46,7 +43,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * messages have been processed, so unlike {@link AdvancedMessageSplitterService}; {@link #setIgnoreSplitMessageFailures(Boolean)}
  * will not halt the processing of the subsequent split messages
  * </p>
- * 
+ *
  * @config pooling-message-splitter-service
  */
 @XStreamAlias("pooling-message-splitter-service")
@@ -66,20 +63,21 @@ public class PoolingMessageSplitterService extends AdvancedMessageSplitterServic
   private Boolean warmStart;
 
   private transient ExecutorService executor;
-  private transient ServiceExceptionHandler exceptionHandler;
   private transient ServiceWorkerPool workerFactory;
   private transient GenericObjectPool<ServiceWorkerPool.Worker> objectPool;
 
   @Override
-  public Future<?> handleSplitMessage(AdaptrisMessage msg) throws ServiceException {
-    return executor.submit(new ServiceExecutor(exceptionHandler, msg));
+  protected void handleSplitMessage(AdaptrisMessage msg, Consumer<Exception> callback)
+      throws ServiceException {
+    executor.submit(new ServiceExecutor(msg, callback));
   }
 
+
+  @Override
   protected void initService() throws CoreException {
     workerFactory = new ServiceWorkerPool(getService(), eventHandler, maxThreads());
     objectPool = workerFactory.createCommonsObjectPool();
     executor = workerFactory.createExecutor(this.getClass().getSimpleName());
-    exceptionHandler = new ServiceExceptionHandler();
     super.initService();
   }
 
@@ -91,16 +89,11 @@ public class PoolingMessageSplitterService extends AdvancedMessageSplitterServic
     super.start();
   }
 
+  @Override
   protected void closeService() {
     ManagedThreadFactory.shutdownQuietly(executor, new TimeInterval());
     ServiceWorkerPool.closeQuietly(objectPool);
     super.closeService();
-  }
-
-  protected void waitForCompletion(List<Future> tasks) throws ServiceException {
-    super.waitForCompletion(tasks);
-    exceptionHandler.throwFirstException();
-    exceptionHandler.clearExceptions();
   }
 
   public Integer getMaxThreads() {
@@ -125,24 +118,26 @@ public class PoolingMessageSplitterService extends AdvancedMessageSplitterServic
 
   /**
    * Specify if the underlying object pool should be warmed up on {@link #start()}.
-   * 
+   *
    * @param b true or false (default false if not specified).
    */
   public void setWarmStart(Boolean b) {
-    this.warmStart = b;
+    warmStart = b;
   }
 
   public PoolingMessageSplitterService withWarmStart(Boolean b) {
     setWarmStart(b);
     return this;
   }
-  private class ServiceExecutor implements Callable<AdaptrisMessage> {
-    private ServiceExceptionHandler handler;
-    private AdaptrisMessage msg;
 
-    ServiceExecutor(ServiceExceptionHandler ceh, AdaptrisMessage msg) {
-      handler = ceh;
+
+  private class ServiceExecutor implements Callable<AdaptrisMessage> {
+    private AdaptrisMessage msg;
+    private Consumer<Exception> callback;
+
+    ServiceExecutor(AdaptrisMessage msg, Consumer<Exception> callback) {
       this.msg = msg;
+      this.callback = callback;
     }
 
     @Override
@@ -150,8 +145,9 @@ public class PoolingMessageSplitterService extends AdvancedMessageSplitterServic
       Worker w = objectPool.borrowObject();
       try {
         w.doService(msg);
+        callback.accept(null);
       } catch (Exception e) {
-        handler.uncaughtException(Thread.currentThread(), e);
+        callback.accept(e);
       } finally {
         sendEvents(msg);
         objectPool.returnObject(w);

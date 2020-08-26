@@ -27,8 +27,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import java.util.List;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -223,32 +221,6 @@ public class BasicMessageSplitterServiceTest {
     }
   }
 
-  // BackReference Test no longer valid due to INTERLOK-145
-  // public void testBackReferences() throws Exception {
-  // BasicMessageSplitterService testObject = new BasicMessageSplitterService();
-  // testObject.setConnection(new NullConnection());
-  // assertEquals(1, testObject.getConnection().retrieveExceptionListeners().size());
-  // assertTrue(testObject == testObject.getConnection().retrieveExceptionListeners().toArray()[0]);
-  //
-  // // Now marshall and see if it's the same.
-  // XStreamMarshaller m = new XStreamMarshaller();
-  // String xml = m.marshal(testObject);
-  // BasicMessageSplitterService testObject2 = (BasicMessageSplitterService) m.unmarshal(xml);
-  // // If the setter has been used, then these two will be "true"
-  // assertNotNull(testObject2.getConnection());
-  // assertEquals(1, testObject2.getConnection().retrieveExceptionListeners().size());
-  // assertTrue(testObject2 == testObject2.getConnection().retrieveExceptionListeners().toArray()[0]);
-  // }
-
-  @Test
-  public void testAlreadyComplete() throws Exception {
-    Future<Boolean> future = new MessageSplitterServiceImp.AlreadyComplete();
-    assertFalse(future.cancel(true));
-    assertTrue(future.isDone());
-    assertFalse(future.isCancelled());
-    assertTrue(future.get());
-    assertTrue(future.get(1, TimeUnit.SECONDS));
-  }
 
   protected MessageSplitterServiceImp createServiceImpl(MessageSplitter splitter, MockMessageProducer producer) {
     BasicMessageSplitterService service = new BasicMessageSplitterService();
