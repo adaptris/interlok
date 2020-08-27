@@ -1,12 +1,12 @@
 /*
  * Copyright 2018 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,6 +40,7 @@ import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
+import com.adaptris.interlok.util.Closer;
 import com.adaptris.util.TimeInterval;
 
 public class ServiceWorkerPool {
@@ -52,8 +53,8 @@ public class ServiceWorkerPool {
 
   public ServiceWorkerPool(Service s, EventHandler eh, int maxThreads) throws CoreException {
     try {
-      this.wrappedService = Args.notNull(s, "service");
-      this.eventHandler = eh;
+      wrappedService = Args.notNull(s, "service");
+      eventHandler = eh;
       this.maxThreads = maxThreads;
     } catch (IllegalArgumentException e) {
       throw ExceptionHelper.wrapCoreException(e);
@@ -86,15 +87,16 @@ public class ServiceWorkerPool {
   }
 
 
+  /**
+   * @deprecated since 3.11.0 use {@link Closer#closeQuietly(Closeable)} instead.
+   *
+   */
+  @Deprecated
   public static void closeQuietly(ObjectPool<?> pool) {
-    try {
-      if (pool != null) pool.close();
-    } catch (Exception ignored) {
-
-    }
+    Closer.closeQuietly(pool);
   }
 
-  
+
   public void warmup(final GenericObjectPool<Worker> objectPool) throws CoreException {
     ExecutorService populator = Executors.newCachedThreadPool(new ManagedThreadFactory(this.getClass().getSimpleName()));
     try {
@@ -123,7 +125,7 @@ public class ServiceWorkerPool {
       populator.shutdownNow();
     }
   }
-  
+
   private List<Worker> waitFor(List<Future<Worker>> tasks) throws Exception {
     List<Worker> result = new ArrayList<>();
     do {
