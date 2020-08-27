@@ -89,7 +89,7 @@ public class PoolingMessageSplitterService extends AdvancedMessageSplitterServic
    * more jobs. This means that if you have a large number of split messages, then we don't attempt
    * to flood the queue with thousands of messages causing possible issues within constrained
    * environments. It defaults to false if not explicitly specified, and if set to true will have a
-   * negative impact on performance.
+   * small negative impact on performance.
    * </p>
    */
   @AdvancedConfig(rare = true)
