@@ -17,7 +17,6 @@ package com.adaptris.core.services.splitter;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.pool2.impl.GenericObjectPool;
@@ -30,7 +29,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.splitter.ServiceWorkerPool.Worker;
-import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.interlok.util.Closer;
 import com.adaptris.util.NumberUtils;
@@ -115,17 +114,12 @@ public class PoolingMessageSplitterService extends AdvancedMessageSplitterServic
 
   private void waitAndSubmit(AdaptrisMessage msg, Consumer<Exception> callback) {
     // Wait nicely
-    Future<AdaptrisMessage> future = null;
     int max = maxThreads();
-    do {
-      if (objectPool.getNumActive() < max) {
-        future = executor.submit(new ServiceExecutor(msg, callback));
-      } else {
-        LifecycleHelper.waitQuietly(100l);
-      }
-    } while (future == null);
+    while (objectPool.getNumActive() >= max) {
+      waitQuietly(callback);
+    }
+    executor.submit(new ServiceExecutor(msg, callback));
   }
-
 
   @Override
   protected void initService() throws CoreException {
@@ -177,13 +171,24 @@ public class PoolingMessageSplitterService extends AdvancedMessageSplitterServic
     return this;
   }
 
+
+  protected void waitQuietly(Object monitor) {
+    try {
+      Args.notNull(monitor, "monitor");
+      synchronized (monitor) {
+        monitor.wait();
+      }
+    } catch (InterruptedException | IllegalArgumentException e) {
+    }
+  }
+
   private class ServiceExecutor implements Callable<AdaptrisMessage> {
     private AdaptrisMessage msg;
     private Consumer<Exception> callback;
 
-    ServiceExecutor(AdaptrisMessage msg, Consumer<Exception> callback) {
-      this.msg = msg;
-      this.callback = callback;
+    private ServiceExecutor(AdaptrisMessage m, Consumer<Exception> c) {
+      msg = m;
+      callback = c;
     }
 
     @Override
@@ -197,6 +202,9 @@ public class PoolingMessageSplitterService extends AdvancedMessageSplitterServic
       } finally {
         sendEvents(msg);
         objectPool.returnObject(w);
+        synchronized (callback) {
+          callback.notifyAll();
+        }
       }
       return msg;
     }

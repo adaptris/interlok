@@ -35,6 +35,12 @@ import com.adaptris.util.TimeInterval;
 public class PoolingMessageSplitterServiceTest {
 
   @Test
+  public void testWait() throws Exception {
+    PoolingMessageSplitterService s = new PoolingMessageSplitterService();
+    s.waitQuietly(null);
+  }
+
+  @Test
   public void testServiceWithXmlSplitter() throws Exception {
     MockMessageProducer producer = createMockProducer();
     PoolingMessageSplitterService service = SplitterCase.createPooling(new XpathMessageSplitter("/envelope/document", "UTF-8"),
