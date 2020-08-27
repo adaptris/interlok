@@ -89,7 +89,8 @@ public class PoolingMessageSplitterService extends AdvancedMessageSplitterServic
    * If set to true, then we check that the underlying object pool has enough space for us to submit
    * more jobs. This means that if you have a large number of split messages, then we don't attempt
    * to flood the queue with thousands of messages causing possible issues within constrained
-   * environments. It defaults to false if not explicitly specified.
+   * environments. It defaults to false if not explicitly specified, and if set to true will have a
+   * negative impact on performance.
    * </p>
    */
   @AdvancedConfig(rare = true)
