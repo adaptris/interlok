@@ -153,7 +153,7 @@ public abstract class MessageSplitterServiceImp extends ServiceImp {
     ignoreSplitMessageFailures = b;
   }
 
-  protected static class SplitterCallback implements Consumer<Exception> {
+  private static class SplitterCallback implements Consumer<Exception> {
 
     private transient Exception lastException = null;
     private transient long count = 0;
@@ -170,15 +170,15 @@ public abstract class MessageSplitterServiceImp extends ServiceImp {
       count++;
     }
 
-    public boolean hadFailures() {
+    private boolean hadFailures() {
       return lastException != null;
     }
 
-    public Exception lastException() {
+    private Exception lastException() {
       return lastException;
     }
 
-    public long count() {
+    private long count() {
       return count;
     }
 
