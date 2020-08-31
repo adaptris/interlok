@@ -12,15 +12,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.jms;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
-import javax.jms.Topic;
+
 import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -28,8 +28,8 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.jms.JmsDestination.DestinationType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -67,7 +67,7 @@ import lombok.Setter;
 @XStreamAlias("jms-consumer")
 @AdapterComponent
 @ComponentProfile(summary = "Listen for JMS messages on the specified queue or topic", tag = "consumer,jms",
-    recommended = {JmsConnection.class})
+recommended = {JmsConnection.class})
 @DisplayOrder(
     order = {"endpoint", "messageSelector", "destination", "acknowledgeMode",
     "messageTranslator"})
@@ -121,44 +121,8 @@ public class JmsConsumer extends JmsConsumerImpl {
     String filterExp = messageSelector();
 
     VendorImplementation vendor = retrieveConnection(JmsConnection.class).configuredVendorImplementation();
-    JmsDestination destination = vendor.createDestination(rfc6167, this);
-
-    if (deferConsumerCreationToVendor()) {
-      return vendor.createConsumer(destination, filterExp, this);
-    } else {
-      MessageConsumer consumer = null;
-
-      if(destination.destinationType().equals(DestinationType.TOPIC)) {
-        if(!isEmpty(destination.subscriptionId())) {  // then durable, maybe shared
-          if(!isEmpty(destination.sharedConsumerId()))  {
-            log.trace("Creating new shared durable consumer.");
-            consumer = ((ConsumerCreator)
-                (session, dest, filterExpression) -> session.createSharedDurableConsumer((Topic) dest.getDestination(), dest.subscriptionId(), filterExpression)
-            ).createConsumer(currentSession(), destination, filterExp);
-          }
-          else {
-            log.trace("Creating new durable consumer.");
-            consumer = ((ConsumerCreator)
-                (session, dest, filterExpression) -> session.createDurableSubscriber((Topic) dest.getDestination(), filterExpression)
-            ).createConsumer(currentSession(), destination, filterExp);
-          }
-        } else if (!isEmpty(destination.sharedConsumerId())) {
-          log.trace("Creating new shared consumer.");
-          consumer = ((ConsumerCreator)
-              (session, dest, filterExpression) -> session.createSharedConsumer((Topic) dest.getDestination(), dest.sharedConsumerId(), filterExpression)
-          ).createConsumer(currentSession(), destination, filterExp);
-        }
-      }
-
-      if(consumer == null) {
-        log.trace("Creating new standard consumer.");
-        consumer = ((ConsumerCreator)
-            (session, dest, filterExpression) -> session.createConsumer(dest.getDestination(), filterExpression)
-        ).createConsumer(currentSession(), destination, filterExp);
-      }
-
-      return consumer;
-    }
+    return new JmsMessageConsumerFactory(vendor, currentSession(), rfc6167, deferConsumerCreationToVendor(), filterExp,
+        this).create();
   }
 
   protected Boolean deferConsumerCreationToVendor() {

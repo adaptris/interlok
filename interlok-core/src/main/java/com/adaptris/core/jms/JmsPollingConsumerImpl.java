@@ -12,41 +12,38 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.jms;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
-import static com.adaptris.core.jms.NullCorrelationIdSource.defaultIfNull;
-import java.util.concurrent.TimeUnit;
+
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
-import javax.jms.IllegalStateException;
 import javax.jms.JMSException;
-import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.Session;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.annotation.Removal;
-import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.AdaptrisPollingConsumer;
 import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
-import com.adaptris.core.util.Args;
 import com.adaptris.core.util.DestinationHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.LoggingHelper;
-import com.adaptris.util.TimeInterval;
+
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 /**
@@ -65,9 +62,7 @@ import lombok.Setter;
  * If connection attempt fails, the poller sleeps for the configured interval then tries again.
  * </p>
  */
-public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer implements JmsActorConfig, JmsConnectionConfig {
-
-  private static final TimeInterval DEFAULT_RECEIVE_WAIT = new TimeInterval(2L, TimeUnit.SECONDS);
+public abstract class JmsPollingConsumerImpl extends BaseJmsPollingConsumerImpl implements JmsConnectionConfig {
 
   private String userName;
   @InputFieldHint(style = "PASSWORD", external = true)
@@ -76,25 +71,20 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
 
   @NotNull
   @AutoPopulated
-  @Pattern(regexp = "AUTO_ACKNOWLEDGE|CLIENT_ACKNOWLEDGE|DUPS_OK_ACKNOWLEDGE|[0-9]+")
-  @AdvancedConfig
-  private String acknowledgeMode;
-  @NotNull
-  @AutoPopulated
   @Valid
+  @NonNull
+  @Getter
+  @Setter
   private VendorImplementation vendorImplementation;
-  @NotNull
-  @AutoPopulated
-  @Valid
-  private MessageTypeTranslator messageTranslator;
-  @Valid
-  @AdvancedConfig
-  private CorrelationIdSource correlationIdSource;
+
+  /**
+   * Set additional trace debug logs
+   */
   @AdvancedConfig
   @InputFieldDefault(value = "false")
+  @Getter
+  @Setter
   private Boolean additionalDebug;
-  @Valid
-  private TimeInterval receiveTimeout;
 
   /**
    * The consume destination represents the endpoint that we will receive JMS messages from.
@@ -111,31 +101,16 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
   @Getter
   @Setter
   @Removal(version = "4.0.0",
-      message = "since 3.11.0 use the endpoint/queue/topic configuration available on the concrete consumer")
+  message = "since 3.11.0 use the endpoint/queue/topic configuration available on the concrete consumer")
   private ConsumeDestination destination;
 
-  /**
-   * The filter expression to use when matching messages to consume
-   */
-  @Getter
-  @Setter
-  private String messageSelector;
-
-  private transient Boolean transacted;
-  private transient boolean managedTransaction;
-  private transient long rollbackTimeout = 30000;
   private transient Connection connection;
-  private transient Session session;
-  private transient MessageConsumer messageConsumer;
-  private transient OnMessageHandler messageHandler;
   private transient boolean destinationWarningLogged = false;
 
 
   public JmsPollingConsumerImpl() {
     // defaults...
-    setAcknowledgeMode(AcknowledgeMode.Mode.CLIENT_ACKNOWLEDGE.name());
     setVendorImplementation(new StandardJndiImplementation());
-    setMessageTranslator(new AutoConvertMessageTranslator());
     setAdditionalDebug(false);
   }
 
@@ -143,8 +118,8 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
   protected void prepareConsumer() throws CoreException {
     DestinationHelper.logWarningIfNotNull(destinationWarningLogged,
         () -> destinationWarningLogged = true, getDestination(),
-          "{} uses destination, this will be removed in a future release",
-          LoggingHelper.friendlyName(this));
+        "{} uses destination, this will be removed in a future release",
+        LoggingHelper.friendlyName(this));
     DestinationHelper.mustHaveEither(configuredEndpoint(), getDestination());
   }
 
@@ -165,20 +140,14 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
 
   protected abstract String configuredEndpoint();
 
-  @Override
-  public void init() throws CoreException {
-    super.init();
-    messageHandler = new OnMessageHandler(this);
-  }
-
   protected ConnectionFactory createConnectionFactory() throws Exception {
     return configuredVendorImplementation().createConnectionFactory();
   }
 
-  protected Session createSession(Connection connection, int acknowledgeMode, boolean transacted) throws JMSException {
+  @Override
+  protected Session createSession(int acknowledgeMode, boolean transacted) throws JMSException {
     return configuredVendorImplementation().createSession(connection, transacted, acknowledgeMode);
   }
-
 
   private void initialiseConnection() throws Exception {
     long start = System.currentTimeMillis();
@@ -189,17 +158,17 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
       connection.setClientID(clientId);
     }
     connection.start(); // required to allow polling
-    session = createSession(connection, AcknowledgeMode.getMode(acknowledgeMode), isTransacted());
-    messageConsumer = createConsumer();
-    messageTranslator.registerSession(session);
-    messageTranslator.registerMessageFactory(defaultIfNull(getMessageFactory()));
-    LifecycleHelper.initAndStart(messageTranslator);
+    initSession();
+    initConsumer();
+    configuredMessageTranslator().registerSession(currentSession());
+    configuredMessageTranslator().registerMessageFactory(defaultIfNull(getMessageFactory()));
+    LifecycleHelper.initAndStart(configuredMessageTranslator());
     if (additionalDebug()) {
       log.trace("connected to broker in {}ms", System.currentTimeMillis() - start);
     }
   }
 
-
+  @Override
   protected abstract MessageConsumer createConsumer() throws JMSException;
 
   @Override
@@ -209,101 +178,39 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
 
     try {
       initialiseConnection();
-      try {
-        Message jmsMsg = null;
-
-        do { // always want to try to obtain a Message
-          try {
-            jmsMsg = messageConsumer.receive(receiveTimeout());
-          }
-          catch (IllegalStateException e) {
-            log.debug("Session closed upon attempt to process message");
-            break;
-          }
-
-          if (jmsMsg != null) {
-            messageHandler.onMessage(jmsMsg); // no Exc. ever
-            if (!continueProcessingMessages(++count)) {
-              break;
-            }
-          }
-        }
-        while (jmsMsg != null);
-
-      }
-      catch (Throwable e) {
-        log.error("Unhandled Throwable processing message", e);
-      }
-    }
-    catch (Exception e) {
+      count = doProcessMessage();
+    } catch (Exception e) {
       log.warn("Failed to initialise JMS Connection, will retry at next PollInterval");
       if (additionalDebug()) {
         log.error("Exception Message :", e);
       }
-    }
-    finally {
+    } finally {
       closeConnection();
       Thread.currentThread().setName(oldName);
     }
-    // log.debug("processed [" + count + "] messages");
 
     return count;
   }
 
   private void closeConnection() {
-    if (additionalDebug()) {
-      log.trace("closing connection...");
-    }
-    long start = System.currentTimeMillis();
-    messageTranslator.registerSession(null);
-    LifecycleHelper.stopAndClose(messageTranslator);
-    JmsUtils.closeQuietly(messageConsumer);
-    JmsUtils.closeQuietly(session);
     JmsUtils.closeQuietly(connection, true);
     connection = null;
-    messageConsumer = null;
-    session = null;
-    if (additionalDebug()) {
-      log.trace("disconnected from broker in [{}]", System.currentTimeMillis() - start);
-    }
   }
 
   /** @see com.adaptris.core.AdaptrisComponent#close() */
   @Override
   public void close() {
+    if (additionalDebug()) {
+      log.trace("closing connection...");
+    }
+    long start = System.currentTimeMillis();
+
     super.close();
+
     closeConnection();
-  }
-
-  boolean isTransacted() {
-    return isManagedTransaction() || BooleanUtils.toBooleanDefaultIfNull(transacted, false);
-  }
-
-  void setTransacted(Boolean b) {
-    transacted = b;
-  }
-
-  Boolean getTransacted() {
-    return transacted;
-  }
-
-  public String getAcknowledgeMode() {
-    return acknowledgeMode;
-  }
-
-  /**
-   * <p>
-   * Sets the JMS acknowledge mode to use.
-   * </p>
-   * <p>
-   * The value may be AUTO_KNOWLEDGE, CLIENT_ACKNOWLEDGE, DUPS_OK_ACKNOWLEDGE or
-   * the int values corresponding to the JMS Session Constant
-   * </p>
-   *
-   * @param s the JMS acknowledge mode to use
-   */
-  public void setAcknowledgeMode(String s) {
-    acknowledgeMode = s;
+    if (additionalDebug()) {
+      log.trace("disconnected from broker in [{}]", System.currentTimeMillis() - start);
+    }
   }
 
   public String getClientId() {
@@ -322,15 +229,6 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
       throw new IllegalArgumentException("empty param");
     }
     clientId = s;
-  }
-
-
-  public MessageTypeTranslator getMessageTranslator() {
-    return messageTranslator;
-  }
-
-  public void setMessageTranslator(MessageTypeTranslator m) {
-    messageTranslator = Args.notNull(m, "messageTranslator");
   }
 
   public String getPassword() {
@@ -361,87 +259,6 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
     userName = s;
   }
 
-  public VendorImplementation getVendorImplementation() {
-    return vendorImplementation;
-  }
-
-  public void setVendorImplementation(VendorImplementation v) {
-    vendorImplementation = Args.notNull(v, "vendorImplementation");
-  }
-
-  long receiveTimeout() {
-    long period = TimeInterval.toMillisecondsDefaultIfNull(getReceiveTimeout(), DEFAULT_RECEIVE_WAIT);
-    if (period < 0) {
-      period = DEFAULT_RECEIVE_WAIT.toMilliseconds();
-    }
-    return period;
-  }
-
-  public TimeInterval getReceiveTimeout() {
-    return receiveTimeout;
-  }
-
-  /**
-   * Sets the period that this class should wait for the broker to deliver a message.
-   * <p>
-   * The default value of 2 seconds should be suitable in most situations. If there is a high degree of network latency and this
-   * class does not consume messages from Queues / Topics as expected try setting a higher value.
-   * </p>
-   *
-   * @param l the period that this class should wait for the broker to deliver a message, if < 0 then the default (2secs) will be
-   *          used.
-   */
-  public void setReceiveTimeout(TimeInterval l) {
-    receiveTimeout = l;
-  }
-
-  /**
-   * <p>
-   * Returns correlationIdSource.
-   * </p>
-   *
-   * @return correlationIdSource
-   */
-  public CorrelationIdSource getCorrelationIdSource() {
-    return correlationIdSource;
-  }
-
-  /**
-   * <p>
-   * Sets correlationIdSource.
-   * </p>
-   *
-   * @param c the correlationIdSource to set
-   */
-  public void setCorrelationIdSource(CorrelationIdSource c) {
-    correlationIdSource = c;
-  }
-
-  @Override
-  public CorrelationIdSource configuredCorrelationIdSource() {
-    return defaultIfNull(getCorrelationIdSource());
-  }
-
-  @Override
-  public MessageTypeTranslator configuredMessageTranslator() {
-    return getMessageTranslator();
-  }
-
-  @Override
-  public int configuredAcknowledgeMode() {
-    return AcknowledgeMode.getMode(getAcknowledgeMode());
-  }
-
-  @Override
-  public AdaptrisMessageListener configuredMessageListener() {
-    return retrieveAdaptrisMessageListener();
-  }
-
-  @Override
-  public Session currentSession() {
-    return session;
-  }
-
   @Override
   public Logger currentLogger() {
     return log;
@@ -467,55 +284,8 @@ public abstract class JmsPollingConsumerImpl extends AdaptrisPollingConsumer imp
     return getVendorImplementation();
   }
 
-  /**
-   * @return the additionalDebug
-   */
-  public Boolean getAdditionalDebug() {
-    return additionalDebug;
-  }
-
   public boolean additionalDebug() {
     return BooleanUtils.toBooleanDefaultIfNull(getAdditionalDebug(), false);
   }
 
-  /**
-   * @param b the additionalDebug to set
-   */
-  public void setAdditionalDebug(Boolean b) {
-    additionalDebug = b;
-  }
-
-  /**
-   * Not directly configurable, as it is done by JmsTransactedWorkflow.
-   *
-   * @param l the rollbackTimeout to set
-   */
-  void setRollbackTimeout(long l) {
-    rollbackTimeout = l;
-  }
-
-  @Override
-  public long rollbackTimeout() {
-    return rollbackTimeout;
-  }
-
-  public void setManagedTransaction(boolean managedTransaction) {
-    this.managedTransaction = managedTransaction;
-  }
-
-  @Override
-  public boolean isManagedTransaction() {
-    return managedTransaction;
-  }
-
-  /**
-   * Provides the metadata key {@value com.adaptris.core.jms.JmsConstants#JMS_DESTINATION} which
-   * will only be populated if {@link MessageTypeTranslatorImp#getMoveJmsHeaders()} is true.
-   *
-   * @since 3.9.0
-   */
-  @Override
-  public String consumeLocationKey() {
-    return JmsConstants.JMS_DESTINATION;
-  }
 }

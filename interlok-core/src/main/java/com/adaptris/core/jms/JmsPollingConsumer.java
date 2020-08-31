@@ -33,7 +33,7 @@ import lombok.Setter;
  * Concrete {@link JmsPollingConsumerImpl} implementation that can target queues or topics via an
  * RFC6167 style destination.
  * <p>
- * This differs from the standard {@link PtpPollingConsumer} and {@link PtpPollingConsumer} in that
+ * This differs from the standard {@link PtpPollingConsumer} and {@link PasPollingConsumer} in that
  * it supports a destination that is specified in RFC6167 style. For instance
  * {@code jms:queue:myQueueName} will consume from a queue called {@code myQueueName} and
  * {@code jms:topic:myTopicName} from a topic called {@code myTopicName}
