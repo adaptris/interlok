@@ -48,12 +48,14 @@ public class JmsMessageConsumerFactoryTest {
   private static final String RFC6167_SUBSCRIPTION = RFC6167 + "?subscriptionId=" + SUBSCRIPTION_ID;
   private static final String FILTER = "filter";
 
-  @Mock private BasicActiveMqImplementation mockVendor;
-  @Mock MessageConsumer mockMessageConsumer;
   @Mock
-  Session session;
+  private BasicActiveMqImplementation mockVendor;
   @Mock
-  JmsActorConfig jmsActorConfig;
+  private MessageConsumer mockMessageConsumer;
+  @Mock
+  private Session session;
+  @Mock
+  private JmsActorConfig jmsActorConfig;
 
   private AutoCloseable openMocks;
   @Before

@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.jms.activemq;
 
@@ -33,15 +33,14 @@ import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.Poller;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
-import com.adaptris.core.jms.JmsConnection;
-import com.adaptris.core.jms.JmsPollingConsumer;
 import com.adaptris.core.jms.JmsProducer;
+import com.adaptris.core.jms.JmsSyncConsumer;
 import com.adaptris.core.jms.activemq.ActiveMqPasPollingConsumerTest.Sometime;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
-public class ActiveMqJmsPollingConsumerTest {
+public class ActiveMqJmsSyncConsumerTest {
 
   @Rule
   public TestName testName = new TestName();
@@ -99,8 +98,8 @@ public class ActiveMqJmsPollingConsumerTest {
     final StandaloneProducer sender =
         new StandaloneProducer(broker.getJmsConnection(), new JmsProducer().withEndpoint(rfc6167));
     Sometime poller = new Sometime();
-    JmsPollingConsumer consumer = createConsumer(broker, testName.getMethodName(), rfc6167, poller);
-    final StandaloneConsumer receiver = new StandaloneConsumer(consumer);
+    JmsSyncConsumer consumer = createConsumer(testName.getMethodName(), rfc6167, poller);
+    final StandaloneConsumer receiver = new StandaloneConsumer(broker.getJmsConnection(), consumer);
     try {
       broker.start();
       MockMessageListener jms = new MockMessageListener();
@@ -121,23 +120,18 @@ public class ActiveMqJmsPollingConsumerTest {
 
   private StandaloneConsumer createStandaloneConsumer(EmbeddedActiveMq broker, String threadName, String destinationName)
       throws Exception {
-    return new StandaloneConsumer(createConsumer(broker, threadName, destinationName));
+    return new StandaloneConsumer(broker.getJmsConnection(), createConsumer(threadName, destinationName));
   }
 
-  private JmsPollingConsumer createConsumer(EmbeddedActiveMq broker, String threadName, String destinationName, Poller poller) {
-    JmsPollingConsumer consumer = new JmsPollingConsumer().withEndpoint(destinationName);
+  private JmsSyncConsumer createConsumer(String threadName, String destinationName, Poller poller) {
+    JmsSyncConsumer consumer = new JmsSyncConsumer().withEndpoint(destinationName);
     consumer.setPoller(poller);
-    JmsConnection c = broker.getJmsConnection();
-    consumer.setClientId(c.configuredClientId());
-    consumer.setUserName(c.configuredUserName());
-    consumer.setPassword(c.configuredPassword());
     consumer.setReacquireLockBetweenMessages(true);
-    consumer.setVendorImplementation(c.getVendorImplementation());
     return consumer;
   }
 
-  private JmsPollingConsumer createConsumer(EmbeddedActiveMq broker, String threadName, String destinationName) {
-    return createConsumer(broker, threadName, destinationName, new FixedIntervalPoller(
+  private JmsSyncConsumer createConsumer(String threadName, String destinationName) {
+    return createConsumer(threadName, destinationName, new FixedIntervalPoller(
         new TimeInterval(500L, TimeUnit.MILLISECONDS)));
   }
 
