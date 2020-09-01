@@ -47,7 +47,7 @@ import com.adaptris.interlok.junit.scaffolding.jms.JmsConfig;
 import com.adaptris.interlok.util.Closer;
 import com.adaptris.util.TimeInterval;
 
-public class JmsSynchConsumerTest extends PollingJmsConsumerCase {
+public class JmsSyncConsumerTest extends PollingJmsConsumerCase {
 
   @Mock
   private BasicActiveMqImplementation mockVendor;
