@@ -12,23 +12,26 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.jms;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+
 import java.util.concurrent.TimeUnit;
+
 import org.junit.Test;
+
 import com.adaptris.util.TimeInterval;
 
 public abstract class PollingJmsConsumerCase
-    extends com.adaptris.interlok.junit.scaffolding.jms.JmsConsumerCase {
+extends com.adaptris.interlok.junit.scaffolding.jms.JmsConsumerCase {
 
-  protected abstract JmsPollingConsumerImpl createConsumer();
+  protected abstract BaseJmsPollingConsumerImpl createConsumer();
 
   @Test
   public void testSetReceiveWait() throws Exception {
-    JmsPollingConsumerImpl consumer = createConsumer();
+    BaseJmsPollingConsumerImpl consumer = createConsumer();
     assertNull(consumer.getReceiveTimeout());
     assertEquals(2000, consumer.receiveTimeout());
 
@@ -46,6 +49,6 @@ public abstract class PollingJmsConsumerCase
     consumer.setReceiveTimeout(null);
     assertNull(consumer.getReceiveTimeout());
     assertEquals(2000, consumer.receiveTimeout());
-
   }
+
 }

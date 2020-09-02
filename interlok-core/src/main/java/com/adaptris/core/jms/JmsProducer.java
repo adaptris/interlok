@@ -277,7 +277,7 @@ public class JmsProducer extends JmsProducerImpl {
     return BooleanUtils.toBooleanDefaultIfNull(getPerMessageProperties(), true);
   }
 
-  @SuppressWarnings("deprecation")
+  @SuppressWarnings("unchecked")
   public <T extends JmsProducer> T withEndpoint(String s) {
     setEndpoint(s);
     return (T) this;
