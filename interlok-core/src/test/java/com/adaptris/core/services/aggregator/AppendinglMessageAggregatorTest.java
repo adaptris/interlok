@@ -47,6 +47,19 @@ public class AppendinglMessageAggregatorTest extends AggregatingServiceExample {
   }
 
   @Test
+  public void testAggregate_WithFilter() throws Exception {
+    AppendingMessageAggregator aggr = createAggregatorForTests();
+    aggr.setFilterCondition(new EvenOddCondition());
+    AdaptrisMessage original = AdaptrisMessageFactory.getDefaultInstance().newMessage("Goodbye");
+    AdaptrisMessage splitMsg1 = AdaptrisMessageFactory.getDefaultInstance().newMessage(" Cruel ");
+    AdaptrisMessage splitMsg2 = AdaptrisMessageFactory.getDefaultInstance().newMessage("World");
+    aggr.joinMessage(original, Arrays.asList(new AdaptrisMessage[] {splitMsg1, splitMsg2}));
+    // First message was skipped, 2nd was merged.
+    assertEquals("GoodbyeWorld", original.getContent());
+  }
+
+
+  @Test
   public void testJoin_WithException() {
     AppendingMessageAggregator aggr = createAggregatorForTests();
     AdaptrisMessage original = new DefectiveMessageFactory(EnumSet.of(WhenToBreak.INPUT, WhenToBreak.OUTPUT)).newMessage("Goodbye");
@@ -85,4 +98,6 @@ public class AppendinglMessageAggregatorTest extends AggregatingServiceExample {
   protected String createBaseFileName(Object object) {
     return super.createBaseFileName(object) + "-" + createAggregatorForTests().getClass().getSimpleName();
   }
+
+
 }
