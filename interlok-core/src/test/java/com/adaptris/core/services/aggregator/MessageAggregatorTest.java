@@ -52,6 +52,7 @@ public class MessageAggregatorTest {
   @Test
   public void testImplFilter() throws Exception {
     AppendingMessageAggregator aggregator = new AppendingMessageAggregator();
+    aggregator.setFilterCondition(new EvenOddCondition());
     AdaptrisMessage splitMsg1 = AdaptrisMessageFactory.getDefaultInstance().newMessage("m1");
     AdaptrisMessage splitMsg2 = AdaptrisMessageFactory.getDefaultInstance().newMessage("m2");
     List<AdaptrisMessage> l = Arrays.asList(new AdaptrisMessage[] {splitMsg1, splitMsg2});

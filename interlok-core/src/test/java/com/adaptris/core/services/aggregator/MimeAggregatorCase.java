@@ -33,6 +33,7 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.metadata.NoOpMetadataFilter;
+import com.adaptris.core.services.aggregator.MessageAggregatorTest.EvenOddCondition;
 import com.adaptris.core.services.metadata.AddMetadataService;
 import com.adaptris.core.stubs.DefectiveMessageFactory;
 import com.adaptris.util.text.mime.BodyPartIterator;
@@ -249,6 +250,24 @@ public abstract class MimeAggregatorCase extends AggregatorCase {
     System.err.println(payload);
     assertTrue(payload.contains("multipart/form-data"));
   }
+
+  @Test
+  public void testAggregate_WithFilter() throws Exception {
+    MimeAggregator aggr = createAggregatorForTests();
+    aggr.setOverwriteMetadata(false);
+    aggr.setFilterCondition(new EvenOddCondition());
+    AdaptrisMessageFactory fac = AdaptrisMessageFactory.getDefaultInstance();
+    AdaptrisMessage original = fac.newMessage("<envelope/>");
+    AdaptrisMessage splitMsg1 = fac.newMessage("<document>hello</document>");
+    AdaptrisMessage splitMsg2 = fac.newMessage("<document>world</document>");
+    aggr.aggregate(original, Arrays.asList(new AdaptrisMessage[] {splitMsg1, splitMsg2}));
+    String payload = original.getContent();
+
+    assertFalse(payload.contains("hello"));
+    assertTrue(payload.contains("world"));
+  }
+
+
 
   @Override
   protected MimeAggregator createAggregatorForTests() {
