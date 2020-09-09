@@ -24,12 +24,14 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.util.Args;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.text.xml.DocumentMerge;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 
 /**
  * {@link MessageAggregator} implementation that creates single XML using each message that needs to be joined up.
@@ -51,12 +53,28 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"documentEncoding", "mergeImplementation", "xmlDocumentFactoryConfig"})
 public class XmlDocumentAggregator extends MessageAggregatorImpl {
 
+  /**
+   * Set the XML encoding for the resulting document which defaults to 'UTF-8' if not explicitly
+   * configured.
+   *
+   */
+  @Getter
+  @Setter
   @AdvancedConfig
   private String documentEncoding;
+  /**
+   * How to merge the split documents into the main XML document.
+   *
+   */
+  @Getter
+  @Setter
   @NotNull
+  @NonNull
   @Valid
   private DocumentMerge mergeImplementation;
   @AdvancedConfig(rare = true)
+  @Getter
+  @Setter
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
   public XmlDocumentAggregator() {
@@ -90,48 +108,7 @@ public class XmlDocumentAggregator extends MessageAggregatorImpl {
     }
   }
 
-  /**
-   * @return the documentEncoding
-   */
-  public String getDocumentEncoding() {
-    return documentEncoding;
-  }
-
-  /**
-   * Set the XML encoding for the resulting document.
-   *
-   * @param s the documentEncoding to set (defaults to UTF-8).
-   */
-  public void setDocumentEncoding(String s) {
-    documentEncoding = s;
-  }
-
-  /**
-   * @return the mergeImplementation
-   */
-  public DocumentMerge getMergeImplementation() {
-    return mergeImplementation;
-  }
-
-  /**
-   * Set how to merge the split documents into the main XML document.
-   *
-   * @param dm the mergeImplementation to set
-   */
-  public void setMergeImplementation(DocumentMerge dm) {
-    mergeImplementation = Args.notNull(dm, "mergeImplementation");
-  }
-
-  public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
-    return xmlDocumentFactoryConfig;
-  }
-
-
-  public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
-    xmlDocumentFactoryConfig = xml;
-  }
-
-  DocumentBuilderFactoryBuilder documentFactoryBuilder() {
+  protected DocumentBuilderFactoryBuilder documentFactoryBuilder() {
     return DocumentBuilderFactoryBuilder.newInstanceIfNull(getXmlDocumentFactoryConfig());
   }
 }
