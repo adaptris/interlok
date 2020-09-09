@@ -75,13 +75,28 @@ public class ReplaceFirstAggregatorTest extends AggregatorCase {
   public void testAggregate_BrokenOutput() throws Exception {
     ReplaceWithFirstMessage aggr = createAggregatorForTests();
     aggr.setOverwriteMetadata(true);
+    AdaptrisMessageFactory fac = AdaptrisMessageFactory.getDefaultInstance();
     AdaptrisMessage original =
         new DefectiveMessageFactory(WhenToBreak.OUTPUT).newMessage("Goodbye");
-    AdaptrisMessage splitMsg1 = AdaptrisMessageFactory.getDefaultInstance().newMessage("short");
-    AdaptrisMessage splitMsg2 = AdaptrisMessageFactory.getDefaultInstance().newMessage("justShort");
-    AdaptrisMessage splitMsg3 = AdaptrisMessageFactory.getDefaultInstance().newMessage("ofSufficientLength");
-    AdaptrisMessage splitMsg4 = AdaptrisMessageFactory.getDefaultInstance().newMessage("tooSmall");
-    aggr.joinMessage(original, Arrays.asList(new AdaptrisMessage[] {splitMsg1, splitMsg2, splitMsg3, splitMsg4}));
+    AdaptrisMessage splitMsg1 = fac.newMessage("short");
+    AdaptrisMessage splitMsg2 = fac.newMessage("justShort");
+    AdaptrisMessage splitMsg3 = fac.newMessage("ofSufficientLength");
+    AdaptrisMessage splitMsg4 = fac.newMessage("tooSmall");
+    aggr.joinMessage(original, Arrays.asList(splitMsg1, splitMsg2, splitMsg3, splitMsg4));
+  }
+
+  @Test
+  public void testAggregate_NoMatch() throws Exception {
+    ReplaceWithFirstMessage aggr = createAggregatorForTests();
+    aggr.setFilterCondition(new LengthCheckCondition());
+    AdaptrisMessageFactory fac = AdaptrisMessageFactory.getDefaultInstance();
+    AdaptrisMessage original = fac.newMessage("Goodbye");
+    AdaptrisMessage splitMsg1 = fac.newMessage("short");
+    AdaptrisMessage splitMsg2 = fac.newMessage("justShort");
+    AdaptrisMessage splitMsg3 = fac.newMessage("tooShort");
+    AdaptrisMessage splitMsg4 = fac.newMessage("tooSmall");
+    aggr.aggregate(original, Arrays.asList(splitMsg1, splitMsg2, splitMsg3, splitMsg4));
+    assertEquals("Goodbye", original.getContent());
   }
 
   @Override
