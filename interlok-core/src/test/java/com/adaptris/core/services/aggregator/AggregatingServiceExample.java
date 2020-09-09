@@ -18,12 +18,9 @@ package com.adaptris.core.services.aggregator;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
 import com.adaptris.core.services.LogMessageService;
-import com.adaptris.core.services.conditional.conditions.ConditionImpl;
 import com.adaptris.core.services.splitter.MessageSplitter;
 import com.adaptris.core.services.splitter.PoolingSplitJoinService;
 import com.adaptris.core.services.splitter.SplitJoinService;
@@ -62,19 +59,4 @@ public abstract class AggregatingServiceExample
     return service;
   }
 
-  // Have a condition that every other call passes
-  protected class EvenOddCondition extends ConditionImpl {
-    private int numberOfCalls = 0;
-
-    @Override
-    public boolean evaluate(AdaptrisMessage message) throws CoreException {
-      numberOfCalls++;
-      return numberOfCalls % 2 == 0;
-    }
-
-    @Override
-    public void close() {
-      throw new RuntimeException();
-    }
-  }
 }

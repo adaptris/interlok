@@ -9,6 +9,8 @@ import java.util.List;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.services.conditional.conditions.ConditionImpl;
 
 public class MessageAggregatorTest {
 
@@ -45,5 +47,31 @@ public class MessageAggregatorTest {
         return l.iterator();
       }
     }).size());
+  }
+
+  @Test
+  public void testImplFilter() throws Exception {
+    AppendingMessageAggregator aggregator = new AppendingMessageAggregator();
+    AdaptrisMessage splitMsg1 = AdaptrisMessageFactory.getDefaultInstance().newMessage("m1");
+    AdaptrisMessage splitMsg2 = AdaptrisMessageFactory.getDefaultInstance().newMessage("m2");
+    List<AdaptrisMessage> l = Arrays.asList(new AdaptrisMessage[] {splitMsg1, splitMsg2});
+    assertEquals(1, aggregator.filter(l).size());
+  }
+
+
+  // Have a condition that every other call passes
+  public static class EvenOddCondition extends ConditionImpl {
+    private int numberOfCalls = 0;
+
+    @Override
+    public boolean evaluate(AdaptrisMessage message) throws CoreException {
+      numberOfCalls++;
+      return numberOfCalls % 2 == 0;
+    }
+
+    @Override
+    public void close() {
+      throw new RuntimeException();
+    }
   }
 }
