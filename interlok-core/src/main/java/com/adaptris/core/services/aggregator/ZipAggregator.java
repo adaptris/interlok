@@ -16,9 +16,11 @@
 
 package com.adaptris.core.services.aggregator;
 
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import com.adaptris.annotation.DisplayOrder;
@@ -27,6 +29,9 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * {@link MessageAggregator} implementation that creates single zip using each message as a file in the zip.
@@ -45,19 +50,21 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("zip-aggregator")
 @DisplayOrder(order = {"filenameMetadata", "overwriteMetadata" })
+@NoArgsConstructor
 public class ZipAggregator extends MessageAggregatorImpl {
 
   public static final String DEFAULT_FILENAME_METADATA = "filename";
 
+  /**
+   * The metadata key that contains the filename to use in the zip file when aggregating.
+   * <p>
+   * This defaults to {@code 'filename'} if not explicitly configured.
+   * </p>
+   */
   @InputFieldDefault(value = "filename")
+  @Getter
+  @Setter
   private String filenameMetadata;
-
-  public ZipAggregator(){
-  }
-
-  public ZipAggregator(final String filenameMetadata){
-    setFilenameMetadata(filenameMetadata);
-  }
 
   @Override
   public void joinMessage(AdaptrisMessage msg, Collection<AdaptrisMessage> msgs) throws CoreException {
@@ -71,7 +78,9 @@ public class ZipAggregator extends MessageAggregatorImpl {
       for (AdaptrisMessage m : messages) {
         if (BooleanUtils.and(new boolean[] {filter(m), m.headersContainsKey(filenameMetadata())})) {
           zipOutputStream.putNextEntry(new ZipEntry(m.getMetadataValue(filenameMetadata())));
-          zipOutputStream.write(m.getPayload());
+          try (InputStream in = m.getInputStream()) {
+            IOUtils.copy(in, zipOutputStream);
+          }
           zipOutputStream.closeEntry();
         }
       }
@@ -80,20 +89,8 @@ public class ZipAggregator extends MessageAggregatorImpl {
     }
 
   }
-  public void setFilenameMetadata(String filenameMetadata) {
-    this.filenameMetadata = filenameMetadata;
-  }
 
-  /**
-   * Returns the metadata key  which contains the respective filename.
-   *
-   * @return the metadata key which contains the respective filenames, default: filename.
-   */
-  public String getFilenameMetadata() {
-    return filenameMetadata;
-  }
-
-  protected String filenameMetadata() {
+  private String filenameMetadata() {
     return StringUtils.defaultIfBlank(getFilenameMetadata(), DEFAULT_FILENAME_METADATA);
   }
 }
