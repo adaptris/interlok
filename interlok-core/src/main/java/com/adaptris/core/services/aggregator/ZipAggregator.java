@@ -16,11 +16,11 @@
 
 package com.adaptris.core.services.aggregator;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
@@ -61,20 +61,25 @@ public class ZipAggregator extends MessageAggregatorImpl {
 
   @Override
   public void joinMessage(AdaptrisMessage msg, Collection<AdaptrisMessage> msgs) throws CoreException {
-    try (ZipOutputStream zipOutputStream = new ZipOutputStream(msg.getOutputStream())) {
-      for (AdaptrisMessage message : filter(msgs)){
-        if(message.getMessageHeaders().containsKey(filenameMetadata())) {
-          zipOutputStream.putNextEntry(new ZipEntry(message.getMetadataValue(filenameMetadata())));
-          zipOutputStream.write(message.getPayload());
+    aggregate(msg, msgs);
+  }
+
+  @Override
+  public void aggregate(AdaptrisMessage original, Iterable<AdaptrisMessage> messages)
+      throws CoreException {
+    try (ZipOutputStream zipOutputStream = new ZipOutputStream(original.getOutputStream())) {
+      for (AdaptrisMessage m : messages) {
+        if (BooleanUtils.and(new boolean[] {filter(m), m.headersContainsKey(filenameMetadata())})) {
+          zipOutputStream.putNextEntry(new ZipEntry(m.getMetadataValue(filenameMetadata())));
+          zipOutputStream.write(m.getPayload());
           zipOutputStream.closeEntry();
         }
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
+
   }
-
-
   public void setFilenameMetadata(String filenameMetadata) {
     this.filenameMetadata = filenameMetadata;
   }
@@ -88,7 +93,7 @@ public class ZipAggregator extends MessageAggregatorImpl {
     return filenameMetadata;
   }
 
-  String filenameMetadata(){
-    return getFilenameMetadata() != null ? getFilenameMetadata() : DEFAULT_FILENAME_METADATA;
+  protected String filenameMetadata() {
+    return StringUtils.defaultIfBlank(getFilenameMetadata(), DEFAULT_FILENAME_METADATA);
   }
 }
