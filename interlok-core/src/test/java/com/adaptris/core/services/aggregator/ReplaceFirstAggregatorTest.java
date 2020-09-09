@@ -26,6 +26,8 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.Service;
 import com.adaptris.core.services.conditional.conditions.ConditionImpl;
 import com.adaptris.core.services.splitter.SplitByMetadata;
+import com.adaptris.core.stubs.DefectiveMessageFactory;
+import com.adaptris.core.stubs.DefectiveMessageFactory.WhenToBreak;
 
 public class ReplaceFirstAggregatorTest extends AggregatorCase {
 
@@ -67,6 +69,19 @@ public class ReplaceFirstAggregatorTest extends AggregatorCase {
     assertEquals("ofSufficientLength", original.getContent());
     // It's part of split message 2 so it gets ignored.
     assertEquals("originalValue", original.getMetadataValue("originalKey"));
+  }
+
+  @Test(expected = CoreException.class)
+  public void testAggregate_BrokenOutput() throws Exception {
+    ReplaceWithFirstMessage aggr = createAggregatorForTests();
+    aggr.setOverwriteMetadata(true);
+    AdaptrisMessage original =
+        new DefectiveMessageFactory(WhenToBreak.OUTPUT).newMessage("Goodbye");
+    AdaptrisMessage splitMsg1 = AdaptrisMessageFactory.getDefaultInstance().newMessage("short");
+    AdaptrisMessage splitMsg2 = AdaptrisMessageFactory.getDefaultInstance().newMessage("justShort");
+    AdaptrisMessage splitMsg3 = AdaptrisMessageFactory.getDefaultInstance().newMessage("ofSufficientLength");
+    AdaptrisMessage splitMsg4 = AdaptrisMessageFactory.getDefaultInstance().newMessage("tooSmall");
+    aggr.joinMessage(original, Arrays.asList(new AdaptrisMessage[] {splitMsg1, splitMsg2, splitMsg3, splitMsg4}));
   }
 
   @Override
