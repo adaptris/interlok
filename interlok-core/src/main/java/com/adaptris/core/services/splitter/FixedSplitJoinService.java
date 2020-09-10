@@ -46,6 +46,7 @@ import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
+import com.adaptris.interlok.util.CloseableIterable;
 import com.adaptris.interlok.util.Closer;
 import com.adaptris.util.NumberUtils;
 import com.adaptris.util.TimeInterval;
@@ -72,7 +73,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class FixedSplitJoinService extends ServiceImp implements EventHandlerAware, ServiceWrapper {
 
-  private static TimeInterval DEFAULT_TTL = new TimeInterval(600L, TimeUnit.SECONDS);
+  private static final long DEFAULT_TTL = TimeUnit.MINUTES.toMillis(10L);
   private static final int DEFAULT_POOLSIZE = 10;
   private static final long UNSET_SPLIT_COUNT = -1;
 
@@ -171,8 +172,8 @@ public class FixedSplitJoinService extends ServiceImp implements EventHandlerAwa
 
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    try {
-      Iterable<AdaptrisMessage> splits = getSplitter().splitMessage(msg);
+    try (CloseableIterable<AdaptrisMessage> splits =
+        CloseableIterable.ensureCloseable(getSplitter().splitMessage(msg))) {
       CountingExceptionHandler exceptionHandler = new CountingExceptionHandler();
       Iterable<AdaptrisMessage> toAggregate = doSplitService(splits, exceptionHandler);
       getAggregator().aggregate(msg, toAggregate);
