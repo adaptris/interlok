@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,9 +17,9 @@
 package com.adaptris.core.management.vcs;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.ServiceLoader;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,10 +28,13 @@ public class RuntimeVersionControlLoader {
   private static RuntimeVersionControlLoader INSTANCE;
 
   private transient Logger log = LoggerFactory.getLogger(RuntimeVersionControlLoader.class);
-  private ServiceLoader<RuntimeVersionControl> runtimeVersionControls;
+  private Collection<RuntimeVersionControl> runtimeVersionControls = new ArrayList<>();
 
   private RuntimeVersionControlLoader() {
-    runtimeVersionControls = ServiceLoader.load(RuntimeVersionControl.class);
+    Iterable<RuntimeVersionControl> resolvers = ServiceLoader.load(RuntimeVersionControl.class);
+    for (RuntimeVersionControl r : resolvers) {
+      runtimeVersionControls.add(r);
+    }
   }
 
   public static RuntimeVersionControlLoader getInstance() {
@@ -47,7 +50,7 @@ public class RuntimeVersionControlLoader {
   }
 
   private RuntimeVersionControl loadFirst() {
-    RuntimeVersionControl result = StreamSupport.stream(runtimeVersionControls.spliterator(), false).findFirst().orElse(null);
+    RuntimeVersionControl result = runtimeVersionControls.stream().findFirst().orElse(null);
     log.trace("Version control system found: [{}]", result != null ? result.getImplementationName() : "None");
     return newInstance(result);
   }
@@ -76,13 +79,7 @@ public class RuntimeVersionControlLoader {
    * @return A list of {@link RuntimeVersionControl}
    */
   public List<RuntimeVersionControl> availableImplementations() {
-    List<RuntimeVersionControl> impls = new ArrayList<>();
-
-    for(RuntimeVersionControl vcs : runtimeVersionControls) {
-      impls.add(vcs);
-    }
-
-    return impls;
+    return new ArrayList<>(runtimeVersionControls);
   }
 
   /**
@@ -95,7 +92,7 @@ public class RuntimeVersionControlLoader {
    * If we cannot find the RuntimeVersionControl based on the given implementation name or if there
    * are no RuntimeVersionControl available, this method will return null.
    * </p>
-   * 
+   *
    * @param implementationName
    * @return {@link RuntimeVersionControl}
    */
