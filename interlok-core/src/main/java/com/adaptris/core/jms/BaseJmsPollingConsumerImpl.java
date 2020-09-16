@@ -1,9 +1,7 @@
 package com.adaptris.core.jms;
 
 import static com.adaptris.core.jms.NullCorrelationIdSource.defaultIfNull;
-
 import java.util.concurrent.TimeUnit;
-
 import javax.jms.IllegalStateException;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -12,9 +10,7 @@ import javax.jms.Session;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessageListener;
@@ -22,7 +18,6 @@ import com.adaptris.core.AdaptrisPollingConsumer;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
-
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -32,15 +27,13 @@ public abstract class BaseJmsPollingConsumerImpl extends AdaptrisPollingConsumer
   private static final TimeInterval DEFAULT_RECEIVE_WAIT = new TimeInterval(2L, TimeUnit.SECONDS);
 
   /**
-   * <p>
    * Sets the JMS acknowledge mode to use.
-   * </p>
    * <p>
-   * The value may be AUTO_KNOWLEDGE, CLIENT_ACKNOWLEDGE, DUPS_OK_ACKNOWLEDGE or the int values corresponding to the JMS Session Constant
+   * The value may be AUTO_KNOWLEDGE, CLIENT_ACKNOWLEDGE, DUPS_OK_ACKNOWLEDGE or the int values
+   * corresponding to the JMS Session Constant. If not set explicitly then defaults to
+   * {@code CLIENT_ACKNOWLEDGE}.
    * </p>
    *
-   * @param i
-   *          the JMS acknowledge mode to use
    */
   @NotNull
   @AutoPopulated
@@ -51,12 +44,11 @@ public abstract class BaseJmsPollingConsumerImpl extends AdaptrisPollingConsumer
   private String acknowledgeMode;
 
   /**
-   * <p>
    * Sets the MessageTypeTranslator to use.
+   * <p>
+   * If not configured explicitly then defaults to {@link AutoConvertMessageTranslator} which
+   * attempts to do the right thing
    * </p>
-   *
-   * @param translator
-   *          the MessageTypeTranslator to use
    */
   @NotNull
   @AutoPopulated
@@ -67,12 +59,12 @@ public abstract class BaseJmsPollingConsumerImpl extends AdaptrisPollingConsumer
   private MessageTypeTranslator messageTranslator;
 
   /**
-   * <p>
+   *
    * Sets correlationIdSource.
+   * <p>
+   * If not configured explicitly then defaults to {@link NullCorrelationIdSource}.
    * </p>
    *
-   * @param c
-   *          the correlationIdSource to set
    */
   @Valid
   @AdvancedConfig
@@ -87,8 +79,6 @@ public abstract class BaseJmsPollingConsumerImpl extends AdaptrisPollingConsumer
    * not consume messages from Queues / Topics as expected try setting a higher value.
    * </p>
    *
-   * @param l
-   *          the period that this class should wait for the broker to deliver a message, if < 0 then the default (2secs) will be used.
    */
   @Valid
   @Getter

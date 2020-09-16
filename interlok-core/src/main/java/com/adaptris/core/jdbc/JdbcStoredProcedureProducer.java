@@ -304,7 +304,8 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
   @Override
   public void prepare() throws CoreException {
     logWarningIfNotNull(destWarning, () -> destWarning = true, getDestination(),
-        "{} uses destination, use 'topic' instead if possible", LoggingHelper.friendlyName(this));
+        "{} uses destination, use 'procedure-name' instead if possible",
+        LoggingHelper.friendlyName(this));
     mustHaveEither(getProcedureName(), getDestination());
   }
 
