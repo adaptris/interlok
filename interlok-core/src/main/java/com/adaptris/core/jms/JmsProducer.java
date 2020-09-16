@@ -111,7 +111,8 @@ public class JmsProducer extends JmsProducerImpl {
   @Override
   public void prepare() throws CoreException {
     logWarningIfNotNull(destWarning, () -> destWarning = true, getDestination(),
-        "{} uses destination, use 'topic' instead if possible", LoggingHelper.friendlyName(this));
+        "{} uses destination, use 'endpoint' instead if possible",
+        LoggingHelper.friendlyName(this));
     mustHaveEither(getEndpoint(), getDestination());
     super.prepare();
   }
