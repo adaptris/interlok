@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,7 +24,6 @@ import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.MetadataElement;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.common.ConstantDataInputParameter;
 import com.adaptris.core.common.Execution;
@@ -35,7 +34,8 @@ import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
 
 @SuppressWarnings("deprecation")
-public class RegexpServiceTest extends ServiceCase {
+public class RegexpServiceTest
+    extends com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase {
   private static final String TARGET_METADATA_KEY = "targetMetadataKey";
   private static final String SOURCE_METADATA_KEY = "sourceKey";
 
@@ -46,7 +46,7 @@ public class RegexpServiceTest extends ServiceCase {
 
   /**
    * Key in unit-test.properties that defines where example goes unless overriden {@link #setBaseDir(String)}.
-   * 
+   *
    */
   public static final String BASE_DIR_KEY = "RegexpServiceExamples.baseDir";
 
@@ -56,10 +56,6 @@ public class RegexpServiceTest extends ServiceCase {
     }
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
   private RegexpService createService() {
     RegexpService s = new RegexpService();
     s.getExecutions()

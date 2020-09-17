@@ -41,10 +41,6 @@ public class ScriptingServiceTest extends GeneralServiceExample {
   private static final String MY_METADATA_VALUE = "MyMetadataValue";
   private static final String MY_METADATA_KEY = "MyMetadataKey";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
 
   private File writeScript(boolean working) throws IOException {

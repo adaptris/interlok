@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,22 +18,19 @@ package com.adaptris.core.services.jdbc;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Map;
 import java.util.Properties;
-
 import org.junit.Test;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.JdbcUtil;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairBag;
 import com.adaptris.util.KeyValuePairSet;
@@ -67,27 +64,27 @@ public class JdbcMapUpsertTest extends JdbcMapInsertCase {
       + "doubleColumn DOUBLE,"
       + "timestampColumn TIMESTAMP,"
       + "timeColumn TIME)", TABLE_NAME);
-  
+
   protected static final String CONTENT_ALL_TYPES =
-      "firstname=alice\n" + 
-      "lastname=smith\n" + 
-      "dob=2017-01-01\n" + 
-      "integerColumn=1\n" + 
-      "longColumn=1\n" + 
-      "booleanColumn=true\n" + 
-      "bigIntegerColumn=1\n" + 
-      "bigDecimalColumn=1.0\n" + 
-      "floatColumn=1.0\n" + 
-      "doubleColumn=1.0\n" + 
-      "timestampColumn=2017-01-01 00:01:00\n" + 
+      "firstname=alice\n" +
+      "lastname=smith\n" +
+      "dob=2017-01-01\n" +
+      "integerColumn=1\n" +
+      "longColumn=1\n" +
+      "booleanColumn=true\n" +
+      "bigIntegerColumn=1\n" +
+      "bigDecimalColumn=1.0\n" +
+      "floatColumn=1.0\n" +
+      "doubleColumn=1.0\n" +
+      "timestampColumn=2017-01-01 00:01:00\n" +
       "timeColumn=00:01:00\n";
-  
+
   protected static final String INSERT_STMT_ALL_TYPES = String.format("INSERT INTO %s "
       + "(firstname, lastname, dob, integerColumn, longColumn, booleanColumn, bigIntegerColumn, bigDecimalColumn, "
       + "floatColumn, doubleColumn, timestampColumn, timeColumn) "
       + "VALUES ('%s', '%s' , '%s', 1, 1, false, 1, 1.0, 1.0, 1.0, '1970-01-01 00:00:00', '00:00:00')",
       TABLE_NAME, ALICE, SMITH, UTC_0);
-  
+
   @Test
   public void testDatabaseId() {
     JdbcMapUpsert upsert = createService();
@@ -101,7 +98,7 @@ public class JdbcMapUpsertTest extends JdbcMapInsertCase {
     UpsertProperties service = configureForTests(createService()).withRowsAffectedMetadataKey("rowsInserted");
     service.setIdField(ID_ELEMENT_VALUE);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(CONTENT);
-    ServiceCase.execute(service, msg);
+    ExampleServiceCase.execute(service, msg);
     doAssert(1);
     assertTrue(msg.headersContainsKey("rowsInserted"));
     assertEquals("1", msg.getMetadataValue("rowsInserted"));
@@ -114,7 +111,7 @@ public class JdbcMapUpsertTest extends JdbcMapInsertCase {
     service.withColumnBookend('"');
     service.setIdField(ID_ELEMENT_VALUE);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(CONTENT);
-    ServiceCase.execute(service, msg);
+    ExampleServiceCase.execute(service, msg);
     doAssert(1);
   }
 
@@ -124,7 +121,7 @@ public class JdbcMapUpsertTest extends JdbcMapInsertCase {
     JdbcMapUpsert service = configureForTests(createService()).withId(ID_ELEMENT_VALUE);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(INVALID_COLUMN);
     try {
-      ServiceCase.execute(service, msg);
+      ExampleServiceCase.execute(service, msg);
       fail();
     }
     catch (ServiceException expected) {
@@ -139,7 +136,7 @@ public class JdbcMapUpsertTest extends JdbcMapInsertCase {
     UpsertProperties service = configureForTests(createService()).withRowsAffectedMetadataKey("rowsUpdated");
     service.setIdField(ID_ELEMENT_VALUE);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(CONTENT);
-    ServiceCase.execute(service, msg);
+    ExampleServiceCase.execute(service, msg);
     assertTrue(msg.headersContainsKey("rowsUpdated"));
     assertEquals("1", msg.getMetadataValue("rowsUpdated"));
     doAssert(1);
@@ -154,7 +151,7 @@ public class JdbcMapUpsertTest extends JdbcMapInsertCase {
     service.withColumnBookend('"');
     service.setIdField(ID_ELEMENT_VALUE);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(CONTENT);
-    ServiceCase.execute(service, msg);
+    ExampleServiceCase.execute(service, msg);
     doAssert(1);
     checkDob(SELECT_QUOTED, ALICE, DOB);
   }
@@ -180,7 +177,7 @@ public class JdbcMapUpsertTest extends JdbcMapInsertCase {
     service.setFieldMappings(mappings);
     service.setIdField(ID_ELEMENT_VALUE);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(CONTENT_ALL_TYPES);
-    ServiceCase.execute(service, msg);
+    ExampleServiceCase.execute(service, msg);
     doAssert(1);
     checkDob(ALICE, DOB);
     try (Connection c = createConnection();
@@ -194,7 +191,7 @@ public class JdbcMapUpsertTest extends JdbcMapInsertCase {
       }
     }
   }
-  
+
   @Override
   protected UpsertProperties createService() {
     return new UpsertProperties();

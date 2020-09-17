@@ -29,24 +29,24 @@ import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
-import com.adaptris.core.management.jetty.WebServerProperties.WebServerPropertiesEnum;
 
 /**
  * Build a jetty server from properties.
  */
 final class FromProperties extends ServerBuilder {
 
-  FromProperties(Properties initialConfig) {
+  public FromProperties(Properties initialConfig) {
     super(initialConfig);
   }
 
   @Override
-  Server build() throws Exception {
+  protected Server build() throws Exception {
     log.trace("Create Server from Properties");
+    log.warn("You are starting Jetty without a configuration file. This is NOT suggested for production environments.");
     final Server server = createSimpleServer();
 
     configureThreadPool(server.getThreadPool());
-    server.addConnector(createConnector(server, initialProperties));
+    server.addConnector(createConnector(server));
 
     // Setting up handler collection
     final HandlerCollection handlerCollection = new HandlerCollection();
@@ -55,13 +55,13 @@ final class FromProperties extends ServerBuilder {
     handlerCollection.addHandler(new DefaultHandler());
 
     server.setHandler(handlerCollection);
-    addDeploymentManager(server, contextHandlerCollection, initialProperties);
+    addDeploymentManager(server, contextHandlerCollection);
     return server;
   }
 
   // Adding monitored webapp directory if specified
-  private void addDeploymentManager(final Server server, final ContextHandlerCollection ctx, final Properties config) {
-    final String jettyWebappBase = WebServerPropertiesEnum.WEBAPP_URL.getValue(config, null);
+  private void addDeploymentManager(final Server server, final ContextHandlerCollection ctx) {
+    final String jettyWebappBase = getConfigItem(WEB_SERVER_WEBAPP_URL_CFG_KEY);
     if (jettyWebappBase != null) {
       final DeploymentManager deploymentManager = new DeploymentManager();
       deploymentManager.setContexts(ctx);
@@ -94,10 +94,10 @@ final class FromProperties extends ServerBuilder {
     }
   }
 
-  private ServerConnector createConnector(Server server, final Properties config) {
+  private ServerConnector createConnector(Server server) {
     ServerConnector connector = new ServerConnector(server, -1, -1,
         new HttpConnectionFactory(configure(new HttpConfiguration()), HttpCompliance.RFC2616));
-    connector.setPort(Integer.parseInt(WebServerPropertiesEnum.PORT.getValue(config, DEFAULT_JETTY_PORT)));
+    connector.setPort(Integer.parseInt(getConfigItem(WEB_SERVER_PORT_CFG_KEY, DEFAULT_JETTY_PORT)));
     return connector;
   }
 

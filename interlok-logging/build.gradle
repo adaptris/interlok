@@ -1,5 +1,6 @@
 ext {
   componentName='Interlok Logging'
+  delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 }
 
 // In this section you declare the dependencies for your production and test code
@@ -24,6 +25,12 @@ artifacts {
     archives javadocJar
 }
 
+
+task deleteGeneratedFiles(type: Delete) {
+  delete delombokTargetDir
+}
+
+
 javadoc {
   configure(options) {
     taglets = ["com.adaptris.taglet.ConfigTaglet", "com.adaptris.taglet.LicenseTaglet"]
@@ -31,6 +38,10 @@ javadoc {
     options.tags('apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:','implNote:a:Implementation Note:')
     title= componentName
   }
+}
+
+delombok {
+  target = delombokTargetDir
 }
 
 uploadArchives {
@@ -52,4 +63,4 @@ uploadArchives {
 }
 
 publish.dependsOn uploadArchives
-
+clean.dependsOn deleteGeneratedFiles

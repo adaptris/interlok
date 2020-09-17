@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -49,14 +49,10 @@ public class NonDeletingFsConsumerTest extends FsConsumerCase {
   private static final String PANGRAM_1 = "the quick brown fox jumps over the lazy dog";
   /**
    * Key in unit-test.properties that defines where example goes unless overriden {@link #setBaseDir(String)}.
-   * 
+   *
    */
   public static final String EXAMPLE_BASEDIR = "NonDeletingFsConsumerExample.baseDir";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected void configureExampleConfigBaseDir() {
@@ -253,7 +249,7 @@ public class NonDeletingFsConsumerTest extends FsConsumerCase {
     ProcessedItemCache cache = new InlineItemCache();
     fs.setPoller(new Never());
     fs.setProcessedItemCache(cache);
-    
+
     StandaloneConsumer consumer = new StandaloneConsumer(fs);
     try {
       start(consumer);
@@ -272,7 +268,7 @@ public class NonDeletingFsConsumerTest extends FsConsumerCase {
     ProcessedItemCache cache = new InlineItemCache();
     fs.setPoller(new Never());
     fs.setProcessedItemCache(cache);
-    
+
     StandaloneConsumer consumer = new StandaloneConsumer(fs);
     try {
       start(consumer);
@@ -295,7 +291,7 @@ public class NonDeletingFsConsumerTest extends FsConsumerCase {
     ProcessedItemCache cache = new InlineItemCache();
     fs.setPoller(new Never());
     fs.setProcessedItemCache(cache);
-    
+
     StandaloneConsumer consumer = new StandaloneConsumer(fs);
     try {
       start(consumer);
@@ -355,7 +351,8 @@ public class NonDeletingFsConsumerTest extends FsConsumerCase {
         ? new ConfiguredConsumeDestination(destinationName, null, threadname)
         : new ConfiguredConsumeDestination(destinationName);
 
-    NonDeletingFsConsumer fs = new NonDeletingFsConsumer(dest);
+    NonDeletingFsConsumer fs = new NonDeletingFsConsumer();
+    fs.setDestination(dest);
     fs.setReacquireLockBetweenMessages(true);
     fs.setCreateDirs(true);
     return fs;
@@ -398,15 +395,15 @@ public class NonDeletingFsConsumerTest extends FsConsumerCase {
     }
     return result;
   }
-  
+
   private File createFile(File file, String content) throws IOException {
     try (PrintStream out = new PrintStream(new FileOutputStream(file), true)) {
       out.print(PANGRAM_1);
     }
     return file;
   }
-  
+
   private class Never extends PollerImp {
-    
+
   }
 }

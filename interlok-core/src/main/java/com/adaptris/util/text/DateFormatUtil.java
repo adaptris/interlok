@@ -23,6 +23,8 @@ import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
+import org.apache.commons.lang3.ObjectUtils;
 
 /**
  * Contains convenience method to format date strings into Date objects. <br>
@@ -142,16 +144,25 @@ public final class DateFormatUtil {
    * @return the date
    */
   public static Date parse(String s) {
-    if (s == null) {
-      return new Date();
-    }
+    return parse(s, new Date());
+  }
+
+  /**
+   * Return a date object from a given string returning a default if it could not.
+   *
+   * @param s the date in string format
+   * @param defaultDate the default Date (which could be null)
+   * @return the date
+   */
+  public static Date parse(String s, Date defaultDate) {
     Date date = useDefaultFormatter(s);
     int i = 0;
     while (date == null && i < DATE_FORMATS.length) {
       date = getDate(s, DATE_FORMATS[i++]);
     }
-    return date == null ? new Date() : date;
+    return ObjectUtils.defaultIfNull(date, defaultDate);
   }
+
 
   /**
    * Return the default formatted String for a given date.
@@ -189,20 +200,17 @@ public final class DateFormatUtil {
   }
 
 
-  private static Date useDefaultFormatter(String s) {
-
-    DateFormat df = DateFormat.getDateTimeInstance();
-    return df.parse(s, new ParsePosition(0));
+  private static Date useDefaultFormatter(String str) {
+    return Optional.ofNullable(str).map((s) -> DateFormat.getDateTimeInstance().parse(s, new ParsePosition(0))).orElse(null);
   }
 
   private static Date getDate(String s, String format) {
     Date d = null;
-
     SimpleDateFormat sdf = new SimpleDateFormat(format);
     try {
       d = sdf.parse(s);
     }
-    catch (ParseException e) {
+    catch (ParseException | NullPointerException e) {
       d = null;
     }
     return d;

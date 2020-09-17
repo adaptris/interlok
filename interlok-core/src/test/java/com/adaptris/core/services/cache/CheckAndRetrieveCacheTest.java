@@ -11,6 +11,7 @@ import com.adaptris.core.BranchingServiceCollection;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.cache.ExpiringMapCache;
 import com.adaptris.core.services.cache.translators.MetadataCacheValueTranslator;
+import com.adaptris.interlok.junit.scaffolding.services.BasicCacheExampleGenerator;
 import com.adaptris.util.TimeInterval;
 
 public class CheckAndRetrieveCacheTest extends CacheServiceBaseCase {
@@ -20,10 +21,6 @@ public class CheckAndRetrieveCacheTest extends CacheServiceBaseCase {
   static final String LOOKUP_METADATA_KEY = "lookupMetadataKey";
   static final String LOOKED_UP_VALUE = "lookedUpValue";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
   @Test
   public void testIsBranching() throws Exception {
 

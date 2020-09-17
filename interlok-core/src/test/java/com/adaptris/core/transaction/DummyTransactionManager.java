@@ -2,14 +2,12 @@ package com.adaptris.core.transaction;
 
 import javax.jms.XAConnectionFactory;
 import javax.transaction.xa.XAResource;
-
 import com.adaptris.core.CoreException;
 
 public class DummyTransactionManager implements TransactionManager {
-  
+
   private String uniqueId;
-  private String lookupName;
-  
+
   private enum TransactionState {
     NOT_IN_TRANSACTION,
     IN_TRANSACTION,
@@ -18,43 +16,13 @@ public class DummyTransactionManager implements TransactionManager {
   }
 
   private transient TransactionState state = TransactionState.NOT_IN_TRANSACTION;
-  
+
   public DummyTransactionManager() {
   }
-  
+
 
   public DummyTransactionManager(String uniqueId) {
     setUniqueId(uniqueId);
-  }
-
-  public DummyTransactionManager(String uniqueId, String lookupName) {
-    this.setLookupName(lookupName);
-    this.setUniqueId(uniqueId);
-  }
-
-  @Override
-  public void init() throws CoreException {
-  }
-
-  @Override
-  public void start() throws CoreException {
-  }
-
-  @Override
-  public void stop() {
-  }
-
-  @Override
-  public void close() {
-  }
-
-  @Override
-  public void prepare() throws CoreException {
-  }
-
-  @Override
-  public String getLookupName() {
-    return lookupName;
   }
 
   @Override
@@ -103,12 +71,13 @@ public class DummyTransactionManager implements TransactionManager {
     this.uniqueId = uniqueId;
   }
 
-  public void setLookupName(String lookupName) {
-    this.lookupName = lookupName;
-  }
 
   @Override
   public void deRegisterXAResource(String name, XAConnectionFactory connectionFactory) throws Exception {
   }
+
+
+  @Override
+  public void prepare() throws CoreException {}
 
 }

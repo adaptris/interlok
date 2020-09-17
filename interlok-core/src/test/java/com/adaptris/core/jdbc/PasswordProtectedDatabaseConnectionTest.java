@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,7 +20,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 import org.junit.Test;
-import com.adaptris.core.BaseCase;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.security.password.Password;
@@ -28,7 +27,8 @@ import com.adaptris.util.TimeInterval;
 
 // Note that this class reuses- the jdbc.storedproc test flags, because
 // That explicitly relies on mysql which is password protected rather than derby (which might not be).
-public class PasswordProtectedDatabaseConnectionTest extends BaseCase {
+public class PasswordProtectedDatabaseConnectionTest
+    extends com.adaptris.interlok.junit.scaffolding.BaseCase {
   protected static final String KEY_TESTS_ENABLED = "jdbc.storedproc.tests.enabled";
   protected static final String KEY_JDBC_PASSWORD = "jdbc.storedproc.password";
   protected static final String KEY_JDBC_USERNAME = "jdbc.storedproc.username";
@@ -37,10 +37,6 @@ public class PasswordProtectedDatabaseConnectionTest extends BaseCase {
   protected static final String KEY_JDBC_DRIVER = "jdbc.storedproc.driver";
   protected static final String KEY_JDBC_TEST_STATEMENT = "jdbc.storedproc.teststatement";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testConnect_WithPlainPassword() throws Exception {

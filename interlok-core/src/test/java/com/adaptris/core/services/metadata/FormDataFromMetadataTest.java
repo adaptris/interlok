@@ -29,10 +29,6 @@ import com.adaptris.core.stubs.DefectiveMessageFactory.WhenToBreak;
 
 public class FormDataFromMetadataTest extends MetadataServiceExample {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   private FormDataFromMetadata createService() {
     FormDataFromMetadata svc = new FormDataFromMetadata();

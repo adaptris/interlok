@@ -48,17 +48,13 @@ import com.adaptris.core.http.jetty.SecurityConstraint;
 import com.adaptris.core.http.jetty.StandardResponseProducer;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.metadata.RegexMetadataFilter;
-import com.adaptris.core.services.metadata.PayloadFromMetadataService;
+import com.adaptris.core.services.metadata.PayloadFromTemplateService;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
 
 public class HttpRequestServiceTest extends HttpServiceExample {
   private static final String TEXT = "ABCDEFG";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testService_init() throws Exception {
@@ -127,10 +123,9 @@ public class HttpRequestServiceTest extends HttpServiceExample {
     MockMessageProducer mock = new MockMessageProducer();
     HttpConnection jc = HttpHelper.createConnection();
     JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
-    Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList(new Service[]
-        {
-            new PayloadFromMetadataService(TEXT), new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200))
-          })));
+    Channel c = createChannel(jc,
+        createWorkflow(mc, mock, new ServiceList(new Service[] {new PayloadFromTemplateService().withTemplate(TEXT),
+            new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200))})));
 
     HttpRequestService service =
         new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
@@ -155,10 +150,9 @@ public class HttpRequestServiceTest extends HttpServiceExample {
     MockMessageProducer mock = new MockMessageProducer();
     HttpConnection jc = HttpHelper.createConnection();
     JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
-    Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList(new Service[]
-        {
-            new PayloadFromMetadataService(TEXT), new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200))
-        })));
+    Channel c = createChannel(jc,
+        createWorkflow(mc, mock, new ServiceList(new Service[] {new PayloadFromTemplateService().withTemplate(TEXT),
+            new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200))})));
 
     HttpRequestService service =
         new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
@@ -185,7 +179,8 @@ public class HttpRequestServiceTest extends HttpServiceExample {
     JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
     Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList(new Service[]
         {
-            new PayloadFromMetadataService(TEXT), new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200))
+        new PayloadFromTemplateService().withTemplate(TEXT),
+        new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200))
         })));
 
     HttpRequestService service =
@@ -291,7 +286,8 @@ public class HttpRequestServiceTest extends HttpServiceExample {
     JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
     Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList(new Service[]
     {
-        new PayloadFromMetadataService(TEXT), new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200))
+        new PayloadFromTemplateService().withTemplate(TEXT),
+        new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200))
     })));
 
     HttpRequestService service = new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
@@ -319,7 +315,8 @@ public class HttpRequestServiceTest extends HttpServiceExample {
 
     Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList(new Service[]
     {
-        new PayloadFromMetadataService(TEXT), new StandaloneProducer(new StandardResponseProducer(HttpStatus.UNAUTHORIZED_401))
+        new PayloadFromTemplateService().withTemplate(TEXT),
+        new StandaloneProducer(new StandardResponseProducer(HttpStatus.UNAUTHORIZED_401))
     })));
     HttpRequestService service =
         new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination())

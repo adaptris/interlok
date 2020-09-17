@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,14 +29,10 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
   private static final String ALL_ROWS_QUERY = "SELECT adapter_version, message_translator_type FROM adapter_type_version ";
   private static final String ALL_ROWS_QUERY_ALIASES =
       "SELECT adapter_version as MY_VERSION, message_translator_type as MY_TYPE FROM adapter_type_version ";
-  
+
   private static final String ALL_ROWS_QUERY_NAMED_PARAMS =
       "SELECT adapter_version, message_translator_type FROM adapter_type_version " + "WHERE adapter_version!=#adapterVersion";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testJdbcDataQueryService() throws Exception {
@@ -122,13 +118,13 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
     populateDatabase(dbItems, false);
     JdbcDataQueryService s = createMetadataService();
     s.setStatementCreator(new ConfiguredSQLStatement(ALL_ROWS_QUERY_NAMED_PARAMS));
-    
+
     StatementParameter adapterVersion = new StatementParameter("xxx", "java.lang.String", StatementParameter.QueryType.constant);
     adapterVersion.setName("adapterVersion");
-    
+
     s.getStatementParameters().add(adapterVersion);
     s.setParameterApplicator(new NamedParameterApplicator());
-    
+
     AllRowsMetadataTranslator t = new AllRowsMetadataTranslator();
     s.setResultSetTranslator(t);
     AdaptrisMessage msg = createMessage(entry);

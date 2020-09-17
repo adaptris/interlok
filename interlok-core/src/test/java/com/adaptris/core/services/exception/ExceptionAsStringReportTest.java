@@ -31,10 +31,6 @@ import com.adaptris.interlok.types.InterlokMessage;
 
 public class ExceptionAsStringReportTest extends ExceptionServiceExample {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
 
   @Test

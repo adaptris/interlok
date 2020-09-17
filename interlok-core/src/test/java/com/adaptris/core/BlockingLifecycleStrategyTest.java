@@ -192,7 +192,7 @@ public class BlockingLifecycleStrategyTest extends DefaultLifecycleStrategyTest 
   public void testChannelInit_ExceedsTimeout() throws Exception {
     String name = renameThread(this.getClass().getSimpleName() + "_" + "testChannelInit_ExceedsTimeout");
     ChannelList list = create();
-    BlockingChannelLifecycleStrategy st = new BlockingChannelLifecycleStrategy(new TimeInterval(5L, TimeUnit.SECONDS));
+    BlockingChannelLifecycleStrategy st = new BlockingChannelLifecycleStrategy(new TimeInterval(3L, TimeUnit.SECONDS));
     list.setLifecycleStrategy(st);
     try {
       Channel testChannel = new Channel() {
@@ -232,7 +232,7 @@ public class BlockingLifecycleStrategyTest extends DefaultLifecycleStrategyTest 
   public void testChannelStart_ExceedsTimeout() throws Exception {
     String name = renameThread(this.getClass().getSimpleName() + "_" + "testChannelStart_ExceedsTimeout");
     ChannelList list = create();
-    BlockingChannelLifecycleStrategy st = new BlockingChannelLifecycleStrategy(new TimeInterval(5L, TimeUnit.SECONDS));
+    BlockingChannelLifecycleStrategy st = new BlockingChannelLifecycleStrategy(new TimeInterval(3L, TimeUnit.SECONDS));
     list.setLifecycleStrategy(st);
     try {
       Channel testChannel = new Channel() {

@@ -36,7 +36,7 @@ Chosen option: Modify AdaptrisMessageListener to have callbacks.
 
 ### Modify AdaptrisMessageListener to have callbacks.
 
-If we change AdaptrisMessageListener to be this : 
+If we change AdaptrisMessageListener to be this :
 
 ```
 default void onAdaptrisMessage(AdaptrisMessage msg) {
@@ -46,7 +46,7 @@ default void onAdaptrisMessage(AdaptrisMessage msg) {
 void onAdaptrisMessage(AdaptrisMessage msg, java.util.function.Consumer<AdaptrisMessage> success, Consumer<AdaptrisMessage> failure);
 ```
 
-Then we can effectively make our SQS polling consumer this : 
+Then we can effectively make our SQS polling consumer this :
 ```
 for (Message message : messages) {
   try {
@@ -74,3 +74,7 @@ for (Message message : messages) {
 * Bad, because it's a callback, and it happens at some point in the future... is the session/queue whatever still valid.
 * Bad, because threadsafe is hard.
 * Neutral, all workflows have to change (and message listener stub implementations).
+
+### Note 2020-02-12
+
+The API change is going to be `void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success);` since the semantics of how the failure will be handled (or where it should be fired) isn't clear at the moment. As of the next major release (v4); we are proposing a different way of handling things like this, since asynchronous callbacks are becoming ever more popular.

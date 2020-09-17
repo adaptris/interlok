@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,12 +29,9 @@ import org.junit.Test;
 import com.adaptris.core.metadata.ElementFormatter;
 import com.adaptris.core.metadata.ElementKeyAndValueFormatter;
 
-public class FormattedMetadataDestinationTest extends ExampleProduceDestinationCase {
+public class FormattedMetadataDestinationTest
+    extends com.adaptris.interlok.junit.scaffolding.ExampleProduceDestinationCase {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testAddMetadataKey() {
@@ -123,7 +120,7 @@ public class FormattedMetadataDestinationTest extends ExampleProduceDestinationC
       fail();
     }
     catch (IllegalArgumentException expected) {
-      
+
     }
     dest.setDestinationTemplate("Hello World");
     assertEquals("Hello World", dest.getDestinationTemplate());
@@ -237,7 +234,7 @@ public class FormattedMetadataDestinationTest extends ExampleProduceDestinationC
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("payload", metadata);
     assertEquals("key1=val1", dest.getDestination(msg));
   }
-  
+
   @Test
   public void testElementFormatterSeparator() throws Exception {
     FormattedMetadataDestination dest = new FormattedMetadataDestination();

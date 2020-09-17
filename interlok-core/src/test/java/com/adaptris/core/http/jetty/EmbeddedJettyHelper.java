@@ -17,16 +17,14 @@
 package com.adaptris.core.http.jetty;
 
 import java.util.Properties;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.ConfiguredProduceDestination;
-import com.adaptris.core.PortManager;
 import com.adaptris.core.management.jetty.JettyServerComponent;
-import com.adaptris.core.management.jetty.WebServerProperties.WebServerPropertiesEnum;
+import com.adaptris.core.management.jetty.ServerBuilder;
 import com.adaptris.core.management.webserver.ServerManager;
 import com.adaptris.core.management.webserver.WebServerManagementUtil;
+import com.adaptris.interlok.junit.scaffolding.util.PortManager;
 
 /**
  * @author gcsiki
@@ -42,7 +40,7 @@ public class EmbeddedJettyHelper {
 
   public EmbeddedJettyHelper() {
     portForServer = PortManager.nextUnusedPort(18080);
-    jettyConfig.setProperty(WebServerPropertiesEnum.PORT.getOverridingBootstrapPropertyKey(), "" + portForServer);
+    jettyConfig.setProperty(ServerBuilder.WEB_SERVER_PORT_CFG_KEY, String.valueOf(portForServer));
   }
 
   public void startServer() throws Exception {

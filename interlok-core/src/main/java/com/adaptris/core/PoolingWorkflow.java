@@ -25,6 +25,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -300,13 +301,12 @@ public class PoolingWorkflow extends WorkflowImp {
    * sent directly to the configured MessageErrorHandler.
    * </p>
    *
-   * @see AdaptrisMessageListener#onAdaptrisMessage(AdaptrisMessage)
    * @see WorkflowImp#handleBadMessage(AdaptrisMessage)
    *
-   * @param msg the AdaptrisMessage.
    */
   @Override
-  public void onAdaptrisMessage(final AdaptrisMessage msg) {
+  public void onAdaptrisMessage(final AdaptrisMessage msg, Consumer<AdaptrisMessage> success, Consumer<AdaptrisMessage> failure) {
+    ListenerCallbackHelper.prepare(msg, success, failure);
     if (!obtainChannel().isAvailable()) {
       handleChannelUnavailable(msg);
     }
@@ -314,7 +314,7 @@ public class PoolingWorkflow extends WorkflowImp {
       onMessage(msg);
     }
   }
-
+  
   /**
    *
    * @see WorkflowImp#resubmitMessage(com.adaptris.core.AdaptrisMessage)
@@ -560,7 +560,7 @@ public class PoolingWorkflow extends WorkflowImp {
    * @param t the initWaitTime to set, default if not specified is 1 minute
    */
   public void setInitWaitTime(TimeInterval t) {
-    this.initWaitTime = t;
+    initWaitTime = t;
   }
 
   public long initWaitTimeMs() {
@@ -759,6 +759,9 @@ public class PoolingWorkflow extends WorkflowImp {
         wip.addEvent(getConsumer(), true);
         sc.doService(wip);
         doProduce(wip);
+        // handle success callback here.
+        // failure callback will be handled by the message-error-handler that's configured...
+        ListenerCallbackHelper.handleSuccessCallback(wip);
         logSuccess(wip, start);
       }
       catch (ProduceException e) {

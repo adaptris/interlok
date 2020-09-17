@@ -26,6 +26,7 @@ import com.adaptris.core.MetadataElement;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
+@SuppressWarnings("deprecation")
 public class PayloadFromMetadataTest extends MetadataServiceExample {
 
   private static final String PAYLOAD_EXP_NEWLINE_RESULT = "{ \n\"key\": \"Hello\"\n}";
@@ -34,10 +35,6 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
   private static final String PAYLOAD_TEMPLATE_EXPR = "{ \"key\": \"%message{helloMetadataKey}\"}";
   private static final String DEFAULT_METADATA_KEY = "helloMetadataKey";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   private PayloadFromMetadataService createService() {
     KeyValuePair k = new KeyValuePair();
@@ -45,9 +42,7 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
     k.setValue("__HELLO__");
     KeyValuePairSet kvps = new KeyValuePairSet();
     kvps.addKeyValuePair(k);
-    PayloadFromMetadataService service = new PayloadFromMetadataService("__HELLO__ World");
-    service.setEscapeBackslash(true);
-    service.setMetadataTokens(kvps);
+    PayloadFromMetadataService service = new PayloadFromMetadataService("__HELLO__ World").withMetadataTokens(kvps);
     return service;
   }
 
@@ -85,7 +80,7 @@ public class PayloadFromMetadataTest extends MetadataServiceExample {
   }
 
   @Test
-  public void testService_MetadataValueHasSlash_CanEscape() throws Exception {
+  public void testService_MetadataValueHasSlash_WillEscape() throws Exception {
     PayloadFromMetadataService service = createService();
     AdaptrisMessage msg = createMessage();
     msg.addMetadata(DEFAULT_METADATA_KEY, "\\tHello");

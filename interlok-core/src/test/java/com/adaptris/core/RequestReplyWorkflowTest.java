@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,7 +42,9 @@ import com.adaptris.core.stubs.MockRequestReplyProducer;
 import com.adaptris.core.stubs.MockSkipProducerService;
 import com.adaptris.core.stubs.MockWorkflowInterceptor;
 import com.adaptris.util.TimeInterval;
-public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
+
+public class RequestReplyWorkflowTest
+    extends com.adaptris.interlok.junit.scaffolding.ExampleWorkflowCase {
 
   public static final String REQUEST_METADATA_VALUE = "RequestMetadataValue";
   public static final String REQUEST_OBJ_METADATA_KEY = "RequestObjectMetadataKey";
@@ -52,11 +54,6 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
   // private MockRequestReplyProducer producer;
   // private MockMessageProducer replyProducer;
 
-
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
 
   private Channel createChannel() throws Exception {
@@ -130,6 +127,7 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testWorkflow_ReplyProducerFailure() throws Exception {
     Channel channel = new MockChannel();
     RequestReplyWorkflow workflow = new RequestReplyWorkflow();
@@ -169,6 +167,7 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testWorkflow_NullReply() throws Exception {
     Channel channel = new MockChannel();
     RequestReplyWorkflow workflow = new RequestReplyWorkflow();
@@ -331,6 +330,7 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
   }
 
   @Override
+  @SuppressWarnings("deprecation")
   protected Object retrieveObjectForSampleConfig() {
     Channel c = new Channel();
     try {
@@ -338,9 +338,9 @@ public class RequestReplyWorkflowTest extends ExampleWorkflowCase {
       c.setProduceConnection(new JmsConnection(new BasicActiveMqImplementation("tcp://localhost:2506")));
       RequestReplyWorkflow workflow = new RequestReplyWorkflow();
       workflow.getServiceCollection().addService(new Base64DecodeService());
-      workflow.setConsumer(new PtpConsumer(new ConfiguredConsumeDestination("inputQueue")));
-      workflow.setProducer(new PtpProducer(new ConfiguredProduceDestination("outputQueue")));
-      workflow.setReplyProducer(new PtpProducer(new JmsReplyToDestination()));
+      workflow.setConsumer(new PtpConsumer().withQueue("inputQueue"));
+      workflow.setProducer(new PtpProducer().withQueue("outputQueue"));
+      workflow.setReplyProducer(new PtpProducer().withDestination(new JmsReplyToDestination()));
       workflow.getReplyServiceCollection().addService(new Base64EncodeService());
       c.getWorkflowList().add(workflow);
       c.setUniqueId(UUID.randomUUID().toString());

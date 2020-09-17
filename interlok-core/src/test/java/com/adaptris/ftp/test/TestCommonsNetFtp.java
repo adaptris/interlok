@@ -57,11 +57,6 @@ public class TestCommonsNetFtp extends FtpCase {
 
   private static final Pattern LIST_DIR_PATTERN = Pattern.compile(LIST_DIR_FULL);
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
   @Test
   public void testBug1924() throws Exception {
     Assume.assumeTrue(areTestsEnabled());

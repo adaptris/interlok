@@ -29,10 +29,6 @@ import com.adaptris.util.KeyValuePairList;
 public class AddExtendedLoggingContextTest extends GeneralServiceExample {
 
   @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-  @Override
   protected AddExtendedLoggingContext retrieveObjectForSampleConfig() {
     return new AddExtendedLoggingContext()
         .withValuesToSet(new KeyValuePairList(Collections.singletonMap("contextKey", "contextValue")));

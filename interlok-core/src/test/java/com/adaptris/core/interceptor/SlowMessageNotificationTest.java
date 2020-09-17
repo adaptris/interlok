@@ -37,10 +37,6 @@ import com.adaptris.util.TimeInterval;
 @SuppressWarnings("deprecation")
 public class SlowMessageNotificationTest extends MessageNotificationCase {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testNotifyThreshold() throws Exception {

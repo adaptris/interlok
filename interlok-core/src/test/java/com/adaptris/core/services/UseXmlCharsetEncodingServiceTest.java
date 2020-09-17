@@ -29,10 +29,6 @@ public class UseXmlCharsetEncodingServiceTest extends GeneralServiceExample {
   private static final String EXAMPLE_XML = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?><root/>";
   private static final String EXAMPLE_XML_2 = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><root/>";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected UseXmlCharsetAsEncodingService retrieveObjectForSampleConfig() {

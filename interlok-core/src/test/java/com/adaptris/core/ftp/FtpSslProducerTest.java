@@ -27,10 +27,6 @@ public class FtpSslProducerTest extends FtpProducerCase {
     }
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected FtpSslConnection createConnectionForExamples() {

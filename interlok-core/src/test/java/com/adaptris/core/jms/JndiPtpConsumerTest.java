@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,20 +19,17 @@ package com.adaptris.core.jms;
 import static com.adaptris.core.jms.JndiPtpProducerTest.DEFAULT_FILE_SUFFIX;
 import static com.adaptris.core.jms.JndiPtpProducerTest.DEFAULT_XML_COMMENT;
 import static com.adaptris.core.jms.JndiPtpProducerTest.createJndiVendorImpExample;
-import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.StandaloneConsumer;
 
-public class JndiPtpConsumerTest extends JmsConsumerCase {
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
+public class JndiPtpConsumerTest
+    extends com.adaptris.interlok.junit.scaffolding.jms.JmsConsumerCase {
+
 
   @Override
   protected Object retrieveObjectForSampleConfig() {
     return new StandaloneConsumer(
-        createJndiVendorImpExample(new JmsConnection()), new PtpConsumer(
-        new ConfiguredConsumeDestination("jndiReferenceToQueue")));
+        createJndiVendorImpExample(new JmsConnection()),
+        new PtpConsumer().withQueue("jndiReferenceToQueue"));
   }
 
   @Override

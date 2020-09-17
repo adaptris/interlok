@@ -1,5 +1,6 @@
 ext {
   componentName='Interlok Common Classes'
+  delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 }
 
 // In this section you declare the dependencies for your production and test code
@@ -7,19 +8,24 @@ dependencies {
 
   compile project(':interlok-core-apt')
   compile ("com.thoughtworks.xstream:xstream:$xstreamVersion")
-  compile ("commons-collections:commons-collections:3.2.2")
-  compile ("commons-io:commons-io:2.6")
-  compile ("commons-net:commons-net:3.6")
+  compile ("commons-io:commons-io:2.7")
+  compile ("commons-net:commons-net:3.7")
   compile ("commons-pool:commons-pool:1.6")
-  compile ("org.apache.commons:commons-lang3:3.9")
-  compile ("org.apache.commons:commons-pool2:2.8.0")
+  compile ("org.apache.commons:commons-lang3:3.11")
+  compile ("org.apache.commons:commons-pool2:2.8.1")
 
   compile ("org.slf4j:slf4j-api:$slf4jVersion")
-  compile "org.slf4j:jcl-over-slf4j:$slf4jVersion", optional
-  compile "org.slf4j:jul-to-slf4j:$slf4jVersion", optional
+
   compile "org.slf4j:slf4j-log4j12:$slf4jVersion", optional
   compile ("javax:javaee-api:8.0.1")
-  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.26.v20200117")
+
+  compile ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
+  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.31.v20200723")
+  compile "org.slf4j:jul-to-slf4j:$slf4jVersion", optional
+  compile "org.apache.logging.log4j:log4j-core:$log4j2Version", optional
+  compile "org.apache.logging.log4j:log4j-api:$log4j2Version", optional
+  compile "org.apache.logging.log4j:log4j-slf4j-impl:$log4j2Version", optional
+  compile "org.apache.logging.log4j:log4j-1.2-api:$log4j2Version", optional
   compile ("javax.servlet:javax.servlet-api:4.0.1")
 
   annotationProcessor project(':interlok-core-apt')
@@ -51,6 +57,14 @@ javadoc {
   }
 }
 
+delombok {
+  target = delombokTargetDir
+}
+
+task deleteGeneratedFiles(type: Delete) {
+  delete delombokTargetDir
+}
+
 uploadArchives {
   repositories {
     mavenDeployer {
@@ -70,3 +84,4 @@ uploadArchives {
 }
 
 publish.dependsOn uploadArchives
+clean.dependsOn deleteGeneratedFiles

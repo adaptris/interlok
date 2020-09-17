@@ -17,16 +17,15 @@
 package com.adaptris.core.services.splitter;
 
 import java.util.Iterator;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreConstants;
+import com.adaptris.interlok.util.CloseableIterable;
 
 /**
  * Partial implementation of MessageSplitter that handles
@@ -154,7 +153,7 @@ public abstract class MessageSplitterImp implements MessageSplitter {
   }
 
   protected abstract class SplitMessageIterator
-      implements com.adaptris.core.util.CloseableIterable<AdaptrisMessage>, Iterator<AdaptrisMessage> {
+      implements CloseableIterable<AdaptrisMessage>, Iterator<AdaptrisMessage> {
     protected final AdaptrisMessage msg;
     protected final AdaptrisMessageFactory factory;
     private AdaptrisMessage nextMessage;

@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,31 +29,30 @@ import org.mockito.MockitoAnnotations;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.services.conditional.Condition;
-import com.adaptris.core.services.conditional.conditions.ConditionOr;
 import com.adaptris.core.util.LifecycleHelper;
 
 public class ConditionOrTest {
 
   private ConditionOr conditionOr;
-  
+
   private AdaptrisMessage adaptrisMessage;
-  
+
   @Mock private Condition mockConditionOne;
-  
+
   @Mock private Condition mockConditionTwo;
-  
+
   @Mock private Condition mockConditionThree;
-  
-  
+
+
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
-    
+
     conditionOr = new ConditionOr();
     conditionOr.getConditions().add(mockConditionOne);
     conditionOr.getConditions().add(mockConditionTwo);
     conditionOr.getConditions().add(mockConditionThree);
-    
+
     adaptrisMessage = DefaultMessageFactory.getDefaultInstance().newMessage();
     LifecycleHelper.initAndStart(conditionOr);
   }
@@ -63,72 +61,72 @@ public class ConditionOrTest {
   public void tearDown() throws Exception {
     LifecycleHelper.stopAndClose(conditionOr);
   }
-  
+
   @Test
   public void testOrAllTrue() throws Exception {
     when(mockConditionOne.evaluate(adaptrisMessage)).thenReturn(true);
     when(mockConditionTwo.evaluate(adaptrisMessage)).thenReturn(true);
     when(mockConditionThree.evaluate(adaptrisMessage)).thenReturn(true);
-    
+
     assertTrue(conditionOr.evaluate(adaptrisMessage));
-    
+
     verify(mockConditionOne).evaluate(adaptrisMessage);
     verify(mockConditionTwo, times(0)).evaluate(adaptrisMessage);
     verify(mockConditionThree, times(0)).evaluate(adaptrisMessage);
   }
-  
+
   @Test
   public void testOrAllFalse() throws Exception {
     when(mockConditionOne.evaluate(adaptrisMessage)).thenReturn(false);
     when(mockConditionTwo.evaluate(adaptrisMessage)).thenReturn(false);
     when(mockConditionThree.evaluate(adaptrisMessage)).thenReturn(false);
-    
+
     assertFalse(conditionOr.evaluate(adaptrisMessage));
-    
+
     verify(mockConditionOne).evaluate(adaptrisMessage);
     verify(mockConditionTwo).evaluate(adaptrisMessage);
     verify(mockConditionThree).evaluate(adaptrisMessage);
   }
-  
+
   @Test
   public void testOrLastConditionTrue() throws Exception {
     when(mockConditionOne.evaluate(adaptrisMessage)).thenReturn(false);
     when(mockConditionTwo.evaluate(adaptrisMessage)).thenReturn(false);
     when(mockConditionThree.evaluate(adaptrisMessage)).thenReturn(true);
-    
+
     assertTrue(conditionOr.evaluate(adaptrisMessage));
-    
+
     verify(mockConditionOne).evaluate(adaptrisMessage);
     verify(mockConditionTwo).evaluate(adaptrisMessage);
     verify(mockConditionThree).evaluate(adaptrisMessage);
   }
-  
+
   @Test
   public void testOrFirstConditionTrue() throws Exception {
     when(mockConditionOne.evaluate(adaptrisMessage)).thenReturn(true);
     when(mockConditionTwo.evaluate(adaptrisMessage)).thenReturn(false);
     when(mockConditionThree.evaluate(adaptrisMessage)).thenReturn(false);
-    
+
     assertTrue(conditionOr.evaluate(adaptrisMessage));
-    
+
     verify(mockConditionOne).evaluate(adaptrisMessage);
     verify(mockConditionTwo, times(0)).evaluate(adaptrisMessage);
     verify(mockConditionThree, times(0)).evaluate(adaptrisMessage);
   }
-  
+
   @Test
   public void testOrMiddleConditionTrue() throws Exception {
     when(mockConditionOne.evaluate(adaptrisMessage)).thenReturn(false);
     when(mockConditionTwo.evaluate(adaptrisMessage)).thenReturn(true);
     when(mockConditionThree.evaluate(adaptrisMessage)).thenReturn(false);
-    
+
     assertTrue(conditionOr.evaluate(adaptrisMessage));
-    
+
     verify(mockConditionOne).evaluate(adaptrisMessage);
     verify(mockConditionTwo).evaluate(adaptrisMessage);
     verify(mockConditionThree, times(0)).evaluate(adaptrisMessage);
   }
-  
+
   @Test
   public void testNoConditionsSet() throws Exception {
     conditionOr.getConditions().clear();

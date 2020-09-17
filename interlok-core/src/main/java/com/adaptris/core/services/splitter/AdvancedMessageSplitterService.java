@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,14 +17,10 @@
 package com.adaptris.core.services.splitter;
 
 import static com.adaptris.core.util.ServiceUtil.discardNulls;
-
-import java.util.concurrent.Future;
-
+import java.util.function.Consumer;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
@@ -51,10 +47,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Rather than directly producing the message to a producer, this allows the use of a {@link com.adaptris.core.ServiceCollection} as
  * the target for the resulting split messages.
  * </p>
- * 
+ *
  * @config advanced-message-splitter-service
- * 
- * 
+ *
+ *
  */
 @XStreamAlias("advanced-message-splitter-service")
 @AdapterComponent
@@ -83,19 +79,20 @@ public class AdvancedMessageSplitterService extends MessageSplitterServiceImp im
     setService(new NullService());
   }
 
-  /**
-   *
-   * @see com.adaptris.core.services.splitter.MessageSplitterServiceImp#handleSplitMessage(com.adaptris.core.AdaptrisMessage)
-   */
+
   @Override
-  public Future<?> handleSplitMessage(AdaptrisMessage msg) throws ServiceException {
+  protected void handleSplitMessage(AdaptrisMessage msg, Consumer<Exception> callback)
+      throws ServiceException {
     try {
       executeService(getService(), msg);
+      callback.accept(null);
     } catch (Exception e) {
-      throw ExceptionHelper.wrapServiceException(e);
+      ServiceException exc = ExceptionHelper.wrapServiceException(e);
+      callback.accept(exc);
+      throw exc;
     }
-    return new AlreadyComplete();
   }
+
 
   protected void executeService(Service s, AdaptrisMessage msg) throws Exception {
     try {
@@ -181,6 +178,7 @@ public class AdvancedMessageSplitterService extends MessageSplitterServiceImp im
   /**
    * @see com.adaptris.core.EventHandlerAware#registerEventHandler(com.adaptris.core.EventHandler)
    */
+  @Override
   public void registerEventHandler(EventHandler eh) {
     eventHandler = eh;
   }

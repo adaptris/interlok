@@ -33,10 +33,6 @@ public class Utf8BomRemoverTest extends GeneralServiceExample {
 
   private static final String PAYLOAD = "Pack my box with five dozen liquor jugs";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testServiceWithBom() throws Exception {

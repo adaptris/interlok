@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,7 +32,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.MimeEncoder;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.fs.FsProducerExample;
@@ -43,10 +42,6 @@ public class LargeFsMessageProducerTest extends FsProducerExample {
 
   private File baseDir, tempDir, destDir;
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Before
   public void setUp() throws Exception {
@@ -128,6 +123,7 @@ public class LargeFsMessageProducerTest extends FsProducerExample {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testProduceWithOverride() throws Exception {
     LargeFsProducer producer = create();
     start(producer);
@@ -150,17 +146,10 @@ public class LargeFsMessageProducerTest extends FsProducerExample {
     assertTrue(tempDir + " is a directory", f.isDirectory());
   }
 
-  @Test
-  public void testSetDestination() {
-    LargeFsProducer producer = create();
-    ProduceDestination dest = new ConfiguredProduceDestination("destination");
-    producer.setDestination(dest);
-    assertTrue(producer.getDestination().equals(dest));
-  }
-
   @Override
-  protected Object retrieveObjectForSampleConfig() {
-    LargeFsProducer producer = create();
+  protected StandaloneProducer retrieveObjectForSampleConfig() {
+    LargeFsProducer producer =
+        new LargeFsProducer().withBaseDirectoryUrl("file:///path/to/directory");
     StandaloneProducer result = new StandaloneProducer(producer);
     return result;
   }
@@ -168,7 +157,7 @@ public class LargeFsMessageProducerTest extends FsProducerExample {
   private LargeFsProducer create() {
     // create producer
     LargeFsProducer producer = new LargeFsProducer();
-    producer.setDestination(new ConfiguredProduceDestination(PROPERTIES.getProperty(BASE_KEY) + DEFAULT_DEST));
+    producer.setBaseDirectoryUrl((PROPERTIES.getProperty(BASE_KEY) + DEFAULT_DEST));
     producer.setCreateDirs(true);
     return producer;
   }

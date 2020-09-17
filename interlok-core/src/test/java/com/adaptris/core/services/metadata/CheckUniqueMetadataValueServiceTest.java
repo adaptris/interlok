@@ -44,11 +44,6 @@ public class CheckUniqueMetadataValueServiceTest extends BranchingServiceExample
     storeFileUrl = PROPERTIES.getProperty(STORE_FILE_URL_KEY);
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
   @Before
   public void setUp() throws Exception {
     if (checkFileExists(storeFileUrl)) {

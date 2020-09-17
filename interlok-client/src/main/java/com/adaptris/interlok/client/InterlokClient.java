@@ -34,7 +34,6 @@ public interface InterlokClient {
    * @param payload the payload
    * @param metadata the metadata.
    * @throws InterlokException wrapping any failures to find the workflow to target.
-   * @see com.adaptris.interlok.management.MessageProcessor#processAsync(SerializableMessage)
    */
   void processAsync(MessageTarget f, String payload, Map<String, String> metadata) throws InterlokException;
 
@@ -44,7 +43,6 @@ public interface InterlokClient {
    * @param f the filter for narrowing down a workflow
    * @param m the message
    * @throws InterlokException wrapping any failures to find the workflow to target.
-   * @see com.adaptris.interlok.management.MessageProcessor#processAsync(SerializableMessage)
    */
   void processAsync(MessageTarget f, SerializableMessage m) throws InterlokException;
 
@@ -56,7 +54,6 @@ public interface InterlokClient {
    * @return a new SerializablMessage instance containing the contents of the message at the end of
    *         the workflow.
    * @throws InterlokException wrapping any failures.
-   * @see com.adaptris.interlok.management.MessageProcessor#process(SerializableMessage)
    */
   SerializableMessage process(MessageTarget f, SerializableMessage m) throws InterlokException;
 }

@@ -54,10 +54,6 @@ public class CheckMetadataValueServiceTest extends BranchingServiceExample {
   private static final String DEFAULT_SERVICE_ID_DUPLICATE = "002";
 
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Before
   public void setUp() throws Exception {

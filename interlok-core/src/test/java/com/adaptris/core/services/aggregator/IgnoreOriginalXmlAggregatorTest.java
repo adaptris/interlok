@@ -44,11 +44,6 @@ import com.adaptris.util.text.xml.XPath;
 public class IgnoreOriginalXmlAggregatorTest extends XmlAggregatorCase {
 
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
   @Test
   public void testSplitJoinService_WithExplicitDocumentEnoding() throws Exception {
     // This is a XML doc with 3 iterable elements...

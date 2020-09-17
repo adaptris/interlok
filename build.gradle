@@ -1,14 +1,15 @@
 plugins {
   // Manage optional dependencies in maven pom.
   id 'nebula.optional-base' version '5.0.3' apply false
-  id 'com.github.spotbugs' version '3.0.0' apply false
-  id "org.sonarqube" version '2.8' apply false
-  id 'org.owasp.dependencycheck' version '5.3.0' apply false
+  id 'com.github.spotbugs' version '4.5.0' apply false
+  id "org.sonarqube" version '3.0' apply false
+  id 'org.owasp.dependencycheck' version '5.3.2.1' apply false
+  id "io.freefair.lombok" version "5.1.1" apply false
 }
 
 ext {
-  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '3.10-SNAPSHOT'
-  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '3.10-SNAPSHOT'
+  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '3.11-SNAPSHOT'
+  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '3.11-SNAPSHOT'
   nexusBaseUrl = project.hasProperty('nexusBaseUrl') ? project.getProperty('nexusBaseUrl') : 'https://nexus.adaptris.net/nexus'
   mavenPublishUrl = project.hasProperty('mavenPublishUrl') ? project.getProperty('mavenPublishUrl') : nexusBaseUrl + '/content/repositories/snapshots'
   javadocsBaseUrl = nexusBaseUrl + "/content/sites/javadocs/com/adaptris"
@@ -22,9 +23,9 @@ ext {
   organizationName = "Adaptris Ltd"
   organizationUrl = "http://interlok.adaptris.net"
   slf4jVersion = "1.8.0-beta4"
-  log4j2Version = "2.13.0"
-  xstreamVersion = '1.4.11.1'
-  mockitoVersion = '3.2.4'
+  log4j2Version = "2.13.3"
+  xstreamVersion = '1.4.12'
+  mockitoVersion = '3.5.9'
 }
 
 if (JavaVersion.current().isJava8Compatible()) {
@@ -71,15 +72,21 @@ subprojects { subproject ->
   apply plugin: 'com.github.spotbugs'
   apply plugin: 'org.sonarqube'
   apply plugin: 'org.owasp.dependencycheck'
+  apply plugin: 'io.freefair.lombok'
+
   if (jacocoEnabled(subproject)) {
     apply plugin: "jacoco"
   }
 
-  sourceCompatibility = 1.8
-  targetCompatibility = 1.8
+  java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+  }
+
   group   = 'com.adaptris'
   version = releaseVersion
   def versionDir = "$buildDir/version"
+  generateLombokConfig.enabled = false
 
   // In this section you declare where to find the dependencies of your project
   repositories {
@@ -103,10 +110,15 @@ subprojects { subproject ->
     all*.exclude group: 'org.eclipse.jetty.orbit', module: 'javax.mail.glassfish'
     all*.exclude group: 'javax.el', module: 'javax.el-api'
     all*.exclude group: 'org.hibernate', module: 'hibernate-validator'
+    // INTERLOK-3197 exclude old javax.mail
+    all*.exclude group: 'com.sun.mail', module: 'javax.mail'
+    all*.exclude group: 'javax.validation', module: 'validation-api'
+    all*.exclude group: 'javax.activation', module: 'activation'
+    all*.exclude group: 'javax.activation', module: 'javax.activation-api'
   }
 
   dependencies {
-    mavenDeploy ("org.apache.maven.wagon:wagon-http:3.3.4")
+    mavenDeploy ("org.apache.maven.wagon:wagon-http:3.4.0")
   }
 
   configurations.all {
@@ -160,32 +172,48 @@ subprojects { subproject ->
     }
   }
 
-  spotbugs {
+
+  task lgtmCompile(type: JavaCompile, dependsOn: delombok) {
+    group 'Build'
+    description 'Compile for lgtm'
+
+    source = sourceSets.main.extensions.delombokTask
+    destinationDir = sourceSets.main.java.outputDir
+    classpath = project.sourceSets.main.compileClasspath
+  }
+
+
+  spotbugsMain {
+    effort = "max"
+    reportLevel = "high"
     // showProgress = "true"
     effort = "max"
     // Ignore failures?
     // ignoreFailures = false
-
-    // We only care about "high priority" issues...
-    reportLevel = "high"
-  }
-
-  // disable spotbugsTests which checks our test code..
-  spotbugsTest.enabled = false
-
-  tasks.withType(com.github.spotbugs.SpotBugsTask) {
     reports {
-      xml.enabled = false
-      html.enabled = true
+      xml {
+        enabled = false
+      }
+      html {
+        enabled = true
+      }
     }
     includeFilter = new File("$rootDir/gradle/spotbugs-filter.xml")
     excludeFilter = new File("$rootDir/gradle/spotbugs-exclude.xml")
   }
 
+  // disable spotbugsTests which checks our test code..
+  spotbugsTest.enabled = false
 
   dependencyCheck  {
     suppressionFiles= [ "$rootDir/gradle/owasp-exclude.xml" ]
-    skipConfigurations = [ "antSql" ]
+    skipConfigurations = [ "mavenDeploy", "antSql", "spotbugs", "umlDoclet", "offlineJavadocPackages", "javadoc", "jacocoAnt", "jacocoAgent", "spotbugsPlugins", "spotbugsSlf4j" ]
+    formats = [ "HTML", "JUNIT" ]
+    junitFailOnCVSS = 7.0
+    failBuildOnCVSS = 7.0
+    analyzers {
+      assemblyEnabled=false
+    }
   }
 
 }

@@ -1,5 +1,17 @@
 package com.adaptris.core.services.conditional;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMessageFactory;
@@ -12,26 +24,11 @@ import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.LogMessageService;
 import com.adaptris.util.GuidGenerator;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
 
 public class ForEachTest extends ConditionalServiceExample
 {
 	private static final byte[] PAYLOAD_1 = "Bacon ipsum dolor amet ball tip pancetta chuck boudin leberkas, alcatra shoulder pig meatball ground round cupim frankfurter chicken andouille. Landjaeger alcatra pork belly rump drumstick beef ribs shoulder. Corned beef venison meatloaf ham hock doner pig salami burgdoggen cow tongue. Swine pork loin ham, kevin flank pig salami biltong shankle ball tip alcatra short ribs hamburger tongue. Buffalo meatloaf capicola, leberkas jowl biltong kevin drumstick pastrami andouille.".getBytes();
-	private static final byte[] PAYLOAD_2 = "Cupcake ipsum dolor sit amet danish fruitcake candy. Icing jujubes powder sweet. Pie gingerbread bonbon dragée lollipop sesame snaps. Bonbon gummi bears danish caramels cupcake powder. Gingerbread bonbon croissant tootsie roll jelly pastry. Candy canes powder sweet biscuit fruitcake. Dragée biscuit brownie biscuit pudding jelly. Muffin tootsie roll tiramisu ice cream macaroon cupcake. Sugar plum powder gummi bears dessert wafer. Cheesecake lollipop tootsie roll dessert lollipop icing cheesecake.".getBytes();
+	private static final byte[] PAYLOAD_2 = "Cupcake ipsum dolor sit amet danish fruitcake candy. Icing jujubes powder sweet. Pie gingerbread bonbon dragee lollipop sesame snaps. Bonbon gummi bears danish caramels cupcake powder. Gingerbread bonbon croissant tootsie roll jelly pastry. Candy canes powder sweet biscuit fruitcake. Dragee biscuit brownie biscuit pudding jelly. Muffin tootsie roll tiramisu ice cream macaroon cupcake. Sugar plum powder gummi bears dessert wafer. Cheesecake lollipop tootsie roll dessert lollipop icing cheesecake.".getBytes();
 
 	private ForEach forEach;
 	private MultiPayloadAdaptrisMessage message;
@@ -92,10 +89,11 @@ public class ForEachTest extends ConditionalServiceExample
 	}
 
 	@Test
+  @SuppressWarnings("serial")
 	public void testNonCloneableMessage() throws Exception
 	{
 		forEach.doService(new MultiPayloadAdaptrisMessageImp("bacon", new GuidGenerator(), DefaultMessageFactory.getDefaultInstance(), PAYLOAD_1) {
-			@Override
+      @Override
 			public MessageLifecycleEvent getMessageLifecycleEvent()
 			{
 				return new MessageLifecycleEvent()
@@ -130,9 +128,4 @@ public class ForEachTest extends ConditionalServiceExample
 		return forEach;
 	}
 
-	@Override
-	public boolean isAnnotatedForJunit4()
-	{
-		return true;
-	}
 }

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" monitorInterval="60" shutdownHook="disable">
+  <Appenders>
+
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout>
+        <Pattern>%-5p [%t] [%c{1.}] %m%n</Pattern>
+      </PatternLayout>
+    </Console>
+
+    <JmxLogAppender name="JmxLogAppender">
+      <PatternLayout>
+        <Pattern>%d{ISO8601} %-5p [%t] [%c{1}] %m%n</Pattern>
+      </PatternLayout>
+      <filters>
+        <ThresholdFilter level="debug"/>
+      </filters>
+    </JmxLogAppender>
+
+  </Appenders>
+  <Loggers>
+
+    <Logger name="org" level="WARN"/>
+    <Logger name="io" level="WARN"/>
+    <Logger name="com" level="WARN"/>
+    <Logger name="net" level="WARN"/>
+    <Logger name="jndi" level="WARN"/>
+    <Logger name="io.vertx" level="ERROR"/>
+    <Logger name="com.hazelcast" level="ERROR"/>
+    <Logger name="org.reflections" level="ERROR"/>
+    <Logger name="java.sql.DatabaseMetadata" level="WARN"/>
+    <Logger name="org.eclipse.jetty" level="WARN"/>
+    <Logger name="org.hibernate.cache" level="WARN"/>
+    <Logger name="org.springframework.aop.framework.CglibAopProxy" level="ERROR"/>
+    <Logger name="org.springframework.context.support.PropertySourcesPlaceholderConfigurer" level="ERROR"/>
+    <Logger name="org.hibernate.cache.EhCacheProvider" level="ERROR"/>
+    <Logger name="com.mchange.v2.resourcepool.BasicResourcePool" level="ERROR"/>
+    <Logger name="com.sun.jersey" level="ERROR"/>
+    <Logger name="com.adaptris" level="TRACE"/>
+    <Logger name="com.adaptris.naming" level="INFO"/>
+    <Logger name="com.adaptris.core.jms" level="DEBUG"/>
+    <Logger name="com.adaptris.core.InitialisedState" level="WARN"/>
+    <Logger name="com.adaptris.core.marshaller.xstream" level="WARN"/>
+
+    <Logger name="com.adaptris.adaptergui" level="WARN"/>
+    <Logger name="com.adaptris.configapi" level="WARN"/>
+    <Logger name="com.adaptris.configapi.util" level="FATAL"/>
+    <Logger name="com.adaptris.adaptergui.util.ObjectConverter" level="FATAL"/>
+    <Logger name="com.adaptris.adaptergui.util.ClassUtils" level="FATAL"/>
+
+    <Root level="TRACE">
+      <AppenderRef ref="Console"/>
+      <AppenderRef ref="JmxLogAppender"/>
+    </Root>
+  </Loggers>
+</Configuration>

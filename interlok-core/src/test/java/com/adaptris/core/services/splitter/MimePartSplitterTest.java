@@ -16,7 +16,7 @@
 
 package com.adaptris.core.services.splitter;
 
-import static com.adaptris.core.services.mime.MimeJunitHelper.create;
+import static com.adaptris.interlok.junit.scaffolding.util.MimeJunitHelper.create;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -32,10 +32,6 @@ public class MimePartSplitterTest extends SplitterCase {
 
   private static Log logR = LogFactory.getLog(MimePartSplitterTest.class);
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
 
   @Override

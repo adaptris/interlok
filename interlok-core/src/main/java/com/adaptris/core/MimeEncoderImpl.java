@@ -45,7 +45,7 @@ import com.adaptris.util.text.mime.BodyPartIterator;
 import com.adaptris.util.text.mime.ByteArrayDataSource;
 import com.adaptris.util.text.mime.MimeConstants;
 
-public abstract class MimeEncoderImpl extends AdaptrisMessageEncoderImp {
+public abstract class MimeEncoderImpl<T, S> extends AdaptrisMessageEncoderImp<T, S> {
 
   protected static final String PAYLOAD_CONTENT_ID = "AdaptrisMessage/payload";
   protected static final String METADATA_CONTENT_ID = "AdaptrisMessage/metadata";

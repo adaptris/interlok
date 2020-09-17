@@ -1597,10 +1597,6 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
   private class FailingChannelManager extends ChannelManager {
     public FailingChannelManager(Channel c, AdapterManager owner) throws MalformedObjectNameException, CoreException {
       super(c, owner);

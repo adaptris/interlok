@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,10 +24,6 @@ import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 
 public class PtpProducerTest extends BasicJmsProducerCase {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   /**
    * @see com.adaptris.core.ExampleConfigCase#retrieveObjectForSampleConfig()
@@ -46,18 +42,25 @@ public class PtpProducerTest extends BasicJmsProducerCase {
   private StandaloneProducer retrieveSampleConfig() {
     JmsConnection c = configureForExamples(new JmsConnection(new BasicActiveMqImplementation("tcp://localhost:61616")));
     c.setClientId(null);
-    StandaloneProducer result = new StandaloneProducer(c, configureForExamples(new PtpProducer()));
+    StandaloneProducer result =
+        new StandaloneProducer(c, configureForExamples(new PtpProducer().withQueue("SampleQ1")));
     return result;
   }
 
   @Override
-  protected DefinedJmsProducer createProducer(ConfiguredProduceDestination dest) {
-    return new PtpProducer(dest);
+  @SuppressWarnings("deprecation")
+  protected PtpProducer createProducer(ConfiguredProduceDestination dest) {
+    PtpProducer p = new PtpProducer();
+    p.setDestination(dest);
+    return p;
   }
 
   @Override
-  protected JmsConsumerImpl createConsumer(ConfiguredConsumeDestination dest) {
-    return new PtpConsumer(dest);
+  @SuppressWarnings("deprecation")
+  protected PtpConsumer createConsumer(ConfiguredConsumeDestination dest) {
+    PtpConsumer ptp = new PtpConsumer();
+    ptp.setDestination(dest);
+    return ptp;
   }
 
   @Override

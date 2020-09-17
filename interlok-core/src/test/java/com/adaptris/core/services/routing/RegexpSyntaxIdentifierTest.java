@@ -40,7 +40,7 @@ public class RegexpSyntaxIdentifierTest extends SyntaxIdentifierCase {
 
   @Test
   public void testIllegalPattern() throws Exception {
-    SyntaxIdentifier ident = createIdentifier();
+    RegexpSyntaxIdentifier ident = createIdentifier();
     ident.addPattern("\\");
     try {
       ident.isThisSyntax(LINE);
@@ -53,7 +53,7 @@ public class RegexpSyntaxIdentifierTest extends SyntaxIdentifierCase {
 
   @Test
   public void testSingleMatchingRegexp() throws Exception {
-    SyntaxIdentifier ident = createIdentifier();
+    RegexpSyntaxIdentifier ident = createIdentifier();
     ident.addPattern(MATCHING_1);
     assertTrue("Matches regexp", ident.isThisSyntax(LINE));
     assertTrue("Matches regexp", ident.isThisSyntax(LINE));
@@ -61,7 +61,7 @@ public class RegexpSyntaxIdentifierTest extends SyntaxIdentifierCase {
 
   @Test
   public void testMultipleMatchingRegexp() throws Exception {
-    SyntaxIdentifier ident = createIdentifier();
+    RegexpSyntaxIdentifier ident = createIdentifier();
     ident.addPattern(MATCHING_1);
     ident.addPattern(MATCHING_2);
     assertTrue("Matches regexp", ident.isThisSyntax(LINE));
@@ -69,7 +69,7 @@ public class RegexpSyntaxIdentifierTest extends SyntaxIdentifierCase {
 
   @Test
   public void testMatchingAndUnmatchedRegexp() throws Exception {
-    SyntaxIdentifier ident = createIdentifier();
+    RegexpSyntaxIdentifier ident = createIdentifier();
     ident.addPattern(MATCHING_1);
     ident.addPattern(UNMATCHED_1);
     assertTrue("Does not match regexp", !ident.isThisSyntax(LINE));
@@ -77,7 +77,7 @@ public class RegexpSyntaxIdentifierTest extends SyntaxIdentifierCase {
 
   @Test
   public void testSingleUnMatchingRegexp() throws Exception {
-    SyntaxIdentifier ident = createIdentifier();
+    RegexpSyntaxIdentifier ident = createIdentifier();
     ident.addPattern(UNMATCHED_1);
     assertTrue("Does not match regexp", !ident.isThisSyntax(LINE));
   }

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,15 +46,23 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 /**
  * Store values extracted from message payload using {@link XpathQuery} as metadata.
  * <p>
- * If the {@code DocumentBuilderFactoryBuilder} has been explicitly set to be not namespace aware and the document does in fact
- * contain namespaces, then Saxon can cause merry havoc in the sense that {@code //NonNamespaceXpath} doesn't work if the document
- * has namespaces in it. We have included a shim so that behaviour can be toggled based on what you have configured.
+ * This service will support XPath 2.0+ features, but in order to use XPath 2.0 features you must
+ * use Saxon as your XPath provider. This means either explicitly removing all
+ * {@link DocumentBuilderFactoryBuilder} configuration, or ensuring that {@code namespace-aware} is
+ * set to 'true' in the {@link DocumentBuilderFactoryBuilder} configuration.
  * </p>
- * 
+ * <p>
+ * If the {@code DocumentBuilderFactoryBuilder} has been explicitly set to be not namespace aware
+ * and the document does in fact contain namespaces, then Saxon can cause merry havoc in the sense
+ * that {@code //NonNamespaceXpath} doesn't work if the document has namespaces in it. We have
+ * included a shim so that behaviour can be toggled based on what you have configured.
+ * </p>
+ *
+ *
  * @see XPath#newXPathInstance(DocumentBuilderFactoryBuilder, NamespaceContext)
  * @config xpath-metadata-service
- * 
- * 
+ *
+ *
  */
 @XStreamAlias("xpath-metadata-service")
 @AdapterComponent
@@ -159,7 +167,7 @@ public class XpathMetadataService extends MetadataServiceImpl {
 
 
   public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
-    this.xmlDocumentFactoryConfig = xml;
+    xmlDocumentFactoryConfig = xml;
   }
 
   DocumentBuilderFactoryBuilder documentFactoryBuilder() {

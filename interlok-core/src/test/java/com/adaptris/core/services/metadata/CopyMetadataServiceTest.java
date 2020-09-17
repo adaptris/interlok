@@ -37,10 +37,6 @@ public class CopyMetadataServiceTest extends MetadataServiceExample {
   private static final String METADATA_VALUE = "Some_Metadata_Value";
   private static final String KEY_TO_BE_COPIED = "Metadata_Key_To_Copy_From";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   private CopyMetadataService createService() {
     CopyMetadataService service = new CopyMetadataService();

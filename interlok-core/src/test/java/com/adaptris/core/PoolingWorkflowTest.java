@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,6 +35,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Test;
 import com.adaptris.core.services.WaitService;
 import com.adaptris.core.services.exception.ConfiguredException;
@@ -50,16 +51,13 @@ import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
-public class PoolingWorkflowTest extends ExampleWorkflowCase {
+public class PoolingWorkflowTest
+    extends com.adaptris.interlok.junit.scaffolding.ExampleWorkflowCase {
   /**
    *
    */
   private static final String COUNT = "Count";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
 
   @Test
@@ -82,7 +80,7 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
   public void testOnMessage_SkipProducer() throws Exception {
     StaticMockMessageProducer serviceProducer = new StaticMockMessageProducer();
     serviceProducer.getMessages().clear();
-    MockChannel channel = createChannel(Arrays.asList(new Service[]
+    MockChannel channel = createAndPrepareChannel(Arrays.asList(new Service[]
     {
         createService(), new StandaloneProducer(serviceProducer), new MockSkipProducerService()
     }));
@@ -395,12 +393,7 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     MockMessageProducer meh = new MockMessageProducer();
     MockMessageProducer prod = new MockMessageProducer() {
       @Override
-      public void produce(AdaptrisMessage msg) throws ProduceException {
-        throw new ProduceException();
-      }
-
-      @Override
-      public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
+      protected void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException {
         throw new ProduceException();
       }
     };
@@ -452,14 +445,10 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     MockMessageProducer meh = new MockMessageProducer();
     MockMessageProducer prod = new MockMessageProducer() {
       @Override
-      public void produce(AdaptrisMessage msg) throws ProduceException {
+      protected void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException {
         throw new RuntimeException();
       }
 
-      @Override
-      public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
-        throw new RuntimeException();
-      }
     };
     wf.setProducer(prod);
     channel.setMessageErrorHandler(new StandardProcessingExceptionHandler(
@@ -573,6 +562,26 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     }
   }
 
+  @Test
+  public void testOnMessage_SuccessCallback() throws Exception {
+    AtomicBoolean onSuccess = new AtomicBoolean(false);
+    MockChannel channel = createChannel();
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD_1);
+    PoolingWorkflow wf = (PoolingWorkflow) channel.getWorkflowList().get(0);
+    MockMessageProducer prod = (MockMessageProducer) wf.getProducer();
+    try {
+      start(channel);
+      wf.onAdaptrisMessage(msg, (m) -> {
+        onSuccess.set(true);
+      });
+      waitForMessages(prod, 1);
+      assertTrue(onSuccess.get());
+    } finally {
+      stop(channel);
+    }
+
+  }
+
   private void submitMessages(PoolingWorkflow wf, int number) throws Exception {
     MockMessageConsumer m = (MockMessageConsumer) wf.getConsumer();
     for (int i = 0; i < number; i++) {
@@ -593,13 +602,19 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
   }
 
   private MockChannel createChannel() throws Exception {
-    return createChannel(Arrays.asList(new Service[]
+    return createAndPrepareChannel(Arrays.asList(new Service[]
     {
         createService(), createService()
     }));
   }
 
-  private MockChannel createChannel(List<Service> services) throws Exception {
+  private MockChannel createChannel(ProcessingExceptionHandler handler, List<Service> services) throws Exception {
+    MockChannel channel = buildChannel(services);
+    channel.setMessageErrorHandler(handler);
+    return channel;
+  }
+
+  private MockChannel buildChannel(List<Service> services) throws Exception {
     MockChannel channel = new MockChannel();
     PoolingWorkflow wf = new PoolingWorkflow();
     MockMessageConsumer consumer = new MockMessageConsumer();
@@ -608,7 +623,12 @@ public class PoolingWorkflowTest extends ExampleWorkflowCase {
     wf.setConsumer(consumer);
     wf.setProducer(producer);
     channel.getWorkflowList().add(wf);
-    channel.prepare();
+    return channel;
+  }
+
+  private MockChannel createAndPrepareChannel(List<Service> services) throws Exception {
+    MockChannel channel = buildChannel(services);
+    LifecycleHelper.prepare(channel);
     return channel;
   }
 

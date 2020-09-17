@@ -32,6 +32,7 @@ import com.adaptris.util.text.xml.InsertNode;
 import com.adaptris.util.text.xml.XPath;
 
 
+@SuppressWarnings("deprecation")
 public class SplitJoinServiceFilterTest extends SplitterServiceExample {
   private static Log logR = LogFactory.getLog(SplitJoinServiceFilterTest.class);
 
@@ -44,10 +45,6 @@ public class SplitJoinServiceFilterTest extends SplitterServiceExample {
   @Rule
   public TestName testName = new TestName();
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected String createBaseFileName(Object object) {

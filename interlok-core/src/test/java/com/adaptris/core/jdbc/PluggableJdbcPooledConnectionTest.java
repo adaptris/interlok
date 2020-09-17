@@ -6,9 +6,12 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
+import org.awaitility.Awaitility;
 import org.junit.Test;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.StartedState;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.GuidGenerator;
@@ -16,17 +19,14 @@ import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.TimeInterval;
 
-public class PluggableJdbcPooledConnectionTest extends DatabaseConnectionCase<PluggableJdbcPooledConnection> {
+public class PluggableJdbcPooledConnectionTest extends
+    com.adaptris.interlok.junit.scaffolding.DatabaseConnectionCase<PluggableJdbcPooledConnection> {
 
   private static final GuidGenerator GUID = new GuidGenerator();
 
   public PluggableJdbcPooledConnectionTest() {
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
   @Override
   protected PluggableJdbcPooledConnection createConnection() {
     return new PluggableJdbcPooledConnection().withBuilder(new HikariPoolBuilder());
@@ -97,7 +97,12 @@ public class PluggableJdbcPooledConnectionTest extends DatabaseConnectionCase<Pl
     con.withPoolProperties(poolProps);
     try {
       LifecycleHelper.initAndStart(con);
-      Thread.sleep(500);
+      Awaitility.await()
+      .atMost(Duration.ofSeconds(5))
+      .with()
+      .pollInterval(Duration.ofMillis(100))
+      .until(() ->con.retrieveComponentState().equals(StartedState.getInstance()));
+
       Connection c1 = con.connect();
       Connection c2 = con.connect();
       // Shouldn't be the same object...

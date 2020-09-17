@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,39 +16,70 @@
 
 package com.adaptris.core.jms;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.core.ConsumeDestination;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.LoggingHelper;
+import com.adaptris.interlok.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * <p>
  * JMS Publish-and-subscribe implementation of <code>AdaptrisMessageConsumer</code>.
  * </p>
- * 
+ *
  * @config jms-topic-consumer
- * 
+ *
  */
 @XStreamAlias("jms-topic-consumer")
 @AdapterComponent
 @ComponentProfile(summary = "Listen for JMS messages on the specified topic", tag = "consumer,jms",
     recommended = {JmsConnection.class})
-@DisplayOrder(order = {"destination", "durable", "subscriptionId", "acknowledgeMode", "messageTranslator"})
+@DisplayOrder(order = {"topic", "messageSelector", "destination", "durable",
+    "subscriptionId", "acknowledgeMode", "messageTranslator"})
 public class PasConsumer extends JmsConsumerImpl {
 
+  /**
+   * Should we be a durable subscriber.
+   *
+   */
   @InputFieldDefault(value = "false")
-  private Boolean durable; // defaults to false
+  @Deprecated
+  @Removal(version = "4.0.0",
+      message = "Durable subscriptions will be implied if subscription-id is not empty")
+  @Getter
+  @Setter
+  private Boolean durable;
+
+  /**
+   * Our subscription ID.
+   * <p>
+   * Sets the subscription ID to use for durable subscriptions. This must remain constant for the
+   * same durable subscription to be accessed each time messages are consumed.
+   * </p>
+   */
+  @Getter
+  @Setter
   private String subscriptionId;
+
+  /**
+   * The JMS Topic
+   *
+   */
+  @Getter
+  @Setter
+  // Needs to be @NotBlank when destination is removed.
+  private String topic;
+
+  private transient boolean durableWarningLogged = false;
 
   public PasConsumer() {
     super();
@@ -58,70 +89,44 @@ public class PasConsumer extends JmsConsumerImpl {
     super(b);
   }
 
-  public PasConsumer(ConsumeDestination d) {
-    super(d);
+  protected String subscriptionId() {
+    if (durable()) {
+      return Args.notBlank(getSubscriptionId(), "subscriptionId");
+    }
+    // Should just return getSubscriptionId() once durable is removed.
+    return null;
+  }
+
+  @Override
+  public void prepare() throws CoreException {
+    super.prepare();
+    if (getDurable() != null) {
+      LoggingHelper.logWarning(durableWarningLogged, () -> durableWarningLogged = true,
+          "{} uses 'durable', this will be implied if subscrption-id is not blank",
+          LoggingHelper.friendlyName(this));
+
+    }
+  }
+
+  @Override
+  protected String configuredEndpoint() {
+    return getTopic();
   }
 
   @Override
   protected MessageConsumer createConsumer() throws JMSException, CoreException {
-    if (durable() && isEmpty(subscriptionId)) {
-        throw new CoreException(
-            "trying to create durable subscription with null subscription id");
-    }
-    MessageConsumer consumer = retrieveConnection(JmsConnection.class).configuredVendorImplementation().createTopicSubscriber(
-        getDestination(), durable() ? subscriptionId : null, this);
-    return consumer;
+    VendorImplementation jmsImpl =
+        retrieveConnection(JmsConnection.class).configuredVendorImplementation();
+    return jmsImpl.createTopicSubscriber(
+        endpoint(), messageSelector(), subscriptionId(), this);
   }
 
-
-  /**
-   * <p>
-   * Sets whether this consumer is durable.
-   * </p>
-   *
-   * @param b whether this consumer is durable
-   */
-  public void setDurable(Boolean b) {
-    durable = b;
-  }
-
-  /**
-   * <p>
-   * Returns whether this consumer is durable.
-   * </p>
-   *
-   * @return whether this consumer is durable
-   */
-  public Boolean getDurable() {
-    return durable;
+  public PasConsumer withTopic(String t) {
+    setTopic(t);
+    return this;
   }
 
   boolean durable() {
     return BooleanUtils.toBooleanDefaultIfNull(getDurable(), false);
   }
-
-  /**
-   * <p>
-   * Sets the subscription ID to use for durable subscriptions. This must remain
-   * constant for the same durable subscription to be accessed each time
-   * messages are consumed.
-   * </p>
-   *
-   * @param s the subscription ID to use for durable subscriptions
-   */
-  public void setSubscriptionId(String s) {
-    subscriptionId = s;
-  }
-
-  /**
-   * <p>
-   * Returns the subscription ID to use for durable subscriptions.
-   * </p>
-   *
-   * @return the subscription ID to use for durable subscriptions
-   */
-  public String getSubscriptionId() {
-    return subscriptionId;
-  }
-
 }

@@ -23,16 +23,13 @@ import java.util.List;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 
+@SuppressWarnings("deprecation")
 public class MetadataStatementCreatorTest extends JdbcQueryServiceCase {
 
   protected static final String QUERY_SQL_2 =
       "SELECT adapter_version"
       + " FROM adapter_type_version " + " WHERE adapter_unique_id = ?";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testMetadataStatementCreator() throws Exception {

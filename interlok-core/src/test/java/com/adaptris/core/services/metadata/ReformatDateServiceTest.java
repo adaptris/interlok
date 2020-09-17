@@ -46,10 +46,6 @@ public class ReformatDateServiceTest extends MetadataServiceExample {
   private static final String REGEXP_DEST_DATE_NUMERIC = "^[0-9]+$";
   protected transient Logger myLogger = LoggerFactory.getLogger(this.getClass().getName());
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
 
   private static AdaptrisMessage createMessage() {

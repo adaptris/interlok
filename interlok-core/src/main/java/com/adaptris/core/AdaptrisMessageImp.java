@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,16 +16,8 @@
 
 package com.adaptris.core;
 
-import com.adaptris.core.util.Args;
-import com.adaptris.interlok.resolver.ExternalResolver;
-import com.adaptris.util.IdGenerator;
-import com.adaptris.util.stream.StreamUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import static com.adaptris.core.metadata.MetadataResolver.resolveKey;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -41,9 +33,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static com.adaptris.core.metadata.MetadataResolver.resolveKey;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.MessageHelper;
+import com.adaptris.interlok.resolver.ExternalResolver;
+import com.adaptris.util.IdGenerator;
 
 /**
  * <p>
@@ -59,7 +56,7 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  * However calling <b>addMetadata("$$myKey", "myValue")</b> will lookup the value of the metadata key named "myKey" and use that
  * value as the key for the addMetadata() method.
  * </p>
- * 
+ *
  *
  * @see DefaultMessageFactory
  * @see AdaptrisMessageFactory
@@ -174,7 +171,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   @Override
   public synchronized void addMetadata(String key, String value) {
-    this.addMessageHeader(resolveKey(this, key), value);
+    addMessageHeader(resolveKey(this, key), value);
   }
 
   @Override
@@ -217,7 +214,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   @Override
   public void setMessageHeaders(Map<String, String> metadata) {
     for (Map.Entry<String, String> entry : metadata.entrySet()) {
-      this.addMessageHeader(entry.getKey(), entry.getValue());
+      addMessageHeader(entry.getKey(), entry.getValue());
     }
   }
 
@@ -356,26 +353,8 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   /** @see Object#toString() */
   @Override
   public String toString() {
-    return this.toString(false);
-  }
-
-  @Override
-  public String toString(boolean includePayload, boolean includeEvents) {
-    ToStringBuilder builder = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("uniqueId", getUniqueId())
-        .append("metadata", metadata);
-    if (includeEvents) {
-      builder.append("message events", messageLifeCycle);
-    }
-    if (includePayload) {
-      builder.append("payload", getPayloadForLogging());
-    }
-    return builder.toString();
-  }
-
-  /** @see AdaptrisMessage#toString(boolean) */
-  @Override
-  public String toString(boolean extended) {
-    return toString(extended, false);
+    return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+        .append("uniqueId", getUniqueId()).append("metadata", metadata).toString();
   }
 
   /** @see AdaptrisMessage#getNextServiceId() */
@@ -394,11 +373,11 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     if (s == null) {
       return null;
     }
-    // see if there are any external resolvers before processing any %message{…}'s
+    // see if there are any external resolvers before processing any %message{...}'s
     s = ExternalResolver.resolve(s, this);
     return resolve(s, dotAll ? dotAllResolver : normalResolver);
   }
-  
+
   private String resolve(String s, Pattern pattern) {
     String result = s;
     Matcher m = pattern.matcher(s);
@@ -510,17 +489,12 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   /**
    * Copy the payload from one AdaptrisMessage to another.
    *
-   * @param src the source adaptris message
-   * @param dest the destination adaptris message
-   * @throws IOException on exception
+   * @deprecated since 3.11.0 use MessageHelper#copyPayload(AdaptrisMessage, AdaptrisMessage)
+   *             instead.
    */
-  public static void copyPayload(AdaptrisMessage src, AdaptrisMessage dest) throws IOException {
-    StreamUtil.copyAndClose(src.getInputStream(), dest.getOutputStream());
-  }
-
   @Deprecated
-  protected static boolean areEqual(String s1, String s2) {
-    return StringUtils.equals(s1, s2);
+  public static void copyPayload(AdaptrisMessage src, AdaptrisMessage dest) throws IOException {
+    MessageHelper.copyPayload(src, dest);
   }
 
   private String getValue(String key) {
@@ -531,15 +505,15 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     }
     return null;
   }
-  
+
   private class ContentEncodingOnClose extends OutputStreamWriter {
     private String charset;
-    
+
     public ContentEncodingOnClose(OutputStream out, String charsetName) throws UnsupportedEncodingException {
       super(out, charsetName);
-      this.charset = charsetName;
+      charset = charsetName;
     }
-    
+
     @Override
     public void close() throws IOException {
       super.close();

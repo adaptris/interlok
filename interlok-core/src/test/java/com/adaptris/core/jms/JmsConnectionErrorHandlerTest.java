@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,17 +21,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import java.util.concurrent.TimeUnit;
 import org.junit.Test;
-import com.adaptris.core.BaseCase;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
-public class JmsConnectionErrorHandlerTest extends BaseCase {
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
+public class JmsConnectionErrorHandlerTest
+    extends com.adaptris.interlok.junit.scaffolding.BaseCase {
+
 
   @Test
   public void testRetryTimeMs() {
@@ -105,13 +102,13 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
   public void testComparatorWith2IdenticalConnections() throws Exception {
     JmsConnectionErrorHandler connectionErrorHandler1 = new JmsConnectionErrorHandler();
     JmsConnectionErrorHandler connectionErrorHandler2 = new JmsConnectionErrorHandler();
-    
+
     JmsConnection connection1 = new JmsConnection(new BasicActiveMqImplementation("tcp://localhost:61616"));
     JmsConnection connection2 = new JmsConnection(new BasicActiveMqImplementation("tcp://localhost:61616"));
-    
+
     connectionErrorHandler1.registerConnection(connection1);
     connectionErrorHandler2.registerConnection(connection2);
-    
+
     assertFalse(connectionErrorHandler1.allowedInConjunctionWith(connectionErrorHandler2));
   }
 
@@ -119,49 +116,49 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
   public void testComparatorWith2IdenticalJNDIConnections() throws Exception {
     JmsConnectionErrorHandler connectionErrorHandler1 = new JmsConnectionErrorHandler();
     JmsConnectionErrorHandler connectionErrorHandler2 = new JmsConnectionErrorHandler();
-    
+
     JmsConnection connection1 = new JmsConnection();
     JmsConnection connection2 = new JmsConnection();
-    
+
     KeyValuePairSet keyValuePairSet = new KeyValuePairSet();
-    
+
     KeyValuePair keyVPInitial = new KeyValuePair();
     keyVPInitial.setKey("java.naming.factory.initial");
     keyVPInitial.setValue("com.sonicsw.jndi.mfcontext.MFContextFactory");
-  
+
     KeyValuePair keyVPCred = new KeyValuePair();
     keyVPCred.setKey("java.naming.security.credentials");
     keyVPCred.setValue("Administrator");
-  
+
     KeyValuePair keyVPDomain = new KeyValuePair();
     keyVPDomain.setKey("com.sonicsw.jndi.mfcontext.domain");
     keyVPDomain.setValue("Domain1");
-  
+
     KeyValuePair keyVPUrl= new KeyValuePair();
     keyVPUrl.setKey("java.naming.provider.url");
     keyVPUrl.setValue("tcp://localhost:2506");
-  
+
     KeyValuePair keyVPPrinciple = new KeyValuePair();
     keyVPPrinciple.setKey("java.naming.security.principal");
     keyVPPrinciple.setValue("Administrator");
-    
+
     keyValuePairSet.add(keyVPInitial);
     keyValuePairSet.add(keyVPCred);
     keyValuePairSet.add(keyVPCred);
     keyValuePairSet.add(keyVPInitial);
-    
+
     StandardJndiImplementation jndiVendor1 = new StandardJndiImplementation();
     jndiVendor1.setJndiParams(keyValuePairSet);
-    
+
     StandardJndiImplementation jndiVendor2 = new StandardJndiImplementation();
     jndiVendor2.setJndiParams(keyValuePairSet);
-    
+
     connection1.setVendorImplementation(jndiVendor1);
     connection2.setVendorImplementation(jndiVendor2);
-    
+
     connectionErrorHandler1.registerConnection(connection1);
     connectionErrorHandler2.registerConnection(connection2);
-    
+
     assertFalse(connectionErrorHandler1.allowedInConjunctionWith(connectionErrorHandler2));
   }
 
@@ -169,52 +166,52 @@ public class JmsConnectionErrorHandlerTest extends BaseCase {
   public void testComparatorWith2DifferemtJNDIConnections() throws Exception {
     JmsConnectionErrorHandler connectionErrorHandler1 = new JmsConnectionErrorHandler();
     JmsConnectionErrorHandler connectionErrorHandler2 = new JmsConnectionErrorHandler();
-    
+
     JmsConnection connection1 = new JmsConnection();
     JmsConnection connection2 = new JmsConnection();
-    
+
     KeyValuePairSet keyValuePairSet1 = new KeyValuePairSet();
-    
+
     KeyValuePair keyVPInitial = new KeyValuePair();
     keyVPInitial.setKey("java.naming.factory.initial");
     keyVPInitial.setValue("com.sonicsw.jndi.mfcontext.MFContextFactory");
-  
+
     KeyValuePair keyVPCred = new KeyValuePair();
     keyVPCred.setKey("java.naming.security.credentials");
     keyVPCred.setValue("Administrator");
-  
+
     KeyValuePair keyVPDomain = new KeyValuePair();
     keyVPDomain.setKey("com.sonicsw.jndi.mfcontext.domain");
     keyVPDomain.setValue("Domain1");
-  
+
     KeyValuePair keyVPUrl= new KeyValuePair();
     keyVPUrl.setKey("java.naming.provider.url");
     keyVPUrl.setValue("tcp://localhost:2506");
-  
+
     KeyValuePair keyVPPrinciple = new KeyValuePair();
     keyVPPrinciple.setKey("java.naming.security.principal");
     keyVPPrinciple.setValue("Administrator");
-    
+
     keyValuePairSet1.add(keyVPInitial);
     keyValuePairSet1.add(keyVPCred);
     keyValuePairSet1.add(keyVPCred);
     keyValuePairSet1.add(keyVPInitial);
-    
+
     KeyValuePairSet keyValuePairSet2 = new KeyValuePairSet(keyValuePairSet1);
     keyValuePairSet2.addKeyValuePair(new KeyValuePair("java.naming.provider.url", "tcp://localhost:2507"));
-    
+
     StandardJndiImplementation jndiVendor1 = new StandardJndiImplementation();
     jndiVendor1.setJndiParams(keyValuePairSet1);
-    
+
     StandardJndiImplementation jndiVendor2 = new StandardJndiImplementation();
     jndiVendor2.setJndiParams(keyValuePairSet2);
-    
+
     connection1.setVendorImplementation(jndiVendor1);
     connection2.setVendorImplementation(jndiVendor2);
-    
+
     connectionErrorHandler1.registerConnection(connection1);
     connectionErrorHandler2.registerConnection(connection2);
-    
+
     assertTrue(connectionErrorHandler1.allowedInConjunctionWith(connectionErrorHandler2));
   }
 

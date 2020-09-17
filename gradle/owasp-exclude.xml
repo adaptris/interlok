@@ -4,7 +4,7 @@
     <notes><![CDATA[
    Hawtio console vulns; we aren't affected.
    ]]>    </notes>
-    <packageUrl regex="true">^pkg:maven/org\.apache\.activemq/activemq\-client@.*$</packageUrl>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.activemq/activemq.*$</packageUrl>
     <cve>CVE-2015-5183</cve>
     <cve>CVE-2015-5184</cve>
   </suppress>
@@ -12,8 +12,29 @@
     <notes><![CDATA[
    CSRF in jolokia; we don't care.
    ]]>    </notes>
-    <packageUrl regex="true">^pkg:maven/org\.apache\.activemq/activemq\-client@.*$</packageUrl>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.activemq/activemq.*$</packageUrl>
     <cve>CVE-2015-5182</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: javax.security.auth.message-1.0.0.v201108011116.jar, isn't geronimo!
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty\.orbit/javax\.security\.auth\.message@.*$</packageUrl>
+    <cpe>cpe:/a:apache:geronimo</cpe>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    javax.websocket-api != Java-WebSocket (INTERLOK-3284)
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/javax\.websocket/javax\.websocket\-api@.*$</packageUrl>
+    <cve>CVE-2020-11050</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    javax.websocket-client-api != Java-WebSocket (INTERLOK-3284)
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/javax\.websocket/javax\.websocket\-client\-api@.*$</packageUrl>
+    <cve>CVE-2020-11050</cve>
   </suppress>
 
 </suppressions>

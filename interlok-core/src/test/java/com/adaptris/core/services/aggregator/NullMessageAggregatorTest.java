@@ -27,10 +27,6 @@ import com.adaptris.core.services.splitter.XpathDocumentCopier;
 
 public class NullMessageAggregatorTest extends AggregatingServiceExample {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testJoinMessage() throws Exception {

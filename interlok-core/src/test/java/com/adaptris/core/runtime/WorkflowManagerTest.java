@@ -77,11 +77,6 @@ public class WorkflowManagerTest extends ComponentManagerCase {
   public WorkflowManagerTest() {
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
   @Test
   public void testJettyInterceptor_AutoAdded() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();

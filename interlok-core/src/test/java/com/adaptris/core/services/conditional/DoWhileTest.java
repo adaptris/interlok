@@ -37,74 +37,74 @@ import com.adaptris.core.services.conditional.conditions.ConditionOr;
 import com.adaptris.core.services.conditional.operator.IsNull;
 import com.adaptris.core.services.conditional.operator.NotNull;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.util.Closer;
 
 public class DoWhileTest extends ConditionalServiceExample {
 
   private DoWhile doWhile;
 
   private AdaptrisMessage message;
-  
+
   private ThenService thenService;
-  
+
   @Mock private Service mockService;
-  
+
   @Mock private Condition mockCondition;
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
+  private AutoCloseable openMocks;
+
   @Before
   public void setUp() throws Exception {
-    MockitoAnnotations.initMocks(this);
-    
+    openMocks = MockitoAnnotations.openMocks(this);
+
     thenService = new ThenService();
     thenService.setService(mockService);
-    
+
     doWhile = new DoWhile().withThen(thenService).withCondition(mockCondition);
-    
+
     message = DefaultMessageFactory.getDefaultInstance().newMessage();
-    
+
     LifecycleHelper.initAndStart(doWhile);
 
   }
-  
+
   @After
   public void tearDown() throws Exception {
     LifecycleHelper.stopAndClose(doWhile);
+    Closer.closeQuietly(openMocks);
   }
-  
+
   @Test
   public void testShouldRunServiceOnce() throws Exception {
     when(mockCondition.evaluate(message))
         .thenReturn(false);
-    
+
     doWhile.doService(message);
-    
+
     verify(mockService, times(1)).doService(message);
   }
-  
+
   @Test
   public void testShouldRunServiceMaxDefault() throws Exception {
     when(mockCondition.evaluate(message))
         .thenReturn(true);
-    
+
     doWhile.doService(message);
-    
+
     verify(mockService, times(10)).doService(message);
   }
-  
+
   @Test
   public void testShouldRunServiceConfiguredFive() throws Exception {
     when(mockCondition.evaluate(message))
         .thenReturn(true);
-    
+
     doWhile.withMaxLoops(5);
     doWhile.withOnMaxLoops((e) -> {
       return;
     });
     doWhile.doService(message);
-    
+
     verify(mockService, times(5)).doService(message);
   }
 
@@ -122,7 +122,7 @@ public class DoWhileTest extends ConditionalServiceExample {
     verify(mockService, times(5)).doService(message);
   }
 
-  
+
   @Test
   public void testShouldRunServiceUnconfiguredFive() throws Exception {
     // 4 trues and then false to run 5 times
@@ -136,7 +136,7 @@ public class DoWhileTest extends ConditionalServiceExample {
     doWhile.doService(message);
     verify(mockService, times(5)).doService(message);
   }
-  
+
   @Test
   public void testInnerServiceExceptionPropagated() throws Exception {
     when(mockCondition.evaluate(message))
@@ -151,7 +151,7 @@ public class DoWhileTest extends ConditionalServiceExample {
       // expected.
     }
   }
-  
+
   @Test
   public void testNoConditionSet() throws Exception {
     DoWhile doWhile = new DoWhile();
@@ -163,24 +163,24 @@ public class DoWhileTest extends ConditionalServiceExample {
       // expected
     }
   }
-  
+
   @Override
   protected Object retrieveObjectForSampleConfig() {
     ConditionMetadata condition = new ConditionMetadata();
     condition.setMetadataKey("key1");
     condition.setOperator(new NotNull());
-    
+
     ConditionMetadata condition2 = new ConditionMetadata();
     condition2.setMetadataKey("key2");
     condition2.setOperator(new IsNull());
-    
+
     ConditionOr conditionOr = new ConditionOr();
     conditionOr.getConditions().add(condition);
     conditionOr.getConditions().add(condition2);
-    
+
     ThenService thenSrvc = new ThenService();
     thenSrvc.setService(new LogMessageService());
-    
+
     doWhile.setCondition(conditionOr);
     doWhile.setThen(thenSrvc);
 

@@ -15,7 +15,8 @@
 */
 package com.adaptris.core.management.jetty;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static com.adaptris.core.util.PropertyHelper.asMap;
+import static com.adaptris.core.util.PropertyHelper.getPropertySubset;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -25,8 +26,8 @@ import java.util.Properties;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.xml.XmlConfiguration;
-import com.adaptris.core.management.jetty.WebServerProperties.WebServerPropertiesEnum;
-import com.adaptris.core.util.PropertyHelper;
+import com.adaptris.interlok.util.Args;
+import com.adaptris.interlok.util.ResourceLocator;
 
 /**
  * Build a jetty server from xml.
@@ -37,68 +38,35 @@ import com.adaptris.core.util.PropertyHelper;
  * </p>
  * 
  */
-final class FromXmlConfig extends ServerBuilder {
+class FromXmlConfig extends ServerBuilder {
 
-  private static final String JETTY_PREFIX = "jetty.";
-  private String jettyConfigUrl;
+  protected static final String JETTY_PREFIX = "jetty.";
 
-  FromXmlConfig(Properties initialConfig) {
+  public FromXmlConfig(Properties initialConfig) {
     super(initialConfig);
-    jettyConfigUrl = WebServerPropertiesEnum.CONFIG_FILE.getValue(initialConfig);
   }
 
   @Override
-  Server build() throws Exception {
+  protected Server build() throws Exception {
     log.trace("Create Server from XML");
-    final XmlConfiguration xmlConfiguration = new XmlConfiguration(toResource(jettyConfigUrl));
-    xmlConfiguration.getProperties().putAll(mergeWithSystemProperties());
+    final XmlConfiguration xmlConfiguration = new XmlConfiguration(getJettyConfigResource());
+    Map<String, String> configProperties = mergeWithSystemProperties();
+    log.trace("Additional properties for XML Config {}", configProperties);
+    xmlConfiguration.getProperties().putAll(configProperties);
     return (Server) xmlConfiguration.configure();
   }
 
-  private Map<String, String> mergeWithSystemProperties() {
-    Map<String, String> result = PropertyHelper.asMap(PropertyHelper.getPropertySubset(System.getProperties(), JETTY_PREFIX));
-    result.putAll(PropertyHelper.asMap(PropertyHelper.getPropertySubset(initialProperties, JETTY_PREFIX)));
-    log.trace("Additional properties for XML Config {}", result);
+  protected Map<String, String> mergeWithSystemProperties() {
+    Map<String, String> result = asMap(getPropertySubset(System.getProperties(), JETTY_PREFIX));
+    result.putAll(asMap(getPropertySubset(getConfig(), JETTY_PREFIX)));
     return result;
   }
 
-  private Resource toResource(String urlString) throws Exception {
-    final URL url = createUrlFromString(urlString);
+  protected Resource getJettyConfigResource() throws Exception {
+    // if we get here, and WEB_SERVER_CONFIG_FILE_NAME_CGF_KEY is null, we're in trouble
+    String jettyConfigUrl = Args.notBlank(getConfigItem(WEB_SERVER_CONFIG_FILE_NAME_CGF_KEY), WEB_SERVER_CONFIG_FILE_NAME_CGF_KEY);
+    final URL url = ResourceLocator.toURL(jettyConfigUrl);
     log.trace("Connecting to configured URL {}", url.toString());
     return Resource.newResource(url);
-  }
-
-  private static URL createUrlFromString(String s) throws Exception {
-    String destToConvert = backslashToSlash(s);
-    URI configuredUri = null;
-    try {
-      configuredUri = new URI(destToConvert);
-    }
-    catch (URISyntaxException e) {
-      // Specifically here to cope with file:///c:/ (which is
-      // technically illegal according to RFC2396 but we need
-      // to support it
-      if (destToConvert.split(":").length >= 3) {
-        configuredUri = new URI(URLEncoder.encode(destToConvert, "UTF-8"));
-      }
-      else {
-        throw e;
-      }
-    }
-    return configuredUri.getScheme() == null ? relativeConfig(configuredUri) : new URL(configuredUri.toString());
-  }
-
-  private static URL relativeConfig(URI uri) throws Exception {
-    String pwd = backslashToSlash(System.getProperty("user.dir"));
-    String path = pwd + "/" + uri;
-    URL result = new URL("file:///" + path);
-    return result;
-  }
-
-  private static String backslashToSlash(String url) {
-    if (!isEmpty(url)) {
-      return url.replaceAll("\\\\", "/");
-    }
-    return url;
   }
 }

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,12 +19,10 @@ package com.adaptris.core.http.client.net;
 import static com.adaptris.core.http.jetty.JettyHelper.createChannel;
 import static com.adaptris.core.http.jetty.JettyHelper.createConsumer;
 import static com.adaptris.core.http.jetty.JettyHelper.createWorkflow;
-
 import com.adaptris.core.Channel;
 import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.PortManager;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.StandaloneProducer;
@@ -34,9 +32,10 @@ import com.adaptris.core.http.jetty.MetadataHeaderHandler;
 import com.adaptris.core.http.jetty.StandardResponseProducer;
 import com.adaptris.core.http.server.HttpStatusProvider;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
-import com.adaptris.core.services.metadata.PayloadFromMetadataService;
+import com.adaptris.core.services.metadata.PayloadFromTemplateService;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.junit.scaffolding.util.PortManager;
 
 public class HttpHelper {
   public static final String CONTENT_TYPE = "content.type";
@@ -74,7 +73,8 @@ public class HttpHelper {
     HttpConnection jc = createConnection();
     Channel c = createChannel(jc, createWorkflow(mc, mock, new ServiceList(new Service[]
     {
-        new PayloadFromMetadataService(replyPayload), new StandaloneProducer(new StandardResponseProducer(status))
+        new PayloadFromTemplateService().withTemplate(replyPayload),
+        new StandaloneProducer(new StandardResponseProducer(status))
     })));
     start(c);
     return c;
@@ -88,8 +88,12 @@ public class HttpHelper {
   }
 
   public static ConfiguredProduceDestination createProduceDestination(Channel channel) {
-    ConfiguredProduceDestination d = new ConfiguredProduceDestination("http://localhost:" + getPort(channel) + URL_TO_POST_TO);
-    return d;
+    return new ConfiguredProduceDestination(createURL(channel));
+  }
+
+
+  public static String createURL(Channel channel) {
+    return "http://localhost:" + getPort(channel) + URL_TO_POST_TO;
   }
 
   private static int getPort(Channel c) {

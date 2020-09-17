@@ -18,6 +18,7 @@ package com.adaptris.core.runtime;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
@@ -26,6 +27,7 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import com.adaptris.core.CoreException;
+import com.adaptris.core.management.ManagementComponentInfo;
 import com.adaptris.util.URLString;
 
 /**
@@ -447,5 +449,18 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
    * @return all the available builders.
    */
   Set<ObjectName> getBuilders();
+  
+  /**
+   * Will return a Map of {@link ManagementComponentInfo}'s.  The key to the map
+   * is the name of the configured management component.  
+   * 
+   * @return Basic information on configured management components
+   */
+  List<ManagementComponentInfo> getManagementComponentInfo();
+  
+  /**
+   * Set the list of configured management components.  
+   */
+  void setManagementComponentInfo(List<ManagementComponentInfo> manComps);
 
 }

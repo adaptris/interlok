@@ -16,6 +16,7 @@
 
 package com.adaptris.core;
 
+import java.util.function.Consumer;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -58,55 +59,8 @@ public class StandardWorkflow extends StandardWorkflowImpl {
   }
 
   @Override
-  public synchronized void onAdaptrisMessage(AdaptrisMessage msg) {
-    if (!obtainChannel().isAvailable()) {
-      handleChannelUnavailable(msg); // make pluggable?
-    }
-    else {
-      handleMessage(msg, true);
-    }
-  }
-
-  /**
-   * @see WorkflowImp#resubmitMessage(com.adaptris.core.AdaptrisMessage)
-   */
-  @Override
-  protected void resubmitMessage(AdaptrisMessage msg) {
-    handleMessage(msg, true);
-  }
-
-  protected void handleMessage(final AdaptrisMessage msg, boolean clone) {
-    AdaptrisMessage wip = addConsumeLocation(msg);
-    workflowStart(msg);
-    processingStart(msg);
-    try {
-      long start = System.currentTimeMillis();
-      log.debug("start processing msg [{}]", messageLogger().toString(msg));
-      if (clone) {
-        wip = (AdaptrisMessage) msg.clone(); // retain orig. for error handling
-      }
-      wip.getMessageLifecycleEvent().setChannelId(obtainChannel().getUniqueId());
-      wip.getMessageLifecycleEvent().setWorkflowId(obtainWorkflowId());
-      wip.addEvent(getConsumer(), true); // initial receive event
-      getServiceCollection().doService(wip);
-      doProduce(wip);
-      logSuccess(wip, start);
-    }
-    catch (ServiceException e) {
-      handleBadMessage("Exception from ServiceCollection", e, copyExceptionHeaders(wip, msg));
-    }
-    catch (ProduceException e) {
-      wip.addEvent(getProducer(), false); // generate event
-      handleBadMessage("Exception producing msg", e, copyExceptionHeaders(wip, msg));
-      handleProduceException();
-    }
-    catch (Exception e) { // all other Exc. inc. runtime
-      handleBadMessage("Exception processing message", e, copyExceptionHeaders(wip, msg));
-    }
-    finally {
-      sendMessageLifecycleEvent(wip);
-    }
-    workflowEnd(msg, wip);
+  public synchronized void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success, Consumer<AdaptrisMessage> failure) {
+    super.onAdaptrisMessage(msg, success, failure);
   }
 
 }

@@ -24,6 +24,7 @@ import com.adaptris.util.text.Conversion;
 /**
  * @author mwarman
  */
+@SuppressWarnings("deprecation")
 public class SymmetricKeyCryptographyServiceTest extends SecurityServiceExample {
 
   private static final String ALGORITHM = "AES";
@@ -40,11 +41,6 @@ public class SymmetricKeyCryptographyServiceTest extends SecurityServiceExample 
     key = generateRandomEncodedByteArray(32);
     iv = generateRandomEncodedByteArray(16);
     encryptedPayload = encrypt(PAYLOAD, key, iv);
-  }
-
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
   }
 
   @Test

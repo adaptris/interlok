@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,22 +22,16 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import org.junit.Test;
-import com.adaptris.core.BaseCase;
 import com.adaptris.util.stream.StreamUtil;
 
-public abstract class SyntaxIdentifierCase extends BaseCase {
+public abstract class SyntaxIdentifierCase
+    extends com.adaptris.interlok.junit.scaffolding.BaseCase {
 
-
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
-  public abstract SyntaxIdentifier createIdentifier();
+  public abstract <T extends SyntaxIdentifierImpl> T createIdentifier();
 
   @Test
   public void testSetPatterns() throws Exception {
-    SyntaxIdentifier si = createIdentifier();
+    SyntaxIdentifierImpl si = createIdentifier();
     si.addPattern("ABC");
     si.addPattern("DEF");
     assertEquals(2, si.getPatterns().size());
@@ -62,7 +56,7 @@ public abstract class SyntaxIdentifierCase extends BaseCase {
 
   @Test
   public void testSetDestination() throws Exception {
-    SyntaxIdentifier si = createIdentifier();
+    SyntaxIdentifierImpl si = createIdentifier();
     si.setDestination("ABC");
     assertEquals("ABC", si.getDestination());
     try {

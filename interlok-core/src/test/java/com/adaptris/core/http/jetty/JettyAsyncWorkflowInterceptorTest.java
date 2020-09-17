@@ -1,12 +1,12 @@
 /*
  * Copyright Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,20 +29,20 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.ExampleWorkflowCase;
 import com.adaptris.core.PoolingWorkflow;
 import com.adaptris.core.ProduceException;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.WorkflowImp;
 import com.adaptris.core.http.client.net.HttpRequestService;
-import com.adaptris.core.services.metadata.PayloadFromMetadataService;
+import com.adaptris.core.services.metadata.PayloadFromTemplateService;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 import com.adaptris.util.TimeInterval;
 
-public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
+public class JettyAsyncWorkflowInterceptorTest
+    extends com.adaptris.interlok.junit.scaffolding.ExampleWorkflowCase {
 
   static final String DEFAULT_XML_COMMENT = "<!-- This interceptor allows you to handle a single HTTP response\n"
       + "across 2 workflows.\n"
@@ -54,10 +54,6 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
       + "it arrives."
       + "\n-->\n";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testLifecycle() throws Exception {
@@ -106,7 +102,7 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
     StandardWorkflow receivingWF = new StandardWorkflow();
     MockMessageProducer producer = new MockMessageProducer();
     receivingWF.addInterceptor(new JettyAsyncWorkflowInterceptor().withMode(JettyAsyncWorkflowInterceptor.Mode.REQUEST));
-    receivingWF.getServiceCollection().add(new PayloadFromMetadataService("hello world"));
+    receivingWF.getServiceCollection().add(new PayloadFromTemplateService().withTemplate("hello world"));
     receivingWF.getServiceCollection().add(new StandaloneProducer(producer));
     receivingWF.getServiceCollection().add(new JettyResponseService(200, "text/plain"));
     receivingWF.getServiceCollection().add(new ShortCutJettyResponse());
@@ -117,7 +113,7 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
       start(channel);
       LifecycleHelper.initAndStart(httpService);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
-      ServiceCase.execute(httpService, msg);
+      ExampleServiceCase.execute(httpService, msg);
       assertEquals("hello world", msg.getContent());
       // Should be removed from the static cache.
       waitForMessages(producer, 1);
@@ -142,7 +138,7 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
     // Mainly to keep track of the msgID. we use a standard workflow so new objects aren't created.
     MockMessageProducer producer = new MockMessageProducer();
     respondingWF.addInterceptor(new JettyAsyncWorkflowInterceptor().withMode(JettyAsyncWorkflowInterceptor.Mode.RESPONSE));
-    respondingWF.getServiceCollection().add(new PayloadFromMetadataService("hello world"));
+    respondingWF.getServiceCollection().add(new PayloadFromTemplateService().withTemplate("hello world"));
     respondingWF.getServiceCollection().add(new JettyResponseService(200, "text/plain"));
     respondingWF.getServiceCollection().add(new StandaloneProducer(producer));
 
@@ -154,8 +150,8 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
       start(channel);
       LifecycleHelper.initAndStart(httpService);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
-      ServiceCase.execute(httpService, msg);
-      assertEquals("hello world", msg.getContent());      
+      ExampleServiceCase.execute(httpService, msg);
+      assertEquals("hello world", msg.getContent());
       waitForMessages(producer, 1);
       // Grab the message that the standardWorkflow handled; and check the msgId.
       // Should be removed from the static cache.
@@ -183,7 +179,7 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
     MockMessageProducer producer = new MockMessageProducer();
     respondingWF.addInterceptor(
         new JettyAsyncWorkflowInterceptor().withMode(JettyAsyncWorkflowInterceptor.Mode.RESPONSE).withCacheKey(cacheKey));
-    respondingWF.getServiceCollection().add(new PayloadFromMetadataService("hello world"));
+    respondingWF.getServiceCollection().add(new PayloadFromTemplateService().withTemplate("hello world"));
     respondingWF.getServiceCollection().add(new JettyResponseService(200, "text/plain"));
     respondingWF.getServiceCollection().add(new StandaloneProducer(producer));
 
@@ -195,7 +191,7 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
       start(channel);
       LifecycleHelper.initAndStart(httpService);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
-      ServiceCase.execute(httpService, msg);
+      ExampleServiceCase.execute(httpService, msg);
       assertEquals("hello world", msg.getContent());
       waitForMessages(producer, 1);
       // Grab the message that the standardWorkflow handled; and check the msgId.
@@ -254,8 +250,8 @@ public class JettyAsyncWorkflowInterceptorTest extends ExampleWorkflowCase {
     }
 
     @Override
-    public void produce(AdaptrisMessage msg) throws ProduceException {
-      super.produce(msg);
+    protected void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException {
+      super.doProduce(msg, endpoint);
       workflow.onAdaptrisMessage(msg);
     }
   }

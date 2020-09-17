@@ -18,7 +18,7 @@ package com.adaptris.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
+import java.util.function.Consumer;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.util.LoggingHelper;
@@ -39,28 +39,36 @@ public class NoRetries implements FailedMessageRetrier {
   
   private String uniqueId;
 
+  @Override
   public void addWorkflow(Workflow workflow) {
     ;
   }
 
+  @Override
   public void close() {
   }
 
+  @Override
   public void init() throws CoreException {
   }
 
+  @Override
   public void start() throws CoreException {
   }
 
+  @Override
   public void stop() {
   }
 
-  public void onAdaptrisMessage(AdaptrisMessage msg) {
+  @Override
+  public void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success, Consumer<AdaptrisMessage> failure) {
   }
 
+  @Override
   public void clearWorkflows() {
   }
 
+  @Override
   public Collection<String> registeredWorkflowIds() {
     return new ArrayList<String>();
   }
@@ -70,6 +78,7 @@ public class NoRetries implements FailedMessageRetrier {
 
   }
 
+  @Override
   public String getUniqueId() {
     return uniqueId;
   }

@@ -19,12 +19,11 @@ package com.adaptris.util;
 import java.io.Serializable;
 import java.util.AbstractSet;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
@@ -45,7 +44,7 @@ public class KeyValuePairSet extends KeyValuePairBag implements Set<KeyValuePair
   private static final long serialVersionUID = 2013111201L;
 
   @XStreamImplicit(itemFieldName = "key-value-pair")
-  private Set<KeyValuePair> set;
+  private LinkedHashSet<KeyValuePair> set;
 
   /**
    * <p>
@@ -54,7 +53,7 @@ public class KeyValuePairSet extends KeyValuePairBag implements Set<KeyValuePair
    */
   public KeyValuePairSet() {
     super();
-    set = new HashSet<KeyValuePair>();
+    set = new LinkedHashSet<KeyValuePair>();
   }
 
   public KeyValuePairSet(Collection<KeyValuePair> pairs) {

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,21 +19,15 @@ package com.adaptris.core.management;
 import static com.adaptris.core.management.Constants.CFG_KEY_START_QUIETLY;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Map;
-import com.adaptris.core.Adapter;
-import com.adaptris.core.DefaultMarshaller;
+import java.util.ArrayList;
+import java.util.List;
+import com.adaptris.core.management.config.ConfigurationCheckRunner;
 import com.adaptris.core.management.logging.LoggingConfigurator;
-import com.adaptris.core.runtime.AdapterManagerMBean;
-import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
-import io.github.classgraph.ClassGraph;
-import io.github.classgraph.Resource;
-import io.github.classgraph.ResourceList;
-import io.github.classgraph.ScanResult;
 
 /**
  * Abstract boostrap that contains standard commandline parsing.
- * 
+ *
  * @author lchan
  */
 abstract class CmdLineBootstrap {
@@ -41,27 +35,30 @@ abstract class CmdLineBootstrap {
   private static final String[] ARG_CONFIG_CHECK = new String[]
   {
       "-configtest", "-configcheck", "--configtest", "--configcheck"
-
   };
 
   private static final String[] ARG_VERSION = new String[]
   {
       "-version", "--version"
-
   };
 
   private static final String[] ARG_BOOTSTRAP_PROPERTIES = new String[]
   {
       "-file", "--file"
-
   };
 
   private transient String bootstrapResource;
   private transient ArgUtil arguments;
   private transient boolean configCheckOnly = false;
+  private transient BootstrapProperties bootProperties;
 
   protected boolean configCheckOnly() {
     return configCheckOnly;
+  }
+
+  protected boolean startQuietly() {
+    return bootProperties.isEnabled(CFG_KEY_START_QUIETLY);
+
   }
 
   protected String getBootstrapResource() {
@@ -70,6 +67,10 @@ abstract class CmdLineBootstrap {
 
   protected ArgUtil getCommandlineArguments() {
     return arguments;
+  }
+
+  protected BootstrapProperties bootProperties() {
+    return bootProperties;
   }
 
   protected CmdLineBootstrap(String[] argv) throws Exception {
@@ -85,49 +86,33 @@ abstract class CmdLineBootstrap {
 
   protected void standardBoot() throws Exception {
     LoggingConfigurator.newConfigurator().defaultInitialisation();
-    BootstrapProperties bootProperties = new BootstrapProperties(getBootstrapResource());
     SystemPropertiesUtil.addSystemProperties(bootProperties);
     SystemPropertiesUtil.addJndiProperties(bootProperties);
     ProxyAuthenticator.register(bootProperties);
+    bootProperties.reconfigureLogging();
     startAdapter(bootProperties);
   }
 
   protected void startAdapter(BootstrapProperties bootProperties) throws Exception {
-    boolean startQuietly = bootProperties.isEnabled(CFG_KEY_START_QUIETLY);
     final UnifiedBootstrap bootstrap = new UnifiedBootstrap(bootProperties);
-    AdapterManagerMBean adapter = bootstrap.createAdapter();
     if (!configCheckOnly()) {
-      bootstrap.init(adapter);
+      bootstrap.init(bootstrap.createAdapter());
       Runtime.getRuntime().addShutdownHook(new ShutdownHandler(bootProperties));
-      launchAdapter(bootstrap, startQuietly);
+      launchAdapter(bootstrap, startQuietly());
     }
     else {
-      // This seems a bit cheaty, but we're going to exit anyway, so
-      // calling prepare probably makes no difference.
-      Adapter clonedAdapter = (Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(adapter.getConfiguration());
-      LifecycleHelper.prepare(clonedAdapter);
+      final List<Exception> fatals = new ArrayList<>();
+      new ConfigurationCheckRunner().runChecks(bootProperties, bootstrap).forEach(report -> {
+        System.err.println("\n" + report.toString());
+        if(report.getFailureExceptions().size() > 0)
+          fatals.addAll(report.getFailureExceptions());
+      });
 
-      // INTERLOK-1455 Shutdown the logging subsystem if we're only just doing a config check.
+   // INTERLOK-1455 Shutdown the logging subsystem if we're only just doing a config check.
       LoggingConfigurator.newConfigurator().requestShutdown();
-      // No starting an adapter, so just terminate.
-      logClasspathIssues();
-      System.err.println("Config check only; terminating");
-    }
-  }
 
-  private static void logClasspathIssues() {
-    if (Constants.DBG) {
-      try (ScanResult result = new ClassGraph().scan()) {
-        for (Map.Entry<String, ResourceList> dup : result.getAllResources().classFilesOnly().findDuplicatePaths()) {
-          if (dup.getKey().equalsIgnoreCase("module-info.class")) {
-            continue;
-          }
-          System.err.println(String.format("%s has possible duplicates", dup.getKey()));
-          for (Resource res : dup.getValue()) {
-            System.err.println(String.format(" -> Found in %s", res.getURI()));
-          }
-        }
-      }
+      System.err.println("\nConfig check only; terminating");
+      System.exit(fatals.size() > 0 ? 1 : 0);
     }
   }
 
@@ -146,6 +131,7 @@ abstract class CmdLineBootstrap {
       }
       configCheckOnly = true;
     }
+    bootProperties = new BootstrapProperties(getBootstrapResource());
   }
 
   /**

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,7 +19,6 @@ package com.adaptris.core.lms;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,18 +29,17 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
-
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.adaptris.core.BaseCase;
 import com.adaptris.core.lms.ZipFileBackedMessageFactory.CompressionMode;
+import com.adaptris.interlok.junit.scaffolding.BaseCase;
 
 public class ZipFileBackedMessageTest extends FileBackedMessageTest {
 
   private ZipFileBackedMessageFactory mf;
-  
+
+  @Override
   @Before
   public void setup() {
     mf = new ZipFileBackedMessageFactory();
@@ -55,24 +53,25 @@ public class ZipFileBackedMessageTest extends FileBackedMessageTest {
   protected ZipFileBackedMessageFactory getMessageFactory() {
     return mf;
   }
-  
+
   /**
    * This tests inputs a compressed file and expects uncompressed data to come out.
    */
+  @Override
   @Test
   public void testInitFromFile() throws Exception {
     ZipFileBackedMessageFactory factory = getMessageFactory();
     factory.setCompressionMode(CompressionMode.Uncompress); // We are feeding a zip file, so the mode must be Uncompress or Both
     FileBackedMessage orig = (FileBackedMessage) factory.newMessage();
-    
+
     File srcFile = new File(BaseCase.PROPERTIES.getProperty("msg.initFromZipFile"));
     orig.initialiseFrom(srcFile);
-    
+
     // Uncompressed size is 185 bytes
-    assertEquals("file size ", 185, orig.getSize()); 
+    assertEquals("file size ", 185, orig.getSize());
     assertEquals("payload size ", 185, orig.getPayload().length);
   }
-  
+
   /**
    * This tests inputs a compressed stream and expects uncompressed data to come out.
    */
@@ -81,7 +80,7 @@ public class ZipFileBackedMessageTest extends FileBackedMessageTest {
     ZipFileBackedMessageFactory factory = getMessageFactory();
     factory.setCompressionMode(CompressionMode.Uncompress);
     FileBackedMessage orig = (FileBackedMessage) factory.newMessage();
-    
+
     File srcFile = new File(BaseCase.PROPERTIES.getProperty("msg.initFromZipFile"));
     orig.initialiseFrom(srcFile);
     try (InputStream in = orig.getInputStream();
@@ -89,22 +88,22 @@ public class ZipFileBackedMessageTest extends FileBackedMessageTest {
       IOUtils.copy(in,  out);
     }
   }
-  
+
   /**
    * This tests inputs an uncompressed file and expects an Exception
    */
   @Test(expected=UnsupportedOperationException.class)
   public void testInitFromUncompressedFile() throws Exception {
     ZipFileBackedMessageFactory factory = getMessageFactory();
-    factory.setCompressionMode(CompressionMode.Compress); 
+    factory.setCompressionMode(CompressionMode.Compress);
     FileBackedMessage orig = (FileBackedMessage) factory.newMessage();
-    
+
     File srcFile = new File(BaseCase.PROPERTIES.getProperty("msg.initFromFile"));
     orig.initialiseFrom(srcFile);
 
     // Exception expected
   }
-  
+
   @Test
   public void testUncompressedFile_FailFast_False() throws Exception {
     ZipFileBackedMessageFactory factory = getMessageFactory();
@@ -126,9 +125,9 @@ public class ZipFileBackedMessageTest extends FileBackedMessageTest {
     ZipFileBackedMessageFactory factory = getMessageFactory();
     factory.setCompressionMode(CompressionMode.Uncompress);
     FileBackedMessage orig = (FileBackedMessage) factory.newMessage();
-    
+
     File srcFile = new File(BaseCase.PROPERTIES.getProperty("msg.initFromFile"));
-    
+
     try(InputStream in = new FileInputStream(srcFile);
         OutputStream out = orig.getOutputStream()) {
       IOUtils.copy(in,  out);
@@ -155,9 +154,9 @@ public class ZipFileBackedMessageTest extends FileBackedMessageTest {
   @Test
   public void testCreateCompressedFile() throws Exception {
     ZipFileBackedMessageFactory factory = getMessageFactory();
-    factory.setCompressionMode(CompressionMode.Compress); 
+    factory.setCompressionMode(CompressionMode.Compress);
     FileBackedMessage orig = (FileBackedMessage) factory.newMessage();
-    
+
     File srcFile = new File(BaseCase.PROPERTIES.getProperty("msg.initFromFile"));
     try(FileInputStream in = new FileInputStream(srcFile);
         OutputStream out = orig.getOutputStream()) {
@@ -172,11 +171,11 @@ public class ZipFileBackedMessageTest extends FileBackedMessageTest {
         ZipEntry entry = entries.nextElement();
         size += entry.getSize();
       }
-      
+
       assertEquals("message size", orig.getSize(), size);
       assertEquals("payload size", srcFile.length(), size);
     }
-    
+
     // Check if the InputStream from the message also yields compressed data
     try(ZipInputStream zin = new ZipInputStream(orig.getInputStream());
         ByteArrayOutputStream out = new ByteArrayOutputStream()) {
@@ -185,5 +184,5 @@ public class ZipFileBackedMessageTest extends FileBackedMessageTest {
       assertEquals("payload size", srcFile.length(), out.size());
     }
   }
-  
+
 }

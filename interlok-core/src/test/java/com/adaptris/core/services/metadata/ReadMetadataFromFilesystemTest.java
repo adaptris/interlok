@@ -43,10 +43,6 @@ public class ReadMetadataFromFilesystemTest extends MetadataServiceExample {
 
   public static final String BASE_DIR = "metadata.MetadataToFileSystem.baseDirUrl";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testDestination() throws Exception {

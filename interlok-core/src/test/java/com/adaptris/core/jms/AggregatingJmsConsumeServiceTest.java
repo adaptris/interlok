@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,7 +23,6 @@ import static org.junit.Assert.fail;
 import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.StandaloneProducer;
@@ -47,21 +46,12 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
   private static final String DEFAULT_FILTER_KEY = "metadataFilterKey";
 
   @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-  @Override
   protected boolean doStateTests() {
     return false;
   }
 
   @Test
   public void testNoOpMethods() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     AggregatingJmsConsumeService service = createService(broker);
     try {
@@ -83,11 +73,6 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
 
   @Test
   public void testService() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     AggregatingJmsConsumeService service = createService(broker);
     try {
@@ -108,11 +93,6 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
 
   @Test
   public void testServiceWithTimeout() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     AggregatingJmsConsumeService service = createService(broker);
     try {
@@ -136,11 +116,6 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
 
   @Test
   public void testService_MultipleMessages() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     AggregatingQueueConsumer consumer = new AggregatingQueueConsumer();
     consumer.setMessageAggregator(new IgnoreOriginalMimeAggregator());
@@ -181,7 +156,7 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
   }
 
   private void sendDataMessage(EmbeddedActiveMq broker) throws Exception {
-    PtpProducer producer = new PtpProducer(new ConfiguredProduceDestination(DATA_QUEUE));
+    PtpProducer producer = new PtpProducer().withQueue(DATA_QUEUE);
     MetadataCorrelationIdSource corr = new MetadataCorrelationIdSource();
     corr.setMetadataKey(CORRELATION_ID_KEY);
     producer.setCorrelationIdSource(corr);

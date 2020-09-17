@@ -1,6 +1,7 @@
 package com.adaptris.core.services.cache;
 
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.cache.Cache;
@@ -17,6 +18,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("remove-key-from-cache")
 @ComponentProfile(summary = "Remove a key from the configured cache", since = "3.9.2", tag = "service,cache",
     recommended = {CacheConnection.class})
+@DisplayOrder(order = {"connection", "key"})
 public class RemoveKeyFromCache extends SingleKeyCacheService {
 
   @Override

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,6 +25,9 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.InitialisedState;
 import com.adaptris.core.StartedState;
 import com.adaptris.core.StoppedState;
+import com.adaptris.core.util.DestinationHelper;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * <p>
@@ -34,6 +37,11 @@ import com.adaptris.core.StoppedState;
  * </p>
  */
 public class MockMessageConsumer extends AdaptrisMessageConsumerImp {
+
+  @Deprecated
+  @Getter
+  @Setter
+  private ConsumeDestination destination;
 
   public MockMessageConsumer() {
     super();
@@ -68,18 +76,22 @@ public class MockMessageConsumer extends AdaptrisMessageConsumerImp {
   public void prepare() throws CoreException {
   }
 
+  @Override
   public void init() throws CoreException {
     changeState(InitialisedState.getInstance());
   }
 
+  @Override
   public void start() throws CoreException {
     changeState(StartedState.getInstance());
   }
 
+  @Override
   public void stop() {
     changeState(StoppedState.getInstance());
   }
 
+  @Override
   public void close() {
     changeState(ClosedState.getInstance());
   }
@@ -87,5 +99,10 @@ public class MockMessageConsumer extends AdaptrisMessageConsumerImp {
   @Override
   public String getUniqueId() {
     return null;
+  }
+
+  @Override
+  protected String newThreadName() {
+    return DestinationHelper.threadName(retrieveAdaptrisMessageListener(), getDestination());
   }
 }

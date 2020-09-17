@@ -6,7 +6,8 @@ import static org.junit.Assert.fail;
 import org.junit.Test;
 import com.adaptris.core.common.ConstantDataInputParameter;
 
-public class AddPayloadTest extends ServiceCase {
+public class AddPayloadTest
+    extends com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase {
   private final MultiPayloadMessageFactory messageFactory = new MultiPayloadMessageFactory();
 
   private static final String ENCODING = "UTF-8";
@@ -14,15 +15,10 @@ public class AddPayloadTest extends ServiceCase {
   private static final String[] CONTENT = {
       "Bacon ipsum dolor amet bresaola ball tip flank, doner pork chop ham hock rump kielbasa pork loin beef burgdoggen short ribs tongue.",
       "Bacon ipsum dolor amet ball tip venison pastrami, short loin kielbasa andouille rump chuck pork spare ribs salami turducken shankle.",
-      "Cupcake ipsum dolor sit amet dragée carrot cake halvah jujubes.",
+      "Cupcake ipsum dolor sit amet dragee carrot cake halvah jujubes.",
       "Cupcake ipsum dolor sit. Amet jelly cupcake sweet roll I love lollipop." };
 
   private static final String[] ID = { "bacon-1", "bacon-2", "cupcake-1", "cupcake-2" };
-
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testService() throws Exception {

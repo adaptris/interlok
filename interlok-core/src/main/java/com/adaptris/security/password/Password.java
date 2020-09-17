@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,24 +16,25 @@
 
 package com.adaptris.security.password;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Optional;
 import java.util.ServiceLoader;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.security.exc.PasswordException;
 
 /**
  * Handles simple encryption and decryption of passwords that may be stored in XML configuration.
  *
  * @author lchan
- * 
+ *
  */
 public abstract class Password {
 
 
   private static transient Password INSTANCE = new PasswordLoader();
-  
+
   private static Logger log = LoggerFactory.getLogger(Password.class);
   /**
    * Password obfuscation using Microsoft Crypto API which is only available on
@@ -132,21 +133,22 @@ public abstract class Password {
     System.exit(0);
   }
 
+
+
   private static class PasswordLoader extends Password {
-    private ServiceLoader<PasswordCodec> passwordImpls;
+    private Collection<PasswordCodec> passwordImpls = new ArrayList<>();
 
     PasswordLoader() {
-      passwordImpls = ServiceLoader.load(PasswordCodec.class);
+      for (PasswordCodec r : ServiceLoader.load(PasswordCodec.class)) {
+        passwordImpls.add(r);
+      }
     }
+
     @Override
     protected PasswordCodec createCodec(String type) throws PasswordException {
-      PasswordCodec result = new PlainText();
-      for (PasswordCodec impl : passwordImpls) {
-        if (impl.canHandle(type)) {
-          result = impl;
-        }
-      }
-      return result;
+      Optional<PasswordCodec> impl =
+          passwordImpls.stream().filter((r) -> r.canHandle(type)).findFirst();
+      return impl.orElse(new PlainText());
     }
 
   }

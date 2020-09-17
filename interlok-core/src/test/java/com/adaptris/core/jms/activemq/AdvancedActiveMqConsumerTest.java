@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,7 +17,6 @@
 package com.adaptris.core.jms.activemq;
 
 import static com.adaptris.core.jms.activemq.AdvancedActiveMqImplementationTest.createImpl;
-import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.PtpConsumer;
@@ -36,10 +35,7 @@ public class AdvancedActiveMqConsumerTest extends BasicActiveMqConsumerTest {
 
     JmsConnection connection = new JmsConnection();
     PtpConsumer producer = new PtpConsumer();
-    ConfiguredConsumeDestination dest = new ConfiguredConsumeDestination(
-        "destination");
-
-    producer.setDestination(dest);
+    producer.setQueue("destination");
     UrlVendorImplementation vendorImpl = createImpl();
     vendorImpl.setBrokerUrl(BasicActiveMqImplementationTest.PRIMARY);
     connection.setUserName("BrokerUsername");

@@ -27,10 +27,6 @@ public class UrlDecodeMetadataServiceTest extends MetadataServiceExample {
   public static final String ENCODED = "2016-01-01T12%3A00%3A00Z";
   public static final String DECODED = "2016-01-01T12:00:00Z";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   private static AdaptrisMessage createMessage() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();

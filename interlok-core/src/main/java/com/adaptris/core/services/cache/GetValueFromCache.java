@@ -2,6 +2,7 @@ package com.adaptris.core.services.cache;
 
 import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
@@ -10,7 +11,7 @@ import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Version of {@link RetrieveFromCacheService} that doesn't use {@link CacheEntryEvaluators}.
+ * Version of {@link RetrieveFromCacheService} that doesn't use {@link CacheEntryEvaluator}.
  * 
  * <p>
  * Most of the time, you only want to retrieve a single item to the cache rather than a list of
@@ -24,6 +25,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("get-single-value-from-cache")
 @ComponentProfile(summary = "Retrieve a value from the configured cache", since = "3.9.2", tag = "service,cache",
     recommended = {CacheConnection.class})
+@DisplayOrder(order = {"connection", "key", "valueTranslator", "exceptionIfNotFound"})
 public class GetValueFromCache extends SingleKeyValueCacheImpl {
 
   @InputFieldDefault(value = "true")

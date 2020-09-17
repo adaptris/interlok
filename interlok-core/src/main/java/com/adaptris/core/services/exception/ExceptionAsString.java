@@ -34,7 +34,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Serializes the exception as a String.
  * <p>
- * Note that this uses {@link ExceptionUtils#getFullStackTrace(Throwable)} which means that the root cause is first
+ * Note that this uses
+ * {@code org.apache.commons.lang3.exception.ExceptionUtils#getFullStackTrace(Throwable)} which
+ * means that the root cause is first
  * </p>
  * 
  * @config exception-as-string

@@ -37,6 +37,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
+import com.adaptris.core.services.conditional.Condition;
 import com.adaptris.core.services.conditional.Switch;
 import com.adaptris.core.services.conditional.conditions.ConditionImpl;
 import com.adaptris.core.services.metadata.ExtractMetadataService;
@@ -50,7 +51,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * 
  * <p>
  * Designed to be used as part of a {@link Switch} service to branch based on the jettyURI and method and
- * takes the metadata values associated with {@link CoreConstants#HTTP_METHOD} and {@link CoreConstants#JETTY_URI} and matches them
+ * takes the metadata values associated with {@link CoreConstants#HTTP_METHOD} and {@link JettyConstants#JETTY_URI} and matches them
  * against a its configured route. If a route matches the URI and the http method (if specified) then the evaluation is true.
  * </p>
  * <p>

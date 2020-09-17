@@ -27,12 +27,6 @@ public class StoppedStateTest extends ComponentStateCase {
   public StoppedStateTest() {
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
-
   @Test
   public void testInstance() throws Exception {
     StoppedState one = StoppedState.getInstance();

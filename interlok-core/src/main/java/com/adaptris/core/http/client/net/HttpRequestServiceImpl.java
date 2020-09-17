@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,6 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.ServiceImp;
@@ -44,7 +43,7 @@ import com.adaptris.core.util.Args;
 
 /**
  * Direct HTTP support as a service rather than wrapped via {@link StandaloneProducer} or {@link StandaloneRequestor}.
- * 
+ *
  * <p>
  * Note that this service just wraps a {@link StandardHttpProducer} instance but doesn't expose all the possible settings available
  * for the normal {@link StandardHttpProducer}. If you need those features, than continue using the producer wrapped as a
@@ -55,7 +54,7 @@ import com.adaptris.core.util.Args;
  * values as part of a constant string e.g. {@code setUrl("%message{http_url}")} will use the metadata value associated with the key
  * {@code http_url}.
  * </p>
- * 
+ *
  */
 public abstract class HttpRequestServiceImpl extends ServiceImp {
 
@@ -118,7 +117,7 @@ public abstract class HttpRequestServiceImpl extends ServiceImp {
   protected StandardHttpProducer buildProducer(AdaptrisMessage msg) {
     StandardHttpProducer p = new StandardHttpProducer();
     p.setMessageFactory(msg.getFactory());
-    p.setDestination(new ConfiguredProduceDestination(msg.resolve(getUrl())));
+    p.setUrl(msg.resolve(getUrl()));
     p.setContentTypeProvider(new RawContentTypeProvider(msg.resolve(getContentType())));
     p.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethod.valueOf(msg.resolve(getMethod()).toUpperCase())));
     p.setAuthenticator(getAuthenticator());
@@ -137,16 +136,16 @@ public abstract class HttpRequestServiceImpl extends ServiceImp {
 
   /**
    * Specify how we handle headers from the HTTP response.
-   * 
+   *
    * @param handler the handler, default is a {@link DiscardResponseHeaders}.
    */
   public void setResponseHeaderHandler(ResponseHeaderHandler<HttpURLConnection> handler) {
-    this.responseHeaderHandler = Args.notNull(handler, "ResponseHeaderHandler");
+    responseHeaderHandler = Args.notNull(handler, "ResponseHeaderHandler");
   }
 
   /**
    * @since 3.9.0
-   * 
+   *
    */
   public <T extends HttpRequestServiceImpl> T withResponseHeaderHandler(
       ResponseHeaderHandler<HttpURLConnection> s) {
@@ -160,16 +159,16 @@ public abstract class HttpRequestServiceImpl extends ServiceImp {
 
   /**
    * Specify how we want to generate the initial set of HTTP Headers.
-   * 
+   *
    * @param handler the handler, default is a {@link NoRequestHeaders}
    */
   public void setRequestHeaderProvider(RequestHeaderProvider<HttpURLConnection> handler) {
-    this.requestHeaderProvider = Args.notNull(handler, "Request Header Provider");
+    requestHeaderProvider = Args.notNull(handler, "Request Header Provider");
   }
 
   /**
    * @since 3.9.0
-   * 
+   *
    */
   public <T extends HttpRequestServiceImpl> T withRequestHeaderProvider(
       RequestHeaderProvider<HttpURLConnection> s) {
@@ -188,12 +187,12 @@ public abstract class HttpRequestServiceImpl extends ServiceImp {
    * @param s the url to set; can be of the form {@code %message{key1}} to use the metadata value associated with {@code key1}
    */
   public void setUrl(String s) {
-    this.url = s;
+    url = s;
   }
 
   /**
    * @since 3.9.0
-   * 
+   *
    */
   public <T extends HttpRequestServiceImpl> T withUrl(String s) {
     setUrl(s);
@@ -212,12 +211,12 @@ public abstract class HttpRequestServiceImpl extends ServiceImp {
    *          {@code key1}
    */
   public void setContentType(String ct) {
-    this.contentType = ct;
+    contentType = ct;
   }
 
   /**
    * @since 3.9.0
-   * 
+   *
    */
   public <T extends HttpRequestServiceImpl> T withContentType(String s) {
     setContentType(s);
@@ -236,12 +235,12 @@ public abstract class HttpRequestServiceImpl extends ServiceImp {
    *          {@code key1}
    */
   public void setMethod(String m) {
-    this.method = m;
+    method = m;
   }
 
   /**
    * @since 3.9.0
-   * 
+   *
    */
   public <T extends HttpRequestServiceImpl> T withMethod(String s) {
     setMethod(s);
@@ -259,12 +258,12 @@ public abstract class HttpRequestServiceImpl extends ServiceImp {
    * @param auth the authenticator to set
    */
   public void setAuthenticator(HttpAuthenticator auth) {
-    this.authenticator = auth;
+    authenticator = auth;
   }
 
   /**
    * @since 3.9.0
-   * 
+   *
    */
   public <T extends HttpRequestServiceImpl> T withAuthenticator(HttpAuthenticator auth) {
     setAuthenticator(auth);

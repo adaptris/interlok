@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,13 +25,13 @@ import org.junit.Test;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.BaseCase;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.security.access.MetadataIdentityBuilderImpl.MetadataSource;
+import com.adaptris.interlok.junit.scaffolding.BaseCase;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairList;
 
-public class IdentityBuilderTest extends BaseCase {
+public class IdentityBuilderTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
 
   public static final String MAPPED_USER = "mappedU";
   public static final String MAPPED_PASSWORD = "mappedP";
@@ -39,11 +39,6 @@ public class IdentityBuilderTest extends BaseCase {
   public static final String USER = "user";
   public static final String PASSWORD = "password";
   public static final String ROLE = "role";
-
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testEmptyIdentityBuilder() throws Exception {

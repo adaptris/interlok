@@ -16,6 +16,9 @@
 
 package com.adaptris.core;
 
+import static com.adaptris.core.CoreConstants.OBJ_METADATA_MESSAGE_FAILED;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import java.util.function.Consumer;
 import com.adaptris.core.util.LifecycleHelper;
 
 public abstract class StandardWorkflowImpl extends WorkflowImp {
@@ -69,5 +72,63 @@ public abstract class StandardWorkflowImpl extends WorkflowImp {
   protected void prepareWorkflow() throws CoreException {
     // Consumers / services / producers already prepared.
   }
+  
+  @Override
+  public void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success, Consumer<AdaptrisMessage> failure) {
+    ListenerCallbackHelper.prepare(msg, success, failure);
+    if (!obtainChannel().isAvailable()) {
+      handleChannelUnavailable(msg); // make pluggable?
+    } else {
+      handleMessage(msg, true);
+    }
+  }
 
+  /**
+   * @see WorkflowImp#resubmitMessage(com.adaptris.core.AdaptrisMessage)
+   */
+  @Override
+  protected void resubmitMessage(AdaptrisMessage msg) {
+    handleMessage(msg, true);
+  }
+
+  protected void handleMessage(final AdaptrisMessage msg, boolean clone) {
+    AdaptrisMessage wip = addConsumeLocation(msg);
+    workflowStart(msg);
+    processingStart(msg);
+    try {
+      long start = System.currentTimeMillis();
+      log.debug("start processing msg [{}]", messageLogger().toString(msg));
+      if (clone) {
+        wip = (AdaptrisMessage) msg.clone(); // retain orig. for error handling
+      }
+      wip.getMessageLifecycleEvent().setChannelId(obtainChannel().getUniqueId());
+      wip.getMessageLifecycleEvent().setWorkflowId(obtainWorkflowId());
+      wip.addEvent(getConsumer(), true); // initial receive event
+      getServiceCollection().doService(wip);
+      doProduce(wip);
+      logSuccess(wip, start);
+      ListenerCallbackHelper.handleSuccessCallback(wip);
+    } catch (ServiceException e) {
+      handleBadMessage("Exception from ServiceCollection", e, copyExceptionHeaders(wip, msg));
+      handleFailureCallback(msg);
+    } catch (ProduceException e) {
+      wip.addEvent(getProducer(), false); // generate event
+      handleBadMessage("Exception producing msg", e, copyExceptionHeaders(wip, msg));
+      handleProduceException();
+      handleFailureCallback(msg);
+    } catch (Exception e) { // all other Exc. inc. runtime
+      handleBadMessage("Exception processing message", e, copyExceptionHeaders(wip, msg));
+      handleFailureCallback(msg);
+    } finally {
+      sendMessageLifecycleEvent(wip);
+    }
+    workflowEnd(msg, wip);
+  }
+
+  private void handleFailureCallback(AdaptrisMessage msg) {
+    // Some message error handlers may not deem a message as failed immediately, like the retry handler.
+    if(defaultIfNull((Boolean) msg.getObjectHeaders().get(OBJ_METADATA_MESSAGE_FAILED), Boolean.FALSE)) {
+      ListenerCallbackHelper.handleFailureCallback(msg);
+    }    
+  }
 }

@@ -18,14 +18,11 @@ package com.adaptris.core.common;
 
 import static com.adaptris.core.common.MetadataDataOutputParameter.DEFAULT_METADATA_KEY;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
-
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.InterlokException;

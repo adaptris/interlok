@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,7 +25,6 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.xml.crypto.MarshalException;
 import javax.xml.crypto.XMLStructure;
 import javax.xml.crypto.dom.DOMStructure;
@@ -35,11 +34,9 @@ import javax.xml.crypto.dsig.keyinfo.KeyInfoFactory;
 import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.exc.KeystoreException;
@@ -83,11 +80,13 @@ class XmlKeyInfoKeystoreProxy extends SingleEntryKeystoreProxy {
    *           contents of the keystore
    * @throws IOException if the keystore is not found
    */
+  @Override
   public void load() throws AdaptrisSecurityException, IOException {
 
     try (InputStream in = getKeystoreLocation().openInput()) {
-      Document doc = DocumentBuilderFactoryBuilder.newInstance().withNamespaceAware(true)
-          .newDocumentBuilder(DocumentBuilderFactory.newInstance()).parse(in);
+      // new RestrictedInstance does the right thing for XXE
+      Document doc = DocumentBuilderFactoryBuilder.newRestrictedInstance().withNamespaceAware(true)
+          .newDocumentBuilder(DocumentBuilderFactory.newInstance()).parse(in); // lgtm [java/xxe]
       loadCertificates(doc);
     }
     catch (SAXException | ParserConfigurationException | MarshalException e) {
@@ -149,6 +148,7 @@ class XmlKeyInfoKeystoreProxy extends SingleEntryKeystoreProxy {
    *         a key entry
    * @throws AdaptrisSecurityException for any error
    */
+  @Override
   public PrivateKey getPrivateKey(String alias, char[] keyPassword)
                                                                    throws AdaptrisSecurityException {
 
@@ -163,6 +163,7 @@ class XmlKeyInfoKeystoreProxy extends SingleEntryKeystoreProxy {
    *         not exist/not a certificate
    * @throws AdaptrisSecurityException for any error
    */
+  @Override
   public Certificate getCertificate(String alias)
                                                  throws AdaptrisSecurityException {
     X509Certificate cert = null;
@@ -195,6 +196,7 @@ class XmlKeyInfoKeystoreProxy extends SingleEntryKeystoreProxy {
    *         exist/not a certificate
    * @throws AdaptrisSecurityException for any error
    */
+  @Override
   public Certificate[] getCertificateChain(String alias)
                                                         throws AdaptrisSecurityException {
     X509Certificate[] cert = null;

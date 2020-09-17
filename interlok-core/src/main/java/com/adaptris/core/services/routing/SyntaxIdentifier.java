@@ -16,20 +16,27 @@
 
 package com.adaptris.core.services.routing;
 
-import java.util.List;
-
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.services.conditional.Condition;
 
-/** Interface used by SyntaxRoutingService.
- *  <p>The contract for this interface is such that
- *  <code>isThisSyntax(String)</code> should only return true, if and only
- *  if <b>ALL</b> the configured patterns are matched within the document.
- *  </p>
- *  @see SyntaxRoutingService
- * @author sellidge
- * @author $Author: phigginson $
+/**
+ * Interface used by SyntaxRoutingService.
+ * <p>
+ * The contract for this interface is such that <code>isThisSyntax(String)</code> should only return true, if and only if <b>ALL</b>
+ * the configured patterns are matched within the document.
+ * </p>
+ * <p>
+ * Since <strong>3.10.0</strong> this interface extends {@link Condition} which means that it can be used as part of the conditional
+ * services; if used in such a manner, then configuration is contextual, get/setDestination will be ignored (but may still have to
+ * be configured due to validation
+ * </p>
+ * 
+ * @see SyntaxRoutingService
+ * @see Condition
  */
-public interface SyntaxIdentifier {
+public interface SyntaxIdentifier extends Condition {
 
   /** Set the configured destination.
    *  <p>This is the value that will be stored against the metadata key
@@ -44,25 +51,6 @@ public interface SyntaxIdentifier {
    */
   String getDestination();
 
-  /** Add a pattern to the list of configured patterns used to match a
-   *  document.
-   * @param pattern a pattern.
-   * @throws ServiceException if the pattern could not be added.
-   */
-  void addPattern(String pattern) throws ServiceException;
-
-  /** Get a list of configured patterns.
-   *
-   * @return the list.
-   */
-  List<String> getPatterns();
-
-  /** Set a list of configured patterns.
-   *
-   * @param l the list.
-   */
-  void setPatterns(List<String> l);
-
   /** Determine if this SyntaxIdentifer considers the message to
    *  match all the configured patterns.
    *
@@ -71,4 +59,14 @@ public interface SyntaxIdentifier {
    * @throws ServiceException if there was an error with the pattern.
    */
   boolean isThisSyntax(String message) throws ServiceException;
+
+  /**
+   * Default implementation for {@link Condition}
+   * 
+   * @implNote the default implementation just calls {@link #isThisSyntax(String)} with the message content.
+   */
+  @Override
+  default boolean evaluate(AdaptrisMessage msg) throws CoreException {
+    return isThisSyntax(msg.getContent());
+  }
 }

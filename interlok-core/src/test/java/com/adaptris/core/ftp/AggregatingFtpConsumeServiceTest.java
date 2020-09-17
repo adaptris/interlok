@@ -45,10 +45,6 @@ import com.adaptris.util.text.mime.BodyPartIterator;
 
 public class AggregatingFtpConsumeServiceTest extends AggregatingServiceExample {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testInit() throws Exception {

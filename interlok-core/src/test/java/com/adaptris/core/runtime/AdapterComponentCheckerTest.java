@@ -227,9 +227,4 @@ public class AdapterComponentCheckerTest extends ComponentManagerCase {
   private SerializableMessage createSerializableMessage() throws Exception {
     return new DefaultSerializableMessageTranslator().translate(AdaptrisMessageFactory.getDefaultInstance().newMessage());
   }
-
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 }

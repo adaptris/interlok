@@ -1,7 +1,7 @@
 package com.adaptris.core.ftp;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import java.io.IOException;
 import org.junit.Test;
@@ -15,7 +15,7 @@ public class SftpAuthenticationWrapperTest {
   public void testConnect() throws Exception {
     SftpAuthenticationProvider mockProvider = Mockito.mock(SftpAuthenticationProvider.class);
     SftpClient mockClient = Mockito.mock(SftpClient.class);
-    when(mockProvider.connect(anyObject(), anyObject())).thenReturn(mockClient);
+    when(mockProvider.connect(any(), any())).thenReturn(mockClient);
     SftpAuthenticationWrapper wrapper = new SftpAuthenticationWrapper(mockProvider);
     assertEquals(mockClient, wrapper.connect(mockClient, null));
   }
@@ -24,7 +24,7 @@ public class SftpAuthenticationWrapperTest {
   public void testConnect_AllFailed_NoLogging() throws Exception {
     SftpAuthenticationProvider mockProvider = Mockito.mock(SftpAuthenticationProvider.class);
     SftpClient mockClient = Mockito.mock(SftpClient.class);
-    when(mockProvider.connect(anyObject(), anyObject())).thenThrow(new IOException());
+    when(mockProvider.connect(any(), any())).thenThrow(new IOException());
     SftpAuthenticationWrapper wrapper = new SftpAuthenticationWrapper(mockProvider);
     wrapper.connect(mockClient, null);
   }
@@ -34,7 +34,7 @@ public class SftpAuthenticationWrapperTest {
   public void testConnect_AllFailed_Logging() throws Exception {
     SftpAuthenticationProvider mockProvider = Mockito.mock(SftpAuthenticationProvider.class);
     SftpClient mockClient = Mockito.mock(SftpClient.class);
-    when(mockProvider.connect(anyObject(), anyObject())).thenThrow(new IOException());
+    when(mockProvider.connect(any(), any())).thenThrow(new IOException());
     SftpAuthenticationWrapper wrapper = new SftpAuthenticationWrapper(mockProvider);
     wrapper.setLogExceptions(true);
     wrapper.connect(mockClient, null);

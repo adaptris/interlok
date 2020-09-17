@@ -26,7 +26,7 @@ import javax.management.JMX;
 import javax.management.ObjectName;
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Before;
 import org.junit.Test;
 import com.adaptris.core.Adapter;
@@ -45,12 +45,6 @@ public class RetryMessageErrorHandlerMonitorTest extends ComponentManagerCase {
 
   public RetryMessageErrorHandlerMonitorTest() {
   }
-
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
 
   @Before
   public void beforeMyTests() throws Exception {

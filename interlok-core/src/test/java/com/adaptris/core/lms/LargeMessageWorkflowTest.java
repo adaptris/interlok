@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,11 +25,8 @@ import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
-import com.adaptris.core.ConfiguredConsumeDestination;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.MetadataElement;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceList;
@@ -100,12 +97,7 @@ public class LargeMessageWorkflowTest extends StandardWorkflowTest {
 
     MockMessageProducer producer = new MockMessageProducer() {
       @Override
-      public void produce(AdaptrisMessage msg) throws ProduceException {
-        throw new ProduceException();
-      }
-
-      @Override
-      public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
+      protected void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException {
         throw new ProduceException();
       }
     };
@@ -150,14 +142,10 @@ public class LargeMessageWorkflowTest extends StandardWorkflowTest {
 
     MockMessageProducer producer = new MockMessageProducer() {
       @Override
-      public void produce(AdaptrisMessage msg) throws ProduceException {
+      protected void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException {
         throw new RuntimeException();
       }
 
-      @Override
-      public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
-        throw new RuntimeException();
-      }
     };
     ;
     MockMessageProducer meh = new MockMessageProducer();
@@ -198,8 +186,10 @@ public class LargeMessageWorkflowTest extends StandardWorkflowTest {
   protected Object retrieveObjectForSampleConfig() {
     Channel c = new Channel();
     LargeMessageWorkflow workflow = new LargeMessageWorkflow();
-    workflow.setConsumer(new LargeFsConsumer(new ConfiguredConsumeDestination("file:////path/to/consume/directory")));
-    workflow.setProducer(new LargeFsProducer(new ConfiguredProduceDestination("file:////path/to/produce/directory")));
+    workflow.setConsumer(
+        new LargeFsConsumer().withBaseDirectoryUrl("file:////path/to/consume/directory"));
+    workflow.setProducer(
+        new LargeFsProducer().withBaseDirectoryUrl("file:////path/to/produce/directory"));
     c.getWorkflowList().add(workflow);
     c.setUniqueId(UUID.randomUUID().toString());
     workflow.setUniqueId(UUID.randomUUID().toString());

@@ -1,22 +1,21 @@
 package com.adaptris.core;
 
+import java.util.Arrays;
 import java.util.Properties;
-
 import javax.naming.CompositeName;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.InvalidNameException;
 import javax.naming.NamingException;
-
 import com.adaptris.core.util.ExceptionHelper;
 
 public class SharedComponent {
-  
+
   protected AdaptrisComponent triggerJndiLookup(String jndiName) throws CoreException {
     AdaptrisComponent result = null;
     try {
       InitialContext ctx = createContext();
-      String compEnvName = this.checkAndComposeName(jndiName);
+      String compEnvName = checkAndComposeName(jndiName);
       String[] namesToTry =
       {
           compEnvName, jndiName
@@ -36,7 +35,7 @@ public class SharedComponent {
     }
     return result;
   }
-  
+
   private InitialContext createContext() throws NamingException {
     Properties env = new Properties();
     env.put(Context.INITIAL_CONTEXT_FACTORY, JndiContextFactory.class.getName());
@@ -52,13 +51,13 @@ public class SharedComponent {
     }
     return result;
   }
-  
+
   /**
    * If the lookup name doesn't contain any subcontext (e.g. "comp/env/") then lets prepend these sub contexts to the name.
    * If however the lookup name does include at least one sub-context, no matter what that sub-context is, then leave the name alone.
    * @param jndiName
    * @return String jndiName
-   * @throws InvalidNameException 
+   * @throws InvalidNameException
    */
   private String checkAndComposeName(String jndiName) throws InvalidNameException {
     CompositeName compositeName = new CompositeName(jndiName);

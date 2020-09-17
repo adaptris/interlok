@@ -40,10 +40,6 @@ public class MapMetadataServiceTest extends MetadataServiceExample {
 
   private static final String UNMATCHED_REGXP = "ABCDEFGHIJKL(.*)";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   private MapMetadataService createService() {
     KeyValuePairList kvps = new KeyValuePairList();

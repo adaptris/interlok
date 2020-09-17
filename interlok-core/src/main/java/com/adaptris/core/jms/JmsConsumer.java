@@ -12,24 +12,26 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.jms;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
-import javax.jms.Topic;
+
+import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.jms.JmsDestination.DestinationType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * JMS Consumer implementation that can target queues or topics via an RFC6167 style destination.
@@ -65,14 +67,35 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("jms-consumer")
 @AdapterComponent
 @ComponentProfile(summary = "Listen for JMS messages on the specified queue or topic", tag = "consumer,jms",
-    recommended = {JmsConnection.class})
-@DisplayOrder(order = {"destination", "acknowledgeMode", "messageTranslator"})
+recommended = {JmsConnection.class})
+@DisplayOrder(
+    order = {"endpoint", "messageSelector", "destination", "acknowledgeMode",
+    "messageTranslator"})
 public class JmsConsumer extends JmsConsumerImpl {
 
+  /**
+   * Set to true if you wish to let the JMS message consumer be delegated by the configured vendor
+   * implementation.
+   * <p>
+   * The default is false such that we use standard JMS 1.1/2.0 methods to create the appropriate
+   * consumers.
+   * </p>
+   */
   @AdvancedConfig(rare = true)
   @AutoPopulated
   @InputFieldDefault(value = "false")
+  @Getter
+  @Setter
   private Boolean deferConsumerCreationToVendor;
+
+  /**
+   * The RFC6167 format topic/queue.
+   *
+   */
+  @Getter
+  @Setter
+  // Needs to be @NotBlank when destination is removed.
+  private String endpoint;
 
   public JmsConsumer() {
   }
@@ -82,83 +105,28 @@ public class JmsConsumer extends JmsConsumerImpl {
     super(transacted);
   }
 
-  public JmsConsumer(ConsumeDestination d) {
-    this();
-    setDestination(d);
+  public JmsConsumer withEndpoint(String s) {
+    setEndpoint(s);
+    return this;
+  }
+
+  @Override
+  protected String configuredEndpoint() {
+    return getEndpoint();
   }
 
   @Override
   protected MessageConsumer createConsumer() throws JMSException, CoreException {
-    String rfc6167 = getDestination().getDestination();
-    String filterExp = getDestination().getFilterExpression();
+    String rfc6167 = endpoint();
+    String filterExp = messageSelector();
 
     VendorImplementation vendor = retrieveConnection(JmsConnection.class).configuredVendorImplementation();
-    JmsDestination destination = vendor.createDestination(rfc6167, this);
-
-    if (deferConsumerCreationToVendor()) {
-      return vendor.createConsumer(destination, filterExp, this);
-    } else {
-      MessageConsumer consumer = null;
-
-      if(destination.destinationType().equals(DestinationType.TOPIC)) {
-        if(!isEmpty(destination.subscriptionId())) {  // then durable, maybe shared
-          if(!isEmpty(destination.sharedConsumerId()))  {
-            log.trace("Creating new shared durable consumer.");
-            consumer = ((ConsumerCreator)
-                (session, dest, filterExpression) -> session.createSharedDurableConsumer((Topic) dest.getDestination(), dest.subscriptionId(), filterExpression)
-            ).createConsumer(currentSession(), destination, filterExp);
-          }
-          else {
-            log.trace("Creating new durable consumer.");
-            consumer = ((ConsumerCreator)
-                (session, dest, filterExpression) -> session.createDurableSubscriber((Topic) dest.getDestination(), filterExpression)
-            ).createConsumer(currentSession(), destination, filterExp);
-          }
-        } else if (!isEmpty(destination.sharedConsumerId())) {
-          log.trace("Creating new shared consumer.");
-          consumer = ((ConsumerCreator)
-              (session, dest, filterExpression) -> session.createSharedConsumer((Topic) dest.getDestination(), dest.sharedConsumerId(), filterExpression)
-          ).createConsumer(currentSession(), destination, filterExp);
-        }
-      }
-
-      if(consumer == null) {
-        log.trace("Creating new standard consumer.");
-        consumer = ((ConsumerCreator)
-            (session, dest, filterExpression) -> session.createConsumer(dest.getDestination(), filterExpression)
-        ).createConsumer(currentSession(), destination, filterExp);
-      }
-
-      return consumer;
-    }
+    return new JmsMessageConsumerFactory(vendor, currentSession(), rfc6167, deferConsumerCreationToVendor(), filterExp,
+        this).create();
   }
 
   protected Boolean deferConsumerCreationToVendor() {
-    return this.getDeferConsumerCreationToVendor() == null ? false : this.getDeferConsumerCreationToVendor();
-  }
-
-  /**
-   * <p>
-   * Returns a boolean value which determines if the JMS message consumer should be created by the configured vendor implementation or not.
-   * </p>
-   * <p>
-   * Generally this will be false or null, such is the default.  When false/null a standard JMS message consumer will be created.
-   * </p>
-   */
-  public Boolean getDeferConsumerCreationToVendor() {
-    return deferConsumerCreationToVendor;
-  }
-
-  /**
-   * <p>
-   * Set to true if you wish to let the JMS message consumer be created by the specific vendor implementation.
-   * </p>
-   * <p>
-   * Generally this will be false/null, such is the default.  When false/null a standard JMS message consumer will be created.
-   * </p>
-   */
-  public void setDeferConsumerCreationToVendor(Boolean deferConsumerCreationToVendor) {
-    this.deferConsumerCreationToVendor = deferConsumerCreationToVendor;
+    return BooleanUtils.toBooleanDefaultIfNull(getDeferConsumerCreationToVendor(), false);
   }
 
 }

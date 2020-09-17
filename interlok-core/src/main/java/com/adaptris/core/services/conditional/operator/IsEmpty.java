@@ -41,8 +41,12 @@ public class IsEmpty implements Operator {
     return false;
   }
 
-  public Boolean isIgnoreWhitespace() {
-    return BooleanUtils.toBooleanDefaultIfNull(ignoreWhitespace, false);
+  private boolean isIgnoreWhitespace() {
+    return BooleanUtils.toBooleanDefaultIfNull(getIgnoreWhitespace(), false);
+  }
+
+  public Boolean getIgnoreWhitespace() {
+    return ignoreWhitespace;
   }
 
   public void setIgnoreWhitespace(Boolean ignoreWhitespace) {

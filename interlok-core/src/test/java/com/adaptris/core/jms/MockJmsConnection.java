@@ -16,10 +16,10 @@
 
 package com.adaptris.core.jms;
 
-public class MockJmsConnection extends JmsConnection {
-  
-  public void initConnection() {
-    // do nothing
-  }
+import com.adaptris.annotation.Removal;
 
+@Deprecated
+@Removal(version = "4.0.0", message = "moved to com.adaptris.interlok.junit.scaffolding")
+public class MockJmsConnection extends com.adaptris.interlok.junit.scaffolding.jms.MockJmsConnection {
+  
 }

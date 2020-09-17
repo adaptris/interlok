@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,7 +34,7 @@ import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceException;
 
 public class NamedParameterApplicatorTest {
-  
+
   private String fiveParamSqlStatement = "insert into table values(#paramOne,#paramTwo,#paramThree,#paramFour,#paramFive)";
   private String twoParamSqlStatementDiffPrefix = "insert into table values(%paramOne,%paramTwo)";
   private String twoParamSqlStatement = "insert into table values(#paramOne,#paramTwo)";
@@ -43,35 +43,35 @@ public class NamedParameterApplicatorTest {
   private String twoParamSelectStatement = "select * from test where fieldOne=#paramOne and fieldTwo=#paramTwo";
   private String expectedTwoParamSelectStatement = "select * from test where fieldOne=? and fieldTwo=?";
   private String twoParamSelectStatementNameNotExists = "select * from test where fieldOne=#xxx and fieldTwo=#zzz";
-  
+
   private StatementParameterList parameters;
-  
+
   private NamedParameterApplicator parameterApplicator;
-  
+
   private AdaptrisMessage message;
-  
+
   @Mock
   private PreparedStatement mockStatement;
-  
+
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
-    
+
     message = DefaultMessageFactory.getDefaultInstance().newMessage("SomePayload");
     parameterApplicator = new NamedParameterApplicator();
-    
+
     StatementParameter param1 = new StatementParameter("MyValue1", "java.lang.String", StatementParameter.QueryType.constant);
     param1.setName("paramOne");
     StatementParameter param2 = new StatementParameter("MyValue2", "java.lang.String", StatementParameter.QueryType.constant);
     param2.setName("paramTwo");
-    
+
     parameters = new StatementParameterList();
     parameters.add(param1);
     parameters.add(param2);
   }
-  
+
   public void tearDown() throws Exception {
-    
+
   }
 
   @Test
@@ -104,7 +104,7 @@ public class NamedParameterApplicatorTest {
   @Test
   public void testParameterApplicator() throws Exception {
     parameterApplicator.applyStatementParameters(message, mockStatement, parameters, twoParamSqlStatement);
-    
+
     verify(mockStatement).setObject(1, "MyValue1");
     verify(mockStatement).setObject(2, "MyValue2");
   }
@@ -131,16 +131,16 @@ public class NamedParameterApplicatorTest {
     param3.setName("paramThree");
     StatementParameter param4 = new StatementParameter("MyValue4", "java.lang.String", StatementParameter.QueryType.constant);
     param4.setName("paramFour");
-    
+
     parameters = new StatementParameterList();
     parameters.add(param1);
     parameters.add(param5);
     parameters.add(param2);
     parameters.add(param3);
     parameters.add(param4);
-    
+
     parameterApplicator.applyStatementParameters(message, mockStatement, parameters, fiveParamSqlStatement);
-    
+
     verify(mockStatement).setObject(1, "MyValue1");
     verify(mockStatement).setObject(2, "MyValue2");
     verify(mockStatement).setObject(3, "MyValue3");
@@ -151,14 +151,14 @@ public class NamedParameterApplicatorTest {
   @Test
   public void testParameterApplicatorZeroParams() throws Exception {
     parameterApplicator.applyStatementParameters(message, mockStatement, new StatementParameterList(), zeroParamSqlStatement);
-    
+
     verify(mockStatement, never()).setObject(anyInt(), anyString());
   }
 
   @Test
   public void testParameterApplicatorServiceException() throws Exception {
     doThrow(new SQLException("Expected")).when(mockStatement).setObject(anyInt(), anyString());
-    
+
     try {
       parameterApplicator.applyStatementParameters(message, mockStatement, parameters, twoParamSqlStatement);
       fail("Should throw service exception.");
@@ -167,7 +167,7 @@ public class NamedParameterApplicatorTest {
     }
   }
 
-  
-  
+
+
 
 }

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.http.HttpProducer;
 import com.adaptris.http.Http;
@@ -38,6 +37,8 @@ import com.adaptris.http.HttpMessageFactory;
 import com.adaptris.http.HttpSession;
 import com.adaptris.util.stream.StreamUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Producer that uses the config HTTP method to send to the remote server.
@@ -75,7 +76,9 @@ public class SimpleHttpProducer extends HttpProducer {
   // private ProduceDestination defaultDestination;
   private long socketTimeout = Http.DEFAULT_SOCKET_TIMEOUT;
   private String method = "POST";
-
+  @Getter
+  @Setter
+  private String url;
   /**
    * @see com.adaptris.core.AdaptrisMessageProducerImp#AdaptrisMessageProducerImp()
    *
@@ -91,52 +94,40 @@ public class SimpleHttpProducer extends HttpProducer {
     return socketTimeout;
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisMessageProducerImp #request(AdaptrisMessage,
-   *      ProduceDestination, long)
-   */
   @Override
-  protected AdaptrisMessage doRequest(AdaptrisMessage msg,
-                                      ProduceDestination destination,
-                                      long timeout) throws ProduceException {
+  protected AdaptrisMessage doRequest(AdaptrisMessage msg, String destination, long timeout)
+      throws ProduceException {
 
     AdaptrisMessage reply = defaultIfNull(getMessageFactory()).newMessage();
     OutputStream out = null;
 
     try {
       HttpClientConnection c = retrieveConnection(HttpClientConnection.class);
-      HttpClientTransport client = c.initialiseClient(destination
-          .getDestination(msg));
+      HttpClientTransport client = c.initialiseClient(destination);
       client.setMethod(getMethod());
       HttpMessage m = HttpMessageFactory.getDefaultInstance().create();
       applyHeaders(getAdditionalHeaders(msg), m);
       if (getContentTypeKey() != null && msg.containsKey(getContentTypeKey())) {
-        m.getHeaders().put(Http.CONTENT_TYPE,
-            msg.getMetadataValue(getContentTypeKey()));
+        m.getHeaders().put(Http.CONTENT_TYPE, msg.getMetadataValue(getContentTypeKey()));
       }
       if (getAuthorisation() != null) {
         m.getHeaders().put(Http.AUTHORIZATION, getAuthorisation());
       }
       if (getEncoder() != null) {
         getEncoder().writeMessage(msg, m);
-      }
-      else {
+      } else {
         out = m.getOutputStream();
         out.write(msg.getPayload());
         out.flush();
       }
-      HttpSession httpSession = client.send(m, new Long(timeout).intValue(),
- handleRedirection());
+      HttpSession httpSession = client.send(m, new Long(timeout).intValue(), handleRedirection());
       readResponse(httpSession, reply);
       httpSession.close();
-    }
-    catch (HttpException e) {
+    } catch (HttpException e) {
       throw new ProduceException(e);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       throw new ProduceException(e);
-    }
-    catch (CoreException e) {
+    } catch (CoreException e) {
       throw new ProduceException(e);
     }
     return reply;
@@ -228,6 +219,11 @@ public class SimpleHttpProducer extends HttpProducer {
    */
   public void setMethod(String s) {
     method = s;
+  }
+
+  @Override
+  public String endpoint(AdaptrisMessage msg) throws ProduceException {
+    return msg.resolve(getUrl());
   }
 
 }

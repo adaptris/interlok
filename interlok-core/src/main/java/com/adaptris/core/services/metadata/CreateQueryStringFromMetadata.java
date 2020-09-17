@@ -24,13 +24,11 @@ import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.core.util.LoggingHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -52,10 +50,6 @@ public class CreateQueryStringFromMetadata extends UrlEncodedMetadataValues {
   @AdvancedConfig
   @InputFieldDefault(value = "true")
   private Boolean includeQueryPrefix;
-  @Deprecated
-  @Removal(version = "3.11.0", message = "use separator instead")
-  private String querySeparator;
-  private transient boolean warningLogged = false;
 
   public CreateQueryStringFromMetadata() {
   }
@@ -82,17 +76,6 @@ public class CreateQueryStringFromMetadata extends UrlEncodedMetadataValues {
     }
   }
 
-  @Override
-  protected String separator() {
-    if (getQuerySeparator() != null) {
-      LoggingHelper.logWarning(warningLogged, () -> {
-        warningLogged = true;
-      }, "query-separator deprecated; use a separator instead");
-      return getQuerySeparator();
-    }
-    return super.separator();
-  }
-
   public String getResultKey() {
     return resultKey;
   }
@@ -112,22 +95,10 @@ public class CreateQueryStringFromMetadata extends UrlEncodedMetadataValues {
    * @param b
    */
   public void setIncludeQueryPrefix(Boolean b) {
-    this.includeQueryPrefix = b;
+    includeQueryPrefix = b;
   }
 
   private boolean includeQueryPrefix() {
     return BooleanUtils.toBooleanDefaultIfNull(getIncludeQueryPrefix(), true);
-  }
-
-  @Deprecated
-  @Removal(version = "3.11.0", message = "use separator instead")
-  public String getQuerySeparator() {
-    return querySeparator;
-  }
-
-  @Deprecated
-  @Removal(version = "3.11.0", message = "use separator instead")
-  public void setQuerySeparator(String s) {
-    this.querySeparator = s;
   }
 }

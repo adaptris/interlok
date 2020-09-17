@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,14 +20,11 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
 import javax.management.JMX;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.CoreException;
 import com.adaptris.core.runtime.AdapterManagerMBean;
 import com.adaptris.core.runtime.AdapterRegistry;
@@ -47,7 +44,6 @@ public class ShutdownHandler extends Thread {
 
   private transient Logger log = LoggerFactory.getLogger(Thread.class.getName());
 
-  private transient Thread mainThread;
   private transient ManagedThreadFactory threadFactory = new ManagedThreadFactory(ShutdownHandler.class.getSimpleName());
   private transient BootstrapProperties bootProperties;
 
@@ -59,8 +55,7 @@ public class ShutdownHandler extends Thread {
    * @param bp the adapter to shut down
    */
   public ShutdownHandler(BootstrapProperties bp) throws Exception {
-    mainThread = Thread.currentThread();
-    this.bootProperties = bp;
+    bootProperties = bp;
   }
 
   /**
@@ -84,17 +79,6 @@ public class ShutdownHandler extends Thread {
       AdapterRegistry.sendShutdownEvent(adapterRegistry.getAdapters());
       log.info("Shutting down Adapter(s)");
       shutdown(adapterRegistry.getAdapters());
-      while (mainThread.isAlive() && !mainThread.isInterrupted()) {
-        mainThread.interrupt();
-        try {
-          Thread.sleep(1000);
-        } catch (InterruptedException e) {
-          mainThread.interrupt();
-          break;
-        }
-      }
-      // log.info("Unregistering Adapter(s)");
-      // AdapterRegistry.unregister(adapterRegistry.getAdapters());
     } catch (Exception e) {
       log.debug(e.getMessage(), e);
     }
@@ -158,8 +142,8 @@ public class ShutdownHandler extends Thread {
     private CountDownLatch barrier;
 
     ShutdownAdapter(ObjectName name, CountDownLatch barrier, boolean force) {
-      this.forceShutdown = force;
-      this.objName = name;
+      forceShutdown = force;
+      objName = name;
       this.barrier = barrier;
     }
 
