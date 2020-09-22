@@ -1,11 +1,11 @@
 package com.adaptris.core.resolver;
 
+import com.adaptris.core.ResolveFromPayloadUsingXPath;
 import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.interlok.types.InterlokMessage;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
@@ -19,7 +19,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-public class FromPayloadUsingXPathTest
+public class ResolveFromPayloadUsingXPathTest
 {
   private static final String REGEX_POOR = "%payload{xpath:/something[0--]invalid}";
   private static final String REGEX_MISS = "%payload{xpath:/text/para/quote/text()}";
@@ -28,7 +28,7 @@ public class FromPayloadUsingXPathTest
   static final String DATA = "<text><para><sent>Hipster ipsum dolor amet portland asymmetrical try-hard roof party poke, schlitz blue bottle pop-up 3 wolf moon kogi hammock kitsch austin health goth.</sent><sent>Ethical mlkshk crucifix pug, hexagon XOXO tote bag portland typewriter celiac cornhole lumbersexual 8-bit pop-up.</sent><sent>Cred typewriter seitan, narwhal quinoa master cleanse mlkshk freegan.</sent><sent>Whatever vape paleo, mustache taiyaki XOXO chia ethical viral.</sent></para></text>";
   static final String RESULT = "Cred typewriter seitan, narwhal quinoa master cleanse mlkshk freegan.";
 
-  private FromPayloadUsingXPath resolver = new FromPayloadUsingXPath();
+  private ResolveFromPayloadUsingXPath resolver = new ResolveFromPayloadUsingXPath();
   private InterlokMessage message = new InterlokMessage()
   {
     @Override public String getUniqueId() { return null; }
