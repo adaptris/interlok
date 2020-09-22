@@ -34,7 +34,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Supports arbitary scripting languges that are supported by JSR223.
  * <p>
  * You should take care when configuring this class; it can present an audit trail issue when used in combination with
- * {@link com.adaptris.core.services.dynamic.DynamicServiceLocator} or
  * {@link com.adaptris.core.services.dynamic.DynamicServiceExecutor} if your script executes arbitrary system commands. In that
  * situation, all commands will be executed with the current users permissions and may be subject to the virtual machines security
  * manager.
@@ -85,7 +84,7 @@ public class ScriptingService extends ScriptingServiceImp {
    * @param s the script
    */
   public void setScriptFilename(String s) {
-    this.scriptFilename = Args.notBlank(s, "scriptFilename");
+    scriptFilename = Args.notBlank(s, "scriptFilename");
   }
 
   @Override

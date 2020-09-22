@@ -30,11 +30,6 @@ import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.keystore.ConfiguredUrl;
 
 public class DecryptionServiceTest extends SecurityServiceCase {
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
   @Test
   public void testFailedDecryption() throws Exception {
     String url = createKeystore();

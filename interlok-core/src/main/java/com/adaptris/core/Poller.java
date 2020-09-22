@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,27 +16,33 @@
 
 package com.adaptris.core;
 
-
 /**
- * <p> 
+ * <p>
  * Schedules polling for <code>AdaptrisPollingConsumer</code>s.
  * </p>
  */
 public interface Poller extends ComponentLifecycle {
-  
+
   /**
    * <p>
-   * Register the <code>AdaptrisPollingConsumer</code> to use.  
+   * Register the <code>AdaptrisPollingConsumer</code> to use.
    * </p>
    * @param consumer the <code>AdaptrisPollingConsumer</code> to use
    */
   void registerConsumer(AdaptrisPollingConsumer consumer);
-  
+
   /**
    * <p>
    * Retrieve the <code>AdaptrisPollingConsumer</code> to use.
    * </p>
+   * 
    * @return the <code>AdaptrisPollingConsumer</code> to use
    */
   AdaptrisPollingConsumer retrieveConsumer();
+
+  /**
+   * Return the register consumer with casting.
+   */
+  <T> T retrieveConsumer(Class<T> type);
+
 }

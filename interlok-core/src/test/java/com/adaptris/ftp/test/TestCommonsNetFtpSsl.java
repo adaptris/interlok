@@ -35,10 +35,6 @@ public class TestCommonsNetFtpSsl extends FtpCase {
   private static final String FTP_GET_REMOTEDIR = "ftp.get.remotedir";
   private static final String FTP_PASSWORD = "ftp.password";
   private static final String FTP_USERNAME = "ftp.username";
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected String getRemoteGetDirectory() throws IOException {

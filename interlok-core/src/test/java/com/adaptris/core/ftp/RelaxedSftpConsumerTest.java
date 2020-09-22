@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,7 +21,6 @@ import static com.adaptris.core.ftp.SftpExampleHelper.createPollers;
 import static com.adaptris.core.ftp.SftpExampleHelper.getConfigSimpleName;
 import java.util.ArrayList;
 import java.util.List;
-import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.Poller;
 import com.adaptris.core.StandaloneConsumer;
 
@@ -50,7 +49,8 @@ public class RelaxedSftpConsumerTest extends RelaxedFtpConsumerCase {
     try {
       for (Poller p : pollers) {
         RelaxedFtpConsumer ftp = new RelaxedFtpConsumer();
-        ftp.setDestination(new ConfiguredConsumeDestination("sftp://overrideuser@hostname:port/path/to/directory", "*.xml"));
+        ftp.setFtpEndpoint("sftp://overrideuser@hostname:port/path/to/directory");
+        ftp.setFilterExpression("*.xml");
         ftp.setPoller(p);
         result.add(new StandaloneConsumer(conn, ftp));
       }

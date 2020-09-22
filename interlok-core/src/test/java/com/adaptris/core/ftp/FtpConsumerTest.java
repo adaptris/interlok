@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -50,6 +50,7 @@ import com.adaptris.core.PollerImp;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.lms.FileBackedMessageFactory;
 import com.adaptris.core.stubs.MockMessageListener;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.ftp.ClientSettings;
 import com.adaptris.ftp.FtpDataMode;
 import com.adaptris.util.KeyValuePair;
@@ -59,7 +60,7 @@ import com.adaptris.util.TimeInterval;
 public class FtpConsumerTest extends FtpConsumerCase {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
-  
+
   @Override
   protected FtpConnection createConnectionForExamples() {
     return FtpExampleHelper.ftpConnection();
@@ -84,7 +85,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     ftpConsumer.setFileFilterImp("ABCDE");
     assertEquals("ABCDE", ftpConsumer.getFileFilterImp());
     assertEquals("ABCDE", ftpConsumer.fileFilterImp());
-    
+
     ftpConsumer.setFileFilterImp(null);
     assertNull(ftpConsumer.getFileFilterImp());
     assertEquals(RegexFileFilter.class.getCanonicalName(), ftpConsumer.fileFilterImp());
@@ -116,6 +117,8 @@ public class FtpConsumerTest extends FtpConsumerCase {
       FtpConsumer ftpConsumer = createForTests(listener, "testBasicConsume");
       FtpConnection consumeConnection = create(server);
       sc = new StandaloneConsumer(consumeConnection, ftpConsumer);
+      // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
+      LifecycleHelper.prepare(sc);
       start(sc);
       waitForMessages(listener, count);
       helper.assertMessages(listener.getMessages(), count);
@@ -264,7 +267,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
       sc = new StandaloneConsumer(consumeConnection, ftpConsumer);
       start(sc);
       long waitTime = waitForPollCallback(pollFired);
-      log.trace("Waited for {}ms for == 0 poll", waitTime);      
+      log.trace("Waited for {}ms for == 0 poll", waitTime);
       helper.assertMessages(listener.getMessages(), 0);
       assertEquals(count, filesystem.listFiles(DEFAULT_WORK_DIR_CANONICAL).size());
     }
@@ -376,9 +379,9 @@ public class FtpConsumerTest extends FtpConsumerCase {
         }
       });
       FtpConsumer ftpConsumer = createForTests(listener, "testConsumeWithQuietPeriodAndTimezone", poller);
-      
+
       ftpConsumer.setQuietInterval(new TimeInterval(3L, TimeUnit.SECONDS));
-      FtpConnection consumeConnection = create(server);      
+      FtpConnection consumeConnection = create(server);
       consumeConnection.setAdditionalDebug(true);
       consumeConnection.setServerTimezone("America/Los_Angeles");
 
@@ -551,7 +554,8 @@ public class FtpConsumerTest extends FtpConsumerCase {
   private FtpConsumer createForTests(MockMessageListener listener, String threadName, Poller p) {
     return createForTests(listener, new ConfiguredConsumeDestination(SERVER_ADDRESS, null, threadName), p);
   }
-  
+
+  @SuppressWarnings("deprecation")
   private FtpConsumer createForTests(MockMessageListener listener, ConsumeDestination dest, Poller poller) {
     FtpConsumer ftpConsumer = new FtpConsumer();
     if (dest.getDestination().equals(SERVER_ADDRESS)) {
@@ -565,7 +569,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     ftpConsumer.registerAdaptrisMessageListener(listener);
     return ftpConsumer;
   }
-  
+
   private FtpConsumer createForTests(MockMessageListener listener, ConsumeDestination dest) {
     return createForTests(listener, dest, new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)));
   }

@@ -20,11 +20,11 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.core.ConfiguredProduceDestination;
-import com.adaptris.core.PortManager;
 import com.adaptris.core.management.jetty.JettyServerComponent;
 import com.adaptris.core.management.jetty.ServerBuilder;
 import com.adaptris.core.management.webserver.ServerManager;
 import com.adaptris.core.management.webserver.WebServerManagementUtil;
+import com.adaptris.interlok.junit.scaffolding.util.PortManager;
 
 /**
  * @author gcsiki

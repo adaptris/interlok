@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,12 +35,9 @@ import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
-import com.adaptris.core.ConfiguredConsumeDestination;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.FixedIntervalPoller;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
@@ -97,8 +94,8 @@ public class ActiveMqJmsTransactedWorkflowTest {
         }
 
       }, 666);
-      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(), new PtpProducer(
-          new ConfiguredProduceDestination(destination)));
+      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
+          new PtpProducer().withQueue(destination));
       send(sender, msgCount);
     }
     finally {
@@ -129,8 +126,8 @@ public class ActiveMqJmsTransactedWorkflowTest {
         }
 
       }, 666);
-      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(), new PtpProducer(
-          new ConfiguredProduceDestination(destination)));
+      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
+          new PtpProducer().withQueue((destination)));
       send(sender, msgCount);
       waitForMessages((MockMessageProducer) workflow.getProducer(), msgCount);
       assertEquals(msgCount, ((MockMessageProducer) workflow.getProducer()).getMessages().size());
@@ -155,8 +152,8 @@ public class ActiveMqJmsTransactedWorkflowTest {
     try {
       activeMqBroker.start();
       channel.requestStart();
-      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(), new PtpProducer(
-          new ConfiguredProduceDestination(destination)));
+      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(), new PtpProducer().withQueue(
+              (destination)));
       send(sender, msgCount);
 
     }
@@ -178,20 +175,15 @@ public class ActiveMqJmsTransactedWorkflowTest {
     JmsTransactedWorkflow workflow = (JmsTransactedWorkflow) channel.getWorkflowList().get(0);
     workflow.setProducer(new MockMessageProducer() {
       @Override
-      public void produce(AdaptrisMessage msg) throws ProduceException {
-        throw new ProduceException();
-      }
-
-      @Override
-      public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
+      protected void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException {
         throw new ProduceException();
       }
     });
     try {
       activeMqBroker.start();
       channel.requestStart();
-      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(), new PtpProducer(
-          new ConfiguredProduceDestination(destination)));
+      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
+          new PtpProducer().withQueue((destination)));
       send(sender, msgCount);
     }
     finally {
@@ -212,20 +204,16 @@ public class ActiveMqJmsTransactedWorkflowTest {
     JmsTransactedWorkflow workflow = (JmsTransactedWorkflow) channel.getWorkflowList().get(0);
     workflow.setProducer(new MockMessageProducer() {
       @Override
-      public void produce(AdaptrisMessage msg) throws ProduceException {
+      protected void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException {
         throw new RuntimeException();
       }
 
-      @Override
-      public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
-        throw new RuntimeException();
-      }
     });
     try {
       activeMqBroker.start();
       channel.requestStart();
-      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(), new PtpProducer(
-          new ConfiguredProduceDestination(destination)));
+      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
+          new PtpProducer().withQueue((destination)));
       send(sender, msgCount);
     }
     finally {
@@ -257,8 +245,8 @@ public class ActiveMqJmsTransactedWorkflowTest {
     try {
       activeMqBroker.start();
       channel.requestStart();
-      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(), new PtpProducer(
-          new ConfiguredProduceDestination(destination)));
+      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
+          new PtpProducer().withQueue((destination)));
       send(sender, msgCount);
       waitForMessages(meh, msgCount);
       assertEquals(0, ((MockMessageProducer) workflow.getProducer()).getMessages().size());
@@ -292,8 +280,8 @@ public class ActiveMqJmsTransactedWorkflowTest {
     try {
       activeMqBroker.start();
       channel.requestStart();
-      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(), new PtpProducer(
-          new ConfiguredProduceDestination(destination)));
+      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
+          new PtpProducer().withQueue((destination)));
       send(sender, msgCount);
     }
     finally {
@@ -316,8 +304,8 @@ public class ActiveMqJmsTransactedWorkflowTest {
     try {
       activeMqBroker.start();
       channel.requestStart();
-      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(), new PtpProducer(
-          new ConfiguredProduceDestination(destination)));
+      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
+          new PtpProducer().withQueue((destination)));
       send(sender, msgCount);
 
     }
@@ -341,8 +329,8 @@ public class ActiveMqJmsTransactedWorkflowTest {
     try {
       activeMqBroker.start();
       channel.requestStart();
-      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(), new PasProducer(
-          new ConfiguredProduceDestination(destination)));
+      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
+          new PasProducer().withTopic(destination));
       send(sender, msgCount);
       assertEquals(0, ((MockMessageProducer) workflow.getProducer()).getMessages().size());
     }
@@ -367,8 +355,8 @@ public class ActiveMqJmsTransactedWorkflowTest {
     try {
       activeMqBroker.start();
       channel.requestStart();
-      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(), new PtpProducer(
-          new ConfiguredProduceDestination(destination)));
+      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
+          new PtpProducer().withQueue(destination));
       send(sender, msgCount);
       waitForMessages((MockMessageProducer) workflow.getProducer(), msgCount);
       assertEquals(msgCount, ((MockMessageProducer) workflow.getProducer()).getMessages().size());
@@ -399,8 +387,8 @@ public class ActiveMqJmsTransactedWorkflowTest {
     try {
       activeMqBroker.start();
       channel.requestStart();
-      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(), new PtpProducer(
-          new ConfiguredProduceDestination(destination)));
+      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
+          new PtpProducer().withQueue((destination)));
       send(sender, msgCount);
       waitForMessages(serviceProducer, msgCount);
       assertEquals(msgCount, serviceProducer.messageCount());
@@ -424,8 +412,8 @@ public class ActiveMqJmsTransactedWorkflowTest {
     try {
       activeMqBroker.start();
       channel.requestStart();
-      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(), new PasProducer(
-          new ConfiguredProduceDestination(destination)));
+      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
+          new PasProducer().withTopic(destination));
       send(sender, msgCount);
       waitForMessages((MockMessageProducer) workflow.getProducer(), msgCount);
       assertEquals(msgCount, ((MockMessageProducer) workflow.getProducer()).getMessages().size());
@@ -449,8 +437,8 @@ public class ActiveMqJmsTransactedWorkflowTest {
     try {
       activeMqBroker.start();
       channel.requestStart();
-      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(), new PasProducer(
-          new ConfiguredProduceDestination(destination)));
+      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
+          new PasProducer().withTopic(destination));
       send(sender, msgCount);
       waitForMessages((MockMessageProducer) workflow.getProducer(), msgCount);
       assertEquals(msgCount, ((MockMessageProducer) workflow.getProducer()).getMessages().size());
@@ -475,8 +463,8 @@ public class ActiveMqJmsTransactedWorkflowTest {
     try {
       activeMqBroker.start();
       channel.requestStart();
-      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(), new PtpProducer(
-          new ConfiguredProduceDestination(destination)));
+      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
+          new PtpProducer().withQueue((destination)));
       start(sender);
       for (int i = 0; i < msgCount; i++) {
         sender.doService(AdaptrisMessageFactory.getDefaultInstance().newMessage("" + i));
@@ -509,8 +497,8 @@ public class ActiveMqJmsTransactedWorkflowTest {
     try {
       activeMqBroker.start();
       channel.requestStart();
-      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(), new PasProducer(
-          new ConfiguredProduceDestination(destination)));
+      StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
+          new PasProducer().withTopic(destination));
       start(sender);
       for (int i = 0; i < msgCount; i++) {
         sender.doService(AdaptrisMessageFactory.getDefaultInstance().newMessage("" + i));
@@ -545,7 +533,7 @@ public class ActiveMqJmsTransactedWorkflowTest {
       activeMqBroker.start();
       channel.requestStart();
       StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true),
-          new PtpProducer(new ConfiguredProduceDestination(destination)));
+          new PtpProducer().withQueue((destination)));
       start(sender);
       for (int i = 0; i < msgCount; i++) {
         sender.doService(AdaptrisMessageFactory.getDefaultInstance().newMessage("" + i));
@@ -592,8 +580,9 @@ public class ActiveMqJmsTransactedWorkflowTest {
     workflow.setWaitPeriodAfterRollback(new TimeInterval(10L, TimeUnit.MILLISECONDS.name()));
 
     workflow.setProducer(new MockMessageProducer());
-    JmsConsumerImpl jmsCons = isPtp ? new PtpConsumer(new ConfiguredConsumeDestination(target, null, threadName)) : new PasConsumer(
-        new ConfiguredConsumeDestination(target, null, threadName));
+
+    JmsConsumerImpl jmsCons =
+        isPtp ? new PtpConsumer().withQueue(target) : new PasConsumer().withTopic(target);
     jmsCons.setMessageTranslator(new TextMessageTranslator().withMoveJmsHeaders(true));
     workflow.setConsumer(jmsCons);
     return workflow;
@@ -604,7 +593,7 @@ public class ActiveMqJmsTransactedWorkflowTest {
     workflow.setProducer(new MockMessageProducer());
     workflow.setWaitPeriodAfterRollback(new TimeInterval(10L, TimeUnit.MILLISECONDS.name()));
 
-    JmsPollingConsumerImpl jmsCons = new PtpPollingConsumer(new ConfiguredConsumeDestination(target, null, threadName));
+    JmsPollingConsumerImpl jmsCons = new PtpPollingConsumer().withQueue(target);
     jmsCons.setReacquireLockBetweenMessages(true);
     jmsCons.setAdditionalDebug(true);
     jmsCons.setPoller(new FixedIntervalPoller(new TimeInterval(2L, TimeUnit.SECONDS)));

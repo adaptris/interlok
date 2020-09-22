@@ -31,10 +31,6 @@ import com.adaptris.util.text.xml.SimpleNamespaceContext;
 
 public class AddNamespaceObjectMetadataTest extends MetadataServiceExample {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testService() throws Exception {

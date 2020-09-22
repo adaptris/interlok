@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,17 +36,15 @@ import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
+import com.adaptris.interlok.junit.scaffolding.BaseCase;
 import com.adaptris.util.SimpleIdGenerator;
 import com.adaptris.util.TimeInterval;
 
-public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
+public class RetryMessageErrorHandlerTest
+    extends com.adaptris.interlok.junit.scaffolding.ExampleErrorHandlerCase {
 
   private static final TimeInterval DEFAULT_RETRY_INTERVAL = new TimeInterval(100L, TimeUnit.MILLISECONDS);
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   private RetryMessageErrorHandler createMessageErrorHandler(AdaptrisMessageProducer p) throws Exception {
     return configure(new RetryMessageErrorHandler(), p);
@@ -386,6 +384,7 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testBug854() throws Exception {
     String name = renameThread("testBug854");
     try {
@@ -479,7 +478,8 @@ public class RetryMessageErrorHandlerTest extends ExampleErrorHandlerCase {
   @Override
   protected RetryMessageErrorHandler createForExamples() {
     RetryMessageErrorHandler meh = new RetryMessageErrorHandler();
-    FsProducer producer = new FsProducer(new ConfiguredProduceDestination("/path/to/bad-directory"));
+    FsProducer producer = new FsProducer();
+    producer.setBaseDirectoryUrl("/path/to/bad-directory");
     producer.setEncoder(new MimeEncoder(false, null, null));
     meh.setProcessingExceptionService(new ServiceList(new ArrayList(Arrays.asList(new Service[]
     {

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,17 +38,16 @@ import javax.management.remote.JMXServiceURL;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import com.adaptris.core.BaseCase;
-import com.adaptris.core.PortManager;
 import com.adaptris.core.management.Constants;
 import com.adaptris.core.management.SystemPropertiesUtilTest;
 import com.adaptris.core.management.jmx.provider.junit.ServerProvider;
 import com.adaptris.core.management.properties.PropertyResolver;
 import com.adaptris.core.runtime.AdapterComponentMBean;
 import com.adaptris.core.util.JmxHelper;
+import com.adaptris.interlok.junit.scaffolding.util.PortManager;
 import com.adaptris.security.password.Password;
 
-public class JmxRemoteComponentTest extends BaseCase {
+public class JmxRemoteComponentTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
 
   private static final String DEFAULT_USERNAME_PASSWORD = "admin";
   private static final String DEFAULT_VALUE = "Back At The Chicken Shack 1960";
@@ -57,12 +56,6 @@ public class JmxRemoteComponentTest extends BaseCase {
   private static final String JMXMP_PREFIX = "service:jmx:jmxmp://localhost:";
 
   private Integer unusedPort = -1;
-
-
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Before
   public void setUp() throws Exception {
@@ -281,12 +274,12 @@ public class JmxRemoteComponentTest extends BaseCase {
       try {
         c.stop();
       } catch (Exception e) {
-        
+
       }
       try {
         c.destroy();
       } catch (Exception e) {
-        
+
       }
     }
   }

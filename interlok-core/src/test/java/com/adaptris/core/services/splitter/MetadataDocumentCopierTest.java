@@ -40,11 +40,6 @@ public class MetadataDocumentCopierTest extends SplitterCase {
 
   private static Log logR = LogFactory.getLog(MetadataDocumentCopierTest.class);
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
 
   @Override
   protected String createBaseFileName(Object object) {

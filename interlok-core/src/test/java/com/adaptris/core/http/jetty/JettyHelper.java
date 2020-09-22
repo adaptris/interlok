@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,7 +17,6 @@
 package com.adaptris.core.http.jetty;
 
 import static com.adaptris.core.http.jetty.HttpConsumerTest.URL_TO_POST_TO;
-
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessageProducer;
 import com.adaptris.core.Channel;
@@ -25,7 +24,6 @@ import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.DefaultEventHandler;
 import com.adaptris.core.EventHandler;
 import com.adaptris.core.NullProcessingExceptionHandler;
-import com.adaptris.core.PortManager;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.StandaloneProducer;
@@ -34,6 +32,7 @@ import com.adaptris.core.Workflow;
 import com.adaptris.core.http.client.net.HttpRequestService;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.stubs.MockChannel;
+import com.adaptris.interlok.junit.scaffolding.util.PortManager;
 
 /**
  * @author lchan

@@ -43,11 +43,6 @@ public class SymmetricKeyCryptographyServiceTest extends SecurityServiceExample 
     encryptedPayload = encrypt(PAYLOAD, key, iv);
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
   @Test
   public void testDoService_BadConfig() throws Exception {
     try {

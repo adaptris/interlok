@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,50 +34,46 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.jmx.JmxConnection;
 
-public class JmxOperationCallServiceTest extends ServiceCase {
-  
+public class JmxOperationCallServiceTest
+    extends com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase {
+
   private static final String BASE_DIR_KEY = "JmxServiceExamples.baseDir";
-  
+
   private AdaptrisMessage message;
-  
+
   private JmxOperationCallService callService;
-  
+
   private String originalPayload = "OriginalPayload";
 
   @Mock
   private JmxOperationInvoker<Object> mockInvoker;
   @Mock
   private JmxConnection mockConnection;
-  
+
   public JmxOperationCallServiceTest() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
   @Before
   public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
-    
+
     callService = new JmxOperationCallService();
     callService.setInvoker(mockInvoker);
     callService.setOperationName("MyOperationName");
     callService.setObjectName("com.adaptris:id=xxx");
-    
+
     message = DefaultMessageFactory.getDefaultInstance().newMessage(originalPayload);
-    
+
     callService.init();
     callService.start();
   }
-  
+
   @After
   public void tearDown() throws Exception {
     callService.stop();
@@ -91,13 +87,13 @@ public class JmxOperationCallServiceTest extends ServiceCase {
   @Test
   public void testPayloadReturn() throws Exception {
     String operationReturnValue = "NewPayloadValue";
-    
+
     when(mockInvoker.invoke((MBeanServerConnection) any(), anyString(), anyString(), any(Object[].class), any(String[].class)))
       .thenReturn(operationReturnValue);
-    
+
     callService.setResultValueTranslator(new PayloadValueTranslator());
     callService.doService(message);
-    
+
     assertEquals(operationReturnValue, message.getContent());
   }
 
@@ -106,15 +102,15 @@ public class JmxOperationCallServiceTest extends ServiceCase {
     String operationReturnValue = "NewPayloadValue";
     when(mockInvoker.invoke((MBeanServerConnection) any(), anyString(), anyString(), any(Object[].class), any(String[].class)))
       .thenReturn(operationReturnValue);
-    
+
     PayloadValueTranslator translatorParam = new PayloadValueTranslator();
     List<ValueTranslator> parameters = new ArrayList<>();
     parameters.add(translatorParam);
-    
+
     callService.setOperationParameters(parameters);
     callService.setResultValueTranslator(new PayloadValueTranslator());
     callService.doService(message);
-    
+
     assertEquals(operationReturnValue, message.getContent());
   }
 
@@ -123,10 +119,10 @@ public class JmxOperationCallServiceTest extends ServiceCase {
     String operationReturnValue = "NewPayloadValue";
     when(mockInvoker.invoke((MBeanServerConnection) any(), anyString(), anyString(), any(Object[].class), any(String[].class)))
       .thenReturn(operationReturnValue);
-    
+
     callService.setResultValueTranslator(null);
     callService.doService(message);
-    
+
     assertEquals(originalPayload, message.getContent());
   }
 
@@ -134,7 +130,7 @@ public class JmxOperationCallServiceTest extends ServiceCase {
   public void testInvokerException() throws Exception {
     when(mockInvoker.invoke((MBeanServerConnection) any(), anyString(), anyString(), any(Object[].class), any(String[].class)))
       .thenThrow(new MBeanException(new Exception(), "Expected"));
-    
+
     callService.setResultValueTranslator(null);
     try {
       callService.doService(message);
@@ -149,39 +145,39 @@ public class JmxOperationCallServiceTest extends ServiceCase {
     String existingObjectMetadataKey = "ExistingObjectMetadataKey";
     String existingObjectMetadataValue = "ExistingObjectMetadataValue";
     String newMetadataKay = "NewMetadataKey";
-    
+
     String operationReturnValue = "NewMetadataValue";
     when(mockInvoker.invoke((MBeanServerConnection) any(), anyString(), anyString(), any(Object[].class), any(String[].class)))
       .thenReturn(operationReturnValue);
-    
+
     message.addObjectHeader(existingObjectMetadataKey, existingObjectMetadataValue);
-    
+
     ObjectMetadataValueTranslator translatorParam = new ObjectMetadataValueTranslator();
     translatorParam.setMetadataKey("ExistingObjectMetadataKey");
     translatorParam.setType("java.lang.String");
-    
+
     List<ValueTranslator> parameters = new ArrayList<>();
     parameters.add(translatorParam);
-    
+
     MetadataValueTranslator returnTranslator = new MetadataValueTranslator();
     returnTranslator.setMetadataKey(newMetadataKay);
-    
+
     callService.setOperationParameters(parameters);
-    callService.setResultValueTranslator(returnTranslator);    
-    
+    callService.setResultValueTranslator(returnTranslator);
+
     assertNull(message.getMetadataValue(newMetadataKay));
     callService.doService(message);
     assertEquals(operationReturnValue, message.getMetadataValue(newMetadataKay));
   }
-  
+
   /*************************************************************************************
    * SAMPLE CONFIG
    *************************************************************************************/
-  
+
   @Override
   protected Object retrieveObjectForSampleConfig() {
     PayloadValueTranslator resultTranslator = new PayloadValueTranslator();
-    
+
     PayloadValueTranslator param1 = new PayloadValueTranslator();
     MetadataValueTranslator param2 = new MetadataValueTranslator("metadataKey", "java.lang.String");
     ObjectMetadataValueTranslator param3 = new ObjectMetadataValueTranslator("objectMetadataKey", "java.lang.Object");
@@ -190,7 +186,7 @@ public class JmxOperationCallServiceTest extends ServiceCase {
     {
         param1, param2, param3, param4
     }));
-    
+
     JmxOperationCallService callService = new JmxOperationCallService();
     JmxConnection conn = new JmxConnection();
     conn.setJmxServiceUrl("service:jmx:jmxmp://localhost:5555");
@@ -201,7 +197,7 @@ public class JmxOperationCallServiceTest extends ServiceCase {
     callService.setOperationName("myMethodToInvoke");
     callService.setOperationParameters(params);
     callService.setResultValueTranslator(resultTranslator);
-    
+
     return callService;
   }
 

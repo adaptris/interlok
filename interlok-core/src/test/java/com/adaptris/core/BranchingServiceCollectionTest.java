@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,6 +29,7 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -38,8 +39,10 @@ import com.adaptris.core.stubs.EventHandlerAwareService;
 import com.adaptris.core.stubs.ExampleBranchingService;
 import com.adaptris.core.stubs.TestBranchingService;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.util.Closer;
 
-public class BranchingServiceCollectionTest extends ServiceCollectionCase {
+public class BranchingServiceCollectionTest
+    extends com.adaptris.interlok.junit.scaffolding.services.ServiceCollectionCase {
 
   private static final String BRANCH_LOW = "001";
   private static final String BRANCH_HIGH = "002";
@@ -48,11 +51,13 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
   private AddMetadataService lowService;
   private AddMetadataService highService;
   private static final String BASE_DIR_KEY = "BranchingServiceExamples.baseDir";
-  
+
   @Mock
   private Service mockFailingService;
   @Mock
   private OutOfStateHandler mockOutOfStateHandler;
+
+  private AutoCloseable openMocks = null;
 
   public BranchingServiceCollectionTest() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
@@ -60,10 +65,6 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
     }
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
   @Before
   public void setUp() throws Exception {
     branchService = new TestBranchingService();
@@ -77,7 +78,12 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
     highService.setUniqueId(BRANCH_HIGH);
     highService.addMetadataElement("service-id", BRANCH_HIGH);
 
-    MockitoAnnotations.initMocks(this);
+    openMocks = MockitoAnnotations.openMocks(this);
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    Closer.closeQuietly(openMocks);
   }
 
   @Override
@@ -240,7 +246,7 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
     branchService.changeState(StartedState.getInstance());
     lowService.changeState(StartedState.getInstance());
     highService.changeState(StartedState.getInstance());
-    
+
     services.addService(branchService);
     services.addService(lowService);
     services.addService(highService);
@@ -300,7 +306,7 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
       branchService.changeState(ClosedState.getInstance());
       lowService.changeState(ClosedState.getInstance());
       highService.changeState(ClosedState.getInstance());
-      
+
       executeWithoutStarting(services, msg);
       fail("Should fail because services are not 'Started'");
     } catch (ServiceException ex) {
@@ -332,16 +338,16 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
     doThrow(new ServiceException("Expected")).when(mockFailingService).doService(any(AdaptrisMessage.class));
     when(mockFailingService.getUniqueId()).thenReturn(FIRST_SERVICE_ID);
     when(mockFailingService.createName()).thenReturn(Service.class.getName());
-    
+
     when(mockOutOfStateHandler.isInCorrectState(mockFailingService)).thenReturn(true);
-    
+
     BranchingServiceCollection services = createServiceCollection();
     services.setOutOfStateHandler(mockOutOfStateHandler);
-    
+
     services.setFirstServiceId(FIRST_SERVICE_ID);
     services.setRestartAffectedServiceOnException(false);
     services.addService(mockFailingService);
-    
+
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     try {
       services.doService(msg);
@@ -360,16 +366,16 @@ public class BranchingServiceCollectionTest extends ServiceCollectionCase {
     doThrow(new ServiceException("Expected")).when(mockFailingService).doService(any(AdaptrisMessage.class));
     when(mockFailingService.getUniqueId()).thenReturn(FIRST_SERVICE_ID);
     when(mockFailingService.createName()).thenReturn(Service.class.getName());
-    
+
     when(mockOutOfStateHandler.isInCorrectState(mockFailingService)).thenReturn(true);
-    
+
     BranchingServiceCollection services = createServiceCollection();
     services.setOutOfStateHandler(mockOutOfStateHandler);
-    
+
     services.setFirstServiceId(FIRST_SERVICE_ID);
     services.setRestartAffectedServiceOnException(true);
     services.addService(mockFailingService);
-    
+
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     try {
       services.doService(msg);

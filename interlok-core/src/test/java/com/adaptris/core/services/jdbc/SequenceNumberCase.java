@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,13 +35,13 @@ import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.jdbc.DatabaseConnection;
-import com.adaptris.core.jdbc.JdbcServiceCase;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
 @SuppressWarnings("deprecation")
-public abstract class SequenceNumberCase extends JdbcServiceCase {
+public abstract class SequenceNumberCase
+    extends com.adaptris.interlok.junit.scaffolding.services.JdbcServiceCase {
 
   protected static final String DEFAULT_NUMBER_FORMAT = "000000000";
   protected static final String DEFAULT_METADATA_KEY = "sequence_number";
@@ -397,7 +397,7 @@ public abstract class SequenceNumberCase extends JdbcServiceCase {
   protected abstract AbstractJdbcSequenceNumberService createService();
 
   protected abstract AbstractJdbcSequenceNumberService createServiceForTests();
-  
+
   protected abstract AdaptrisMessage createMessageForTests();
 
   @Override

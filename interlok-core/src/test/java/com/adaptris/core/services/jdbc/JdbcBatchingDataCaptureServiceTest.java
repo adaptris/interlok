@@ -31,10 +31,6 @@ import com.adaptris.core.jdbc.PooledConnectionHelper;
 
 public class JdbcBatchingDataCaptureServiceTest extends JdbcDataCaptureServiceCase {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected JdbcBatchingDataCaptureService newService() {

@@ -12,7 +12,7 @@ public class EncodingHelper {
    * Standard supported encodings
    */
   public enum Encoding {
-    @Removal(version="3.11.0", message="Use Base64_MIME / Base64_URL / Base64_Basic instead")
+    @Removal(version = "4.0.0", message = "Use Base64_MIME / Base64_URL / Base64_Basic instead")
     Base64 {
       @Override
       public OutputStream wrap(OutputStream orig) throws Exception {
@@ -25,7 +25,7 @@ public class EncodingHelper {
       }
     },
     /**
-     * Base64 sing the MIME type base64 scheme.
+     * Base64 using the MIME type base64 scheme.
      * <p>
      * Uses {@link java.util.Base64} under the covers
      * </p>
@@ -112,7 +112,7 @@ public class EncodingHelper {
     },
     /**
      * No Encoding.
-     * 
+     *
      */
     None {
       @Override
@@ -134,7 +134,7 @@ public class EncodingHelper {
 
   /**
    * Just the supported Base64 styles which are available via {@link java.util.Base64}
-   * 
+   *
    */
   public enum Base64Encoding {
     /**

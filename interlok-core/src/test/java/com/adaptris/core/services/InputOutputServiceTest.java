@@ -25,10 +25,6 @@ import com.adaptris.core.stubs.DefectiveMessageFactory;
 
 public class InputOutputServiceTest extends GeneralServiceExample {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
   @Test
   public void testService() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("hello world");

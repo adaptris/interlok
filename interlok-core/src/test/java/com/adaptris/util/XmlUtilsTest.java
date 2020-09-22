@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,7 +38,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.BaseCase;
 import com.adaptris.core.stubs.MessageHelper;
 import com.adaptris.core.transform.XmlValidationServiceTest;
 import com.adaptris.core.util.XmlHelper;
@@ -51,18 +50,13 @@ import com.adaptris.util.text.xml.XPath;
  * @author Stuart Ellidge
  */
 @SuppressWarnings("deprecation")
-public class XmlUtilsTest extends BaseCase {
+public class XmlUtilsTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
 
   private static final String CHAR_80 = "this is a string of text which can be demonstrated " + "to be eighty characters long";
 
   static String unpadded = "<root><test>" + CHAR_80 + CHAR_80 + "</test></root>";
 
   static String multiLine = "<root><test att='1'>one</test><test att='2'>two</test></root>";
-
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testConstructors() {

@@ -1,6 +1,7 @@
 ext {
   componentName='Interlok Bootstrap'
-  springBootLoaderVersion='2.3.1.RELEASE'
+  springBootLoaderVersion='2.3.3.RELEASE'
+  delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 }
 
 configurations {
@@ -56,6 +57,14 @@ javadoc {
   classpath += configurations.bundled
 }
 
+task deleteGeneratedFiles(type: Delete) {
+  delete delombokTargetDir
+}
+
+delombok {
+  target = delombokTargetDir
+}
+
 uploadArchives {
   repositories {
     mavenDeployer {
@@ -76,4 +85,4 @@ uploadArchives {
 
 jar.dependsOn unzipSpringBoot
 publish.dependsOn uploadArchives
-
+clean.dependsOn deleteGeneratedFiles

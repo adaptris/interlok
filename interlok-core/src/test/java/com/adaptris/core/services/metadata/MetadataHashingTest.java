@@ -33,10 +33,6 @@ public class MetadataHashingTest extends MetadataServiceExample {
   private static final String METADATA_VALUE = "2104913203";
   private static final String METADATA_HASH_MD5 = "fff9f3d8d4ec2726e0b2422116b20dd2";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   private AdaptrisMessage createMessage(String encoding) throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("asdfghjk", encoding);

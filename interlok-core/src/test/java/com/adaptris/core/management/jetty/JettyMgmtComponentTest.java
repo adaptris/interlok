@@ -1,16 +1,15 @@
 package com.adaptris.core.management.jetty;
 
-import static org.junit.Assert.assertNotNull;
 import java.time.Duration;
 import java.util.Properties;
 import org.awaitility.Awaitility;
 import org.junit.Test;
-import com.adaptris.core.BaseCase;
-import com.adaptris.core.PortManager;
 import com.adaptris.core.management.Constants;
 import com.adaptris.core.management.webserver.JettyServerManager;
 import com.adaptris.core.management.webserver.ServerManager;
 import com.adaptris.core.management.webserver.WebServerManagementUtil;
+import com.adaptris.interlok.junit.scaffolding.BaseCase;
+import com.adaptris.interlok.junit.scaffolding.util.PortManager;
 
 public class JettyMgmtComponentTest {
 

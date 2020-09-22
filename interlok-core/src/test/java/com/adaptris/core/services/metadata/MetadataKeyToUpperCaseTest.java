@@ -38,10 +38,6 @@ public class MetadataKeyToUpperCaseTest extends MetadataKeyCaseChanger {
 
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected MetadataKeyToUpperCase createService() {

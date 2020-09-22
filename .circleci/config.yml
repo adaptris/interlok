@@ -67,23 +67,14 @@ jobs:
           name: Configure
           command: |
             sudo -E apt-get -y -q update
-            sudo -E apt-get -y -q install haveged openjdk-8-jdk mysql-server
+            sudo -E apt-get -y -q install haveged openjdk-8-jdk
             sudo -E systemctl restart haveged
-            # Enable root mysql user for the circleci user...
-            sudo mysql -e"ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root'"
-            sudo mysql -uroot -proot -e"FLUSH PRIVILEGES"
             mkdir -p ~/.gradle
             echo "org.gradle.warning.mode=none" > ~/.gradle/gradle.properties
             echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
-            echo "default.jdbc.storedproc.tests.enabled=true" >> interlok-core/build.properties
-            echo "default.jdbc.storedproc.url=jdbc:mysql://localhost:3306/" >> interlok-core/build.properties
-            echo "default.jdbc.storedproc.driver=com.mysql.jdbc.Driver" >> interlok-core/build.properties
-            echo "default.jdbc.storedproc.database=circle_test" >> interlok-core/build.properties
-            echo "default.jdbc.storedproc.username=root" >> interlok-core/build.properties
-            echo "default.jdbc.storedproc.password=root" >> interlok-core/build.properties
-            echo "default.jdbc.storedproc.vendor=mysql" >> interlok-core/build.properties
-            echo "default.jdbc.storedproc.teststatement=" >> interlok-core/build.properties
-            echo "default.jdbc.storedproc.url.params=?useSSL=false" >> interlok-core/build.properties
+            echo "default.jdbc.storedproc.tests.enabled=false" >> interlok-core/build.properties
+            echo "default.ftp.tests.enabled=false" >> interlok-core/build.properties
+            echo "junit.jms.tests.enabled=false" >> interlok-core/build.properties
 
       # Download and cache dependencies
       - restore_cache:
@@ -109,66 +100,6 @@ jobs:
       - store_test_results:
           path: ~/test-results
 
-      - run:
-          name: codecov.io
-          command: bash <(curl -s https://codecov.io/bash)
-
-      - save_cache:
-          paths:
-            - ~/.gradle/caches
-            - ~/.gradle/wrapper
-          key: dependencies-{{ .Environment.CIRCLE_JOB}}-{{ checksum "build.gradle" }}-{{ checksum "interlok-core/build.gradle" }}-{{ checksum "interlok-common/build.gradle"}}
-
-  sonarbuild:
-    machine:
-      image: ubuntu-1604:201903-01
-
-    working_directory: ~/interlok
-
-    environment:
-      JAVA_TOOL_OPTIONS: -Xmx2G
-      TERM: dumb
-      DEBIAN_FRONTEND: noninteractive
-
-    steps:
-      - checkout
-
-      - run:
-          name: Configure
-          command: |
-            sudo -E apt-get -y -q update
-            sudo -E apt-get -y -q install haveged openjdk-8-jdk mysql-server
-            sudo -E systemctl restart haveged
-            # Enable root mysql user for the circleci user...
-            sudo mysql -e"ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root'"
-            sudo mysql -uroot -proot -e"FLUSH PRIVILEGES"
-            mkdir -p ~/.gradle
-            echo "org.gradle.warning.mode=none" > ~/.gradle/gradle.properties
-            echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
-            echo "default.jdbc.storedproc.tests.enabled=true" >> interlok-core/build.properties
-            echo "default.jdbc.storedproc.url=jdbc:mysql://localhost:3306/" >> interlok-core/build.properties
-            echo "default.jdbc.storedproc.driver=com.mysql.jdbc.Driver" >> interlok-core/build.properties
-            echo "default.jdbc.storedproc.database=circle_test" >> interlok-core/build.properties
-            echo "default.jdbc.storedproc.username=root" >> interlok-core/build.properties
-            echo "default.jdbc.storedproc.password=root" >> interlok-core/build.properties
-            echo "default.jdbc.storedproc.vendor=mysql" >> interlok-core/build.properties
-            echo "default.jdbc.storedproc.teststatement=" >> interlok-core/build.properties
-            echo "default.jdbc.storedproc.url.params=?useSSL=false" >> interlok-core/build.properties
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - dependencies-{{ .Environment.CIRCLE_JOB}}-{{ checksum "build.gradle" }}-{{ checksum "interlok-core/build.gradle" }}-{{ checksum "interlok-common/build.gradle"}}
-            - dependencies-{{ checksum "build.gradle" }}-{{ checksum "interlok-core/build.gradle" }}-{{ checksum "interlok-common/build.gradle"}}
-            - dependencies-{{ checksum "build.gradle" }}
-            - dependencies
-
-      - run:
-          name: Analyze on SonarCloud
-          command: |
-            chmod +x ./gradlew
-            ./gradlew -PverboseTests=true sonarqube -Dsonar.projectKey="adaptris_interlok" -Dsonar.organization="adaptris" -Dsonar.host.url="https://sonarcloud.io"
-
       - save_cache:
           paths:
             - ~/.gradle/caches
@@ -183,13 +114,13 @@ workflows:
       # - sonarbuild:
       #     context: SonarCloud
 
-  nightly:
-    triggers:
-      - schedule:
-          cron: "00 04 * * *"
-          filters:
-            branches:
-              only:
-                - develop
-    jobs:
-      - build
+  # nightly:
+  #   triggers:
+  #     - schedule:
+  #         cron: "00 04 * * 2,5"
+  #         filters:
+  #           branches:
+  #             only:
+  #               - develop
+  #   jobs:
+  #     - build

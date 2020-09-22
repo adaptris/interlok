@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -52,19 +52,17 @@ public class DocumentBuilderFactoryBuilderTest {
   public void tearDown() throws Exception {}
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testNewInstance() {
     DocumentBuilderFactoryBuilder b = DocumentBuilderFactoryBuilder.newInstance();
     assertNotNull(b.getFeatures());
     assertEquals(0, b.getFeatures().size());
     assertEquals(true, b.getNamespaceAware());
-    
-    assertEquals(b, DocumentBuilderFactoryBuilder.newInstance(b));
-    assertNotSame(b, DocumentBuilderFactoryBuilder.newInstance(null));
+
+    assertEquals(b, DocumentBuilderFactoryBuilder.newInstanceIfNull(b));
+    assertNotSame(b, DocumentBuilderFactoryBuilder.newInstanceIfNull(null));
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testNewRestrictedInstance() {
     DocumentBuilderFactoryBuilder b = DocumentBuilderFactoryBuilder.newRestrictedInstance();
     assertNotNull(b.getFeatures());
@@ -72,8 +70,8 @@ public class DocumentBuilderFactoryBuilderTest {
     assertNotNull(b.getFeatures().getKeyValuePair(DocumentBuilderFactoryBuilder.DISABLE_DOCTYP));
     assertEquals(true, b.getNamespaceAware());
     assertEquals(false, b.getExpandEntityReferences());
-    assertEquals(b, DocumentBuilderFactoryBuilder.newRestrictedInstance(b));
-    assertNotSame(b, DocumentBuilderFactoryBuilder.newRestrictedInstance(null));
+    assertEquals(b, DocumentBuilderFactoryBuilder.newRestrictedInstanceIfNull(b));
+    assertNotSame(b, DocumentBuilderFactoryBuilder.newRestrictedInstanceIfNull(null));
   }
 
   @Test

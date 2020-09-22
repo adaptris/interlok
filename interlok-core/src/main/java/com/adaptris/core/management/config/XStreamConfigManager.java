@@ -16,7 +16,6 @@
 
 package com.adaptris.core.management.config;
 import static com.adaptris.core.util.PropertyHelper.getPropertyIgnoringCase;
-
 import com.adaptris.core.AdapterMarshallerFactory;
 import com.adaptris.core.AdapterXStreamMarshallerFactory;
 import com.adaptris.core.DefaultMarshaller;
@@ -46,11 +45,6 @@ public class XStreamConfigManager extends ReadWriteConfigManager {
     // Get the configured output type property (XML/JSON) and create the marshaller based on this
     final String marshallerOutputProperty = getPropertyIgnoringCase(bootstrapProperties, Constants.CFG_KEY_MARSHALLER_OUTPUT_TYPE);
 
-    // Get the xstream enable beautified output flag
-    final boolean enableBeautifiedOutputFlag = bootstrapProperties.isEnabled(Constants.CFG_XSTREAM_BEAUTIFIED_OUTPUT);
-    if (enableBeautifiedOutputFlag) {
-      log.warn("Beautification is no longer supported due to illegal module access in Java 11");
-    }
     // Now initialize the marshaller
     marshallerFactory = AdapterXStreamMarshallerFactory.getInstance();
     marshaller = marshallerFactory.createMarshaller(marshallerOutputProperty);

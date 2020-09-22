@@ -3,9 +3,9 @@ package com.adaptris.core.services.transcoding;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.MimeEncoder;
-import com.adaptris.core.ServiceCase;
 
-public abstract class TranscodingServiceCase extends ServiceCase {
+public abstract class TranscodingServiceCase
+    extends com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase {
 
   /**
    * Key in unit-test.properties that defines where example goes unless overriden {@link #setBaseDir(String)}.

@@ -16,12 +16,13 @@
 
 package com.adaptris.core;
 
-import com.adaptris.core.stubs.MockEncoder;
-import com.adaptris.util.GuidGenerator;
-import com.adaptris.util.stream.StreamUtil;
-import org.apache.commons.io.IOUtils;
-import org.junit.Test;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -38,14 +39,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.apache.commons.io.IOUtils;
+import org.junit.Test;
+import com.adaptris.core.stubs.MockEncoder;
+import com.adaptris.util.GuidGenerator;
+import com.adaptris.util.stream.StreamUtil;
 
 @SuppressWarnings("deprecation")
 public abstract class AdaptrisMessageCase {
@@ -111,12 +109,6 @@ public abstract class AdaptrisMessageCase {
   public void testToString() throws Exception {
     AdaptrisMessage msg1 = createMessage();
     assertNotNull(msg1.toString());
-    assertNotNull(msg1.toString(true));
-    assertNotNull(msg1.toString(false));
-    assertNotNull(msg1.toString(true, true));
-    assertNotNull(msg1.toString(true, false));
-    assertNotNull(msg1.toString(false, true));
-    assertNotNull(msg1.toString(false, false));
   }
 
   @Test

@@ -37,10 +37,6 @@ public class FormDataToMetadataTest extends MetadataServiceExample {
 
   private static final String COMPLEX_PARAM = "complexParam";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected FormDataToMetadata retrieveObjectForSampleConfig() {

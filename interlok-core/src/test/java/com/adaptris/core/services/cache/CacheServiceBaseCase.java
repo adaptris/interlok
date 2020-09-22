@@ -20,7 +20,8 @@ import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 import net.jodah.expiringmap.ExpirationPolicy;
 
-public abstract class CacheServiceBaseCase extends CacheServiceExample {
+public abstract class CacheServiceBaseCase
+    extends com.adaptris.interlok.junit.scaffolding.services.CacheServiceExample {
 
   protected enum CacheImps implements CacheExampleImplementation {
 

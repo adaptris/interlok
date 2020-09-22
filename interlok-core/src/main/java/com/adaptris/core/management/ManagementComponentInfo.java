@@ -1,17 +1,21 @@
 package com.adaptris.core.management;
 
+import java.io.Serializable;
+
 import com.adaptris.core.ComponentState;
 
-public class ManagementComponentInfo {
-  
+public class ManagementComponentInfo implements Serializable {
+
+  private static final long serialVersionUID = 2020072701L;
+
   private String name;
-    
+
   private String className;
-  
+
   private ComponentState state;
-  
-  private ManagementComponent instance;
-  
+
+  private transient ManagementComponent instance;
+
   public ManagementComponentInfo() {
   }
 

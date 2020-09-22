@@ -16,6 +16,40 @@
 
 package com.adaptris.core.transform;
 
+/*
+ * This test uses the data in XmlTransformServiceTest
+ */
+import static com.adaptris.core.transform.XmlTransformServiceTest.ISSUE2641_DEST_XPATH;
+import static com.adaptris.core.transform.XmlTransformServiceTest.ISSUE2641_SRC_XPATH;
+import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_ISSUE2641_INPUT;
+import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_ISSUE2641_TRANSFORM_URL;
+import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_NODE_TRANSFORM_URL;
+import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_FATAL_TRANSFORM_URL;
+import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_INPUT;
+import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_INVALID_TRANSFORM_URL;
+import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_OUTPUT;
+import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_STX_TRANSFORM_URL;
+import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_TRANSFORM_URL;
+import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_TRANSFORM_URL_XSL_MESSAGE;
+import static com.adaptris.core.transform.XmlTransformServiceTest.XML_WITH_NAMESPACE;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import org.junit.Test;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MultiPayloadAdaptrisMessage;
 import com.adaptris.core.MultiPayloadMessageFactory;
@@ -33,46 +67,10 @@ import com.adaptris.util.text.xml.XmlTransformerFactory;
 import com.adaptris.util.text.xml.XsltTransformerFactory;
 import net.sf.saxon.serialize.MessageWarner;
 import net.sf.saxon.trans.UncheckedXPathException;
-import org.junit.Test;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-/*
- * This test uses the data in XmlTransformServiceTest
- */
-import static com.adaptris.core.transform.XmlTransformServiceTest.ISSUE2641_DEST_XPATH;
-import static com.adaptris.core.transform.XmlTransformServiceTest.ISSUE2641_SRC_XPATH;
-import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_ISSUE2641_INPUT;
-import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_ISSUE2641_TRANSFORM_URL;
-import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_NODE_TRANSFORM_URL;
-import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_FATAL_TRANSFORM_URL;
-import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_INPUT;
-import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_INVALID_TRANSFORM_URL;
-import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_OUTPUT;
-import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_STX_TRANSFORM_URL;
-import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_TRANSFORM_URL;
-import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_TRANSFORM_URL_XSL_MESSAGE;
-import static com.adaptris.core.transform.XmlTransformServiceTest.XML_WITH_NAMESPACE;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 @SuppressWarnings("deprecation")
-public class MultiPayloadXmlTransformServiceTest extends TransformServiceExample {
+public class MultiPayloadXmlTransformServiceTest
+    extends com.adaptris.interlok.junit.scaffolding.services.TransformServiceExample {
 
   private static final String URL = "url";
   private static final String PAYLOAD_ID_SOURCE = "source-payload";
@@ -94,7 +92,7 @@ public class MultiPayloadXmlTransformServiceTest extends TransformServiceExample
     XmlTransformerFactory factory;
 
     FactoryConfig(XmlTransformerFactory fac) {
-      this.factory = fac;
+      factory = fac;
     }
 
     MultiPayloadXmlTransformService configure(MultiPayloadXmlTransformService s) {
@@ -136,10 +134,6 @@ public class MultiPayloadXmlTransformServiceTest extends TransformServiceExample
     }
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testRemoveNamespaceMapping() throws Exception {

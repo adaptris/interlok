@@ -41,10 +41,6 @@ public class FtpConnectionTest extends FtpPasswordConnectionCase {
     return c;
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
   protected FtpConnectionImp createConnectionObj() {
     return new FtpConnection();
   }

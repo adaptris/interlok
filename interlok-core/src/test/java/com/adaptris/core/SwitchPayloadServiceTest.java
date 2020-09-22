@@ -6,7 +6,8 @@ import static org.junit.Assert.fail;
 import java.nio.charset.Charset;
 import org.junit.Test;
 
-public class SwitchPayloadServiceTest extends ServiceCase {
+public class SwitchPayloadServiceTest
+    extends com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase {
   private final MultiPayloadMessageFactory messageFactory = new MultiPayloadMessageFactory();
 
   private static final String ENCODING = "UTF-8";
@@ -17,10 +18,6 @@ public class SwitchPayloadServiceTest extends ServiceCase {
 
   private static final String[] ID = { "bacon", "cupcake" };
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testService() throws Exception {

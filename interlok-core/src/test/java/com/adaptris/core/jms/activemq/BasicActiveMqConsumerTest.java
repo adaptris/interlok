@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,10 +16,10 @@
 
 package com.adaptris.core.jms.activemq;
 
-import static com.adaptris.core.jms.JmsProducerCase.assertMessages;
 import static com.adaptris.core.jms.activemq.AdvancedActiveMqImplementationTest.createImpl;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.addBlobUrlRef;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase.assertMessages;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import org.junit.Test;
@@ -29,8 +29,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.Channel;
 import com.adaptris.core.ChannelList;
 import com.adaptris.core.ClosedState;
-import com.adaptris.core.ConfiguredConsumeDestination;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.NullProcessingExceptionHandler;
 import com.adaptris.core.StandaloneConsumer;
@@ -41,9 +39,7 @@ import com.adaptris.core.Workflow;
 import com.adaptris.core.jms.AutoConvertMessageTranslator;
 import com.adaptris.core.jms.BytesMessageTranslator;
 import com.adaptris.core.jms.DefinedJmsProducer;
-import com.adaptris.core.jms.JmsConfig;
 import com.adaptris.core.jms.JmsConnection;
-import com.adaptris.core.jms.JmsConsumerCase;
 import com.adaptris.core.jms.PasConsumer;
 import com.adaptris.core.jms.PasProducer;
 import com.adaptris.core.jms.PtpConsumer;
@@ -55,9 +51,11 @@ import com.adaptris.core.stubs.ExternalResourcesHelper;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.stubs.MockMessageProducer;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.GuidGenerator;
 
-public class BasicActiveMqConsumerTest extends JmsConsumerCase {
+public class BasicActiveMqConsumerTest
+    extends com.adaptris.interlok.junit.scaffolding.jms.JmsConsumerCase {
 
   private static final String MY_CLIENT_ID;
   private static final String MY_SUBSCRIPTION_ID;
@@ -72,10 +70,7 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
       throw new RuntimeException(e);
     }
   }
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
+
 
   @Override
   protected String createBaseFileName(Object object) {
@@ -87,9 +82,7 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
 
     JmsConnection connection = new JmsConnection();
     PtpConsumer producer = new PtpConsumer();
-    ConfiguredConsumeDestination dest = new ConfiguredConsumeDestination("destination");
-
-    producer.setDestination(dest);
+    producer.setQueue("destination");
     UrlVendorImplementation vendorImpl = createImpl();
     vendorImpl.setBrokerUrl(BasicActiveMqImplementationTest.PRIMARY);
     connection.setUserName("BrokerUsername");
@@ -105,16 +98,11 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
 
   @Test
   public void testTopicProduceAndConsume() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();
 
-      PasConsumer consumer = new PasConsumer(new ConfiguredConsumeDestination(getName()));
+      PasConsumer consumer = new PasConsumer().withTopic(getName());
       consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
       StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
 
@@ -122,7 +110,10 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
       standaloneConsumer.registerAdaptrisMessageListener(jms);
 
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
-          new PasProducer(new ConfiguredProduceDestination(getName())));
+              new PasProducer().withTopic(getName()));
+      // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
+      LifecycleHelper.prepare(standaloneConsumer);
+      LifecycleHelper.prepare(standaloneProducer);
       execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
       assertMessages(jms, 1);
       AdaptrisMessage consumed = jms.getMessages().get(0);
@@ -137,21 +128,16 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
 
   @Test
   public void testTopicProduceAndConsumeWithImplicitFallbackMessageTranslation() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();
-      PasConsumer consumer = new PasConsumer(new ConfiguredConsumeDestination(getName()));
+      PasConsumer consumer = new PasConsumer().withTopic(getName());
       consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
       StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
 
       MockMessageListener jms = new MockMessageListener();
       standaloneConsumer.registerAdaptrisMessageListener(jms);
-      DefinedJmsProducer producer = new PasProducer(new ConfiguredProduceDestination(getName()));
+      DefinedJmsProducer producer = new PasProducer().withTopic(getName());
       producer.setMessageTranslator(new BytesMessageTranslator());
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), producer);
       execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
@@ -164,22 +150,17 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
 
   @Test
   public void testTopicProduceAndConsumeWithExplicitFallbackMessageTranslation() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();
-      PasConsumer consumer = new PasConsumer(new ConfiguredConsumeDestination(getName()));
+      PasConsumer consumer = new PasConsumer().withTopic(getName());
       consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
       consumer.setMessageTranslator(new AutoConvertMessageTranslator());
       StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
 
       MockMessageListener jms = new MockMessageListener();
       standaloneConsumer.registerAdaptrisMessageListener(jms);
-      DefinedJmsProducer producer = new PasProducer(new ConfiguredProduceDestination(getName()));
+      DefinedJmsProducer producer = new PasProducer().withTopic(getName());
       producer.setMessageTranslator(new BytesMessageTranslator());
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), producer);
       execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
@@ -207,13 +188,8 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
 
   @Test
   public void testQueue_ProduceWhenConsumerStopped() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    PtpConsumer consumer = new PtpConsumer(new ConfiguredConsumeDestination(getName()));
+    PtpConsumer consumer = new PtpConsumer().withQueue(getName());
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandardWorkflow workflow = new StandardWorkflow();
     MockMessageProducer producer = new MockMessageProducer();
@@ -225,7 +201,7 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
       activeMqBroker.start();
 
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
-          new PtpProducer(new ConfiguredProduceDestination(getName())));
+              new PtpProducer().withQueue((getName())));
 
       channel.requestStart();
       workflow.requestStop();
@@ -245,13 +221,8 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
 
   @Test
   public void testTopic_ProduceWhenConsumerStopped() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    PasConsumer consumer = new PasConsumer(new ConfiguredConsumeDestination(getName()));
+    PasConsumer consumer = new PasConsumer().withTopic(getName());
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandardWorkflow workflow = new StandardWorkflow();
     MockMessageProducer producer = new MockMessageProducer();
@@ -263,7 +234,7 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
       activeMqBroker.start();
 
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
-          new PasProducer(new ConfiguredProduceDestination(getName())));
+              new PasProducer().withTopic(getName()));
 
       channel.requestStart();
       workflow.requestStop();
@@ -283,15 +254,10 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
 
   @Test
   public void testQueueProduceAndConsume() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();
-      PtpConsumer consumer = new PtpConsumer(new ConfiguredConsumeDestination(getName()));
+      PtpConsumer consumer = new PtpConsumer().withQueue(getName());
       consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
 
       StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
@@ -299,7 +265,10 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
       standaloneConsumer.registerAdaptrisMessageListener(jms);
 
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
-          new PtpProducer(new ConfiguredProduceDestination(getName())));
+              new PtpProducer().withQueue((getName())));
+      // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
+      LifecycleHelper.prepare(standaloneConsumer);
+      LifecycleHelper.prepare(standaloneProducer);
 
       execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
       assertMessages(jms, 1);
@@ -311,21 +280,16 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
 
   @Test
   public void testQueueProduceAndConsumeWithImplicitFallbackMessageTranslation() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();
-      PtpConsumer consumer = new PtpConsumer(new ConfiguredConsumeDestination(getName()));
+      PtpConsumer consumer = new PtpConsumer().withQueue(getName());
       consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
       StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
 
       MockMessageListener jms = new MockMessageListener();
       standaloneConsumer.registerAdaptrisMessageListener(jms);
-      DefinedJmsProducer producer = new PtpProducer(new ConfiguredProduceDestination(getName()));
+      DefinedJmsProducer producer = new PtpProducer().withQueue((getName()));
       producer.setMessageTranslator(new BytesMessageTranslator());
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), producer);
       execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
@@ -338,22 +302,18 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
 
   @Test
   public void testQueueProduceAndConsumeWithExplicitFallbackMessageTranslation() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
+
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();
-      PtpConsumer consumer = new PtpConsumer(new ConfiguredConsumeDestination(getName()));
+      PtpConsumer consumer = new PtpConsumer().withQueue(getName());
       consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
       consumer.setMessageTranslator(new AutoConvertMessageTranslator());
       StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
 
       MockMessageListener jms = new MockMessageListener();
       standaloneConsumer.registerAdaptrisMessageListener(jms);
-      DefinedJmsProducer producer = new PtpProducer(new ConfiguredProduceDestination(getName()));
+      DefinedJmsProducer producer = new PtpProducer().withQueue((getName()));
       producer.setMessageTranslator(new BytesMessageTranslator());
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), producer);
       execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
@@ -370,22 +330,17 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
       log.debug("Blob Server not available; skipping test");
       return;
     }
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();
-      PtpConsumer consumer = new PtpConsumer(new ConfiguredConsumeDestination(getName()));
+      PtpConsumer consumer = new PtpConsumer().withQueue(getName());
       consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
       consumer.setMessageTranslator(new BlobMessageTranslator());
       StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
       MockMessageListener jms = new MockMessageListener();
       standaloneConsumer.registerAdaptrisMessageListener(jms);
 
-      PtpProducer producer = new PtpProducer(new ConfiguredProduceDestination(getName()));
+      PtpProducer producer = new PtpProducer().withQueue((getName()));
       producer.setMessageTranslator(new BlobMessageTranslator("blobUrl"));
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), producer);
 
@@ -403,22 +358,17 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
       log.debug("Blob Server not available; skipping test");
       return;
     }
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();
-      PtpConsumer consumer = new PtpConsumer(new ConfiguredConsumeDestination(getName()));
+      PtpConsumer consumer = new PtpConsumer().withQueue(getName());
       consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
       consumer.setMessageTranslator(new BlobMessageTranslator());
       StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
       MockMessageListener jms = new MockMessageListener();
       standaloneConsumer.registerAdaptrisMessageListener(jms);
 
-      PtpProducer producer = new PtpProducer(new ConfiguredProduceDestination(getName()));
+      PtpProducer producer = new PtpProducer().withQueue((getName()));
       producer.setMessageTranslator(new BlobMessageTranslator("blobUrl"));
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), producer);
 
@@ -432,11 +382,6 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
 
   @Test
   public void testStartWithDurableSubscribers_WithNonBlockingChannelStrategy() throws Exception {
-    // This would be best, but we can't mix Junit3 with Junit4 assumptions.
-    // Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    if (!JmsConfig.jmsTestsEnabled()) {
-      return;
-    }
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     try {
       activeMqBroker.start();
@@ -476,8 +421,7 @@ public class BasicActiveMqConsumerTest extends JmsConsumerCase {
     conn.setClientId(MY_CLIENT_ID);
     c.setConsumeConnection(conn);
     StandardWorkflow swf = new StandardWorkflow();
-    PasConsumer pasConsumer = new PasConsumer(new ConfiguredConsumeDestination(new GuidGenerator().getUUID().replaceAll(":", "")
-        .replaceAll("-", "")));
+    PasConsumer pasConsumer = new PasConsumer().withTopic(new GuidGenerator().safeUUID());
     pasConsumer.setDurable(true);
     pasConsumer.setSubscriptionId(MY_SUBSCRIPTION_ID);
     swf.setConsumer(pasConsumer);

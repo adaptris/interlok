@@ -44,10 +44,6 @@ public class TraversingFsConsumerTest extends FsConsumerCase {
    */
   public static final String EXAMPLE_BASEDIR = "TraversingFsConsumerExample.baseDir";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected void configureExampleConfigBaseDir() {

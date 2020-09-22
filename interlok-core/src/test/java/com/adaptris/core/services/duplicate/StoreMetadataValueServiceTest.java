@@ -34,10 +34,6 @@ public class StoreMetadataValueServiceTest extends SyntaxRoutingServiceExample {
   private static final String STORE_URL = "StoreMetadataValueServiceTest.storeFileUrl";
   private static final String DEFAULT_METADATA_KEY = "key";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Before
   public void setUp() throws Exception {

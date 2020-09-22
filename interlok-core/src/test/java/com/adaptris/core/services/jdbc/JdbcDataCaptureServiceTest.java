@@ -19,10 +19,6 @@ import org.junit.Test;
 
 public class JdbcDataCaptureServiceTest extends JdbcDataCaptureServiceCase {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
 
   @Override

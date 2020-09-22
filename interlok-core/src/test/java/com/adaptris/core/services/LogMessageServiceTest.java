@@ -17,8 +17,6 @@
 package com.adaptris.core.services;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -30,10 +28,6 @@ import com.adaptris.core.util.PayloadMessageLogger;
 @SuppressWarnings("deprecation")
 public class LogMessageServiceTest extends GeneralServiceExample {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
   @Override
   protected Object retrieveObjectForSampleConfig() {
     return new LogMessageService(LoggingLevel.DEBUG);
@@ -47,27 +41,6 @@ public class LogMessageServiceTest extends GeneralServiceExample {
   }
 
   @Test
-  public void testSetLogPayload() {
-    LogMessageService srv = new LogMessageService();
-    assertNull(srv.getIncludePayload());
-    srv.setIncludePayload(Boolean.FALSE);
-    assertEquals(Boolean.FALSE, srv.getIncludePayload());
-    srv.setIncludePayload(null);
-    assertNull(srv.getIncludePayload());
-  }
-
-
-  @Test
-  public void testSetIncludeEvents() {
-    LogMessageService srv = new LogMessageService();
-    assertNull(srv.getIncludeEvents());
-    srv.setIncludeEvents(Boolean.TRUE);
-    assertEquals(Boolean.TRUE, srv.getIncludeEvents());
-    srv.setIncludeEvents(null);
-    assertNull(srv.getIncludeEvents());
-  }
-
-  @Test
   public void testSetLoggingFormat() throws Exception {
     LogMessageService srv = new LogMessageService(LoggingLevel.ERROR, "testSetLoggingFormat: ");
     assertNull(srv.getLoggingFormat());
@@ -76,17 +49,6 @@ public class LogMessageServiceTest extends GeneralServiceExample {
     srv.setLoggingFormat(new MinimalMessageLogger());
     assertEquals(MinimalMessageLogger.class, srv.loggingFormat().getClass());
 
-    srv.setIncludeEvents(true);
-    assertNotNull(srv.loggingFormat());
-    assertNotSame(MinimalMessageLogger.class, srv.loggingFormat().getClass());
-    assertNotSame(PayloadMessageLogger.class, srv.loggingFormat().getClass());
-    execute(srv, AdaptrisMessageFactory.getDefaultInstance().newMessage("+Event,-Payload"));
-
-    srv.setIncludePayload(true);
-    assertNotNull(srv.loggingFormat());
-    assertNotSame(MinimalMessageLogger.class, srv.loggingFormat().getClass());
-    assertNotSame(PayloadMessageLogger.class, srv.loggingFormat().getClass());
-    execute(srv, AdaptrisMessageFactory.getDefaultInstance().newMessage("+Event,+Payload"));
   }
 
   @Test

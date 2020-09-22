@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,15 +30,12 @@ import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.core.services.metadata.AddMetadataService;
 import com.adaptris.core.util.LifecycleHelper;
 
-public class CloneMessageServiceListTest extends ServiceCollectionCase {
+public class CloneMessageServiceListTest
+    extends com.adaptris.interlok.junit.scaffolding.services.ServiceCollectionCase {
 
   private static final String VAL1 = "val1";
   private static final String KEY1 = "key1";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   public CloneMessageServiceList createServiceCollection() {
@@ -88,28 +85,6 @@ public class CloneMessageServiceListTest extends ServiceCollectionCase {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
-  public void testNormalOperation_NoPreserveKeys_LegacyMode() throws Exception {
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    CloneMessageServiceList service = createServiceList();
-    service.setOverrideMetadata(false);
-    MarkerService marker = new MarkerService();
-    service.getServices().add(marker);
-    try {
-      LifecycleHelper.initAndStart(service);
-      service.doService(msg);
-
-      // md not present because Service applied to a clone
-      assertTrue(msg.getMetadataValue(KEY1) == null);
-      assertTrue(marker.hasTriggered);
-    }
-    finally {
-      LifecycleHelper.stopAndClose(service);
-    }
-  }
-
-  
-  @Test
   public void testHaltProcessing() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     CloneMessageServiceList service = createServiceList();
@@ -123,29 +98,6 @@ public class CloneMessageServiceListTest extends ServiceCollectionCase {
       // md not present because Service applied to a clone
       assertTrue(msg.getMetadataValue(KEY1) == null);
       assertFalse(marker.hasTriggered);
-    }
-    finally {
-      LifecycleHelper.stopAndClose(service);
-    }
-  }
-
-  @Test
-  @SuppressWarnings("deprecation")
-  public void testNormalOperationPreserveKey_LegacyMode() throws Exception {
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    CloneMessageServiceList service = createServiceList();
-    RegexMetadataFilter rmf = new RegexMetadataFilter();
-    rmf.addIncludePattern(KEY1);
-    service.setOverrideMetadata(true);
-    service.setOverrideMetadataFilter(rmf);
-    try {
-      LifecycleHelper.initAndStart(service);
-
-      service.doService(msg);
-
-      // md not present because Service applied to a clone
-      assertNotNull(msg.getMetadataValue(KEY1));
-      assertEquals(VAL1, msg.getMetadataValue(KEY1));
     }
     finally {
       LifecycleHelper.stopAndClose(service);
@@ -172,7 +124,7 @@ public class CloneMessageServiceListTest extends ServiceCollectionCase {
       LifecycleHelper.stopAndClose(service);
     }
   }
-  
+
   @Test
   public void testFailWithNoContinueOnFail() throws Exception {
     CloneMessageServiceList services = createServiceList();
@@ -223,7 +175,6 @@ public class CloneMessageServiceListTest extends ServiceCollectionCase {
     result.addService(new NullService());
     result.addService(new NullService());
     result.addService(new NullService());
-    result.setOverrideMetadata(false);
     return result;
   }
 

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,9 +47,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Although multiple file-filters can be configured only filters that work with the filepath will work. Other filter implementations
  * (such as those based on size /last modified) may not work.
  * </p>
- * 
+ *
  * @config relaxed-ftp-consumer
- * 
+ *
  * @see FtpConnection
  * @see FileTransferConnection
  * @see com.adaptris.core.ConsumeDestination
@@ -60,11 +60,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 {
         CoreConstants.ORIGINAL_NAME_KEY, CoreConstants.FS_FILE_SIZE,
         CoreConstants.FS_CONSUME_DIRECTORY, CoreConstants.MESSAGE_CONSUME_LOCATION
-}, 
+},
     tag = "consumer,ftp,ftps,sftp", recommended = {FileTransferConnection.class})
 @DisplayOrder(order =
 {
-    "poller", "fileFilterImp", "quietInterval", "failOnDeleteFailure"
+    "ftpEndpoint", "filterExpression", "poller", "fileFilterImp", "quietInterval",
+    "failOnDeleteFailure"
 })
 public class RelaxedFtpConsumer extends FtpConsumerImpl {
 

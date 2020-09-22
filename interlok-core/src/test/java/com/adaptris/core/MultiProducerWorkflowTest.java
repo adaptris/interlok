@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,15 +39,12 @@ import com.adaptris.core.stubs.MockWorkflowInterceptor;
 import com.adaptris.core.util.Args;
 import com.adaptris.util.TimeInterval;
 
-public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
+public class MultiProducerWorkflowTest
+    extends com.adaptris.interlok.junit.scaffolding.ExampleWorkflowCase {
 
   private static final String ORIGINAL_PAYLOAD = PAYLOAD_1;
   private static final String MODIFIED_PAYLOAD = PAYLOAD_2;
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testToString() throws Exception {
@@ -280,12 +277,7 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
       MultiProducerWorkflow workflow = (MultiProducerWorkflow) channel.getWorkflowList().get(0);
       workflow.setProducer(new MockMessageProducer() {
         @Override
-        public void produce(AdaptrisMessage msg) throws ProduceException {
-          throw new ProduceException();
-        }
-        @Override
-        public void produce(AdaptrisMessage msg, ProduceDestination destination)
-        throws ProduceException {
+        protected void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException {
           throw new ProduceException();
         }
       });
@@ -308,12 +300,7 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
   public void testHandleAdditionalProducerProduceException() throws Exception {
     MockMessageProducer mock1 = new MockMessageProducer() {
       @Override
-      public void produce(AdaptrisMessage msg) throws ProduceException {
-        throw new ProduceException();
-      }
-
-      @Override
-      public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
+      protected void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException {
         throw new ProduceException();
       }
     };
@@ -364,12 +351,7 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
       workflow.setUseProcessedMessage(false);
       workflow.setProducer(new MockMessageProducer() {
         @Override
-        public void produce(AdaptrisMessage msg) throws ProduceException {
-          throw new RuntimeException();
-        }
-
-        @Override
-        public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
+        protected void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException {
           throw new RuntimeException();
         }
       });
@@ -430,7 +412,7 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
     MockChannel channel = new MockChannel();
     MultiProducerWorkflow workflow = new MultiProducerWorkflow();
     String uuid = UUID.randomUUID().toString();
-    workflow.getConsumer().setDestination(new ConfiguredConsumeDestination(uuid));
+    // workflow.getConsumer().setDestination(new ConfiguredConsumeDestination(uuid));
     for (AdaptrisMessageProducer p : list) {
       workflow.addStandaloneProducer(new StandaloneProducer(p));
     }
@@ -445,9 +427,11 @@ public class MultiProducerWorkflowTest extends ExampleWorkflowCase {
     c.setUniqueId(UUID.randomUUID().toString());
     MultiProducerWorkflow workflow = new MultiProducerWorkflow();
     workflow.setUniqueId(UUID.randomUUID().toString());
-    workflow.addStandaloneProducer(new StandaloneProducer(new NullMessageProducer(new ConfiguredProduceDestination("Producer2"))));
-    workflow.addStandaloneProducer(new StandaloneProducer(new NullMessageProducer(new ConfiguredProduceDestination("Producer3"))));
-    workflow.setProducer(new NullMessageProducer(new ConfiguredProduceDestination("Producer1")));
+    workflow.addStandaloneProducer(
+        new StandaloneProducer(new NullMessageProducer().withUniqueID("Producer2")));
+    workflow.addStandaloneProducer(
+        new StandaloneProducer(new NullMessageProducer().withUniqueID("Producer3")));
+    workflow.setProducer(new NullMessageProducer().withUniqueID("Producer1"));
     c.getWorkflowList().add(workflow);
     return c;
   }

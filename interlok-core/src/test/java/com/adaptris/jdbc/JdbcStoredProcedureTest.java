@@ -1,11 +1,11 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS"
  * BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
@@ -28,19 +28,13 @@ import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
-import com.adaptris.core.BaseCase;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.jdbc.JdbcConnection;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.junit.scaffolding.BaseCase;
 
 public class JdbcStoredProcedureTest extends BaseCase {
-
-
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   private static final String JDBC_STOREDPROC_TESTS_ENABLED = "jdbc.storedproc.tests.enabled";
   private static final String JDBC_DRIVER = "jdbc.storedproc.driver";
@@ -209,9 +203,9 @@ public class JdbcStoredProcedureTest extends BaseCase {
     StoredProcedureParameter parameter1 =
         new StoredProcedureParameter("xManagerName", 1, ParameterValueType.VARCHAR, ParameterType.IN, "Gerard Houllier");
     StoredProcedureParameter parameter2 = new StoredProcedureParameter("xDateFrom", 2, ParameterValueType.DATE, ParameterType.IN,
-        this.createFormattedDate(1, 1, 2004));
+        createFormattedDate(1, 1, 2004));
     StoredProcedureParameter parameter3 =
-        new StoredProcedureParameter("xDateTo", 3, ParameterValueType.DATE, ParameterType.IN, this.createFormattedDate(1, 6, 2004));
+        new StoredProcedureParameter("xDateTo", 3, ParameterValueType.DATE, ParameterType.IN, createFormattedDate(1, 6, 2004));
     StoredProcedureParameter parameter4 =
         new StoredProcedureParameter("transferType", 4, ParameterValueType.VARCHAR, ParameterType.OUT, null);
     StoredProcedureParameter parameter5 =

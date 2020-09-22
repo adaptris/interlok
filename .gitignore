@@ -39,3 +39,4 @@ null/
 Gemfile.lock
 .sass-cache
 _site
+*/src/main/generated

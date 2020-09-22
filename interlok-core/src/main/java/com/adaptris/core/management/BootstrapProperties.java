@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,10 +18,8 @@ package com.adaptris.core.management;
 
 import static com.adaptris.core.management.Constants.BOOTSTRAP_PROPERTIES_RESOURCE_KEY;
 import static com.adaptris.core.management.Constants.CFG_KEY_CONFIG_MANAGER;
-import static com.adaptris.core.management.Constants.CFG_KEY_CONFIG_RESOURCE;
 import static com.adaptris.core.management.Constants.CFG_KEY_CONFIG_URL;
 import static com.adaptris.core.management.Constants.CFG_KEY_JMX_SERVICE_URL_KEY;
-import static com.adaptris.core.management.Constants.CFG_KEY_LOG4J12_URL;
 import static com.adaptris.core.management.Constants.CFG_KEY_LOGGING_RECONFIGURE;
 import static com.adaptris.core.management.Constants.CFG_KEY_LOGGING_URL;
 import static com.adaptris.core.management.Constants.CFG_KEY_MANAGEMENT_COMPONENT;
@@ -29,6 +27,8 @@ import static com.adaptris.core.management.Constants.DBG;
 import static com.adaptris.core.management.Constants.DEFAULT_CONFIG_MANAGER;
 import static com.adaptris.core.management.Constants.DEFAULT_PROPS_RESOURCE;
 import static com.adaptris.core.management.Constants.PROTOCOL_FILE;
+import static com.adaptris.core.util.PropertyHelper.getPropertyIgnoringCase;
+import static com.adaptris.core.util.PropertyHelper.getPropertySubset;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -94,8 +94,6 @@ public class BootstrapProperties extends Properties {
     HTTPENABLEPROXYAUTH(true),
     // Constants#CFG_KEY_USE_MANAGEMENT_FACTORY_FOR_JMX
     USEJAVALANGMANAGEMENTFACTORY(true),
-    // Constants#CFG_KEY_VALIDATE_CONFIG
-    VALIDATECONFIG(false),
     // CFG_KEY_LOGGING_RECONFIGURE
     LOGGINGRECONFIGURE(true),
     // Constants#CFG_KEY_START_QUIETLY
@@ -119,7 +117,7 @@ public class BootstrapProperties extends Properties {
     super();
   }
 
-  public BootstrapProperties(String resourceName) throws Exception {
+  public BootstrapProperties(String resourceName) {
     this();
     putAll(overrideWithSystemProperties(createProperties(resourceName)));
     setProperty(BOOTSTRAP_PROPERTIES_RESOURCE_KEY, resourceName);
@@ -130,7 +128,7 @@ public class BootstrapProperties extends Properties {
     putAll(overrideWithSystemProperties(p));
   }
 
-  private static Properties createProperties(final String resourceName) throws Exception {
+  private static Properties createProperties(final String resourceName) {
     String propertiesFile = StringUtils.defaultIfBlank(resourceName, DEFAULT_PROPS_RESOURCE);
     log.trace("Properties resource is [{}]", propertiesFile);
     Properties config = PropertyHelper.loadQuietly(() -> {
@@ -159,12 +157,12 @@ public class BootstrapProperties extends Properties {
 
   /**
    * Add overloaded method to get numerical values from bootstrap.properties.
-   * 
+   *
    * @param key
    *      The property key to get.
    * @param defaultValue
    *      The default numerical value if the key isn't found (or cannot be parsed as numercial).
-   * 
+   *
    * @return The numerical value for the given property key, or default if necessary.
    */
   public Long getProperty(String key, Long defaultValue) {
@@ -173,7 +171,7 @@ public class BootstrapProperties extends Properties {
 
   /**
    * Convenience method to create an adapter based on the existing bootstrap properties
-   * 
+   *
    * @return the adapter object.
    * @throws Exception if an exception occured.
    * @deprecated use {@link #getConfigManager()} to create an AdapterManagerMBean instead.
@@ -182,13 +180,13 @@ public class BootstrapProperties extends Properties {
   public synchronized Adapter createAdapter() throws Exception {
     // First of all make sure the the config manager has made the default marshaller correct.
     getConfigManager();
-    Adapter result = (Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(this.getConfigurationStream());
+    Adapter result = (Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(getConfigurationStream());
     log.info("Adapter created");
     return result;
   }
-  
+
   public InputStream getConfigurationStream() throws Exception {
-    return URLHelper.connect(new URLString(this.findAdapterResource()));
+    return URLHelper.connect(new URLString(findAdapterResource()));
   }
 
   public String[] getConfigurationUrls() {
@@ -233,10 +231,6 @@ public class BootstrapProperties extends Properties {
           break;
         }
       }
-    }
-    if (adapterXml == null) {
-      log.trace("Sourcing configuration from [{}] property", CFG_KEY_CONFIG_RESOURCE);
-      adapterXml = getProperty(CFG_KEY_CONFIG_RESOURCE);
     }
     return adapterXml;
   }
@@ -301,12 +295,9 @@ public class BootstrapProperties extends Properties {
     return configManager;
   }
 
-  @SuppressWarnings("deprecation")
   public void reconfigureLogging() {
     if (isEnabled(CFG_KEY_LOGGING_RECONFIGURE)) {
-      // Default to log4j12Url for backwards compat.
-      String legacy = getPropertyIgnoringCase(this, CFG_KEY_LOG4J12_URL, "");
-      String loggingUrl = getPropertyIgnoringCase(this, CFG_KEY_LOGGING_URL, legacy);
+      String loggingUrl = getPropertyIgnoringCase(this, CFG_KEY_LOGGING_URL, "");
       if (!StringUtils.isEmpty(loggingUrl)) {
         log.trace("Attempting Logging reconfiguration using {}", loggingUrl);
         LoggingConfigurator.newConfigurator().initialiseFrom(loggingUrl);
@@ -332,35 +323,4 @@ public class BootstrapProperties extends Properties {
     return BooleanUtils.toBooleanDefaultIfNull(BooleanUtils.toBooleanObject(val), enabledByDefault(key));
   }
 
-  /**
-   * @deprecated since 3.1.1 use {@link PropertyHelper#getPropertySubset(Properties, String)} instead.
-   */
-  @Deprecated
-  public static Properties getPropertySubset(Properties p, String prefix) {
-    return PropertyHelper.getPropertySubset(p, prefix, false);
-  }
-
-  /**
-   * @deprecated since 3.1.1 use {@link PropertyHelper#getPropertySubset(Properties, String, boolean)} instead.
-   */
-  @Deprecated
-  public static Properties getPropertySubset(Properties p, String prefix, boolean ignoreCase) {
-    return PropertyHelper.getPropertySubset(p, prefix, ignoreCase);
-  }
-
-  /**
-   * @deprecated since 3.1.1 use {@link PropertyHelper#getPropertyIgnoringCase(Properties, String, String)} instead.
-   */
-  @Deprecated
-  public static String getPropertyIgnoringCase(Properties p, String key, String defaultValue) {
-    return PropertyHelper.getPropertyIgnoringCase(p, key, defaultValue);
-  }
-
-  /**
-   * @deprecated since 3.1.1 use {@link PropertyHelper#getPropertyIgnoringCase(Properties, String)} instead.
-   */
-  @Deprecated
-  public static String getPropertyIgnoringCase(Properties p, String key) {
-    return PropertyHelper.getPropertyIgnoringCase(p, key, null);
-  }
 }

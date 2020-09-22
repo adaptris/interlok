@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,9 +16,9 @@
 
 package com.adaptris.core.services.splitter;
 
-import static com.adaptris.core.ServiceCase.execute;
 import static com.adaptris.core.services.splitter.MessageSplitterServiceImp.KEY_CURRENT_SPLIT_MESSAGE_COUNT;
 import static com.adaptris.core.services.splitter.SplitterCase.createAdvanced;
+import static com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase.execute;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -36,7 +36,6 @@ import com.adaptris.core.EventHandler;
 import com.adaptris.core.EventHandlerAware;
 import com.adaptris.core.MessageLifecycleEvent;
 import com.adaptris.core.Service;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.ServiceList;
@@ -45,6 +44,7 @@ import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 
 public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServiceTest {
 
@@ -128,7 +128,7 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     });
     service.registerEventHandler(null);
     try {
-      ServiceCase.execute(service, msg);
+      ExampleServiceCase.execute(service, msg);
       fail("Expecting failure from AlwaysFailService");
     } catch (ServiceException expected) {
       ;
@@ -146,7 +146,7 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     service.registerEventHandler(null);
     service.setSendEvents(true);
     try {
-      ServiceCase.execute(service, msg);
+      ExampleServiceCase.execute(service, msg);
       fail("Expecting failure from AlwaysFailService");
     } catch (ServiceException expected) {
       ;
@@ -168,7 +168,7 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     service.registerEventHandler(eh);
     service.setSendEvents(true);
     try {
-      ServiceCase.execute(service, msg);
+      ExampleServiceCase.execute(service, msg);
       fail("Expecting failure from AlwaysFailService");
     } catch (ServiceException expected) {
       ;
@@ -192,7 +192,7 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     service.registerEventHandler(eh);
     service.setSendEvents(false);
     try {
-      ServiceCase.execute(service, msg);
+      ExampleServiceCase.execute(service, msg);
       fail("Expecting failure from AlwaysFailService");
     } catch (ServiceException expected) {
       ;
@@ -207,7 +207,7 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     AdvancedMessageSplitterService service = createServiceImpl(new SimpleRegexpMessageSplitter("\\|"), producer);
     AdaptrisMessage msg = createMessage(REGEXP_DATA);
     service.registerEventHandler(null);
-    ServiceCase.execute(service, msg);
+    ExampleServiceCase.execute(service, msg);
     assertEquals("Number of messages", 4, producer.getMessages().size());
     assertEquals("splitCount metadata", 4, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
     int count = 0;
@@ -224,7 +224,7 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     AdaptrisMessage msg = createMessage(REGEXP_DATA);
     service.registerEventHandler(null);
     service.setSendEvents(true);
-    ServiceCase.execute(service, msg);
+    ExampleServiceCase.execute(service, msg);
     assertEquals("Number of messages", 4, producer.getMessages().size());
     assertEquals("splitCount metadata", 4,
         Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
@@ -245,7 +245,7 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     eh.setProducer(ehp);
     eh.requestStart();
     service.registerEventHandler(eh);
-    ServiceCase.execute(service, msg);
+    ExampleServiceCase.execute(service, msg);
     eh.requestClose();
     assertEquals("Number of messages", 4, producer.getMessages().size());
     assertEquals("splitCount metadata", 4,
@@ -270,7 +270,7 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     eh.requestStart();
     service.registerEventHandler(eh);
     service.setSendEvents(true);
-    ServiceCase.execute(service, msg);
+    ExampleServiceCase.execute(service, msg);
     eh.requestClose();
     assertEquals("Number of messages", 4, producer.getMessages().size());
     assertEquals("splitCount metadata", 4, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
@@ -293,7 +293,7 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     eh.requestStart();
     service.registerEventHandler(eh);
     service.setSendEvents(false);
-    ServiceCase.execute(service, msg);
+    ExampleServiceCase.execute(service, msg);
     eh.requestClose();
     assertEquals("Number of messages", 4, producer.getMessages().size());
     assertEquals("splitCount metadata", 4, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
@@ -314,7 +314,7 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
         new ThrowExceptionService(new ConfiguredException("Fail")), new StandaloneProducer(producer)
     });
     try {
-      ServiceCase.execute(service, msg);
+      ExampleServiceCase.execute(service, msg);
       fail("Expecting failure from AlwaysFailService");
     }
     catch (ServiceException expected) {
@@ -333,7 +333,7 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     service.setIgnoreSplitMessageFailures(true);
     execute(service, msg);
     assertEquals("Number of messages", 0, producer.getMessages().size());
-    // We should still get 4 messages as the splitCount. They may not have been successfully 
+    // We should still get 4 messages as the splitCount. They may not have been successfully
     // processed, but they were still results from the split!
     assertEquals("splitCount metadata", 4, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
     int count = 0;

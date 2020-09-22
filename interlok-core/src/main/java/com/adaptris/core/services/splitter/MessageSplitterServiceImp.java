@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,11 +16,7 @@
 
 package com.adaptris.core.services.splitter;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.BooleanUtils;
@@ -33,6 +29,7 @@ import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.interlok.util.CloseableIterable;
+import lombok.Synchronized;
 
 /**
  * <p>
@@ -42,13 +39,13 @@ import com.adaptris.interlok.util.CloseableIterable;
 public abstract class MessageSplitterServiceImp extends ServiceImp {
   public static final String KEY_SPLIT_MESSAGE_COUNT = "splitCount";
   public static final String KEY_CURRENT_SPLIT_MESSAGE_COUNT = "currentSplitCount";
-  
+
   @NotNull
   @Valid
   private MessageSplitter splitter;
   @InputFieldDefault(value = "false")
   private Boolean ignoreSplitMessageFailures;
-  
+
   /**
    */
   public MessageSplitterServiceImp() {
@@ -60,14 +57,14 @@ public abstract class MessageSplitterServiceImp extends ServiceImp {
    */
   @Override
   public final void doService(AdaptrisMessage msg) throws ServiceException {
-    List<Future> tasks = new ArrayList<Future>();
     try (CloseableIterable<AdaptrisMessage> messages = CloseableIterable.ensureCloseable(splitter.splitMessage(msg))) {
       long count = 0;
+      SplitterCallback callback = new SplitterCallback();
       for (AdaptrisMessage splitMessage : messages) {
         count++;
         try {
           splitMessage.addMetadata(KEY_CURRENT_SPLIT_MESSAGE_COUNT, Long.toString(count));
-          tasks.add(handleSplitMessage(splitMessage));
+          handleSplitMessage(splitMessage, callback);
         } catch (ServiceException e) {
           log.debug("Split msg {} failed", splitMessage.getUniqueId());
           if (ignoreSplitMessageFailures()) {
@@ -77,28 +74,26 @@ public abstract class MessageSplitterServiceImp extends ServiceImp {
           }
         }
       }
-      waitForCompletion(tasks);
+      waitForCompletion(callback, count);
       msg.addMetadata(KEY_SPLIT_MESSAGE_COUNT, Long.toString(count));
     } catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);
     }
   }
 
-  protected abstract Future<?> handleSplitMessage(AdaptrisMessage msg)
-      throws ServiceException;
+  protected abstract void handleSplitMessage(AdaptrisMessage msg,
+      java.util.function.Consumer<Exception> successOrFailure) throws ServiceException;
 
-  protected void waitForCompletion(List<Future> tasks) throws ServiceException {
+  protected void waitForCompletion(SplitterCallback tasks, long expected) throws ServiceException {
+    long count = -1;
+    boolean ignore = ignoreSplitMessageFailures();
     do {
-      for (Iterator<Future> i = tasks.iterator(); i.hasNext();) {
-        Future f = i.next();
-        if (f.isDone()) {
-          i.remove();
-        }
+      count = tasks.count();
+      if (BooleanUtils.and(new boolean[] {tasks.hadFailures(), !ignore})) {
+        throw ExceptionHelper.wrapServiceException(tasks.lastException());
       }
-      if (tasks.size() > 0) {
-        LifecycleHelper.waitQuietly(100);
-      }
-    } while (tasks.size() > 0);
+      LifecycleHelper.waitQuietly(100);
+    } while (count < expected);
   }
 
   @Override
@@ -158,33 +153,35 @@ public abstract class MessageSplitterServiceImp extends ServiceImp {
     ignoreSplitMessageFailures = b;
   }
 
-  // In the current thread, by the time the future returns everything is complete.
-  protected static class AlreadyComplete implements Future<Boolean> {
+  private static class SplitterCallback implements Consumer<Exception> {
 
+    private transient Exception lastException = null;
+    private transient long count = 0;
+    private final transient Object locker = new Object();
+
+    // The question here is, should the callback use AtomicXXX rather than
+    // making this synchronized?
     @Override
-    public boolean cancel(boolean mayInterruptIfRunning) {
-      return false;
+    @Synchronized("locker")
+    public void accept(Exception e) {
+      if (e != null) {
+        lastException = e;
+      }
+      count++;
     }
 
-    @Override
-    public boolean isCancelled() {
-      return false;
+    private boolean hadFailures() {
+      return lastException != null;
     }
 
-    @Override
-    public boolean isDone() {
-      return true;
+    private Exception lastException() {
+      return lastException;
     }
 
-    @Override
-    public Boolean get() {
-      return Boolean.TRUE;
-    }
-
-    @Override
-    public Boolean get(long timeout, TimeUnit unit) {
-      return Boolean.TRUE;
+    private long count() {
+      return count;
     }
 
   }
+
 }

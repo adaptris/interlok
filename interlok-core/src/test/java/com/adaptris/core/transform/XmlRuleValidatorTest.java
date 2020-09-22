@@ -23,11 +23,10 @@ import static org.junit.Assert.fail;
 import java.util.Arrays;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.BaseCase;
 import com.adaptris.core.DefaultMessageFactory;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 import com.adaptris.transform.validate.IsNullContentValidation;
 import com.adaptris.transform.validate.NotInListContentValidation;
 import com.adaptris.transform.validate.NotNullContentValidation;
@@ -37,7 +36,7 @@ import com.adaptris.transform.validate.ValidationStage;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
-public class XmlRuleValidatorTest extends BaseCase {
+public class XmlRuleValidatorTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
 
   static final String XML_FAMILY_TREE = "<document>\n" + "  <parent id=\"Cronus\">\n"
       + "    <child mother=\"Rhea\"><name>Zeus</name></child>\n" + "    <child mother=\"Rhea\"><name>Demeter</name></child>\n"
@@ -107,12 +106,6 @@ public class XmlRuleValidatorTest extends BaseCase {
       + "  <PartnerIdentifier Type=\"GLN\">1234567890ABC</PartnerIdentifier>\n" +
       "</document>";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
-
   @Test
   public void testSetNamespaceContext() {
     XmlRuleValidator obj = new XmlRuleValidator();
@@ -131,7 +124,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("ABCDEFG");
     XmlValidationService service = new XmlValidationService(validator);
     try {
-      ServiceCase.execute(service, msg);
+      ExampleServiceCase.execute(service, msg);
       fail("RuleValidationService success when expecting failure");
     }
     catch (ServiceException expected) {
@@ -148,7 +141,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     validator.addValidationStage(vs);
     XmlValidationService service = new XmlValidationService(validator);
     try {
-      ServiceCase.execute(service, msg);
+      ExampleServiceCase.execute(service, msg);
       fail("RuleValidationService success when expecting failure");
     }
     catch (ServiceException expected) {
@@ -164,13 +157,13 @@ public class XmlRuleValidatorTest extends BaseCase {
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(XML_FAMILY_TREE);
     XmlValidationService service = new XmlValidationService(validator);
     try {
-      ServiceCase.execute(service, msg);
+      ExampleServiceCase.execute(service, msg);
       fail("RuleValidationService success when expecting failure");
     }
     catch (ServiceException expected) {
     }
     finally {
-      ServiceCase.stop(service);
+      ExampleServiceCase.stop(service);
     }
   }
 
@@ -182,7 +175,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(XML_FAMILY_TREE);
     XmlValidationService service = new XmlValidationService(validator);
     try {
-      ServiceCase.start(service);
+      ExampleServiceCase.start(service);
       service.doService(new DefaultMessageFactory().newMessage(XML_FAMILY_TREE));
       service.doService(new DefaultMessageFactory().newMessage(XML_FAMILY_TREE));
     }
@@ -190,7 +183,7 @@ public class XmlRuleValidatorTest extends BaseCase {
       fail("RuleValidationService failure when expecting success");
     }
     finally {
-      ServiceCase.stop(service);
+      ExampleServiceCase.stop(service);
     }
   }
 
@@ -203,7 +196,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(XML_FAMILY_TREE);
     XmlValidationService service = new XmlValidationService(validator);
     try {
-      ServiceCase.execute(service, msg);
+      ExampleServiceCase.execute(service, msg);
       fail("RuleValidationService success when expecting failure");
     }
     catch (ServiceException expected) {
@@ -218,7 +211,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(XML_FAMILY_TREE);
     XmlValidationService service = new XmlValidationService(validator);
     try {
-      ServiceCase.execute(service, msg);
+      ExampleServiceCase.execute(service, msg);
     }
     catch (ServiceException expected) {
       fail("RuleValidationService failure when expecting success");
@@ -237,7 +230,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(XML_FAMILY_TREE);
     XmlValidationService service = new XmlValidationService(validator);
     try {
-      ServiceCase.execute(service, msg);
+      ExampleServiceCase.execute(service, msg);
     }
     catch (ServiceException e) {
       fail("RuleValidationService failure when expecting success");
@@ -255,7 +248,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(XML_WITH_NAMESEPACE);
     XmlValidationService service = new XmlValidationService(validator);
     try {
-      ServiceCase.execute(service, msg);
+      ExampleServiceCase.execute(service, msg);
     }
     catch (ServiceException e) {
       fail("RuleValidationService failure when expecting success");
@@ -270,7 +263,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(XML_FAMILY_TREE);
     XmlValidationService service = new XmlValidationService(validator);
     try {
-      ServiceCase.execute(service, msg);
+      ExampleServiceCase.execute(service, msg);
       fail("RuleValidationService success when expecting exception");
     }
     catch (ServiceException e) {
@@ -288,7 +281,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(XML_WITH_NAMESEPACE);
     XmlValidationService service = new XmlValidationService(validator);
     try {
-      ServiceCase.execute(service, msg);
+      ExampleServiceCase.execute(service, msg);
       fail("RuleValidationService success when expecting exception");
     }
     catch (ServiceException e) {
@@ -304,7 +297,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(XML_FAMILY_TREE);
     XmlValidationService service = new XmlValidationService(validator);
     try {
-      ServiceCase.execute(service, msg);
+      ExampleServiceCase.execute(service, msg);
       fail("RuleValidationService sucess when expecting failure");
     }
     catch (ServiceException e) {
@@ -321,7 +314,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(XML_FAMILY_TREE);
     XmlValidationService service = new XmlValidationService(validator);
     try {
-      ServiceCase.execute(service, msg);
+      ExampleServiceCase.execute(service, msg);
     }
     catch (ServiceException e) {
       fail("RuleValidationService failure when expecting success");
@@ -336,7 +329,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(XML_FAMILY_TREE);
     XmlValidationService service = new XmlValidationService(validator);
     try {
-      ServiceCase.execute(service, msg);
+      ExampleServiceCase.execute(service, msg);
     }
     catch (ServiceException e) {
       fail("RuleValidationService failure when expecting success");
@@ -353,7 +346,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(XML_FAMILY_TREE);
     XmlValidationService service = new XmlValidationService(validator);
     try {
-      ServiceCase.execute(service, msg);
+      ExampleServiceCase.execute(service, msg);
       fail("RuleValidationService success when expecting exception");
     }
     catch (ServiceException e) {
@@ -377,7 +370,7 @@ public class XmlRuleValidatorTest extends BaseCase {
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(XML_FAMILY_TREE);
     XmlValidationService service = new XmlValidationService(validator);
     try {
-      ServiceCase.execute(service, msg);
+      ExampleServiceCase.execute(service, msg);
     }
     catch (ServiceException e) {
       fail("RuleValidationService failure when expecting success");
@@ -393,13 +386,13 @@ public class XmlRuleValidatorTest extends BaseCase {
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(REGEXP_XML);
     XmlValidationService service = new XmlValidationService(validator);
     try {
-      ServiceCase.execute(service, msg);
+      ExampleServiceCase.execute(service, msg);
       fail("RuleValidationService success when expecting failure");
     } catch (ServiceException expected) {
       // Should be a good msg, not some kind of IllegalArgumentException / no group index.
       assertTrue(expected.getMessage().startsWith("NodeList entry "));
     } finally {
-      ServiceCase.stop(service);
+      ExampleServiceCase.stop(service);
     }
   }
 

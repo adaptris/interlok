@@ -31,10 +31,6 @@ import com.adaptris.core.services.metadata.AddMetadataService;
 
 public class ExceptionHandlingServiceWrapperTest extends ExceptionServiceExample {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
 
   @Test

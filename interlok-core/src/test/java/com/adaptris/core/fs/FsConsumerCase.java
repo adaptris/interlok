@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,7 +40,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.Channel;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConsumeDestination;
-import com.adaptris.core.ConsumerCase;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.Poller;
@@ -58,15 +57,16 @@ import com.adaptris.core.fs.enhanced.SizeDescending;
 import com.adaptris.core.runtime.AdapterManager;
 import com.adaptris.core.util.JmxHelper;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.junit.scaffolding.ExampleConsumerCase;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.TimeInterval;
 
-public abstract class FsConsumerCase extends ConsumerCase {
+public abstract class FsConsumerCase extends ExampleConsumerCase {
   protected static final String COLON = ":";
   protected static final String HYPHEN = "-";
   /**
    * Key in unit-test.properties that defines where example goes unless overriden {@link #setBaseDir(String)}.
-   * 
+   *
    */
   public static final String BASE_DIR_KEY = "FsConsumerCase.baseDir";
 
@@ -384,7 +384,7 @@ public abstract class FsConsumerCase extends ConsumerCase {
         // expected
       }
       // test creation of file filter imp...
-      consumer.getDestination().setFilterExpression(".*\\.xml");
+      consumer.setFilterExpression(".*\\.xml");
       consumer.setFileFilterImp(Perl5FilenameFilter.class.getName());
       try {
         LifecycleHelper.init(consumer);
@@ -419,12 +419,13 @@ public abstract class FsConsumerCase extends ConsumerCase {
       consumer.setFileSorter(null);
       fail();
     }
-    catch (IllegalArgumentException expected) {
+    catch (Exception expected) {
 
     }
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testSetFileFilterImp() throws Exception {
 
     String subdir = new GuidGenerator().safeUUID();
@@ -474,20 +475,13 @@ public abstract class FsConsumerCase extends ConsumerCase {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testSetDestination() {
     FsConsumerImpl consumer = createConsumer();
-
-    // 1 - valid ConfiguredConsumeDestination
+    assertNull(consumer.getDestination());
     ConfiguredConsumeDestination dest = new ConfiguredConsumeDestination("dest");
     consumer.setDestination(dest);
     assertTrue(consumer.getDestination().equals(dest));
-    try {
-      consumer.setDestination(null);
-      fail("no Exc. when dest is null");
-    }
-    catch (IllegalArgumentException e) {
-      // ok
-    }
   }
 
   @Test
@@ -547,7 +541,7 @@ public abstract class FsConsumerCase extends ConsumerCase {
     fs.setCreateDirs(false);
     try {
       LifecycleHelper.init(fs);
-      fail("Should not have been able to init with [" + fs.getDestination().getDestination() + "] w/o creating the directory");
+      fail("Should fail since dir can't exist");
     }
     catch (CoreException e) {
       ;// Expected
@@ -616,8 +610,10 @@ public abstract class FsConsumerCase extends ConsumerCase {
       for (Poller poller : POLLER_LIST) {
         for (FileSortImplementation sort : FileSortImplementation.values()) {
           StandaloneConsumer sc = new StandaloneConsumer(createConsumer(null));
+          ConsumeDestination cd = filter.createDestination();
           ((FsConsumerImpl) sc.getConsumer()).setPoller(poller);
-          ((FsConsumerImpl) sc.getConsumer()).setDestination(filter.createDestination());
+          ((FsConsumerImpl) sc.getConsumer()).setBaseDirectoryUrl(cd.getDestination());
+          ((FsConsumerImpl) sc.getConsumer()).setFilterExpression(cd.getFilterExpression());
           ((FsConsumerImpl) sc.getConsumer()).setFileFilterImp(filter.getImpl());
           ((FsConsumerImpl) sc.getConsumer()).setFileSorter(sort.getImplementation());
 

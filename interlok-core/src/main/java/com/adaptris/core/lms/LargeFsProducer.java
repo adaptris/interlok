@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,10 +18,8 @@ package com.adaptris.core.lms;
 
 import java.io.File;
 import java.io.IOException;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -29,7 +27,6 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.NullConnection;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.fs.FsProducer;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -59,9 +56,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <li>If, at runtime, the AdaptrisMessage implementation is not {@link FileBackedMessage}, then behaviour is delegated back to the
  * parent {@link FsProducer}</li>
  * </ul>
- * 
+ *
  * @config large-fs-producer
- * 
+ *
  */
 @XStreamAlias("large-fs-producer")
 @AdapterComponent
@@ -72,7 +69,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 {
     "producedname", "fsProduceDir"
 })
-@DisplayOrder(order = {"createDirs", "filenameCreator", "tempDirectory", "useRenameTo", "fsWorker"})
+@DisplayOrder(order = {"baseDirectoryUrl", "createDirs", "filenameCreator", "tempDirectory",
+    "useRenameTo", "fsWorker"})
 public class LargeFsProducer extends FsProducer {
 
   @AdvancedConfig
@@ -82,11 +80,6 @@ public class LargeFsProducer extends FsProducer {
   public LargeFsProducer() {
     super();
     setMessageFactory(new FileBackedMessageFactory());
-  }
-
-  public LargeFsProducer(ProduceDestination d) {
-    this();
-    setDestination(d);
   }
 
   private void tryRename(FileBackedMessage msg, File t) throws Exception {

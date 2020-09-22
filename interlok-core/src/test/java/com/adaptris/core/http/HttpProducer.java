@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,10 +20,8 @@ import java.io.IOException;
 import java.net.PasswordAuthentication;
 import java.util.Iterator;
 import java.util.Properties;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -33,7 +31,6 @@ import com.adaptris.core.AdaptrisMessageImp;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.MetadataElement;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.RequestReplyProducerImp;
 import com.adaptris.core.metadata.MetadataFilter;
@@ -47,9 +44,9 @@ import com.adaptris.util.text.Conversion;
 
 /**
  * Abstract base class for all Http producer classes.
- * 
+ *
  * @author lchan
- * 
+ *
  */
 @Deprecated
 public abstract class HttpProducer extends RequestReplyProducerImp {
@@ -135,18 +132,14 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
 
   }
 
-  /**
-   * 
-   * @see RequestReplyProducerImp#produce(AdaptrisMessage, ProduceDestination)
-   */
   @Override
-  public void produce(AdaptrisMessage msg, ProduceDestination dest) throws ProduceException {
+  public void doProduce(AdaptrisMessage msg, String dest) throws ProduceException {
     doRequest(msg, dest, defaultTimeout());
   }
 
   /**
    * Set the RFC 2617 username.
-   * 
+   *
    * @param s the user name
    */
   public void setUserName(String s) {
@@ -158,7 +151,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
    * <p>
    * In additional to plain text passwords, the passwords can also be encoded using the appropriate {@link com.adaptris.security.password.Password}
    * </p>
-   * 
+   *
    * @param s the password
    */
   public void setPassword(String s) {
@@ -167,7 +160,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
 
   /**
    * Get the username.
-   * 
+   *
    * @return username
    */
   public String getUserName() {
@@ -176,7 +169,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
 
   /**
    * Get the password.
-   * 
+   *
    * @return the password
    */
   public String getPassword() {
@@ -187,7 +180,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
    * Set any additional information that will be sent as part of the HTTP headers.
    * <p>
    * The key part of the <code>KeyValuePair</code> forms the header tag, the value forms the data.
-   * 
+   *
    * @param kps the content type.
    */
   public void setAdditionalHeaders(KeyValuePairSet kps) {
@@ -196,7 +189,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
 
   /**
    * Get any additional header information.
-   * 
+   *
    * @return the content type.
    */
   public KeyValuePairSet getAdditionalHeaders() {
@@ -205,7 +198,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
 
   /**
    * Specify whether to automatically handle redirection.
-   * 
+   *
    * @param b true or false.
    */
   public void setHandleRedirection(Boolean b) {
@@ -218,7 +211,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
 
   /**
    * Get the handle redirection flag.
-   * 
+   *
    * @return true or false.
    */
   public Boolean getHandleRedirection() {
@@ -227,7 +220,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
 
   /**
    * Get the metadata key from which to extract the content-type.
-   * 
+   *
    * @return the contentTypeKey
    */
   public String getContentTypeKey() {
@@ -240,7 +233,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
    * In the event that this metadata key exists, it will be used in preference to any configured content-type in the
    * additionalHeaders field
    * </p>
-   * 
+   *
    * @see #getAdditionalHeaders()
    * @see #setAdditionalHeaders(KeyValuePairSet)
    * @param s the contentTypeKey to set
@@ -251,7 +244,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
 
   /**
    * Get the currently configured flag for ignoring server response code.
-   * 
+   *
    * @return true or false
    * @see #setIgnoreServerResponseCode(Boolean)
    */
@@ -273,7 +266,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
    * In all cases the metadata key {@link com.adaptris.core.CoreConstants#HTTP_PRODUCER_RESPONSE_CODE} is populated with the last
    * server response.
    * </p>
-   * 
+   *
    * @see com.adaptris.core.CoreConstants#HTTP_PRODUCER_RESPONSE_CODE
    * @param b true
    */
@@ -283,7 +276,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
 
   /**
    * Get any additional items that need to be added as HTTP Headers.
-   * 
+   *
    * @param msg the AdaptrisMessage
    * @return a set of properties that contain the required items.
    * @see #setAdditionalHeaders(KeyValuePairSet)
@@ -304,7 +297,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
 
   /**
    * Get the RFC2617 authorisation string.
-   * 
+   *
    * @return the RFC2617 authorsation string or null if none specified.
    * @deprecated we should probably be using {@link #getPasswordAuthentication()} instead
    */
@@ -324,7 +317,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
   }
 
   /**
-   * 
+   *
    * @return the sendMetadataAsHeaders
    * @deprecated since 3.0.2 use {@link #setMetadataFilter(MetadataFilter)} instead.
    */
@@ -340,7 +333,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
 
   /**
    * Specify whether or not to send selected {@link com.adaptris.core.AdaptrisMessage} metadata as HTTP Headers or not.
-   * 
+   *
    * @param b the sendMetadataAsHeaders to set
    * @deprecated since 3.0.2 use {@link #setMetadataFilter(MetadataFilter)} instead.
    */
@@ -368,7 +361,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
    * Keys that match this regular expression will override any statically configured {@link #setAdditionalHeaders(KeyValuePairSet)}
    * entries
    * </p>
-   * 
+   *
    * @param regexp the regular expression; keys which match this expression will be sent as HTTP Headers
    * @see java.util.regex.Pattern
    * @deprecated use {@link #setMetadataFilter(MetadataFilter)} instead.
@@ -391,7 +384,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
    * Any metadata that is returned by this filter will be sent as HTTP headers. Any values that match will override any statically
    * configured {@link #setAdditionalHeaders(KeyValuePairSet)} entries
    * </p>
-   * 
+   *
    * @param metadataFilter the filter defaults to {@link RemoveAllMetadataFilter}
    * @see MetadataFilter
    */
@@ -404,7 +397,7 @@ public abstract class HttpProducer extends RequestReplyProducerImp {
 
   /**
    * Build a RFC2617 basic authorisation string.
-   * 
+   *
    * @param user the user
    * @param password the password
    * @return the RFC2617 auth

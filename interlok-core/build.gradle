@@ -3,13 +3,22 @@ import org.apache.tools.ant.filters.*
 
 ext {
   componentName='Base Interlok'
-  activeMqVersion='5.15.12'
-  artemisVersion='2.12.0'
-  bouncyCastleVersion='1.65'
+  activeMqVersion='5.16.0'
+  artemisVersion='2.14.0'
+  bouncyCastleVersion='1.66'
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
   classesToTest = project.hasProperty("junit.test.classes") ? project.getProperty("junit.test.classes") : "**/*Test*"
   maxThreads = project.hasProperty("junit.threads") ? project.getProperty("junit.threads") : 1
   interlokCommonsOfflineJavadocDir = project.rootDir.getCanonicalPath() + "/interlok-common/build/docs/javadoc"
+  delombokTargetDir = new File("${project.projectDir}/src/main/generated")
+
+  unitTestStubsIncludes = [ '**/core/BaseCase*', '**/core/Example*',  '**/core/PortManager*', '**/core/ProducerCase*', '**/core/ConsumerCase*', '**/core/ServiceCase*',
+                         '**/core/ServiceCollection*', '**/core/MarshallingBaseCase*' ,'**/core/jms/JmsConsumerCase*', '**/core/jms/JmsProducerCase*',
+                         '**/core/jms/JmsProducerExample*','**/core/jms/MockJmsConnectionErrorHandler*',   '**/core/jms/MessageTypeTranslatorCase*',
+                         '**/core/jms/JmsConfig*', '**/core/jms/MockProducer*', '**/core/jms/**/JndiImplementationCase*',
+                         '**/core/jms/ActiveJmsConnectionErrorHandlerCase*', '**/core/transform/TransformServiceExample*',
+                         '**/core/services/cache/*Example*', '**/core/services/mime/MimeJunitHelper*', '**/core/jdbc/JdbcServiceCase*',
+                         '**/core/jdbc/DatabaseConnectionCase*', '**/stubs/**', '**/scaffolding/**', '**/util/system/*', '**/META-INF/**']
 
 }
 
@@ -61,11 +70,11 @@ dependencies {
   compile ("org.hibernate.validator:hibernate-validator:6.1.5.Final")
   compile ("org.glassfish:javax.el:3.0.1-b11")
   compile ("commons-io:commons-io:2.7")
-  compile ("org.apache.commons:commons-lang3:3.10")
-  compile ("commons-net:commons-net:3.6")
-  compile ("org.apache.commons:commons-pool2:2.8.0")
+  compile ("org.apache.commons:commons-lang3:3.11")
+  compile ("commons-net:commons-net:3.7")
+  compile ("org.apache.commons:commons-pool2:2.8.1")
   compile ("org.apache.commons:commons-exec:1.3")
-  compile ("org.apache.commons:commons-text:1.8")
+  compile ("org.apache.commons:commons-text:1.9")
   compile ("org.apache.commons:commons-collections4:4.4")
   compile ("org.bouncycastle:bcprov-jdk15on:$bouncyCastleVersion")
   compile ("org.bouncycastle:bcpkix-jdk15on:$bouncyCastleVersion")
@@ -75,7 +84,7 @@ dependencies {
   compile ("org.glassfish.external:opendmk_jdmkrt_jar:1.0-b01-ea")
   compile ("javax.xml.bind:jaxb-api:2.3.1")
   compile ("com.jcraft:jsch:0.1.55")
-  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.30.v20200611")
+  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.31.v20200723")
   compile ("javax.servlet:javax.servlet-api:4.0.1")
   compile ("net.sf.joost:joost:0.9.1")
   compile ("org.quartz-scheduler:quartz:2.3.2") {
@@ -101,7 +110,7 @@ dependencies {
   testCompile ("org.apache.activemq:activemq-kahadb-store:$activeMqVersion")
   testCompile ("org.apache.activemq.protobuf:activemq-protobuf:1.1")
 
-  testCompile ("org.jruby:jruby-complete:9.2.11.1")
+  testCompile ("org.jruby:jruby-complete:9.2.13.0")
   testCompile ("org.mockftpserver:MockFtpServer:2.7.1")
   testCompile ("org.mockito:mockito-core:$mockitoVersion")
   testCompile ("org.mockito:mockito-inline:$mockitoVersion")
@@ -133,39 +142,22 @@ task examplesJar(type: Jar, dependsOn: test) {
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
-    from sourceSets.main.allSource
+    from sourceSets.main.extensions.delombokTask
 }
 
 task unitTestStubsJar(type: Jar, dependsOn: compileTestJava) {
   from sourceSets.test.output
   baseName "interlok-stubs"
   includeEmptyDirs false
-  include '**/core/BaseCase*'
-  include   '**/core/Example*'
-  include   '**/core/PortManager*'
-  include   '**/core/ProducerCase*'
-  include   '**/core/ConsumerCase*'
-  include   '**/core/ServiceCase*'
-  include   '**/core/ServiceCollection*'
-  include   '**/core/MarshallingBaseCase*'
-  include   '**/core/jms/JmsConsumerCase*'
-  include   '**/core/jms/JmsProducerCase*'
-  include   '**/core/jms/JmsProducerExample*'
-  include   '**/core/jms/MockJmsConnectionErrorHandler*'
-  include   '**/core/jms/MessageTypeTranslatorCase*'
-  include   '**/core/jms/JmsConfig*'
-  include   '**/core/http/HttpProducer.class'
-  include   '**/core/jms/**/JndiImplementationCase*'
-  include   '**/core/jms/ActiveJmsConnectionErrorHandlerCase*'
-  include   '**/core/transform/TransformServiceExample*'
-  include   '**/core/services/cache/*Example*'
-  include   '**/core/services/mime/MimeJunitHelper*'
-  include   '**/core/jdbc/JdbcServiceCase*'
-  include   '**/core/jdbc/DatabaseConnectionCase*'
-  include   '**/core/runtime/ComponentManagerCase*'
-  include   '**/stubs/**'
-  include   '**/util/system/*'
-  include   '**/META-INF/**'
+  include unitTestStubsIncludes
+}
+
+task unitTestStubsSourcesJar(type: Jar, dependsOn: classes) {
+  classifier = 'sources'
+  from sourceSets.test.allSource
+  baseName "interlok-stubs"
+  includeEmptyDirs false
+  include unitTestStubsIncludes
 }
 
 task generateUnitTestProperties {
@@ -262,6 +254,7 @@ task deleteGeneratedFiles(type: Delete) {
   delete file(testResourcesDir() + '/security.properties')
   delete file('derby.log')
   delete 'activemq-data'
+  delete delombokTargetDir
 }
 
 
@@ -270,6 +263,7 @@ artifacts {
   archives examplesJar
   archives sourcesJar
   unitTestStubs unitTestStubsJar
+  unitTestStubs unitTestStubsSourcesJar
 }
 
 javadoc {
@@ -348,6 +342,10 @@ uploadUnitTestStubs {
 
     }
   }
+}
+
+delombok {
+  target = delombokTargetDir
 }
 
 check.dependsOn jacocoTestReport

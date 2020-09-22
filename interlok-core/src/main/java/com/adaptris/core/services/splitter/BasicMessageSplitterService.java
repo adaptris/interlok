@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,7 +16,7 @@
 
 package com.adaptris.core.services.splitter;
 
-import java.util.concurrent.Future;
+import java.util.function.Consumer;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.AdapterComponent;
@@ -33,6 +33,7 @@ import com.adaptris.core.NullMessageProducer;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -44,10 +45,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <p>
  * This implementation simply uses the configured producer and connection to produce the split message.
  * </p>
- * 
+ *
  * @config basic-message-splitter-service
- * 
- * 
+ *
+ *
  */
 @XStreamAlias("basic-message-splitter-service")
 @AdapterComponent
@@ -77,18 +78,17 @@ public class BasicMessageSplitterService extends MessageSplitterServiceImp imple
     setProducer(new NullMessageProducer());
   }
 
-  /**
-   *
-   * @see MessageSplitterServiceImp#handleSplitMessage(AdaptrisMessage)
-   */
   @Override
-  protected Future<?> handleSplitMessage(AdaptrisMessage msg) throws ServiceException {
+  protected void handleSplitMessage(AdaptrisMessage msg, Consumer<Exception> callback)
+      throws ServiceException {
     try {
       producer.produce(msg);
+      callback.accept(null);
     } catch (ProduceException e) {
-      throw new ServiceException(e);
+      ServiceException exc = ExceptionHelper.wrapServiceException(e);
+      callback.accept(exc);
+      throw exc;
     }
-    return new AlreadyComplete();
   }
 
   @Override
@@ -180,5 +180,6 @@ public class BasicMessageSplitterService extends MessageSplitterServiceImp imple
     LifecycleHelper.prepare(getConnection());
     LifecycleHelper.prepare(getProducer());
   }
+
 
 }

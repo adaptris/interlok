@@ -37,7 +37,7 @@ public abstract class JmsConnectionErrorHandlerImpl extends ConnectionErrorHandl
       idForLogging = loggingId;
     }
     else {
-      idForLogging = abbreviate(retrieveConnection(JmsConnection.class).getBrokerDetailsForLogging(), 20);
+      idForLogging = abbreviate(retrieveConnection(JmsConnection.class).brokerDetailsForLogging(), 20);
     }
   }
 

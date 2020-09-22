@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,7 +29,6 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -63,9 +62,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * resolved as an expression or from static configuration. This means that until first use, no attempt is made to access the schema
  * URL.
  * </p>
- * 
+ *
  * @config xml-schema-validator
- * 
+ *
  */
 @XStreamAlias("xml-schema-validator")
 @DisplayOrder(order =
@@ -88,10 +87,6 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
   // file:./relative/path which isn't truly rfc2396 compliant...
   // @UrlExpression
   private String schema;
-  @AdvancedConfig
-  @Deprecated
-  @Removal(version = "3.11.0")
-  private String schemaMetadataKey;
   @InputFieldDefault(value = "expiring-map-cache, 16 entries, 2 hours")
   @AdvancedConfig
   @Valid
@@ -99,7 +94,6 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
 
   // transient
   private transient SchemaFactory schemaFactory;
-  private transient boolean warningLogged;
   private transient boolean classWarningLogged;
   private transient AdaptrisConnection schemaCacheConnection;
 
@@ -111,16 +105,10 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
     setSchema(schema);
   }
 
-  @Deprecated
-  public XmlSchemaValidator(String schema, String metadataKey) {
-    this(schema);
-    setSchemaMetadataKey(metadataKey);
-  }
-
   @Override
   public void validate(AdaptrisMessage msg) throws CoreException {
     try (InputStream in = msg.getInputStream()) {
-      Validator validator = this.obtainSchemaToUse(msg).newValidator();
+      Validator validator = obtainSchemaToUse(msg).newValidator();
       validator.setErrorHandler(new ErrorHandlerImp());
       validator.validate(new SAXSource(new InputSource(in)));
     }
@@ -138,7 +126,7 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
     LoggingHelper.logWarning(classWarningLogged, () -> {
       classWarningLogged = true;
     }, "Use basic-xml-schema-validator or extended-xml-schema-validator instead");
-    
+
     schemaCacheConnection = ObjectUtils.defaultIfNull(getSchemaCache(), new CacheConnection(
         new ExpiringMapCache().withExpiration(DEFAULT_CACHE_TTL).withMaxEntries(DEFAULT_CACHE_SIZE)));
     LifecycleHelper.prepare(schemaCacheConnection);
@@ -149,9 +137,7 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
     try {
       super.init();
       Args.notNull(schemaCacheConnection, "schemaCache");
-      if (StringUtils.isBlank(getSchema()) && StringUtils.isBlank(getSchemaMetadataKey())) {
-        throw new CoreException("metadata-key & schema are blank");
-      }
+      Args.notBlank(getSchema(), "schema");
       LifecycleHelper.init(schemaCacheConnection);
       schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
     }
@@ -180,14 +166,6 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
 
   private Schema obtainSchemaToUse(AdaptrisMessage msg) throws Exception {
     String schemaUrl = msg.resolve(getSchema());
-    if (StringUtils.isNotBlank(getSchemaMetadataKey())) {
-      LoggingHelper.logWarning(warningLogged, () -> {
-        warningLogged = true;
-      }, "schema-metadata-metadata is deprecated, use expression based schema URL instead.");
-      if (msg.headersContainsKey(getSchemaMetadataKey())) {
-        schemaUrl = msg.getMetadataValue(getSchemaMetadataKey());
-      }
-    }
     return resolve(schemaUrl);
   }
 
@@ -239,44 +217,20 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
 
   /**
    * Sets the schema to validate against. May not be null or empty.
-   * 
+   *
    * @param s the schema to validate against, normally a URL.
    */
   public void setSchema(String s) {
-    this.schema = s;
+    schema = s;
   }
 
   /**
    * Returns the schema to validate against.
-   * 
+   *
    * @return the schema to validate against
    */
   public String getSchema() {
     return schema;
-  }
-
-  /**
-   * Returns the (optional) metadata key against which a schema can be provided at run time.
-   * 
-   * @return the (optional) metadata key against which a schema can be provided at run time
-   * @deprecated since 3.8.4 use an expression based {@link #setSchema(String)} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.11.0", message = "use an expression based schema value instead.")
-  public String getSchemaMetadataKey() {
-    return schemaMetadataKey;
-  }
-
-  /**
-   * Sets the (optional) metadata key against which a schema can be provided at run time
-   * 
-   * @param s the (optional) metadata key against which a schema can be provided at run time
-   * @deprecated since 3.8.4 use an expression based {@link #setSchema(String)} instead.
-   */
-  @Deprecated
-  @Removal(version = "3.11.0", message = "use an expression based schema value instead.")
-  public void setSchemaMetadataKey(String s) {
-    this.schemaMetadataKey = s;
   }
 
   public AdaptrisConnection getSchemaCache() {
@@ -291,11 +245,11 @@ public class XmlSchemaValidator extends MessageValidatorImpl {
    * caching. The default behaviour is to cache 16 schemas for a max of 2 hours (last-access) if you don't explicitly configure it
    * differently.
    * </p>
-   * 
+   *
    * @param cache the cache, generally a {@link CacheConnection} or {@link SharedConnection}.
    */
   public void setSchemaCache(AdaptrisConnection cache) {
-    this.schemaCache = Args.notNull(cache, "schemaCache");
+    schemaCache = Args.notNull(cache, "schemaCache");
   }
 
   public XmlSchemaValidator withSchemaCache(AdaptrisConnection c) {

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,23 +17,12 @@
 package com.adaptris.core.runtime;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
-
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Properties;
-import java.util.Set;
-
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.Adapter;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
@@ -41,7 +30,6 @@ import com.adaptris.core.config.ConfigPreProcessorLoader;
 import com.adaptris.core.config.ConfigPreProcessors;
 import com.adaptris.core.config.DefaultPreProcessorLoader;
 import com.adaptris.core.management.BootstrapProperties;
-import com.adaptris.core.management.Constants;
 import com.adaptris.core.management.vcs.RuntimeVersionControl;
 import com.adaptris.core.management.vcs.RuntimeVersionControlLoader;
 import com.adaptris.core.management.vcs.VcsConstants;
@@ -52,7 +40,7 @@ class AdapterBuilder implements AdapterBuilderMBean {
   private static final String JMX_REGISTRY_TYPE = AdapterComponentMBean.JMX_DOMAIN_NAME + ":type=Builder";
 
   private static final String JMX_OBJECT_PREFIX =
-      JMX_REGISTRY_TYPE + 
+      JMX_REGISTRY_TYPE +
       AdapterComponentMBean.PROPERTY_SEPARATOR + AdapterComponentMBean.KEY_ID + AdapterComponentMBean.EQUALS;
 
 
@@ -61,7 +49,6 @@ class AdapterBuilder implements AdapterBuilderMBean {
   private transient ConfigPreProcessorLoader configurationPreProcessorLoader = new DefaultPreProcessorLoader();
   private transient RuntimeVersionControl runtimeVCS;
   private transient AdapterRegistry parent;
-  private transient ValidatorFactory validatorFactory;
   private transient ObjectName myObjectName;
 
   private AdapterBuilder() {
@@ -70,12 +57,8 @@ class AdapterBuilder implements AdapterBuilderMBean {
   public AdapterBuilder(AdapterRegistry owner, Properties cfg) throws MalformedObjectNameException {
     this();
     parent = owner;
-    this.config = new BootstrapProperties(cfg);
+    config = new BootstrapProperties(cfg);
     runtimeVCS = loadVCS();
-    boolean enableValidation = config.isEnabled(Constants.CFG_KEY_VALIDATE_CONFIG);
-    if (enableValidation) {
-      validatorFactory = Validation.buildDefaultValidatorFactory();
-    }
     myObjectName = ObjectName.getInstance(JMX_OBJECT_PREFIX + Integer.toHexString(System.identityHashCode(cfg)));
   }
 
@@ -144,37 +127,10 @@ class AdapterBuilder implements AdapterBuilderMBean {
   }
 
   private Adapter validate(Adapter adapter) throws CoreException {
-    if (validatorFactory != null) {
-      Validator validator = validatorFactory.getValidator();
-      checkViolations(validator.validate(adapter));
-    } else {
-      if (isBlank(adapter.getUniqueId())) {
-        throw new CoreException("Adapter Unique ID is null/empty");
-      }
+    if (isBlank(adapter.getUniqueId())) {
+      throw new CoreException("Adapter Unique ID is null/empty");
     }
     return adapter;
-  }
-
-  private void checkViolations(Set<ConstraintViolation<Adapter>> violations) throws CoreException {
-    StringWriter writer = new StringWriter();
-    if (violations.size() == 0) {
-      return;
-    }
-    try (PrintWriter p = new PrintWriter(writer)) {
-      p.println();
-      for (ConstraintViolation v : violations) {
-        String logString = String.format("Adapter Validation Error: [%1$s]=[%2$s]", v.getPropertyPath(), v.getMessage());
-        p.println(logString);
-        log.warn(logString);
-      }
-    }
-    throw new CoreException(writer.toString());
-  }
-
-  static void assertNotNull(Object o, String msg) throws CoreException {
-    if (o == null) {
-      throw new CoreException(msg);
-    }
   }
 
   @Override

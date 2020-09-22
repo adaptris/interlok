@@ -14,6 +14,7 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.cache.Cache;
 import com.adaptris.core.services.cache.translators.MetadataCacheValueTranslator;
 import com.adaptris.core.services.cache.translators.StaticCacheValueTranslator;
+import com.adaptris.interlok.junit.scaffolding.services.BasicCacheExampleGenerator;
 
 public class RetrieveFromCacheServiceTest extends CacheServiceBaseCase {
   static final String TARGET_METADATA_KEY = "targetMetadataKey";
@@ -21,10 +22,6 @@ public class RetrieveFromCacheServiceTest extends CacheServiceBaseCase {
   static final String LOOKUP_VALUE = "lookupValue";
   static final String LOOKED_UP_VALUE = "lookedUpValue";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
 
   @Test

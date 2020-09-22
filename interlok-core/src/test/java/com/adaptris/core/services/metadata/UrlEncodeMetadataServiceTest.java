@@ -33,10 +33,6 @@ public class UrlEncodeMetadataServiceTest extends MetadataServiceExample {
     return msg;
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testService() throws Exception {

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,19 +34,22 @@ import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.util.Closer;
 import com.adaptris.util.TimeInterval;
 
 public class MessageMetricsInterceptorTest {
 
   private MessageMetricsInterceptor metricsInterceptor;
-  
+
   @Mock private StandaloneProducer mockStandaloneProducer;
   @Mock private AdaptrisMarshaller mockMarshaller;
 
+  private AutoCloseable openMocks;
+
   @Before
   public void setUp() throws Exception {
-    MockitoAnnotations.initMocks(this);
-    
+    openMocks = MockitoAnnotations.openMocks(this);
+
     metricsInterceptor = new MessageMetricsInterceptor();
     metricsInterceptor.setTimesliceDuration(new TimeInterval(5L, TimeUnit.SECONDS));
     metricsInterceptor.setTimesliceHistoryCount(2);
@@ -56,6 +59,7 @@ public class MessageMetricsInterceptorTest {
   public void tearDown() throws Exception {
     LifecycleHelper.stop(metricsInterceptor);
     LifecycleHelper.close(metricsInterceptor);
+    Closer.closeQuietly(openMocks);
   }
 
   @Test
@@ -93,14 +97,14 @@ public class MessageMetricsInterceptorTest {
 
     // A minus time will expire the time slice immediately after the first message
     metricsInterceptor.setTimesliceDuration(new TimeInterval(-1L, TimeUnit.SECONDS));
-    
+
     assertEquals(0, metricsInterceptor.getStats().size());
     submitMessage(message);
 
     assertEquals(1, metricsInterceptor.getStats().size());
-    
+
     metricsInterceptor.setTimesliceDuration(new TimeInterval(500L, TimeUnit.MILLISECONDS));
-    
+
     submitMessage(message);
     submitMessage(message);
 
@@ -114,9 +118,9 @@ public class MessageMetricsInterceptorTest {
     ProducingStatisticManager producingStatisticManager = new ProducingStatisticManager();
     producingStatisticManager.setMarshaller(mockMarshaller);
     producingStatisticManager.setProducer(mockStandaloneProducer);
-    
+
     metricsInterceptor.setStatisticManager(producingStatisticManager);
-    
+
     LifecycleHelper.init(metricsInterceptor);
     LifecycleHelper.start(metricsInterceptor);
 
@@ -124,7 +128,7 @@ public class MessageMetricsInterceptorTest {
 
     // A minus time will expire the time slice immediately after the first message
     metricsInterceptor.setTimesliceDuration(new TimeInterval(-1L, TimeUnit.SECONDS));
-    
+
     assertEquals(0, metricsInterceptor.getStats().size());
     submitMessage(message);
 
@@ -139,9 +143,9 @@ public class MessageMetricsInterceptorTest {
     ProducingStatisticManager producingStatisticManager = new ProducingStatisticManager();
     producingStatisticManager.setMarshaller(mockMarshaller);
     producingStatisticManager.setProducer(mockStandaloneProducer);
-    
+
     metricsInterceptor.setStatisticManager(producingStatisticManager);
-    
+
     LifecycleHelper.init(metricsInterceptor);
     LifecycleHelper.start(metricsInterceptor);
 
@@ -149,7 +153,7 @@ public class MessageMetricsInterceptorTest {
 
     // A minus time will expire the time slice immediately after the first message
     metricsInterceptor.setTimesliceDuration(new TimeInterval(-1L, TimeUnit.SECONDS));
-    
+
     assertEquals(0, metricsInterceptor.getStats().size());
     submitMessage(message);
 
@@ -164,20 +168,20 @@ public class MessageMetricsInterceptorTest {
   public void testRestartProducerAfterProduceFailure() throws Exception {
     doThrow(new ProduceException("Expected."))
         .when(mockStandaloneProducer).produce(any());
-        
+
     ProducingStatisticManager producingStatisticManager = new ProducingStatisticManager();
     producingStatisticManager.setMarshaller(mockMarshaller);
     producingStatisticManager.setProducer(mockStandaloneProducer);
-    
+
     metricsInterceptor.setStatisticManager(producingStatisticManager);
 
     LifecycleHelper.init(metricsInterceptor);
     LifecycleHelper.start(metricsInterceptor);
-    
+
     AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage();
     // A minus time will expire the time slice immediately after the first message
     metricsInterceptor.setTimesliceDuration(new TimeInterval(-1L, TimeUnit.SECONDS));
-    
+
     assertEquals(0, metricsInterceptor.getStats().size());
     submitMessage(message);
 
@@ -186,7 +190,7 @@ public class MessageMetricsInterceptorTest {
 
     verify(mockMarshaller).marshal(any());
     verify(mockStandaloneProducer).produce(any());
-    
+
     //test the restart.
     verify(mockStandaloneProducer).requestStop();
   }
@@ -200,14 +204,14 @@ public class MessageMetricsInterceptorTest {
 
     // A minus time will expire the time slice immediately after the first message
     metricsInterceptor.setTimesliceDuration(new TimeInterval(-1L, TimeUnit.SECONDS));
-    
+
     assertEquals(0, metricsInterceptor.getStats().size());
     submitMessage(message);
 
     assertEquals(1, metricsInterceptor.getStats().size());
-    
+
     metricsInterceptor.setTimesliceDuration(new TimeInterval(500L, TimeUnit.MILLISECONDS));
-    
+
     submitMessage(message);
     submitMessage(message);
 

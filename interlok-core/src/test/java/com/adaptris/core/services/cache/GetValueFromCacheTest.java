@@ -11,10 +11,7 @@ import com.adaptris.core.cache.Cache;
 import com.adaptris.core.services.cache.translators.StringPayloadCacheTranslator;
 
 public class GetValueFromCacheTest extends SingleKeyCacheCase {
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
+
 
   @Test
   public void testDoService() throws Exception {
@@ -56,7 +53,7 @@ public class GetValueFromCacheTest extends SingleKeyCacheCase {
 
   @Test
   public void testDoService_WithError() throws Exception {
-    
+
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello World");
     Cache cache = createCacheInstanceForTests();
     GetValueFromCache service =

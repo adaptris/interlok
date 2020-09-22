@@ -36,10 +36,6 @@ public class PayloadFromTemplateTest extends MetadataServiceExample {
   private static final String PAYLOAD_TEMPLATE_EXPR = "{ \"key\": \"%message{helloMetadataKey}\"}";
   private static final String DEFAULT_METADATA_KEY = "helloMetadataKey";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   private PayloadFromTemplateService createService() {
     Map<String, String> map = new HashMap<>();

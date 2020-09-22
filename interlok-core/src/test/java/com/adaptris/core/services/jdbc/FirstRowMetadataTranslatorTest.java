@@ -52,10 +52,6 @@ public class FirstRowMetadataTranslatorTest extends JdbcQueryServiceCase {
   private static final String DATE_QUERY_SQL = "SELECT adapter_version, message_translator_type, inserted_on, counter"
       + " FROM adapter_type_version " + " WHERE inserted_on > ?";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testMetadataStatementParameter() throws Exception {

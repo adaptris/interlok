@@ -9,11 +9,8 @@ import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.util.TimeInterval;
 
-public class GaussianIntervalPollerTest extends BaseCase {
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
+public class GaussianIntervalPollerTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
+
 
   @Test
   public void testSetConstructors() throws Exception {

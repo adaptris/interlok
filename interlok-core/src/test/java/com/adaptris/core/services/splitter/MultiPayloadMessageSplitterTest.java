@@ -1,5 +1,11 @@
 package com.adaptris.core.services.splitter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.MessageLifecycleEvent;
@@ -8,14 +14,6 @@ import com.adaptris.core.MultiPayloadAdaptrisMessage;
 import com.adaptris.core.MultiPayloadAdaptrisMessageImp;
 import com.adaptris.core.MultiPayloadMessageFactory;
 import com.adaptris.util.GuidGenerator;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 public class MultiPayloadMessageSplitterTest extends SplitterCase
 {
@@ -59,6 +57,7 @@ public class MultiPayloadMessageSplitterTest extends SplitterCase
 	}
 
 	@Test
+  @SuppressWarnings("serial")
 	public void testNonCloneableMessage()
 	{
 		List<AdaptrisMessage> response = (List<AdaptrisMessage>)splitter.splitMessage(new MultiPayloadAdaptrisMessageImp("bacon", new GuidGenerator(), DefaultMessageFactory.getDefaultInstance(), PAYLOAD_1.getBytes()) {
@@ -112,9 +111,4 @@ public class MultiPayloadMessageSplitterTest extends SplitterCase
 		return createExamples(createSplitterForTests());
 	}
 
-	@Override
-	public boolean isAnnotatedForJunit4()
-	{
-		return true;
-	}
 }
