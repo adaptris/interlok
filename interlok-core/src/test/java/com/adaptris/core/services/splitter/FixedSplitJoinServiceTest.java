@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services.splitter;
 
+import static com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase.asCollection;
+import static com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase.execute;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import java.io.PrintWriter;
@@ -114,6 +116,79 @@ public class FixedSplitJoinServiceTest {
       assertEquals("always-fail", e.getMessage());
       throw e;
     }
+  }
+
+  @Test
+  public void testService_DidWorkSuccessfully() throws Exception {
+    FixedSplitJoinService service = new FixedSplitJoinService();
+    service.setServiceErrorHandler(
+        new NoExceptionIfWorkDone().withMetadataKey(NoExceptionIfWorkDone.DEFAULT_METADATA_KEY));
+    service.setSplitter(new LineCountSplitter(1));
+    service.setService(
+        asCollection(new MockExceptionStrategyService(MockExceptionStrategyService.MODE.NEUTRAL)));
+    service.setPoolsize(10);
+    service.setTimeout(new TimeInterval(5L, TimeUnit.SECONDS));
+    service.setAggregator(new AppendingMessageAggregator());
+    service.registerEventHandler(LifecycleHelper.initAndStart(new DefaultEventHandler()));
+    AdaptrisMessage msg = createLineCountMessageInput(50);
+    execute(service, msg);
+    List<String> result = IOUtils.readLines(msg.getReader());
+    // Using an appending message aggregator just means that we double up on the original message...
+    // Since we aren't doing any filtering... then we will always get 100 msgs.
+    assertEquals(50 * 2, result.size());
+  }
+
+  @Test(expected = ServiceException.class)
+  public void testService_DidNoWork() throws Exception {
+    FixedSplitJoinService service = new FixedSplitJoinService();
+    service.setServiceErrorHandler(new NoExceptionIfWorkDone().withMetadataKey(NoExceptionIfWorkDone.DEFAULT_METADATA_KEY));
+    service.setSplitter(new LineCountSplitter(1));
+    service.setService(asCollection(new MockExceptionStrategyService(MockExceptionStrategyService.MODE.ERROR)));
+    service.setPoolsize(10);
+    service.setTimeout(new TimeInterval(5L, TimeUnit.SECONDS));
+    service.setAggregator(new AppendingMessageAggregator());
+    service.registerEventHandler(LifecycleHelper.initAndStart(new DefaultEventHandler()));
+    AdaptrisMessage msg = createLineCountMessageInput(50);
+    execute(service, msg);
+  }
+
+  @Test
+  public void testService_DidSomeWork() throws Exception {
+    FixedSplitJoinService service = new FixedSplitJoinService();
+    service.setServiceErrorHandler(
+        new NoExceptionIfWorkDone().withMetadataKey(NoExceptionIfWorkDone.DEFAULT_METADATA_KEY));
+    service.setSplitter(new LineCountSplitter(1));
+    service.setService(
+        asCollection(new MockExceptionStrategyService(MockExceptionStrategyService.MODE.MIXED)));
+    service.setPoolsize(10);
+    service.setTimeout(new TimeInterval(5L, TimeUnit.SECONDS));
+    service.setAggregator(new AppendingMessageAggregator());
+    service.registerEventHandler(LifecycleHelper.initAndStart(new DefaultEventHandler()));
+    AdaptrisMessage msg = createLineCountMessageInput(50);
+    execute(service, msg);
+    List<String> result = IOUtils.readLines(msg.getReader());
+    // Using an appending message aggregator just means that we double up on the original message...
+    // Since we aren't doing any filtering... then we will always get 100 msgs.
+    assertEquals(50 * 2, result.size());
+  }
+
+  @Test
+  public void testService_IgnoreExceptions() throws Exception {
+    FixedSplitJoinService service = new FixedSplitJoinService();
+    service.setServiceErrorHandler(new IgnoreAllExceptions());
+    service.setSplitter(new LineCountSplitter(1));
+    service.setService(
+        asCollection(new MockExceptionStrategyService(MockExceptionStrategyService.MODE.ERROR)));
+    service.setPoolsize(10);
+    service.setTimeout(new TimeInterval(5L, TimeUnit.SECONDS));
+    service.setAggregator(new AppendingMessageAggregator());
+    service.registerEventHandler(LifecycleHelper.initAndStart(new DefaultEventHandler()));
+    AdaptrisMessage msg = createLineCountMessageInput(50);
+    execute(service, msg);
+    List<String> result = IOUtils.readLines(msg.getReader());
+    // Using an appending message aggregator just means that we double up on the original message...
+    // Since we aren't doing any filtering... then we will always get 100 msgs.
+    assertEquals(50 * 2, result.size());
   }
 
 

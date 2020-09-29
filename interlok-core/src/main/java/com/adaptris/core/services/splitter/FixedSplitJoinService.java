@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services.splitter;
 
+import static com.adaptris.core.services.splitter.MessageSplitterServiceImp.KEY_CURRENT_SPLIT_MESSAGE_COUNT;
+import static com.adaptris.core.services.splitter.MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT;
 import static com.adaptris.core.util.ServiceUtil.discardNulls;
 import java.util.Iterator;
 import java.util.concurrent.Callable;
@@ -26,6 +28,7 @@ import java.util.concurrent.TimeoutException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
@@ -65,7 +68,9 @@ import lombok.Setter;
  */
 @XStreamAlias("fixed-split-join-service")
 @AdapterComponent
-@ComponentProfile(summary = "Split a message and then execute the associated services on the split items, aggregating the split messages afterwards", tag = "service,splitjoin")
+@ComponentProfile(
+    summary = "Split a message and then execute the associated services on the split items, aggregating the split messages afterwards",
+    since = "3.11.1", tag = "service,splitjoin")
 @DisplayOrder(order =
 {
     "splitter", "service", "aggregator", "timeout", "poolsize"
@@ -130,6 +135,17 @@ public class FixedSplitJoinService extends ServiceImp implements EventHandlerAwa
   @InputFieldDefault(value = "10")
   private Integer poolsize;
 
+  /**
+   * The strategy to use when encountering any errors during execution.
+   * <p>
+   * Defaults to {@link ServiceExceptionHandler} if not explicitly specified
+   * </p>
+   */
+  @Getter
+  @Setter
+  @AdvancedConfig
+  private ServiceErrorHandler serviceErrorHandler;
+
   private transient ExecutorService executor;
   private transient EventHandler eventHandler;
   private transient ServiceWorkerPool workerFactory;
@@ -168,24 +184,24 @@ public class FixedSplitJoinService extends ServiceImp implements EventHandlerAwa
     Closer.closeQuietly(objectPool);
   }
 
-
-
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     try (CloseableIterable<AdaptrisMessage> splits =
         CloseableIterable.ensureCloseable(getSplitter().splitMessage(msg))) {
-      CountingExceptionHandler exceptionHandler = new CountingExceptionHandler();
+      CountingExceptionHandlerWrapper exceptionHandler =
+          new CountingExceptionHandlerWrapper(serviceErrorHandler());
       Iterable<AdaptrisMessage> toAggregate = doSplitService(splits, exceptionHandler);
       getAggregator().aggregate(msg, toAggregate);
-      // TODO: how to handle the pooling-future-exception-strategy behaviour?
-      exceptionHandler.throwFirstException();
+      exceptionHandler.throwExceptionAsRequired();
+      msg.addMetadata(KEY_SPLIT_MESSAGE_COUNT,
+          Long.toString(exceptionHandler.getExpectedSplitCount()));
     } catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);
     }
   }
 
   protected Iterable<AdaptrisMessage> doSplitService(final Iterable<AdaptrisMessage> msgs,
-      final CountingExceptionHandler exceptionHandler) {
+      final CountingExceptionHandlerWrapper exceptionHandler) {
     final LinkedBlockingQueue<AdaptrisMessage> splitQueue = new LinkedBlockingQueue<>();
     final long deadline = System.nanoTime() + timeoutNanos();
     new Thread(() -> {
@@ -198,6 +214,7 @@ public class FixedSplitJoinService extends ServiceImp implements EventHandlerAwa
             waitQuietly(exceptionHandler, 100L);
             checkTimeout(deadline);
           }
+          m.addMetadata(KEY_CURRENT_SPLIT_MESSAGE_COUNT, Long.toString(count));
           executor.submit(new MyServiceExecutor(m, exceptionHandler, splitQueue));
         } catch (Exception e) {
           // probably a timeout at this point.
@@ -230,6 +247,9 @@ public class FixedSplitJoinService extends ServiceImp implements EventHandlerAwa
     return NumberUtils.toIntDefaultIfNull(getPoolsize(), DEFAULT_POOLSIZE);
   }
 
+  private ServiceErrorHandler serviceErrorHandler() {
+    return ObjectUtils.defaultIfNull(getServiceErrorHandler(), new ServiceExceptionHandler());
+  }
 
   private void checkTimeout(long deadlineNanos) throws TimeoutException {
     long nanos = deadlineNanos - System.nanoTime();
@@ -267,10 +287,10 @@ public class FixedSplitJoinService extends ServiceImp implements EventHandlerAwa
     private AdaptrisMessage nextMessage;
     private LinkedBlockingQueue<AdaptrisMessage> myQueue;
     private long count = 0;
-    private CountingExceptionHandler counter;
+    private CountingExceptionHandlerWrapper counter;
 
     public MessageAggregatorIterator(LinkedBlockingQueue<AdaptrisMessage> queue, long deadline,
-        CountingExceptionHandler wrapper) {
+        CountingExceptionHandlerWrapper wrapper) {
       deadlineNanos = deadline;
       myQueue = queue;
       counter = wrapper;
@@ -334,11 +354,11 @@ public class FixedSplitJoinService extends ServiceImp implements EventHandlerAwa
 
   private class MyServiceExecutor implements Callable<AdaptrisMessage> {
 
-    private ServiceExceptionHandler handler;
+    private ServiceErrorHandler handler;
     private AdaptrisMessage myMessage;
     private LinkedBlockingQueue<AdaptrisMessage> myQueue;
 
-    MyServiceExecutor(AdaptrisMessage msg, ServiceExceptionHandler excHandler,
+    MyServiceExecutor(AdaptrisMessage msg, ServiceErrorHandler excHandler,
         LinkedBlockingQueue<AdaptrisMessage> queue) {
       handler = excHandler;
       myMessage = msg;
@@ -350,6 +370,7 @@ public class FixedSplitJoinService extends ServiceImp implements EventHandlerAwa
       Worker w = objectPool.borrowObject();
       try {
         w.doService(myMessage);
+        handler.markSuccessful(myMessage);
       } catch (Exception e) {
         handler.uncaughtException(Thread.currentThread(), e);
       } finally {
@@ -365,10 +386,29 @@ public class FixedSplitJoinService extends ServiceImp implements EventHandlerAwa
   }
 
   // Also keeps track of the expected number messages that have been split.
-  private class CountingExceptionHandler extends ServiceExceptionHandler {
+  private class CountingExceptionHandlerWrapper implements ServiceErrorHandler {
     @Setter(AccessLevel.PRIVATE)
     @Getter(AccessLevel.PRIVATE)
     private long expectedSplitCount = UNSET_SPLIT_COUNT;
+    private ServiceErrorHandler handler;
 
+    public CountingExceptionHandlerWrapper(ServiceErrorHandler h) {
+      handler = h;
+    }
+
+    @Override
+    public void uncaughtException(Thread t, Throwable e) {
+      handler.uncaughtException(t, e);
+    }
+
+    @Override
+    public void throwExceptionAsRequired() throws ServiceException {
+      handler.throwExceptionAsRequired();
+    }
+
+    @Override
+    public void markSuccessful(AdaptrisMessage msg) {
+      handler.markSuccessful(msg);
+    }
   }
 }
