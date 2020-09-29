@@ -36,5 +36,17 @@
     <packageUrl regex="true">^pkg:maven/javax\.websocket/javax\.websocket\-client\-api@.*$</packageUrl>
     <cve>CVE-2020-11050</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+    This CVE is a ruby CVE : https://nvd.nist.gov/vuln/detail/CVE-2020-10663
+    ]]></notes>
+    <cve>CVE-2020-10663</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    This CVE is a NPM Node/CVE... https://nvd.nist.gov/vuln/detail/CVE-2020-7712
+    ]]></notes>
+    <cve>CVE-2020-7712</cve>
+  </suppress>
 
 </suppressions>

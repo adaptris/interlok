@@ -1,4 +1,4 @@
-package com.adaptris.core.resolver;
+package com.adaptris.core;
 
 import java.io.InputStream;
 import java.util.regex.Matcher;
@@ -17,7 +17,7 @@ import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
 import com.adaptris.util.text.xml.XPath;
 
-public class FromPayloadUsingXPath extends ResolverImp
+public class ResolveFromPayloadUsingXPath extends ResolverImp
 {
   private static final String RESOLVE_PAYLOAD_REGEXP = "^.*%payload\\{xpath:([\\w!\\$\"#&%'\\*\\+,\\-\\.:=\\(\\)\\[\\]\\/@\\|]+)\\}.*$";
   private static final transient Pattern PAYLOAD_RESOLVER = Pattern.compile(RESOLVE_PAYLOAD_REGEXP, Pattern.DOTALL);
@@ -25,7 +25,7 @@ public class FromPayloadUsingXPath extends ResolverImp
   private final DocumentBuilderFactoryBuilder factoryBuilder;
   private final NamespaceContext namespaceContext;
 
-  public FromPayloadUsingXPath()
+  public ResolveFromPayloadUsingXPath()
   {
     factoryBuilder = DocumentBuilderFactoryBuilder.newRestrictedInstance();
     KeyValuePairSet result = new KeyValuePairSet();

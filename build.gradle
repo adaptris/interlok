@@ -3,8 +3,8 @@ plugins {
   id 'nebula.optional-base' version '5.0.3' apply false
   id 'com.github.spotbugs' version '4.5.0' apply false
   id "org.sonarqube" version '3.0' apply false
-  id 'org.owasp.dependencycheck' version '5.3.2.1' apply false
-  id "io.freefair.lombok" version "5.1.1" apply false
+  id 'org.owasp.dependencycheck' version '6.0.2' apply false
+  id "io.freefair.lombok" version "5.2.1" apply false
 }
 
 ext {
@@ -24,8 +24,8 @@ ext {
   organizationUrl = "http://interlok.adaptris.net"
   slf4jVersion = '1.7.30'
   log4j2Version = "2.13.3"
-  xstreamVersion = '1.4.12'
-  mockitoVersion = '3.5.9'
+  xstreamVersion = '1.4.13'
+  mockitoVersion = '3.5.13'
 }
 
 if (JavaVersion.current().isJava8Compatible()) {

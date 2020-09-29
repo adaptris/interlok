@@ -53,8 +53,9 @@ public class ActiveJmsConnectionErrorHandlerTest
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
-    MockChannel channel = createChannel(activeMqBroker, activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true),
-        topicName);
+    JmsConnection jmsCon = activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true);
+    jmsCon.setConnectionAttempts(null);
+    MockChannel channel = createChannel(activeMqBroker, jmsCon, topicName);
     try {
       activeMqBroker.start();
       channel.requestStart();
@@ -84,6 +85,7 @@ public class ActiveJmsConnectionErrorHandlerTest
     JmsConnection conn = activeMqBroker.getJndiPasConnection(
         new MyStandardJndiImpl(testName.getMethodName()), false, queueName, topicName);
     conn.setUniqueId(testName.getMethodName());
+    conn.setConnectionAttempts(null);
     MockChannel channel = createChannel(activeMqBroker, conn, topicName);
     try {
       activeMqBroker.start();
@@ -112,8 +114,11 @@ public class ActiveJmsConnectionErrorHandlerTest
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
-    MockChannel channel = createChannel(activeMqBroker,
-        activeMqBroker.getJndiPasConnection(new StandardJndiImplementation(), false, queueName, topicName), topicName);
+    JmsConnection jmsCon = activeMqBroker.getJndiPasConnection(new StandardJndiImplementation(),
+        false, queueName, topicName);
+    jmsCon.setConnectionAttempts(null);
+
+    MockChannel channel = createChannel(activeMqBroker, jmsCon, topicName);
     try {
       ActiveJmsConnectionErrorHandler handler = new ActiveJmsConnectionErrorHandler();
       handler.setCheckInterval(new TimeInterval(100L, TimeUnit.MILLISECONDS));
@@ -138,8 +143,11 @@ public class ActiveJmsConnectionErrorHandlerTest
     EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
-    MockChannel channel = createChannel(activeMqBroker,
-        activeMqBroker.getJndiPasConnection(new StandardJndiImplementation(), false, queueName, topicName), topicName);
+    JmsConnection jmsCon = activeMqBroker.getJndiPasConnection(new StandardJndiImplementation(),
+        false, queueName, topicName);
+    jmsCon.setConnectionAttempts(null);
+
+    MockChannel channel = createChannel(activeMqBroker, jmsCon, topicName);
     try {
       activeMqBroker.start();
       channel.requestStart();
@@ -167,6 +175,7 @@ public class ActiveJmsConnectionErrorHandlerTest
     connection.setConnectionErrorHandler(createErrorHandler());
     connection.setUniqueId(testName.getMethodName());
     connection.setConnectionRetryInterval(new TimeInterval(5L, "SECONDS"));
+    connection.setConnectionAttempts(null);
     adapter.getSharedComponents().addConnection(connection);
     MockChannel channel = createChannel(activeMqBroker,
         new SharedConnection(testName.getMethodName()), testName.getMethodName());
@@ -213,6 +222,7 @@ public class ActiveJmsConnectionErrorHandlerTest
     adapter.setUniqueId(testName.getMethodName());
     JmsConnection connection = activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true);
     connection.setConnectionErrorHandler(createErrorHandler());
+    connection.setConnectionAttempts(null);
     connection.setUniqueId(testName.getMethodName());
     connection.setConnectionRetryInterval(new TimeInterval(5L, "SECONDS"));
     adapter.getSharedComponents().addConnection(connection);

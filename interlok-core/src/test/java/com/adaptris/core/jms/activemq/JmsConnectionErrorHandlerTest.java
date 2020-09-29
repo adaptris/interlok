@@ -284,6 +284,7 @@ public class JmsConnectionErrorHandlerTest {
     connection.setConnectionErrorHandler(new JmsConnectionErrorHandler());
     connection.setUniqueId(testName.getMethodName());
     connection.setConnectionRetryInterval(new TimeInterval(5L, "SECONDS"));
+    connection.setConnectionAttempts(null);
     adapter.getSharedComponents().addConnection(connection);
     MockChannel channel = createChannel(activeMqBroker,
         new SharedConnection(testName.getMethodName()), testName.getMethodName());
@@ -335,6 +336,7 @@ public class JmsConnectionErrorHandlerTest {
     connection.setConnectionErrorHandler(new JmsConnectionErrorHandler());
     connection.setUniqueId(testName.getMethodName());
     connection.setConnectionRetryInterval(new TimeInterval(5L, "SECONDS"));
+    connection.setConnectionAttempts(null);
     adapter.getSharedComponents().addConnection(connection);
     MockChannel started = createChannel(activeMqBroker,
         new SharedConnection(testName.getMethodName()), testName.getMethodName());
