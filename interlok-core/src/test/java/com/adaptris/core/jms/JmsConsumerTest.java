@@ -74,7 +74,8 @@ public class JmsConsumerTest extends com.adaptris.interlok.junit.scaffolding.jms
   
   @AfterClass
   public static void tearDownAll() throws Exception {
-    activeMqBroker.destroy();
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
   }
 
   @Test
