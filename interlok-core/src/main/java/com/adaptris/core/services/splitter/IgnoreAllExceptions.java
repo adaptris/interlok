@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  * <p>
  * This is included for completeness, since there are some obvious gotchas this class as part of a
- * {@link FixedSplitJoinService}
+ * {@link PooledSplitJoinService}
  * <ul>
  * <li>If your aggregator is sensitive to payload structure (e.g you're aggregating as a JSON ARRAY,
  * but because of failures, the message to be aggregated is in fact XML) then you have to use a

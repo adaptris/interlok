@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,6 +34,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
@@ -47,6 +48,7 @@ import com.adaptris.core.services.aggregator.MessageAggregator;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.interlok.util.CloseableIterable;
 import com.adaptris.util.TimeInterval;
@@ -54,19 +56,22 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Implementation of the Splitter and Aggregator enterprise integration pattern.
- * 
+ *
  * <p>
- * This service splits a message according to the configured {@link MessageSplitter} implementation, executes the configured
- * {@link com.adaptris.core.Service} and subsequently joins all the messages back using the configured {@link MessageAggregator}
- * implementation
+ * This service splits a message according to the configured {@link MessageSplitter} implementation,
+ * executes the configured {@link com.adaptris.core.Service} and subsequently joins all the messages
+ * back using the configured {@link MessageAggregator} implementation
  * <p>
  * <p>
- * A new (cloned) instance of the underlying {@link com.adaptris.core.Service} is created for every split message, and executed in
- * its own thread; this means that where there is a high cost of initialisation for the service, then you may get better performance
- * aggregating the messages in a different way.
+ * A new (cloned) instance of the underlying {@link com.adaptris.core.Service} is created for every
+ * split message, and executed in its own thread; this means that where there is a high cost of
+ * initialisation for the service, then you may get better performance aggregating the messages in a
+ * different way.
  * </p>
- * 
+ *
  * @config split-join-service
+ * @deprecated since 3.11.1 Use {@link PooledSplitJoinService} instead; since performance
+ *             characteristics are unpredictable in constrained environments
  */
 @XStreamAlias("split-join-service")
 @AdapterComponent
@@ -75,6 +80,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 {
     "splitter", "service", "aggregator", "maxThreads", "timeout"
 })
+@Deprecated
+@Removal(version = "4.0.0",
+    message = "Use pooled-split-join-service instead; since performance characteristics are unpredictable in constrained environments")
 public class SplitJoinService extends ServiceImp implements EventHandlerAware, ServiceWrapper {
 
   private static TimeInterval DEFAULT_TTL = new TimeInterval(600L, TimeUnit.SECONDS);
@@ -99,6 +107,8 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
   @AdvancedConfig
   @Valid
   private PoolingFutureExceptionStrategy exceptionStrategy;
+
+  private transient boolean warningLogged = false;
 
   public SplitJoinService() {
     super();
@@ -181,6 +191,8 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
 
   @Override
   public void prepare() throws CoreException {
+    LoggingHelper.logDeprecation(warningLogged, () -> warningLogged = true,
+        this.getClass().getSimpleName(), PooledSplitJoinService.class.getCanonicalName());
     LifecycleHelper.prepare(getService());
   }
 
@@ -229,11 +241,11 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
    * <p>
    * If the time to live is exceeded then an exception will be thrown by the service
    * </p>
-   * 
+   *
    * @param ttl the timeout to set, default is 10 minutes
    */
   public void setTimeout(TimeInterval ttl) {
-    this.timeout = ttl;
+    timeout = ttl;
   }
 
   long timeoutMs() {
@@ -254,11 +266,11 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
 
   /**
    * The {@link com.adaptris.core.Service} to execute over all the split messages.
-   * 
+   *
    * @param s the service to set
    */
   public void setService(Service s) {
-    this.service = Args.notNull(s, "service");
+    service = Args.notNull(s, "service");
   }
 
   /**
@@ -270,11 +282,11 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
 
   /**
    * The {@link MessageSplitter} implementation to use to split the incoming message.
-   * 
+   *
    * @param ms the messageSplitter to set
    */
   public void setSplitter(MessageSplitter ms) {
-    this.splitter = Args.notNull(ms, "splitter");
+    splitter = Args.notNull(ms, "splitter");
   }
 
   /**
@@ -286,11 +298,11 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
 
   /**
    * The {@link MessageAggregator} implementation to use to join messages together.
-   * 
+   *
    * @param mj the messageJoiner to set
    */
   public void setAggregator(MessageAggregator mj) {
-    this.aggregator = Args.notNull(mj, "aggregator");
+    aggregator = Args.notNull(mj, "aggregator");
   }
 
   @Override

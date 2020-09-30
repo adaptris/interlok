@@ -63,20 +63,43 @@ import lombok.Setter;
 /**
  * Implementation of the Splitter and Aggregator enterprise integration pattern.
  *
+ * <p>
+ * This supersedes {@link SplitJoinService} and {@link PoolingSplitJoinService} as our preferred
+ * service for handling split/aggregation since it has more predictable peformance characteristics
+ * in constrained environments where the numbers of messages that are generated and aggregated can
+ * be large/unknown.
+ * </p>
+ * <p>
+ * This service splits a message according to the configured {@link MessageSplitter} implementation,
+ * executes the configured {@link Service} and subsequently aggregates all the messages back using
+ * the configured {@link MessageAggregator} implementation
+ * <p>
+ * <p>
+ * A pool of {@link com.adaptris.core.Service} instances is maintained and re-used for each message;
+ * the cost of initialisation for the wrapped service, is incurred during this service's
+ * initialisation phase.
+ * </p>
+ * <p>
+ * Aggregation may start happening as soon as messages are available to be aggregated (i.e. a split
+ * message has been operated on) using the
+ * {@link MessageAggregator#aggregate(AdaptrisMessage, Iterable)} method. Performance characterstics
+ * will largely depend on how the splitter and aggregator implementations iterate over the messages.
+ * </p>
  *
- * @config fixed-split-join-service
+ * @config pooled-split-join-service
  */
-@XStreamAlias("fixed-split-join-service")
+@XStreamAlias("pooled-split-join-service")
 @AdapterComponent
 @ComponentProfile(
     summary = "Split a message and then execute the associated services on the split items, aggregating the split messages afterwards",
     since = "3.11.1", tag = "service,splitjoin")
 @DisplayOrder(order =
 {
-    "splitter", "service", "aggregator", "timeout", "poolsize"
+    "splitter", "service", "aggregator", "timeout", "poolsize", "sendEvents",
+    "serviceErrorHandler"
 })
 @NoArgsConstructor
-public class FixedSplitJoinService extends ServiceImp implements EventHandlerAware, ServiceWrapper {
+public class PooledSplitJoinService extends ServiceImp implements EventHandlerAware, ServiceWrapper {
 
   private static final long DEFAULT_TTL = TimeUnit.MINUTES.toMillis(10L);
   private static final int DEFAULT_POOLSIZE = 10;
@@ -128,10 +151,10 @@ public class FixedSplitJoinService extends ServiceImp implements EventHandlerAwa
   @InputFieldDefault(value = "false")
   @Getter
   @Setter
+  @AdvancedConfig
   private Boolean sendEvents;
   @Getter
   @Setter
-  @AdvancedConfig
   @InputFieldDefault(value = "10")
   private Integer poolsize;
 

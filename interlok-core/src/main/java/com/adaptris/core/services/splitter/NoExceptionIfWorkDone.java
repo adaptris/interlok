@@ -36,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
  * provided one or more messages have set a specific metadata to the value {@code true | 1}.
  * </p>
  * <p>
- * There are some caveats to using this class as part of a {@link FixedSplitJoinService}
+ * There are some caveats to using this class as part of a {@link PooledSplitJoinService}
  * <ul>
  * <li>If your aggregator is sensitive to payload structure (e.g you're aggregating as a JSON ARRAY,
  * but because of failures, the message to be aggregated is in fact XML) then you have to use a
@@ -81,6 +81,8 @@ public class NoExceptionIfWorkDone extends ServiceExceptionHandler {
     if (!workDone) {
       super.throwExceptionAsRequired();
     }
+    // we've done work so reset state.
+    clearExceptions();
     workDone = false;
   }
 

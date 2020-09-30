@@ -39,11 +39,11 @@ import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 import com.adaptris.util.TimeInterval;
 
-public class FixedSplitJoinServiceTest {
+public class PooledSplitJoinServiceTest {
 
   @Test
   public void testService() throws Exception {
-    FixedSplitJoinService service = new FixedSplitJoinService();
+    PooledSplitJoinService service = new PooledSplitJoinService();
     service.setAggregator(new AppendingMessageAggregator());
     service.setSplitter(new LineCountSplitter(1));
     service.setPoolsize(10);
@@ -60,7 +60,7 @@ public class FixedSplitJoinServiceTest {
 
   @Test
   public void testService_Events() throws Exception {
-    FixedSplitJoinService service = new FixedSplitJoinService();
+    PooledSplitJoinService service = new PooledSplitJoinService();
     MockMessageProducer events = new MockMessageProducer();
     service.setAggregator(new AppendingMessageAggregator());
     service.setSplitter(new LineCountSplitter(1));
@@ -81,7 +81,7 @@ public class FixedSplitJoinServiceTest {
 
   @Test(expected = ServiceException.class)
   public void testTimeout() throws Exception {
-    FixedSplitJoinService service = new FixedSplitJoinService();
+    PooledSplitJoinService service = new PooledSplitJoinService();
     service.setAggregator(new AppendingMessageAggregator());
     service.setSplitter(new LineCountSplitter(1));
     service.setPoolsize(10);
@@ -102,7 +102,7 @@ public class FixedSplitJoinServiceTest {
 
   @Test(expected = ServiceException.class)
   public void testService_WithException() throws Exception {
-    FixedSplitJoinService service = new FixedSplitJoinService();
+    PooledSplitJoinService service = new PooledSplitJoinService();
     service.setAggregator(new AppendingMessageAggregator());
     service.setSplitter(new LineCountSplitter(1));
     service.setPoolsize(10);
@@ -120,7 +120,7 @@ public class FixedSplitJoinServiceTest {
 
   @Test
   public void testService_DidWorkSuccessfully() throws Exception {
-    FixedSplitJoinService service = new FixedSplitJoinService();
+    PooledSplitJoinService service = new PooledSplitJoinService();
     service.setServiceErrorHandler(
         new NoExceptionIfWorkDone().withMetadataKey(NoExceptionIfWorkDone.DEFAULT_METADATA_KEY));
     service.setSplitter(new LineCountSplitter(1));
@@ -140,7 +140,7 @@ public class FixedSplitJoinServiceTest {
 
   @Test(expected = ServiceException.class)
   public void testService_DidNoWork() throws Exception {
-    FixedSplitJoinService service = new FixedSplitJoinService();
+    PooledSplitJoinService service = new PooledSplitJoinService();
     service.setServiceErrorHandler(new NoExceptionIfWorkDone().withMetadataKey(NoExceptionIfWorkDone.DEFAULT_METADATA_KEY));
     service.setSplitter(new LineCountSplitter(1));
     service.setService(asCollection(new MockExceptionStrategyService(MockExceptionStrategyService.MODE.ERROR)));
@@ -154,7 +154,7 @@ public class FixedSplitJoinServiceTest {
 
   @Test
   public void testService_DidSomeWork() throws Exception {
-    FixedSplitJoinService service = new FixedSplitJoinService();
+    PooledSplitJoinService service = new PooledSplitJoinService();
     service.setServiceErrorHandler(
         new NoExceptionIfWorkDone().withMetadataKey(NoExceptionIfWorkDone.DEFAULT_METADATA_KEY));
     service.setSplitter(new LineCountSplitter(1));
@@ -174,7 +174,7 @@ public class FixedSplitJoinServiceTest {
 
   @Test
   public void testService_IgnoreExceptions() throws Exception {
-    FixedSplitJoinService service = new FixedSplitJoinService();
+    PooledSplitJoinService service = new PooledSplitJoinService();
     service.setServiceErrorHandler(new IgnoreAllExceptions());
     service.setSplitter(new LineCountSplitter(1));
     service.setService(
