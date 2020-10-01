@@ -50,13 +50,13 @@ public class JmsMessageConsumerFactory {
           } else {
             log.trace("Creating new durable consumer.");
             consumer = ((ConsumerCreator) (session, dest, filterExpression) -> session
-                .createDurableSubscriber((Topic) dest.getDestination(), filterExpression)).createConsumer(session, destination,
+                .createDurableSubscriber((Topic) dest.getDestination(), dest.subscriptionId())).createConsumer(session, destination,
                     filterExp);
           }
         } else if (!isEmpty(destination.sharedConsumerId())) {
           log.trace("Creating new shared consumer.");
-          consumer = ((ConsumerCreator) (session, dest, filterExpression) -> session.createSharedConsumer((Topic) dest.getDestination(),
-              dest.sharedConsumerId(), filterExpression)).createConsumer(session, destination, filterExp);
+          consumer = ((ConsumerCreator) (session, dest, filterExpression) -> session
+              .createSharedConsumer((Topic) dest.getDestination(), dest.sharedConsumerId(), filterExpression)).createConsumer(session, destination, filterExp);
         }
       }
 

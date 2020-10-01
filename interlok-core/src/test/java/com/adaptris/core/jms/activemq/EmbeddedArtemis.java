@@ -20,6 +20,8 @@ import static com.adaptris.interlok.junit.scaffolding.util.PortManager.nextUnuse
 import static com.adaptris.interlok.junit.scaffolding.util.PortManager.release;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import org.apache.activemq.artemis.core.config.Configuration;
@@ -35,6 +37,7 @@ import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.PlainIdGenerator;
+import com.adaptris.util.TimeInterval;
 
 public class EmbeddedArtemis {
   private static final long MAX_WAIT = 20000;
@@ -149,6 +152,9 @@ public class EmbeddedArtemis {
  private JmsConnection applyCfg(JmsConnection con, StandardJndiImplementation impl, boolean useTcp) {
    con.setClientId(createSafeUniqueId(impl));
    con.setVendorImplementation(impl);
+   con.setConnectionRetryInterval(new TimeInterval(3L, TimeUnit.SECONDS));
+   con.setConnectionAttempts(1);
+   
    return con;
  }
 
