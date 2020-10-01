@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,24 +46,31 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumerImp;
 import com.adaptris.core.ClosedState;
+import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.WorkflowImp;
 import com.adaptris.core.WorkflowInterceptor;
 import com.adaptris.core.http.client.RequestMethodProvider.RequestMethod;
+import com.adaptris.core.util.DestinationHelper;
+import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.util.TimeInterval;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * This is the abstract class for all implementations that make use of Jetty to receive messages.
- * 
- * 
+ *
+ *
  * @author lchan
  * @author $Author: lchan $
  */
@@ -79,6 +86,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   private transient Servlet jettyServlet;
   private transient ServletWrapper servletWrapper = null;
   private transient List<String> acceptedMethods = new ArrayList<>(HTTP_METHODS);
+  private transient boolean destinationWarningLogged = false;
 
   @InputFieldDefault(value = "false")
   @AdvancedConfig
@@ -95,6 +103,36 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   @InputFieldDefault(value = "20 Seconds")
   private TimeInterval sendProcessingInterval;
 
+
+  /**
+   * The consume destination represents the path that we register with jetty for this consumer.
+   *
+   */
+  @Deprecated
+  @Valid
+  @Removal(version = "4.0.0", message = "Use 'path' instead")
+  @Getter
+  @Setter
+  private ConsumeDestination destination;
+
+  /**
+   * The path we register against jetty for this consumer
+   *
+   */
+  @Getter
+  @Setter
+  // Needs to be @NotBlank when destination is removed.
+  private String path;
+
+  /**
+   * Comma separated string of valid methods.
+   *
+   */
+  @Getter
+  @Setter
+  @AdvancedConfig
+  private String methods;
+
   static {
     List<String> methods = new ArrayList<>();
     for (RequestMethod m : RequestMethod.values()) {
@@ -109,9 +147,32 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
     changeState(ClosedState.getInstance());
   }
 
+  protected String servletPath() {
+    return DestinationHelper.consumeDestination(getPath(), getDestination());
+  }
+
+  protected String validMethods() {
+    return DestinationHelper.filterExpression(getMethods(), getDestination());
+  }
+
+  @Override
+  protected String newThreadName() {
+    return DestinationHelper.threadName(retrieveAdaptrisMessageListener(), getDestination());
+  }
+
+
+  @Override
+  public void prepare() throws CoreException {
+    DestinationHelper.logWarningIfNotNull(destinationWarningLogged,
+        () -> destinationWarningLogged = true, getDestination(),
+        "{} uses destination, use path + methods instead", LoggingHelper.friendlyName(this));
+    DestinationHelper.mustHaveEither(getPath(), getDestination());
+  }
+
+
   /**
    * Create an AdaptrisMessage from the incoming servlet request and response.
-   * 
+   *
    * @param request the HttpServletRequest
    * @param response the HttpServletResponse
    * @return an AdaptrisMessage instance.
@@ -162,7 +223,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
 
   protected ServletWrapper asServletWrapper() throws CoreException {
     if (servletWrapper == null) {
-      String destination = ensureIsPath(getDestination().getDestination());
+      String destination = ensureIsPath(servletPath());
       servletWrapper = new ServletWrapper(jettyServlet, destination);
     }
     return servletWrapper;
@@ -183,19 +244,20 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   }
 
   /**
-   * 
+   *
    * @see com.adaptris.core.AdaptrisComponent#init()
    */
   @Override
   public void init() throws CoreException {
-    if (!isEmpty(getDestination().getFilterExpression())) {
-      acceptedMethods = Arrays.asList(getDestination().getFilterExpression().split(","));
+    String methods = validMethods();
+    if (!isEmpty(methods)) {
+      acceptedMethods = Arrays.asList(methods.split(","));
       log.trace("Acceptable HTTP methods set to : {}", acceptedMethods);
     }
   }
 
   /**
-   * 
+   *
    * @see com.adaptris.core.AdaptrisComponent#start()
    */
   @Override
@@ -204,7 +266,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   }
 
   /**
-   * 
+   *
    * @see com.adaptris.core.AdaptrisComponent#stop()
    */
   @Override
@@ -220,7 +282,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   }
 
   /**
-   * 
+   *
    * @see com.adaptris.core.AdaptrisComponent#close()
    */
   @Override
@@ -241,11 +303,11 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
    * This setting only has an impact if the consumer is the entry point for a {@link com.adaptris.core.PoolingWorkflow} instance. In
    * the event that the wait time is exceeded, then the behaviour specified here is done.
    * </p>
-   * 
+   *
    * @param action the action; default is a 202 after 10 minutes.
    */
   public void setTimeoutAction(TimeoutAction action) {
-    this.timeoutAction = action;
+    timeoutAction = action;
   }
 
   public Boolean getAdditionalDebug() {
@@ -269,11 +331,11 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
 
   /**
    * Log a warning after this interval.
-   * 
+   *
    * @param t the warnAfter to set, default is to never warn.
    */
   public void setWarnAfter(TimeInterval t) {
-    this.warnAfter = t;
+    warnAfter = t;
   }
 
   long warnAfter() {
@@ -289,11 +351,11 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
 
   /**
    * If required send a 102 upon this interval.
-   * 
+   *
    * @param t the sendExpectEvery to set, default is 20 seconds.
    */
   public void setSendProcessingInterval(TimeInterval t) {
-    this.sendProcessingInterval = t;
+    sendProcessingInterval = t;
   }
 
   long sendProcessingInterval() {
@@ -304,7 +366,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   /**
    * Provides the metadata key '{@value com.adaptris.core.http.jetty.JettyConstants#JETTY_URI}' that
    * contains the URI which triggered the consumer.
-   * 
+   *
    * @since 3.9.0
    */
   @Override
@@ -475,7 +537,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
       }
       catch (Exception e) {
         // In the event of an exception, cancel ourselves.
-        this.cancel();
+        cancel();
       }
     }
   }

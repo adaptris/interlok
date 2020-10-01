@@ -62,10 +62,6 @@ public class ThrowExceptionServiceTest extends ExceptionServiceExample {
     abstract ExceptionGenerator create();
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testDefault() throws Exception {

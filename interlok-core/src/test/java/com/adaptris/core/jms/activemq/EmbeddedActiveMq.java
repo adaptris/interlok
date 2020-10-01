@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,14 +16,15 @@
 
 package com.adaptris.core.jms.activemq;
 
-import static com.adaptris.core.PortManager.nextUnusedPort;
-import static com.adaptris.core.PortManager.release;
-import static com.adaptris.core.jms.JmsConfig.DEFAULT_PAYLOAD;
-import static com.adaptris.core.jms.JmsConfig.DEFAULT_TTL;
-import static com.adaptris.core.jms.JmsConfig.HIGHEST_PRIORITY;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.DEFAULT_PAYLOAD;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.DEFAULT_TTL;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.HIGHEST_PRIORITY;
+import static com.adaptris.interlok.junit.scaffolding.util.PortManager.nextUnusedPort;
+import static com.adaptris.interlok.junit.scaffolding.util.PortManager.release;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import javax.jms.DeliveryMode;
 import javax.jms.JMSException;
 import javax.naming.Context;
@@ -40,33 +41,27 @@ import org.junit.Assume;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.jms.FailoverJmsConnection;
-import com.adaptris.core.jms.JmsConfig;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.JmsConstants;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.core.stubs.ExternalResourcesHelper;
+import com.adaptris.interlok.junit.scaffolding.jms.JmsConfig;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.KeyValuePair;
-import com.adaptris.util.PlainIdGenerator;
+import com.adaptris.util.TimeInterval;
 
 public class EmbeddedActiveMq {
+  private static final long MAX_WAIT = 20000;
+  private static final int DEFAULT_WAIT_INTERVAL = 100;
 
-  private static final String DEF_URL_PREFIX = "tcp://localhost:";
+  private static final String DEF_URL_PREFIX = "tcp://127.0.0.1:";
   private BrokerService broker = null;
   private String brokerName;
   private File brokerDataDir;
   private Integer port;
 
-  private static IdGenerator nameGenerator;
-  static {
-    try {
-      nameGenerator = new GuidGenerator();
-    }
-    catch (Exception e) {
-      nameGenerator = new PlainIdGenerator("-");
-    }
-  }
+  private static IdGenerator nameGenerator = new GuidGenerator();
 
   public EmbeddedActiveMq() throws Exception {
     Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
@@ -82,8 +77,18 @@ public class EmbeddedActiveMq {
     brokerDataDir = createTempFile(true);
     broker = createBroker();
     broker.start();
-    while (!broker.isStarted()) {
-      Thread.sleep(100);
+    waitFor(broker, MAX_WAIT);
+  }
+
+  private static void waitFor(BrokerService broker, long maxWaitMs) throws Exception {
+    long totalWaitTime = 0;
+    while (!broker.isStarted() && totalWaitTime < maxWaitMs) {
+      Thread.sleep(DEFAULT_WAIT_INTERVAL);
+      totalWaitTime += DEFAULT_WAIT_INTERVAL;
+    }
+    if (!broker.isStarted()) {
+      throw new Exception(
+          "Got Tired of waiting for broker to start; waited for " + totalWaitTime + "ms");
     }
   }
 
@@ -117,12 +122,11 @@ public class EmbeddedActiveMq {
 
       @Override
       public void run() {
+        release(port);
         try {
           stop();
-          release(port);
         }
         catch (Exception e) {
-
         }
       }
     }).start();
@@ -150,13 +154,15 @@ public class EmbeddedActiveMq {
 
   private JmsConnection applyCfg(JmsConnection con, BasicActiveMqImplementation impl, boolean useTcp) {
     if (useTcp) {
-      impl.setBrokerUrl("tcp://localhost:" + port);
+      impl.setBrokerUrl(DEF_URL_PREFIX + port);
     }
     else {
       impl.setBrokerUrl("vm://" + getName());
     }
     con.setClientId(createSafeUniqueId(impl));
     con.setVendorImplementation(impl);
+    con.setConnectionRetryInterval(new TimeInterval(3L, TimeUnit.SECONDS));
+    con.setConnectionAttempts(1);
     return con;
   }
 
@@ -181,7 +187,8 @@ public class EmbeddedActiveMq {
     jndi.setJndiName("topicConnectionFactory");
     result.setVendorImplementation(jndi);
     result.setClientId(createSafeUniqueId(jndi));
-
+    result.setConnectionRetryInterval(new TimeInterval(3L, TimeUnit.SECONDS));
+    result.setConnectionAttempts(1);
     return result;
   }
 
@@ -191,6 +198,8 @@ public class EmbeddedActiveMq {
     jndi.setJndiName("queueConnectionFactory");
     result.setVendorImplementation(jndi);
     result.setClientId(createSafeUniqueId(jndi));
+    result.setConnectionRetryInterval(new TimeInterval(3L, TimeUnit.SECONDS));
+    result.setConnectionAttempts(1);
     return result;
   }
 

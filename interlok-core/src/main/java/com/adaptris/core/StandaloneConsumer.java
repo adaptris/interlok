@@ -205,22 +205,6 @@ public class StandaloneConsumer implements AdaptrisMessageConsumer, StateManaged
     getConsumer().registerAdaptrisMessageListener(l);
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisMessageConsumer#getDestination()
-   */
-  @Override
-  public ConsumeDestination getDestination() {
-    return getConsumer().getDestination();
-  }
-
-  /**
-   * @see com.adaptris.core.AdaptrisMessageConsumer
-   *      #setDestination(com.adaptris.core.ConsumeDestination)
-   */
-  @Override
-  public void setDestination(ConsumeDestination destination) {
-    getConsumer().setDestination(destination);
-  }
 
   /**
    * @see com.adaptris.core.AdaptrisMessageWorker#getEncoder()

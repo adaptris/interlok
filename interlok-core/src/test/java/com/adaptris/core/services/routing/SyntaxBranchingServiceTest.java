@@ -36,11 +36,6 @@ public class SyntaxBranchingServiceTest extends BranchingServiceExample {
 
 
   @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
-  @Override
   protected String createBaseFileName(Object object) {
     return SyntaxBranchingService.class.getName();
   }

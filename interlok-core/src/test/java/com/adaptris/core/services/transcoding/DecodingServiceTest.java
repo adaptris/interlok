@@ -19,11 +19,6 @@ public class DecodingServiceTest extends TranscodingServiceCase {
 
   private static final String OVERRIDE_HEADER_VALUE = "value";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
 
   @Test
   public void testInit() throws Exception {

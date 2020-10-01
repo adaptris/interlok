@@ -1,16 +1,18 @@
 package com.adaptris.core.services.cache;
 
 import java.util.concurrent.TimeUnit;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.cache.ExpiringMapCache;
 import com.adaptris.util.TimeInterval;
 
-public abstract class SingleKeyCacheCase extends ServiceCase {
+public abstract class SingleKeyCacheCase
+    extends com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase {
 
 
   public SingleKeyCacheCase() {
-    if (PROPERTIES.getProperty(CacheServiceExample.BASE_DIR_KEY) != null) {
-      setBaseDir(PROPERTIES.getProperty(CacheServiceExample.BASE_DIR_KEY));
+    if (PROPERTIES.getProperty(
+        com.adaptris.interlok.junit.scaffolding.services.CacheServiceExample.BASE_DIR_KEY) != null) {
+      setBaseDir(PROPERTIES.getProperty(
+          com.adaptris.interlok.junit.scaffolding.services.CacheServiceExample.BASE_DIR_KEY));
     }
   }
 

@@ -32,12 +32,6 @@ import com.adaptris.interlok.management.MessageProcessor;
 
 public class MessageMetricsStatisticsTest extends StatisticsMBeanCase {
 
-
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
   @Test
   public void testNoCachesExists() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();

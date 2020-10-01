@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,7 @@
 
 package com.adaptris.core.http.jetty;
 
+import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -23,7 +24,11 @@ import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.ProduceDestination;
+import com.adaptris.core.ProduceException;
 import com.adaptris.core.ProduceOnlyProducerImp;
 import com.adaptris.core.http.ContentTypeProvider;
 import com.adaptris.core.http.NullContentTypeProvider;
@@ -32,35 +37,97 @@ import com.adaptris.core.http.server.HttpStatusProvider;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.http.server.HttpStatusProvider.Status;
 import com.adaptris.core.http.server.ResponseHeaderProvider;
+import com.adaptris.core.util.LoggingHelper;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 
 /**
  * @author lchan
  *
  */
 public abstract class ResponseProducerImpl extends ProduceOnlyProducerImp {
+
+  /**
+   * The HTTP Status.
+   *
+   */
   @NotNull
   @AutoPopulated
   @Valid
+  @Getter
+  @Setter
+  @NonNull
   private HttpStatusProvider statusProvider;
 
+  /**
+   * Additional HTTP headers that will be sent as part of the response.
+   *
+   */
   @NotNull
   @AutoPopulated
   @Valid
+  @Getter
+  @Setter
+  @NonNull
   private ResponseHeaderProvider<HttpServletResponse> responseHeaderProvider;
 
+  /**
+   * The Content-Type to send with the response.
+   *
+   */
   @NotNull
   @AutoPopulated
   @Valid
+  @Getter
+  @Setter
+  @NonNull
   private ContentTypeProvider contentTypeProvider;
+
+  /**
+   * Send the current payload as part of the response.
+   * <p>
+   * Defaults to true if not explicitly configured.
+   * </p>
+   */
   @InputFieldDefault(value = "true")
+  @Getter
+  @Setter
   private Boolean sendPayload;
 
+  /**
+   * Throw an exception if producing the response fails.
+   *
+   * <p>
+   * When producing the reply to a client; it may be that they have already terminated the
+   * connection. By default client disconnections will not generate a
+   * {@link com.adaptris.core.ServiceException} so normal processing continues. Set this to be true
+   * if you want error handling to be triggered in this situation. This defaults to {@code false}
+   * unless explicitly configured.
+   * </p>
+   */
   @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
+  @Getter
+  @Setter
   private Boolean forwardConnectionException;
   @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "true")
+  @Getter
+  @Setter
   private Boolean flushBuffer;
+  /**
+   * The destination has no meaning for a response producer since it uses object metadata.
+   *
+   */
+  @Getter
+  @Setter
+  @Deprecated
+  @Valid
+  @Removal(version = "4.0.0", message = "Has no meaning, and will be removed")
+  private ProduceDestination destination;
+
+  private transient boolean destWarning;
 
   public ResponseProducerImpl() {
     setResponseHeaderProvider(new NoOpResponseHeaderProvider());
@@ -68,12 +135,17 @@ public abstract class ResponseProducerImpl extends ProduceOnlyProducerImp {
     setStatusProvider(new ConfiguredStatusProvider(HttpStatus.INTERNAL_ERROR_500));
   }
 
-  public HttpStatusProvider getStatusProvider() {
-    return statusProvider;
+
+  @Override
+  public void prepare() throws CoreException {
+    logWarningIfNotNull(destWarning, () -> destWarning = true, getDestination(),
+        "{} uses destination, just remove it", LoggingHelper.friendlyName(this));
   }
 
-  public void setStatusProvider(HttpStatusProvider p) {
-    this.statusProvider = p;
+
+  @Override
+  public String endpoint(AdaptrisMessage msg) throws ProduceException {
+    return null;
   }
 
   public <T extends ResponseProducerImpl> T withStatusProvider(HttpStatusProvider p) {
@@ -81,37 +153,9 @@ public abstract class ResponseProducerImpl extends ProduceOnlyProducerImp {
     return (T) this;
   }
 
-  public ResponseHeaderProvider<HttpServletResponse> getResponseHeaderProvider() {
-    return responseHeaderProvider;
-  }
-
-  public void setResponseHeaderProvider(ResponseHeaderProvider<HttpServletResponse> p) {
-    this.responseHeaderProvider = p;
-  }
-
   public <T extends ResponseProducerImpl> T withResponseHeaderProvider(ResponseHeaderProvider<HttpServletResponse> p) {
     setResponseHeaderProvider(p);
     return (T) this;
-  }
-
-  public Boolean getForwardConnectionException() {
-    return forwardConnectionException;
-  }
-
-  /**
-   * Set to true to throw an exception if producing the response fails.
-   * 
-   * <p>
-   * When producing the reply to a client; it may be that they have already terminated the connection. By default client
-   * disconnections will not generate a {@link com.adaptris.core.ServiceException} so normal processing continues. Set this to be
-   * true if you want
-   * error handling to be triggered in this situation.
-   * </p>
-   * 
-   * @param b true to throw a ServiceException if producing the response fails., default null (false).
-   */
-  public void setForwardConnectionException(Boolean b) {
-    this.forwardConnectionException = b;
   }
 
   public <T extends ResponseProducerImpl> T withForwardConnectionException(Boolean b) {
@@ -121,14 +165,6 @@ public abstract class ResponseProducerImpl extends ProduceOnlyProducerImp {
 
   protected boolean forwardConnectionException() {
     return BooleanUtils.toBooleanDefaultIfNull(getForwardConnectionException(), false);
-  }
-
-  public Boolean getFlushBuffer() {
-    return flushBuffer;
-  }
-
-  public void setFlushBuffer(Boolean flush) {
-    this.flushBuffer = flush;
   }
 
   protected boolean flushBuffers() {
@@ -144,38 +180,9 @@ public abstract class ResponseProducerImpl extends ProduceOnlyProducerImp {
     return getStatusProvider().getStatus(msg);
   }
 
-  public ContentTypeProvider getContentTypeProvider() {
-    return contentTypeProvider;
-  }
-
-  /**
-   * Set the Content-Type that will be returned as part of the HTTP Response.
-   * 
-   * @param ctp the content type provider
-   */
-  public void setContentTypeProvider(ContentTypeProvider ctp) {
-    this.contentTypeProvider = ctp;
-  }
-
   public <T extends ResponseProducerImpl> T withContentTypeProvider(ContentTypeProvider b) {
     setContentTypeProvider(b);
     return (T) this;
-  }
-
-  /**
-   * @return the sendPayload
-   */
-  public Boolean getSendPayload() {
-    return sendPayload;
-  }
-
-  /**
-   * Whether or not to send the {@link com.adaptris.core.AdaptrisMessage#getPayload()} as part of the reply.
-   *
-   * @param b the sendPayload to set defaults true.
-   */
-  public void setSendPayload(Boolean b) {
-    sendPayload = b;
   }
 
   public <T extends ResponseProducerImpl> T withSendPayload(Boolean b) {

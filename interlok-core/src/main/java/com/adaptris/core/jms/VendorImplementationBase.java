@@ -6,6 +6,7 @@ import javax.jms.MessageConsumer;
 import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.Topic;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.ComponentLifecycleExtension;
 import com.adaptris.core.ConsumeDestination;
 
@@ -17,7 +18,7 @@ public interface VendorImplementationBase
    * Returns the broker details used to create the underlying <code>ConnectionFactory</code>. This is delegated to the
    * <code>VendorImplementation</code> because it may over-ride the broker details configured in <code>JmsConnection</code>.
    * </p>
-   * 
+   *
    * @return the broker details used to create the underlying <code>ConnectionFactory</code>
    */
   String retrieveBrokerDetailsForLogging();
@@ -26,7 +27,7 @@ public interface VendorImplementationBase
    * <p>
    * Create or otherwise obtain a <code>Queue</code>.
    * </p>
-   * 
+   *
    * @param name the name of the queue
    * @param c the Configuration
    * @return a <code>Queue</code> object
@@ -38,7 +39,7 @@ public interface VendorImplementationBase
    * <p>
    * Create or otherwise obtain a <code>Topic</code>.
    * </p>
-   * 
+   *
    * @param name the name of the topic
    * @param c the Configuration
    * @return a <code>Topic</code> object
@@ -48,7 +49,7 @@ public interface VendorImplementationBase
 
   /**
    * Create either a {@code Topic} or {@code Queue} based on a RFC6167 style destination.
-   * 
+   *
    * <p>
    * While RFC6167 defines the ability to use jndi to lookup the (as part of the 'jndi' variant
    * section); this is not supported. The standard deliveryMode, timeToLive, priority, replyToName
@@ -73,7 +74,7 @@ public interface VendorImplementationBase
    * setting. This defaults to false, if not specified.</li>
    * <ul>
    * </p>
-   * 
+   *
    * @param destination a RFC6167 style destination.
    * @param c configuration
    * @return a {@link JmsDestination}.
@@ -92,7 +93,7 @@ public interface VendorImplementationBase
    * {@link JmsDestination#noLocal()} is passed through to the appropriate {@link javax.jms.Session}
    * methods.
    * </p>
-   * 
+   *
    * @param dest the destination
    * @param msgSelector the message selector
    * @param c configuration
@@ -103,32 +104,69 @@ public interface VendorImplementationBase
   MessageConsumer createConsumer(JmsDestination dest, String msgSelector,
       JmsActorConfig c) throws JMSException;
 
+
   /**
    * Create or otherwise get a MessageConsumer
-   * 
-   * @param cd the consume destination
-   * @param c the Configuration
-   * @return a MessageConsumer
-   * @throws JMSException if there were any JMS related exceptions
+   *
+   * @param dest the destination
+   * @param c the configuration.
+   * @implNote The default implementation just calls
+   *           {@link #createQueueReceiver(String, String, JmsActorConfig)} with the destination and
+   *           filter expression from the destination.
+   * @deprecated since 3.11.0 since {@link ConsumeDestination} is considered deprecated.
    */
-  MessageConsumer createQueueReceiver(ConsumeDestination cd, JmsActorConfig c)
+  @Deprecated
+  @Removal(version = "4.0.0")
+  default MessageConsumer createQueueReceiver(ConsumeDestination dest, JmsActorConfig c)
+      throws JMSException {
+    return createQueueReceiver(dest.getDestination(), dest.getFilterExpression(), c);
+  }
+
+
+  /**
+   * Create or otherwise get a MessageConsumer
+   *
+   * @param queue the Queue
+   * @param filter the filter expression if any
+   * @param c the configuration.
+   */
+  MessageConsumer createQueueReceiver(String queue, String filter, JmsActorConfig c)
       throws JMSException;
 
   /**
-   * Create or otherwise get a TopicSubscriber.
-   * 
-   * @param cd the consume destination
-   * @param subscriptionId A subscription ID to create a durable subscriber.
-   * @param c the Configuration
-   * @return a TopicSubscriber
-   * @throws JMSException if there were any JMS related exceptions
+   * Create or otherwise get a MessageConsumer
+   *
+   * @param dest the destination
+   * @param c the configuration.
+   * @implNote The default implementation just calls
+   *           {@link #createTopicSubscriber(String, String, String, JmsActorConfig)} with the
+   *           destination and filter expression from the destination.
+   * @deprecated since 3.11.0 since {@link ConsumeDestination} is considered deprecated.
    */
-  MessageConsumer createTopicSubscriber(ConsumeDestination cd,
-      String subscriptionId, JmsActorConfig c) throws JMSException;
+  @Deprecated
+  @Removal(version = "4.0.0")
+  default MessageConsumer createTopicSubscriber(ConsumeDestination dest, String subscriptionId,
+      JmsActorConfig c)
+      throws JMSException {
+    return createTopicSubscriber(dest.getDestination(), dest.getFilterExpression(), subscriptionId, c);
+  }
+
+  /**
+   * Create or otherwise get a TopicSubscriber.
+   *
+   * @param topic the topic
+   * @param filter the filter expression if any
+   * @param subscriptionID the subscriptionID for durable subscribers
+   * @param c the configuration
+   *
+   */
+  MessageConsumer createTopicSubscriber(String topic, String filter, String subscriptionID,
+      JmsActorConfig c)
+      throws JMSException;
 
   /**
    * Create or otherwise get a Session
-   * 
+   *
    * @param c the Connection
    * @param transacted whether or not the session is transacted
    * @return acknowledgeMode the acknowledgement mode

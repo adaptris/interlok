@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,10 +16,10 @@
 
 package com.adaptris.core.jms.activemq;
 
-import static com.adaptris.core.BaseCase.MAX_WAIT;
-import static com.adaptris.core.BaseCase.waitForMessages;
 import static com.adaptris.core.stubs.ObjectUtils.asSetters;
 import static com.adaptris.core.stubs.ObjectUtils.invokeSetter;
+import static com.adaptris.interlok.junit.scaffolding.BaseCase.MAX_WAIT;
+import static com.adaptris.interlok.junit.scaffolding.BaseCase.waitForMessages;
 import static org.junit.Assert.assertEquals;
 import java.util.concurrent.TimeUnit;
 import org.junit.Rule;
@@ -31,11 +31,8 @@ import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ClosedState;
 import com.adaptris.core.ComponentState;
-import com.adaptris.core.ConfiguredConsumeDestination;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.InitialisedState;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.SharedConnection;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandardWorkflow;
@@ -50,6 +47,7 @@ import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.ObjectUtils;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 import com.adaptris.util.TimeInterval;
 
 public class JmsConnectionErrorHandlerTest {
@@ -286,6 +284,7 @@ public class JmsConnectionErrorHandlerTest {
     connection.setConnectionErrorHandler(new JmsConnectionErrorHandler());
     connection.setUniqueId(testName.getMethodName());
     connection.setConnectionRetryInterval(new TimeInterval(5L, "SECONDS"));
+    connection.setConnectionAttempts(null);
     adapter.getSharedComponents().addConnection(connection);
     MockChannel channel = createChannel(activeMqBroker,
         new SharedConnection(testName.getMethodName()), testName.getMethodName());
@@ -296,7 +295,7 @@ public class JmsConnectionErrorHandlerTest {
       adapter.requestStart();
       assertEquals(StartedState.getInstance(), channel.retrieveComponentState());
       // Now try and send a message
-      ServiceCase.execute(createProducer(activeMqBroker, testName.getMethodName()),
+      ExampleServiceCase.execute(createProducer(activeMqBroker, testName.getMethodName()),
           AdaptrisMessageFactory.getDefaultInstance().newMessage("ABC"));
       waitForMessages(producer, 1);
 
@@ -316,7 +315,7 @@ public class JmsConnectionErrorHandlerTest {
       assertEquals(StartedState.getInstance(), channel.retrieveComponentState());
 
       // Now try and send a message
-      ServiceCase.execute(createProducer(activeMqBroker, testName.getMethodName()),
+      ExampleServiceCase.execute(createProducer(activeMqBroker, testName.getMethodName()),
           AdaptrisMessageFactory.getDefaultInstance().newMessage("ABC"));
       waitForMessages(producer, 2);
 
@@ -337,6 +336,7 @@ public class JmsConnectionErrorHandlerTest {
     connection.setConnectionErrorHandler(new JmsConnectionErrorHandler());
     connection.setUniqueId(testName.getMethodName());
     connection.setConnectionRetryInterval(new TimeInterval(5L, "SECONDS"));
+    connection.setConnectionAttempts(null);
     adapter.getSharedComponents().addConnection(connection);
     MockChannel started = createChannel(activeMqBroker,
         new SharedConnection(testName.getMethodName()), testName.getMethodName());
@@ -352,7 +352,7 @@ public class JmsConnectionErrorHandlerTest {
       assertEquals(StartedState.getInstance(), started.retrieveComponentState());
       assertEquals(ClosedState.getInstance(), neverStarted.retrieveComponentState());
       // Now try and send a message
-      ServiceCase.execute(createProducer(activeMqBroker, testName.getMethodName()),
+      ExampleServiceCase.execute(createProducer(activeMqBroker, testName.getMethodName()),
           AdaptrisMessageFactory.getDefaultInstance().newMessage("ABC"));
       waitForMessages(producer, 1);
 
@@ -371,7 +371,7 @@ public class JmsConnectionErrorHandlerTest {
 
 
       // Now try and send a message
-      ServiceCase.execute(createProducer(activeMqBroker, testName.getMethodName()),
+      ExampleServiceCase.execute(createProducer(activeMqBroker, testName.getMethodName()),
           AdaptrisMessageFactory.getDefaultInstance().newMessage("ABC"));
       waitForMessages(producer, 2);
       assertEquals(ClosedState.getInstance(), neverStarted.retrieveComponentState());
@@ -418,7 +418,7 @@ public class JmsConnectionErrorHandlerTest {
 
   private Workflow createWorkflow(EmbeddedActiveMq mq, String destination) throws Exception {
     StandardWorkflow wf = new StandardWorkflow();
-    PasConsumer consumer = new PasConsumer(new ConfiguredConsumeDestination(destination));
+    PasConsumer consumer = new PasConsumer().withTopic(destination);
     wf.setProducer(new MockMessageProducer());
     wf.setConsumer(consumer);
     return wf;
@@ -445,7 +445,7 @@ public class JmsConnectionErrorHandlerTest {
   private StandaloneProducer createProducer(EmbeddedActiveMq mq, String dest) {
     JmsConnection conn = mq.getJmsConnection(new BasicActiveMqImplementation(), true);
     conn.setConnectionErrorHandler(new JmsConnectionErrorHandler());
-    PasProducer producer = new PasProducer(new ConfiguredProduceDestination(dest));
+    PasProducer producer = new PasProducer().withTopic(dest);
     return new StandaloneProducer(conn, producer);
   }
 
@@ -497,8 +497,8 @@ public class JmsConnectionErrorHandlerTest {
       super.close();
     }
   }
-  
-  
+
+
   private class JmsConnectionCloseWithRuntimeException extends JmsConnection {
 
     private transient boolean failOnClose = true;

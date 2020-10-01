@@ -29,11 +29,6 @@ public class Base64ServiceTest extends GeneralServiceExample {
 
   public static final String LINE = "The quick brown fox jumps over the lazy dog";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
   @Test
   public void testBase64Service() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(

@@ -31,10 +31,6 @@ import com.adaptris.core.metadata.RegexMetadataFilter;
 @SuppressWarnings("deprecation")
 public class CreateQueryStringFromMetadataTest extends MetadataServiceExample {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   public CreateQueryStringFromMetadata createService() {
     CreateQueryStringFromMetadata svc = new CreateQueryStringFromMetadata()
@@ -52,12 +48,7 @@ public class CreateQueryStringFromMetadataTest extends MetadataServiceExample {
     service.setSeparator(",");
     assertEquals(",", service.separator());
     assertEquals(",", service.getSeparator());
-
     service.setSeparator(null);
-    service.setQuerySeparator(",");
-
-    assertEquals(",", service.separator());
-    service.setQuerySeparator(null);
     assertEquals("&", service.separator());
   }
 

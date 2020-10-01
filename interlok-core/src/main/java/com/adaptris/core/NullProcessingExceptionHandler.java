@@ -38,6 +38,7 @@ public class NullProcessingExceptionHandler extends RootProcessingExceptionHandl
   }
 
   public void handleProcessingException(AdaptrisMessage msg) {
+    msg.getObjectHeaders().put(CoreConstants.OBJ_METADATA_MESSAGE_FAILED, true);
     notifyParent(msg);
   }
 

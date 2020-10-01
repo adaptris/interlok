@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,10 +35,6 @@ import com.adaptris.util.text.mime.BodyPartIterator;
 @SuppressWarnings("deprecation")
 public class IgnoreOriginalMimeAggregatorTest extends MimeAggregatorCase {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testService_ContentEncoding() throws Exception {
@@ -67,7 +63,7 @@ public class IgnoreOriginalMimeAggregatorTest extends MimeAggregatorCase {
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
     service.setSplitter(new LineCountSplitter());
     MimeAggregator aggr = createAggregatorForTests();
-    aggr.setPartContentIdMetadataKey(getName());
+    aggr.setPartContentId("%message{" + getName() + "}");
     service.setAggregator(aggr);
     execute(service, msg);
     BodyPartIterator input = MimeHelper.createBodyPartIterator(msg);

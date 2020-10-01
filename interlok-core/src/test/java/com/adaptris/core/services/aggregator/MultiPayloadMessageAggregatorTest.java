@@ -1,5 +1,13 @@
 package com.adaptris.core.services.aggregator;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
@@ -7,16 +15,6 @@ import com.adaptris.core.MultiPayloadAdaptrisMessage;
 import com.adaptris.core.MultiPayloadMessageFactory;
 import com.adaptris.core.Service;
 import com.adaptris.core.services.splitter.MultiPayloadMessageSplitter;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 public class MultiPayloadMessageAggregatorTest extends AggregatorCase
 {
@@ -87,9 +85,4 @@ public class MultiPayloadMessageAggregatorTest extends AggregatorCase
 		return (MultiPayloadAdaptrisMessage)new MultiPayloadMessageFactory().newMessage("original", PIRATE, "UTF-8");
 	}
 
-	@Override
-	public boolean isAnnotatedForJunit4()
-	{
-		return true;
-	}
 }

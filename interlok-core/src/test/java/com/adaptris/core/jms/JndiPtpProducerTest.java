@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,13 +17,13 @@
 package com.adaptris.core.jms;
 
 import javax.naming.Context;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
-public class JndiPtpProducerTest extends JmsProducerCase {
+public class JndiPtpProducerTest
+    extends com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase {
 
   static final String DEFAULT_XML_COMMENT = "<!-- " + "\nNote that using StandardJndiImplementation means that"
       + "\nthe JmsConnection fields broker-host, broker-url, port are ignored."
@@ -34,10 +34,6 @@ public class JndiPtpProducerTest extends JmsProducerCase {
 
   static final String DEFAULT_FILE_SUFFIX = "-JNDI";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   static JmsConnection createJndiVendorImpExample(JmsConnection c) {
     return createJndiVendorImpExample(new StandardJndiImplementation(), c);
@@ -62,8 +58,8 @@ public class JndiPtpProducerTest extends JmsProducerCase {
 
   @Override
   protected Object retrieveObjectForSampleConfig() {
-    return new StandaloneProducer(createJndiVendorImpExample(new JmsConnection()), new PtpProducer(
-        new ConfiguredProduceDestination("jndiReferenceToQueue")));
+    return new StandaloneProducer(createJndiVendorImpExample(new JmsConnection()),
+        new PtpProducer().withQueue("jndiReferenceToQueue"));
   }
 
   @Override

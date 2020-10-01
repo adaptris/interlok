@@ -30,10 +30,6 @@ public class MetadataStatementCreatorTest extends JdbcQueryServiceCase {
       "SELECT adapter_version"
       + " FROM adapter_type_version " + " WHERE adapter_unique_id = ?";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testMetadataStatementCreator() throws Exception {

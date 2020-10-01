@@ -51,7 +51,6 @@ public abstract class SharedServiceImpl extends SharedComponent implements Servi
     return (Service) marshaller.unmarshal(marshaller.marshal(lookedUpService));
   }
 
-  @Override
   public String getLookupName() {
     return lookupName;
   }

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,6 @@ import static com.adaptris.annotation.AnnotationConstants.XSTREAM_ALIAS_PROPERTI
 import static com.adaptris.annotation.AnnotationConstants.XSTREAM_IMPLICIT_PROPERTIES_FILE;
 import static com.adaptris.core.marshaller.xstream.XStreamUtils.getClasses;
 import static com.adaptris.core.marshaller.xstream.XStreamUtils.readResource;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -31,10 +30,11 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
-
+import java.util.LinkedHashSet;
+import java.util.Set;
+import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.marshaller.xstream.LowerCaseHyphenatedMapper;
 import com.adaptris.core.marshaller.xstream.PrettyStaxDriver;
 import com.thoughtworks.xstream.XStream;
@@ -47,7 +47,7 @@ import com.thoughtworks.xstream.mapper.MapperWrapper;
 
 /**
  * XStream Marshaller Specific Factory class.
- * 
+ *
  * @author bklair
  */
 public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
@@ -57,16 +57,17 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
   /**
    * Whether not extended debugging is emitted; defaults to false unless explicitly set via either the system property
    * {@code interlok.xstream.debug} or {@code adp.xtream.debug}.
-   * 
+   *
    */
   public static final transient boolean XSTREAM_DBG = Boolean.getBoolean("adp.xstream.debug")
       || Boolean.getBoolean("interlok.xstream.debug");
   /**
-   * Whether or not we force XStream to use the JVMs internal Stax implementation; this defaults to 'true' unless explicitly
-   * set via the system property {@code interlok.xstream.jdk.stax}.
-   * 
+   * Whether or not we force XStream to use the JVMs internal Stax implementation; this defaults to
+   * 'true' unless explicitly set via the system property {@code interlok.xstream.jdk.stax}.
+   *
    */
-  public static final transient boolean XSTREAM_JDK_STAX_ONLY = Boolean.getBoolean("interlok.xstream.jdk.stax");
+  public static final transient boolean XSTREAM_JDK_STAX_ONLY =
+      BooleanUtils.toBoolean(System.getProperty("interlok.xstream.jdk.stax", "true"));
 
   private enum XStreamTypes {
     XML {
@@ -165,7 +166,7 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
 
   /**
    * Creates the XStream object instance
-   * 
+   *
    * @param outputMode - The type of output to generate ie JSON/XML
    * @return - newly created instance
    */
@@ -175,7 +176,7 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
 
   /**
    * Public method that returns a configure XStream object instance read for use
-   * 
+   *
    * @return Xstream configured for XML output
    */
   public XStream createXStream() {
@@ -184,7 +185,7 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
 
   /**
    * Public method that returns a configure XStream object instance read for use configured for the given form of output.
-   * 
+   *
    * @param outputType - Type of output to configure XStream for ie JSON or XML
    * @return Xstream configured for the specified output type
    */
@@ -197,7 +198,7 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
    * Configures the given XStream object.<br />
    * It is expected that the Factory has been initialised and that all of the configuration settings have been processed and stored
    * already.
-   * 
+   *
    * @param xstream - XStream instance to configure
    * @param outputMode - The output type to configure XStream for
    */
@@ -235,6 +236,8 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
     }
 
     xstream.addDefaultImplementation(ArrayList.class, Collection.class);
+    xstream.addDefaultImplementation(LinkedHashSet.class, Set.class);
+
     return xstream;
   }
 
@@ -245,9 +248,9 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
   /**
    * Helper class that processes a given list of resources. Each resource is read and processed. This allows subclasses to focus on
    * processes the resource file contents in a specific way without the boilerplate.
-   * 
+   *
    * @author bklair
-   * 
+   *
    * @param <T> - Type of data contained by resource file - just text data or classes
    */
   static abstract class PropertyListProcessor<T> {
@@ -274,7 +277,7 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
     }
     /**
      * Processes the current resource file and adds the processed contents to the given Collection.
-     * 
+     *
      * @param propertyCollection - Target collection to populate with the resource contents
      * @param in - Opened Input Stream to the resource file
      * @throws IOException - If problem encountered
@@ -285,7 +288,7 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
 
   /**
    * Processes the resources as a List of text data
-   * 
+   *
    * @author bklair
    */
   static class PropertyStringListProcessor extends PropertyListProcessor<String> {
@@ -298,7 +301,7 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
 
   /**
    * Processes the resources as a List of defined Classes
-   * 
+   *
    * @author bklair
    */
   static class PropertyClassListProcessor extends PropertyListProcessor<Class<?>> {

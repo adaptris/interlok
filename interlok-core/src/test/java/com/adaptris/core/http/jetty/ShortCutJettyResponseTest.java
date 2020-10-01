@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
 import com.adaptris.core.PoolingWorkflow;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.http.HttpServiceExample;
 import com.adaptris.core.http.client.net.HttpRequestService;
@@ -34,13 +33,11 @@ import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.services.WaitService;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.StaticMockMessageProducer;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 import com.adaptris.util.TimeInterval;
 
 public class ShortCutJettyResponseTest extends HttpServiceExample {
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
+
 
   @Override
   protected Object retrieveObjectForSampleConfig() {
@@ -71,7 +68,7 @@ public class ShortCutJettyResponseTest extends HttpServiceExample {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
       msg.addMetadata(HttpConsumerTest.CONTENT_TYPE_METADATA_KEY, "text/xml");
       long start = System.currentTimeMillis();
-      ServiceCase.execute(service, msg);;
+      ExampleServiceCase.execute(service, msg);;
       long end = System.currentTimeMillis();
       assertTrue(end - start < TimeUnit.SECONDS.toMillis(10));
     }

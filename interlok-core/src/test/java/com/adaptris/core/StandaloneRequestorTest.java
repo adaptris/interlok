@@ -33,10 +33,6 @@ import com.adaptris.util.TimeInterval;
 @SuppressWarnings("deprecation")
 public class StandaloneRequestorTest extends GeneralServiceExample {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testSetTimeoutOverride() throws Exception {

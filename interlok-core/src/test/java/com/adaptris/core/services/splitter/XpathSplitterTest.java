@@ -64,10 +64,6 @@ public class XpathSplitterTest extends SplitterCase {
   private MockMessageProducer producer;
   private BasicMessageSplitterService service;
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
 
   @Before

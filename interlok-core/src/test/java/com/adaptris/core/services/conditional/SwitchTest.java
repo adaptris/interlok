@@ -33,10 +33,7 @@ import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.core.services.metadata.AddMetadataService;
 
 public class SwitchTest extends ConditionalServiceExample {
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
+
 
   @Override
   protected Switch retrieveObjectForSampleConfig() {

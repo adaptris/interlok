@@ -46,9 +46,10 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
   private static FileCleaningTracker cleaner = new FileCleaningTracker();
   private Object fileTracker = new Object();
 
+
   @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
+  protected boolean areTestsEnabled() {
+    return Boolean.parseBoolean(PROPERTIES.getProperty("sftp.tests.enabled", "false"));
   }
 
   @Test
@@ -185,7 +186,6 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
   public void testConnectOnly_StrictKnownHosts_KnownHost() throws Exception {
     Assume.assumeTrue(areTestsEnabled());
     File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_KNOWN_HOSTS_FILE)));
-
     StandardSftpConnection conn = createConnection();
     conn.setConfiguration(new InlineConfigRepositoryBuilder(true).build());
     conn.setKnownHostsFile(tempHostsFile.getCanonicalPath());
@@ -246,7 +246,6 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
     }
     File tempFile = File.createTempFile(StandardSftpConnectionTest.class.getSimpleName(), "", tempDir);
     FileUtils.copyFile(srcKnownHosts, tempFile);
-    tempFile.deleteOnExit();
     cleaner.track(tempFile, fileTracker, FileDeleteStrategy.FORCE);
     return tempFile;
   }

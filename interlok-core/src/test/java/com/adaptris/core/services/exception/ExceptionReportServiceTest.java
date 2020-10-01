@@ -50,10 +50,6 @@ public class ExceptionReportServiceTest extends ExceptionServiceExample {
   private static String RAW_DATA = "This is Some Data";
   private static String XML_PAYLOAD = "<Root><OriginalNode>" + RAW_DATA + "</OriginalNode></Root>";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
 
   @Test

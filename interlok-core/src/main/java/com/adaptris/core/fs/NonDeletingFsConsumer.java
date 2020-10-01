@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,7 +25,6 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
@@ -53,9 +52,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <p>
  * On windows based platforms, you should always use a file based url.
  * </p>
- * 
+ *
  * @config non-deleting-fs-consumer
- * 
+ *
  */
 @XStreamAlias("non-deleting-fs-consumer")
 @AdapterComponent
@@ -68,7 +67,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 {
     NullConnection.class
 })
-@DisplayOrder(order = {"poller", "createDirs", "fileFilterImp", "fileSorter", "processedItemCache"})
+@DisplayOrder(order = {"baseDirectoryUrl", "poller", "createDirs", "fileFilterImp", "fileSorter",
+    "processedItemCache"})
 public class NonDeletingFsConsumer extends FsConsumerImpl {
 
   @NotNull
@@ -87,11 +87,6 @@ public class NonDeletingFsConsumer extends FsConsumerImpl {
     super();
     setProcessedItemCache(new InlineItemCache());
     filesDetected = new ProcessedItemList();
-  }
-
-  public NonDeletingFsConsumer(ConsumeDestination d) {
-    this();
-    setDestination(d);
   }
 
   @Override
@@ -116,7 +111,7 @@ public class NonDeletingFsConsumer extends FsConsumerImpl {
           if (hasChanged(item)) {
             AdaptrisMessage msg = createAdaptrisMessage(fileToProcess);
             addStandardMetadata(msg, fileToProcess, fileToProcess);
-            this.retrieveAdaptrisMessageListener().onAdaptrisMessage(msg);
+            retrieveAdaptrisMessageListener().onAdaptrisMessage(msg);
             result++;
           }
           else {
@@ -168,7 +163,7 @@ public class NonDeletingFsConsumer extends FsConsumerImpl {
   }
 
   public void setProcessedItemCache(ProcessedItemCache cache) {
-    this.processedItemCache = cache;
+    processedItemCache = cache;
   }
 
   protected boolean hasChanged(ProcessedItem entry) throws Exception {

@@ -30,6 +30,7 @@ import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.jdbc.DatabaseConnection;
 import com.adaptris.core.jdbc.JdbcConstants;
+import com.adaptris.interlok.util.Closer;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
 
@@ -42,14 +43,7 @@ public abstract class JdbcUtil {
   private static Logger log = LoggerFactory.getLogger(JdbcUtil.class);
 
   public static void closeQuietly(AutoCloseable... closeables) {
-    if (closeables != null) {
-      for (AutoCloseable c : closeables) {
-        try {
-          if (c != null) c.close();
-        } catch (Exception e) {
-        }
-      }
-    }
+    Closer.closeQuietly(closeables);
   }
 
   /**
@@ -183,7 +177,7 @@ public abstract class JdbcUtil {
   /**
    * Convenience method to get the {@link Connection} either from the
    * {@link com.adaptris.core.AdaptrisMessage} object or from configuration.
-   * 
+   *
    * @param msg the adaptrisMessage object
    * @param adpCon the configured {@link AdaptrisConnection}
    * @return the connection either from the adaptris message or from configuration.

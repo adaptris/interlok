@@ -89,7 +89,6 @@ public class UnifiedBootstrap {
 
   public AdapterManagerMBean createAdapter() throws Exception {
     configurationUpdate();
-    bootstrapProperties.reconfigureLogging();
     AdapterManagerMBean adapter = bootstrapProperties.getConfigManager().createAdapter(bootstrapProperties.findAdapterResource());
     log.info("Adapter created");
     return adapter;

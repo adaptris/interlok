@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,18 +18,17 @@ package com.adaptris.core.stubs;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ClosedState;
 import com.adaptris.core.ComponentState;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.InitialisedState;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ProduceOnlyProducerImp;
 import com.adaptris.core.StartedState;
 import com.adaptris.core.StateManagedComponent;
 import com.adaptris.core.StoppedState;
+import com.adaptris.interlok.util.Args;
 
 /**
  * <p>
@@ -43,31 +42,20 @@ public class MockMessageProducer extends ProduceOnlyProducerImp implements
 
   private transient List<AdaptrisMessage> producedMessages;
   private transient ComponentState state = ClosedState.getInstance();
-  /**
-   * <p>
-   * Creates a new instance.
-   * </p>
-   */
   public MockMessageProducer() {
     producedMessages = new ArrayList<AdaptrisMessage>();
   }
 
+
   @Override
-  public void prepare() throws CoreException {
+  protected void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException {
+    Args.notNull(msg, "message");
+    producedMessages.add(msg);
   }
 
 
-  /**
-   * @see com.adaptris.core.AdaptrisMessageProducer#produce
-   *      (com.adaptris.core.AdaptrisMessage)
-   */
   @Override
-  public void produce(AdaptrisMessage msg) throws ProduceException {
-    if (msg == null) {
-      throw new ProduceException("msg is null");
-    }
-    log.trace("Produced [" + msg.getUniqueId() + "]");
-    producedMessages.add(msg);
+  public void prepare() throws CoreException {
   }
 
   /**
@@ -77,52 +65,37 @@ public class MockMessageProducer extends ProduceOnlyProducerImp implements
    *
    * @return the internal store of produced messages
    */
+  @Override
   public List<AdaptrisMessage> getMessages() {
     return producedMessages;
   }
 
+  @Override
   public int messageCount() {
     return producedMessages.size();
   }
-  // nothing to see below here...
 
-  /**
-   * @see com.adaptris.core.AdaptrisMessageProducer#produce
-   *      (com.adaptris.core.AdaptrisMessage,
-   *      com.adaptris.core.ProduceDestination)
-   */
-  public void produce(AdaptrisMessage msg, ProduceDestination destination)
-      throws ProduceException {
-
-    if (msg == null) {
-      throw new ProduceException("msg is null");
-    }
-    if (destination == null) {
-      throw new ProduceException("Destination is null");
-    }
-    produce(msg);
-  }
-
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
+  @Override
   public void init() throws CoreException {
     state = InitialisedState.getInstance();
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#start() */
+  @Override
   public void start() throws CoreException {
     state = StartedState.getInstance();
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#stop() */
+  @Override
   public void stop() {
     state = StoppedState.getInstance();
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
+  @Override
   public void close() {
     state = ClosedState.getInstance();
   }
-  
+
+  @Override
   public void changeState(ComponentState newState) {
     state = newState;
   }
@@ -133,23 +106,33 @@ public class MockMessageProducer extends ProduceOnlyProducerImp implements
     return null;
   }
 
+  @Override
   public void requestClose() {
     state.requestClose(this);
   }
 
+  @Override
   public void requestInit() throws CoreException {
     state.requestInit(this);
   }
 
+  @Override
   public void requestStart() throws CoreException {
     state.requestStart(this);
   }
 
+  @Override
   public void requestStop() {
     state.requestStop(this);
   }
 
+  @Override
   public ComponentState retrieveComponentState() {
     return state;
+  }
+
+  @Override
+  public String endpoint(AdaptrisMessage msg) throws ProduceException {
+    return null;
   }
 }

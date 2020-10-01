@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,16 +41,18 @@ import org.slf4j.Logger;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
-import com.adaptris.core.RequestReplyProducerImp;
+import com.adaptris.core.ProduceException;
+import com.adaptris.core.RequestReplyProducerBase;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.NumberUtils;
 
-public abstract class JmsProducerImpl extends RequestReplyProducerImp implements JmsActorConfig {
+public abstract class JmsProducerImpl extends RequestReplyProducerBase implements JmsActorConfig {
 
   // This is used to track the current message id, for the session factory.
   // There doesn't appear to be a good way of doing this, everything *depends* on currentSession()
@@ -105,7 +107,8 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   @AdvancedConfig
   private ProducerSessionFactory sessionFactory;
 
-  protected transient ProducerSession producerSession;
+
+  private transient ProducerSession producerSession;
 
   private transient Boolean transactedSession;
   private transient long rollbackTimeout = 30000;
@@ -154,11 +157,6 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
     setSessionFactory(new DefaultProducerSessionFactory());
   }
 
-  public JmsProducerImpl(ProduceDestination d) {
-    this();
-    setDestination(d);
-  }
-
   @Override
   public void prepare() throws CoreException {
     LifecycleHelper.prepare(getMessageTranslator());
@@ -195,6 +193,20 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   @Override
   protected long defaultTimeout() {
     return 0L;
+  }
+
+  @Override
+  @SuppressWarnings("deprecation")
+  @Deprecated
+  @Removal(version = "4.0")
+  public AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination destination)
+      throws ProduceException {
+    return request(msg, destination, defaultTimeout());
+  }
+
+  @Override
+  public AdaptrisMessage request(AdaptrisMessage msg) throws ProduceException {
+    return request(msg, defaultTimeout());
   }
 
 
@@ -292,7 +304,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
    * <p>
    * Returns the JMS delivery mode.
    * </p>
-   * 
+   *
    * @return the JMS delivery mode
    */
   public String getDeliveryMode() {
@@ -306,7 +318,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
    * <p>
    * The value may be either "PERSISENT", "NON_PERSISTENT", or the int corresponding to the
    * javax.jms.DeliveryMode constant.
-   * 
+   *
    * @param i the JMS delivery mode
    */
   public void setDeliveryMode(String i) {
@@ -317,7 +329,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
    * <p>
    * Returns the JMS priority.
    * </p>
-   * 
+   *
    * @return the JMS priority
    */
   public Integer getPriority() {
@@ -328,14 +340,14 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
    * <p>
    * Sets the JMS priority. Valid values are 0 to 9.
    * </p>
-   * 
+   *
    * @param i the JMS priority
    */
   public void setPriority(Integer i) {
     priority = i;
   }
 
-  protected int messagePriority() {
+  public int messagePriority() {
     return NumberUtils.toIntDefaultIfNull(getPriority(), DEFAULT_PRIORITY);
   }
 
@@ -343,14 +355,14 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
    * <p>
    * Returns the time to live. 0 means live forever.
    * </p>
-   * 
+   *
    * @return the time to live
    */
   public Long getTtl() {
     return ttl;
   }
 
-  protected long timeToLive() {
+  public long timeToLive() {
     return NumberUtils.toLongDefaultIfNull(getTtl(), 0);
   }
 
@@ -358,7 +370,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
    * <p>
    * Sets the time to live.
    * </p>
-   * 
+   *
    * @param l the time to live
    */
   public void setTtl(Long l) {
@@ -369,7 +381,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
    * <p>
    * Sets the <code>MessageTypeTranslator</code> to use.
    * </p>
-   * 
+   *
    * @param translator the <code>MessageTypeTranslator</code> to use
    */
   public void setMessageTranslator(MessageTypeTranslator translator) {
@@ -380,7 +392,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
    * <p>
    * Returns the <code>MessageTypeTranslator</code> to use.
    * </p>
-   * 
+   *
    * @return the <code>MessageTypeTranslator</code> to use
    */
   public MessageTypeTranslator getMessageTranslator() {
@@ -404,7 +416,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
    * <p>
    * Returns the JMS acknowledge mode.
    * </p>
-   * 
+   *
    * @return the JMS acknowledge mode
    */
   public String getAcknowledgeMode() {
@@ -415,7 +427,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
    * <p>
    * Returns correlationIdSource.
    * </p>
-   * 
+   *
    * @return correlationIdSource
    */
   public CorrelationIdSource getCorrelationIdSource() {
@@ -426,7 +438,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
    * <p>
    * Sets correlationIdSource.
    * </p>
-   * 
+   *
    * @param c the correlationIdSource to set
    */
   public void setCorrelationIdSource(CorrelationIdSource c) {
@@ -447,7 +459,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
    * priority and delivery mode. These properties are taken from the producer's configuration but
    * can be overriden via metadata.
    * </p>
-   * 
+   *
    * @see JmsConstants#JMS_PRIORITY
    * @see JmsConstants#JMS_DELIVERY_MODE
    * @see JmsConstants#JMS_EXPIRATION
@@ -457,12 +469,12 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
     perMessageProperties = b;
   }
 
-  protected boolean perMessageProperties() {
+  public boolean perMessageProperties() {
     return BooleanUtils.toBooleanDefaultIfNull(getPerMessageProperties(), false);
   }
 
   // BUG#915
-  protected void commit() throws JMSException {
+  public void commit() throws JMSException {
     if (currentSession().getTransacted()) {
       currentLogger().trace("Committing transacted session");
       currentSession().commit();
@@ -470,7 +482,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   }
 
   // BUG#915
-  protected void rollback() {
+  public void rollback() {
     boolean tryRollback = false;
     try {
       tryRollback = currentSession().getTransacted();
@@ -485,6 +497,10 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
         currentLogger().trace("Error encountered rolling back transaction : {}", f.getMessage());
       }
     }
+  }
+
+  protected ProducerSession producerSession() {
+    return producerSession;
   }
 
   protected void acknowledge(Message msg) throws JMSException {
@@ -542,7 +558,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
     transactedSession = b;
   }
 
-  boolean transactedSession() {
+  public boolean transactedSession() {
     return BooleanUtils.toBooleanDefaultIfNull(getTransactedSession(), false);
   }
 
@@ -556,7 +572,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
 
   /**
    * Not directly configurable, as it is done by JmsTransactedWorkflow.
-   * 
+   *
    * @param l the rollbackTimeout to set
    */
   @SuppressWarnings("unused")
@@ -573,7 +589,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
   public boolean isManagedTransaction() {
     return false;
   }
-  
+
   protected boolean captureOutgoingMessageDetails() {
     return BooleanUtils.toBooleanDefaultIfNull(getCaptureOutgoingMessageDetails(), false);
   }
@@ -592,25 +608,28 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
    * "javax.jms.Message.JMSMessageID" where JMSMessageID is derived from the associated
    * {@link JmsConstants} constant.
    * </p>
-   * 
+   *
    * @param b true to capture standard JMS Headers as object metadata post produce. If unspecified,
    *        defaults to false.
    */
   public void setCaptureOutgoingMessageDetails(Boolean b) {
-    this.captureOutgoingMessageDetails = b;
+    captureOutgoingMessageDetails = b;
   }
 
   protected void captureOutgoingMessageDetails(Message jmsMsg, AdaptrisMessage msg) {
-    String objectMetadataPrefix = Message.class.getCanonicalName() + ".";
-    Map<String, String> jmsDetails = new HashMap<String, String>();
-    for (MetadataHandler.JmsPropertyHandler handler : MetadataHandler.JmsPropertyHandler.values()) {
-      try {
-        jmsDetails.put(objectMetadataPrefix + handler.getKey(), handler.getValue(jmsMsg));
-      } catch (JMSException ignore) {
+    if (captureOutgoingMessageDetails()) {
+      String objectMetadataPrefix = Message.class.getCanonicalName() + ".";
+      Map<String, String> jmsDetails = new HashMap<String, String>();
+      for (MetadataHandler.JmsPropertyHandler handler : MetadataHandler.JmsPropertyHandler
+          .values()) {
+        try {
+          jmsDetails.put(objectMetadataPrefix + handler.getKey(), handler.getValue(jmsMsg));
+        } catch (JMSException ignore) {
 
+        }
       }
+      msg.getObjectHeaders().putAll(jmsDetails);
     }
-    msg.getObjectHeaders().putAll(jmsDetails);
   }
 
   public ProducerSessionFactory getSessionFactory() {
@@ -619,11 +638,12 @@ public abstract class JmsProducerImpl extends RequestReplyProducerImp implements
 
   /**
    * Set the behavioural characteristics of the session used by this producer.
-   * 
+   *
    * @param s the {@link ProducerSessionFactory} instance, default is
    *        {@link DefaultProducerSessionFactory}
    */
   public void setSessionFactory(ProducerSessionFactory s) {
-    this.sessionFactory = Args.notNull(s, "sessionFactory");
+    sessionFactory = Args.notNull(s, "sessionFactory");
   }
+
 }

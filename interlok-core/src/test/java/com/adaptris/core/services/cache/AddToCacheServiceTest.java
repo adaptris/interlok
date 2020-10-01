@@ -17,6 +17,7 @@ import com.adaptris.core.cache.Cache;
 import com.adaptris.core.jms.JmsConstants;
 import com.adaptris.core.services.cache.translators.JmsReplyToCacheValueTranslator;
 import com.adaptris.core.services.cache.translators.MetadataCacheValueTranslator;
+import com.adaptris.interlok.junit.scaffolding.services.BasicCacheExampleGenerator;
 
 public class AddToCacheServiceTest extends CacheServiceBaseCase {
   private static final String QUEUE_NAME = "TempReplyQueue";
@@ -25,11 +26,6 @@ public class AddToCacheServiceTest extends CacheServiceBaseCase {
   private static final String SRC_KEY = "srcKey";
   private static final String SRC_VALUE = "srcValue";
 
-
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testEnforceSerializable() throws Exception {

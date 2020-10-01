@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,12 +17,9 @@
 package com.adaptris.core.interceptor;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import java.util.Map;
-
-import com.adaptris.util.KeyValuePair;
-import com.adaptris.util.KeyValuePairList;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,7 +28,6 @@ import org.junit.rules.TestName;
 import org.slf4j.MDC;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.BaseCase;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -39,6 +35,9 @@ import com.adaptris.core.ServiceImp;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
+import com.adaptris.interlok.junit.scaffolding.BaseCase;
+import com.adaptris.util.KeyValuePair;
+import com.adaptris.util.KeyValuePairList;
 
 public class LoggingContextInterceptorTest {
 

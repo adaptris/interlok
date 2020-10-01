@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,8 @@ import org.junit.Test;
 import com.adaptris.core.fs.FsConsumer;
 import com.adaptris.core.stubs.StubEventHandler;
 
-public class DefaultFailedMessageRetrierTest extends FailedMessageRetrierCase {
+public class DefaultFailedMessageRetrierTest
+    extends com.adaptris.interlok.junit.scaffolding.FailedMessageRetrierCase {
 
   @Test
   public void testDuplicateWorkflows() throws Exception {
@@ -42,9 +43,7 @@ public class DefaultFailedMessageRetrierTest extends FailedMessageRetrierCase {
     Adapter result = null;
     try {
       DefaultFailedMessageRetrier fmr = new DefaultFailedMessageRetrier();
-      FsConsumer consumer = new FsConsumer();
-      consumer.setDestination(new ConfiguredConsumeDestination(
-          "/path/to/retry-directory"));
+      FsConsumer consumer = new FsConsumer().withBaseDirectoryUrl("/path/to/retry-directory");
       StandaloneConsumer c = new StandaloneConsumer();
       c.setConsumer(consumer);
       fmr.setStandaloneConsumer(c);
@@ -73,7 +72,8 @@ public class DefaultFailedMessageRetrierTest extends FailedMessageRetrierCase {
   @Override
   protected DefaultFailedMessageRetrier createForExamples() {
     DefaultFailedMessageRetrier fmr = new DefaultFailedMessageRetrier();
-    FsConsumer consumer = new FsConsumer(new ConfiguredConsumeDestination("/path/to/retry-directory"));
+    FsConsumer consumer = new FsConsumer();
+    consumer.setBaseDirectoryUrl("/path/to/retry-directory");
     consumer.setEncoder(new MimeEncoder(true, null, null));
     fmr.setStandaloneConsumer(new StandaloneConsumer(consumer));
     return fmr;

@@ -57,10 +57,6 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
   public StandardMessageErrorDigestTest() {
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testSetMaxCount() throws Exception {

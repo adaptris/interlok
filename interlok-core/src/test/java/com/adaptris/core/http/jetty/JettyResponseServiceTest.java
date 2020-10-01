@@ -42,10 +42,6 @@ import com.adaptris.core.stubs.MockMessageProducer;
 @SuppressWarnings("deprecation")
 public class JettyResponseServiceTest extends HttpServiceExample {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testDoService() throws Exception {

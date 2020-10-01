@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -54,9 +54,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * hierarchy with a key difference; although multiple file-filters can be configured only filters that work with the filepath will
  * work. Other filter implementations (such as those based on size /last modified) may not work.
  * </p>
- * 
+ *
  * @config ftp-consumer
- * 
+ *
  * @see FtpConnection
  * @see FileTransferConnection
  * @see com.adaptris.core.ConsumeDestination
@@ -68,9 +68,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 {
         CoreConstants.ORIGINAL_NAME_KEY, CoreConstants.FS_FILE_SIZE,
         CoreConstants.FS_CONSUME_DIRECTORY, CoreConstants.MESSAGE_CONSUME_LOCATION
-}, 
+},
     recommended = {FileTransferConnection.class})
-@DisplayOrder(order = {"poller", "workDirectory", "fileFilterImp", "procDirectory", "wipSuffix", "quietInterval"})
+@DisplayOrder(order = {"ftpEndpoint", "filterExpression", "poller", "workDirectory",
+    "fileFilterImp", "procDirectory",
+    "wipSuffix", "quietInterval"})
 public class FtpConsumer extends FtpConsumerImpl {
   private static final String DEFAULT_WIP_SUFFIX = "_wip";
 
@@ -127,8 +129,9 @@ public class FtpConsumer extends FtpConsumerImpl {
   @Override
   protected boolean fetchAndProcess(String fullPath) throws Exception {
     String procDir = null;
+    String hostUrl = ftpURL();
     if (procDirectory != null) {
-      procDir = retrieveConnection(FileTransferConnection.class).getDirectoryRoot(getDestination().getDestination())
+      procDir = retrieveConnection(FileTransferConnection.class).getDirectoryRoot(hostUrl)
           + procDirectory;
     }
     return processMessage(fullPath, procDir);
@@ -189,7 +192,7 @@ public class FtpConsumer extends FtpConsumerImpl {
 
   /**
    * Get the "proc" directory.
-   * 
+   *
    * @return the configured directory.
    */
   public String getProcDirectory() {
@@ -198,7 +201,7 @@ public class FtpConsumer extends FtpConsumerImpl {
 
   /**
    * Get the work directory.
-   * 
+   *
    * @return the work directory.
    */
   public String getWorkDirectory() {
@@ -214,7 +217,7 @@ public class FtpConsumer extends FtpConsumerImpl {
    * If the ConsumeDestination specifies a URL, then it is assumed be a sub-directory of the path specified by the URL. If the
    * ConsumeDestination does not specify a URL, then it is an absolute path.
    * </p>
-   * 
+   *
    * @param s the directory
    */
   public void setProcDirectory(String s) {
@@ -227,7 +230,7 @@ public class FtpConsumer extends FtpConsumerImpl {
    * If the ConsumeDestination specifies a URL, then it is assumed be a sub-directory of the path specified by the URL. If the
    * ConsumeDestination does not specify a URL, then it is an absolute path.
    * </p>
-   * 
+   *
    * @see com.adaptris.core.ConsumeDestination
    * @param s the directory.
    */
@@ -244,7 +247,7 @@ public class FtpConsumer extends FtpConsumerImpl {
 
   /**
    * Return the wip Suffix with null protection.
-   * 
+   *
    * @return the suffix, default is "_wip" if not configured.
    */
   String wipSuffix() {
@@ -253,13 +256,13 @@ public class FtpConsumer extends FtpConsumerImpl {
 
   /**
    * Set the suffix of the file to indicate it is being processed.
-   * 
+   *
    * <p>
    * The first action performed by the consumer is to attempt to rename any file that it is attempting to process to mark it as
    * being processed. This will allow multiple consumers to poll the same directory, and also isolate the consumer from anything
    * that attempts to write to the file concurrently.
    * </p>
-   * 
+   *
    * @param s The wipSuffix to set, default is "_wip" if not specified.
    */
   public void setWipSuffix(String s) {

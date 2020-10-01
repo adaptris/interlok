@@ -61,10 +61,6 @@ public class XpathMetadataServiceTest extends MetadataServiceExample {
       + "<!ENTITY LOCAL_ENTITY 'entity'>\n" + "<!ENTITY % StandardInfo SYSTEM \"../StandardInfo.dtd\">\n" + "%StandardInfo;\n"
       + "]>\n" + "<document>\n" + "</document>\n";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testSetNamespaceContext() {

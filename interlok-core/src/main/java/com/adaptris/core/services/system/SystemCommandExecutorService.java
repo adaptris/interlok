@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,16 +19,13 @@ package com.adaptris.core.services.system;
 import java.io.OutputStream;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.Executor;
 import org.apache.commons.exec.PumpStreamHandler;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -44,33 +41,33 @@ import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Service that runs the specified system executable with the provided arguments, optionally capturing the output.
- * 
+ * Service that runs the specified system executable with the provided arguments, optionally
+ * capturing the output.
+ *
  * <p>
- * Note that no checking is peformed on the command to be executed; it will be executed as-is. If used in combination with
- * {@link com.adaptris.core.services.dynamic.DynamicServiceExecutor} or {@link
- * com.adaptris.core.services.dynamic.DynamicServiceLocator} then you might have a large security hole if it is improperly
- * configured or validated.
+ * Note that no checking is peformed on the command to be executed; it will be executed as-is. If
+ * used in combination with {@link com.adaptris.core.services.dynamic.DynamicServiceExecutor} then
+ * you might have a large security hole if it is improperly configured or validated.
  * </p>
  * <p>
  * The following behaviour is non-configurable:
  * <ul>
- * <li>The exitcode is stored against the metadata key {@value #COMMAND_RETURN_VALUE_METADATA_KEY} if the service does not throw an
- * exception.</li>
- * <li>If a timeout occurs then a ServiceException is thrown, output that was captured before the timeout should still be
- * available</li>
+ * <li>The exitcode is stored against the metadata key {@value #COMMAND_RETURN_VALUE_METADATA_KEY}
+ * if the service does not throw an exception.</li>
+ * <li>If a timeout occurs then a ServiceException is thrown, output that was captured before the
+ * timeout should still be available</li>
  * </ul>
  * </p>
- * 
+ *
  * @config system-command-executor
- * 
+ *
  */
 @XStreamAlias("system-command-executor")
 @AdapterComponent
 @ComponentProfile(summary = "Execute an arbitrary system command (DANGER!)", tag = "service")
 @DisplayOrder(order = {"commandBuilder", "outputCapture", "timeout"})
 public class SystemCommandExecutorService extends ServiceImp {
-  
+
   public static final String COMMAND_RETURN_VALUE_METADATA_KEY = "SystemCommandExecutorService.ReturnValue";
   private static final TimeInterval DEFAULT_TIMEOUT = new TimeInterval(30L, TimeUnit.SECONDS);
 
@@ -86,7 +83,7 @@ public class SystemCommandExecutorService extends ServiceImp {
   @AutoPopulated
   private CommandOutputCapture outputCapture;
 
-  
+
   public SystemCommandExecutorService() {
     this(new DefaultCommandBuilder(), new IgnoreOutput());
   }
@@ -120,7 +117,7 @@ public class SystemCommandExecutorService extends ServiceImp {
       throw ExceptionHelper.wrapServiceException(e);
     }
   }
-  
+
 
   @Override
   protected void initService() throws CoreException {
@@ -136,12 +133,12 @@ public class SystemCommandExecutorService extends ServiceImp {
 
   /**
    * Set the command builder.
-   * 
+   *
    * @param builder the {@link CommandBuilder} implementation
    * @see DefaultCommandBuilder
    */
   public void setCommandBuilder(CommandBuilder builder) {
-    this.commandBuilder = Args.notNull(builder, "commandBuilder");
+    commandBuilder = Args.notNull(builder, "commandBuilder");
 
   }
 
@@ -151,11 +148,11 @@ public class SystemCommandExecutorService extends ServiceImp {
 
   /**
    * Specifies a maximum time for the executable to run, after which it will be terminated.
-   * 
+   *
    * @param t the timeout; default if not configured is 30 seconds.
    */
   public void setTimeout(TimeInterval t) {
-    this.timeout = t;
+    timeout = t;
   }
 
   long timeoutMs() {

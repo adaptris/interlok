@@ -34,11 +34,6 @@ import com.adaptris.core.util.LifecycleHelper;
 public class JettyRoutingServiceTest extends BranchingServiceExample {
 
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
   @Test
   public void testMatchedRoute() throws Exception {
     JettyRoutingService service = new JettyRoutingService("NotHandled", createRoutes());

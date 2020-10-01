@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,12 +23,13 @@ import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * <p>
@@ -36,36 +37,40 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * clientID and subscriptionId to be set. It is up to the user to ensure that these are set such that this consumer is uniquely
  * identified in the context of the broker's other consumers.
  * </p>
- * 
+ *
  * @config jms-topic-poller
- * 
+ *
  */
 @XStreamAlias("jms-topic-poller")
 @AdapterComponent
 @ComponentProfile(summary = "Pickup messages from a JMS Topic by actively polling for them", tag = "consumer,jms",
     recommended = {NullConnection.class})
-@DisplayOrder(order = {"poller", "vendorImplementation", "userName", "password", "clientId", "subscriptionId", "acknowledgeMode",
+@DisplayOrder(order = {"topic", "messageSelector", "poller", "vendorImplementation",
+    "userName", "password", "clientId", "subscriptionId", "acknowledgeMode",
     "messageTranslator"})
 public class PasPollingConsumer extends JmsPollingConsumerImpl {
+
+  /**
+   * The JMS Topic
+   *
+   */
+  @Getter
+  @Setter
+  // Needs to be @NotBlank when destination is removed.
+  private String topic;
 
   @NotNull
   @NotBlank
   private String subscriptionId;
 
-  /**
-   * <p>
-   * Creates a new instance.
-   * </p>
-   */
   public PasPollingConsumer() {
     super();
   }
 
-  public PasPollingConsumer(ConsumeDestination d) {
-    this();
-    setDestination(d);
+  @Override
+  protected String configuredEndpoint() {
+    return getTopic();
   }
-
 
   /** @see com.adaptris.core.AdaptrisComponent#init() */
   @Override
@@ -73,9 +78,7 @@ public class PasPollingConsumer extends JmsPollingConsumerImpl {
     try {
       Args.notBlank(getSubscriptionId(), "subscriptionId");
       Args.notBlank(getClientId(), "clientId");
-
-      log.trace("client ID [{}] subscription ID [{}]", this.getClientId(), this.getSubscriptionId());
-
+      log.trace("client ID [{}] subscription ID [{}]", getClientId(), getSubscriptionId());
       super.init();
     }
     catch (Exception e) {
@@ -85,7 +88,13 @@ public class PasPollingConsumer extends JmsPollingConsumerImpl {
 
   @Override
   protected MessageConsumer createConsumer() throws JMSException {
-    return getVendorImplementation().createTopicSubscriber(this.getDestination(), this.getSubscriptionId(), this);
+    return getVendorImplementation().createTopicSubscriber(endpoint(), messageSelector(),
+        getSubscriptionId(), this);
+  }
+
+  public PasPollingConsumer withTopic(String s) {
+    setTopic(s);
+    return this;
   }
 
   /**
@@ -96,7 +105,7 @@ public class PasPollingConsumer extends JmsPollingConsumerImpl {
    * @return subscriptionId the subscription ID to use
    */
   public String getSubscriptionId() {
-    return this.subscriptionId;
+    return subscriptionId;
   }
 
   /**
@@ -109,6 +118,6 @@ public class PasPollingConsumer extends JmsPollingConsumerImpl {
    * @see JmsPollingConsumerImpl
    */
   public void setSubscriptionId(String s) {
-    this.subscriptionId = Args.notBlank(s, "subscriptionId");
+    subscriptionId = Args.notBlank(s, "subscriptionId");
   }
 }

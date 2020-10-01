@@ -26,10 +26,6 @@ import com.adaptris.core.GeneralServiceExample;
 public class AddLoggingContextTest extends GeneralServiceExample {
 
   @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-  @Override
   protected AddLoggingContext retrieveObjectForSampleConfig() {
     return new AddLoggingContext("contextKey", "contextValue");
   }

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,20 +20,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageCase;
-import com.adaptris.core.BaseCase;
 import com.adaptris.core.MessageLifecycleEvent;
 import com.adaptris.core.StandaloneProducer;
+import com.adaptris.interlok.junit.scaffolding.BaseCase;
 
 public class FileBackedMessageTest extends AdaptrisMessageCase {
 
@@ -60,7 +57,7 @@ public class FileBackedMessageTest extends AdaptrisMessageCase {
       fail("Null payload must not throw NPE");
     }
   }
-  
+
   @Test
   public void testSetNullPayloadString() {
     try {
@@ -69,7 +66,7 @@ public class FileBackedMessageTest extends AdaptrisMessageCase {
       fail("Null payload must not throw NPE");
     }
   }
-  
+
   @Test
   public void testMaxSize() {
     getMessageFactory().setMaxMemorySizeBytes(10L);
@@ -82,7 +79,7 @@ public class FileBackedMessageTest extends AdaptrisMessageCase {
       // expected.
     }
   }
-  
+
   @Test
   public void testMaxSizeString() {
     getMessageFactory().setMaxMemorySizeBytes(10L);
@@ -114,7 +111,7 @@ public class FileBackedMessageTest extends AdaptrisMessageCase {
     FileBackedMessage orig = (FileBackedMessage) getMessageFactory().newMessage();
     File srcFile = new File(BaseCase.PROPERTIES.getProperty("msg.initFromFile"));
     orig.initialiseFrom(srcFile);
-    
+
     assertEquals("file size ", srcFile.length(), orig.getSize());
     assertEquals("payload size ", srcFile.length(), orig.getPayload().length);
   }
@@ -129,12 +126,12 @@ public class FileBackedMessageTest extends AdaptrisMessageCase {
     assertEquals("file size ", srcFile.length(), orig.getSize());
     assertEquals("payload size ", srcFile.length(), orig.getPayload().length);
   }
-  
+
   @Test
   public void testCloneFileBackedMessageWithoutContents() throws Exception {
     AdaptrisMessage msg1 = getMessageFactory().newMessage();
     msg1.addEvent(new StandaloneProducer(), true);
-    
+
     AdaptrisMessage msg2 = (AdaptrisMessage) msg1.clone();
 
     assertTrue(msg2.getPayload() != msg1.getPayload());

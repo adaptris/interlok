@@ -39,10 +39,6 @@ public class PayloadHashingServiceTest extends MetadataServiceExample {
   private static final String SHA256 = "SHA256";
   private static final String PAYLOAD = "Glib jocks quiz nymph to vex dwarf";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testInit() throws Exception {

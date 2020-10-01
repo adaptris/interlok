@@ -32,10 +32,6 @@ import com.adaptris.core.GeneralServiceExample;
 public class ReadFileServiceTest extends GeneralServiceExample {
   private static final String FILE = "build.gradle";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
 
   @Test

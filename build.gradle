@@ -1,14 +1,15 @@
 plugins {
   // Manage optional dependencies in maven pom.
   id 'nebula.optional-base' version '5.0.3' apply false
-  id 'com.github.spotbugs' version '4.2.3' apply false
-  id "org.sonarqube" version '2.8' apply false
-  id 'org.owasp.dependencycheck' version '5.3.2.1' apply false
+  id 'com.github.spotbugs' version '4.5.0' apply false
+  id "org.sonarqube" version '3.0' apply false
+  id 'org.owasp.dependencycheck' version '6.0.2' apply false
+  id "io.freefair.lombok" version "5.2.1" apply false
 }
 
 ext {
-  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '3.10-SNAPSHOT'
-  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '3.10-SNAPSHOT'
+  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '3.11-SNAPSHOT'
+  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '3.11-SNAPSHOT'
   nexusBaseUrl = project.hasProperty('nexusBaseUrl') ? project.getProperty('nexusBaseUrl') : 'https://nexus.adaptris.net/nexus'
   mavenPublishUrl = project.hasProperty('mavenPublishUrl') ? project.getProperty('mavenPublishUrl') : nexusBaseUrl + '/content/repositories/snapshots'
   javadocsBaseUrl = nexusBaseUrl + "/content/sites/javadocs/com/adaptris"
@@ -23,8 +24,8 @@ ext {
   organizationUrl = "http://interlok.adaptris.net"
   slf4jVersion = '1.7.30'
   log4j2Version = "2.13.3"
-  xstreamVersion = '1.4.12'
-  mockitoVersion = '3.3.3'
+  xstreamVersion = '1.4.13'
+  mockitoVersion = '3.5.13'
 }
 
 if (JavaVersion.current().isJava8Compatible()) {
@@ -71,14 +72,21 @@ subprojects { subproject ->
   apply plugin: 'com.github.spotbugs'
   apply plugin: 'org.sonarqube'
   apply plugin: 'org.owasp.dependencycheck'
+  apply plugin: 'io.freefair.lombok'
+
   if (jacocoEnabled(subproject)) {
     apply plugin: "jacoco"
   }
 
-  sourceCompatibility = 1.8
+  java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+  }
+
   group   = 'com.adaptris'
   version = releaseVersion
   def versionDir = "$buildDir/version"
+  generateLombokConfig.enabled = false
 
   // In this section you declare where to find the dependencies of your project
   repositories {
@@ -161,6 +169,17 @@ subprojects { subproject ->
     }
   }
 
+
+  task lgtmCompile(type: JavaCompile, dependsOn: delombok) {
+    group 'Build'
+    description 'Compile for lgtm'
+
+    source = sourceSets.main.extensions.delombokTask
+    destinationDir = sourceSets.main.java.outputDir
+    classpath = project.sourceSets.main.compileClasspath
+  }
+
+
   spotbugsMain {
     effort = "max"
     reportLevel = "high"
@@ -182,8 +201,6 @@ subprojects { subproject ->
 
   // disable spotbugsTests which checks our test code..
   spotbugsTest.enabled = false
-
-
 
   dependencyCheck  {
     suppressionFiles= [ "$rootDir/gradle/owasp-exclude.xml" ]

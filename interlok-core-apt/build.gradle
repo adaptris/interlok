@@ -1,5 +1,6 @@
 ext {
   componentName='Interlok Annotation Support'
+  delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 }
 
 dependencies {
@@ -29,6 +30,15 @@ javadoc {
   }
 }
 
+task deleteGeneratedFiles(type: Delete) {
+  delete delombokTargetDir
+}
+
+delombok {
+  target = delombokTargetDir
+}
+
+
 uploadArchives {
   repositories {
     mavenDeployer {
@@ -47,6 +57,6 @@ uploadArchives {
     }
   }
 }
-sourceCompatibility = 1.7
-publish.dependsOn uploadArchives
 
+publish.dependsOn uploadArchives
+clean.dependsOn deleteGeneratedFiles

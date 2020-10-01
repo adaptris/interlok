@@ -32,11 +32,12 @@ import com.adaptris.core.services.jdbc.FirstRowMetadataTranslator;
 import com.adaptris.core.services.jdbc.JdbcDataQueryService;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.JdbcUtil;
+import com.adaptris.interlok.util.Closer;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Extract the service to execute from a database
- * 
+ *
  * <p>
  * This executes the configured query, takes the first column of the first ResultSet and uses that
  * as the source for the dynamic service.
@@ -44,11 +45,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <p>
  * Since it supports the expression syntax; this is perfectly acceptable; It is up to you to protect
  * against SQL injection attacks.
- * 
+ *
  * <pre>
- * {@code SELECT dynamicService FROM services 
- *        WHERE src='%message{source}' 
- *              AND dest='%message{destination}' 
+ * {@code SELECT dynamicService FROM services
+ *        WHERE src='%message{source}'
+ *              AND dest='%message{destination}'
  *              AND msgType='%message{messageType}'}
  * </pre>
  * </p>
@@ -58,10 +59,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * metadata). That might be more performant as you would benefit from prepared statement caching and
  * mitigate against SQL injection style attacks.
  * </p>
- * 
+ *
  * @config dynamic-service-from-database
  * @see DynamicServiceExecutor
- * 
+ *
  */
 @XStreamAlias("dynamic-service-from-database")
 @ComponentProfile(summary = "Extract the service to execute from a database",
@@ -127,7 +128,7 @@ public class ServiceFromDatabase extends ExtractorWithConnection {
     @Override
     public void close() throws IOException {
       super.close();
-      JdbcUtil.closeQuietly(result, statement);
+      Closer.closeQuietly(result, statement);
     }
   }
 }

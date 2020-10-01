@@ -34,10 +34,6 @@ public class AddFormattedMetadataServiceTest extends MetadataServiceExample {
   private MetadataElement m2;
 
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
   @Test
   public void testService() throws Exception {
     AddFormattedMetadataService service = retrieveObjectForSampleConfig();

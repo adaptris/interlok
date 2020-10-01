@@ -45,10 +45,6 @@ public class SplitJoinServiceFilterTest extends SplitterServiceExample {
   @Rule
   public TestName testName = new TestName();
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected String createBaseFileName(Object object) {

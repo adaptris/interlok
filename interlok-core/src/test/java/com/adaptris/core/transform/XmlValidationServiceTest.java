@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,7 +37,8 @@ import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
 @SuppressWarnings("deprecation")
-public class XmlValidationServiceTest extends TransformServiceExample {
+public class XmlValidationServiceTest
+    extends com.adaptris.interlok.junit.scaffolding.services.TransformServiceExample {
 
   public static final String KEY_WILL_VALIDATE_SCHEMA = "XmlValidationServiceTest.schemaUrl";
   public static final String KEY_WILL_NOT_VALIDATE = "XmlValidationServiceTest.schemaUrl2";
@@ -45,10 +46,6 @@ public class XmlValidationServiceTest extends TransformServiceExample {
 
   public static final String KEY_INPUT_FILE = "XmlValidationServiceTest.input.xml";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testSchemaValidator_SetUrl() {
@@ -59,16 +56,6 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     v.setSchema(null);
     assertNull(v.getSchema());
 
-  }
-
-  @Test
-  public void testSchemaValidator_SetMetadataKey() {
-    XmlSchemaValidator v = new XmlSchemaValidator();
-    assertNull(v.getSchemaMetadataKey());
-    v.setSchemaMetadataKey("schema");
-    assertEquals("schema", v.getSchemaMetadataKey());
-    v.setSchemaMetadataKey(null);
-    assertNull(v.getSchemaMetadataKey());
   }
 
   @Test
@@ -118,42 +105,6 @@ public class XmlValidationServiceTest extends TransformServiceExample {
   }
 
   @Test
-  public void testSchemaValidator_MetadataSchemaKeyDoesNotExist() throws Exception {
-    String schemaUrl = PROPERTIES.getProperty(KEY_WILL_VALIDATE_SCHEMA);
-    // if (!ExternalResourcesHelper.isExternalServerAvailable(new URLString(schemaUrl))) {
-    // log.debug(schemaUrl + " not available, ignoring testMetadataSchemaKeyDoesNotExist test");
-    // return;
-    // }
-    XmlSchemaValidator validator = new XmlSchemaValidator(schemaUrl, "schema-key");
-    AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
-    XmlValidationService service = new XmlValidationService(validator);
-    try {
-      execute(service, msg);
-    }
-    catch (ServiceException expected) {
-    }
-  }
-
-  @Test
-  public void testSchemaValidator_MetadataSchemaKeyIsEmpty() throws Exception {
-    String schemaUrl = PROPERTIES.getProperty(KEY_WILL_VALIDATE_SCHEMA);
-    // if (!ExternalResourcesHelper.isExternalServerAvailable(new URLString(schemaUrl))) {
-    // log.debug(schemaUrl + " not available, ignoring testMetadataSchemaKeyIsEmpty test");
-    // return;
-    // }
-
-    XmlSchemaValidator validator = new XmlSchemaValidator(schemaUrl, "schema-key");
-    AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
-    msg.addMetadata("schema-key", "");
-    XmlValidationService service = new XmlValidationService(validator);
-    try {
-      execute(service, msg);
-    }
-    catch (ServiceException expected) {
-    }
-  }
-
-  @Test
   public void testValidXmlSchemaInMetadataOnly() throws Exception {
     String schemaUrl = PROPERTIES.getProperty(KEY_WILL_VALIDATE_SCHEMA);
     // if (!ExternalResourcesHelper.isExternalServerAvailable(new URLString(schemaUrl))) {
@@ -161,7 +112,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     // return;
     // }
     XmlSchemaValidator validator = new XmlSchemaValidator();
-    validator.setSchemaMetadataKey("schema-key");
+    validator.setSchema("%message{schema-key}");
     AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
     msg.addMetadata("schema-key", schemaUrl);
     XmlValidationService service = new XmlValidationService(validator);
@@ -190,25 +141,6 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     }
   }
 
-  @Test
-  public void testValidXmlSchemaInMetadataAndConfiguredSchema() throws Exception {
-    String schemaUrl = PROPERTIES.getProperty(KEY_WILL_VALIDATE_SCHEMA);
-    String schemaUrl2 = PROPERTIES.getProperty(KEY_WILL_NOT_VALIDATE);
-    // if (!ExternalResourcesHelper.isExternalServerAvailable(new URLString(schemaUrl))
-    // || !ExternalResourcesHelper.isExternalServerAvailable(new URLString(schemaUrl2))) {
-    // log.debug(schemaUrl + " or " + schemaUrl2 + " not available, ignoring testValidXmlSchemaInMetadataAndConfiguredSchema test");
-    // return;
-    // }
-
-    XmlSchemaValidator validator = new XmlSchemaValidator();
-    validator.setSchema(schemaUrl2);
-    validator.setSchemaMetadataKey("schema-key");
-    AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
-    msg.addMetadata("schema-key", schemaUrl);
-    XmlValidationService service = new XmlValidationService(validator);
-
-    execute(service, msg);
-  }
 
   @Test
   public void testSchemaValidator_InvalidXml() throws Exception {
@@ -239,7 +171,7 @@ public class XmlValidationServiceTest extends TransformServiceExample {
     // }
 
     XmlSchemaValidator validator = new XmlSchemaValidator();
-    validator.setSchemaMetadataKey("schema-key");
+    validator.setSchema("%message{schema-key}");
     AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
     msg.addMetadata("schema-key", schemaUrl);
     XmlValidationService service = new XmlValidationService(validator);
@@ -316,8 +248,8 @@ public class XmlValidationServiceTest extends TransformServiceExample {
         new XmlSchemaValidator("http://host/schema.xsd or %message{metadatKey}"),
         new XmlRuleValidator(vs));
   }
-  
-  
+
+
   @Override
   protected boolean doStateTests() {
     return false;

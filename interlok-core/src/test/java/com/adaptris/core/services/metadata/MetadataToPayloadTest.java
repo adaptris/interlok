@@ -36,10 +36,6 @@ public class MetadataToPayloadTest extends MetadataServiceExample {
     return new MetadataToPayloadService(DEFAULT_METADATA_KEY, target);
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   private AdaptrisMessage createMessage(boolean base64) {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();

@@ -2018,10 +2018,6 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
   private class FailingAdapterManager extends AdapterManager {
 
     public FailingAdapterManager(Adapter owner) throws MalformedObjectNameException, CoreException {

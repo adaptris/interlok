@@ -19,17 +19,14 @@ import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.TimeInterval;
 
-public class PluggableJdbcPooledConnectionTest extends DatabaseConnectionCase<PluggableJdbcPooledConnection> {
+public class PluggableJdbcPooledConnectionTest extends
+    com.adaptris.interlok.junit.scaffolding.DatabaseConnectionCase<PluggableJdbcPooledConnection> {
 
   private static final GuidGenerator GUID = new GuidGenerator();
 
   public PluggableJdbcPooledConnectionTest() {
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
   @Override
   protected PluggableJdbcPooledConnection createConnection() {
     return new PluggableJdbcPooledConnection().withBuilder(new HikariPoolBuilder());
@@ -104,7 +101,7 @@ public class PluggableJdbcPooledConnectionTest extends DatabaseConnectionCase<Pl
       .atMost(Duration.ofSeconds(5))
       .with()
       .pollInterval(Duration.ofMillis(100))
-      .until(() ->con.retrieveComponentState().equals(StartedState.getInstance()));   
+      .until(() ->con.retrieveComponentState().equals(StartedState.getInstance()));
 
       Connection c1 = con.connect();
       Connection c2 = con.connect();

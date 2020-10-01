@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -49,14 +49,10 @@ public class FsMessageConsumerTest extends FsConsumerCase {
 
   /**
    * Key in unit-test.properties that defines where example goes unless overriden {@link #setBaseDir(String)}.
-   * 
+   *
    */
   public static final String EXAMPLE_BASEDIR = "FsConsumerExample.baseDir";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected void configureExampleConfigBaseDir() {
@@ -103,6 +99,8 @@ public class FsMessageConsumerTest extends FsConsumerCase {
       File baseDir = new File(parentDir, subDir);
       LifecycleHelper.init(sc);
       createFiles(baseDir, ".xml", count);
+      // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
+      LifecycleHelper.prepare(sc);
       LifecycleHelper.start(sc);
       waitForMessages(stub, count);
       assertMessages(stub.getMessages(), count, baseDir.listFiles((FilenameFilter) new Perl5FilenameFilter(".*\\.xml")));
@@ -448,7 +446,7 @@ public class FsMessageConsumerTest extends FsConsumerCase {
   public void testRedmine481_SubDirInConsumeDirectory() throws Exception {
     String consumeDir = new GuidGenerator().safeUUID();
     File parentDir = FsHelper.createFileReference(FsHelper.createUrlFromString(PROPERTIES.getProperty(BASE_KEY), true));
-      
+
     String subDir = parentDir.getCanonicalPath() + "/" + consumeDir + "/" + new GuidGenerator().safeUUID();
     File subDirectory = new File(subDir);
     subDirectory.mkdirs();

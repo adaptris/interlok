@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageListener;
+import com.adaptris.core.Channel;
 import com.adaptris.core.ListenerCallbackHelper;
 import com.adaptris.core.ProduceException;
 
@@ -31,7 +32,10 @@ import com.adaptris.core.ProduceException;
  * @author $Author: $
  */
 public class MockMessageListener implements AdaptrisMessageListener, MessageCounter {
+  
   private MockMessageProducer producer;
+  
+  private Channel channel;
 
   private long waitTime = -1;
 
@@ -43,15 +47,17 @@ public class MockMessageListener implements AdaptrisMessageListener, MessageCoun
     this();
     this.waitTime = waitTime;
   }
-
+  
   @Override
-  public void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success) {
-    ListenerCallbackHelper.prepare(msg, success);
+  public void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success, Consumer<AdaptrisMessage> failure) {
+    ListenerCallbackHelper.prepare(msg, success, failure);
     try {
       producer.produce(msg);
       ListenerCallbackHelper.handleSuccessCallback(msg);
-    }
-    catch (ProduceException e) {
+    } catch (ProduceException e) {
+      ListenerCallbackHelper.handleFailureCallback(msg);
+    } finally {
+      
     }
     if (waitTime != -1) {
       try {
@@ -77,5 +83,13 @@ public class MockMessageListener implements AdaptrisMessageListener, MessageCoun
   @Override
   public String friendlyName() {
     return "MockMessageListener";
+  }
+
+  public Channel obtainChannel() {
+    return channel;
+  }
+
+  public void setChannel(Channel channel) {
+    this.channel = channel;
   }
 }

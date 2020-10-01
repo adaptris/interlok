@@ -34,10 +34,6 @@ import com.adaptris.util.TimeInterval;
 
 public class MessageCountNotificationTest extends MessageNotificationCase {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testNotifyThreshold() throws Exception {

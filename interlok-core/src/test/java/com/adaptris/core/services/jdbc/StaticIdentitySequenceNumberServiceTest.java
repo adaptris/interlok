@@ -52,10 +52,6 @@ public class StaticIdentitySequenceNumberServiceTest extends SequenceNumberCase 
     }
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected StaticIdentitySequenceNumberService createService() {

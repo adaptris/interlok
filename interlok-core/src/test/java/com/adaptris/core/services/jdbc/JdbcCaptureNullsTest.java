@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,23 +17,20 @@
 package com.adaptris.core.services.jdbc;
 
 import static org.junit.Assert.assertEquals;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-
 import org.junit.Test;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.jdbc.JdbcConnection;
 import com.adaptris.core.services.jdbc.StatementParameterImpl.QueryType;
 import com.adaptris.core.services.jdbc.raw.JdbcRawDataCaptureService;
 import com.adaptris.core.util.JdbcUtil;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 
 public class JdbcCaptureNullsTest {
 
@@ -49,7 +46,7 @@ public class JdbcCaptureNullsTest {
     createDatabase();
     JdbcDataCaptureServiceImpl service = configure(new JdbcDataCaptureService());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(CONTENT_NULl);
-    ServiceCase.execute(service, msg);
+    ExampleServiceCase.execute(service, msg);
     doBasicCaptureAsserts(null);
   }
 
@@ -58,7 +55,7 @@ public class JdbcCaptureNullsTest {
     createDatabase();
     JdbcDataCaptureServiceImpl service = configure(new JdbcDataCaptureService());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(CONTENT_NOT_NULL);
-    ServiceCase.execute(service, msg);
+    ExampleServiceCase.execute(service, msg);
     doBasicCaptureAsserts("2000-01-01");
   }
 
@@ -67,7 +64,7 @@ public class JdbcCaptureNullsTest {
     createDatabase();
     JdbcDataCaptureServiceImpl service = configure(new JdbcDataCaptureService());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(CONTENT_EMPTY);
-    ServiceCase.execute(service, msg);
+    ExampleServiceCase.execute(service, msg);
     doBasicCaptureAsserts("");
   }
 
@@ -76,7 +73,7 @@ public class JdbcCaptureNullsTest {
     createDatabase();
     JdbcDataCaptureServiceImpl service = configure(new JdbcRawDataCaptureService());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("hello world");
-    ServiceCase.execute(service, msg);
+    ExampleServiceCase.execute(service, msg);
   }
 
   @Test
@@ -84,7 +81,7 @@ public class JdbcCaptureNullsTest {
     createDatabase();
     JdbcDataCaptureServiceImpl service = configure(new JdbcRawDataCaptureService());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(CONTENT_NULl);
-    ServiceCase.execute(service, msg);
+    ExampleServiceCase.execute(service, msg);
     doBasicCaptureAsserts(null);
   }
 
@@ -93,7 +90,7 @@ public class JdbcCaptureNullsTest {
     createDatabase();
     JdbcDataCaptureServiceImpl service = configure(new JdbcRawDataCaptureService());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(CONTENT_NOT_NULL);
-    ServiceCase.execute(service, msg);
+    ExampleServiceCase.execute(service, msg);
     doBasicCaptureAsserts("2000-01-01");
   }
 
@@ -102,7 +99,7 @@ public class JdbcCaptureNullsTest {
     createDatabase();
     JdbcDataCaptureServiceImpl service = configure(new JdbcRawDataCaptureService());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(CONTENT_EMPTY);
-    ServiceCase.execute(service, msg);
+    ExampleServiceCase.execute(service, msg);
     doBasicCaptureAsserts("");
   }
 

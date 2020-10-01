@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,28 +26,17 @@ import javax.naming.InitialContext;
 import org.junit.Before;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisConnection;
-import com.adaptris.core.BaseCase;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.JndiContextFactory;
 import com.adaptris.core.NullConnection;
-import com.adaptris.core.jdbc.AdvancedJdbcPooledConnection;
 import com.adaptris.core.jdbc.JdbcPooledConnection;
-import com.adaptris.core.jdbc.PooledConnectionProperties;
 import com.adaptris.core.transaction.DummyTransactionManager;
 import com.adaptris.core.transaction.TransactionManager;
 import com.adaptris.util.GuidGenerator;
-import com.adaptris.util.KeyValuePair;
-import com.adaptris.util.KeyValuePairSet;
 
 @SuppressWarnings("deprecation")
-public class JndiHelperTest extends BaseCase {
+public class JndiHelperTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
   private Properties env = new Properties();
-
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
 
   @Before
   public void setUp() throws Exception {
@@ -162,22 +151,6 @@ public class JndiHelperTest extends BaseCase {
     }
   }
 
-  @Test
-  public void testBindObject_WithLookupName() throws Exception {
-    NullConnection connection = new NullConnection();
-    connection.setUniqueId("SomethingElseEntirely");
-    connection.setLookupName("adapter:comp/env/" + getName());
-    InitialContext initialContext = new InitialContext(env);
-    try {
-      JndiHelper.bind(initialContext, connection, false);
-      NullConnection lookedup = (NullConnection) initialContext.lookup("adapter:comp/env/" + getName());
-      assertNotNull(lookedup);
-      assertEquals("SomethingElseEntirely", lookedup.getUniqueId());
-    }
-    finally {
-      JndiHelper.unbindQuietly(initialContext, connection, false);
-    }
-  }
 
   @Test
   public void testBindObject_AlreadyBound() throws Exception {
@@ -204,7 +177,7 @@ public class JndiHelperTest extends BaseCase {
 
   @Test
   public void testBindTransactionManager_AlreadyBound() throws Exception {
-    TransactionManager transactionManager = new DummyTransactionManager(getName(), null);
+    TransactionManager transactionManager = new DummyTransactionManager(getName());
     InitialContext initialContext = new InitialContext(env);
     JndiHelper.bind(initialContext, transactionManager, false);
     try {
@@ -272,7 +245,7 @@ public class JndiHelperTest extends BaseCase {
 
   @Test
   public void testUnbindUnboundTransactionManager() throws Exception {
-    TransactionManager transactionManager = new DummyTransactionManager(getName(), null);
+    TransactionManager transactionManager = new DummyTransactionManager(getName());
     try {
       JndiHelper.unbind(transactionManager, false);
       fail();
@@ -284,7 +257,7 @@ public class JndiHelperTest extends BaseCase {
 
   @Test
   public void testUnbindUnboundTransactionManager_Debug() throws Exception {
-    TransactionManager transactionManager = new DummyTransactionManager(getName(), null);
+    TransactionManager transactionManager = new DummyTransactionManager(getName());
     try {
       JndiHelper.unbind(transactionManager, true);
       fail();
@@ -321,54 +294,6 @@ public class JndiHelperTest extends BaseCase {
     }
     finally {
       JndiHelper.unbindQuietly(initialContext, connection, false);
-    }
-  }
-
-  @Test
-  public void testBindJdbcConnection_WithLookupName() throws Exception {
-    JdbcPooledConnection connection = new JdbcPooledConnection();
-    connection.setConnectUrl("jdbc:derby:memory:" + new GuidGenerator().safeUUID() + ";create=true");
-    connection.setDriverImp("org.apache.derby.jdbc.EmbeddedDriver");
-    connection.setMinimumPoolSize(1);
-    connection.setAcquireIncrement(1);
-    connection.setMaximumPoolSize(7);
-    connection.setUniqueId("jdbcConnectionLookup");
-    connection.setLookupName("adapter:comp/env/" + getName());
-
-    InitialContext initialContext = new InitialContext(env);
-    try {
-      JndiHelper.bind(initialContext, connection, true);
-      JdbcPooledConnection lookedup = (JdbcPooledConnection) initialContext.lookup("adapter:comp/env/" + getName());
-      assertEquals("jdbcConnectionLookup", lookedup.getUniqueId());
-      assertNotNull(initialContext.lookup("adapter:comp/env/jdbc/" + getName()));
-    }
-    finally {
-      JndiHelper.unbindQuietly(initialContext, connection, true);
-    }
-  }
-
-  @Test
-  public void testBindAdvancedJdbcConnection_WithLookupName() throws Exception {
-    AdvancedJdbcPooledConnection connection = new AdvancedJdbcPooledConnection();
-    connection.setConnectUrl("jdbc:derby:memory:" + new GuidGenerator().safeUUID() + ";create=true");
-    connection.setDriverImp("org.apache.derby.jdbc.EmbeddedDriver");
-    KeyValuePairSet poolProps = new KeyValuePairSet();
-    poolProps.add(new KeyValuePair(PooledConnectionProperties.minPoolSize.name(), "1"));
-    poolProps.add(new KeyValuePair(PooledConnectionProperties.acquireIncrement.name(), "1"));
-    poolProps.add(new KeyValuePair(PooledConnectionProperties.maxPoolSize.name(), "7"));
-    connection.setConnectionPoolProperties(poolProps);
-    connection.setUniqueId("jdbcAdvConnectionLookup");
-    connection.setLookupName("adapter:comp/env/" + getName());
-
-    InitialContext initialContext = new InitialContext(env);
-    try {
-      JndiHelper.bind(initialContext, connection, true);
-      AdvancedJdbcPooledConnection lookedup = (AdvancedJdbcPooledConnection) initialContext.lookup("adapter:comp/env/" + getName());
-      assertEquals("jdbcAdvConnectionLookup", lookedup.getUniqueId());
-      assertNotNull(initialContext.lookup("adapter:comp/env/jdbc/" + getName()));
-    }
-    finally {
-      JndiHelper.unbindQuietly(initialContext, connection, true);
     }
   }
 

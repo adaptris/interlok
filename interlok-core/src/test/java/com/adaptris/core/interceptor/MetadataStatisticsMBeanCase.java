@@ -19,8 +19,4 @@ package com.adaptris.core.interceptor;
 
 public abstract class MetadataStatisticsMBeanCase extends StatisticsMBeanCase {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 }

@@ -71,11 +71,6 @@ public class FileLogHandlerJmxTest extends ComponentManagerCase {
     super.tearDown();
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
-
   @Test
   public void testExistsInAdapterManager() throws Exception {
     Adapter adapter = createAdapter(getName());

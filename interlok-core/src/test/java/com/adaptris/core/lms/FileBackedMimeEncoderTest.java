@@ -43,19 +43,6 @@ public class FileBackedMimeEncoderTest {
   private static final String METADATA_VALUE = "value";
   private static final String METADATA_KEY = "key";
 
-  @Test(expected = CoreException.class)
-  public void testEncode_NotFile() throws Exception {
-    FileBackedMimeEncoder mimeEncoder = new FileBackedMimeEncoder();
-
-    mimeEncoder.writeMessage(AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD), new Object());
-  }
-
-  @Test(expected = CoreException.class)
-  public void testDecode_NotFile() throws Exception {
-    FileBackedMimeEncoder mimeEncoder = new FileBackedMimeEncoder();
-    mimeEncoder.readMessage(new Object());
-  }
-
   @Test
   public void testRoundTrip() throws Exception {
     FileBackedMimeEncoder mimeEncoder = new FileBackedMimeEncoder();

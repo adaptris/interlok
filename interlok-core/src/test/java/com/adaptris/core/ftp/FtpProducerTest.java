@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -48,8 +48,10 @@ import com.adaptris.core.ServiceCase;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandaloneRequestor;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
 
+@SuppressWarnings("deprecation")
 public class FtpProducerTest extends FtpProducerCase {
 
   private static final TimeInterval DEFAULT_TIMEOUT = new TimeInterval(100L, TimeUnit.MILLISECONDS);
@@ -60,10 +62,7 @@ public class FtpProducerTest extends FtpProducerCase {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
     }
   }
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
+
 
   @Override
   protected FtpConnection createConnectionForExamples() {
@@ -139,6 +138,8 @@ public class FtpProducerTest extends FtpProducerCase {
       FtpProducer ftpProducer = createForTests();
       FtpConnection produceConnection = create(server);
       StandaloneProducer sp = new StandaloneProducer(produceConnection, ftpProducer);
+      // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
+      LifecycleHelper.prepare(sp);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD);
       ServiceCase.execute(sp, msg);
       assertEquals(1, filesystem.listFiles(DEFAULT_WORK_DIR_CANONICAL).size());
@@ -473,6 +474,7 @@ public class FtpProducerTest extends FtpProducerCase {
     return createForTests(new ConfiguredProduceDestination(SERVER_ADDRESS));
   }
 
+  @SuppressWarnings("deprecation")
   private FtpProducer createForTests(ConfiguredProduceDestination dest) {
     FtpProducer ftpProducer = new FtpProducer();
     if (dest.getDestination().equals(SERVER_ADDRESS)) {

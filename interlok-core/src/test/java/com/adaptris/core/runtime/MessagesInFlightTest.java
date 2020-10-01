@@ -44,10 +44,6 @@ public class MessagesInFlightTest extends ComponentManagerCase {
   public MessagesInFlightTest() {
   }
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testInFlightMessageCount() throws Exception {

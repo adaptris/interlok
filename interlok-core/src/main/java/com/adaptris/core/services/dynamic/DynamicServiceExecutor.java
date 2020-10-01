@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,19 +45,18 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Implementation of {@link com.adaptris.core.Service} which dynamically obtains and applies a
  * {@link com.adaptris.core.Service} to an {@link com.adaptris.core.AdaptrisMessage} based on the
  * contents of the message.
- * 
+ *
  * <p>
- * This class will attempt to extract a marshalled service (roughly analagous to
- * {@link DynamicServiceLocator}) from the specified location (which might be the current message),
- * unmarshal that service, and then execute that service against the current message. The use of
- * this type of service is discouraged from a supportability perspective; however there will be use
- * cases where it is appropriate. No checks are performed on the {@link com.adaptris.core.Service}
- * that is unmarshalled; any exceptions thrown by unmarshalled service are simply rethrown back to
- * the workflow for standard message error handling.
+ * This class will attempt to extract a marshalled service from the specified location (which might
+ * be the current message), unmarshal that service, and then execute that service against the
+ * current message. The use of this type of service is discouraged from a supportability
+ * perspective; however there will be use cases where it is appropriate. No checks are performed on
+ * the {@link com.adaptris.core.Service} that is unmarshalled; any exceptions thrown by unmarshalled
+ * service are simply rethrown back to the workflow for standard message error handling.
  * </p>
- * 
+ *
  * @config dynamic-service-executor
- * 
+ *
  * @see ServiceExtractor
  */
 @XStreamAlias("dynamic-service-executor")
@@ -156,11 +155,11 @@ public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAw
 
   /**
    * Set the {@link ServiceExtractor} implementation used to extract the service from the message.
-   * 
+   *
    * @param s the service extractor implementation, the default is {@link DefaultServiceExtractor}
    */
   public void setServiceExtractor(ServiceExtractor s) {
-    this.serviceExtractor = Args.notNull(s, "serviceExtractor");
+    serviceExtractor = Args.notNull(s, "serviceExtractor");
 
   }
 
@@ -170,12 +169,12 @@ public class DynamicServiceExecutor extends ServiceImp implements EventHandlerAw
 
   /**
    * Set the marshaller to use to unmarshal the service.
-   * 
+   *
    * @param m the marshaller, if not configured will default to
    *        {@link DefaultMarshaller#getDefaultMarshaller()}
    */
   public void setMarshaller(AdaptrisMarshaller m) {
-    this.marshaller = m;
+    marshaller = m;
   }
 
   private AdaptrisMarshaller currentMarshaller() {

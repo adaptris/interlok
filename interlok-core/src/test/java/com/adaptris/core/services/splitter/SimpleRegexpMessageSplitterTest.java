@@ -35,10 +35,6 @@ public class SimpleRegexpMessageSplitterTest extends SplitterCase {
 
   private static final String MULTILINE_INPUT = "ABC\nDEF\nGHI\nEND\nABC\nDEF\nGHI\nEND\n";
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Override
   protected SimpleRegexpMessageSplitter createSplitterForTests() {

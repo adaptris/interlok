@@ -17,7 +17,9 @@
 package com.adaptris.core.jms;
 
 import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -28,7 +30,6 @@ import com.adaptris.core.AdaptrisMessageConsumer;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullMessageConsumer;
-import com.adaptris.core.NullProcessingExceptionHandler;
 import com.adaptris.core.NullProduceExceptionHandler;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ProduceExceptionHandler;
@@ -113,13 +114,14 @@ public final class JmsTransactedWorkflow extends StandardWorkflow {
     else {
       log.error(logMsg, e);
     }
-    if (!(retrieveActiveMsgErrorHandler() instanceof NullProcessingExceptionHandler)) {
-      msg.getObjectHeaders().put(CoreConstants.OBJ_METADATA_EXCEPTION, e);
-      handleBadMessage(msg);
-      if (!isStrict()) {
-        LAST_MSG_FAILED.set(Boolean.FALSE);
-      }
+    msg.getObjectHeaders().put(CoreConstants.OBJ_METADATA_EXCEPTION, e);
+    handleBadMessage(msg);
+    if (!isStrict()) {
+      LAST_MSG_FAILED.set(Boolean.FALSE);
+      // If we want the message to pass (even though the workflow thinks it's failed) then lets stick the success callback into the failure callback.
+      msg.getObjectHeaders().put(CoreConstants.OBJ_METADATA_ON_FAILURE_CALLBACK, msg.getObjectHeaders().get(CoreConstants.OBJ_METADATA_ON_SUCCESS_CALLBACK));
     }
+    
   }
 
   boolean lastMessageFailed() {

@@ -40,10 +40,6 @@ import com.adaptris.util.text.xml.XPath;
 @SuppressWarnings("deprecation")
 public class XmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlResults {
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Test
   public void testMetadataStatementParam() throws Exception {

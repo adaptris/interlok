@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -61,10 +61,6 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
 
   protected StandardHttpProducer httpProducer;
 
-  @Override
-  public boolean isAnnotatedForJunit4() {
-    return true;
-  }
 
   @Before
   public void setUp() throws Exception {
@@ -95,6 +91,8 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
     Channel channel = JettyHelper.createChannel(new EmbeddedConnection(),
         JettyHelper.createConsumer("http://localhost:8080" + URL_TO_POST_TO), mockProducer);
     try {
+      // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
+      LifecycleHelper.prepare(channel);
       channel.requestStart();
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
@@ -404,6 +402,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
   protected StandardHttpProducer createProducer() {
     StandardHttpProducer p = new StandardHttpProducer();
     p.setContentTypeProvider(new MetadataContentTypeProvider("content.type"));
+    p.setUrl("dummy_url");
     p.setIgnoreServerResponseCode(true);
     p.registerConnection(new NullConnection());
     return p;
