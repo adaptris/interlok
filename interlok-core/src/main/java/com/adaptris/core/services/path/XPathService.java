@@ -248,11 +248,17 @@ public class XPathService extends ServiceImp {
   }
   
   private String serializeNode(Node node) throws TransformerException {
-    StreamResult xmlOutput = new StreamResult(new StringWriter());
-    Transformer transformer = TransformerFactory.newInstance().newTransformer();
-    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-    transformer.transform(new DOMSource(node), xmlOutput);
-    return xmlOutput.getWriter().toString();
+	  DOMSource source = new DOMSource(node);
+	    StringWriter stringWriter = new StringWriter();
+		StreamResult xmlOutput = new StreamResult(stringWriter);
+	    Transformer transformer = TransformerFactory.newInstance().newTransformer();
+	    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+	    if (source.getNode().getNodeType() != Node.ATTRIBUTE_NODE) {
+	        transformer.transform(source, xmlOutput);
+	      } else {
+	        stringWriter.write(source.getNode().getNodeValue());
+	      }
+	    return stringWriter.toString();
   }
   
   @Override
