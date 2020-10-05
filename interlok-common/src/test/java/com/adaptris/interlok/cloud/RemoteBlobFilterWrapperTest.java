@@ -30,12 +30,4 @@ public class RemoteBlobFilterWrapperTest {
     assertTrue(wrapper.accept(blob2));
   }
 
-
-  @Test(expected = RuntimeException.class)
-  public void testAccept_NoFileFilterImp() {
-    RemoteBlobFilterWrapper wrapper = new RemoteBlobFilterWrapper().withFilterExpression(".*");
-    RemoteBlob blob = new RemoteBlob.Builder().setBucket("bucket").setName("blob1")
-        .setLastModified(new Date().getTime()).setSize(0).build();
-    wrapper.accept(blob);
-  }
 }
