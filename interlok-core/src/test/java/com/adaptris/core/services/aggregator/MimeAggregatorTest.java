@@ -21,10 +21,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
-import com.adaptris.core.services.conditional.conditions.ConditionImpl;
+import com.adaptris.core.services.aggregator.MessageAggregatorTest.EvenOddCondition;
 import com.adaptris.core.services.mime.MimeJunitHelper;
 import com.adaptris.core.services.splitter.LineCountSplitter;
 import com.adaptris.core.services.splitter.MimePartSplitter;
@@ -134,22 +133,5 @@ public class MimeAggregatorTest extends MimeAggregatorCase {
   @Override
   protected String createBaseFileName(Object object) {
     return super.createBaseFileName(object) + "-MimeAggregator";
-  }
-
-  // Have a condition that every other call passes
-
-  private class EvenOddCondition extends ConditionImpl {
-    private int numberOfCalls = 0;
-
-    @Override
-    public boolean evaluate(AdaptrisMessage message) throws CoreException {
-      numberOfCalls++;
-      return numberOfCalls %2 == 0;
-    }
-
-    @Override
-    public void close() {
-      throw new RuntimeException();
-    }
   }
 }

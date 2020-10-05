@@ -58,4 +58,5 @@ public abstract class AggregatingServiceExample
     service.setService(asCollection(services));
     return service;
   }
+
 }

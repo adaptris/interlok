@@ -27,6 +27,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.services.aggregator.MessageAggregator;
@@ -35,22 +36,27 @@ import com.adaptris.util.NumberUtils;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Variant of {@link SplitJoinService} that uses a underlying thread and object pool to execute the service on each split message.
+ * Variant of {@link SplitJoinService} that uses a underlying thread and object pool to execute the
+ * service on each split message.
  *
  * <p>
- * This service splits a message according to the configured {@link MessageSplitter} implementation, executes the configured
- * {@link com.adaptris.core.Service} and subsequently joins all the messages back using the configured {@link MessageAggregator}
- * implementation
+ * This service splits a message according to the configured {@link MessageSplitter} implementation,
+ * executes the configured {@link com.adaptris.core.Service} and subsequently joins all the messages
+ * back using the configured {@link MessageAggregator} implementation
  * <p>
  * <p>
- * This differs from {@link SplitJoinService} in that a pool of {@link com.adaptris.core.Service} instances is maintained and
- * re-used for each message; so the high cost of initialisation for the service, is not incurred (more than the max number of
- * threads specified) as much.
+ * This differs from {@link SplitJoinService} in that a pool of {@link com.adaptris.core.Service}
+ * instances is maintained and re-used for each message; so the high cost of initialisation for the
+ * service, is not incurred (more than the max number of threads specified) as much.
  * </p>
- *
+ * 
+ * @deprecated since 3.11.1 Use {@link PooledSplitJoinService} instead; since performance
+ *             characteristics are unpredictable in constrained environments
+ * 
  * @config pooling-split-join-service
  *
  */
+@Deprecated
 @XStreamAlias("pooling-split-join-service")
 @AdapterComponent
 @ComponentProfile(summary = "Split a message and then execute the associated services on the split items, aggregating the split messages afterwards", tag = "service,splitjoin", since = "3.7.1")
@@ -58,6 +64,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 {
     "splitter", "service", "aggregator", "maxThreads", "timeout", "warmStart"
 })
+@Removal(version = "4.0.0",
+    message = "Use pooled-split-join-service instead; since performance characteristics are unpredictable in constrained environments")
 public class PoolingSplitJoinService extends SplitJoinService {
 
   private static final int DEFAULT_THREADS = 10;

@@ -2,17 +2,21 @@ package com.adaptris.core.services.splitter;
 
 import java.util.List;
 import java.util.concurrent.Future;
-
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * 
+ * @deprecated since 3.11.1 replaced by {@link ServiceErrorHandler} and
+ *             {@link PooledSplitJoinService}.
  * @config default-pooling-future-exception-strategy
  *
  */
 @XStreamAlias("default-pooling-future-exception-strategy")
+@Deprecated
+@Removal(version = "4.0",
+    message = "since 3.11.1 replaced by 'ServiceErrorHandler' and 'PooledSplitJoinService'")
 public class DefaultPoolingFutureExceptionStrategy implements PoolingFutureExceptionStrategy {
 
     public static final String EXCEPTION_MSG = "Timeout exceeded waiting for split services to complete.";

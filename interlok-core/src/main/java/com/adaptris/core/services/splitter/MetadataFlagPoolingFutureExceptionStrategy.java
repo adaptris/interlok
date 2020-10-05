@@ -3,12 +3,10 @@ package com.adaptris.core.services.splitter;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.BooleanUtils;
-
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
@@ -18,24 +16,28 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Ignores exception so long as some messages were considered successful based on a metadata key.
- * 
- * <p>
- * This strategy is useful if messages within a split-join are transient, and can be ignored provided some of them work; it allows
- * you to ignore exceptions processing individual mesages provided one or more messages have set a specific metadata to the value
- * {@code true | 1}.
- * </p>
- * 
- * @config metadata-flag-pooling-future-exception-strategy
  *
+ * <p>
+ * This strategy is useful if messages within a split-join are transient, and can be ignored
+ * provided some of them work; it allows you to ignore exceptions processing individual mesages
+ * provided one or more messages have set a specific metadata to the value {@code true | 1}.
+ * </p>
+ *
+ * @deprecated since 3.11.1 replaced by {@link ServiceErrorHandler} and
+ *             {@link PooledSplitJoinService}.
+ * @config metadata-flag-pooling-future-exception-strategy
  */
 @XStreamAlias("metadata-flag-pooling-future-exception-strategy")
+@Deprecated
+@Removal(version = "4.0",
+    message = "since 3.11.1 replaced by 'ServiceErrorHandler' and 'PooledSplitJoinService'")
 public class MetadataFlagPoolingFutureExceptionStrategy implements PoolingFutureExceptionStrategy {
     @NotNull
     @Valid
     private String metadataFlagKey;
 
-    @NotNull
-    @Valid
+    // This should have been transient; this would be inconfigurable via the UI.
+    // But we can't change it since that would break XSTream.
     private boolean defaultFlagValue = false;
 
 
@@ -84,11 +86,11 @@ public class MetadataFlagPoolingFutureExceptionStrategy implements PoolingFuture
     }
 
     public void setMetadataFlagKey(String metadataKey) {
-        this.metadataFlagKey = Args.notNull(metadataKey, "metadataFlagKey");
+        metadataFlagKey = Args.notNull(metadataKey, "metadataFlagKey");
     }
 
     private String getMetadataFlagKey() {
-        return this.metadataFlagKey;
+        return metadataFlagKey;
     }
 
 }
