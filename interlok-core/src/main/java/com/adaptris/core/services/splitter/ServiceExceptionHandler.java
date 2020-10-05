@@ -25,14 +25,14 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Default {@link ServiceErrorHandler} that captures exceptions thrown and rethrows the first
  * exception when requested.
- * 
+ *
  * @config default-service-exception-handler
  *
  */
 @XStreamAlias("default-service-exception-handler")
 @Slf4j
 @ComponentProfile(
-    summary = "Default behaviour for handling exceptions during fixed-split-join-service execution",
+    summary = "Default behaviour for handling exceptions during pooled-split-join-service execution",
     since = "3.11.1",
     tag = "service,splitjoin")
 public class ServiceExceptionHandler implements ServiceErrorHandler {

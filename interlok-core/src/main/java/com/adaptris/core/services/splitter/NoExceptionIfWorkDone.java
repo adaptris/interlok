@@ -56,7 +56,7 @@ import lombok.extern.slf4j.Slf4j;
 @XStreamAlias("no-exception-if-work-done")
 @Slf4j
 @ComponentProfile(
-    summary = "No exceptions if fixed-split-join-service recorded 'some work'",
+    summary = "No exceptions if pooled-split-join-service recorded 'some work'",
     since = "3.11.1", tag = "service,splitjoin")
 public class NoExceptionIfWorkDone extends ServiceExceptionHandler {
 

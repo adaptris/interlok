@@ -82,8 +82,9 @@ import lombok.Setter;
  * <p>
  * Aggregation may start happening as soon as messages are available to be aggregated (i.e. a split
  * message has been operated on) using the
- * {@link MessageAggregator#aggregate(AdaptrisMessage, Iterable)} method. Performance characterstics
- * will largely depend on how the splitter and aggregator implementations iterate over the messages.
+ * {@link MessageAggregator#aggregate(AdaptrisMessage, Iterable)} method. Performance
+ * characteristics will largely depend on how the splitter and aggregator implementations iterate
+ * over the messages.
  * </p>
  *
  * @config pooled-split-join-service
@@ -148,11 +149,31 @@ public class PooledSplitJoinService extends ServiceImp implements EventHandlerAw
   @Getter
   @Setter
   private TimeInterval timeout;
+  /**
+   * Whether or not to send events for the split message once service execution has completed.
+   * <p>
+   * Note that even if this is set to true, because each child message has its own unique id, you
+   * will have to externally correlate the message lifecycle events together. Child messages will
+   * always have the metadata {@link com.adaptris.core.CoreConstants#PARENT_UNIQUE_ID_KEY} set with
+   * the originating message id.
+   * </p>
+   * <p>
+   * If not explicitly specified then is set to false which means no events are sent for 'split'
+   * messages.
+   * </p>
+   *
+   */
   @InputFieldDefault(value = "false")
   @Getter
   @Setter
   @AdvancedConfig
   private Boolean sendEvents;
+  /**
+   * The size of the underlying object/thread pool used to execute services.
+   * <p>
+   * The default value is '10' unless explicitly configured
+   * </p>
+   */
   @Getter
   @Setter
   @InputFieldDefault(value = "10")

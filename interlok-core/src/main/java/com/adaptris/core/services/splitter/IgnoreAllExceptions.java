@@ -44,7 +44,7 @@ import lombok.extern.slf4j.Slf4j;
 @XStreamAlias("ignoring-service-exception-handler")
 @Slf4j
 @ComponentProfile(
-    summary = "Ignore all exceptions from fixed-split-join-service",
+    summary = "Ignore all exceptions from pooled-split-join-service",
     since = "3.11.1", tag = "service,splitjoin")
 public class IgnoreAllExceptions implements ServiceErrorHandler {
 
