@@ -358,7 +358,6 @@ public class PooledSplitJoinService extends ServiceImp implements EventHandlerAw
     // Do we just wait until the timeout has expired?
     protected AdaptrisMessage constructAdaptrisMessage() throws Exception {
       AdaptrisMessage next = null;
-      boolean timeoutExpired = true;
       do {
         checkTimeout(deadlineNanos);
         next = myQueue.peek();
