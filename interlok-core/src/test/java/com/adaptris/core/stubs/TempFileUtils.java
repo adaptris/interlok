@@ -24,6 +24,7 @@ import java.util.function.Supplier;
 import org.apache.commons.io.FileCleaningTracker;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FileUtils;
+import com.adaptris.interlok.util.Args;
 import com.adaptris.util.GuidGenerator;
 
 public class TempFileUtils {
@@ -52,6 +53,7 @@ public class TempFileUtils {
   public static File createTrackedFile(String prefix, String suffix, File baseDir, Object tracker,
       Supplier<String> content)
       throws IOException {
+    Args.notNull(tracker, "tracker");
     File f = File.createTempFile(prefix, suffix, baseDir);
     f.delete();
     Optional.ofNullable(content).ifPresent((c) -> {

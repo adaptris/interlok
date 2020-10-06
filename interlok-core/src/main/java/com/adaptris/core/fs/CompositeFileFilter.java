@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A {@link FileFilter} that contains other filters.
- * 
+ *
  * <p>
  * It is designed for use with either the FsConsumer or FtpConsumer, as a result of the limitations of
  * {@link com.adaptris.core.ConsumeDestination}, this filter creates its underlying filters from a single <code>__@@__</code>
@@ -58,8 +58,8 @@ import org.slf4j.LoggerFactory;
  * So for example we would use <code>SizeGT=4096__@@__Perl=.*\.xml</code> to match all files ending with <code>.xml</code> whose
  * size is greater than 4096 bytes
  * </p>
- * 
- * 
+ *
+ *
  * @author lchan
  */
 public class CompositeFileFilter implements FileFilter {
@@ -114,7 +114,7 @@ public class CompositeFileFilter implements FileFilter {
   };
 
   private transient List<FileFilter> filters;
-  private transient boolean quietMode = false;
+  private transient boolean quietMode = true;
 
   /**
    * Default constructor
@@ -157,6 +157,7 @@ public class CompositeFileFilter implements FileFilter {
     FileFilter filter = null;
     try {
       FilterImplementation f = FilterImplementation.valueOf(impl);
+      log.trace("Trying to create filter from : {}", f.filterImpl());
       filter = FsHelper.createFilter(expr, f.filterImpl());
     }
     catch (Exception e) {
@@ -182,13 +183,15 @@ public class CompositeFileFilter implements FileFilter {
    */
   @Override
   public boolean accept(File pathname) {
-    int result = 0;
     for (FileFilter f : filters) {
       if (!quietMode) {
-        log.trace("Checking {} is acceptable for {}", pathname.getAbsolutePath(), f.getClass().getSimpleName());
+        log.trace("Checking {} against {}", pathname.getAbsolutePath(),
+            f.getClass().getSimpleName());
       }
-      result += f.accept(pathname) ? 1 : 0;
+      if (!f.accept(pathname)) {
+        return false;
+      }
     }
-    return result == filters.size();
+    return true;
   }
 }
