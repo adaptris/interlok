@@ -125,7 +125,8 @@ public class PooledSplitJoinServiceTest {
         new NoExceptionIfWorkDone().withMetadataKey(NoExceptionIfWorkDone.DEFAULT_METADATA_KEY));
     service.setSplitter(new LineCountSplitter(1));
     service.setService(
-        asCollection(new MockExceptionStrategyService(MockExceptionStrategyService.MODE.NEUTRAL)));
+        asCollection(new WaitService(new TimeInterval(10L, TimeUnit.MILLISECONDS), false),
+            new MockExceptionStrategyService(MockExceptionStrategyService.MODE.NEUTRAL)));
     service.setPoolsize(10);
     service.setTimeout(new TimeInterval(5L, TimeUnit.SECONDS));
     service.setAggregator(new AppendingMessageAggregator());
