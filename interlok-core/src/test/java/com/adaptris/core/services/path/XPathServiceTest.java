@@ -83,6 +83,26 @@ public class XPathServiceTest
   }
 
   @Test
+  public void testPayloadAttributeValueXPathIntoMetadata() throws Exception {
+    message.setContent(attributeXml, message.getContentEncoding());
+
+    MetadataDataOutputParameter metadataDataDestination1 = new MetadataDataOutputParameter("targetMetadataKey");
+
+    ConstantDataInputParameter constantDataDestination = new ConstantDataInputParameter("//some/random/xml/node1/@attr");
+
+    Execution execution = new Execution(constantDataDestination, metadataDataDestination1);
+
+    List<Execution> executions = new ArrayList<>();
+    executions.add(execution);
+
+    service.setXmlSource(new StringPayloadDataInputParameter());
+    service.setExecutions(executions);
+    execute(service, message);
+
+    assertEquals("attribute value", message.getMetadataValue("targetMetadataKey"));
+  }
+
+  @Test
   public void testForCoveragePurposesInvalidXml() throws Exception {
     message.setContent("not valid xml!", message.getContentEncoding());
 
@@ -268,6 +288,17 @@ public class XPathServiceTest
           + "</xml>"
         + "</random>"
       + "</some>";
+  
+  private String attributeXml = ""
+	      + "<some>"
+	        + "<random>"
+	          + "<xml>"
+	            + "<node1 attr=\"attribute value\">value1</node1>"
+	            + "<node2>value2</node2>"
+	            + "<node3>value3</node3>"
+	          + "</xml>"
+	        + "</random>"
+	      + "</some>";
 
   private String sampleXmlWithInternalNamespaces = ""
       + "<some xmlns:some=\"http://adaptris.com/xml/some\">"
