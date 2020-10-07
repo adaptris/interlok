@@ -214,7 +214,7 @@ public abstract class JndiImplementationCase {
 
     jv.getJndiParams().addKeyValuePair(new KeyValuePair("UserName", RequiresCredentialsBroker.DEFAULT_USERNAME));
     jv.getJndiParams().addKeyValuePair(
-        new KeyValuePair("Password", Password.encode(RequiresCredentialsBroker.DEFAULT_PASSWORD, Password.NON_PORTABLE_PASSWORD)));
+        new KeyValuePair("Password", Password.encode(RequiresCredentialsBroker.DEFAULT_PASSWORD, Password.PORTABLE_PASSWORD)));
     jv.setEncodedPasswordKeys("Password");
     StandaloneProducer standaloneProducer = new StandaloneProducer(c, producer);
     try {
@@ -239,7 +239,7 @@ public abstract class JndiImplementationCase {
 
     jv.getJndiParams().addKeyValuePair(new KeyValuePair("UserName", RequiresCredentialsBroker.DEFAULT_USERNAME));
     jv.getJndiParams().addKeyValuePair(
-        new KeyValuePair("Password", Password.encode(RequiresCredentialsBroker.DEFAULT_PASSWORD, Password.NON_PORTABLE_PASSWORD)));
+        new KeyValuePair("Password", Password.encode(RequiresCredentialsBroker.DEFAULT_PASSWORD, Password.PORTABLE_PASSWORD)));
     jv.setEncodedPasswordKeys("Password");
     jv.setEnableEncodedPasswords(true);
     StandaloneProducer standaloneProducer = new StandaloneProducer(c, producer);
@@ -264,7 +264,7 @@ public abstract class JndiImplementationCase {
     JmsConnection c = broker.getJndiPasConnection(jv, false, queueName, topicName);
     jv.getJndiParams().addKeyValuePair(new KeyValuePair("UserName", RequiresCredentialsBroker.DEFAULT_USERNAME));
     jv.getJndiParams().addKeyValuePair(
-        new KeyValuePair("Password", Password.encode(RequiresCredentialsBroker.DEFAULT_PASSWORD, Password.NON_PORTABLE_PASSWORD)));
+        new KeyValuePair("Password", Password.encode(RequiresCredentialsBroker.DEFAULT_PASSWORD, Password.PORTABLE_PASSWORD)));
     StandaloneProducer standaloneProducer = new StandaloneProducer(c, producer);
     try {
       broker.start();
