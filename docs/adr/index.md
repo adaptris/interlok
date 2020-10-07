@@ -16,6 +16,7 @@ This log lists the architectural decisions for Interlok
 * [ADR-0005](0005-remove-produce-destination.md) - Deprecate and ultimately remove ProduceDestination interface.
 * [ADR-0006](0006-workflow-callback.md) - Make onAdaptrisMessage() have a callback
 * [ADR-0007](0007-jetty-failsafe.md) - Allow jetty management component to run w/o any configuration
+* [ADR-0008](0008-restful-failed-message-retrier.md) - Have a failed message retrier that supports "REST" style retrying.
 
 <!-- adrlogstop -->
 
