@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.services.path;
 
@@ -191,25 +191,25 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @ComponentProfile(summary = "Extract data via XPath and store it", tag = "service,xml")
 @DisplayOrder(order = {"xmlSource", "executions", "namespaceContext", "xmlDocumentFactoryConfig"})
 public class XPathService extends ServiceImp {
-  
+
   @NotNull
   @AutoPopulated
   @Valid
   private DataInputParameter<String> xmlSource;
-  
+
   @NotNull
   @Valid
   @AutoPopulated
   @XStreamImplicit(itemFieldName="xpath-execution")
   private List<Execution> executions;
-  
+
   @AdvancedConfig(rare = true)
   @Valid
   private KeyValuePairSet namespaceContext;
   @AdvancedConfig(rare = true)
   @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
-  
+
   public XPathService() {
     this.setExecutions(new ArrayList<Execution>());
     this.setXmlSource(new StringPayloadDataInputParameter());
@@ -246,21 +246,21 @@ public class XPathService extends ServiceImp {
     }
     return stringBuilder.toString();
   }
-  
+
   private String serializeNode(Node node) throws TransformerException {
-	  DOMSource source = new DOMSource(node);
-	    StringWriter stringWriter = new StringWriter();
-		StreamResult xmlOutput = new StreamResult(stringWriter);
-	    Transformer transformer = TransformerFactory.newInstance().newTransformer();
-	    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-	    if (source.getNode().getNodeType() != Node.ATTRIBUTE_NODE) {
-	        transformer.transform(source, xmlOutput);
-	      } else {
-	        stringWriter.write(source.getNode().getNodeValue());
-	      }
-	    return stringWriter.toString();
+    DOMSource source = new DOMSource(node);
+    StringWriter stringWriter = new StringWriter();
+    StreamResult xmlOutput = new StreamResult(stringWriter);
+    Transformer transformer = TransformerFactory.newInstance().newTransformer();
+    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+    if (source.getNode().getNodeType() != Node.ATTRIBUTE_NODE) {
+      transformer.transform(source, xmlOutput);
+    } else {
+      stringWriter.write(source.getNode().getNodeValue());
+    }
+    return stringWriter.toString();
   }
-  
+
   @Override
   public void prepare() throws CoreException {
   }
