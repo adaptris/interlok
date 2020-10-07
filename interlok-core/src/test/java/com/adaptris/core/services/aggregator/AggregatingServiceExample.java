@@ -22,7 +22,7 @@ import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
 import com.adaptris.core.services.LogMessageService;
 import com.adaptris.core.services.splitter.MessageSplitter;
-import com.adaptris.core.services.splitter.PoolingSplitJoinService;
+import com.adaptris.core.services.splitter.PooledSplitJoinService;
 import com.adaptris.core.services.splitter.SplitJoinService;
 
 public abstract class AggregatingServiceExample
@@ -46,11 +46,20 @@ public abstract class AggregatingServiceExample
 
   protected static List<Service> createExamples(MessageSplitter splitter, MessageAggregator aggregator, Service... services) {
     List<Service> result = new ArrayList<Service>();
-    result.add(configure(new SplitJoinService(), splitter, aggregator, services));
-    result.add(configure(new PoolingSplitJoinService().withMaxThreads(5), splitter, aggregator, services));
+    result.add(configureExample(new PooledSplitJoinService(), splitter, aggregator, services));
     return result;
   }
 
+  protected static PooledSplitJoinService configureExample(PooledSplitJoinService service,
+      MessageSplitter splitter, MessageAggregator agg, Service... services) {
+    service.setAggregator(agg);
+    service.setSplitter(splitter);
+    service.setService(asCollection(services));
+    return service;
+  }
+
+  @Deprecated
+  @SuppressWarnings("deprecation")
   protected static SplitJoinService configure(SplitJoinService service, MessageSplitter splitter, MessageAggregator agg,
                                     Service... services) {
     service.setAggregator(agg);

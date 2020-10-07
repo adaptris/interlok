@@ -22,13 +22,14 @@ import java.util.Collection;
 import java.util.List;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.services.splitter.SplitJoinService;
+import com.adaptris.core.services.splitter.PooledSplitJoinService;
 import com.adaptris.interlok.util.CloseableIterable;
 
 /**
- * Interface for creating a single {@link com.adaptris.core.AdaptrisMessage} instance from multiple Messages.
+ * Interface for creating a single {@link com.adaptris.core.AdaptrisMessage} instance from multiple
+ * Messages.
  *
- * @see SplitJoinService
+ * @see PooledSplitJoinService
  */
 public interface MessageAggregator {
 
