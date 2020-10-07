@@ -1,0 +1,38 @@
+title Triggered Error Handler
+
+participant External
+participant Interlok
+participant S3
+
+External->Interlok: start processing
+alt happy
+  Interlok->Interlok: process
+else sad
+  Interlok->Interlok: trigger error handler 
+  note left of Interlok
+  'workflowId' should already be populated as
+  metadata upon entry into the error-handler.
+  end note
+  Interlok->S3: write raw payload
+  Interlok->S3: write metadata
+  note left of S3
+  The "resulting blobs" should be
+  /bucket/<interlok-uid>/<msg-id>/payload.bin
+  (application/octet-stream)
+  /bucket/<interlok-uid>/<msg-id>/metadata.properties
+  (text/plain)
+  end note
+  Interlok->External: Alert?
+end
+opt RetryFromJetty
+  External->Interlok: POST /api/retry/<msgid>
+  Interlok->S3: Build /bucket/<interlok-uid>/<msg-id>/payload.bin
+  Interlok->S3: Build /bucket/<interlok-uid>/<msg-id>/metadata.properties
+  Interlok->Interlok: Submit to workflow.
+end
+opt RetryFromJetty
+  External->Interlok: GET /api/retry/
+  Interlok->S3: List the contents of /bucket/<interlok-uid>/
+  Interlok->Interlok: Render as JSON
+  Interlok->External: The data
+end
