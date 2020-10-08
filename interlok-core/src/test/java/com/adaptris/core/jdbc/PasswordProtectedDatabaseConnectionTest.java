@@ -71,7 +71,7 @@ public class PasswordProtectedDatabaseConnectionTest
   public void testConnect_WithEncryptedPassword() throws Exception {
     if (Boolean.parseBoolean(PROPERTIES.getProperty(KEY_TESTS_ENABLED, "false"))) {
       DatabaseConnection con = createConnection();
-      con.setPassword(Password.encode(PROPERTIES.getProperty(KEY_JDBC_PASSWORD), Password.NON_PORTABLE_PASSWORD));
+      con.setPassword(Password.encode(PROPERTIES.getProperty(KEY_JDBC_PASSWORD), Password.PORTABLE_PASSWORD));
       LifecycleHelper.init(con);
       Connection sqlConnection = con.connect();
     }
