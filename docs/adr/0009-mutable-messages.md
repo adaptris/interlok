@@ -151,6 +151,7 @@ Since it's a readonly message; it still has the same caveats as mentioned above.
 - Good, because this isn't "tied" to the specific use-case.
 - Bad, because we have to guarantee that nothing ever touches the payload
 - Bad, If you use `%payload{jsonpath:$.1.2.3}` is still possible but has a huge performance hit every every time (might just throw an UnsupportedOperationException here)
+- Bad, The internal shortcuts that know about FileBackedMessageFactory would be broken because `instanceOf` is no longer valid.
 - Unknown, Does S3 give us an InputStream or is it the case that the DownloadManager doesn't expose that to us.
 - Unknown, We use TransferManager which multiplexes the download (to make it faster) -> if we're reading directly from the InputStream does this even help?
 - Unknown, Needs prototyping and testing for speed...
