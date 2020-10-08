@@ -46,9 +46,10 @@ The target is to be able to something like this :
 - `curl -XGET http://localhost/api/list-failed` and get a JSON array back that essentially that does an _ls of the target directory_
 - `curl -XPOST http://localhost:8080/api/retry/{msg-id}` and get that message automatically retried to the target workflow.
 
-This can be described with a pretty diagram generated from [text](./assets/0008-restful-sequence.txt)
+This can be described with a pretty diagram generated [via plantuml](./assets/0008-restful-sequence.puml)
 
-![a sequence diagram](./assets/0008-restful-sequence.png)
+![Sequence](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/adaptris/interlok/ADR-0008-Restful-FailedMessageRetrier/docs/adr/assets/0008-restful-sequence.puml)
+
 
 This boils down to a new FailedMessageRetrier implementation (`RetryFromJetty`) and a supporting interface in `interlok-core`. Since FailedMessageRetriers know about all the workflows, this is the right object to use. We can re-use whatever components we need to.
 
