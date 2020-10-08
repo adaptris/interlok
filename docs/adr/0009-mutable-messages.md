@@ -6,9 +6,7 @@ title: 0009-mutable-messages
 
 * Status: DRAFT
 * Deciders: Lewin Chan, Matt Warman, Aaron McGrath, Sebastien Belin
-* Date: 2020-10-07
-
-Technical Story: [description , ticket/issue URL] <!-- optional -->
+* Date: 2020-10-08
 
 ## Context and Problem Statement
 
