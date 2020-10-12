@@ -29,7 +29,7 @@ dependencies {
 
   javadoc project(':interlok-core-apt')
 
-  testCompile ("junit:junit:4.13")
+  testCompile ("junit:junit:4.13.1")
   testCompile ("org.mockito:mockito-core:$mockitoVersion")
   testCompile ("org.mockito:mockito-inline:$mockitoVersion")
 }
