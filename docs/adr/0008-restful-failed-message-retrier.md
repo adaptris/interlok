@@ -4,9 +4,9 @@ title: 0008-restful-failed-message-retrier
 ---
 # Failed Message Retrier should have a REST endpoint
 
-* Status: DRAFT
+* Status: CONFIRMED
 * Deciders: Lewin Chan, Matt Warman, Aaron McGrath, Sebastien Belin, Paul Higginson
-* Date: 2020-10-07
+* Date: 2020-10-13
 
 ## Context and Problem Statement
 
@@ -28,7 +28,8 @@ If you are full ESB stylings, and you have dead-letter queues, then perhaps this
 
 ## Decision Outcome
 
-...
+Jetty Trigger; however, there is documentation that needs to happen around the behaviour of RetryMessageErrorHandler vis-a-vis JMS Async producers.
+
 
 ### Vanilla workflow based system.
 
