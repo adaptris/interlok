@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.util.Properties;
-
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.util.text.Conversion;
 
@@ -61,6 +60,7 @@ final class InlineKeystoreLocation implements KeystoreLocation {
   /**
    * @see com.adaptris.security.keystore.KeystoreLocation#openInput()
    */
+  @Override
   public InputStream openInput() throws IOException, AdaptrisSecurityException {
     return new ByteArrayInputStream(keystoreBytes);
   }
@@ -68,6 +68,7 @@ final class InlineKeystoreLocation implements KeystoreLocation {
   /**
    * @see com.adaptris.security.keystore.KeystoreLocation#openOutput()
    */
+  @Override
   public OutputStream openOutput()
       throws IOException, AdaptrisSecurityException {
     throw new IOException(this.getClass() + " is implicitly readonly");
@@ -76,6 +77,7 @@ final class InlineKeystoreLocation implements KeystoreLocation {
   /**
    * @see com.adaptris.security.keystore.KeystoreLocation#isWriteable()
    */
+  @Override
   public boolean isWriteable() {
     return false;
   }
@@ -84,6 +86,7 @@ final class InlineKeystoreLocation implements KeystoreLocation {
    *
    * @see com.adaptris.security.keystore.KeystoreLocation#exists()
    */
+  @Override
   public boolean exists() {
     return true;
   }
@@ -115,6 +118,7 @@ final class InlineKeystoreLocation implements KeystoreLocation {
    *
    * @see KeystoreLocation#getAdditionalParams()
    */
+  @Override
   public Properties getAdditionalParams() {
     return additionalParams;
   }
@@ -124,6 +128,7 @@ final class InlineKeystoreLocation implements KeystoreLocation {
    *
    * @see KeystoreLocation#getKeyStoreType()
    */
+  @Override
   public String getKeyStoreType() {
     return keystoreType;
   }
@@ -133,6 +138,7 @@ final class InlineKeystoreLocation implements KeystoreLocation {
    *
    * @see KeystoreLocation#getKeystorePassword()
    */
+  @Override
   public char[] getKeystorePassword() {
     return keystorePassword;
   }
@@ -142,16 +148,18 @@ final class InlineKeystoreLocation implements KeystoreLocation {
    *
    * @see KeystoreLocation#setAdditionalParams(java.util.Properties)
    */
+  @Override
   public void setAdditionalParams(Properties p) {
-    this.additionalParams = p;
+    additionalParams = p;
   }
 
   /**
    *
    * @see KeystoreLocation#setKeystorePassword(char[])
    */
+  @Override
   public void setKeystorePassword(char[] pw) {
-    this.keystorePassword = pw;
+    keystorePassword = pw;
   }
 
 
@@ -159,14 +167,15 @@ final class InlineKeystoreLocation implements KeystoreLocation {
    *
    * @see KeystoreLocation#setKeystoreType(java.lang.String)
    */
+  @Override
   public void setKeystoreType(String s) {
-    this.keystoreType = s;
+    keystoreType = s;
   }
 
   private static byte[] calculateHash(byte[] b) {
     byte[] result = null;
     try {
-      MessageDigest md = MessageDigest.getInstance("SHA1");
+      MessageDigest md = MessageDigest.getInstance("SHA1"); // java/weak-cryptographic-algorithm
       md.update(b);
       result = md.digest();
     }
