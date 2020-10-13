@@ -4,7 +4,7 @@ title: 0008-restful-failed-message-retrier
 ---
 # Failed Message Retrier should have a REST endpoint
 
-* Status: CONFIRMED
+* Status: ACCEPTED
 * Deciders: Lewin Chan, Matt Warman, Aaron McGrath, Sebastien Belin, Paul Higginson
 * Date: 2020-10-13
 
