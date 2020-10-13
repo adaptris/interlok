@@ -25,6 +25,7 @@ What are the options that we can provide to mitigate the problem.
 - Do Nothing
 - Custom JSON parsing message factory
 - Mutable Message
+- Streaming Workflow
 
 ## Decision Outcome
 
@@ -155,3 +156,9 @@ Since it's a readonly message; it still has the same caveats as mentioned above.
 - Unknown, Does S3 give us an InputStream or is it the case that the DownloadManager doesn't expose that to us.
 - Unknown, We use TransferManager which multiplexes the download (to make it faster) -> if we're reading directly from the InputStream does this even help?
 - Unknown, Needs prototyping and testing for speed...
+
+
+## Streaming Workflow
+
+- Or Streaming Service... TBC
+
