@@ -73,8 +73,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 {
     NullConnection.class
 })
-@DisplayOrder(order = {"baseDirectoryUrl", "poller", "createDirs", "fileFilterImp", "fileSorter",
-    "wipSuffix", "resetWipFiles"})
+@DisplayOrder(order = {"baseDirectoryUrl", "poller", "createDirs", "filterExpression",
+    "fileFilterImp", "fileSorter", "wipSuffix", "resetWipFiles"})
 public class LargeFsConsumer extends FsConsumer {
 
   private transient FileCleaningTracker tracker;

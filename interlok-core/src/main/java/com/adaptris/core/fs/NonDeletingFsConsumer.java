@@ -67,8 +67,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 {
     NullConnection.class
 })
-@DisplayOrder(order = {"baseDirectoryUrl", "poller", "createDirs", "fileFilterImp", "fileSorter",
-    "processedItemCache"})
+@DisplayOrder(order = {"baseDirectoryUrl", "poller", "createDirs", "filterExpression",
+    "fileFilterImp", "fileSorter", "processedItemCache"})
 public class NonDeletingFsConsumer extends FsConsumerImpl {
 
   @NotNull
