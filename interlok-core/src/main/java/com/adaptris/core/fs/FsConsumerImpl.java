@@ -56,6 +56,7 @@ import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.fs.FsException;
 import com.adaptris.fs.FsWorker;
 import com.adaptris.fs.NioWorker;
+import com.adaptris.interlok.util.FileFilterBuilder;
 import com.adaptris.util.TimeInterval;
 import lombok.Getter;
 import lombok.NonNull;
@@ -69,7 +70,6 @@ import lombok.Setter;
 public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
 
   private static final TimeInterval DEFAULT_OLDER_THAN = new TimeInterval(0L, TimeUnit.MILLISECONDS);
-  private static final String DEFAULT_FILE_FILTER_IMP = "org.apache.commons.io.filefilter.RegexFileFilter";
 
   /**
    * Set the filename filter implementation that will be used for filtering files.
@@ -371,7 +371,7 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
   }
 
   String fileFilterImp() {
-    return ObjectUtils.defaultIfNull(getFileFilterImp(), DEFAULT_FILE_FILTER_IMP);
+    return ObjectUtils.defaultIfNull(getFileFilterImp(), FileFilterBuilder.DEFAULT_FILE_FILTER_IMP);
   }
 
   public boolean logAllExceptions() {

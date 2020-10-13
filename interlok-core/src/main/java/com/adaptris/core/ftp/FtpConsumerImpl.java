@@ -39,6 +39,7 @@ import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
+import com.adaptris.interlok.util.FileFilterBuilder;
 import com.adaptris.util.TimeInterval;
 import lombok.Getter;
 import lombok.Setter;
@@ -48,7 +49,13 @@ import lombok.Setter;
  */
 public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
   protected static final TimeInterval DEFAULT_OLDER_THAN = new TimeInterval(0L, TimeUnit.MILLISECONDS);
-  protected static final String DEFAULT_FILE_FILTER_IMPL = "org.apache.commons.io.filefilter.RegexFileFilter";
+  /**
+   * @deprecated since 3.11.1 {@link FileFilterBuilder#DEFAULT_FILE_FILTER_IMP instead.
+   *
+   */
+  @Deprecated
+  protected static final String DEFAULT_FILE_FILTER_IMPL =
+      FileFilterBuilder.DEFAULT_FILE_FILTER_IMP;
 
   /**
    * Set the filename filter implementation that will be used for filtering files.
@@ -261,7 +268,7 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
 
 
   protected String fileFilterImp() {
-    return ObjectUtils.defaultIfNull(getFileFilterImp(), DEFAULT_FILE_FILTER_IMPL);
+    return ObjectUtils.defaultIfNull(getFileFilterImp(), FileFilterBuilder.DEFAULT_FILE_FILTER_IMP);
   }
 
   protected long olderThanMs() {

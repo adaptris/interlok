@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,6 +24,7 @@ import java.io.RandomAccessFile;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
+import com.adaptris.core.stubs.TempFileUtils;
 
 /**
  * @author lchan
@@ -33,7 +34,8 @@ public class CompositeFileFilterTest {
   protected transient Log logR = LogFactory.getLog(this.getClass());
   private static final String FILTER_SIZE = "SizeGT=1024__@@__Regex=.*\\.xml";
   private static final String FILTER_CUSTOM = "SizeGT=1024__@@__Regex=.*\\.xml__@@__com.adaptris.core.fs.YesOrNo=false";
-  private static final String FILTER_N0CLASSDEF = "SizeGT=1024__@@__Regex=.*\\.xml__@@__com.adaptris.core.fs.Blah=false";
+  private static final String FILTER_NO_CLASSDEF = "SizeGT=1024__@@__Regex=.*\\.xml__@@__com.adaptris.core.fs.Blah=false";
+  private static final String FILTER_EMPTY_EXPR = "com.adaptris.core.fs.IsFileFilter=__@@__Regex=.*\\.xml";
 
   private static final String[] FILTER_STRINGS = {
       "NewerThan=-PT1H",
@@ -59,41 +61,41 @@ public class CompositeFileFilterTest {
 
   @Test
   public void testFilterMatches() throws Exception {
-    File src = File.createTempFile(this.getClass().getSimpleName(), ".xml");
+    CompositeFileFilter df = new CompositeFileFilter(FILTER_SIZE, false);
+    File src = TempFileUtils.createTrackedFile(this.getClass().getSimpleName(), ".xml", df);
     write(2048, src);
-    CompositeFileFilter df = new CompositeFileFilter(FILTER_SIZE, true);
-    boolean accepted = df.accept(src);
-    String text = src + ", size=" + src.length() + " should match";
-    src.delete();
-    assertTrue(text, accepted);
+    assertTrue(df.accept(src));
   }
 
   @Test
   public void testFilterNoMatch() throws Exception {
-    File src = File.createTempFile(this.getClass().getSimpleName(), ".xml");
-    write(999, src);
     CompositeFileFilter df = new CompositeFileFilter(FILTER_SIZE);
-    boolean accepted = df.accept(src);
-    String text = src + ", size=" + src.length() + " should not match";
-    src.delete();
-    assertFalse(text, accepted);
+    File src = TempFileUtils.createTrackedFile(this.getClass().getSimpleName(), ".xml", df);
+    write(999, src);
+    assertFalse(df.accept(src));
   }
 
   @Test
   public void testCustomFilter() throws Exception {
-    File src = File.createTempFile(this.getClass().getSimpleName(), ".xml");
-    write(2048, src);
     CompositeFileFilter df = new CompositeFileFilter(FILTER_CUSTOM);
-    boolean accepted = df.accept(src);
-    String text = src + ", size=" + src.length() + " should not match";
-    src.delete();
-    assertFalse(text, accepted);
+    File src = TempFileUtils.createTrackedFile(this.getClass().getSimpleName(), ".xml", df);
+    write(2048, src);
+    assertFalse(df.accept(src));
   }
 
   @Test(expected = RuntimeException.class)
   public void testCustomFilterNoClassDef() throws Exception {
-    CompositeFileFilter df = new CompositeFileFilter(FILTER_N0CLASSDEF);
+    CompositeFileFilter df = new CompositeFileFilter(FILTER_NO_CLASSDEF);
   }
+
+  @Test
+  public void testCustomFilter_NoExpr() throws Exception {
+    CompositeFileFilter df = new CompositeFileFilter(FILTER_EMPTY_EXPR);
+    File src = TempFileUtils.createTrackedFile(this.getClass().getSimpleName(), ".xml", null, df,
+        () -> "<xml/>");
+    assertTrue(df.accept(src));
+  }
+
 
   private void write(long size, File f) throws IOException {
     RandomAccessFile rf = new RandomAccessFile(f, "rw");

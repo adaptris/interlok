@@ -95,8 +95,8 @@ metadata =
   {
       NullConnection.class
   })
-@DisplayOrder(order = {"baseDirectoryUrl", "poller", "createDirs", "fileFilterImp", "fileSorter",
-    "wipSuffix", "resetWipFiles"})
+@DisplayOrder(order = {"baseDirectoryUrl", "poller", "createDirs", "filterExpression",
+    "fileFilterImp", "fileSorter", "wipSuffix", "resetWipFiles"})
 public class FsConsumer extends FsConsumerImpl {
 
   @NotBlank
