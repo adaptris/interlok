@@ -28,6 +28,10 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.common.ConstantDataInputParameter;
+import com.adaptris.core.common.Execution;
+import com.adaptris.core.common.MetadataDataOutputParameter;
+import com.adaptris.core.common.StringPayloadDataInputParameter;
 import com.adaptris.core.services.metadata.xpath.ConfiguredXpathQuery;
 import com.adaptris.core.services.metadata.xpath.MetadataXpathQuery;
 import com.adaptris.core.services.metadata.xpath.MultiItemConfiguredXpathQuery;
@@ -43,7 +47,7 @@ public class XpathMetadataServiceTest extends MetadataServiceExample {
 
   public static final String XML = "<?xml version=\"1.0\"?><message><message-type>order"
       + "</message-type><source-id>partnera</source-id><destination-id>" + "partnerb</destination-id><body>...</body>"
-      + "<extra att=\"att\">one</extra><extra att=\"two\">two</extra>" + "<extra att=\"two\">three</extra></message>";
+      + "<extra att=\"att\">one</extra><extraa att=\"two\">two</extraa>" + "<extrab att=\"two\">three</extrab></message>";
 
   public static final String XML_WITH_NAMESPACE = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
       + "<svrl:schematron-output xmlns:svrl=\"http://purl.oclc.org/dsdl/svrl\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:sch=\"http://www.ascc.net/xml/schematron\" xmlns:iso=\"http://purl.oclc.org/dsdl/schematron\" xmlns:dp=\"http://www.dpawson.co.uk/ns#\" title=\"Anglia Farmers AF xml Invoice Schematron File\" schemaVersion=\"ISO19757-3\">\n"
@@ -98,6 +102,26 @@ public class XpathMetadataServiceTest extends MetadataServiceExample {
     execute(service, msg);
     assertEquals("partnera", msg.getMetadataValue("source"));
     assertEquals("partnerb", msg.getMetadataValue("destination"));
+  }
+  
+  @Test
+  public void testPayloadSingleAttributeValueXPathIntoMetadata() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
+    XpathMetadataService service = new XpathMetadataService();
+    service.addXpathQuery(new ConfiguredXpathQuery("attribute", "//extra/@att"));
+    service.addXpathQuery(new ConfiguredXpathQuery("attr", "//extraa/@att"));
+    execute(service, msg);
+    assertEquals("att", msg.getMetadataValue("attribute"));
+    assertEquals("two", msg.getMetadataValue("attr"));
+  }
+  
+  @Test
+  public void testPayloadMultipleAttributeValuesXPathIntoMetadata() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
+    XpathMetadataService service = new XpathMetadataService();
+    service.addXpathQuery(new MultiItemConfiguredXpathQuery("attribute", "//@att"));
+    execute(service, msg);
+    assertEquals("att|two|two", msg.getMetadataValue("attribute"));
   }
 
   @Test
