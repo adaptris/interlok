@@ -24,9 +24,10 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 
 /**
- * Annotation that specifies when a deprecated field/type will be removed.
+ * Annotation that specifies when a deprecated field/type will be removed. It should be used with the Deprecated.class group to be used with
+ * the deprecation config checker: <em>@ConfigDeprecated(groups = Deprecated.class)</em>
  *
- * @since 3.8.2
+ * @since 3.11.1
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
