@@ -18,15 +18,18 @@ package com.adaptris.core.ftp;
 
 import static com.adaptris.core.CoreConstants.FS_CONSUME_DIRECTORY;
 import static com.adaptris.core.ftp.FtpHelper.FORWARD_SLASH;
+
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+
 import javax.validation.Valid;
+
 import org.apache.commons.lang3.ObjectUtils;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumer;
 import com.adaptris.core.AdaptrisPollingConsumer;
@@ -41,6 +44,8 @@ import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.interlok.util.FileFilterBuilder;
 import com.adaptris.util.TimeInterval;
+import com.adaptris.validation.constraints.ConfigDeprecated;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -55,7 +60,7 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
    */
   @Deprecated
   protected static final String DEFAULT_FILE_FILTER_IMPL =
-      FileFilterBuilder.DEFAULT_FILE_FILTER_IMP;
+  FileFilterBuilder.DEFAULT_FILE_FILTER_IMP;
 
   /**
    * Set the filename filter implementation that will be used for filtering files.
@@ -91,10 +96,10 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
    *
    */
   @Deprecated
-  @Valid
-  @Removal(version = "4.0.0", message = "Use 'ftp-endpoint' instead")
   @Getter
   @Setter
+  @Valid
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'ftp-endpoint' instead", groups = Deprecated.class)
   private ConsumeDestination destination;
 
   /**

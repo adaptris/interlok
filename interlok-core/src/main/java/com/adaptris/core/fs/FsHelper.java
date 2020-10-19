@@ -1,22 +1,23 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.fs;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -26,9 +27,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.adaptris.fs.FsException;
 import com.adaptris.fs.FsFilenameExistsException;
 import com.adaptris.fs.FsWorker;
@@ -42,7 +45,7 @@ public abstract class FsHelper {
 
   /**
    * Go straight to a {@link File} from a url style string.
-   * 
+   *
    */
   public static File toFile(String s) throws IOException, URISyntaxException {
     try {
@@ -55,7 +58,7 @@ public abstract class FsHelper {
 
   /**
    * Create a file reference from a URL using the platform default encoding for the URL.
-   * 
+   *
    * @see #createFileReference(URL, String)
    */
   public static File createFileReference(URL url) throws UnsupportedEncodingException {
@@ -64,7 +67,7 @@ public abstract class FsHelper {
 
   /**
    * Create a file reference from a URL using the platform default encoding for the URL.
-   * 
+   *
    * @param url the URL.
    * @param charset the encoding that the url is considered to be in.
    * @return a File object
@@ -93,7 +96,7 @@ public abstract class FsHelper {
    * with a URISyntaxException; use {@link #createUrlFromString(String, boolean)} to convert backslashes into forward slashes prior
    * to processing.
    * </p>
-   * 
+   *
    * @param s the String to convert to a URL.
    * @return a new URL
    * @see #createUrlFromString(String, boolean)
@@ -111,10 +114,10 @@ public abstract class FsHelper {
    * as is. If the {@code scheme} is null then the URL is considered a {@code "file"} URL, and <strong>relative</strong>> to the
    * current working directory.
    * </p>
-   * 
+   *
    * @param s the string to convert to a URL.
    * @param backslashConvert whether or not to convert backslashes into forward slashes.
-   * 
+   *
    */
   public static URL createUrlFromString(String s, boolean backslashConvert) throws IOException, URISyntaxException {
     String destToConvert = backslashConvert ? backslashToSlash(s) : s;
@@ -156,7 +159,7 @@ public abstract class FsHelper {
 
   public static FileFilter logWarningIfRequired(FileFilter f) {
     try {
-      Class clz = Class.forName("org.apache.oro.io.RegexFilenameFilter");
+      Class<?> clz = Class.forName("org.apache.oro.io.RegexFilenameFilter");
       if (clz.isAssignableFrom(f.getClass())) {
         log.warn("{} is deprecated, use a java.util.regex.Pattern based filter instead", f.getClass().getCanonicalName());
       }

@@ -31,7 +31,7 @@ public abstract class RequestReplyProducerImp extends RequestReplyProducerBase {
   }
 
   @Deprecated
-  @Removal(version = "4.0")
+  @Removal(version = "4.0.0")
   @Override
   public final void produce(AdaptrisMessage msg, ProduceDestination dest) throws ProduceException {
     doProduce(msg, DestinationHelper.resolveProduceDestination(endpoint(msg), dest, msg));
@@ -49,7 +49,7 @@ public abstract class RequestReplyProducerImp extends RequestReplyProducerBase {
 
   @Override
   @Deprecated
-  @Removal(version = "4.0")
+  @Removal(version = "4.0.0")
   public final AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination destination)
       throws ProduceException {
     return request(msg, destination, defaultTimeout());
@@ -57,7 +57,7 @@ public abstract class RequestReplyProducerImp extends RequestReplyProducerBase {
 
   @Override
   @Deprecated
-  @Removal(version = "4.0")
+  @Removal(version = "4.0.0")
   public final AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination destination,
       long timeout) throws ProduceException {
     return request(msg, DestinationHelper.resolveProduceDestination(endpoint(msg), destination, msg),

@@ -12,11 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.services.splitter;
 
 import static com.adaptris.core.util.ServiceUtil.discardNulls;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,15 +27,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
@@ -52,6 +55,7 @@ import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.interlok.util.CloseableIterable;
 import com.adaptris.util.TimeInterval;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -81,8 +85,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
     "splitter", "service", "aggregator", "maxThreads", "timeout"
 })
 @Deprecated
-@Removal(version = "4.0.0",
-    message = "Use pooled-split-join-service instead; since performance characteristics are unpredictable in constrained environments")
+@ConfigDeprecated(removalVersion = "4.0.0", message = "Use pooled-split-join-service instead; since performance characteristics are unpredictable in constrained environments", groups = Deprecated.class)
 public class SplitJoinService extends ServiceImp implements EventHandlerAware, ServiceWrapper {
 
   private static TimeInterval DEFAULT_TTL = new TimeInterval(600L, TimeUnit.SECONDS);
@@ -157,7 +160,7 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
     if (iter instanceof List) {
       return (List<AdaptrisMessage>) iter;
     }
-    List<AdaptrisMessage> result = new ArrayList<AdaptrisMessage>();
+    List<AdaptrisMessage> result = new ArrayList<>();
     try (CloseableIterable<AdaptrisMessage> messages = CloseableIterable.ensureCloseable(iter)) {
       for (AdaptrisMessage msg : messages) {
         result.add(msg);
@@ -176,8 +179,9 @@ public class SplitJoinService extends ServiceImp implements EventHandlerAware, S
       Args.notNull(getSplitter(), "splitter");
       Args.notNull(getAggregator(), "aggregator");
       Args.notNull(getService(), "service");
-      if (exceptionStrategy == null)
+      if (exceptionStrategy == null) {
         exceptionStrategy = new DefaultPoolingFutureExceptionStrategy();
+      }
       executors = createExecutor();
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);

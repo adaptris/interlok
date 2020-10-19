@@ -59,7 +59,7 @@ public abstract class ProduceOnlyProducerImp extends AdaptrisMessageProducerImp 
    */
   @Override
   @Deprecated
-  @Removal(version = "4.0")
+  @Removal(version = "4.0.0")
   public final AdaptrisMessage request(AdaptrisMessage msg,
                                        ProduceDestination destination)
       throws ProduceException {
@@ -75,7 +75,7 @@ public abstract class ProduceOnlyProducerImp extends AdaptrisMessageProducerImp 
    */
   @Override
   @Deprecated
-  @Removal(version = "4.0")
+  @Removal(version = "4.0.0")
   public final AdaptrisMessage request(AdaptrisMessage msg,
                                        ProduceDestination destination,
                                        long timeout) throws ProduceException {
@@ -92,7 +92,7 @@ public abstract class ProduceOnlyProducerImp extends AdaptrisMessageProducerImp 
    * @deprecated since 3.11.0 {@link ProduceDestination} is deprecated
    */
   @Deprecated
-  @Removal(version = "4.0")
+  @Removal(version = "4.0.0")
   @Override
   public final void produce(AdaptrisMessage msg, ProduceDestination destination)
       throws ProduceException {

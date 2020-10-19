@@ -32,7 +32,7 @@ import com.adaptris.util.text.Base64ByteTranslator;
  *
  */
 @Deprecated
-@Removal(version = "4.0",
+@Removal(version = "4.0.0",
     message = "This uses PBEWithSHA1AndDESede which is now cryptographically weak")
 public class PbeCrypto extends PasswordImpl {
 

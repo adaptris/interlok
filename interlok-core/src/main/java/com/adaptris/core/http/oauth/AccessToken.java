@@ -2,6 +2,7 @@ package com.adaptris.core.http.oauth;
 
 import java.io.Serializable;
 import java.util.Date;
+
 import com.adaptris.util.text.DateFormatUtil;
 
 /**
@@ -38,7 +39,6 @@ public class AccessToken implements Serializable {
   /**
    * Calls {@link #AccessToken(String, String, long)} with {@code -1} as the expiry
    */
-  @SuppressWarnings("deprecation")
   public AccessToken(String type, String token) {
     this(type, token, -1);
   }
@@ -75,7 +75,7 @@ public class AccessToken implements Serializable {
   }
 
   public void setType(String tokenType) {
-    this.type = tokenType;
+    type = tokenType;
   }
 
   public String getToken() {

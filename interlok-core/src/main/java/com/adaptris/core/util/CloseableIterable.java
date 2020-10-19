@@ -12,20 +12,22 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.util;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Iterator;
+
 import com.adaptris.annotation.Removal;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 
 /**
  * @deprecated since 3.10.2 moved to com.adaptris.interlok.util package.
  */
 @Deprecated
-@Removal(version="3.12.0")
+@ConfigDeprecated(removalVersion = "3.12.0", groups = Deprecated.class)
 public interface CloseableIterable<E> extends com.adaptris.interlok.util.CloseableIterable<E> {
 
   /**

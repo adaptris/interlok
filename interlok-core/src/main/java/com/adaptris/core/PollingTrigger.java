@@ -12,22 +12,26 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
+
 import javax.validation.Valid;
+
 import org.apache.commons.lang3.ObjectUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.DestinationHelper;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -43,7 +47,7 @@ import lombok.Setter;
 @XStreamAlias("polling-trigger")
 @AdapterComponent
 @ComponentProfile(summary = "Generate a static trigger message on a schedule", tag = "consumer,base",
-    recommended = {NullConnection.class})
+recommended = {NullConnection.class})
 @DisplayOrder(order = {"poller", "messageProvider"})
 public class PollingTrigger extends AdaptrisPollingConsumer {
 
@@ -60,8 +64,7 @@ public class PollingTrigger extends AdaptrisPollingConsumer {
   @Setter
   @Deprecated
   @Valid
-  @Removal(version = "4.0.0",
-      message = "Destination doesn't have much meaning for a polling-trigger")
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Destination doesn't have much meaning for a polling-trigger", groups = Deprecated.class)
   private ConsumeDestination destination;
 
   public PollingTrigger() {

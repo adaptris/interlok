@@ -44,7 +44,7 @@ public interface AdaptrisMessageSender extends ComponentLifecycle {
    * @deprecated since 3.11.0 {@link ProduceDestination} is deprecated
    */
   @Deprecated
-  @Removal(version = "4.0")
+  @Removal(version = "4.0.0")
   void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException;
 
 }
