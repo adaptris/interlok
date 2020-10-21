@@ -1,23 +1,25 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.services.metadata;
 
 import java.util.regex.Matcher;
+
 import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -26,6 +28,7 @@ import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.Removal;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.LoggingHelper;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -37,7 +40,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <li>multi-line-expression defaults to FALSE in the constructor for backwards compatibility reasons</li>
  * </ul>
  * </p>
- * 
+ *
  * @config payload-from-metadata-service
  * @deprecated since 3.10.0 use {@link PayloadFromTemplateService} or {@link MetadataToPayloadService} instead; most of the time
  *             you're abusing it...
@@ -47,13 +50,13 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Construct a new payload based on metadata and a template", tag = "service,metadata")
 @DisplayOrder(order = {"template", "metadataTokens", "multiLineExpression", "quoteReplacement", "escapeBackslash", "quiet"})
-@Removal(version = "4.0", message = "use payload-from-template or metadata-to-payload instead")
+@ConfigDeprecated(removalVersion = "4.0.0", message = "use payload-from-template or metadata-to-payload instead", groups = Deprecated.class)
 public class PayloadFromMetadataService extends PayloadFromTemplateService {
-  
+
   @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "true")
   @Deprecated
-  @Removal(version = "3.12.0", message = "use quote-replacement instead")
+  @ConfigDeprecated(removalVersion = "3.12.0", message = "use quote-replacement instead", groups = Deprecated.class)
   private Boolean escapeBackslash;
 
   private transient boolean warningLogged = false;
@@ -78,11 +81,11 @@ public class PayloadFromMetadataService extends PayloadFromTemplateService {
 
 
   /**
-   * 
+   *
    * @deprecated since 3.10.0, use {@link #setQuoteReplacement(Boolean)} instead.
    */
   @Deprecated
-  @Removal(version = "3.12.0", message = "use quote-replacement instead")
+  @ConfigDeprecated(removalVersion = "3.12.0", message = "use quote-replacement instead", groups = Deprecated.class)
   public Boolean getEscapeBackslash() {
     return escapeBackslash;
   }
@@ -92,7 +95,7 @@ public class PayloadFromMetadataService extends PayloadFromTemplateService {
    * <p>
    * Set this flag to make sure that special characters are treated literally by the regular expression engine.
    * <p>
-   * 
+   *
    * @deprecated since 3.10.0, use {@link #setQuoteReplacement(Boolean)} instead.
    * @see Matcher#quoteReplacement(String)
    * @param b the value to set
@@ -104,13 +107,13 @@ public class PayloadFromMetadataService extends PayloadFromTemplateService {
   }
 
   /**
-   * 
+   *
    * @deprecated since 3.10.0, use {@link #setQuoteReplacement(Boolean)} instead.
    */
   @Deprecated
   @Removal(version = "3.12.0", message = "use quote-replacement instead")
   public PayloadFromMetadataService withEscapeBackslash(Boolean b) {
-    setEscapeBackslash(b); 
+    setEscapeBackslash(b);
     return this;
   }
 

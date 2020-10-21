@@ -1,6 +1,7 @@
 package com.adaptris.core.http.oauth;
 
 import org.apache.commons.lang3.StringUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
@@ -13,14 +14,15 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LoggingHelper;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Simplified framework for retrieving OAUTH tokens from verious 3rd party resources (such as Salesforce, or Google).
- * 
- * 
+ *
+ *
  * @config get-oauth-token
- * 
+ *
  */
 @XStreamAlias("get-oauth-token")
 @AdapterComponent
@@ -34,17 +36,17 @@ public class GetOauthToken extends OauthTokenGetter {
   @AffectsMetadata
   @InputFieldDefault(value = "Authorization")
   @Deprecated
-  @Removal(version = "3.12.0", message = "Use a access-token-writer instead")
+  @ConfigDeprecated(removalVersion = "3.12.0", message = "Use a access-token-writer instead", groups = Deprecated.class)
   private String tokenKey;
   @AffectsMetadata
   @AdvancedConfig
   @Deprecated
-  @Removal(version = "3.12.0", message = "Use a access-token-writer instead")
+  @ConfigDeprecated(removalVersion = "3.12.0", message = "Use a access-token-writer instead", groups = Deprecated.class)
   private String tokenExpiryKey;
   @AffectsMetadata
   @AdvancedConfig
   @Deprecated
-  @Removal(version = "3.12.0", message = "Use a access-token-writer instead")
+  @ConfigDeprecated(removalVersion = "3.12.0", message = "Use a access-token-writer instead", groups = Deprecated.class)
   private String refreshTokenKey;
 
   private transient boolean warningLogged = false;
@@ -82,20 +84,20 @@ public class GetOauthToken extends OauthTokenGetter {
 
 
   @Deprecated
-  @Removal(version = "3.12.0", message = "Use a access-token-writer instead")
+  @ConfigDeprecated(removalVersion = "3.12.0", message = "Use a access-token-writer instead", groups = Deprecated.class)
   public String getTokenKey() {
     return tokenKey;
   }
 
   /**
    * Set the metadata to store the token against.
-   * 
+   *
    * @param key the key.
    */
   @Deprecated
   @Removal(version = "3.12.0", message = "Use a access-token-writer instead")
   public void setTokenKey(String key) {
-    this.tokenKey = Args.notBlank(key, "tokenMetadataKey");
+    tokenKey = Args.notBlank(key, "tokenMetadataKey");
   }
 
 
@@ -107,7 +109,7 @@ public class GetOauthToken extends OauthTokenGetter {
   }
 
   @Deprecated
-  @Removal(version = "3.12.0", message = "Use a access-token-writer instead")
+  @ConfigDeprecated(removalVersion = "3.12.0", message = "Use a access-token-writer instead", groups = Deprecated.class)
   public String getTokenExpiryKey() {
     return tokenExpiryKey;
   }
@@ -117,13 +119,13 @@ public class GetOauthToken extends OauthTokenGetter {
    * <p>
    * In some cases, there is no expiry date for a token, in which case, the metadata key will never be set even if configured.
    * </p>
-   * 
+   *
    * @param key key.
    */
   @Deprecated
   @Removal(version = "3.12.0", message = "Use a access-token-writer instead")
   public void setTokenExpiryKey(String key) {
-    this.tokenExpiryKey = Args.notBlank(key, "tokenExpiryKey");
+    tokenExpiryKey = Args.notBlank(key, "tokenExpiryKey");
   }
 
   @Deprecated
@@ -134,7 +136,7 @@ public class GetOauthToken extends OauthTokenGetter {
   }
 
   @Deprecated
-  @Removal(version = "3.12.0", message = "Use a access-token-write instead")
+  @ConfigDeprecated(removalVersion = "3.12.0", message = "Use a access-token-write instead", groups = Deprecated.class)
   public String getRefreshTokenKey() {
     return refreshTokenKey;
   }
@@ -144,12 +146,12 @@ public class GetOauthToken extends OauthTokenGetter {
    * <p>
    * In some cases, there is no refresh token, in which case, the metadata key will never be set even if configured.
    * </p>
-   * 
+   *
    * @param key key.
    */
   @Deprecated
   @Removal(version = "3.12.0", message = "Use a access-token-write instead")
   public void setRefreshTokenKey(String key) {
-    this.refreshTokenKey = key;
+    refreshTokenKey = key;
   }
 }

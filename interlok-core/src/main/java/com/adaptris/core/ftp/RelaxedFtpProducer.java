@@ -12,21 +12,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.ftp;
 
 import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
 import static com.adaptris.core.util.DestinationHelper.mustHaveEither;
+
 import java.io.InputStream;
+
 import javax.validation.Valid;
+
 import org.apache.commons.lang3.ObjectUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -38,7 +41,9 @@ import com.adaptris.core.ProduceOnlyProducerImp;
 import com.adaptris.core.util.DestinationHelper;
 import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.filetransfer.FileTransferClient;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -77,7 +82,7 @@ import lombok.Setter;
 @XStreamAlias("relaxed-ftp-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Put a file on a FTP/SFTP server; uses PUT only", tag = "producer,ftp,ftps,sftp",
-    recommended = {FileTransferConnection.class})
+recommended = {FileTransferConnection.class})
 @DisplayOrder(order = {"ftpEndpoint", "filenameCreator"})
 public class RelaxedFtpProducer extends ProduceOnlyProducerImp {
 
@@ -97,7 +102,7 @@ public class RelaxedFtpProducer extends ProduceOnlyProducerImp {
   @Setter
   @Deprecated
   @Valid
-  @Removal(version = "4.0.0", message = "Use 'ftp-endpoint' instead")
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'ftp-endpoint' instead", groups = Deprecated.class)
   private ProduceDestination destination;
 
   /**

@@ -12,18 +12,22 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.ftp;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
 import static com.adaptris.core.util.DestinationHelper.mustHaveEither;
+
 import java.io.InputStream;
 import java.io.OutputStream;
+
 import javax.validation.Valid;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -45,7 +49,9 @@ import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.filetransfer.FileTransferClient;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -96,11 +102,11 @@ import lombok.Setter;
 @XStreamAlias("ftp-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Put a file on a FTP/SFTP server; uses PUT, RNFR and RNTO for atomicity",
-    tag = "producer,ftp,ftps,sftp",
- recommended = {FileTransferConnection.class})
+tag = "producer,ftp,ftps,sftp",
+recommended = {FileTransferConnection.class})
 @DisplayOrder(
     order = {"ftpEndpoint", "buildDirectory", "destDirectory", "replyDirectory",
-        "replyProcDirectory"})
+    "replyProcDirectory"})
 public class FtpProducer extends RequestReplyProducerImp {
 
   private static final String SLASH = "/";
@@ -121,8 +127,7 @@ public class FtpProducer extends RequestReplyProducerImp {
   @Getter
   @Setter
   @Deprecated
-  @Removal(version = "4.0.0",
-      message = "We strongly discourage anyone from trying to implement request reply using FTP")
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "We strongly discourage anyone from trying to implement request reply using FTP", groups = Deprecated.class)
   private String replyDirectory = null;
   /**
    * Once the reply has been handled move it here.
@@ -136,8 +141,7 @@ public class FtpProducer extends RequestReplyProducerImp {
   @Getter
   @Setter
   @Deprecated
-  @Removal(version = "4.0",
-      message = "We strongly discourage anyone from trying to implement request reply using FTP")
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "We strongly discourage anyone from trying to implement request reply using FTP", groups = Deprecated.class)
   private String replyProcDirectory = null;
 
   /**
@@ -155,8 +159,7 @@ public class FtpProducer extends RequestReplyProducerImp {
   @Getter
   @Setter
   @Deprecated
-  @Removal(version = "4.0",
-      message = "We strongly discourage anyone from trying to implement request reply using FTP")
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "We strongly discourage anyone from trying to implement request reply using FTP", groups = Deprecated.class)
   private Boolean replyUsesEncoder;
 
   @Valid
@@ -169,7 +172,7 @@ public class FtpProducer extends RequestReplyProducerImp {
   @Setter
   @Deprecated
   @Valid
-  @Removal(version = "4.0", message = "Use 'ftp-endpoint' instead")
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'ftp-endpoint' instead", groups = Deprecated.class)
   private ProduceDestination destination;
 
   /**
@@ -399,7 +402,7 @@ public class FtpProducer extends RequestReplyProducerImp {
   }
 
   @Deprecated
-  @Removal(version = "4.0")
+  @Removal(version = "4.0.0")
   public boolean replyUsesEncoder() {
     return BooleanUtils.toBooleanDefaultIfNull(getReplyUsesEncoder(), true);
   }

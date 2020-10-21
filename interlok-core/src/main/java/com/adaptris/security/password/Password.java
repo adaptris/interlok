@@ -67,7 +67,7 @@ public abstract class Password {
    *
    */
   @Deprecated
-  @Removal(version = "4.0",
+  @Removal(version = "4.0.0",
       message = "This uses PBEWithSHA1AndDESede which is now cryptographically weak")
   public static final String NON_PORTABLE_PASSWORD = "ALTPW:";
 

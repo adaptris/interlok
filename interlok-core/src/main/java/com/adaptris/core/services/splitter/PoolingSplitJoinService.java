@@ -20,19 +20,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.pool2.impl.GenericObjectPool;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.services.aggregator.MessageAggregator;
 import com.adaptris.core.services.splitter.ServiceWorkerPool.Worker;
 import com.adaptris.util.NumberUtils;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -49,10 +51,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * instances is maintained and re-used for each message; so the high cost of initialisation for the
  * service, is not incurred (more than the max number of threads specified) as much.
  * </p>
- * 
+ *
  * @deprecated since 3.11.1 Use {@link PooledSplitJoinService} instead; since performance
  *             characteristics are unpredictable in constrained environments
- * 
+ *
  * @config pooling-split-join-service
  *
  */
@@ -64,8 +66,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 {
     "splitter", "service", "aggregator", "maxThreads", "timeout", "warmStart"
 })
-@Removal(version = "4.0.0",
-    message = "Use pooled-split-join-service instead; since performance characteristics are unpredictable in constrained environments")
+@ConfigDeprecated(removalVersion = "4.0.0", message = "Use pooled-split-join-service instead; since performance characteristics are unpredictable in constrained environments", groups = Deprecated.class)
 public class PoolingSplitJoinService extends SplitJoinService {
 
   private static final int DEFAULT_THREADS = 10;

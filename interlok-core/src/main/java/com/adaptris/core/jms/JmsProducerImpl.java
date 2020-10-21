@@ -21,11 +21,13 @@ import static com.adaptris.core.jms.JmsConstants.JMS_DELIVERY_MODE;
 import static com.adaptris.core.jms.JmsConstants.JMS_EXPIRATION;
 import static com.adaptris.core.jms.JmsConstants.JMS_PRIORITY;
 import static com.adaptris.core.jms.NullCorrelationIdSource.defaultIfNull;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -35,9 +37,11 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -196,9 +200,8 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
   }
 
   @Override
-  @SuppressWarnings("deprecation")
   @Deprecated
-  @Removal(version = "4.0")
+  @Removal(version = "4.0.0")
   public AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination destination)
       throws ProduceException {
     return request(msg, destination, defaultTimeout());
@@ -208,7 +211,6 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
   public AdaptrisMessage request(AdaptrisMessage msg) throws ProduceException {
     return request(msg, defaultTimeout());
   }
-
 
   protected ProducerSession setupSession(AdaptrisMessage msg) throws JMSException {
     if (!msg.getUniqueId().equals(CURRENT_MESSAGE_ID) || producerSession == null) {
@@ -619,7 +621,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
   protected void captureOutgoingMessageDetails(Message jmsMsg, AdaptrisMessage msg) {
     if (captureOutgoingMessageDetails()) {
       String objectMetadataPrefix = Message.class.getCanonicalName() + ".";
-      Map<String, String> jmsDetails = new HashMap<String, String>();
+      Map<String, String> jmsDetails = new HashMap<>();
       for (MetadataHandler.JmsPropertyHandler handler : MetadataHandler.JmsPropertyHandler
           .values()) {
         try {

@@ -12,26 +12,29 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.http.client.net;
 
 import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
 import static com.adaptris.core.util.DestinationHelper.mustHaveEither;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
@@ -46,6 +49,8 @@ import com.adaptris.core.http.client.RequestMethodProvider.RequestMethod;
 import com.adaptris.core.http.client.ResponseHeaderHandler;
 import com.adaptris.core.util.DestinationHelper;
 import com.adaptris.core.util.LoggingHelper;
+import com.adaptris.validation.constraints.ConfigDeprecated;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -154,7 +159,7 @@ public abstract class HttpProducer<A, B> extends RequestReplyProducerImp {
   @Setter
   @Deprecated
   @Valid
-  @Removal(version = "4.0.0", message = "Use 'url' instead")
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'url' instead", groups = Deprecated.class)
   private ProduceDestination destination;
 
   /**

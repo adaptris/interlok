@@ -12,26 +12,28 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.jdbc;
 
 import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
 import static com.adaptris.core.util.DestinationHelper.mustHaveEither;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
@@ -50,7 +52,9 @@ import com.adaptris.jdbc.ParameterType;
 import com.adaptris.jdbc.StoredProcedure;
 import com.adaptris.jdbc.StoredProcedureParameter;
 import com.adaptris.util.TimeInterval;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -150,7 +154,7 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
   @Setter
   @Deprecated
   @Valid
-  @Removal(version = "4.0.0", message = "Use 'procedure-name' instead")
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'procedure-name' instead", groups = Deprecated.class)
   private ProduceDestination destination;
 
   /**
@@ -284,7 +288,7 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
   }
 
   private List<StoredProcedureParameter> parseInParameters(AdaptrisMessage msg) throws JdbcParameterException {
-    ArrayList<StoredProcedureParameter> params = new ArrayList<StoredProcedureParameter>();
+    ArrayList<StoredProcedureParameter> params = new ArrayList<>();
 
     for (InParameter p : getInParameters().getParameters()) {
       params.add(new StoredProcedureParameter(p.getName(), p.getOrder(), p.getType(), ParameterType.IN, p.applyInputParam(msg)));

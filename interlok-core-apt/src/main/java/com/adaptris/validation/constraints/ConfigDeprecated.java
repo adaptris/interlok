@@ -17,40 +17,39 @@
 package com.adaptris.validation.constraints;
 
 import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
 /**
- * {@code BooleanExpression} is a field/method/parameter level constraint which can be applied on a
- * string to assert that the string represents a valid Boolean or a message expression
- * <em>%message{key}</em>.<br/>
- * The valid values are:
- * <ul>
- * <li>true</li>
- * <li>false</li>
- * <li>True</li>
- * <li>False</li>
- * <li>TRUE</li>
- * <li>FALSE</li>
- * </ul>
+ * Annotation that specifies when a deprecated field/type will be removed. It should be used with the Deprecated.class group to be used with
+ * the deprecation config checker: <em>@ConfigDeprecated(groups = Deprecated.class)</em>
+ *
+ * @since 3.11.1
  */
-@Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD,ElementType.FIELD,ElementType.PARAMETER})
-@Constraint(validatedBy = BooleanExpressionValidator.class)
-public @interface BooleanExpression {
+@Documented
+@Constraint(validatedBy = ConfigDeprecatedValidator.class)
+public @interface ConfigDeprecated {
 
-  String message() default "{com.adaptris.validation.constraints.BooleanExpression.message}";
+  String MESSAGE_TEMPLATE = "{com.adaptris.validation.constraints.ConfigDeprecated.message}";
+  String DEFAULT_VERSION = "a future version";
 
-  String pattern() default ExpressionValidator.DEFAULT_EXPRESSION_PATTERN;
+  /**
+   * The deprecation message
+   */
+  String message() default MESSAGE_TEMPLATE;
 
   Class<?>[] groups() default {};
 
   Class<? extends Payload>[] payload() default {};
+
+  /**
+   * The version when it will be removed.
+   *
+   */
+  String removalVersion() default DEFAULT_VERSION;
 
 }

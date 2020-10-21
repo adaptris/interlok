@@ -22,6 +22,7 @@ import static com.adaptris.core.CoreConstants.FS_CONSUME_PARENT_DIR;
 import static com.adaptris.core.CoreConstants.FS_FILE_SIZE;
 import static com.adaptris.core.CoreConstants.ORIGINAL_NAME_KEY;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -29,16 +30,18 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
 import javax.management.MalformedObjectNameException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisPollingConsumer;
@@ -58,6 +61,8 @@ import com.adaptris.fs.FsWorker;
 import com.adaptris.fs.NioWorker;
 import com.adaptris.interlok.util.FileFilterBuilder;
 import com.adaptris.util.TimeInterval;
+import com.adaptris.validation.constraints.ConfigDeprecated;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -166,7 +171,7 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
   @Setter
   @Deprecated
   @Valid
-  @Removal(version = "4.0.0", message = "Use 'base-directory-url' instead")
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'base-directory-url' instead", groups = Deprecated.class)
   private ConsumeDestination destination;
 
   /**
