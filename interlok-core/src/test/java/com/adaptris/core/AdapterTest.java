@@ -604,13 +604,6 @@ public class AdapterTest extends com.adaptris.interlok.junit.scaffolding.BaseCas
     catch (IllegalArgumentException expected) {
 
     }
-    try {
-      a.setLogHandler(null);
-      fail();
-    }
-    catch (IllegalArgumentException expected) {
-
-    }
     a.setLogHandler(new FileLogHandler());
 
     try {

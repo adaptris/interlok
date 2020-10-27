@@ -31,6 +31,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdapterComponent;
@@ -48,7 +49,10 @@ import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * <p>
@@ -66,6 +70,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
   private static final TimeInterval DEFAULT_HB_EVENT_INTERVAL = new TimeInterval(15L, TimeUnit.MINUTES.name());
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
+  @SuppressWarnings("deprecation")
   private static final LogHandler DEFAULT_LOG_HANDLER = new NullLogHandler();
 
   @NotBlank
@@ -81,6 +86,10 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
   private String heartbeatEventImp;
   @AdvancedConfig(rare = true)
   @Valid
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Defunct and should not be configured", groups = Deprecated.class)
+  @SuppressWarnings("deprecation")
+  @Getter
+  @Setter
   private LogHandler logHandler;
   @NotNull
   @AutoPopulated
@@ -145,6 +154,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * @throws CoreException wrapping any underlying Exceptions
    */
   @Override
+  @SuppressWarnings("deprecation")
   public void prepare() throws CoreException {
     if (isBlank(uniqueId)) {
       throw new CoreException("invalid unique id [" + uniqueId + "]");
@@ -534,26 +544,9 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
     return failedMessageRetrier;
   }
 
-  /**
-   * Set the LogHandler implementation.
-   *
-   * @param lh the log handler implementation.
-   */
-  public void setLogHandler(LogHandler lh) {
-    logHandler = Args.notNull(lh, "logHandler");
-  }
-
-  /**
-   * Return the configured LogHandler.
-   *
-   * @return the log handler.
-   */
-  public LogHandler getLogHandler() {
-    return logHandler;
-  }
-
+  @SuppressWarnings("deprecation")
   public LogHandler logHandler() {
-    return getLogHandler() != null ? getLogHandler() : DEFAULT_LOG_HANDLER;
+    return ObjectUtils.defaultIfNull(getLogHandler(), DEFAULT_LOG_HANDLER);
   }
 
   public TimeInterval getHeartbeatEventInterval() {
