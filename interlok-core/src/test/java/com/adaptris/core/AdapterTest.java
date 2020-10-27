@@ -566,6 +566,7 @@ public class AdapterTest extends com.adaptris.interlok.junit.scaffolding.BaseCas
     }
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void testSetters() throws Exception {
     Adapter a = createAdapter("testHeartbeatTimerTask");
