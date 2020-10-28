@@ -18,6 +18,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import static com.adaptris.core.CoreConstants.shouldStopProcessing;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -161,6 +164,9 @@ public class ForEach extends ServiceImp
 					{
 						log.error("Could not clone message [{}]", id, e);
 					}
+					
+					if(shouldStopProcessing.apply(msg))
+					  break;
 				}
 			}
 		}

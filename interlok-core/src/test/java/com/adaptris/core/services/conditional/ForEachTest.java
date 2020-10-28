@@ -6,12 +6,15 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMessageFactory;
@@ -22,7 +25,10 @@ import com.adaptris.core.MultiPayloadAdaptrisMessageImp;
 import com.adaptris.core.MultiPayloadMessageFactory;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.ServiceList;
 import com.adaptris.core.services.LogMessageService;
+import com.adaptris.core.services.StopProcessingService;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.GuidGenerator;
 
 public class ForEachTest extends ConditionalServiceExample
@@ -39,7 +45,7 @@ public class ForEachTest extends ConditionalServiceExample
 	@Before
 	public void setUp() throws Exception
 	{
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		forEach = new ForEach();
 		then = new ThenService();
 		then.setService(mock);
@@ -87,6 +93,27 @@ public class ForEachTest extends ConditionalServiceExample
 		forEach.doService(message);
 		verify(mock, times(2)).doService(any(AdaptrisMessage.class));
 	}
+	
+	@Test
+	  public void testStopProcessingServiceCancelsLoop() throws Exception {
+	    Service stopProcessingService = new StopProcessingService();
+
+	    ServiceList services = new ServiceList();
+	    services.add(stopProcessingService);
+	    services.add(mock);
+	    
+	    then = new ThenService();
+	    then.setService(services);
+	    
+	    forEach.setThen(then);
+	    
+	    LifecycleHelper.init(forEach);
+	    LifecycleHelper.start(forEach);
+	    
+	    forEach.doService(message);
+
+	    verify(mock, times(0)).doService(any(AdaptrisMessage.class));
+	  }
 
 	@Test
   @SuppressWarnings("serial")
