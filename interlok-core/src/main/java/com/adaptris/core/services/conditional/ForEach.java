@@ -1,5 +1,15 @@
 package com.adaptris.core.services.conditional;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -10,20 +20,10 @@ import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.MultiPayloadAdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.services.StopProcessingService;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
-import static com.adaptris.core.CoreConstants.shouldStopProcessing;
-
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * A for-each implementation that iterates over the payloads in a
@@ -44,6 +44,10 @@ import java.util.concurrent.TimeUnit;
  *   <thread-count>1</thread-count>
  * </for-each-payload>
  * }</pre>
+ * 
+ * <p>
+ * Note: If your service list for each payload contains a {@link StopProcessingService} it will not stop the processing of each payload.
+ * </p>
  *
  * @author amanderson
  * @config for-each-payload
@@ -164,9 +168,6 @@ public class ForEach extends ServiceImp
 					{
 						log.error("Could not clone message [{}]", id, e);
 					}
-					
-					if(shouldStopProcessing.apply(msg))
-					  break;
 				}
 			}
 		}
