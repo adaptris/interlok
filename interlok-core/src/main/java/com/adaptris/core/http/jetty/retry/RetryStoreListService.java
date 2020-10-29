@@ -26,7 +26,7 @@ import lombok.Setter;
 @XStreamAlias("retry-store-list-service")
 @NoArgsConstructor
 @ComponentProfile(summary = "List messages available to be retried from the retry store",
-    since = "3.11.1")
+    since = "3.11.1", tag = "retry")
 @DisplayOrder(order = {"reportRenderer", "retryStore"})
 public class RetryStoreListService extends RetryStoreServiceImpl {
 

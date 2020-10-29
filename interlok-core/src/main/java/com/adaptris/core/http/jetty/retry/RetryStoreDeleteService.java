@@ -28,7 +28,7 @@ import lombok.Setter;
 @XStreamAlias("retry-store-delete-service")
 @NoArgsConstructor
 @ComponentProfile(summary = "Delete a message from the retry store",
-    since = "3.11.1")
+    since = "3.11.1", tag = "retry")
 @DisplayOrder(order = {"messageId", "retryStore"})
 public class RetryStoreDeleteService extends RetryStoreServiceImpl {
 

@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @XStreamAlias("retry-store-write-message")
 @NoArgsConstructor
 @ComponentProfile(summary = "Write a message to the retry store for future retries",
-    since = "3.11.1")
+    since = "3.11.1", tag = "retry")
 @DisplayOrder(order = {"retryStore"})
 public class RetryStoreWriteService extends RetryStoreServiceImpl {
 
