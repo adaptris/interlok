@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,14 +18,13 @@ package com.adaptris.core.util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ServiceException;
+import com.adaptris.interlok.InterlokException;
 
 public class ExceptionHelperTest extends ExceptionHelper {
 
@@ -50,7 +49,7 @@ public class ExceptionHelperTest extends ExceptionHelper {
       fail();
     } catch (CoreException e) {
       assertEquals(c2, e);
-    }    
+    }
   }
 
   @Test
@@ -130,6 +129,21 @@ public class ExceptionHelperTest extends ExceptionHelper {
     try {
       throw wrapProduceException(new Exception());
     } catch (ProduceException e) {
+      assertNotNull(e.getCause());
+    }
+  }
+
+  @Test
+  public void testWrapInterlokExceptionThrowable() {
+    InterlokException cause = new InterlokException();
+    try {
+      throw wrapInterlokException(cause);
+    } catch (InterlokException e) {
+      assertEquals(cause, e);
+    }
+    try {
+      throw wrapInterlokException(new Exception());
+    } catch (InterlokException e) {
       assertNotNull(e.getCause());
     }
   }
