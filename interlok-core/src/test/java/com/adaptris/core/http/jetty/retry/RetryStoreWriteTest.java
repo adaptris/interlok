@@ -4,6 +4,7 @@ import static com.adaptris.core.http.jetty.retry.FilesystemRetryStoreTest.TEST_B
 import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.FileFilter;
+import java.util.Optional;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
@@ -21,7 +22,8 @@ public class RetryStoreWriteTest extends ExampleServiceCase {
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("hello");
     RetryStoreWriteService service = new RetryStoreWriteService()
         .withRetryStore(new FilesystemRetryStore().withBaseUrl(getConfiguration(TEST_BASE_URL)));
-    int base = retryStoreDir.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY).length;
+    File[] files = retryStoreDir.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
+    int base = Optional.ofNullable(files).orElse(new File[0]).length;
     execute(service, msg);
     assertEquals(1,
         retryStoreDir.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY).length - base);
@@ -29,7 +31,6 @@ public class RetryStoreWriteTest extends ExampleServiceCase {
 
   @Test(expected = ServiceException.class)
   public void testService_Exception() throws Exception {
-    File retryStoreDir = FsHelper.toFile(BaseCase.getConfiguration(TEST_BASE_URL));
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("hello");
     RetryStoreWriteService service = new RetryStoreWriteService()
         .withRetryStore(
