@@ -24,7 +24,6 @@ import static com.adaptris.core.http.jetty.JettyConstants.JETTY_USER_ROLES;
 import static com.adaptris.core.http.jetty.JettyConstants.JETTY_USER_ROLE_ATTR;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.join;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -42,18 +41,15 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
@@ -68,7 +64,6 @@ import com.adaptris.core.util.DestinationHelper;
 import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.util.TimeInterval;
 import com.adaptris.validation.constraints.ConfigDeprecated;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -377,6 +372,18 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   @Override
   public String consumeLocationKey() {
     return JettyConstants.JETTY_URI;
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T extends BasicJettyConsumer> T withPath(String path) {
+    setPath(path);
+    return (T) this;
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T extends BasicJettyConsumer> T withMethods(String methods) {
+    setMethods(methods);
+    return (T) this;
   }
 
   protected class BasicServlet extends HttpServlet {

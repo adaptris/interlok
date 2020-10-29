@@ -51,12 +51,17 @@ public abstract class FailedMessageRetrierImp implements FailedMessageRetrier {
   }
 
   protected Workflow getWorkflow(AdaptrisMessage msg) throws CoreException {
-    Workflow workflow = getWorkflows().get(msg.getMetadataValue(Workflow.WORKFLOW_ID_KEY));
+    return getWorkflow(msg.getMetadataValue(Workflow.WORKFLOW_ID_KEY));
+  }
+
+  protected Workflow getWorkflow(String workflowId) throws CoreException {
+    Workflow workflow = getWorkflows().get(workflowId);
     if (workflow == null) {
-      throw new CoreException("No Workflow [" + msg.getMetadataValue(Workflow.WORKFLOW_ID_KEY) + "] found");
+      throw new CoreException(String.format("No Workflow [%s] found", workflowId));
     }
     if (!StartedState.getInstance().equals(workflow.retrieveComponentState())) {
-      throw new CoreException("Workflow [" + workflow.obtainWorkflowId() + "] is not started.");
+      throw new CoreException(
+          String.format("Workflow [%s] is not started", workflow.obtainWorkflowId()));
     }
     return workflow;
   }
