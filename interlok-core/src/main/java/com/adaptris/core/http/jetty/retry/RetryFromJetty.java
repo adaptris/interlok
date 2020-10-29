@@ -164,31 +164,36 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
   private transient RetryListener retrier;
   private transient ExecutorService workflowSubmitter;
   private transient JettyRouteCondition routing;
+  private transient boolean prepared = false;
 
   @Override
   public void prepare() throws CoreException {
-    Args.notNull(getReportBuilder(), "report-builder");
-    Args.notNull(getRetryStore(), "retry-store");
-    retryServletPath = retryEndpointPrefix() + "*";
-    retryServletRegexp = "^" + retryEndpointPrefix() + "(.*)";
-    routing = new JettyRouteCondition().withUrlPattern(retryServletRegexp)
-        .withMetadataKeys(RETRY_MSG_ID_KEY)
-        .withMethod(retryHttpMethod());
-    reporter = new ReportListener();
-    retrier = new RetryListener();
-    // By not dictating the method in the consumer; we accept all methods in jetty, but we use the
-    // jetty route filter to filter it out.
-    retrying = new StandaloneConsumer(getConnection(),
-        new JettyMessageConsumer().withPath(retryServletPath));
-    reporting = new StandaloneConsumer(getConnection(), new JettyMessageConsumer().withPath(reportingEndpoint()));
-    retrying.registerAdaptrisMessageListener(retrier);
-    reporting.registerAdaptrisMessageListener(reporter);
-    LifecycleHelper.prepare(routing, getRetryStore(), getReportBuilder(), reporter, retrier,
-        retrying, reporting);
+    if (!prepared) {
+      Args.notNull(getReportBuilder(), "report-builder");
+      Args.notNull(getRetryStore(), "retry-store");
+      retryServletPath = retryEndpointPrefix() + "*";
+      retryServletRegexp = "^" + retryEndpointPrefix() + "(.*)";
+      routing = new JettyRouteCondition().withUrlPattern(retryServletRegexp)
+          .withMetadataKeys(RETRY_MSG_ID_KEY).withMethod(retryHttpMethod());
+      reporter = new ReportListener();
+      retrier = new RetryListener();
+      // By not dictating the method in the consumer; we accept all methods in jetty, but we use the
+      // jetty route filter to filter it out.
+      retrying = new StandaloneConsumer(getConnection(),
+          new JettyMessageConsumer().withPath(retryServletPath));
+      reporting = new StandaloneConsumer(getConnection(),
+          new JettyMessageConsumer().withPath(reportingEndpoint()));
+      retrying.registerAdaptrisMessageListener(retrier);
+      reporting.registerAdaptrisMessageListener(reporter);
+      LifecycleHelper.prepare(routing, getRetryStore(), getReportBuilder(), reporter, retrier,
+          retrying, reporting);
+      prepared = true;
+    }
   }
 
   @Override
   public void init() throws CoreException {
+    prepare();
     LifecycleHelper.init(routing, getRetryStore(), getReportBuilder(), reporter, retrier, retrying,
         reporting);
     workflowSubmitter = Executors.newSingleThreadExecutor();
@@ -338,6 +343,8 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
           // So, we can fire a 202 before submission.
           sendResponse(HTTP_ACCEPTED, jettyMsg);
           updateRetryCountMetadata(msgForRetry);
+          log.trace("Attempting to retry {}; resubmitting to [{}]", msgForRetry.getUniqueId(),
+              workflow.obtainWorkflowId());
           // pooling workflow returns immediately, standard workflow does not.
           // so submit to an Executor Service.
           workflowSubmitter.execute(new Thread() {
