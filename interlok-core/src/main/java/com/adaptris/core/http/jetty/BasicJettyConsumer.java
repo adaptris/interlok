@@ -380,12 +380,6 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
     return (T) this;
   }
 
-  @SuppressWarnings("unchecked")
-  public <T extends BasicJettyConsumer> T withMethods(String methods) {
-    setMethods(methods);
-    return (T) this;
-  }
-
   protected class BasicServlet extends HttpServlet {
 
     private static final long serialVersionUID = 2007082301L;
