@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.FileFilter;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
-import org.junit.Before;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
@@ -16,15 +15,9 @@ import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 
 public class RetryStoreWriteTest extends ExampleServiceCase {
 
-  private File retryStoreDir;
-
-  @Before
-  public void setUp() throws Exception {
-    retryStoreDir = FsHelper.toFile(BaseCase.getConfiguration(TEST_BASE_URL));
-  }
-
   @Test
   public void testService() throws Exception {
+    File retryStoreDir = FsHelper.toFile(BaseCase.getConfiguration(TEST_BASE_URL));
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("hello");
     RetryStoreWriteService service = new RetryStoreWriteService()
         .withRetryStore(new FilesystemRetryStore().withBaseUrl(getConfiguration(TEST_BASE_URL)));
@@ -36,6 +29,7 @@ public class RetryStoreWriteTest extends ExampleServiceCase {
 
   @Test(expected = ServiceException.class)
   public void testService_Exception() throws Exception {
+    File retryStoreDir = FsHelper.toFile(BaseCase.getConfiguration(TEST_BASE_URL));
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("hello");
     RetryStoreWriteService service = new RetryStoreWriteService()
         .withRetryStore(
