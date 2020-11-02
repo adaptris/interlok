@@ -16,6 +16,10 @@
 
 package com.adaptris.core;
 
+import java.util.function.Function;
+
+import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.validation.constraints.ConfigDeprecated;
 
 /**
@@ -39,6 +43,22 @@ public abstract class CoreConstants {
    * </p>
    */
   public static final String STOP_PROCESSING_KEY = "adpstopprocessing";
+  
+  /**
+   * <p>
+   * Metadata value which determines whether or not to stop processing additional services and/or producers
+   * </p>
+   *
+   * @see #STOP_PROCESSING_KEY
+   * @see #KEY_WORKFLOW_SKIP_PRODUCER
+   */
+  public static final String STOP_PROCESSING_VALUE = "true";
+  
+  /**
+   * A simply function check to test if the processing of the given message should stop.
+   */
+  public static final Function<AdaptrisMessage, Boolean> shouldStopProcessing = adaptrisMessage -> 
+      BooleanUtils.toBoolean(adaptrisMessage.getMetadataValue(STOP_PROCESSING_KEY));
 
   /**
    * <p>
@@ -64,16 +84,6 @@ public abstract class CoreConstants {
    * </ul>
    */
   public static final String KEY_WORKFLOW_SKIP_PRODUCER = "adpworkflowskipproducer";
-
-  /**
-   * <p>
-   * Metadata value which determines whether or not to stop processing additional services and/or producers
-   * </p>
-   *
-   * @see #STOP_PROCESSING_KEY
-   * @see #KEY_WORKFLOW_SKIP_PRODUCER
-   */
-  public static final String STOP_PROCESSING_VALUE = "true";
 
   /**
    * <p>
