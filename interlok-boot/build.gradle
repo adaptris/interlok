@@ -1,6 +1,6 @@
 ext {
   componentName='Interlok Bootstrap'
-  springBootLoaderVersion='2.3.4.RELEASE'
+  springBootLoaderVersion='2.3.5.RELEASE'
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 }
 
