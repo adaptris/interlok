@@ -18,10 +18,8 @@ package com.adaptris.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.function.Consumer;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
-import com.adaptris.core.util.LoggingHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -61,10 +59,6 @@ public class NoRetries implements FailedMessageRetrier {
   }
 
   @Override
-  public void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success, Consumer<AdaptrisMessage> failure) {
-  }
-
-  @Override
   public void clearWorkflows() {
   }
 
@@ -85,11 +79,6 @@ public class NoRetries implements FailedMessageRetrier {
 
   public void setUniqueId(String uniqueId) {
     this.uniqueId = uniqueId;
-  }
-
-  @Override
-  public String friendlyName() {
-    return LoggingHelper.friendlyName(this);
   }
 
 }

@@ -174,6 +174,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
     getMessageErrorHandler().registerDigester(getMessageErrorDigester());
     injectErrorHandler();
     registerWorkflowsInRetrier();
+    LifecycleHelper.prepare(getFailedMessageRetrier());
   }
 
   /**

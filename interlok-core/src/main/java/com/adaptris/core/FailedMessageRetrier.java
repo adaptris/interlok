@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,7 +25,7 @@ import java.util.Collection;
  * originally.
  * </p>
  */
-public interface FailedMessageRetrier extends AdaptrisComponent, AdaptrisMessageListener, ComponentLifecycleExtension {
+public interface FailedMessageRetrier extends AdaptrisComponent, ComponentLifecycleExtension {
 
   /**
    * Add a {@linkplain Workflow} to the internal register of workflows
@@ -33,7 +33,7 @@ public interface FailedMessageRetrier extends AdaptrisComponent, AdaptrisMessage
    * Add a {@linkplain Workflow} to the internal store. If the generated key is
    * not unique a{@linkplain CoreException} is thrown.
    * </p>
-   * 
+   *
    * @param workflow the workflow to add
    * @throws CoreException if it is considered a duplicate
    */
