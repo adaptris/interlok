@@ -6,14 +6,16 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
-import java.util.stream.Collectors;
 import javax.validation.constraints.NotBlank;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -156,16 +158,17 @@ public class FilesystemRetryStore implements RetryStore {
 
   @Override
   public Iterable<RemoteBlob> report() throws InterlokException {
+    List<RemoteBlob> result = new ArrayList<>();
     try {
       File target = validateDir(FsHelper.toFile(getBaseUrl()), false);
       File[] files = fsWorker.listFiles(target, DirectoryFileFilter.DIRECTORY);
-      return Arrays.stream(files)
-          .map((e) -> new RemoteBlob.Builder().setBucket(e.getParent())
-              .setLastModified(e.lastModified()).setName(e.getName()).setSize(e.length()).build())
-          .collect(Collectors.toList());
+      for (File msgId : files) {
+        Optional.ofNullable(createForReport(msgId)).ifPresent((blob) -> result.add(blob));
+      }
     } catch (Exception e) {
       throw ExceptionHelper.wrapInterlokException(e);
     }
+    return result;
   }
 
   @Override
@@ -176,6 +179,24 @@ public class FilesystemRetryStore implements RetryStore {
     } catch (Exception e) {
       throw ExceptionHelper.wrapInterlokException(e);
     }
+  }
+
+  protected static RemoteBlob createForReport(File baseDir) {
+    // assert that both metadata & payload files exist.
+    try {
+      File payload = new File(baseDir, PAYLOAD_FILE_NAME);
+      File metadata = new File(baseDir, METADATA_FILE_NAME);
+      if (BooleanUtils.and(new boolean[] {FileUtils.directoryContains(baseDir, payload),
+          FileUtils.directoryContains(baseDir, metadata)})) {
+        // Return the size of the payload file, but other things like
+        // last modified can be derived from the directory.
+        return new RemoteBlob.Builder().setBucket(baseDir.getParent())
+            .setLastModified(baseDir.lastModified()).setName(baseDir.getName())
+            .setSize(payload.length()).build();
+      }
+    } catch (Exception e) {
+    }
+    return null;
   }
 
   public FilesystemRetryStore withBaseUrl(String s) {

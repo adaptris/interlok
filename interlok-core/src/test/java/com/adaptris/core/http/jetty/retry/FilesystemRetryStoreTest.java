@@ -1,6 +1,8 @@
 package com.adaptris.core.http.jetty.retry;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.FileFilter;
@@ -14,8 +16,10 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.lms.FileBackedMessageFactory;
+import com.adaptris.core.stubs.TempFileUtils;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.interlok.InterlokException;
+import com.adaptris.interlok.cloud.RemoteBlob;
 import com.adaptris.interlok.junit.scaffolding.BaseCase;
 
 public class FilesystemRetryStoreTest {
@@ -203,4 +207,28 @@ public class FilesystemRetryStoreTest {
     }
   }
 
+
+  @Test
+  public void testCreateForReport() throws Exception {
+    FilesystemRetryStore store =
+        new FilesystemRetryStore().withBaseUrl(BaseCase.getConfiguration(TEST_BASE_URL));
+    try {
+      LifecycleHelper.initAndStart(store);
+      AdaptrisMessage msg = new DefaultMessageFactory().newMessage("hello");
+      store.write(msg);
+      File retryStoreDir = FsHelper.toFile(BaseCase.getConfiguration(TEST_BASE_URL));
+      File storedMsgDir = new File(retryStoreDir, msg.getUniqueId());
+
+      RemoteBlob blob = FilesystemRetryStore.createForReport(storedMsgDir);
+      assertNotNull(blob);
+      assertEquals("hello".length(), blob.getSize());
+
+      File randomDir = TempFileUtils.createTrackedDir(store);
+      assertNull(FilesystemRetryStore.createForReport(randomDir));
+      assertNull(FilesystemRetryStore.createForReport(null));
+    } finally {
+      LifecycleHelper.stopAndClose(store);
+    }
+
+  }
 }
