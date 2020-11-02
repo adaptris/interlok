@@ -18,6 +18,8 @@ package com.adaptris.core;
 
 import java.util.function.Function;
 
+import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.validation.constraints.ConfigDeprecated;
 
 /**
@@ -55,8 +57,8 @@ public abstract class CoreConstants {
   /**
    * A simply function check to test if the processing of the given message should stop.
    */
-  public static final Function<AdaptrisMessage, Boolean> shouldStopProcessing = adaptrisMessage ->
-    STOP_PROCESSING_VALUE.equals(adaptrisMessage.getMetadataValue(STOP_PROCESSING_KEY));
+  public static final Function<AdaptrisMessage, Boolean> shouldStopProcessing = adaptrisMessage -> 
+      BooleanUtils.toBoolean(adaptrisMessage.getMetadataValue(STOP_PROCESSING_KEY));
 
   /**
    * <p>
