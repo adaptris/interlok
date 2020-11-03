@@ -190,7 +190,7 @@ public class FilesystemRetryStore implements RetryStore {
           FileUtils.directoryContains(baseDir, metadata)})) {
         // Return the size of the payload file, but other things like
         // last modified can be derived from the directory.
-        return new RemoteBlob.Builder().setBucket(baseDir.getParent())
+        return new RemoteBlob.Builder()
             .setLastModified(baseDir.lastModified()).setName(baseDir.getName())
             .setSize(payload.length()).build();
       }
