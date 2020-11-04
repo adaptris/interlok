@@ -24,6 +24,11 @@ import com.adaptris.interlok.junit.scaffolding.BaseCase;
 
 public class FilesystemRetryStoreTest {
 
+  // On Windows since TEST_BASE_URL will contain file://localhost/c:/
+  // This gets magically URL encoded... so we can't assume that spaces will
+  // make things fail, so for an invalid URL we must make
+  // sure that we never have a drive letter.
+  public static final String INVALID_URL = "file://localhost/./ spaces / not / valid / in / url";
   public static final String TEST_BASE_URL = "retry.baseUrl";
 
   @AfterClass
@@ -64,9 +69,7 @@ public class FilesystemRetryStoreTest {
 
   @Test(expected = InterlokException.class)
   public void testWrite_Exception() throws Exception {
-    FilesystemRetryStore store =
-        new FilesystemRetryStore().withBaseUrl(
-            BaseCase.getConfiguration(TEST_BASE_URL) + "/ spaces / not / valid / in / url");
+    FilesystemRetryStore store = new FilesystemRetryStore().withBaseUrl(INVALID_URL);
     try {
       LifecycleHelper.initAndStart(store);
       AdaptrisMessage msg = new DefaultMessageFactory().newMessage("hello");
@@ -112,9 +115,7 @@ public class FilesystemRetryStoreTest {
 
   @Test(expected = InterlokException.class)
   public void testBuildForRetry_Exception() throws Exception {
-    FilesystemRetryStore store = new FilesystemRetryStore()
-        .withBaseUrl(
-            BaseCase.getConfiguration(TEST_BASE_URL) + "/ spaces / not / valid / in / url");
+    FilesystemRetryStore store = new FilesystemRetryStore().withBaseUrl(INVALID_URL);
     try {
       LifecycleHelper.initAndStart(store);
       AdaptrisMessage retry = store.buildForRetry("xxx", Collections.EMPTY_MAP);
@@ -168,9 +169,8 @@ public class FilesystemRetryStoreTest {
 
   @Test(expected = InterlokException.class)
   public void testReport_Exception() throws Exception {
-    FilesystemRetryStore store =
-        new FilesystemRetryStore().withBaseUrl(
-            BaseCase.getConfiguration(TEST_BASE_URL) + "/ spaces / not / valid / in / url");
+    FilesystemRetryStore store = new FilesystemRetryStore().withBaseUrl(INVALID_URL);
+
     try {
       LifecycleHelper.initAndStart(store);
       AdaptrisMessage msg = new DefaultMessageFactory().newMessage("hello");
@@ -197,8 +197,8 @@ public class FilesystemRetryStoreTest {
   @Test(expected = InterlokException.class)
   public void testDelete_Exception() throws Exception {
     FilesystemRetryStore store = new FilesystemRetryStore()
-        .withBaseUrl(
-            BaseCase.getConfiguration(TEST_BASE_URL) + "/ spaces / not / valid / in / url");
+        .withBaseUrl(INVALID_URL);
+
     try {
       LifecycleHelper.initAndStart(store);
       store.delete("XXXX");
