@@ -1,5 +1,6 @@
 package com.adaptris.core.http.jetty.retry;
 
+import static com.adaptris.core.http.jetty.retry.FilesystemRetryStoreTest.INVALID_URL;
 import static com.adaptris.core.http.jetty.retry.FilesystemRetryStoreTest.TEST_BASE_URL;
 import static org.junit.Assert.assertEquals;
 import java.io.File;
@@ -34,7 +35,7 @@ public class RetryStoreWriteTest extends ExampleServiceCase {
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("hello");
     RetryStoreWriteService service = new RetryStoreWriteService()
         .withRetryStore(
-            new FilesystemRetryStore().withBaseUrl(getConfiguration(TEST_BASE_URL) + "/ invalid"));
+            new FilesystemRetryStore().withBaseUrl(INVALID_URL));
     execute(service, msg);
   }
 
