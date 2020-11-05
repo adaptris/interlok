@@ -18,6 +18,9 @@ package com.adaptris.core.jms;
 
 import static org.junit.Assert.assertNotSame;
 import javax.jms.Session;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -28,13 +31,24 @@ public class JmsConnectionTest {
   @Rule
   public TestName testName = new TestName();
 
+  private static EmbeddedActiveMq activeMqBroker;
+
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
+  
   @Test
   public void testSession() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    JmsConnection conn = broker.getJmsConnection();
+    JmsConnection conn = activeMqBroker.getJmsConnection();
     try {
-      broker.start();
       LifecycleHelper.init(conn);
       LifecycleHelper.start(conn);
       Session s1 = conn.createSession(false, AcknowledgeMode.Mode.AUTO_ACKNOWLEDGE.acknowledgeMode());
@@ -43,7 +57,6 @@ public class JmsConnectionTest {
     }
     finally {
       LifecycleHelper.close(conn);
-      broker.destroy();
     }
   }
 

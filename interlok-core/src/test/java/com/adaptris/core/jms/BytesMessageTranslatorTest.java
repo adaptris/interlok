@@ -30,6 +30,9 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageEOFException;
 import javax.jms.Session;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import com.adaptris.core.AdaptrisMessage;
@@ -43,6 +46,18 @@ import com.adaptris.core.stubs.DefectiveMessageFactory;
 @SuppressWarnings("deprecation")
 public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
 
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
+  
   private static byte[] BYTES = new byte[256]; {
     for(int i=0; i<BYTES.length; i++) {
       BYTES[i] = (byte)i;
@@ -60,12 +75,9 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
   @Override
   @Test
   public void testMoveMetadataJmsMessageToAdaptrisMessage() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       BytesMessage jmsMsg = createMessage(session);
 
       addProperties(jmsMsg);
@@ -78,8 +90,6 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
     }
     finally {
       stop(trans);
-      broker.destroy();
-
     }
   }
 
@@ -88,12 +98,9 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
   @Override
   @Test
   public void testMoveJmsHeadersJmsMessageToAdaptrisMessage() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       BytesMessage jmsMsg = createMessage(session);
       jmsMsg.setJMSCorrelationID("ABC");
       jmsMsg.setJMSDeliveryMode(1);
@@ -118,21 +125,16 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
     }
     finally {
       stop(trans);
-
-      broker.destroy();
     }
   }
 
   @Override
   @Test
   public void testMoveMetadataJmsMessageToAdaptrisMessage_RemoveAllFilter() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     trans.setMetadataFilter(new RemoveAllMetadataFilter());
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       BytesMessage jmsMsg = createMessage(session);
       addProperties(jmsMsg);
       start(trans, session);
@@ -146,22 +148,18 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
   }
 
   @Override
   @Test
   public void testMoveMetadata_JmsMessageToAdaptrisMessage_WithFilter() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     RegexMetadataFilter regexp = new RegexMetadataFilter();
     regexp.addExcludePattern("IntegerMetadataKey");
     trans.setMetadataFilter(regexp);
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       BytesMessage jmsMsg = createMessage(session);
       addProperties(jmsMsg);
       start(trans, session);
@@ -176,19 +174,15 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
 
   }
 
   @Test
   public void testBytesMessageToAdaptrisMessage() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       BytesMessage jmsMsg = session.createBytesMessage();
       jmsMsg.writeBytes(BYTES);
       addProperties(jmsMsg);
@@ -200,18 +194,14 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
   }
 
   @Test
   public void testBytesMessageToAdaptrisMessage_Alt() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       BytesMessage jmsMsg = session.createBytesMessage();
       jmsMsg.writeBytes(BYTES_ALT);
       addProperties(jmsMsg);
@@ -222,33 +212,28 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
       assertTrue(Arrays.equals(BYTES_ALT, msg.getPayload()));
     } finally {
       stop(trans);
-      broker.destroy();
     }
   }
 
 
   @Test
   public void testBytesMessageToAdaptrisMessage_StreamFailure() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       BytesMessage jmsMsg = createMessage(session);
       jmsMsg.writeBytes(TEXT.getBytes());
       start(trans, session);
       trans.registerMessageFactory(new DefectiveMessageFactory());
       jmsMsg.reset();
       try {
-        AdaptrisMessage msg = trans.translate(jmsMsg);
+        trans.translate(jmsMsg);
         fail();
       } catch (JMSException expected) {
 
       }
     } finally {
       stop(trans);
-      broker.destroy();
     }
   }
 
@@ -268,7 +253,7 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
     try {
       start(trans, session);
       try {
-        AdaptrisMessage msg = trans.translate(jmsMsg);
+        trans.translate(jmsMsg);
         fail();
       } catch (JMSException expected) {
 
@@ -280,12 +265,9 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
 
   @Test
   public void testAdaptrisMessageToBytesMessage() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
       addMetadata(msg);
@@ -297,14 +279,11 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
   }
 
   @Test
   public void testAdaptrisMessageToBytesMessage_StreamFailure() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     BytesMessageTranslator trans = new BytesMessageTranslator() {
       @Override
       long streamThreshold() {
@@ -312,19 +291,17 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
       }
     };
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
       AdaptrisMessage msg = new DefectiveMessageFactory().newMessage(TEXT);
       addMetadata(msg);
       try {
-        Message jmsMsg = trans.translate(msg);
+        trans.translate(msg);
         fail();
       } catch (JMSException expected) {
       }
     } finally {
       stop(trans);
-      broker.destroy();
     }
   }
 
@@ -345,7 +322,7 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
       start(trans, session);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
       try {
-        Message m = trans.translate(msg);
+        trans.translate(msg);
         fail();
       } catch (JMSException expected) {
       }
@@ -358,8 +335,6 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
 
   @Test
   public void testAdaptrisMessageToBytesMessage_ExceedsThreshold() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     BytesMessageTranslator trans = new BytesMessageTranslator() {
 
       @Override
@@ -368,8 +343,7 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
       }
     };
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
       addMetadata(msg);
@@ -381,7 +355,6 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
   }
 

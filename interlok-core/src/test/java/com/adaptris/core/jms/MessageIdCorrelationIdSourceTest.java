@@ -20,7 +20,9 @@ import static org.junit.Assert.assertNotSame;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -32,6 +34,20 @@ import com.adaptris.core.util.LifecycleHelper;
 public class MessageIdCorrelationIdSourceTest {
   @Rule
   public TestName testName = new TestName();
+  
+  private static EmbeddedActiveMq activeMqBroker;
+
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
 
   @Before
   public void setUp() throws Exception {
@@ -43,11 +59,8 @@ public class MessageIdCorrelationIdSourceTest {
 
   @Test
   public void testCorrelationIdAdaptrisMessage_ToMessage() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    JmsConnection conn = broker.getJmsConnection();
+    JmsConnection conn = activeMqBroker.getJmsConnection();
     try {
-      broker.start();
       LifecycleHelper.initAndStart(conn, false);
       Session session = conn.createSession(false, Session.CLIENT_ACKNOWLEDGE);
       AdaptrisMessage adpMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage("hello");
@@ -58,17 +71,13 @@ public class MessageIdCorrelationIdSourceTest {
       session.close();
     } finally {
       LifecycleHelper.stopAndClose(conn, false);
-      broker.destroy();
     }
   }
 
   @Test
   public void testCorrelationIdMessage_AdaptrisMessage() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    JmsConnection conn = broker.getJmsConnection();
+    JmsConnection conn = activeMqBroker.getJmsConnection();
     try {
-      broker.start();
       LifecycleHelper.initAndStart(conn, false);
       Session session = conn.createSession(false, Session.CLIENT_ACKNOWLEDGE);
       AdaptrisMessage adpMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage("hello");
@@ -83,17 +92,13 @@ public class MessageIdCorrelationIdSourceTest {
       session.close();
     } finally {
       LifecycleHelper.stopAndClose(conn, false);
-      broker.destroy();
     }
   }
 
   @Test
   public void testCorrelationIdMessage_AdaptrisMessage_NoCorrelationId() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    JmsConnection conn = broker.getJmsConnection();
+    JmsConnection conn = activeMqBroker.getJmsConnection();
     try {
-      broker.start();
       LifecycleHelper.initAndStart(conn, false);
       Session session = conn.createSession(false, Session.CLIENT_ACKNOWLEDGE);
       AdaptrisMessage adpMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage("hello");
@@ -106,7 +111,6 @@ public class MessageIdCorrelationIdSourceTest {
       session.close();
     } finally {
       LifecycleHelper.stopAndClose(conn, false);
-      broker.destroy();
     }
   }
 }

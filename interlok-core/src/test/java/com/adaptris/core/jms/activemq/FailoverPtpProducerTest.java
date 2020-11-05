@@ -19,6 +19,9 @@ package com.adaptris.core.jms.activemq;
 import static com.adaptris.core.BaseCase.execute;
 import static com.adaptris.core.jms.JmsProducerCase.assertMessages;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -31,26 +34,32 @@ import com.adaptris.core.stubs.MockMessageListener;
 public class FailoverPtpProducerTest {
   @Rule
   public TestName testName = new TestName();
+  
+  private static EmbeddedActiveMq activeMqBroker;
+
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
 
   @Test
   public void testProduceAndConsume() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     StandaloneConsumer standaloneConsumer =
-        new StandaloneConsumer(broker.getFailoverJmsConnection(true),
+        new StandaloneConsumer(activeMqBroker.getFailoverJmsConnection(true),
             new PtpConsumer().withQueue(testName.getMethodName()));
     MockMessageListener jms = new MockMessageListener();
     standaloneConsumer.registerAdaptrisMessageListener(jms);
-    StandaloneProducer standaloneProducer = new StandaloneProducer(broker.getFailoverJmsConnection(true), new PtpProducer(
+    StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getFailoverJmsConnection(true), new PtpProducer(
         ).withQueue((testName.getMethodName())));
-    try {
-      broker.start();
-      execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
-      assertMessages(jms, 1);
-    }
-    finally {
-      broker.destroy();
-    }
+    execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
+    assertMessages(jms, 1);
   }
 
 }

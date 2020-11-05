@@ -22,6 +22,9 @@ import static org.junit.Assert.assertTrue;
 import javax.jms.Message;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -30,15 +33,23 @@ import com.adaptris.core.metadata.RegexMetadataFilter;
 
 public class TextMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
 
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
 
   @Test
   public void testTextMessageToAdaptrisMessage() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     TextMessageTranslator trans = new TextMessageTranslator();
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       Message jmsMsg = createMessage(session);
       addProperties(jmsMsg);
       start(trans, session);
@@ -48,18 +59,14 @@ public class TextMessageTranslatorTest extends GenericMessageTypeTranslatorCase 
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
   }
 
   @Test
   public void testAdaptrisMessageToTextMessage() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     TextMessageTranslator trans = new TextMessageTranslator();
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
 
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
@@ -71,22 +78,18 @@ public class TextMessageTranslatorTest extends GenericMessageTypeTranslatorCase 
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
   }
 
   @Test
   public void testAdaptrisMessageToTextMessageWithMetadataFilter() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     TextMessageTranslator trans = new TextMessageTranslator();
 
     RegexMetadataFilter filter = new RegexMetadataFilter();
     filter.addExcludePattern(INTEGER_METADATA);
     trans.setMetadataFilter(filter);
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
 
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
@@ -103,7 +106,6 @@ public class TextMessageTranslatorTest extends GenericMessageTypeTranslatorCase 
       assertNull(jmsMsg.getStringProperty(INTEGER_METADATA));
     } finally {
       stop(trans);
-      broker.destroy();
     }
   }
 

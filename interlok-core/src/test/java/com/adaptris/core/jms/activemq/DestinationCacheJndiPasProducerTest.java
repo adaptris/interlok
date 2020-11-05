@@ -21,6 +21,9 @@ import static com.adaptris.core.BaseCase.stop;
 import static com.adaptris.core.BaseCase.waitForMessages;
 import static com.adaptris.core.jms.JmsProducerCase.assertMessages;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
@@ -32,6 +35,18 @@ import com.adaptris.core.stubs.MockMessageListener;
 
 public class DestinationCacheJndiPasProducerTest extends JndiPasProducerCase {
 
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
+  
   @Override
   protected CachedDestinationJndiImplementation createVendorImplementation() {
     return new CachedDestinationJndiImplementation();
@@ -39,22 +54,19 @@ public class DestinationCacheJndiPasProducerTest extends JndiPasProducerCase {
 
   @Test
   public void testProduceAndConsumeWithCache() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     StandardJndiImplementation recvVendorImp = createVendorImplementation();
     StandardJndiImplementation sendVendorImp = createVendorImplementation();
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
 
-    StandaloneConsumer standaloneConsumer = new StandaloneConsumer(broker.getJndiPasConnection(recvVendorImp, false, queueName,
+    StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJndiPasConnection(recvVendorImp, false, queueName,
             topicName), new PasConsumer().withTopic(topicName));
     MockMessageListener jms = new MockMessageListener();
 
     standaloneConsumer.registerAdaptrisMessageListener(jms);
-    StandaloneProducer standaloneProducer = new StandaloneProducer(broker.getJndiPasConnection(sendVendorImp, false, queueName,
+    StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJndiPasConnection(sendVendorImp, false, queueName,
             topicName), new PasProducer().withTopic(topicName));
     try {
-      broker.start();
       start(standaloneConsumer);
       start(standaloneProducer);
       standaloneProducer.doService(createMessage(null));
@@ -65,7 +77,6 @@ public class DestinationCacheJndiPasProducerTest extends JndiPasProducerCase {
     finally {
       stop(standaloneProducer);
       stop(standaloneConsumer);
-      broker.destroy();
     }
   }
 

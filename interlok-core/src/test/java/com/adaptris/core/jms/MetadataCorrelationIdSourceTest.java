@@ -28,6 +28,8 @@ import javax.jms.TextMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -42,14 +44,24 @@ public class MetadataCorrelationIdSourceTest {
 
   protected transient Log log = LogFactory.getLog(this.getClass());
 
+  private static EmbeddedActiveMq activeMqBroker;
+
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
+  
   @Test
   public void testAdaptrisMessageMetadataToJmsCorrelationId() throws Exception {
-
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    JmsConnection conn = broker.getJmsConnection();
+    JmsConnection conn = activeMqBroker.getJmsConnection();
     try {
-      broker.start();
       start(conn);
       Session session = conn.createSession(false, Session.CLIENT_ACKNOWLEDGE);
       AdaptrisMessage adpMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
@@ -62,17 +74,13 @@ public class MetadataCorrelationIdSourceTest {
     }
     finally {
       stop(conn);
-      broker.destroy();
     }
   }
 
   @Test
   public void testAdaptrisMessageMetadataToJmsCorrelationId_NoMetadataKey() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    JmsConnection conn = broker.getJmsConnection();
+    JmsConnection conn = activeMqBroker.getJmsConnection();
     try {
-      broker.start();
       start(conn);
       Session session = conn.createSession(false, Session.CLIENT_ACKNOWLEDGE);
       AdaptrisMessage adpMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
@@ -85,17 +93,13 @@ public class MetadataCorrelationIdSourceTest {
     }
     finally {
       stop(conn);
-      broker.destroy();
     }
   }
 
   @Test
   public void testAdaptrisMessageMetadataToJmsCorrelationId_EmptyValue() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    JmsConnection conn = broker.getJmsConnection();
+    JmsConnection conn = activeMqBroker.getJmsConnection();
     try {
-      broker.start();
       start(conn);
       Session session = conn.createSession(false, Session.CLIENT_ACKNOWLEDGE);
       AdaptrisMessage adpMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
@@ -108,17 +112,13 @@ public class MetadataCorrelationIdSourceTest {
     }
     finally {
       stop(conn);
-      broker.destroy();
     }
   }
 
   @Test
   public void testJmsCorrelationIdToAdaptrisMessageMetadata() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    JmsConnection conn = broker.getJmsConnection();
+    JmsConnection conn = activeMqBroker.getJmsConnection();
     try {
-      broker.start();
       start(conn);
       Session session = conn.createSession(false, Session.CLIENT_ACKNOWLEDGE);
       AdaptrisMessage adpMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
@@ -131,17 +131,13 @@ public class MetadataCorrelationIdSourceTest {
     }
     finally {
       stop(conn);
-      broker.destroy();
     }
   }
 
   @Test
   public void testJmsCorrelationIdToAdaptrisMessageMetadata_NoMetadataKey() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    JmsConnection conn = broker.getJmsConnection();
+    JmsConnection conn = activeMqBroker.getJmsConnection();
     try {
-      broker.start();
       start(conn);
       Session session = conn.createSession(false, Session.CLIENT_ACKNOWLEDGE);
       AdaptrisMessage adpMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
@@ -154,17 +150,13 @@ public class MetadataCorrelationIdSourceTest {
     }
     finally {
       stop(conn);
-      broker.destroy();
     }
   }
 
   @Test
   public void testJmsCorrelationIdToAdaptrisMessageMetadata_NoValue() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    JmsConnection conn = broker.getJmsConnection();
+    JmsConnection conn = activeMqBroker.getJmsConnection();
     try {
-      broker.start();
       start(conn);
       Session session = conn.createSession(false, Session.CLIENT_ACKNOWLEDGE);
       AdaptrisMessage adpMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
@@ -176,7 +168,6 @@ public class MetadataCorrelationIdSourceTest {
     }
     finally {
       stop(conn);
-      broker.destroy();
     }
   }
 

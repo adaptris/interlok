@@ -16,21 +16,25 @@
 
 package com.adaptris.core.jms.activemq;
 
-import static com.adaptris.core.jms.MessageTypeTranslatorCase.addMetadata;
-import static com.adaptris.core.jms.MessageTypeTranslatorCase.addProperties;
-import static com.adaptris.core.jms.MessageTypeTranslatorCase.assertJmsProperties;
-import static com.adaptris.core.jms.MessageTypeTranslatorCase.assertMetadata;
+import static com.adaptris.interlok.junit.scaffolding.jms.MessageTypeTranslatorCase.addMetadata;
+import static com.adaptris.interlok.junit.scaffolding.jms.MessageTypeTranslatorCase.addProperties;
+import static com.adaptris.interlok.junit.scaffolding.jms.MessageTypeTranslatorCase.assertJmsProperties;
+import static com.adaptris.interlok.junit.scaffolding.jms.MessageTypeTranslatorCase.assertMetadata;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
+
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.jms.Message;
 import javax.jms.Session;
+
 import org.apache.activemq.ActiveMQSession;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMessageFactory;
@@ -45,11 +49,22 @@ import com.adaptris.core.jms.MessageTypeTranslatorImp;
 public class BlobMessageTranslatorTest
     extends com.adaptris.interlok.junit.scaffolding.jms.JmsProducerExample {
 
-  private transient Log log = LogFactory.getLog(this.getClass());
-
   private static final String INPUT = "Quick zephyrs blow, vexing daft Jim";
 
+  private static EmbeddedActiveMq activeMqBroker;
 
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
+  
   private Message createMessage(Session session) throws Exception {
     return ((ActiveMQSession) session).createBlobMessage(new ByteArrayInputStream(INPUT.getBytes()));
   }
@@ -57,10 +72,8 @@ public class BlobMessageTranslatorTest
   @Test
   public void testMoveMetadataJmsMessageToAdaptrisMessage() throws Exception {
     MessageTypeTranslatorImp trans = new BlobMessageTranslator();
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConnection conn = null;
     try {
-      activeMqBroker.start();
       conn = activeMqBroker.getJmsConnection(new BasicActiveMqImplementation());
       start(conn);
       Session session = conn.createSession(false, Session.CLIENT_ACKNOWLEDGE);
@@ -77,17 +90,14 @@ public class BlobMessageTranslatorTest
     finally {
       stop(trans);
       stop(conn);
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testMoveJmsHeadersJmsMessageToAdaptrisMessage() throws Exception {
     MessageTypeTranslatorImp trans = new BlobMessageTranslator();
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConnection conn = null;
     try {
-      activeMqBroker.start();
       conn = activeMqBroker.getJmsConnection(new BasicActiveMqImplementation());
       start(conn);
 
@@ -115,7 +125,6 @@ public class BlobMessageTranslatorTest
     finally {
       stop(trans);
       stop(conn);
-      activeMqBroker.destroy();
     }
 
   }
@@ -123,10 +132,8 @@ public class BlobMessageTranslatorTest
   @Test
   public void testMoveMetadataAdaptrisMessageToJmsMessage() throws Exception {
     MessageTypeTranslatorImp trans = new BlobMessageTranslator();
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConnection conn = null;
     try {
-      activeMqBroker.start();
       conn = activeMqBroker.getJmsConnection(new BasicActiveMqImplementation());
       start(conn);
 
@@ -144,7 +151,6 @@ public class BlobMessageTranslatorTest
     finally {
       stop(trans);
       stop(conn);
-      activeMqBroker.destroy();
     }
 
   }
@@ -152,10 +158,8 @@ public class BlobMessageTranslatorTest
   @Test
   public void testBug895() throws Exception {
     MessageTypeTranslatorImp trans = new BlobMessageTranslator();
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConnection conn = null;
     try {
-      activeMqBroker.start();
       conn = activeMqBroker.getJmsConnection(new BasicActiveMqImplementation());
       start(conn);
 
@@ -177,7 +181,6 @@ public class BlobMessageTranslatorTest
     finally {
       stop(trans);
       stop(conn);
-      activeMqBroker.destroy();
     }
 
   }
@@ -194,8 +197,8 @@ public class BlobMessageTranslatorTest
   }
 
   @Override
-  protected List retrieveObjectsForSampleConfig() {
-    ArrayList result = new ArrayList();
+  protected List<StandaloneProducer> retrieveObjectsForSampleConfig() {
+    ArrayList<StandaloneProducer> result = new ArrayList<>();
     result.add(buildStandaloneProducer(new JmsConnection(), new JmsProducer()));
     return result;
   }

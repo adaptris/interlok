@@ -21,6 +21,9 @@ import static com.adaptris.core.BaseCase.stop;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import java.util.concurrent.TimeUnit;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -57,14 +60,25 @@ public class JmsReplyToWorkflowTest {
 
   @Rule
   public TestName testName = new TestName();
+  
+  private static EmbeddedActiveMq activeMqBroker;
+
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
 
   @Test
   public void testInitWithNullProducerConsumer() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
-    Channel channel = createChannel(broker);
+    Channel channel = createChannel(activeMqBroker);
     channel.getWorkflowList().add(workflow);
     try {
       LifecycleHelper.prepare(channel);
@@ -76,18 +90,14 @@ public class JmsReplyToWorkflowTest {
     }
     finally {
       LifecycleHelper.stopAndClose(channel);
-      broker.destroy();
     }
 
   }
 
   @Test
   public void testInitWithNullProducer() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
-    Channel channel = createChannel(broker);
+    Channel channel = createChannel(activeMqBroker);
     workflow
         .setConsumer(new PtpConsumer().withQueue(testName.getMethodName()));
     channel.getWorkflowList().add(workflow);
@@ -102,18 +112,14 @@ public class JmsReplyToWorkflowTest {
     }
     finally {
       LifecycleHelper.stopAndClose(channel);
-      broker.destroy();
     }
 
   }
 
   @Test
   public void testInitWithNullConsumer() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
-    Channel channel = createChannel(broker);
+    Channel channel = createChannel(activeMqBroker);
     workflow.setProducer(new PtpProducer());
     channel.getWorkflowList().add(workflow);
     try {
@@ -127,19 +133,15 @@ public class JmsReplyToWorkflowTest {
     }
     finally {
       LifecycleHelper.stopAndClose(channel);
-      broker.destroy();
     }
 
   }
 
   @Test
   public void testInitWithMisMatchedProducer() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
-    Channel channel = createChannel(broker);
-    channel.setProduceConnection(broker.getJmsConnection());
+    Channel channel = createChannel(activeMqBroker);
+    channel.setProduceConnection(activeMqBroker.getJmsConnection());
     workflow.setProducer(new PasProducer().withTopic(testName.getMethodName()));
     channel.getWorkflowList().add(workflow);
     try {
@@ -153,18 +155,14 @@ public class JmsReplyToWorkflowTest {
     }
     finally {
       LifecycleHelper.stopAndClose(channel);
-      broker.destroy();
     }
 
   }
 
   @Test
   public void testInit() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
-    Channel channel = createChannel(broker);
+    Channel channel = createChannel(activeMqBroker);
     workflow.setProducer(new PtpProducer().withDestination(new JmsReplyToDestination()));
     workflow.setConsumer(new PtpConsumer().withQueue(testName.getMethodName()));
     channel.getWorkflowList().add(workflow);
@@ -173,22 +171,18 @@ public class JmsReplyToWorkflowTest {
     }
     finally {
       LifecycleHelper.stopAndClose(channel);
-      broker.destroy();
     }
   }
 
   @Test
   public void testPtpWorkflow() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
-    Channel channel = createChannel(broker);
+    Channel channel = createChannel(activeMqBroker);
     workflow.setProducer(new PtpProducer().withDestination(new JmsReplyToDestination()));
     workflow.setConsumer(new PtpConsumer().withQueue(testName.getMethodName()));
     workflow.setServiceCollection(createServiceList());
     channel.getWorkflowList().add(workflow);
-    StandaloneRequestor sender = new StandaloneRequestor(broker.getJmsConnection(),
+    StandaloneRequestor sender = new StandaloneRequestor(activeMqBroker.getJmsConnection(),
         new PtpProducer().withQueue(testName.getMethodName()));
     try {
       sender.setReplyTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
@@ -199,22 +193,18 @@ public class JmsReplyToWorkflowTest {
     }
     finally {
       stop(channel, sender);
-      broker.destroy();
     }
   }
 
   @Test
   public void testPasWorkflow() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
-    Channel channel = createChannel(broker);
+    Channel channel = createChannel(activeMqBroker);
     workflow.setProducer(new PasProducer().withDestination(new JmsReplyToDestination()));
     workflow.setConsumer(new PasConsumer().withTopic(testName.getMethodName()));
     workflow.setServiceCollection(createServiceList());
     channel.getWorkflowList().add(workflow);
-    StandaloneRequestor sender = new StandaloneRequestor(broker.getJmsConnection(),
+    StandaloneRequestor sender = new StandaloneRequestor(activeMqBroker.getJmsConnection(),
         new PasProducer().withTopic(testName.getMethodName()));
     try {
       sender.setReplyTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
@@ -225,16 +215,13 @@ public class JmsReplyToWorkflowTest {
     }
     finally {
       stop(channel, sender);
-      broker.destroy();
     }
   }
 
   @Test
   public void testWorkflow_SkipProducer_HasNoEffect() throws Exception {
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
-    Channel channel = createChannel(broker);
+    Channel channel = createChannel(activeMqBroker);
     workflow.setProducer(new PtpProducer().withDestination(new JmsReplyToDestination()));
     workflow.setConsumer(new PtpConsumer().withQueue(testName.getMethodName()));
 
@@ -242,7 +229,7 @@ public class JmsReplyToWorkflowTest {
     workflow.getServiceCollection().add(new MockSkipProducerService());
     channel.getWorkflowList().add(workflow);
     channel.prepare();
-    StandaloneRequestor sender = new StandaloneRequestor(broker.getJmsConnection(),
+    StandaloneRequestor sender = new StandaloneRequestor(activeMqBroker.getJmsConnection(),
         new PtpProducer().withQueue(testName.getMethodName()));
     try {
       sender.setReplyTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
@@ -253,24 +240,20 @@ public class JmsReplyToWorkflowTest {
     }
     finally {
       stop(channel, sender);
-      broker.destroy();
     }
   }
 
   @Test
   public void testWorkflowWithInterceptor() throws Exception {
-
     MockWorkflowInterceptor interceptor = new MockWorkflowInterceptor();
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
     workflow.addInterceptor(interceptor);
-    Channel channel = createChannel(broker);
+    Channel channel = createChannel(activeMqBroker);
     workflow.setProducer(new PasProducer().withDestination(new JmsReplyToDestination()));
     workflow.setConsumer(new PasConsumer().withTopic(testName.getMethodName()));
     workflow.setServiceCollection(createServiceList());
     channel.getWorkflowList().add(workflow);
-    StandaloneRequestor sender = new StandaloneRequestor(broker.getJmsConnection(),
+    StandaloneRequestor sender = new StandaloneRequestor(activeMqBroker.getJmsConnection(),
         new PasProducer().withTopic(testName.getMethodName()));
     try {
       sender.setReplyTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
@@ -282,17 +265,13 @@ public class JmsReplyToWorkflowTest {
     }
     finally {
       stop(channel, sender);
-      broker.destroy();
     }
   }
 
   @Test
   public void testDoProduce_NoObjectMetadata() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    broker.start();
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
-    Channel channel = createChannel(broker);
+    Channel channel = createChannel(activeMqBroker);
     workflow.setProducer(new PtpProducer().withDestination(new JmsReplyToDestination()));
     workflow.setConsumer(new PtpConsumer().withQueue(testName.getMethodName()));
     channel.getWorkflowList().add(workflow);
@@ -306,7 +285,6 @@ public class JmsReplyToWorkflowTest {
 
     } finally {
       stop(channel);
-      broker.destroy();
     }
   }
 
