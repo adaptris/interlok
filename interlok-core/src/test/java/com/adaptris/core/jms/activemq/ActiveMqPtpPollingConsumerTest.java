@@ -16,15 +16,20 @@
 
 package com.adaptris.core.jms.activemq;
 
-import static com.adaptris.core.BaseCase.start;
-import static com.adaptris.core.BaseCase.waitForMessages;
-import static com.adaptris.core.jms.JmsProducerCase.assertMessages;
-import static com.adaptris.core.jms.JmsProducerCase.createMessage;
 import static com.adaptris.core.jms.activemq.ActiveMqPasPollingConsumerTest.shutdownQuietly;
+import static com.adaptris.interlok.junit.scaffolding.BaseCase.start;
+import static com.adaptris.interlok.junit.scaffolding.BaseCase.waitForMessages;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase.assertMessages;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase.createMessage;
+
 import java.util.concurrent.TimeUnit;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
+
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
@@ -32,26 +37,36 @@ import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.PtpPollingConsumer;
 import com.adaptris.core.jms.PtpProducer;
 import com.adaptris.core.stubs.MockMessageListener;
-import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.TimeInterval;
 
 public class ActiveMqPtpPollingConsumerTest {
-  private static final ManagedThreadFactory MY_THREAD_FACTORY = new ManagedThreadFactory();
-
+  
   @Rule
   public TestName testName = new TestName();
+  
+  private static EmbeddedActiveMq activeMqBroker;
+
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
 
   @Test
   public void testProduceConsume() throws Exception {
 
     int msgCount = 5;
-    final EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    final StandaloneProducer sender = new StandaloneProducer(broker.getJmsConnection(),
+    final StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
         new PtpProducer().withQueue((testName.getMethodName())));
     final StandaloneConsumer receiver =
-        createConsumer(broker, "testProduceConsume", testName.getMethodName());
+        createConsumer(activeMqBroker, "testProduceConsume", testName.getMethodName());
     try {
-      broker.start();
       MockMessageListener jms = new MockMessageListener();
       receiver.registerAdaptrisMessageListener(jms);
       start(receiver);
@@ -63,7 +78,7 @@ public class ActiveMqPtpPollingConsumerTest {
       assertMessages(jms, msgCount);
     }
     finally {
-      shutdownQuietly(sender, receiver, broker);
+      shutdownQuietly(sender, receiver);
     }
   }
 

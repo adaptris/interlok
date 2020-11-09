@@ -24,6 +24,9 @@ import static org.junit.Assert.assertTrue;
 import java.util.Map;
 import javax.jms.Queue;
 import javax.jms.Topic;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MetadataDestination;
@@ -35,6 +38,18 @@ import com.adaptris.util.KeyValuePair;
 
 public class DestinationCacheJndiPtpProducerTest extends JndiPtpProducerCase {
 
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
+  
   @Override
   protected CachedDestinationJndiImplementation createVendorImplementation() {
     return new CachedDestinationJndiImplementation();
@@ -42,8 +57,6 @@ public class DestinationCacheJndiPtpProducerTest extends JndiPtpProducerCase {
 
   @Test
   public void testProduceWithCache() throws Exception {
-
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     DestinationCachingJndiVendorImpl sendVendorImp = new DestinationCachingJndiVendorImpl();
     sendVendorImp.setUseJndiForQueues(true);
     String queueName = testName.getMethodName() + "_queue";
@@ -52,7 +65,6 @@ public class DestinationCacheJndiPtpProducerTest extends JndiPtpProducerCase {
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJndiPtpConnection(sendVendorImp, false,
             queueName, topicName), new PtpProducer().withQueue((queueName)));
     try {
-      activeMqBroker.start();
       start(standaloneProducer);
       standaloneProducer.doService(createMessage(null));
       standaloneProducer.doService(createMessage(null));
@@ -60,7 +72,6 @@ public class DestinationCacheJndiPtpProducerTest extends JndiPtpProducerCase {
       assertTrue(sendVendorImp.queueCache().containsKey(queueName));
     }
     finally {
-      activeMqBroker.destroy();
       stop(standaloneProducer);
     }
   }
@@ -68,8 +79,6 @@ public class DestinationCacheJndiPtpProducerTest extends JndiPtpProducerCase {
   @Test
   @SuppressWarnings("deprecation")
   public void testProduceWithCacheExceeded() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     DestinationCachingJndiVendorImpl jv = new DestinationCachingJndiVendorImpl(2);
     MockMessageListener jms = new MockMessageListener();
     MetadataDestination dest = new MetadataDestination();
@@ -79,14 +88,13 @@ public class DestinationCacheJndiPtpProducerTest extends JndiPtpProducerCase {
     String topicName = testName.getMethodName() + "_topic";
 
     StandaloneProducer sp1 =
-        new StandaloneProducer(broker.getJndiPtpConnection(jv, false, queueName, topicName),
+        new StandaloneProducer(activeMqBroker.getJndiPtpConnection(jv, false, queueName, topicName),
             new PtpProducer().withDestination(dest));
     jv.setUseJndiForQueues(true);
     jv.getJndiParams().addKeyValuePair(new KeyValuePair("queue.testProduceWithCacheExceeded1", "testProduceWithCacheExceeded1"));
     jv.getJndiParams().addKeyValuePair(new KeyValuePair("queue.testProduceWithCacheExceeded2", "testProduceWithCacheExceeded2"));
 
     try {
-      broker.start();
       start(sp1);
       AdaptrisMessage m1 = createMessage(null);
       m1.addMetadata("testProduceWithCacheExceeded", queueName);
@@ -105,7 +113,6 @@ public class DestinationCacheJndiPtpProducerTest extends JndiPtpProducerCase {
       assertTrue(jv.queueCache().containsKey("testProduceWithCacheExceeded2"));
     }
     finally {
-      broker.destroy();
       stop(sp1);
     }
   }

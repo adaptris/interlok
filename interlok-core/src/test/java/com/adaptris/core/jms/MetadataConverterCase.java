@@ -7,6 +7,9 @@ import static org.junit.Assert.assertTrue;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -23,6 +26,20 @@ public abstract class MetadataConverterCase {
 
   @Rule
   public TestName testName = new TestName();
+  
+  protected static EmbeddedActiveMq activeMqBroker;
+
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
 
   static final String HEADER = "header";
 
@@ -46,42 +63,28 @@ public abstract class MetadataConverterCase {
 
   @Test
   public void testSetProperty() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MetadataConverter mc = createConverter();
-    try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
-      MetadataCollection metadataCollection = new MetadataCollection();
-      metadataCollection.add(new MetadataElement(HEADER, getStringValue()));
-      Message jmsMsg = session.createMessage();
-      mc.moveMetadata(metadataCollection, jmsMsg);
-      assertEquals(getStringValue(), jmsMsg.getStringProperty(HEADER));
-      assertValue(jmsMsg);
-    } finally {
-      broker.destroy();
-    }
+    Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+    MetadataCollection metadataCollection = new MetadataCollection();
+    metadataCollection.add(new MetadataElement(HEADER, getStringValue()));
+    Message jmsMsg = session.createMessage();
+    mc.moveMetadata(metadataCollection, jmsMsg);
+    assertEquals(getStringValue(), jmsMsg.getStringProperty(HEADER));
+    assertValue(jmsMsg);
   }
 
   @Test
   public void testSetPropertyWithReserved() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MetadataConverter mc = createConverter();
-    try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
-      MetadataCollection metadataCollection = new MetadataCollection();
-      metadataCollection.add(new MetadataElement(HEADER, getStringValue()));
-      metadataCollection.add(new MetadataElement("JMSCorrelationID", "1234"));
-      Message jmsMsg = session.createMessage();
-      mc.moveMetadata(metadataCollection, jmsMsg);
-      assertEquals(getStringValue(), jmsMsg.getStringProperty(HEADER));
-      assertNull(jmsMsg.getStringProperty("JMSCorrelationID"));
-      assertValue(jmsMsg);
-    } finally {
-      broker.destroy();
-    }
+    Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+    MetadataCollection metadataCollection = new MetadataCollection();
+    metadataCollection.add(new MetadataElement(HEADER, getStringValue()));
+    metadataCollection.add(new MetadataElement("JMSCorrelationID", "1234"));
+    Message jmsMsg = session.createMessage();
+    mc.moveMetadata(metadataCollection, jmsMsg);
+    assertEquals(getStringValue(), jmsMsg.getStringProperty(HEADER));
+    assertNull(jmsMsg.getStringProperty("JMSCorrelationID"));
+    assertValue(jmsMsg);
   }
 
   abstract MetadataConverter createConverter();

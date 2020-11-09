@@ -22,6 +22,9 @@ import static com.adaptris.core.BaseCase.stop;
 import static com.adaptris.core.jms.JmsProducerCase.assertMessages;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
 import static org.junit.Assert.fail;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -43,36 +46,41 @@ public abstract class JndiPasProducerCase {
 
   protected abstract StandardJndiImplementation createVendorImplementation();
 
+  protected static EmbeddedActiveMq activeMqBroker;
+
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
+  
   @Test
   public void testProduceAndConsume() throws Exception {
-
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     StandardJndiImplementation recvVendorImp = createVendorImplementation();
     StandardJndiImplementation sendVendorImp = createVendorImplementation();
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
 
-    StandaloneConsumer standaloneConsumer = new StandaloneConsumer(broker.getJndiPasConnection(recvVendorImp, false, queueName,
+    StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJndiPasConnection(recvVendorImp, false, queueName,
             topicName), new PasConsumer().withTopic(topicName));
     MockMessageListener jms = new MockMessageListener();
 
     standaloneConsumer.registerAdaptrisMessageListener(jms);
-    StandaloneProducer standaloneProducer = new StandaloneProducer(broker.getJndiPasConnection(sendVendorImp, false, queueName,
+    StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJndiPasConnection(sendVendorImp, false, queueName,
             topicName), new PasProducer().withTopic(topicName));
-    try {
-      broker.start();
-      execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
-      assertMessages(jms, 1);
-    }
-    finally {
-      broker.destroy();
-    }
+
+    execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
+    assertMessages(jms, 1);
   }
 
   @Test
   public void testProduceAndConsume_ExtraConfig() throws Exception {
-
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
     SimpleFactoryConfiguration sfc = new SimpleFactoryConfiguration();
@@ -80,69 +88,55 @@ public abstract class JndiPasProducerCase {
     kvps.add(new KeyValuePair("ClientID", "testProduceAndConsume_ExtraConfig"));
     kvps.add(new KeyValuePair("UseCompression", "true"));
     sfc.setProperties(kvps);
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
+
     StandardJndiImplementation recvVendorImp = createVendorImplementation();
     StandardJndiImplementation sendVendorImp = createVendorImplementation();
     sendVendorImp.setExtraFactoryConfiguration(sfc);
 
-    StandaloneConsumer standaloneConsumer = new StandaloneConsumer(broker.getJndiPasConnection(recvVendorImp, false, queueName,
+    StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJndiPasConnection(recvVendorImp, false, queueName,
         topicName),
         new PasConsumer().withTopic(topicName));
     MockMessageListener jms = new MockMessageListener();
 
     standaloneConsumer.registerAdaptrisMessageListener(jms);
-    StandaloneProducer standaloneProducer = new StandaloneProducer(broker.getJndiPasConnection(sendVendorImp, false, queueName,
+    StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJndiPasConnection(sendVendorImp, false, queueName,
         topicName),
         new PasProducer().withTopic(topicName));
-    try {
-      broker.start();
-      execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
-      assertMessages(jms, 1);
-    }
-    finally {
-      broker.destroy();
-    }
+
+    execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
+    assertMessages(jms, 1);
   }
 
   @Test
   public void testProduceAndConsumeUsingJndiOnly() throws Exception {
-
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
+
     StandardJndiImplementation recvVendorImp = createVendorImplementation();
     StandardJndiImplementation sendVendorImp = createVendorImplementation();
-    StandaloneConsumer standaloneConsumer = new StandaloneConsumer(broker.getJndiPasConnection(recvVendorImp, true, queueName,
+    StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJndiPasConnection(recvVendorImp, true, queueName,
         topicName),
         new PasConsumer().withTopic(topicName));
     MockMessageListener jms = new MockMessageListener();
     standaloneConsumer.registerAdaptrisMessageListener(jms);
-    StandaloneProducer standaloneProducer = new StandaloneProducer(broker.getJndiPasConnection(sendVendorImp, true, queueName,
+    StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJndiPasConnection(sendVendorImp, true, queueName,
         topicName),
         new PasProducer().withTopic(topicName));
-    try {
-      broker.start();
-      execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
-      assertMessages(jms);
-    }
-    finally {
-      broker.destroy();
-    }
 
+    execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
+    assertMessages(jms);
   }
 
   @Test
   public void testProduceJndiOnlyObjectNotFound() throws Exception {
-
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
+
     StandardJndiImplementation sendVendorImp = createVendorImplementation();
-    StandaloneProducer standaloneProducer = new StandaloneProducer(broker.getJndiPasConnection(sendVendorImp, true, queueName,
+    StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJndiPasConnection(sendVendorImp, true, queueName,
         topicName),
         new PasProducer().withTopic(this.getClass().getSimpleName()));
     try {
-      broker.start();
       start(standaloneProducer);
       standaloneProducer.produce(createMessage(null));
       fail("Expected ProduceException");
@@ -151,7 +145,6 @@ public abstract class JndiPasProducerCase {
     }
     finally {
       stop(standaloneProducer);
-      broker.destroy();
     }
   }
 

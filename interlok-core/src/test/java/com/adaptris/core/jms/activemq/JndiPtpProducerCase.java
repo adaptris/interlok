@@ -22,6 +22,9 @@ import static com.adaptris.core.BaseCase.stop;
 import static com.adaptris.core.jms.JmsProducerCase.assertMessages;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
 import static org.junit.Assert.fail;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -43,10 +46,22 @@ public abstract class JndiPtpProducerCase {
 
   protected abstract StandardJndiImplementation createVendorImplementation();
 
+  protected static EmbeddedActiveMq activeMqBroker;
+
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
+  
   @Test
   public void testProduceAndConsume() throws Exception {
-
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     StandardJndiImplementation recvVendorImp = createVendorImplementation();
     StandardJndiImplementation sendVendorImp = createVendorImplementation();
     String queueName = testName.getMethodName() + "_queue";
@@ -57,14 +72,9 @@ public abstract class JndiPtpProducerCase {
     standaloneConsumer.registerAdaptrisMessageListener(jms);
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJndiPtpConnection(sendVendorImp, false,
             queueName, topicName), new PtpProducer().withQueue((queueName)));
-    try {
-      activeMqBroker.start();
-      execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
-      assertMessages(jms);
-    }
-    finally {
-      activeMqBroker.destroy();
-    }
+
+    execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
+    assertMessages(jms);
   }
 
   @Test
@@ -77,7 +87,7 @@ public abstract class JndiPtpProducerCase {
     sfc.setProperties(kvps);
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
+
     StandardJndiImplementation recvVendorImp = createVendorImplementation();
     StandardJndiImplementation sendVendorImp = createVendorImplementation();
     sendVendorImp.setExtraFactoryConfiguration(sfc);
@@ -87,54 +97,37 @@ public abstract class JndiPtpProducerCase {
     standaloneConsumer.registerAdaptrisMessageListener(jms);
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJndiPtpConnection(sendVendorImp, false,
             queueName, topicName), new PtpProducer().withQueue((queueName)));
-    try {
-      activeMqBroker.start();
-      execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
-      assertMessages(jms);
-    }
-    finally {
-      activeMqBroker.destroy();
-    }
+
+    execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
+    assertMessages(jms);
   }
 
   @Test
   public void testProduceAndConsumeUsingJndiOnly() throws Exception {
-
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     StandardJndiImplementation recvVendorImp = createVendorImplementation();
     StandardJndiImplementation sendVendorImp = createVendorImplementation();
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
 
-    PtpConsumer consumer = new PtpConsumer().withQueue(queueName);
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJndiPtpConnection(recvVendorImp, true,
             queueName, topicName), new PtpConsumer().withQueue(queueName));
     MockMessageListener jms = new MockMessageListener();
     standaloneConsumer.registerAdaptrisMessageListener(jms);
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJndiPtpConnection(sendVendorImp, true,
             queueName, topicName), new PtpProducer().withQueue((queueName)));
-    try {
-      activeMqBroker.start();
-      execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
-      assertMessages(jms);
-    }
-    finally {
-      activeMqBroker.destroy();
 
-    }
+    execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
+    assertMessages(jms);
   }
 
   @Test
   public void testProduceJndiOnlyObjectNotFound() throws Exception {
-
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
     StandardJndiImplementation sendVendorImp = createVendorImplementation();
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJndiPtpConnection(sendVendorImp, true,
             queueName, topicName), new PtpProducer().withQueue((this.getClass().getSimpleName())));
     try {
-      activeMqBroker.start();
       start(standaloneProducer);
       standaloneProducer.produce(createMessage(null));
       fail("Expected ProduceException");
@@ -143,7 +136,6 @@ public abstract class JndiPtpProducerCase {
     }
     finally {
       stop(standaloneProducer);
-      activeMqBroker.destroy();
     }
   }
 }

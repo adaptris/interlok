@@ -18,13 +18,16 @@ package com.adaptris.core.jms;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
 import com.adaptris.core.Channel;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullProcessingExceptionHandler;
@@ -45,9 +48,20 @@ import com.adaptris.util.TimeInterval;
 public class JmsTransactedWorkflowTest
     extends com.adaptris.interlok.junit.scaffolding.ExampleWorkflowCase {
 
-  private static Log logR = LogFactory.getLog(JmsTransactedWorkflowTest.class);
+  private static EmbeddedActiveMq activeMqBroker;
 
-
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
+  
   @Test
   public void testSetStrict() throws Exception {
     JmsTransactedWorkflow workflow = new JmsTransactedWorkflow();
@@ -65,12 +79,10 @@ public class JmsTransactedWorkflowTest
 
   @Test
   public void testInit_UnsupportedConsumer() throws Exception {
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    Channel channel = createStartableChannel(broker);
+    Channel channel = createStartableChannel(activeMqBroker);
     JmsTransactedWorkflow workflow = (JmsTransactedWorkflow) channel.getWorkflowList().get(0);
     workflow.setConsumer(new FsConsumer().withBaseDirectoryUrl("file:////path/to/directory"));
     try {
-      broker.start();
       channel.requestInit();
     }
     catch (CoreException expected) {
@@ -78,7 +90,6 @@ public class JmsTransactedWorkflowTest
     }
     finally {
       channel.requestClose();
-      broker.destroy();
     }
   }
 
@@ -96,12 +107,10 @@ public class JmsTransactedWorkflowTest
 
   @Test
   public void testInit_UnsupportedProduceExceptionHandler() throws Exception {
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    Channel channel = createStartableChannel(broker);
+    Channel channel = createStartableChannel(activeMqBroker);
     JmsTransactedWorkflow workflow = (JmsTransactedWorkflow) channel.getWorkflowList().get(0);
     workflow.setProduceExceptionHandler(new RestartProduceExceptionHandler());
     try {
-      broker.start();
       channel.requestInit();
     }
     catch (CoreException expected) {
@@ -110,35 +119,28 @@ public class JmsTransactedWorkflowTest
     }
     finally {
       channel.requestClose();
-      broker.destroy();
     }
   }
 
   @Test
   public void testInit() throws Exception {
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    Channel channel = createStartableChannel(broker);
+    Channel channel = createStartableChannel(activeMqBroker);
     try {
-      broker.start();
       channel.requestInit();
     }
     finally {
       channel.requestClose();
-      broker.destroy();
     }
   }
 
   @Test
   public void testStart() throws Exception {
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    Channel channel = createStartableChannel(broker);
+    Channel channel = createStartableChannel(activeMqBroker);
     try {
-      broker.start();
       channel.requestStart();
     }
     finally {
       channel.requestClose();
-      broker.destroy();
     }
   }
 

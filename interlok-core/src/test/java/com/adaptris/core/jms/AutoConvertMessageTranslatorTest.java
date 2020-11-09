@@ -24,7 +24,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayOutputStream;
+
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
@@ -33,14 +35,18 @@ import javax.jms.MessageEOFException;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 
 public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
-  
+    
   private static final String ORIGINAL_MESSGAE_TYPE_KEY = "adpmessagetype";
 
   private static final String MAP_MSG_PREFIX = "mapMsg.";
@@ -54,18 +60,25 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
       INTEGER_VALUE, BOOLEAN_VALUE, STRING_VALUE
   };
 
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
 
   @Test
   public void testConvertFromConsumeTypeBytes() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
     trans.setConvertBackToConsumedType(true);
     trans.setRemoveOriginalMessageTypeKey(false);
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
 
       BytesMessage jmsMsg = session.createBytesMessage();
@@ -81,22 +94,17 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
 
   }
 
   @Test
   public void testConvertFromConsumeTypeText() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
     trans.setConvertBackToConsumedType(true);
     trans.setRemoveOriginalMessageTypeKey(false);
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
 
       TextMessage jmsMsg = session.createTextMessage();
@@ -112,17 +120,12 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
 
   }
   
   @Test
   public void testConvertFromConsumeTypeTextRemoveKeyAfter() throws Exception {
-
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
     trans.setConvertBackToConsumedType(true);
     trans.setRemoveOriginalMessageTypeKey(true);
@@ -130,8 +133,7 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
     assertTrue(trans.getRemoveOriginalMessageTypeKey());
     
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
 
       TextMessage jmsMsg = session.createTextMessage();
@@ -148,24 +150,19 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
 
   }
 
   @Test
   public void testConvertFromConsumeTypeTextDefaultRemoveKeyAfter() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
     trans.setConvertBackToConsumedType(true);
     
     assertNull(trans.getRemoveOriginalMessageTypeKey()); // defaults to true if null.
     
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
 
       TextMessage jmsMsg = session.createTextMessage();
@@ -182,23 +179,17 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
 
   }
   
   @Test
   public void testConvertFromConsumeTypeMap() throws Exception {
-
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
     trans.setConvertBackToConsumedType(true);
     trans.setRemoveOriginalMessageTypeKey(false);
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
 
       MapMessage jmsMsg = session.createMapMessage();
@@ -213,23 +204,17 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
 
   }
   
   @Test
   public void testConvertFromConsumeTypeObject() throws Exception {
-
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
     trans.setConvertBackToConsumedType(true);
     trans.setRemoveOriginalMessageTypeKey(false);
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
 
       ObjectMessage jmsMsg = session.createObjectMessage();
@@ -246,23 +231,17 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
 
   }
   
   @Test
   public void testConvertFromConsumeTypeBytesNoMetadataKey() throws Exception {
-
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
     trans.setConvertBackToConsumedType(true);
     trans.setRemoveOriginalMessageTypeKey(false);
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
 
       BytesMessage jmsMsg = session.createBytesMessage();
@@ -279,22 +258,16 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
 
   }
   
   @Test
   public void testConvertFromConsumeTypeBytesIllegalMetadataKey() throws Exception {
-
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
     trans.setConvertBackToConsumedType(true);
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
 
       BytesMessage jmsMsg = session.createBytesMessage();
@@ -311,21 +284,15 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
 
   }
   
   @Test
   public void testBytesMessageToAdaptrisMessage() throws Exception {
-
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
 
       BytesMessage jmsMsg = session.createBytesMessage();
@@ -339,21 +306,16 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
 
   }
 
   @Test
   public void testAdaptrisMessageToBytesMessage() throws Exception {
-
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
     trans.setJmsOutputType(AutoConvertMessageTranslator.SupportedMessageType.Bytes.name());
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
 
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
@@ -366,19 +328,15 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
   }
 
   @Test
   public void testAdaptrisMessageToTextMessage() throws Exception {
-
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
     trans.setJmsOutputType(AutoConvertMessageTranslator.SupportedMessageType.Text.name());
     try {
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
       addMetadata(msg);
@@ -389,21 +347,15 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
     }
     finally {
       stop(trans);
-      broker.destroy();
 
     }
   }
 
   @Test
   public void testMapMessageToAdaptrisMessage() throws Exception {
-
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
 
       MapMessage jmsMsg = session.createMapMessage();
@@ -416,20 +368,15 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
   }
 
   @Test
   public void testAdaptrisMessageToMapMessage() throws Exception {
-
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
     trans.setJmsOutputType(AutoConvertMessageTranslator.SupportedMessageType.Map.name());
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
       addMetadata(msg);
@@ -442,20 +389,14 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
   }
 
   @Test
   public void testObjectMessageToAdaptrisMessage() throws Exception {
-
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
       ObjectMessage jmsMsg = session.createObjectMessage();
       Exception e = new Exception("This is an Exception that was serialized");
@@ -470,20 +411,15 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
   }
 
   @Test
   public void testAdaptrisMessageToObjectMessage() throws Exception {
-
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
     trans.setJmsOutputType(AutoConvertMessageTranslator.SupportedMessageType.Object.name());
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
       Exception e = new Exception("This is an Exception that was serialized");
@@ -496,20 +432,14 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
   }
   
   @Test
   public void testMessageToAdaptrisMessageWithFallback() throws Exception {
-
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
       Message jmsMsg = session.createMessage();
 
@@ -520,21 +450,15 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
   }
   
   @Test
   public void testAdaptrisMessageToMessageWithFallback() throws Exception {
-
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-
     AutoConvertMessageTranslator trans = new AutoConvertMessageTranslator();
     trans.setJmsOutputType("xxx");
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
       
@@ -543,7 +467,6 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
   }
 

@@ -19,6 +19,8 @@ package com.adaptris.core.jms.activemq;
 import static com.adaptris.core.jms.activemq.AdvancedActiveMqImplementationTest.createImpl;
 import org.apache.activemq.ActiveMQPrefetchPolicy;
 import org.apache.activemq.RedeliveryPolicy;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
@@ -31,6 +33,17 @@ import com.adaptris.util.KeyValuePair;
 
 public class AdvancedActiveMqProducerTest extends BasicActiveMqProducerTest {
 
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
 
   @Override
   protected String createBaseFileName(Object object) {
@@ -39,50 +52,36 @@ public class AdvancedActiveMqProducerTest extends BasicActiveMqProducerTest {
 
   @Test
   public void testQueueProduceAndConsumeWithRedeliveryPolicy() throws Exception {
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    try {
-      activeMqBroker.start();
-      PtpConsumer consumer = new PtpConsumer().withQueue(getName());
-      consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+    PtpConsumer consumer = new PtpConsumer().withQueue(getName());
+    consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
 
-      StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl(
-          createRedelivery(), null)), consumer);
-      MockMessageListener jms = new MockMessageListener();
-      standaloneConsumer.registerAdaptrisMessageListener(jms);
+    StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl(
+        createRedelivery(), null)), consumer);
+    MockMessageListener jms = new MockMessageListener();
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
 
-      StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl(
-              createRedelivery(), null)), new PtpProducer().withQueue((getName())));
+    StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl(
+            createRedelivery(), null)), new PtpProducer().withQueue((getName())));
 
-      execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
-      assertMessages(jms, 1);
-    }
-    finally {
-      activeMqBroker.destroy();
-    }
+    execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
+    assertMessages(jms, 1);
   }
 
   @Test
   public void testQueueProduceAndConsumeWithPrefetch() throws Exception {
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    try {
-      activeMqBroker.start();
-      PtpConsumer consumer = new PtpConsumer().withQueue(getName());
-      consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+    PtpConsumer consumer = new PtpConsumer().withQueue(getName());
+    consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
 
-      StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl(null,
-          createPrefetch())), consumer);
-      MockMessageListener jms = new MockMessageListener();
-      standaloneConsumer.registerAdaptrisMessageListener(jms);
+    StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl(null,
+        createPrefetch())), consumer);
+    MockMessageListener jms = new MockMessageListener();
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
 
-      StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl(null,
-              createPrefetch())), new PtpProducer().withQueue((getName())));
+    StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl(null,
+            createPrefetch())), new PtpProducer().withQueue((getName())));
 
-      execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
-      assertMessages(jms, 1);
-    }
-    finally {
-      activeMqBroker.destroy();
-    }
+    execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
+    assertMessages(jms, 1);
   }
 
   @Override
