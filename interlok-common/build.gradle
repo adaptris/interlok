@@ -16,7 +16,7 @@ dependencies {
 
   compile ("org.slf4j:slf4j-api:$slf4jVersion")
   compile ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
-  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.33.v20201020")
+  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.34.v20201102")
   compile "org.slf4j:jul-to-slf4j:$slf4jVersion", optional
   compile "org.apache.logging.log4j:log4j-core:$log4j2Version", optional
   compile "org.apache.logging.log4j:log4j-api:$log4j2Version", optional
