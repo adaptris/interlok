@@ -10,10 +10,11 @@ import com.adaptris.util.SimpleBeanUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import lombok.Synchronized;
 
 /**
  * Constructs a HikariCP connection pool for use with {@link PluggableJdbcPooledConnection}.
- * 
+ *
  * @config jdbc-hikari-pool-builder
  *
  */
@@ -40,23 +41,43 @@ public class HikariPoolBuilder implements ConnectionPoolBuilder {
     conn.poolProperties().stream().forEach((kvp) -> {
       SimpleBeanUtil.callSetter(config, "set" + kvp.getKey(), kvp.getValue());
     });
-    return new HikariDataSourceWrapper(new HikariDataSource(config));
+    return new HikariDataSourceWrapper(config);
   }
 
 
+  // Building the HikariDataSource means that we try to make the connection, there's nothing
+  // in the HikariDataSource configuration that suggests we can be lazy about this
+  // So, do it when we actually try to access something...
+  // INTERLOK-3463
   public class HikariDataSourceWrapper extends PooledDataSourceImpl<HikariDataSource> {
 
-    public HikariDataSourceWrapper(HikariDataSource wrapped) {
-      super(wrapped);
+    private HikariConfig config;
+    private HikariDataSource wrapped = null;
+    private volatile boolean built = false;
+    private Object lock = new Object();
+
+    public HikariDataSourceWrapper(HikariConfig config) {
+      super();
+      this.config = config;
     }
 
+    @Override
     public HikariDataSource wrapped() {
+      if (!built) {
+        build();
+      }
       return wrapped;
+    }
+
+    @Synchronized(value = "lock")
+    private void build() {
+      wrapped = new HikariDataSource(config);
+      built = true;
     }
 
     @Override
     public void close() throws IOException {
-      wrapped.close();
+      wrapped().close();
     }
 
   }
