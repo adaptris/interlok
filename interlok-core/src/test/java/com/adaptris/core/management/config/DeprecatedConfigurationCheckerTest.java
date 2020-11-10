@@ -3,7 +3,9 @@ package com.adaptris.core.management.config;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import java.util.Arrays;
 import java.util.List;
+import org.apache.commons.collections4.IterableUtils;
 import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessage;
@@ -96,16 +98,10 @@ public class DeprecatedConfigurationCheckerTest {
     return DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
   }
 
-  // Probably has to be a better way than nested for loops...
   private boolean violationsAsExpected(List<String> violations, String... txt) {
+    List<String> expected = Arrays.asList(txt);
     for (String v : violations) {
-      int matches = 0;
-      for (String s : txt) {
-        if (v.contains(s)) {
-          matches++;
-        }
-      }
-      if (matches == 0) {
+      if (!IterableUtils.matchesAny(expected, (match) -> v.contains(match))) {
         return false;
       }
     }
