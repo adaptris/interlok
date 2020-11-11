@@ -3,19 +3,23 @@ package com.adaptris.core.management.config;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
+import java.util.Arrays;
+import java.util.List;
+import org.apache.commons.collections4.IterableUtils;
 import org.junit.Test;
-
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.Channel;
+import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
+import com.adaptris.core.NullMessageConsumer;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.management.BootstrapProperties;
 import com.adaptris.core.services.metadata.AddTimestampMetadataService;
 import com.adaptris.validation.constraints.ConfigDeprecated;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -62,6 +66,26 @@ public class DeprecatedConfigurationCheckerTest {
   }
 
   @Test
+  public void testValidate_Invalid_WithChannels() throws Exception {
+    DeprecatedConfigurationChecker checker = new DeprecatedConfigurationChecker();
+
+    ConfigurationCheckReport report = new ConfigurationCheckReport();
+    report.setCheckName(checker.getFriendlyName());
+    checker.validate(createAdapterConfig(false, true), report);
+
+    assertFalse(report.isCheckPassed());
+    // Should be 4 warnings,
+    // deprecated class, deprecated member, consumer destination, deprecated service inside a
+    // service list.
+    assertEquals(4, report.getWarnings().size());
+    assertTrue(violationsAsExpected(report.getWarnings(), "sharedComponents.services[1]",
+        "sharedComponents.services[2]",
+        "channelList.channels[0].workflowList.workflows[0].serviceCollection.services[0]",
+        "channelList.channels[0].workflowList.workflows[0].consumer.destination"));
+    assertEquals(0, report.getFailureExceptions().size());
+  }
+
+  @Test
   public void testValidate_Null() throws Exception {
     DeprecatedConfigurationChecker checker = new DeprecatedConfigurationChecker();
 
@@ -76,7 +100,18 @@ public class DeprecatedConfigurationCheckerTest {
     return DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
   }
 
-  private Adapter createAdapterConfig(boolean validates) throws Exception {
+  private boolean violationsAsExpected(List<String> violations, String... txt) {
+    List<String> expected = Arrays.asList(txt);
+    for (String v : violations) {
+      if (!IterableUtils.matchesAny(expected, (match) -> v.contains(match))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+
+  private Adapter createAdapterConfig(boolean validates, boolean channels) throws Exception {
 
     Adapter adapter = new Adapter();
 
@@ -96,7 +131,23 @@ public class DeprecatedConfigurationCheckerTest {
       dms.setDeprecated("value");
       adapter.getSharedComponents().addService(dms);
     }
+    if (channels) {
+      Channel c = new Channel();
+      StandardWorkflow w = new StandardWorkflow();
+      if (!validates) {
+        NullMessageConsumer consumer = new NullMessageConsumer();
+        consumer.setDestination(new ConfiguredConsumeDestination("dest"));
+        w.setConsumer(consumer);
+        w.getServiceCollection().add(new DeprecatedService());
+      }
+      c.getWorkflowList().add(w);
+      adapter.getChannelList().add(c);
+    }
     return adapter;
+  }
+
+  private Adapter createAdapterConfig(boolean validates) throws Exception {
+    return createAdapterConfig(validates, false);
   }
 
   @ConfigDeprecated(message = "It will be removed in a future version. No replacement.", groups = Deprecated.class)
