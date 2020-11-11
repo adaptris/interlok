@@ -3,11 +3,11 @@ package com.adaptris.core.management.config;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
-
 import com.adaptris.core.Adapter;
+import com.adaptris.core.Channel;
 import com.adaptris.core.DefaultMarshaller;
+import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.management.BootstrapProperties;
 import com.adaptris.core.services.metadata.AddTimestampMetadataService;
 import com.adaptris.core.services.metadata.PayloadHashingService;
@@ -59,11 +59,31 @@ public class JavaxValidationCheckerTest {
     assertEquals(1, report.getFailureExceptions().size());
   }
 
+  @Test
+  public void testValidate_Invalid_WithChannels() throws Exception {
+    JavaxValidationChecker checker = new JavaxValidationChecker();
+
+    ConfigurationCheckReport report = new ConfigurationCheckReport();
+    report.setCheckName(checker.getFriendlyName());
+    checker.validate(createAdapterConfig(false, true), report);
+
+    assertFalse(report.isCheckPassed());
+    // Should be 6 exceptions,
+    // 1x adapter-unique-id,
+    // 3 from the shared-services,
+    // 2 from the service list in the channel.
+    // Don't expect multiples from channel-list/workflow-list/service-collection are lists
+    // behaviour.)
+    assertEquals(6, report.getFailureExceptions().size());
+    assertEquals(0, report.getWarnings().size());
+  }
+
+
   private String toString(Adapter adapter) throws Exception {
     return DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
   }
 
-  private Adapter createAdapterConfig(boolean validates) throws Exception {
+  private Adapter createAdapterConfig(boolean validates, boolean channels) throws Exception {
 
     Adapter adapter = new Adapter();
     if (validates) {
@@ -93,6 +113,23 @@ public class JavaxValidationCheckerTest {
       adapter.getSharedComponents().addService(ts);
       adapter.getSharedComponents().addService(ph);
     }
+    if (channels) {
+      Channel c = new Channel();
+      c.setUniqueId("channel");
+      StandardWorkflow w = new StandardWorkflow();
+      w.setUniqueId("workflow");
+      if (!validates) {
+        PayloadHashingService ph = new PayloadHashingService();
+        ph.setUniqueId("invalid-payload-hasher-2");
+        w.getServiceCollection().add(ph);
+      }
+      c.getWorkflowList().add(w);
+      adapter.getChannelList().add(c);
+    }
     return adapter;
+  }
+
+  private Adapter createAdapterConfig(boolean validates) throws Exception {
+    return createAdapterConfig(validates, false);
   }
 }
