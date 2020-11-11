@@ -74,11 +74,13 @@ public class DeprecatedConfigurationCheckerTest {
     checker.validate(createAdapterConfig(false, true), report);
 
     assertFalse(report.isCheckPassed());
-    // Should be 3 warnings,
-    // deprecated class, deprecated member, consumer destination.
-    assertEquals(3, report.getWarnings().size());
+    // Should be 4 warnings,
+    // deprecated class, deprecated member, consumer destination, deprecated service inside a
+    // service list.
+    assertEquals(4, report.getWarnings().size());
     assertTrue(violationsAsExpected(report.getWarnings(), "sharedComponents.services[1]",
         "sharedComponents.services[2]",
+        "channelList.channels[0].workflowList.workflows[0].serviceCollection.services[0]",
         "channelList.channels[0].workflowList.workflows[0].consumer.destination"));
     assertEquals(0, report.getFailureExceptions().size());
   }
@@ -136,6 +138,7 @@ public class DeprecatedConfigurationCheckerTest {
         NullMessageConsumer consumer = new NullMessageConsumer();
         consumer.setDestination(new ConfiguredConsumeDestination("dest"));
         w.setConsumer(consumer);
+        w.getServiceCollection().add(new DeprecatedService());
       }
       c.getWorkflowList().add(w);
       adapter.getChannelList().add(c);
