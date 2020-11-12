@@ -398,7 +398,10 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
 
   @NoArgsConstructor
   private class DeleteListener extends ListenerImpl {
+    private transient Object locker = new Object();
+
     @Override
+    @Synchronized(value = "locker")
     public void onAdaptrisMessage(AdaptrisMessage jettyMsg, Consumer<AdaptrisMessage> success,
         Consumer<AdaptrisMessage> failure) {
       try {
