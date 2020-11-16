@@ -68,7 +68,8 @@ public interface RetryStore extends ComponentLifecycle, ComponentLifecycleExtens
    * This is used to assert that the workflow exists in this instance for that message; there is no
    * point building the whole message only to fail because the workflow doesn't exist.
    * </p>
-   *
+   * 
+   * @throws InterlokException if no metadata could be retrieved (e.g the msgId doesn't exist)
    */
   Map<String, String> getMetadata(String msgId) throws InterlokException;
 

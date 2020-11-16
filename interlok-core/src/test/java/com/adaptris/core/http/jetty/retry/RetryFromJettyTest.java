@@ -26,6 +26,7 @@ import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.Workflow;
 import com.adaptris.core.http.client.ConfiguredRequestMethodProvider;
 import com.adaptris.core.http.client.RequestMethodProvider;
+import com.adaptris.core.http.client.RequestMethodProvider.RequestMethod;
 import com.adaptris.core.http.client.net.HttpRequestService;
 import com.adaptris.core.http.client.net.StandardHttpProducer;
 import com.adaptris.core.http.jetty.EmbeddedConnection;
@@ -199,6 +200,83 @@ public class RetryFromJettyTest extends FailedMessageRetrierCase {
 
     } finally {
       stop(retrier, workflow);
+    }
+  }
+
+  @Test
+  public void testDelete() throws Exception {
+    RetryFromJetty retrier = create();
+    try {
+      start(retrier);
+      AdaptrisMessage baseMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+      retryStore.write(baseMsg);
+      assertNotNull(retryStore.getMetadata(baseMsg.getUniqueId()));
+
+      // This should result in a msgId that isn't found; so we get a 500...
+      AdaptrisMessage triggerMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+      String url =
+          jettyHelper.buildUrl(RetryFromJetty.DEFAULT_DELETE_PREFIX + baseMsg.getUniqueId());
+      StandardHttpProducer http = buildProducer(url);
+      http.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethod.DELETE));
+
+      http.setIgnoreServerResponseCode(true);
+      ExampleServiceCase.execute(new StandaloneRequestor(http), triggerMsg);
+
+      assertEquals(RetryFromJetty.HTTP_OK,
+          triggerMsg.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
+    } finally {
+      stop(retrier);
+    }
+  }
+
+  @Test
+  public void testDelete_BadRequest() throws Exception {
+    RetryFromJetty retrier = create();
+    try {
+      start(retrier);
+      AdaptrisMessage baseMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+      retryStore.write(baseMsg);
+      assertNotNull(retryStore.getMetadata(baseMsg.getUniqueId()));
+
+      // we're going to use a POST but with the correct URL.
+      // so should be a BAD request.
+      AdaptrisMessage triggerMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+      String url =
+          jettyHelper.buildUrl(RetryFromJetty.DEFAULT_DELETE_PREFIX + baseMsg.getUniqueId());
+      StandardHttpProducer http = buildProducer(url);
+      http.setIgnoreServerResponseCode(true);
+      http.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethod.POST));
+      ExampleServiceCase.execute(new StandaloneRequestor(http), triggerMsg);
+
+      assertEquals(RetryFromJetty.HTTP_BAD,
+          triggerMsg.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
+    } finally {
+      stop(retrier);
+    }
+  }
+
+  @Test
+  public void testDelete_NotFound() throws Exception {
+    RetryFromJetty retrier = create();
+    try {
+      start(retrier);
+      AdaptrisMessage baseMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+      retryStore.write(baseMsg);
+      assertNotNull(retryStore.getMetadata(baseMsg.getUniqueId()));
+
+      // This should result in a msgId that isn't found; so we get a 500...
+      AdaptrisMessage triggerMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+      String url =
+          jettyHelper.buildUrl(RetryFromJetty.DEFAULT_DELETE_PREFIX + triggerMsg.getUniqueId());
+      StandardHttpProducer http = buildProducer(url);
+      http.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethod.DELETE));
+      http.setIgnoreServerResponseCode(true);
+      ExampleServiceCase.execute(new StandaloneRequestor(http), triggerMsg);
+
+      assertEquals(RetryFromJetty.HTTP_NOT_FOUND,
+          triggerMsg.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
+    } finally {
+      stop(retrier);
     }
   }
 
