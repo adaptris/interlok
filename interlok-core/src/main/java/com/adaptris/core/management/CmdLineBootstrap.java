@@ -19,9 +19,10 @@ package com.adaptris.core.management;
 import static com.adaptris.core.management.Constants.CFG_KEY_START_QUIETLY;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import com.adaptris.core.management.config.ConfigurationCheckReport;
 import com.adaptris.core.management.config.ConfigurationCheckRunner;
+import com.adaptris.core.management.config.ConfigurationReportRunner;
 import com.adaptris.core.management.logging.LoggingConfigurator;
 import com.adaptris.core.util.ManagedThreadFactory;
 
@@ -101,18 +102,14 @@ abstract class CmdLineBootstrap {
       launchAdapter(bootstrap, startQuietly());
     }
     else {
-      final List<Exception> fatals = new ArrayList<>();
-      new ConfigurationCheckRunner().runChecks(bootProperties, bootstrap).forEach(report -> {
-        System.err.println("\n" + report.toString());
-        if(report.getFailureExceptions().size() > 0)
-          fatals.addAll(report.getFailureExceptions());
-      });
-
-   // INTERLOK-1455 Shutdown the logging subsystem if we're only just doing a config check.
+      Collection<ConfigurationCheckReport> reports =
+          new ConfigurationCheckRunner().runChecks(bootProperties);
+      boolean reportSuccess = new ConfigurationReportRunner().report(reports);
+      // INTERLOK-1455 Shutdown the logging subsystem if we're only just doing a config check.
       LoggingConfigurator.newConfigurator().requestShutdown();
 
       System.err.println("\nConfig check only; terminating");
-      System.exit(fatals.size() > 0 ? 1 : 0);
+      System.exit(reportSuccess ? 0 : 1);
     }
   }
 
