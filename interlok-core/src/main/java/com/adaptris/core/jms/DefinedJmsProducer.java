@@ -48,7 +48,7 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
 
   @Override
   @Deprecated
-  @Removal(version = "4.0")
+  @Removal(version = "4.0.0")
   public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
     try {
       setupSession(msg);
@@ -109,7 +109,7 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
 
   @Override
   @Deprecated
-  @Removal(version = "4.0")
+  @Removal(version = "4.0.0")
   public AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination dest, long timeout)
       throws ProduceException {
 

@@ -1,27 +1,28 @@
 /*
  * Copyright 2017 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 package com.adaptris.core.http.jetty;
 
 import java.util.Collections;
 import java.util.List;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+
 import org.apache.commons.lang3.ObjectUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.Removal;
@@ -32,6 +33,7 @@ import com.adaptris.core.services.metadata.ExtractMetadataService;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.LoggingHelper;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -52,7 +54,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
           <metadata-key>parentId</metadata-key>
           <metadata-key>childId</metadata-key>
         </condition>
-        <service-id>handleInsert</service-id>   
+        <service-id>handleInsert</service-id>
       </jetty-route-spec>
    }
  * </pre>
@@ -66,18 +68,16 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @XStreamAlias("jetty-route-spec")
 public class JettyRouteSpec implements ComponentLifecycle {
 
-  private transient Logger log = LoggerFactory.getLogger(this.getClass());
-
   @Deprecated
-  @Removal(version = "3.12.0", message = "Use a condition instead")
+  @ConfigDeprecated(removalVersion = "3.12.0", message = "Use a condition instead", groups = Deprecated.class)
   private String urlPattern;
   @Deprecated
-  @Removal(version = "3.12.0", message = "Use a condition instead")
+  @ConfigDeprecated(removalVersion = "3.12.0", message = "Use a condition instead", groups = Deprecated.class)
   private String method;
   @XStreamImplicit(itemFieldName = "metadata-key")
   @AffectsMetadata
   @Deprecated
-  @Removal(version = "3.12.0", message = "Use a condition instead")
+  @ConfigDeprecated(removalVersion = "3.12.0", message = "Use a condition instead", groups = Deprecated.class)
   private List<String> metadataKeys;
   @NotBlank
   private String serviceId;
@@ -121,18 +121,18 @@ public class JettyRouteSpec implements ComponentLifecycle {
   }
 
   /**
-   * 
+   *
    * @deprecated since 3.9.0 use a condition instead
    */
   @Deprecated
-  @Removal(version = "3.12.0", message = "Use a condition instead")
+  @ConfigDeprecated(removalVersion = "3.12.0", message = "Use a condition instead", groups = Deprecated.class)
   public String getUrlPattern() {
     return urlPattern;
   }
 
   /**
    * Set the URL pattern that you want to match against.
-   * 
+   *
    * @param urlPattern the pattern.
    * @deprecated since 3.9.0 use a condition instead
    */
@@ -147,18 +147,18 @@ public class JettyRouteSpec implements ComponentLifecycle {
   }
 
   /**
-   * 
+   *
    * @deprecated since 3.9.0 use a condition instead
    */
   @Deprecated
-  @Removal(version = "3.12.0", message = "Use a condition instead")
+  @ConfigDeprecated(removalVersion = "3.12.0", message = "Use a condition instead", groups = Deprecated.class)
   public String getMethod() {
     return method;
   }
 
   /**
    * Specify a method to match against (optional).
-   * 
+   *
    * @deprecated since 3.9.0 use a condition instead
    */
   @Deprecated
@@ -168,11 +168,11 @@ public class JettyRouteSpec implements ComponentLifecycle {
   }
 
   /**
-   * 
+   *
    * @deprecated since 3.9.0 use a condition instead
    */
   @Deprecated
-  @Removal(version = "3.12.0", message = "Use a condition instead")
+  @ConfigDeprecated(removalVersion = "3.12.0", message = "Use a condition instead", groups = Deprecated.class)
   public List<String> getMetadataKeys() {
     return metadataKeys;
   }
@@ -186,14 +186,14 @@ public class JettyRouteSpec implements ComponentLifecycle {
    * <p>
    * The list of keys is processed in order, against each capturing match group in order
    * </p>
-   * 
+   *
    * @param s list of keys.
    * @deprecated since 3.9.0 use a condition instead
    */
   @Deprecated
   @Removal(version = "3.12.0", message = "Use a condition instead")
   public void setMetadataKeys(List<String> s) {
-    this.metadataKeys = s;
+    metadataKeys = s;
   }
 
   public String getServiceId() {
@@ -218,7 +218,7 @@ public class JettyRouteSpec implements ComponentLifecycle {
 
   /**
    * Specify the conditions for the route.
-   * 
+   *
    * @param condition the condition.
    */
   public void setCondition(JettyRouteCondition condition) {

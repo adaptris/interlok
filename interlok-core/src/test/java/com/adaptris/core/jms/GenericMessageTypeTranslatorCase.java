@@ -17,10 +17,11 @@ package com.adaptris.core.jms;
 
 import javax.jms.Message;
 import javax.jms.Session;
+
 import org.junit.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 
 public abstract class GenericMessageTypeTranslatorCase
@@ -30,15 +31,13 @@ public abstract class GenericMessageTypeTranslatorCase
   @Test
   public void testMetadataConverter() throws Exception {
 
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator().withMetadataConverters(
         new StringMetadataConverter(new RegexMetadataFilter().withIncludePatterns(STRING_METADATA)),
         new IntegerMetadataConverter(new RegexMetadataFilter().withIncludePatterns(INTEGER_METADATA)),
         new BooleanMetadataConverter(
             new RegexMetadataFilter().withIncludePatterns(BOOLEAN_METADATA)));
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
       addMetadata(msg);
@@ -46,7 +45,6 @@ public abstract class GenericMessageTypeTranslatorCase
       assertJmsProperties(jmsMsg);
     } finally {
       stop(trans);
-      broker.destroy();
     }
   }
 }

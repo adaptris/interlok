@@ -26,6 +26,9 @@ import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import javax.jms.StreamMessage;
 import javax.jms.TextMessage;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -33,14 +36,23 @@ import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 
 public class BasicJavaxJmsMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
 
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
+  
   @Test
   public void testMessageToAdaptrisMessage() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = this.createTranslator();
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       Message jmsMsg = createMessage(session);
       addProperties(jmsMsg);
       start(trans, session);
@@ -50,18 +62,14 @@ public class BasicJavaxJmsMessageTranslatorTest extends GenericMessageTypeTransl
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
   }
 
   @Test
   public void testAdaptrisMessageToMessage() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = this.createTranslator();
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
 
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -78,18 +86,14 @@ public class BasicJavaxJmsMessageTranslatorTest extends GenericMessageTypeTransl
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
   }
   
   @Test
   public void testAdaptrisMessageWithPayloadToMessage() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = this.createTranslator();
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
 
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
@@ -106,7 +110,6 @@ public class BasicJavaxJmsMessageTranslatorTest extends GenericMessageTypeTransl
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
   }
   

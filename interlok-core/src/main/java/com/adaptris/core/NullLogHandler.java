@@ -17,7 +17,7 @@
 package com.adaptris.core;
 
 import java.io.IOException;
-
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -32,6 +32,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author lchan / $Author: hfraser $
  */
 @XStreamAlias("null-log-handler")
+@Deprecated
+@ConfigDeprecated(removalVersion = "4.0.0", message = "Defunct and should not be configured", groups = Deprecated.class)
 public class NullLogHandler extends LogHandlerImp {
 
   /**

@@ -62,9 +62,14 @@ public class EmbeddedJettyHelper {
     jetty = null;
   }
 
+  public String buildUrl(String uri) {
+    String actualUri = uri.startsWith("/") ? uri : "/" + uri;
+    log.trace("Destination is {}{}{}", "http://localhost:", portForServer, actualUri);
+    return "http://localhost:" + portForServer + actualUri;
+  }
+
   public ConfiguredProduceDestination createProduceDestination() {
-    log.trace("Destination is " + "http://localhost:" + portForServer + URL_TO_POST_TO);
-    return new ConfiguredProduceDestination("http://localhost:" + portForServer + URL_TO_POST_TO);
+    return new ConfiguredProduceDestination(buildUrl(URL_TO_POST_TO));
   }
 
 }

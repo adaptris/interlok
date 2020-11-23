@@ -30,8 +30,10 @@ import javax.jms.MessageConsumer;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -55,6 +57,20 @@ public class JmsSyncConsumerTest extends PollingJmsConsumerCase {
   private MessageConsumer mockMessageConsumer;
 
   private AutoCloseable openMocks;
+  
+  private static EmbeddedActiveMq activeMqBroker;
+
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
 
   @Before
   public void setUp() throws Exception {
@@ -114,7 +130,6 @@ public class JmsSyncConsumerTest extends PollingJmsConsumerCase {
   @Test
   public void testDeferConsumerCreationToVendor() throws Exception {
     Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
 
     when(mockVendor.createConsumer(any(), any(), any(JmsActorConfig.class))).thenReturn(mockMessageConsumer);
 
@@ -124,33 +139,24 @@ public class JmsSyncConsumerTest extends PollingJmsConsumerCase {
     when(mockVendor.createConnectionFactory()).thenReturn(factory);
     when(mockVendor.createConnection(any(), any())).thenReturn(factory.createConnection());
 
-    try {
-      activeMqBroker.start();
+    JmsConnection jmsConnection = activeMqBroker.getJmsConnection();
+    jmsConnection.setVendorImplementation(mockVendor);
 
-      JmsConnection jmsConnection = activeMqBroker.getJmsConnection();
-      jmsConnection.setVendorImplementation(mockVendor);
+    StandaloneConsumer standaloneConsumer = createStandaloneConsumer(jmsConnection, false, true);
 
-      StandaloneConsumer standaloneConsumer = createStandaloneConsumer(jmsConnection, false, true);
+    MockMessageListener jms = new MockMessageListener();
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
 
-      MockMessageListener jms = new MockMessageListener();
-      standaloneConsumer.registerAdaptrisMessageListener(jms);
+    LifecycleHelper.initAndStart(standaloneConsumer);
 
-      LifecycleHelper.initAndStart(standaloneConsumer);
+    verify(mockVendor).createConsumer(any(), any(), any(JmsSyncConsumer.class));
 
-      verify(mockVendor).createConsumer(any(), any(), any(JmsSyncConsumer.class));
-
-      LifecycleHelper.stopAndClose(standaloneConsumer);
-
-    } finally {
-      activeMqBroker.destroy();
-    }
+    LifecycleHelper.stopAndClose(standaloneConsumer);
   }
 
   @Test
   public void testDefaultFalseDeferConsumerCreationToVendor() throws Exception {
     Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
 
     when(mockVendor.createConsumer(any(JmsDestination.class), any(String.class), any(JmsActorConfig.class)))
     .thenReturn(mockMessageConsumer);
@@ -159,28 +165,21 @@ public class JmsSyncConsumerTest extends PollingJmsConsumerCase {
 
     when(mockVendor.createConnectionFactory()).thenReturn(new ActiveMQConnectionFactory("vm://" + activeMqBroker.getName()));
 
+    JmsConnection jmsConnection = activeMqBroker.getJmsConnection();
+    jmsConnection.setVendorImplementation(mockVendor);
+
+    StandaloneConsumer standaloneConsumer = createStandaloneConsumer(jmsConnection, false, false);
+    MockMessageListener jms = new MockMessageListener();
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
+
     try {
-      activeMqBroker.start();
-
-      JmsConnection jmsConnection = activeMqBroker.getJmsConnection();
-      jmsConnection.setVendorImplementation(mockVendor);
-
-      StandaloneConsumer standaloneConsumer = createStandaloneConsumer(jmsConnection, false, false);
-      MockMessageListener jms = new MockMessageListener();
-      standaloneConsumer.registerAdaptrisMessageListener(jms);
-
-      try {
-        LifecycleHelper.initAndStart(standaloneConsumer);
-      } catch (Exception ex) {
-      }
-
-      verify(mockVendor, times(0)).createConsumer(any(JmsDestination.class), any(String.class), any(JmsActorConfig.class));
-
-      LifecycleHelper.stopAndClose(standaloneConsumer);
-
-    } finally {
-      activeMqBroker.destroy();
+      LifecycleHelper.initAndStart(standaloneConsumer);
+    } catch (Exception ex) {
     }
+
+    verify(mockVendor, times(0)).createConsumer(any(JmsDestination.class), any(String.class), any(JmsActorConfig.class));
+
+    LifecycleHelper.stopAndClose(standaloneConsumer);
   }
 
 }

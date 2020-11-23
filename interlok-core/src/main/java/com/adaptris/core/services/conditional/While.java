@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services.conditional;
 
+import static com.adaptris.core.CoreConstants.shouldStopProcessing;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -104,7 +106,7 @@ public class While extends ServiceImp {
     try {
       log.trace("Running logical test on 'WHILE', with condition class {}",
           this.getCondition().getClass().getSimpleName());
-      while(this.getCondition().evaluate(msg)) {
+      while((!shouldStopProcessing.apply(msg)) && (this.getCondition().evaluate(msg))) {
         log.trace("Logical 'IF' evaluated to true on WHILE test, running service.");
         getThen().getService().doService(msg);
         loopCount ++;

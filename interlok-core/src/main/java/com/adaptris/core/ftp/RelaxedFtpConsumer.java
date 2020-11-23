@@ -64,7 +64,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
     tag = "consumer,ftp,ftps,sftp", recommended = {FileTransferConnection.class})
 @DisplayOrder(order =
 {
-    "ftpEndpoint", "filterExpression", "poller", "fileFilterImp", "quietInterval",
+    "ftpEndpoint", "filterExpression", "fileFilterImp", "poller", "quietInterval",
     "failOnDeleteFailure"
 })
 public class RelaxedFtpConsumer extends FtpConsumerImpl {

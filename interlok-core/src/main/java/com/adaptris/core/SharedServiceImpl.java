@@ -14,8 +14,7 @@ import com.adaptris.util.GuidGenerator;
 
 public abstract class SharedServiceImpl extends SharedComponent implements Service, EventHandlerAware {
 
-  @NotBlank
-  private String lookupName;
+
   @NotBlank
   @AutoPopulated
   private String uniqueId;
@@ -35,7 +34,7 @@ public abstract class SharedServiceImpl extends SharedComponent implements Servi
     setUniqueId(new GuidGenerator().getUUID());
     changeState(ClosedState.getInstance());
   }
-  
+
   protected void applyService(Service s, AdaptrisMessage msg) throws ServiceException {
     try {
       s.doService(msg);
@@ -51,14 +50,6 @@ public abstract class SharedServiceImpl extends SharedComponent implements Servi
     return (Service) marshaller.unmarshal(marshaller.marshal(lookedUpService));
   }
 
-  public String getLookupName() {
-    return lookupName;
-  }
-
-  public void setLookupName(String lookupName) {
-    this.lookupName = lookupName;
-  }
-  
   @Override
   public void registerEventHandler(EventHandler eh) {
     eventHandler = eh;

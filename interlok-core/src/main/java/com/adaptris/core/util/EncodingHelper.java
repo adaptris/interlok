@@ -2,9 +2,11 @@ package com.adaptris.core.util;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+
 import javax.mail.internet.MimeUtility;
-import com.adaptris.annotation.Removal;
+
 import com.adaptris.util.text.mime.MimeConstants;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 
 public class EncodingHelper {
 
@@ -12,7 +14,7 @@ public class EncodingHelper {
    * Standard supported encodings
    */
   public enum Encoding {
-    @Removal(version = "4.0.0", message = "Use Base64_MIME / Base64_URL / Base64_Basic instead")
+    @ConfigDeprecated(removalVersion = "4.0.0", message = "Use Base64_MIME / Base64_URL / Base64_Basic instead", groups = Deprecated.class)
     Base64 {
       @Override
       public OutputStream wrap(OutputStream orig) throws Exception {

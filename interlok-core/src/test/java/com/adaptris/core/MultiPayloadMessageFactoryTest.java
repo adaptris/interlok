@@ -220,6 +220,12 @@ public class MultiPayloadMessageFactoryTest extends AdaptrisMessageFactoryImplCa
     assertEquals(new String(PAYLOAD), message.resolve("%payload_id{cake}"));
     assertNull(message.resolve(null));
     assertEquals("VALUE", message.resolve("%message{KEY}"));
+
+    message = (MultiPayloadAdaptrisMessage)messageFactory.newMessage("bacon", CONTENT, ENCODING);
+    message.addContent("joke", "The other day I was listening to a song about superglue, it’s been stuck in my head ever since.");
+    message.switchPayload("bacon");
+    String s = message.resolve("Thank you for your message.\n\nHere's a random joke: %payload_id{joke}.\n\n-- \n\nSomething interesting...\n");
+
     try {
       message.resolve("%payload_id{fail}");
       fail();

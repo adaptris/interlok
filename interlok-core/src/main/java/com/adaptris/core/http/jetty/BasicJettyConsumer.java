@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.http.jetty;
 
@@ -52,7 +52,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumerImp;
 import com.adaptris.core.ClosedState;
@@ -64,6 +63,7 @@ import com.adaptris.core.http.client.RequestMethodProvider.RequestMethod;
 import com.adaptris.core.util.DestinationHelper;
 import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.util.TimeInterval;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -109,10 +109,10 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
    *
    */
   @Deprecated
-  @Valid
-  @Removal(version = "4.0.0", message = "Use 'path' instead")
   @Getter
   @Setter
+  @Valid
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'path' instead", groups = Deprecated.class)
   private ConsumeDestination destination;
 
   /**
@@ -206,9 +206,9 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
       p.println("URL " + req.getRequestURL());
       p.println("URI " + req.getRequestURI());
       p.println("Query " + req.getQueryString());
-      for (Enumeration e = req.getHeaderNames(); e.hasMoreElements();) {
-        String key = (String) e.nextElement();
-        Enumeration values = req.getHeaders(key);
+      for (Enumeration<String> e = req.getHeaderNames(); e.hasMoreElements();) {
+        String key = e.nextElement();
+        Enumeration<String> values = req.getHeaders(key);
         StringBuffer sb = new StringBuffer();
         while (values.hasMoreElements()) {
           sb.append(values.nextElement()).append(",");
@@ -374,6 +374,12 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
     return JettyConstants.JETTY_URI;
   }
 
+  @SuppressWarnings("unchecked")
+  public <T extends BasicJettyConsumer> T withPath(String path) {
+    setPath(path);
+    return (T) this;
+  }
+
   protected class BasicServlet extends HttpServlet {
 
     private static final long serialVersionUID = 2007082301L;
@@ -417,7 +423,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
 
     protected Map<String, HttpOperation> handlers() {
       if (httpHandlers == null) {
-        httpHandlers = new HashMap<String, HttpOperation>();
+        httpHandlers = new HashMap<>();
         HttpOperation defaultHandler = new HttpOperation() {
           @Override
           public void handle(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {

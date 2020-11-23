@@ -25,6 +25,9 @@ import static org.junit.Assert.fail;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -50,6 +53,20 @@ public class ActiveMqPasPollingConsumerTest {
 
   @Rule
   public TestName testName = new TestName();
+  
+  private static EmbeddedActiveMq activeMqBroker;
+
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
 
   @Test
   public void testInitNoClientIdOrSubscriptionId() throws Exception {
@@ -109,12 +126,10 @@ public class ActiveMqPasPollingConsumerTest {
   public void testProduceConsume() throws Exception {
 
     int msgCount = 5;
-    final EmbeddedActiveMq activeBroker = new EmbeddedActiveMq();
-    final StandaloneProducer sender = new StandaloneProducer(activeBroker.getJmsConnection(),
+    final StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
         new PasProducer().withTopic(testName.getMethodName()));
     final StandaloneConsumer receiver =
-        createStandalone(activeBroker, "testProduceConsume", testName.getMethodName());
-    activeBroker.start();
+        createStandalone(activeMqBroker, "testProduceConsume", testName.getMethodName());
     try {
       MockMessageListener jms = new MockMessageListener();
       receiver.registerAdaptrisMessageListener(jms);
@@ -124,12 +139,11 @@ public class ActiveMqPasPollingConsumerTest {
       for (int i = 0; i < msgCount; i++) {
         sender.doService(createMessage());
       }
-      long totalWaitTime = 0;
       waitForMessages(jms, msgCount);
       assertMessages(jms, msgCount);
     }
     finally {
-      shutdownQuietly(sender, receiver, activeBroker);
+      shutdownQuietly(sender, receiver);
     }
   }
 
@@ -193,8 +207,7 @@ public class ActiveMqPasPollingConsumerTest {
     }
   }
 
-  static void shutdownQuietly(final StandaloneProducer sender, final StandaloneConsumer receiver,
-      final EmbeddedActiveMq activeMqBroker) {
+  static void shutdownQuietly(final StandaloneProducer sender, final StandaloneConsumer receiver) {
     MY_THREAD_FACTORY.newThread(new Runnable() {
       @Override
       public void run() {
@@ -203,7 +216,6 @@ public class ActiveMqPasPollingConsumerTest {
         LifecycleHelper.waitQuietly(1000);
         stop(receiver);
         LifecycleHelper.waitQuietly(1000);
-        activeMqBroker.destroy();
       }
     }).start();
   }

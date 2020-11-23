@@ -16,12 +16,13 @@
 
 package com.adaptris.core.jms.activemq;
 
-import static com.adaptris.core.BaseCase.start;
-import static com.adaptris.core.BaseCase.stop;
-import static com.adaptris.core.BaseCase.waitForMessages;
-import static com.adaptris.core.jms.JmsConfig.DEFAULT_PAYLOAD;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createSafeUniqueId;
+import static com.adaptris.interlok.junit.scaffolding.BaseCase.start;
+import static com.adaptris.interlok.junit.scaffolding.BaseCase.stop;
+import static com.adaptris.interlok.junit.scaffolding.BaseCase.waitForMessages;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.DEFAULT_PAYLOAD;
 import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,9 +30,11 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
@@ -69,13 +72,23 @@ import com.adaptris.util.TimeInterval;
  */
 public class ActiveMqJmsTransactedWorkflowTest {
 
-  private static Log logR = LogFactory.getLog(ActiveMqJmsTransactedWorkflowTest.class);
+  private static EmbeddedActiveMq activeMqBroker;
 
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
 
   @Test
   public void testHandleChannelUnavailableWithException_Bug2343() throws Exception {
     int msgCount = 10;
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
     final Channel channel = createStartableChannel(activeMqBroker, true, "testHandleChannelUnavailableWithException_Bug2343",
         destination);
@@ -83,7 +96,6 @@ public class ActiveMqJmsTransactedWorkflowTest {
     workflow.setChannelUnavailableWaitInterval(new TimeInterval(1L, TimeUnit.SECONDS));
     workflow.getServiceCollection().addService(new ThrowExceptionService(new ConfiguredException("Fail")));
     try {
-      activeMqBroker.start();
       channel.requestStart();
       channel.toggleAvailability(false);
       Timer t = new Timer();
@@ -102,20 +114,16 @@ public class ActiveMqJmsTransactedWorkflowTest {
       channel.requestClose();
     }
     assertEquals(msgCount, activeMqBroker.messagesOnQueue(destination));
-    activeMqBroker.destroy();
   }
 
   @Test
   public void testHandleChannelUnavailable_Bug2343() throws Exception {
-
     int msgCount = 10;
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
     final Channel channel = createStartableChannel(activeMqBroker, true, "testHandleChannelUnavailable_Bug2343", destination);
     JmsTransactedWorkflow workflow = (JmsTransactedWorkflow) channel.getWorkflowList().get(0);
     workflow.setChannelUnavailableWaitInterval(new TimeInterval(1L, TimeUnit.SECONDS));
     try {
-      activeMqBroker.start();
       channel.requestStart();
       channel.toggleAvailability(false);
       Timer t = new Timer();
@@ -136,21 +144,17 @@ public class ActiveMqJmsTransactedWorkflowTest {
       channel.requestClose();
     }
     assertEquals(0, activeMqBroker.messagesOnQueue(destination));
-    activeMqBroker.destroy();
   }
 
   @Test
   public void testServiceException() throws Exception {
     int msgCount = 10;
-
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
 
     Channel channel = createStartableChannel(activeMqBroker, true, "testServiceException", destination);
     JmsTransactedWorkflow workflow = (JmsTransactedWorkflow) channel.getWorkflowList().get(0);
     workflow.getServiceCollection().addService(new ThrowExceptionService(new ConfiguredException("Fail")));
     try {
-      activeMqBroker.start();
       channel.requestStart();
       StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(), new PtpProducer().withQueue(
               (destination)));
@@ -161,14 +165,12 @@ public class ActiveMqJmsTransactedWorkflowTest {
       channel.requestClose();
     }
     assertEquals(msgCount, activeMqBroker.messagesOnQueue(destination));
-    activeMqBroker.destroy();
   }
 
   @Test
   public void testProduceException() throws Exception {
 
     int msgCount = 10;
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
 
     Channel channel = createStartableChannel(activeMqBroker, true, "testProduceException", destination);
@@ -180,7 +182,6 @@ public class ActiveMqJmsTransactedWorkflowTest {
       }
     });
     try {
-      activeMqBroker.start();
       channel.requestStart();
       StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
           new PtpProducer().withQueue((destination)));
@@ -190,14 +191,12 @@ public class ActiveMqJmsTransactedWorkflowTest {
       channel.requestClose();
     }
     assertEquals(msgCount, activeMqBroker.messagesOnQueue(destination));
-    activeMqBroker.destroy();
   }
 
   @Test
   public void testRuntimeException() throws Exception {
 
     int msgCount = 10;
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
 
     Channel channel = createStartableChannel(activeMqBroker, true, "testRuntimeException", destination);
@@ -210,7 +209,6 @@ public class ActiveMqJmsTransactedWorkflowTest {
 
     });
     try {
-      activeMqBroker.start();
       channel.requestStart();
       StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
           new PtpProducer().withQueue((destination)));
@@ -220,7 +218,6 @@ public class ActiveMqJmsTransactedWorkflowTest {
       channel.requestClose();
     }
     assertEquals(msgCount, activeMqBroker.messagesOnQueue(destination));
-    activeMqBroker.destroy();
   }
 
   // In Non-Strict Mode, if you have configured an error handler, then
@@ -229,7 +226,6 @@ public class ActiveMqJmsTransactedWorkflowTest {
   public void testServiceExceptionNonStrictWithErrorHandler() throws Exception {
 
     int msgCount = 10;
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
     MockMessageProducer meh = new MockMessageProducer();
     Channel channel = createStartableChannel(activeMqBroker, true, "testServiceExceptionNonStrictWithErrorHandler", destination);
@@ -243,7 +239,6 @@ public class ActiveMqJmsTransactedWorkflowTest {
   	    	      })))));
     channel.prepare();
     try {
-      activeMqBroker.start();
       channel.requestStart();
       StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
           new PtpProducer().withQueue((destination)));
@@ -255,7 +250,6 @@ public class ActiveMqJmsTransactedWorkflowTest {
       channel.requestClose();
     }
     assertEquals(0, activeMqBroker.messagesOnQueue(destination));
-    activeMqBroker.destroy();
   }
 
   // In Strict Mode, Then even if you have configured an error handler, then
@@ -265,7 +259,6 @@ public class ActiveMqJmsTransactedWorkflowTest {
   public void testServiceExceptionStrictWithErrorHandler() throws Exception {
 
     int msgCount = 10;
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
     MockMessageProducer meh = new MockMessageProducer();
     Channel channel = createStartableChannel(activeMqBroker, true, "testServiceExceptionStrictWithErrorHandler", destination);
@@ -278,7 +271,6 @@ public class ActiveMqJmsTransactedWorkflowTest {
   	    	        new StandaloneProducer(meh)
   	    	      })))));
     try {
-      activeMqBroker.start();
       channel.requestStart();
       StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
           new PtpProducer().withQueue((destination)));
@@ -288,21 +280,18 @@ public class ActiveMqJmsTransactedWorkflowTest {
       channel.requestClose();
     }
     assertEquals(msgCount, activeMqBroker.messagesOnQueue(destination));
-    activeMqBroker.destroy();
   }
 
   @Test
   public void testMessagesRolledBackUsingQueue() throws Exception {
 
     int msgCount = 10;
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
 
     Channel channel = createStartableChannel(activeMqBroker, true, "testMessagesRolledBackUsingQueue", destination);
     JmsTransactedWorkflow workflow = (JmsTransactedWorkflow) channel.getWorkflowList().get(0);
     workflow.getServiceCollection().addService(new ThrowExceptionService(new ConfiguredException("Fail")));
     try {
-      activeMqBroker.start();
       channel.requestStart();
       StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
           new PtpProducer().withQueue((destination)));
@@ -313,21 +302,18 @@ public class ActiveMqJmsTransactedWorkflowTest {
       channel.requestClose();
     }
     assertEquals(msgCount, activeMqBroker.messagesOnQueue(destination));
-    activeMqBroker.destroy();
   }
 
   @Test
   public void testMessagesRolledBackUsingTopic() throws Exception {
 
     int msgCount = 10;
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
 
     Channel channel = createStartableChannel(activeMqBroker, false, "testMessagesRolledBackUsingTopic", destination);
     JmsTransactedWorkflow workflow = (JmsTransactedWorkflow) channel.getWorkflowList().get(0);
     workflow.getServiceCollection().addService(new ThrowExceptionService(new ConfiguredException("Fail")));
     try {
-      activeMqBroker.start();
       channel.requestStart();
       StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
           new PasProducer().withTopic(destination));
@@ -340,20 +326,17 @@ public class ActiveMqJmsTransactedWorkflowTest {
     // can't actually check the count of messsages on a topic, that's a trifle
     // silly; you might check per-subscription...
     // assertEquals(msgCount, activeMqBroker.messageCount(get(TOPIC)));
-    activeMqBroker.destroy();
   }
 
   @Test
   public void testMessagesCommittedUsingQueue() throws Exception {
 
     int msgCount = 10;
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
 
     Channel channel = createStartableChannel(activeMqBroker, true, "testMessagesCommittedUsingQueue", destination);
     JmsTransactedWorkflow workflow = (JmsTransactedWorkflow) channel.getWorkflowList().get(0);
     try {
-      activeMqBroker.start();
       channel.requestStart();
       StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
           new PtpProducer().withQueue(destination));
@@ -365,15 +348,11 @@ public class ActiveMqJmsTransactedWorkflowTest {
       channel.requestClose();
     }
     assertEquals(0, activeMqBroker.messagesOnQueue(destination));
-    activeMqBroker.destroy();
   }
 
   @Test
   public void testWorkflow_SkipProducer() throws Exception {
-
-
     int msgCount = 10;
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
 
     Channel channel = createStartableChannel(activeMqBroker, true, "testWorkflow_SkipProducer", destination);
@@ -385,7 +364,6 @@ public class ActiveMqJmsTransactedWorkflowTest {
     MockMessageProducer workflowProducer = (MockMessageProducer) workflow.getProducer();
 
     try {
-      activeMqBroker.start();
       channel.requestStart();
       StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
           new PtpProducer().withQueue((destination)));
@@ -398,19 +376,15 @@ public class ActiveMqJmsTransactedWorkflowTest {
       channel.requestClose();
     }
     assertEquals(0, activeMqBroker.messagesOnQueue(destination));
-    activeMqBroker.destroy();
   }
 
   @Test
   public void testMessagesCommittedUsingTopic() throws Exception {
-
     int msgCount = 10;
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
     Channel channel = createStartableChannel(activeMqBroker, false, "testMessagesCommittedUsingTopic", destination);
     JmsTransactedWorkflow workflow = (JmsTransactedWorkflow) channel.getWorkflowList().get(0);
     try {
-      activeMqBroker.start();
       channel.requestStart();
       StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
           new PasProducer().withTopic(destination));
@@ -421,21 +395,17 @@ public class ActiveMqJmsTransactedWorkflowTest {
     finally {
       channel.requestClose();
     }
-    activeMqBroker.destroy();
   }
 
   @Test
   public void testWorkflowWithInterceptor() throws Exception {
-
     int msgCount = 10;
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
     Channel channel = createStartableChannel(activeMqBroker, false, "testMessagesCommittedUsingTopic", destination);
     JmsTransactedWorkflow workflow = (JmsTransactedWorkflow) channel.getWorkflowList().get(0);
     MockWorkflowInterceptor interceptor = new MockWorkflowInterceptor();
     workflow.addInterceptor(interceptor);
     try {
-      activeMqBroker.start();
       channel.requestStart();
       StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
           new PasProducer().withTopic(destination));
@@ -447,21 +417,17 @@ public class ActiveMqJmsTransactedWorkflowTest {
     finally {
       channel.requestClose();
     }
-    activeMqBroker.destroy();
   }
 
   @Test
   public void testMessagesOrderedUsingQueue() throws Exception {
-
     int msgCount = 10;
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
 
     Channel channel = createStartableChannel(activeMqBroker, true, "testMessagesOrderedUsingQueue", destination);
     JmsTransactedWorkflow workflow = (JmsTransactedWorkflow) channel.getWorkflowList().get(0);
     workflow.getServiceCollection().addService(new RandomlyFail());
     try {
-      activeMqBroker.start();
       channel.requestStart();
       StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
           new PtpProducer().withQueue((destination)));
@@ -482,20 +448,16 @@ public class ActiveMqJmsTransactedWorkflowTest {
       channel.requestClose();
     }
     assertEquals(0, activeMqBroker.messagesOnQueue(destination));
-    activeMqBroker.destroy();
   }
 
   @Test
   public void testMessagesOrderedUsingTopic() throws Exception {
-
     int msgCount = 10;
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
     Channel channel = createStartableChannel(activeMqBroker, false, "testMessagesOrderedUsingTopic", destination);
     JmsTransactedWorkflow workflow = (JmsTransactedWorkflow) channel.getWorkflowList().get(0);
     workflow.getServiceCollection().addService(new RandomlyFail());
     try {
-      activeMqBroker.start();
       channel.requestStart();
       StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
           new PasProducer().withTopic(destination));
@@ -515,14 +477,11 @@ public class ActiveMqJmsTransactedWorkflowTest {
     finally {
       channel.requestClose();
     }
-    activeMqBroker.destroy();
   }
 
   @Test
   public void testMessagesOrderedUsingQueuePollingConsumer() throws Exception {
-
     int msgCount = 10;
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String destination = createSafeUniqueId(new Object());
 
     JmsTransactedWorkflow workflow = createPollingWorkflow(activeMqBroker, "testMessagesOrderedUsingQueuePollingConsumer",
@@ -530,7 +489,6 @@ public class ActiveMqJmsTransactedWorkflowTest {
     Channel channel = createStartableChannel(workflow);
     workflow.getServiceCollection().addService(new RandomlyFail());
     try {
-      activeMqBroker.start();
       channel.requestStart();
       StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true),
           new PtpProducer().withQueue((destination)));
@@ -551,7 +509,6 @@ public class ActiveMqJmsTransactedWorkflowTest {
       channel.requestClose();
     }
     assertEquals(0, activeMqBroker.messagesOnQueue(destination));
-    activeMqBroker.destroy();
   }
 
   private Channel createStartableChannel(Workflow w) throws Exception {

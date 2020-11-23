@@ -30,7 +30,10 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.ServiceList;
+import com.adaptris.core.StartedState;
 import com.adaptris.core.services.LogMessageService;
+import com.adaptris.core.services.StopProcessingService;
 import com.adaptris.core.services.conditional.conditions.ConditionMetadata;
 import com.adaptris.core.services.conditional.conditions.ConditionOr;
 import com.adaptris.core.services.conditional.operator.IsNull;
@@ -52,8 +55,11 @@ public class WhileTest extends ConditionalServiceExample {
 
   @Before
   public void setUp() throws Exception {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
 
+    when(mockService.retrieveComponentState())
+        .thenReturn(StartedState.getInstance());
+    
     thenService = new ThenService();
     thenService.setService(mockService);
 
@@ -69,7 +75,7 @@ public class WhileTest extends ConditionalServiceExample {
   public void tearDown() throws Exception {
     StopMe(logicalExpression);
   }
-
+  
   @Test
   public void testShouldRunServiceOnce() throws Exception {
     when(mockCondition.evaluate(message))
@@ -157,6 +163,30 @@ public class WhileTest extends ConditionalServiceExample {
     } catch (ServiceException ex) {
       // expected.
     }
+  }
+  
+  @Test
+  public void testStopProcessingServiceCancelsLoop() throws Exception {
+    when(mockCondition.evaluate(message))
+        .thenReturn(true);
+    
+    Service stopProcessingService = new StopProcessingService();
+
+    ServiceList services = new ServiceList();
+    services.add(stopProcessingService);
+    services.add(mockService);
+    
+    thenService = new ThenService();
+    thenService.setService(services);
+    
+    logicalExpression = new While().withThen(thenService).withCondition(mockCondition);
+    
+    startMe(logicalExpression);
+    
+    logicalExpression.doService(message);
+
+    // The default would loop 10 times, but the stop-processing-service should limit us to only a single loop.
+    verify(mockCondition, times(1)).evaluate(message);
   }
 
   @Test

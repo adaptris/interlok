@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.jms;
 
@@ -21,13 +21,17 @@ import static com.adaptris.core.jms.JmsConstants.JMS_ASYNC_STATIC_REPLY_TO;
 import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
 import static com.adaptris.core.util.DestinationHelper.mustHaveEither;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 import java.util.Optional;
+
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.validation.Valid;
+
 import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -42,7 +46,9 @@ import com.adaptris.core.util.DestinationHelper;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.interlok.util.Args;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -94,7 +100,7 @@ public class JmsProducer extends JmsProducerImpl {
   @Setter
   @Deprecated
   @Valid
-  @Removal(version = "4.0.0", message = "Use 'endpoint' instead if possible")
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'endpoint' instead if possible", groups = Deprecated.class)
   private ProduceDestination destination;
 
   /**
@@ -119,7 +125,7 @@ public class JmsProducer extends JmsProducerImpl {
 
   @Override
   @Deprecated
-  @Removal(version = "4.0")
+  @Removal(version = "4.0.0")
   public void produce(AdaptrisMessage msg, ProduceDestination dest) throws ProduceException {
     try {
       setupSession(msg);
@@ -152,7 +158,7 @@ public class JmsProducer extends JmsProducerImpl {
 
   @Override
   @Deprecated
-  @Removal(version = "4.0")
+  @Removal(version = "4.0.0")
   public AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination dest, long timeout)
       throws ProduceException {
 
@@ -192,7 +198,7 @@ public class JmsProducer extends JmsProducerImpl {
     Message jmsReply = receiver.receive(timeout);
     AdaptrisMessage translatedReply =
         Optional.ofNullable(MessageTypeTranslatorImp.translate(getMessageTranslator(), jmsReply))
-            .orElseThrow(() -> new JMSException("No Reply Received within " + timeout + "ms"));
+        .orElseThrow(() -> new JMSException("No Reply Received within " + timeout + "ms"));
     acknowledge(jmsReply);
     return translatedReply;
   }
@@ -235,7 +241,7 @@ public class JmsProducer extends JmsProducerImpl {
    */
   protected Destination createReplyTo(AdaptrisMessage msg, JmsDestination target,
       boolean createTmpDest)
-      throws JMSException {
+          throws JMSException {
     Destination replyTo = null;
     if (target.getReplyToDestination() == null) {
       if (msg.headersContainsKey(JMS_ASYNC_STATIC_REPLY_TO)) {

@@ -20,6 +20,7 @@ import com.adaptris.core.services.conditional.conditions.ConditionImpl;
 import com.adaptris.core.services.metadata.AddFormattedMetadataService;
 import com.adaptris.core.services.splitter.SplitByMetadata;
 import com.adaptris.core.stubs.DefectiveMessageFactory;
+import com.adaptris.core.stubs.DefectiveMessageFactory.WhenToBreak;
 
 public class ZipAggregatorTest extends AggregatingServiceExample {
 
@@ -27,12 +28,14 @@ public class ZipAggregatorTest extends AggregatingServiceExample {
   @Test
   public void testJoinMessage() throws Exception {
     ZipAggregator aggr = new ZipAggregator();
-    AdaptrisMessage original = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    AdaptrisMessage splitMsg1 = AdaptrisMessageFactory.getDefaultInstance().newMessage("<document>hello</document>");
+    AdaptrisMessageFactory fac = AdaptrisMessageFactory.getDefaultInstance();
+
+    AdaptrisMessage original = fac.newMessage();
+    AdaptrisMessage splitMsg1 = fac.newMessage("<document>hello</document>");
     splitMsg1.addMetadata(DEFAULT_FILENAME_METADATA, "file1.xml");
-    AdaptrisMessage splitMsg2 = new DefectiveMessageFactory().newMessage("<document>world</document>");
+    AdaptrisMessage splitMsg2 = fac.newMessage("<document>world</document>");
     splitMsg2.addMetadata(DEFAULT_FILENAME_METADATA, "file2.xml");
-    AdaptrisMessage willBeIgnoredMsg = new DefectiveMessageFactory().newMessage("<document>world</document>");
+    AdaptrisMessage willBeIgnoredMsg = fac.newMessage("<document>world</document>");
     aggr.joinMessage(original, Arrays.asList(splitMsg1, splitMsg2, willBeIgnoredMsg));
 
     boolean isZipped = new ZipInputStream(new ByteArrayInputStream(original.getPayload())).getNextEntry() != null;
@@ -54,15 +57,16 @@ public class ZipAggregatorTest extends AggregatingServiceExample {
     aggr.setFilterCondition(new MetadataFilenameCondition());
     AdaptrisMessage original = AdaptrisMessageFactory.getDefaultInstance().newMessage();
 
-    AdaptrisMessage splitMsg1 = AdaptrisMessageFactory.getDefaultInstance().newMessage("<document>hello</document>");
+    AdaptrisMessageFactory fac = AdaptrisMessageFactory.getDefaultInstance();
+    AdaptrisMessage splitMsg1 = fac.newMessage("<document>hello</document>");
     splitMsg1.addMetadata(DEFAULT_FILENAME_METADATA, "xfile1.xml");
-    AdaptrisMessage splitMsg2 = new DefectiveMessageFactory().newMessage("<document>world2</document>");
+    AdaptrisMessage splitMsg2 = fac.newMessage("<document>world2</document>");
     splitMsg2.addMetadata(DEFAULT_FILENAME_METADATA, "file2.xml");
-    AdaptrisMessage splitMsg3 = new DefectiveMessageFactory().newMessage("<document>world3</document>");
+    AdaptrisMessage splitMsg3 = fac.newMessage("<document>world3</document>");
     splitMsg3.addMetadata(DEFAULT_FILENAME_METADATA, "xfile3.xml");
-    AdaptrisMessage splitMsg4 = new DefectiveMessageFactory().newMessage("<document>world4</document>");
+    AdaptrisMessage splitMsg4 = fac.newMessage("<document>world4</document>");
     splitMsg4.addMetadata(DEFAULT_FILENAME_METADATA, "file4.xml");
-    AdaptrisMessage willBeIgnoredMsg = new DefectiveMessageFactory().newMessage("<document>world4</document>");
+    AdaptrisMessage willBeIgnoredMsg = fac.newMessage("<document>world4</document>");
     aggr.joinMessage(original, Arrays.asList(splitMsg1, splitMsg2, splitMsg3, splitMsg4, willBeIgnoredMsg));
 
     boolean isZipped = new ZipInputStream(new ByteArrayInputStream(original.getPayload())).getNextEntry() != null;
@@ -79,14 +83,22 @@ public class ZipAggregatorTest extends AggregatingServiceExample {
 
   }
 
-  @Test
-  public void testGetFilenameMetadata() throws Exception {
-    ZipAggregator z = new ZipAggregator();
-    assertEquals(DEFAULT_FILENAME_METADATA, z.filenameMetadata());
-    z.setFilenameMetadata("filename-via-value");
-    assertEquals("filename-via-value", z.filenameMetadata());
-    z = new ZipAggregator("filename-via-constructor");
-    assertEquals("filename-via-constructor", z.filenameMetadata());
+  @Test(expected = CoreException.class)
+  public void testAggregate_BrokenOutput() throws Exception {
+    ZipAggregator aggr = new ZipAggregator();
+    AdaptrisMessage original = new DefectiveMessageFactory(WhenToBreak.OUTPUT).newMessage();
+    AdaptrisMessageFactory fac = AdaptrisMessageFactory.getDefaultInstance();
+    AdaptrisMessage splitMsg1 = fac.newMessage("<document>hello</document>");
+    splitMsg1.addMetadata(DEFAULT_FILENAME_METADATA, "xfile1.xml");
+    AdaptrisMessage splitMsg2 = fac.newMessage("<document>world2</document>");
+    splitMsg2.addMetadata(DEFAULT_FILENAME_METADATA, "file2.xml");
+    AdaptrisMessage splitMsg3 = fac.newMessage("<document>world3</document>");
+    splitMsg3.addMetadata(DEFAULT_FILENAME_METADATA, "xfile3.xml");
+    AdaptrisMessage splitMsg4 = fac.newMessage("<document>world4</document>");
+    splitMsg4.addMetadata(DEFAULT_FILENAME_METADATA, "file4.xml");
+    AdaptrisMessage willBeIgnoredMsg = fac.newMessage("<document>world4</document>");
+    aggr.joinMessage(original,
+        Arrays.asList(splitMsg1, splitMsg2, splitMsg3, splitMsg4, willBeIgnoredMsg));
   }
 
   @Override

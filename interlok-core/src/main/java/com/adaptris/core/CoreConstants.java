@@ -16,7 +16,11 @@
 
 package com.adaptris.core;
 
-import com.adaptris.annotation.Removal;
+import java.util.function.Function;
+
+import org.apache.commons.lang3.BooleanUtils;
+
+import com.adaptris.validation.constraints.ConfigDeprecated;
 
 /**
  * <p>
@@ -39,6 +43,22 @@ public abstract class CoreConstants {
    * </p>
    */
   public static final String STOP_PROCESSING_KEY = "adpstopprocessing";
+  
+  /**
+   * <p>
+   * Metadata value which determines whether or not to stop processing additional services and/or producers
+   * </p>
+   *
+   * @see #STOP_PROCESSING_KEY
+   * @see #KEY_WORKFLOW_SKIP_PRODUCER
+   */
+  public static final String STOP_PROCESSING_VALUE = "true";
+  
+  /**
+   * A simply function check to test if the processing of the given message should stop.
+   */
+  public static final Function<AdaptrisMessage, Boolean> shouldStopProcessing = adaptrisMessage -> 
+      BooleanUtils.toBoolean(adaptrisMessage.getMetadataValue(STOP_PROCESSING_KEY));
 
   /**
    * <p>
@@ -64,16 +84,6 @@ public abstract class CoreConstants {
    * </ul>
    */
   public static final String KEY_WORKFLOW_SKIP_PRODUCER = "adpworkflowskipproducer";
-
-  /**
-   * <p>
-   * Metadata value which determines whether or not to stop processing additional services and/or producers
-   * </p>
-   *
-   * @see #STOP_PROCESSING_KEY
-   * @see #KEY_WORKFLOW_SKIP_PRODUCER
-   */
-  public static final String STOP_PROCESSING_VALUE = "true";
 
   /**
    * <p>
@@ -180,11 +190,11 @@ public abstract class CoreConstants {
 
   /**
    * Metadata key for the FTP reply to name override.
-   * 
+   *
    * @deprecated since 3.11.0 if you're using FTP to do request reply, then please don't.
    */
   @Deprecated
-  @Removal(version = "4.0")
+  @ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
   public static final String FTP_REPLYTO_NAME = "ftpreplytoname";
 
   /**
@@ -274,15 +284,15 @@ public abstract class CoreConstants {
    * @see Workflow#onAdaptrisMessage(AdaptrisMessage, java.util.function.Consumer)
    */
   public static final String OBJ_METADATA_MESSAGE_FAILED = "_messageFailed";
-  
+
   /**
    * Object metadata that stores the on success callback.
    *
    * @see Workflow#onAdaptrisMessage(AdaptrisMessage, java.util.function.Consumer)
    */
   public static final String OBJ_METADATA_ON_SUCCESS_CALLBACK = "_onSuccessCallback";
-  
-  
+
+
   /**
    * Object metadata that stores the on failure callback.
    *

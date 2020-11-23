@@ -26,6 +26,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.Service;
+import com.adaptris.core.services.aggregator.MessageAggregatorTest.EvenOddCondition;
 import com.adaptris.core.services.splitter.LineCountSplitter;
 import com.adaptris.core.stubs.DefectiveMessageFactory;
 import com.adaptris.core.stubs.DefectiveMessageFactory.WhenToBreak;
@@ -45,6 +46,19 @@ public class AppendinglMessageAggregatorTest extends AggregatingServiceExample {
     assertEquals("Goodbye Cruel World", original.getContent());
     assertEquals("newValue", original.getMetadataValue("originalKey"));
   }
+
+  @Test
+  public void testAggregate_WithFilter() throws Exception {
+    AppendingMessageAggregator aggr = createAggregatorForTests();
+    aggr.setFilterCondition(new EvenOddCondition());
+    AdaptrisMessage original = AdaptrisMessageFactory.getDefaultInstance().newMessage("Goodbye");
+    AdaptrisMessage splitMsg1 = AdaptrisMessageFactory.getDefaultInstance().newMessage(" Cruel ");
+    AdaptrisMessage splitMsg2 = AdaptrisMessageFactory.getDefaultInstance().newMessage("World");
+    aggr.joinMessage(original, Arrays.asList(new AdaptrisMessage[] {splitMsg1, splitMsg2}));
+    // First message was skipped, 2nd was merged.
+    assertEquals("GoodbyeWorld", original.getContent());
+  }
+
 
   @Test
   public void testJoin_WithException() {
@@ -85,4 +99,6 @@ public class AppendinglMessageAggregatorTest extends AggregatingServiceExample {
   protected String createBaseFileName(Object object) {
     return super.createBaseFileName(object) + "-" + createAggregatorForTests().getClass().getSimpleName();
   }
+
+
 }

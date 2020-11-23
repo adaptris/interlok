@@ -22,17 +22,21 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
 import java.util.concurrent.TimeUnit;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
+
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.JmsConnectionConfig;
 import com.adaptris.core.jms.PasProducer;
 import com.adaptris.core.jms.VendorImplementation;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
-import com.adaptris.core.jms.activemq.EmbeddedArtemis;
 import com.adaptris.core.jms.activemq.RequiresCredentialsBroker;
 import com.adaptris.core.jms.jndi.BaseJndiImplementation;
 import com.adaptris.core.jms.jndi.NoOpFactoryConfiguration;
@@ -50,6 +54,20 @@ public abstract class JndiImplementationCase {
 
   @Rule
   public TestName testName = new TestName();
+  
+  private static EmbeddedActiveMq activeMqBroker;
+
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
 
   @Test
   public void testSetEnableJndiForQueues() throws Exception {
@@ -161,44 +179,36 @@ public abstract class JndiImplementationCase {
 
   @Test
   public void testInitialiseDefaultArtemisBroker() throws Exception {
-
-    EmbeddedArtemis broker = new EmbeddedArtemis();
     String topicName = testName.getMethodName() + "_topic";
 
     PasProducer producer = new PasProducer().withTopic(topicName);
-    JmsConnection c = broker.getJmsConnection();
+    JmsConnection c = activeMqBroker.getJmsConnection();
     StandaloneProducer standaloneProducer = new StandaloneProducer(c, producer);
 
     try {
-      broker.start();
       LifecycleHelper.init(standaloneProducer);
     }
     finally {
       LifecycleHelper.close(standaloneProducer);
-      broker.destroy();
     }
   }
 
   @Test
   public void testInitialiseWithCredentials() throws Exception {
-
-    RequiresCredentialsBroker broker = new RequiresCredentialsBroker();
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
     PasProducer producer = new PasProducer().withTopic(topicName);;
     StandardJndiImplementation jv = createVendorImplementation();
-    JmsConnection c = broker.getJndiPasConnection(jv, false, queueName, topicName);
+    JmsConnection c = activeMqBroker.getJndiPasConnection(jv, false, queueName, topicName);
 
     jv.getJndiParams().addKeyValuePair(new KeyValuePair("UserName", RequiresCredentialsBroker.DEFAULT_USERNAME));
     jv.getJndiParams().addKeyValuePair(new KeyValuePair("Password", RequiresCredentialsBroker.DEFAULT_PASSWORD));
     StandaloneProducer standaloneProducer = new StandaloneProducer(c, producer);
     try {
-      broker.start();
       LifecycleHelper.init(standaloneProducer);
     }
     finally {
       LifecycleHelper.close(standaloneProducer);
-      broker.destroy();
     }
   }
 
@@ -214,7 +224,7 @@ public abstract class JndiImplementationCase {
 
     jv.getJndiParams().addKeyValuePair(new KeyValuePair("UserName", RequiresCredentialsBroker.DEFAULT_USERNAME));
     jv.getJndiParams().addKeyValuePair(
-        new KeyValuePair("Password", Password.encode(RequiresCredentialsBroker.DEFAULT_PASSWORD, Password.NON_PORTABLE_PASSWORD)));
+        new KeyValuePair("Password", Password.encode(RequiresCredentialsBroker.DEFAULT_PASSWORD, Password.PORTABLE_PASSWORD)));
     jv.setEncodedPasswordKeys("Password");
     StandaloneProducer standaloneProducer = new StandaloneProducer(c, producer);
     try {
@@ -239,7 +249,7 @@ public abstract class JndiImplementationCase {
 
     jv.getJndiParams().addKeyValuePair(new KeyValuePair("UserName", RequiresCredentialsBroker.DEFAULT_USERNAME));
     jv.getJndiParams().addKeyValuePair(
-        new KeyValuePair("Password", Password.encode(RequiresCredentialsBroker.DEFAULT_PASSWORD, Password.NON_PORTABLE_PASSWORD)));
+        new KeyValuePair("Password", Password.encode(RequiresCredentialsBroker.DEFAULT_PASSWORD, Password.PORTABLE_PASSWORD)));
     jv.setEncodedPasswordKeys("Password");
     jv.setEnableEncodedPasswords(true);
     StandaloneProducer standaloneProducer = new StandaloneProducer(c, producer);
@@ -264,7 +274,7 @@ public abstract class JndiImplementationCase {
     JmsConnection c = broker.getJndiPasConnection(jv, false, queueName, topicName);
     jv.getJndiParams().addKeyValuePair(new KeyValuePair("UserName", RequiresCredentialsBroker.DEFAULT_USERNAME));
     jv.getJndiParams().addKeyValuePair(
-        new KeyValuePair("Password", Password.encode(RequiresCredentialsBroker.DEFAULT_PASSWORD, Password.NON_PORTABLE_PASSWORD)));
+        new KeyValuePair("Password", Password.encode(RequiresCredentialsBroker.DEFAULT_PASSWORD, Password.PORTABLE_PASSWORD)));
     StandaloneProducer standaloneProducer = new StandaloneProducer(c, producer);
     try {
       broker.start();
@@ -281,53 +291,41 @@ public abstract class JndiImplementationCase {
 
   @Test
   public void testInitialiseWithTopicConnectionFactoryNotFound() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
     PasProducer producer = new PasProducer().withTopic(queueName);
     StandardJndiImplementation jv = createVendorImplementation();
-    JmsConnection c = broker.getJndiPasConnection(jv, false, queueName, topicName);
+    JmsConnection c = activeMqBroker.getJndiPasConnection(jv, false, queueName, topicName);
     c.setConnectionAttempts(1);
     c.setConnectionRetryInterval(new TimeInterval(100L, TimeUnit.MILLISECONDS.name()));
     jv.setJndiName("testInitialiseWithTopicConnectionFactoryNotFound");
     StandaloneProducer standaloneProducer = new StandaloneProducer(c, producer);
     try {
-      broker.start();
       LifecycleHelper.init(standaloneProducer);
       fail("Should Fail to lookup 'testInitialiseWithTopicConnectionFactoryNotFound'");
     }
     catch (Exception e) {
       // expected
     }
-    finally {
-      broker.destroy();
-    }
   }
 
   @Test
   public void testInitialiseWithQueueConnectionFactoryNotFound() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
     PasProducer producer = new PasProducer().withTopic((topicName));
     StandardJndiImplementation jv = createVendorImplementation();
-    JmsConnection c = broker.getJndiPtpConnection(jv, false, queueName, topicName);
+    JmsConnection c = activeMqBroker.getJndiPtpConnection(jv, false, queueName, topicName);
     c.setConnectionAttempts(1);
     c.setConnectionRetryInterval(new TimeInterval(100L, TimeUnit.MILLISECONDS));
     jv.setJndiName("testInitialiseWithQueueConnectionFactoryNotFound");
     StandaloneProducer standaloneProducer = new StandaloneProducer(c, producer);
     try {
-      broker.start();
       LifecycleHelper.init(standaloneProducer);
       fail("Should Fail to lookup 'testInitialiseWithQueueConnectionFactoryNotFound'");
     }
     catch (Exception e) {
       // expected
-    }
-    finally {
-      broker.destroy();
     }
   }
 

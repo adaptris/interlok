@@ -6,12 +6,16 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMessageFactory;
@@ -22,6 +26,7 @@ import com.adaptris.core.MultiPayloadAdaptrisMessageImp;
 import com.adaptris.core.MultiPayloadMessageFactory;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.StartedState;
 import com.adaptris.core.services.LogMessageService;
 import com.adaptris.util.GuidGenerator;
 
@@ -39,7 +44,13 @@ public class ForEachTest extends ConditionalServiceExample
 	@Before
 	public void setUp() throws Exception
 	{
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
+		
+		when(mock.retrieveComponentState())
+            .thenReturn(StartedState.getInstance());
+		when(mock.createName())
+		    .thenReturn(mock.getClass().getName());
+		
 		forEach = new ForEach();
 		then = new ThenService();
 		then.setService(mock);
@@ -87,7 +98,7 @@ public class ForEachTest extends ConditionalServiceExample
 		forEach.doService(message);
 		verify(mock, times(2)).doService(any(AdaptrisMessage.class));
 	}
-
+	
 	@Test
   @SuppressWarnings("serial")
 	public void testNonCloneableMessage() throws Exception

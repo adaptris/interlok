@@ -22,6 +22,9 @@ import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
 import static com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase.assertMessages;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisConnection;
@@ -71,6 +74,19 @@ public class BasicActiveMqConsumerTest
     }
   }
 
+  private static EmbeddedActiveMq activeMqBroker;
+
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
 
   @Override
   protected String createBaseFileName(Object object) {
@@ -98,77 +114,54 @@ public class BasicActiveMqConsumerTest
 
   @Test
   public void testTopicProduceAndConsume() throws Exception {
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    try {
-      activeMqBroker.start();
+    PasConsumer consumer = new PasConsumer().withTopic(getName());
+    consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+    StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
 
-      PasConsumer consumer = new PasConsumer().withTopic(getName());
-      consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
-      StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
+    MockMessageListener jms = new MockMessageListener();
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
 
-      MockMessageListener jms = new MockMessageListener();
-      standaloneConsumer.registerAdaptrisMessageListener(jms);
-
-      StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
-              new PasProducer().withTopic(getName()));
-      // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
-      LifecycleHelper.prepare(standaloneConsumer);
-      LifecycleHelper.prepare(standaloneProducer);
-      execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
-      assertMessages(jms, 1);
-      AdaptrisMessage consumed = jms.getMessages().get(0);
-      // Since it's not a workflow; this will be false.
-      assertFalse(consumed.headersContainsKey(CoreConstants.MESSAGE_CONSUME_LOCATION));
-    }
-    finally {
-      activeMqBroker.destroy();
-    }
-
+    StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
+            new PasProducer().withTopic(getName()));
+    // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
+    LifecycleHelper.prepare(standaloneConsumer);
+    LifecycleHelper.prepare(standaloneProducer);
+    execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
+    assertMessages(jms, 1);
+    AdaptrisMessage consumed = jms.getMessages().get(0);
+    // Since it's not a workflow; this will be false.
+    assertFalse(consumed.headersContainsKey(CoreConstants.MESSAGE_CONSUME_LOCATION));
   }
 
   @Test
   public void testTopicProduceAndConsumeWithImplicitFallbackMessageTranslation() throws Exception {
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    try {
-      activeMqBroker.start();
-      PasConsumer consumer = new PasConsumer().withTopic(getName());
-      consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
-      StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
+    PasConsumer consumer = new PasConsumer().withTopic(getName());
+    consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+    StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
 
-      MockMessageListener jms = new MockMessageListener();
-      standaloneConsumer.registerAdaptrisMessageListener(jms);
-      DefinedJmsProducer producer = new PasProducer().withTopic(getName());
-      producer.setMessageTranslator(new BytesMessageTranslator());
-      StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), producer);
-      execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
-      assertMessages(jms, 1);
-    }
-    finally {
-      activeMqBroker.destroy();
-    }
+    MockMessageListener jms = new MockMessageListener();
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
+    DefinedJmsProducer producer = new PasProducer().withTopic(getName());
+    producer.setMessageTranslator(new BytesMessageTranslator());
+    StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), producer);
+    execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
+    assertMessages(jms, 1);
   }
 
   @Test
   public void testTopicProduceAndConsumeWithExplicitFallbackMessageTranslation() throws Exception {
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    try {
-      activeMqBroker.start();
-      PasConsumer consumer = new PasConsumer().withTopic(getName());
-      consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
-      consumer.setMessageTranslator(new AutoConvertMessageTranslator());
-      StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
+    PasConsumer consumer = new PasConsumer().withTopic(getName());
+    consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+    consumer.setMessageTranslator(new AutoConvertMessageTranslator());
+    StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
 
-      MockMessageListener jms = new MockMessageListener();
-      standaloneConsumer.registerAdaptrisMessageListener(jms);
-      DefinedJmsProducer producer = new PasProducer().withTopic(getName());
-      producer.setMessageTranslator(new BytesMessageTranslator());
-      StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), producer);
-      execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
-      assertMessages(jms, 1);
-    }
-    finally {
-      activeMqBroker.destroy();
-    }
+    MockMessageListener jms = new MockMessageListener();
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
+    DefinedJmsProducer producer = new PasProducer().withTopic(getName());
+    producer.setMessageTranslator(new BytesMessageTranslator());
+    StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), producer);
+    execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
+    assertMessages(jms, 1);
   }
 
   private Channel createChannel(AdaptrisConnection cc, Workflow wf) throws Exception {
@@ -188,7 +181,6 @@ public class BasicActiveMqConsumerTest
 
   @Test
   public void testQueue_ProduceWhenConsumerStopped() throws Exception {
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     PtpConsumer consumer = new PtpConsumer().withQueue(getName());
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandardWorkflow workflow = new StandardWorkflow();
@@ -198,8 +190,6 @@ public class BasicActiveMqConsumerTest
     Channel channel = createChannel(activeMqBroker.getJmsConnection(createVendorImpl()), workflow);
 
     try {
-      activeMqBroker.start();
-
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
               new PtpProducer().withQueue((getName())));
 
@@ -215,13 +205,11 @@ public class BasicActiveMqConsumerTest
     }
     finally {
       channel.requestClose();
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testTopic_ProduceWhenConsumerStopped() throws Exception {
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     PasConsumer consumer = new PasConsumer().withTopic(getName());
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandardWorkflow workflow = new StandardWorkflow();
@@ -231,8 +219,6 @@ public class BasicActiveMqConsumerTest
     Channel channel = createChannel(activeMqBroker.getJmsConnection(createVendorImpl()), workflow);
 
     try {
-      activeMqBroker.start();
-
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
               new PasProducer().withTopic(getName()));
 
@@ -248,80 +234,57 @@ public class BasicActiveMqConsumerTest
     }
     finally {
       channel.requestClose();
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testQueueProduceAndConsume() throws Exception {
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    try {
-      activeMqBroker.start();
-      PtpConsumer consumer = new PtpConsumer().withQueue(getName());
-      consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+    PtpConsumer consumer = new PtpConsumer().withQueue(getName());
+    consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
 
-      StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
-      MockMessageListener jms = new MockMessageListener();
-      standaloneConsumer.registerAdaptrisMessageListener(jms);
+    StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
+    MockMessageListener jms = new MockMessageListener();
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
 
-      StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
-              new PtpProducer().withQueue((getName())));
-      // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
-      LifecycleHelper.prepare(standaloneConsumer);
-      LifecycleHelper.prepare(standaloneProducer);
+    StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
+            new PtpProducer().withQueue((getName())));
+    // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
+    LifecycleHelper.prepare(standaloneConsumer);
+    LifecycleHelper.prepare(standaloneProducer);
 
-      execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
-      assertMessages(jms, 1);
-    }
-    finally {
-      activeMqBroker.destroy();
-    }
+    execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
+    assertMessages(jms, 1);
   }
 
   @Test
   public void testQueueProduceAndConsumeWithImplicitFallbackMessageTranslation() throws Exception {
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    try {
-      activeMqBroker.start();
-      PtpConsumer consumer = new PtpConsumer().withQueue(getName());
-      consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
-      StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
+    PtpConsumer consumer = new PtpConsumer().withQueue(getName());
+    consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+    StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
 
-      MockMessageListener jms = new MockMessageListener();
-      standaloneConsumer.registerAdaptrisMessageListener(jms);
-      DefinedJmsProducer producer = new PtpProducer().withQueue((getName()));
-      producer.setMessageTranslator(new BytesMessageTranslator());
-      StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), producer);
-      execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
-      assertMessages(jms, 1);
-    }
-    finally {
-      activeMqBroker.destroy();
-    }
+    MockMessageListener jms = new MockMessageListener();
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
+    DefinedJmsProducer producer = new PtpProducer().withQueue((getName()));
+    producer.setMessageTranslator(new BytesMessageTranslator());
+    StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), producer);
+    execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
+    assertMessages(jms, 1);
   }
 
   @Test
   public void testQueueProduceAndConsumeWithExplicitFallbackMessageTranslation() throws Exception {
+    PtpConsumer consumer = new PtpConsumer().withQueue(getName());
+    consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+    consumer.setMessageTranslator(new AutoConvertMessageTranslator());
+    StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
 
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    try {
-      activeMqBroker.start();
-      PtpConsumer consumer = new PtpConsumer().withQueue(getName());
-      consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
-      consumer.setMessageTranslator(new AutoConvertMessageTranslator());
-      StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
-
-      MockMessageListener jms = new MockMessageListener();
-      standaloneConsumer.registerAdaptrisMessageListener(jms);
-      DefinedJmsProducer producer = new PtpProducer().withQueue((getName()));
-      producer.setMessageTranslator(new BytesMessageTranslator());
-      StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), producer);
-      execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
-      assertMessages(jms, 1);
-    }
-    finally {
-      activeMqBroker.destroy();
-    }
+    MockMessageListener jms = new MockMessageListener();
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
+    DefinedJmsProducer producer = new PtpProducer().withQueue((getName()));
+    producer.setMessageTranslator(new BytesMessageTranslator());
+    StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), producer);
+    execute(standaloneConsumer, standaloneProducer, createMessage(null), jms);
+    assertMessages(jms, 1);
   }
 
   @Test
@@ -330,26 +293,20 @@ public class BasicActiveMqConsumerTest
       log.debug("Blob Server not available; skipping test");
       return;
     }
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    try {
-      activeMqBroker.start();
-      PtpConsumer consumer = new PtpConsumer().withQueue(getName());
-      consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
-      consumer.setMessageTranslator(new BlobMessageTranslator());
-      StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
-      MockMessageListener jms = new MockMessageListener();
-      standaloneConsumer.registerAdaptrisMessageListener(jms);
 
-      PtpProducer producer = new PtpProducer().withQueue((getName()));
-      producer.setMessageTranslator(new BlobMessageTranslator("blobUrl"));
-      StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), producer);
+    PtpConsumer consumer = new PtpConsumer().withQueue(getName());
+    consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+    consumer.setMessageTranslator(new BlobMessageTranslator());
+    StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
+    MockMessageListener jms = new MockMessageListener();
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
 
-      execute(standaloneConsumer, standaloneProducer, addBlobUrlRef(createMessage(null), "blobUrl"), jms);
-      assertMessages(jms, 1, false);
-    }
-    finally {
-      activeMqBroker.destroy();
-    }
+    PtpProducer producer = new PtpProducer().withQueue((getName()));
+    producer.setMessageTranslator(new BlobMessageTranslator("blobUrl"));
+    StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), producer);
+
+    execute(standaloneConsumer, standaloneProducer, addBlobUrlRef(createMessage(null), "blobUrl"), jms);
+    assertMessages(jms, 1, false);
   }
 
   @Test
@@ -358,54 +315,40 @@ public class BasicActiveMqConsumerTest
       log.debug("Blob Server not available; skipping test");
       return;
     }
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    try {
-      activeMqBroker.start();
-      PtpConsumer consumer = new PtpConsumer().withQueue(getName());
-      consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
-      consumer.setMessageTranslator(new BlobMessageTranslator());
-      StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
-      MockMessageListener jms = new MockMessageListener();
-      standaloneConsumer.registerAdaptrisMessageListener(jms);
+    PtpConsumer consumer = new PtpConsumer().withQueue(getName());
+    consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+    consumer.setMessageTranslator(new BlobMessageTranslator());
+    StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
+    MockMessageListener jms = new MockMessageListener();
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
 
-      PtpProducer producer = new PtpProducer().withQueue((getName()));
-      producer.setMessageTranslator(new BlobMessageTranslator("blobUrl"));
-      StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), producer);
+    PtpProducer producer = new PtpProducer().withQueue((getName()));
+    producer.setMessageTranslator(new BlobMessageTranslator("blobUrl"));
+    StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()), producer);
 
-      execute(standaloneConsumer, standaloneProducer, addBlobUrlRef(createMessage(new FileBackedMessageFactory()), "blobUrl"), jms);
-      assertMessages(jms, 1, false);
-    }
-    finally {
-      activeMqBroker.destroy();
-    }
+    execute(standaloneConsumer, standaloneProducer, addBlobUrlRef(createMessage(new FileBackedMessageFactory()), "blobUrl"), jms);
+    assertMessages(jms, 1, false);
   }
 
   @Test
   public void testStartWithDurableSubscribers_WithNonBlockingChannelStrategy() throws Exception {
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    try {
-      activeMqBroker.start();
-      Adapter adapter = createDurableSubsAdapter(getName(), activeMqBroker);
-      adapter.requestStart();
-      assertEquals(StartedState.getInstance(), adapter.retrieveComponentState());
-      adapter.requestClose();
-      assertEquals(ClosedState.getInstance(), adapter.retrieveComponentState());
-      adapter.getChannelList().setLifecycleStrategy(new NonBlockingChannelStartStrategy());
-      adapter.requestStart();
-      // Thread.sleep(1000);
-      Channel c = adapter.getChannelList().getChannel(0);
-      int maxAttempts = 100;
-      int attempts = 0;
-      while (attempts < maxAttempts && c.retrieveComponentState() != StartedState.getInstance()) {
-        Thread.sleep(500);
-        attempts++;
-      }
-      assertEquals(StartedState.getInstance(), c.retrieveComponentState());
-      adapter.requestClose();
+    Adapter adapter = createDurableSubsAdapter(getName(), activeMqBroker);
+    adapter.requestStart();
+    assertEquals(StartedState.getInstance(), adapter.retrieveComponentState());
+    adapter.requestClose();
+    assertEquals(ClosedState.getInstance(), adapter.retrieveComponentState());
+    adapter.getChannelList().setLifecycleStrategy(new NonBlockingChannelStartStrategy());
+    adapter.requestStart();
+    // Thread.sleep(1000);
+    Channel c = adapter.getChannelList().getChannel(0);
+    int maxAttempts = 100;
+    int attempts = 0;
+    while (attempts < maxAttempts && c.retrieveComponentState() != StartedState.getInstance()) {
+      Thread.sleep(500);
+      attempts++;
     }
-    finally {
-      activeMqBroker.destroy();
-    }
+    assertEquals(StartedState.getInstance(), c.retrieveComponentState());
+    adapter.requestClose();
   }
 
   @Test
@@ -413,6 +356,7 @@ public class BasicActiveMqConsumerTest
     testStartWithDurableSubscribers_WithNonBlockingChannelStrategy();
   }
 
+  @SuppressWarnings("deprecation")
   private Adapter createDurableSubsAdapter(String adapterName, EmbeddedActiveMq activeMqBroker) throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(adapterName);

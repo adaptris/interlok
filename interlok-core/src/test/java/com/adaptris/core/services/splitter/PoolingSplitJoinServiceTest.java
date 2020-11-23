@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,8 +16,8 @@
 
 package com.adaptris.core.services.splitter;
 
-import static com.adaptris.core.ServiceCase.asCollection;
-import static com.adaptris.core.ServiceCase.execute;
+import static com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase.asCollection;
+import static com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase.execute;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
@@ -31,6 +31,7 @@ import com.adaptris.core.util.MimeHelper;
 import com.adaptris.util.TimeInterval;
 import com.adaptris.util.text.mime.BodyPartIterator;
 
+@SuppressWarnings("deprecation")
 public class PoolingSplitJoinServiceTest extends SplitJoinServiceTest {
 
   @Test
@@ -61,7 +62,7 @@ public class PoolingSplitJoinServiceTest extends SplitJoinServiceTest {
         .with()
         .pollInterval(ONE_HUNDRED_MILLISECONDS)
         .until(input::size, equalTo(11));
-    
+
     assertEquals(11, input.size());
   }
 
@@ -78,13 +79,13 @@ public class PoolingSplitJoinServiceTest extends SplitJoinServiceTest {
     service.setAggregator(new MimeAggregator());
     execute(service, msg);
     BodyPartIterator input = MimeHelper.createBodyPartIterator(msg);
-    
+
     await()
         .atMost(FIVE_SECONDS)
         .with()
         .pollInterval(ONE_HUNDRED_MILLISECONDS)
         .until(input::size, equalTo(11));
-    
+
     assertEquals(11, input.size());
   }
 

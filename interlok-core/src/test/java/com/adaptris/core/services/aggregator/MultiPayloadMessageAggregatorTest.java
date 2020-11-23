@@ -3,17 +3,18 @@ package com.adaptris.core.services.aggregator;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.MultiPayloadAdaptrisMessage;
 import com.adaptris.core.MultiPayloadMessageFactory;
 import com.adaptris.core.Service;
+import com.adaptris.core.services.aggregator.MessageAggregatorTest.EvenOddCondition;
 import com.adaptris.core.services.splitter.MultiPayloadMessageSplitter;
 
 public class MultiPayloadMessageAggregatorTest extends AggregatorCase
@@ -54,19 +55,20 @@ public class MultiPayloadMessageAggregatorTest extends AggregatorCase
 		assertEquals(3, message.getPayloadCount());
 	}
 
-	@Test
-	public void testWrongMessageType()
-	{
-		try
-		{
-			aggregator.joinMessage(DefaultMessageFactory.getDefaultInstance().newMessage(), messages);
-			fail();
-		}
-		catch (CoreException e)
-		{
-			/* expected */
-		}
-	}
+  @Test(expected = CoreException.class)
+  public void testWrongMessageType() throws Exception {
+    aggregator.joinMessage(AdaptrisMessageFactory.getDefaultInstance().newMessage(), messages);
+  }
+
+  @Test
+  public void testWithFilter() throws Exception {
+    aggregator.setReplaceOriginalMessage(false);
+    aggregator.setFilterCondition(new EvenOddCondition());
+    aggregator.aggregate(message, messages);
+    assertFalse(aggregator.getReplaceOriginalMessage());
+    // 2 to merge, of which one will be discarded + the original.
+    assertEquals(2, message.getPayloadCount());
+  }
 
 	@Override
 	protected MultiPayloadMessageAggregator createAggregatorForTests()

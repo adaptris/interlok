@@ -70,9 +70,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
         CoreConstants.FS_CONSUME_DIRECTORY, CoreConstants.MESSAGE_CONSUME_LOCATION
 },
     recommended = {FileTransferConnection.class})
-@DisplayOrder(order = {"ftpEndpoint", "filterExpression", "poller", "workDirectory",
-    "fileFilterImp", "procDirectory",
-    "wipSuffix", "quietInterval"})
+@DisplayOrder(order = {"ftpEndpoint", "filterExpression", "fileFilterImp", "poller",
+    "workDirectory", "procDirectory", "wipSuffix", "quietInterval"})
 public class FtpConsumer extends FtpConsumerImpl {
   private static final String DEFAULT_WIP_SUFFIX = "_wip";
 

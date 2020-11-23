@@ -20,6 +20,9 @@ import static org.junit.Assert.fail;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.MetadataElement;
@@ -27,34 +30,35 @@ import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 
 public abstract class ConvertingMetadataConverterCase extends MetadataConverterCase {
 
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
+  
   @Test
   public void testConvertFailure() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MetadataConverter mc = createConverter();
-    try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
-      MetadataCollection metadataCollection = new MetadataCollection();
-      metadataCollection.add(new MetadataElement(HEADER, testName.getMethodName()));
-      Message jmsMsg = session.createMessage();
-      mc.moveMetadata(metadataCollection, jmsMsg);
-      assertEquals(testName.getMethodName(), jmsMsg.getStringProperty(HEADER));
-    }
-    finally {
-      broker.destroy();
-    }
+    Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+    MetadataCollection metadataCollection = new MetadataCollection();
+    metadataCollection.add(new MetadataElement(HEADER, testName.getMethodName()));
+    Message jmsMsg = session.createMessage();
+    mc.moveMetadata(metadataCollection, jmsMsg);
+    assertEquals(testName.getMethodName(), jmsMsg.getStringProperty(HEADER));
   }
 
   @Test
   public void testConvertFailure_Strict() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MetadataConverter mc = createConverter();
     mc.setStrictConversion(true);
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       MetadataCollection metadataCollection = new MetadataCollection();
       metadataCollection.add(new MetadataElement(HEADER, testName.getMethodName()));
       Message jmsMsg = session.createMessage();
@@ -63,9 +67,6 @@ public abstract class ConvertingMetadataConverterCase extends MetadataConverterC
     }
     catch (JMSException expected) {
 
-    }
-    finally {
-      broker.destroy();
     }
   }
 

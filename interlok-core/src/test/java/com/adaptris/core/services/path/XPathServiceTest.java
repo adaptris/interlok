@@ -83,6 +83,26 @@ public class XPathServiceTest
   }
 
   @Test
+  public void testPayloadAttributeValueXPathIntoMetadata() throws Exception {
+    message.setContent(sampleXml, message.getContentEncoding());
+
+    MetadataDataOutputParameter metadataDataDestination1 = new MetadataDataOutputParameter("targetMetadataKey");
+
+    ConstantDataInputParameter constantDataDestination = new ConstantDataInputParameter("//some/random/xml/node1/@attr");
+
+    Execution execution = new Execution(constantDataDestination, metadataDataDestination1);
+
+    List<Execution> executions = new ArrayList<>();
+    executions.add(execution);
+
+    service.setXmlSource(new StringPayloadDataInputParameter());
+    service.setExecutions(executions);
+    execute(service, message);
+
+    assertEquals("attribute value", message.getMetadataValue("targetMetadataKey"));
+  }
+
+  @Test
   public void testForCoveragePurposesInvalidXml() throws Exception {
     message.setContent("not valid xml!", message.getContentEncoding());
 
@@ -141,7 +161,7 @@ public class XPathServiceTest
     service.setExecutions(executions);
     execute(service, message);
 
-    assertEquals("<node1>value1</node1>", message.getMetadataValue("targetMetadataKey"));
+    assertEquals("<node1 attr=\"attribute value\">value1</node1>", message.getMetadataValue("targetMetadataKey"));
   }
 
   @Test
@@ -262,7 +282,7 @@ public class XPathServiceTest
       + "<some>"
         + "<random>"
           + "<xml>"
-            + "<node1>value1</node1>"
+            + "<node1 attr=\"attribute value\">value1</node1>"
             + "<node2>value2</node2>"
             + "<node3>value3</node3>"
           + "</xml>"

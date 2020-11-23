@@ -1,7 +1,7 @@
 package com.adaptris.core;
 
+import javax.validation.constraints.NotBlank;
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -9,6 +9,8 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * <p>
@@ -18,20 +20,30 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * By default the looked-up service is deep cloned before being loaded into your workflows. <br/>
  * You can turn off cloning by simply setting "clone-service=true".
  * </p>
- * 
+ *
  * @config shared-service
  * @author amcgrath
- * 
+ *
  */
 @XStreamAlias("shared-service")
 @AdapterComponent
-@ComponentProfile(summary = "A Service that refers to another Service configured elsewhere", tag = "service,base")
+@ComponentProfile(summary = "A Service that refers to another Service configured elsewhere",
+    tag = "service")
 @DisplayOrder(order = {"lookupName", "cloneService"})
 public class SharedService extends SharedServiceImpl {
 
   @AdvancedConfig
   @InputFieldDefault(value="true")
   private Boolean cloneService;
+  /**
+   * Set the name of the service that will be looked up from
+   * {@link SharedComponentList#getServices()},
+   *
+   */
+  @NotBlank
+  @Getter
+  @Setter
+  private String lookupName;
 
   private transient Service clonedService;
 
@@ -40,9 +52,9 @@ public class SharedService extends SharedServiceImpl {
 
   public SharedService(String lookupName) {
     this();
-    this.setLookupName(lookupName);
+    setLookupName(lookupName);
   }
-  
+
   private Service getProxiedService() {
     try {
       if (clonedService == null) {
@@ -58,7 +70,7 @@ public class SharedService extends SharedServiceImpl {
     }
     return clonedService;
   }
-  
+
   @Override
   public void init() throws CoreException {
     LifecycleHelper.init(getProxiedService());

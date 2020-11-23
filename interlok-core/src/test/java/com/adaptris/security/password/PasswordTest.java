@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import com.adaptris.interlok.junit.scaffolding.util.Os;
@@ -57,6 +58,7 @@ public class PasswordTest {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testNonPortable() throws Exception {
     String encoded = Password.encode(TEXT, Password.NON_PORTABLE_PASSWORD);
     assertEquals(TEXT, Password.decode(encoded));
@@ -64,9 +66,8 @@ public class PasswordTest {
 
   @Test
   public void testMicrosoftCrypto() throws Exception {
-    if (Os.isFamily(Os.WINDOWS_NT_FAMILY)) {
-      String encoded = Password.encode(TEXT, Password.MSCAPI_STYLE);
-      assertEquals(TEXT, Password.decode(encoded));
-    }
+    Assume.assumeTrue(Os.isFamily(Os.WINDOWS_NT_FAMILY));
+    String encoded = Password.encode(TEXT, Password.MSCAPI_STYLE);
+    assertEquals(TEXT, Password.decode(encoded));
   }
 }

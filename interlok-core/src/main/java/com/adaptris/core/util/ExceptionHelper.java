@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,12 +19,13 @@ package com.adaptris.core.util;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ServiceException;
+import com.adaptris.interlok.InterlokException;
 
 /**
  * Helper class that assists converting exceptions.
- * 
+ *
  * @author lchan
- * 
+ *
  */
 public abstract class ExceptionHelper {
 
@@ -92,5 +93,16 @@ public abstract class ExceptionHelper {
       return (ProduceException) e;
     }
     return new ProduceException(msg, e);
+  }
+
+  public static InterlokException wrapInterlokException(Throwable e) {
+    return wrapInterlokException(e.getMessage(), e);
+  }
+
+  public static InterlokException wrapInterlokException(String msg, Throwable e) {
+    if (e instanceof InterlokException) {
+      return (InterlokException) e;
+    }
+    return new InterlokException(msg, e);
   }
 }

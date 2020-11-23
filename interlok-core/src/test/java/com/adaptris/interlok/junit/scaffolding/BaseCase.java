@@ -346,4 +346,7 @@ public abstract class BaseCase {
     return name;
   }
 
+  public static String getConfiguration(String key) {
+    return PROPERTIES.getProperty(key);
+  }
 }

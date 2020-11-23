@@ -15,7 +15,9 @@ import javax.jms.Message;
 import javax.jms.MessageProducer;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -38,10 +40,12 @@ public class JmsAsyncProducerTest
   
   private static final String ID_HEADER = "interlokMessageId";
 
+  private static EmbeddedArtemis activeMqBroker;
+  
   private JmsAsyncProducer producer;
 
   private AdaptrisMessage adaptrisMessage;
-
+  
   @Mock private ProducerSessionFactory mockSessionFactory;
   @Mock private ProducerSession mockSession;
   @Mock private MessageTypeTranslator mockTranslator;
@@ -53,10 +57,21 @@ public class JmsAsyncProducerTest
 
   private AutoCloseable openMocks;
 
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedArtemis();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null) activeMqBroker.destroy();
+  }
+  
   @Before
   public void setUp() throws Exception {
     openMocks = MockitoAnnotations.openMocks(this);
-
+    
     adaptrisMessage = DefaultMessageFactory.getDefaultInstance().newMessage();
     
     ListenerCallbackHelper.prepare(adaptrisMessage, 
@@ -211,7 +226,6 @@ public class JmsAsyncProducerTest
 
   @Test
   public void testEmbeddedSuccessHandler() throws Exception {
-    EmbeddedArtemis broker = new EmbeddedArtemis();
     JmsAsyncProducer producer = new JmsAsyncProducer();
 
     producer.setEndpoint("jms:topic:myTopicName?priority=4");
@@ -219,9 +233,7 @@ public class JmsAsyncProducerTest
     StandaloneProducer standaloneProducer = new StandaloneProducer();
 
     try {
-      broker.start();
-
-      standaloneProducer.setConnection(broker.getJmsConnection());
+      standaloneProducer.setConnection(activeMqBroker.getJmsConnection());
       standaloneProducer.setProducer(producer);
 
       LifecycleHelper.initAndStart(standaloneProducer);
@@ -230,13 +242,11 @@ public class JmsAsyncProducerTest
 
     } finally {
       LifecycleHelper.stopAndClose(standaloneProducer);
-      broker.destroy();
     }
   }
 
   @Test
   public void testEmbeddedJmsException() throws Exception {
-    EmbeddedArtemis broker = new EmbeddedArtemis();
     JmsAsyncProducer producer = new JmsAsyncProducer();
 
     producer.setEndpoint("{}");
@@ -244,9 +254,7 @@ public class JmsAsyncProducerTest
     StandaloneProducer standaloneProducer = new StandaloneProducer();
 
     try {
-      broker.start();
-
-      standaloneProducer.setConnection(broker.getJmsConnection());
+      standaloneProducer.setConnection(activeMqBroker.getJmsConnection());
       standaloneProducer.setProducer(producer);
 
       LifecycleHelper.initAndStart(standaloneProducer);
@@ -260,7 +268,6 @@ public class JmsAsyncProducerTest
 
     } finally {
       LifecycleHelper.stopAndClose(standaloneProducer);
-      broker.destroy();
     }
   }
 

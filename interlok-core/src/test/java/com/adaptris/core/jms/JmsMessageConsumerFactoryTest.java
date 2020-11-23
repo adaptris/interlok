@@ -89,7 +89,7 @@ public class JmsMessageConsumerFactoryTest {
     mockCreateDestinationAndConsumer(jmsDestination, RFC6167_SUBSCRIPTION);
 
     TopicSubscriber topicSubscriber = mock(TopicSubscriber.class);
-    when(session.createDurableSubscriber(any(Topic.class), eq(FILTER))).thenReturn(topicSubscriber);
+    when(session.createDurableSubscriber(any(Topic.class), eq(SUBSCRIPTION_ID))).thenReturn(topicSubscriber);
 
     JmsMessageConsumerFactory jmsMessageConsumerFactory = new JmsMessageConsumerFactory(mockVendor, session, RFC6167_SUBSCRIPTION, false,
         FILTER,
@@ -98,7 +98,7 @@ public class JmsMessageConsumerFactoryTest {
     MessageConsumer messageConsumer = jmsMessageConsumerFactory.create();
 
     assertEquals(topicSubscriber, messageConsumer);
-    verify(session).createDurableSubscriber(any(Topic.class), eq(FILTER));
+    verify(session).createDurableSubscriber(any(Topic.class), eq(SUBSCRIPTION_ID));
   }
 
   @Test

@@ -8,11 +8,11 @@ dependencies {
 
   compile project(':interlok-core-apt')
   compile ("com.thoughtworks.xstream:xstream:$xstreamVersion")
-  compile ("commons-io:commons-io:2.7")
-  compile ("commons-net:commons-net:3.7")
+  compile ("commons-io:commons-io:2.8.0")
+  compile ("commons-net:commons-net:3.7.2")
   compile ("commons-pool:commons-pool:1.6")
   compile ("org.apache.commons:commons-lang3:3.11")
-  compile ("org.apache.commons:commons-pool2:2.8.1")
+  compile ("org.apache.commons:commons-pool2:2.9.0")
 
   compile ("org.slf4j:slf4j-api:$slf4jVersion")
 
@@ -20,7 +20,7 @@ dependencies {
   compile ("javax:javaee-api:8.0.1")
 
   compile ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
-  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.31.v20200723")
+  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.34.v20201102")
   compile "org.slf4j:jul-to-slf4j:$slf4jVersion", optional
   compile "org.apache.logging.log4j:log4j-core:$log4j2Version", optional
   compile "org.apache.logging.log4j:log4j-api:$log4j2Version", optional
@@ -34,7 +34,7 @@ dependencies {
   javadoc project(':interlok-core-apt')
 
   testCompile ("log4j:log4j:1.2.17")
-  testCompile ("junit:junit:4.13")
+  testCompile ("junit:junit:4.13.1")
   testCompile ("org.mockito:mockito-core:$mockitoVersion")
   testCompile ("org.mockito:mockito-inline:$mockitoVersion")
 }

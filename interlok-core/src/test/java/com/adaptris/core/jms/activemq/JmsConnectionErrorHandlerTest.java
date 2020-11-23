@@ -22,6 +22,9 @@ import static com.adaptris.interlok.junit.scaffolding.BaseCase.MAX_WAIT;
 import static com.adaptris.interlok.junit.scaffolding.BaseCase.waitForMessages;
 import static org.junit.Assert.assertEquals;
 import java.util.concurrent.TimeUnit;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -57,15 +60,26 @@ public class JmsConnectionErrorHandlerTest {
   private Logger log = LoggerFactory.getLogger(this.getClass());
   @Rule
   public TestName testName = new TestName();
+  
+  private static EmbeddedActiveMq activeMqBroker;
+
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
 
   @Test
   public void testConnectionErrorHandler() throws Exception {
-
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     MockChannel channel = createChannel(activeMqBroker, activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true),
         testName.getMethodName(), new JmsConnectionErrorHandler());
     try {
-      activeMqBroker.start();
       channel.requestStart();
       assertEquals(StartedState.getInstance(), channel.retrieveComponentState());
       activeMqBroker.stop();
@@ -79,15 +93,12 @@ public class JmsConnectionErrorHandlerTest {
     }
     finally {
       channel.requestClose();
-      activeMqBroker.destroy();
     }
   }
 
   // Tests INTERLOK-2063
   @Test
   public void testConnectionErrorHandler_WithRuntimeException() throws Exception {
-
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     MockChannel channel = createChannel(activeMqBroker,
         new JmsConnectionCloseWithRuntimeException(activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true)),
         testName.getMethodName(), new JmsConnectionErrorHandler() {
@@ -97,7 +108,6 @@ public class JmsConnectionErrorHandlerTest {
           }
         });
     try {
-      activeMqBroker.start();
       channel.requestStart();
       assertEquals(StartedState.getInstance(), channel.retrieveComponentState());
       activeMqBroker.stop();
@@ -110,20 +120,16 @@ public class JmsConnectionErrorHandlerTest {
 
     } finally {
       channel.requestClose();
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testConnectionErrorHandler_WithInitialiseException() throws Exception {
-
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     MockChannel channel = new MockChannelFail(createChannel(activeMqBroker,
         activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true),
         testName.getMethodName(), new JmsConnectionErrorHandler()),
         MockChannelFail.WhenToFail.INIT_AFTER_CLOSE);
     try {
-      activeMqBroker.start();
       channel.requestStart();
       assertEquals(StartedState.getInstance(), channel.retrieveComponentState());
       activeMqBroker.stop();
@@ -139,20 +145,16 @@ public class JmsConnectionErrorHandlerTest {
 
     } finally {
       channel.requestClose();
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testConnectionErrorHandler_WithStartException() throws Exception {
-
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     MockChannel channel = new MockChannelFail(createChannel(activeMqBroker,
         activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true),
         testName.getMethodName(), new JmsConnectionErrorHandler()),
         MockChannelFail.WhenToFail.START_AFTER_CLOSE);
     try {
-      activeMqBroker.start();
       channel.requestStart();
       assertEquals(StartedState.getInstance(), channel.retrieveComponentState());
       activeMqBroker.stop();
@@ -166,18 +168,14 @@ public class JmsConnectionErrorHandlerTest {
 
     } finally {
       channel.requestClose();
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testConnectionErrorHandler_NotSingleExecution() throws Exception {
-
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     MockChannel channel = createChannel(activeMqBroker, activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true),
         testName.getMethodName(), new JmsConnectionErrorHandler(false));
     try {
-      activeMqBroker.start();
       channel.requestStart();
       assertEquals(StartedState.getInstance(), channel.retrieveComponentState());
       activeMqBroker.stop();
@@ -191,19 +189,15 @@ public class JmsConnectionErrorHandlerTest {
     }
     finally {
       channel.requestClose();
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testConnectionErrorHandlerWithUnamedChannel() throws Exception {
-
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     MockChannel channel = createChannel(null, activeMqBroker,
         activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true),
         testName.getMethodName());
     try {
-      activeMqBroker.start();
       channel.requestStart();
       assertEquals(StartedState.getInstance(), channel.retrieveComponentState());
       activeMqBroker.stop();
@@ -217,21 +211,17 @@ public class JmsConnectionErrorHandlerTest {
     }
     finally {
       channel.requestClose();
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testConnectionErrorHandlerWithJndi() throws Exception {
-
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
     MockChannel channel = createChannel(activeMqBroker,
         activeMqBroker.getJndiPasConnection(new StandardJndiImplementation(), false, queueName, topicName), topicName,
         new JmsConnectionErrorHandler());
     try {
-      activeMqBroker.start();
       channel.requestStart();
       assertEquals(StartedState.getInstance(), channel.retrieveComponentState());
       activeMqBroker.stop();
@@ -245,18 +235,14 @@ public class JmsConnectionErrorHandlerTest {
     }
     finally {
       channel.requestClose();
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testBug1926() throws Exception {
-
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     MockChannel channel = createChannel(activeMqBroker, activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true),
         testName.getMethodName(), new JmsConnectionErrorHandler());
     try {
-      activeMqBroker.start();
       channel.requestStart();
       assertEquals(StartedState.getInstance(), channel.retrieveComponentState());
       activeMqBroker.stop();
@@ -270,27 +256,24 @@ public class JmsConnectionErrorHandlerTest {
     }
     finally {
       channel.requestClose();
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testRestartSharedConnection() throws Exception {
-
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     Adapter adapter = new Adapter();
     adapter.setUniqueId(testName.getMethodName());
     JmsConnection connection = activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true);
     connection.setConnectionErrorHandler(new JmsConnectionErrorHandler());
     connection.setUniqueId(testName.getMethodName());
     connection.setConnectionRetryInterval(new TimeInterval(5L, "SECONDS"));
+    connection.setConnectionAttempts(null);
     adapter.getSharedComponents().addConnection(connection);
     MockChannel channel = createChannel(activeMqBroker,
         new SharedConnection(testName.getMethodName()), testName.getMethodName());
     MockMessageProducer producer = (MockMessageProducer) channel.getWorkflowList().get(0).getProducer();
     adapter.getChannelList().add(channel);
     try {
-      activeMqBroker.start();
       adapter.requestStart();
       assertEquals(StartedState.getInstance(), channel.retrieveComponentState());
       // Now try and send a message
@@ -321,20 +304,18 @@ public class JmsConnectionErrorHandlerTest {
     }
     finally {
       adapter.requestClose();
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testRestartSharedConnection_ChannelNotStarted() throws Exception {
-
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     Adapter adapter = new Adapter();
     adapter.setUniqueId(testName.getMethodName());
     JmsConnection connection = activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true);
     connection.setConnectionErrorHandler(new JmsConnectionErrorHandler());
     connection.setUniqueId(testName.getMethodName());
     connection.setConnectionRetryInterval(new TimeInterval(5L, "SECONDS"));
+    connection.setConnectionAttempts(null);
     adapter.getSharedComponents().addConnection(connection);
     MockChannel started = createChannel(activeMqBroker,
         new SharedConnection(testName.getMethodName()), testName.getMethodName());
@@ -345,7 +326,6 @@ public class JmsConnectionErrorHandlerTest {
     adapter.getChannelList().add(started);
     adapter.getChannelList().add(neverStarted);
     try {
-      activeMqBroker.start();
       adapter.requestStart();
       assertEquals(StartedState.getInstance(), started.retrieveComponentState());
       assertEquals(ClosedState.getInstance(), neverStarted.retrieveComponentState());
@@ -377,7 +357,6 @@ public class JmsConnectionErrorHandlerTest {
     }
     finally {
       adapter.requestClose();
-      activeMqBroker.destroy();
     }
   }
 

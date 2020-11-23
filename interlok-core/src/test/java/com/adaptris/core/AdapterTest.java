@@ -566,6 +566,7 @@ public class AdapterTest extends com.adaptris.interlok.junit.scaffolding.BaseCas
     }
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void testSetters() throws Exception {
     Adapter a = createAdapter("testHeartbeatTimerTask");
@@ -599,13 +600,6 @@ public class AdapterTest extends com.adaptris.interlok.junit.scaffolding.BaseCas
     }
     try {
       a.setHeartbeatEventImp("");
-      fail();
-    }
-    catch (IllegalArgumentException expected) {
-
-    }
-    try {
-      a.setLogHandler(null);
       fail();
     }
     catch (IllegalArgumentException expected) {

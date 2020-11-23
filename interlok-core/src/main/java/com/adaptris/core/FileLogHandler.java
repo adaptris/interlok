@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,19 +21,17 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-
 import javax.management.MalformedObjectNameException;
-
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.runtime.AdapterManager;
 import com.adaptris.core.runtime.ParentRuntimeInfoComponent;
 import com.adaptris.core.runtime.RuntimeInfoComponent;
 import com.adaptris.core.runtime.RuntimeInfoComponentFactory;
 import com.adaptris.core.util.Args;
 import com.adaptris.util.NumberUtils;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -41,12 +39,14 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Zip file based implemention of <code>LogHandler</code>. This LogHandler returns the specified log file (up to maximum of 5Mb)
  * compressed using the GZIP algorithm.
  * </p>
- * 
+ *
  * @config file-log-handler
- * 
- * 
+ *
+ *
  */
 @XStreamAlias("file-log-handler")
+@Deprecated
+@ConfigDeprecated(removalVersion = "4.0.0", message = "Defunct and should not be configured", groups = Deprecated.class)
 public class FileLogHandler extends LogHandlerImp {
 
   private static final int DEFAULT_PERIOD = 30;

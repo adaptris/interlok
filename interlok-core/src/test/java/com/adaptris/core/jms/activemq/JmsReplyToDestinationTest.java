@@ -24,6 +24,8 @@ import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -38,6 +40,19 @@ public class JmsReplyToDestinationTest
   private static final String ANY_OLD_KEY = "ANY_OLD_KEY";
   protected static Log log = LogFactory.getLog(JmsReplyToDestinationTest.class);
 
+  private static EmbeddedActiveMq activeMqBroker;
+
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
 
   private AdaptrisMessage createMessage(Destination d) throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx");
@@ -55,65 +70,37 @@ public class JmsReplyToDestinationTest
 
   @Test
   public void testRetrieveDestination() throws Exception {
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    try {
-      activeMqBroker.start();
-      Queue tempQueue = createTempQueue(activeMqBroker);
-      AdaptrisMessage msg = createMessage(tempQueue);
-      JmsReplyToDestination d = new JmsReplyToDestination();
-      assertEquals("Queues", tempQueue, d.retrieveJmsDestination(msg));
-    }
-    finally {
-      activeMqBroker.destroy();
-    }
+    Queue tempQueue = createTempQueue(activeMqBroker);
+    AdaptrisMessage msg = createMessage(tempQueue);
+    JmsReplyToDestination d = new JmsReplyToDestination();
+    assertEquals("Queues", tempQueue, d.retrieveJmsDestination(msg));
   }
 
   @Test
   public void testRetrieveDestination_ByName() throws Exception {
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    try {
-      activeMqBroker.start();
-      Queue tempQueue = createTempQueue(activeMqBroker);
-      AdaptrisMessage msg = createMessage(tempQueue);
-      JmsReplyToDestination d = new JmsReplyToDestination();
-      d.setObjectMetadataKey(ANY_OLD_KEY);
-      assertEquals("Queues", tempQueue, d.retrieveJmsDestination(msg));
-    }
-    finally {
-      activeMqBroker.destroy();
-    }
+    Queue tempQueue = createTempQueue(activeMqBroker);
+    AdaptrisMessage msg = createMessage(tempQueue);
+    JmsReplyToDestination d = new JmsReplyToDestination();
+    d.setObjectMetadataKey(ANY_OLD_KEY);
+    assertEquals("Queues", tempQueue, d.retrieveJmsDestination(msg));
   }
 
   @Test
   public void testGetDestination() throws Exception {
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    try {
-      activeMqBroker.start();
-      Queue tempQueue = createTempQueue(activeMqBroker);
-      AdaptrisMessage msg = createMessage(tempQueue);
-      JmsReplyToDestination d = new JmsReplyToDestination();
-      assertEquals(tempQueue.toString(), d.getDestination(msg));
-    }
-    finally {
-      activeMqBroker.destroy();
-    }
+    Queue tempQueue = createTempQueue(activeMqBroker);
+    AdaptrisMessage msg = createMessage(tempQueue);
+    JmsReplyToDestination d = new JmsReplyToDestination();
+    assertEquals(tempQueue.toString(), d.getDestination(msg));
   }
 
   @Test
   public void testGetDestination_MetadataDoesNotExist() throws Exception {
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    try {
-      activeMqBroker.start();
-      Queue tempQueue = createTempQueue(activeMqBroker);
-      AdaptrisMessage msg = createMessage(tempQueue);
-      msg.getObjectHeaders().clear();
-      JmsReplyToDestination d = new JmsReplyToDestination();
-      d.setObjectMetadataKey(ANY_OLD_KEY);
-      assertNull(d.getDestination(msg));
-    }
-    finally {
-      activeMqBroker.destroy();
-    }
+    Queue tempQueue = createTempQueue(activeMqBroker);
+    AdaptrisMessage msg = createMessage(tempQueue);
+    msg.getObjectHeaders().clear();
+    JmsReplyToDestination d = new JmsReplyToDestination();
+    d.setObjectMetadataKey(ANY_OLD_KEY);
+    assertNull(d.getDestination(msg));
   }
 
   @Override
