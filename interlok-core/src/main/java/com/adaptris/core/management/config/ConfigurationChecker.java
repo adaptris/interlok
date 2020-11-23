@@ -1,7 +1,13 @@
 package com.adaptris.core.management.config;
 
+import java.util.ServiceLoader;
 import com.adaptris.core.management.BootstrapProperties;
 
+/**
+ * {@link ServiceLoader} interface that allows for config checks to be performed.
+ *
+ *
+ */
 public interface ConfigurationChecker {
 
   String getFriendlyName();
