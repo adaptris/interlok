@@ -3,36 +3,40 @@ package com.adaptris.core.management.config;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import org.apache.commons.io.IOUtils;
-import com.adaptris.core.config.ConfigPreProcessorLoader;
 import com.adaptris.core.management.BootstrapProperties;
 import com.adaptris.util.XmlUtils;
 
 public abstract class SharedComponentConfigurationChecker implements ConfigurationChecker {
 
   private String componentType;
-  private String xpathAvailableComponents;
-  private String xpathReferencedComponents;
+  private Collection<String> xpathAvailableComponents;
+  private Collection<String> xpathReferencedComponents;
 
-  public SharedComponentConfigurationChecker(String componentType, String xpathAvailableComponents, String xpathReferencedComponents) {
-    this.componentType = componentType;
-    this.xpathAvailableComponents = xpathAvailableComponents;
-    this.xpathReferencedComponents = xpathReferencedComponents;
+  protected SharedComponentConfigurationChecker(String type, String avail, String refs) {
+    this(type, Arrays.asList(avail), Arrays.asList(refs));
+  }
+
+  protected SharedComponentConfigurationChecker(String type, Collection<String> avail,
+      Collection<String> refs) {
+    componentType = type;
+    xpathAvailableComponents = avail;
+    xpathReferencedComponents = refs;
   }
 
   @Override
   public ConfigurationCheckReport performConfigCheck(ConfigurationCheckReport report, BootstrapProperties bootProperties) {
     try {
-      String xml = ConfigPreProcessorLoader.loadInterlokConfig(bootProperties);
+      String xml = CachingConfigLoader.loadInterlokConfig(bootProperties);
       try (InputStream in = IOUtils.toInputStream(xml, Charset.defaultCharset())) {
         XmlUtils xmlUtils = new XmlUtils();
         xmlUtils.setSource(in);
 
-        List<String> availableComponents =
-            Arrays.asList(xmlUtils.getMultipleTextItems(xpathAvailableComponents));
-        List<String> referencedComponents =
-            Arrays.asList(xmlUtils.getMultipleTextItems(xpathReferencedComponents));
+        Set<String> availableComponents = evaluate(xmlUtils, xpathAvailableComponents);
+        Set<String> referencedComponents = evaluate(xmlUtils, xpathReferencedComponents);
 
         // **********************************
         // Check all shared components are used.
@@ -58,4 +62,12 @@ public abstract class SharedComponentConfigurationChecker implements Configurati
     return report;
   }
 
+  private static Set<String> evaluate(XmlUtils xmlUtils, Collection<String> xpaths)
+      throws Exception {
+    LinkedHashSet<String> result = new LinkedHashSet<>();
+    for (String xpath : xpaths) {
+      result.addAll(Arrays.asList(xmlUtils.getMultipleTextItems(xpath)));
+    }
+    return result;
+  }
 }
