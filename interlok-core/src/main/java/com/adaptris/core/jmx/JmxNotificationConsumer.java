@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServerConnection;
 import javax.management.Notification;
@@ -26,14 +27,15 @@ import javax.management.NotificationListener;
 import javax.management.ObjectName;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumerImp;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -47,15 +49,17 @@ import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.FifoMutexLock;
 import com.adaptris.util.TimeInterval;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @XStreamAlias("jmx-notification-consumer")
 @AdapterComponent
 @ComponentProfile(summary = "Listen for notifications against the specified ObjectName", tag = "consumer,jmx",
-    metadata = {com.adaptris.core.jmx.JmxNotificationConsumer.JMX_NOTIF_SOURCE},
-    recommended = {JmxConnection.class})
+metadata = {com.adaptris.core.jmx.JmxNotificationConsumer.JMX_NOTIF_SOURCE},
+recommended = {JmxConnection.class})
 @DisplayOrder(order = {"objectName", "serializer"})
 public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implements NotificationListener {
 
@@ -77,7 +81,7 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
    */
   @Deprecated
   @Valid
-  @Removal(version = "4.0.0", message = "Use 'object-name' instead")
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'object-name' instead", groups = Deprecated.class)
   @Getter
   @Setter
   private ConsumeDestination destination;
@@ -117,7 +121,7 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
     DestinationHelper.logWarningIfNotNull(destinationWarningLogged,
         () -> destinationWarningLogged = true, getDestination(),
         "{} uses destination, use objectName instead",
-          LoggingHelper.friendlyName(this));
+        LoggingHelper.friendlyName(this));
     DestinationHelper.mustHaveEither(getObjectName(), getDestination());
   }
 

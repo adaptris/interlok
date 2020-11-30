@@ -15,12 +15,16 @@
 package com.adaptris.core;
 
 import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
+
 import javax.validation.Valid;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.LoggingHelper;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -34,7 +38,7 @@ import lombok.Setter;
 @XStreamAlias("null-message-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Default NO-OP producer implementation", tag = "producer,base",
-    recommended = {NullConnection.class})
+recommended = {NullConnection.class})
 public class NullMessageProducer extends AdaptrisMessageProducerImp {
 
   /**
@@ -42,10 +46,10 @@ public class NullMessageProducer extends AdaptrisMessageProducerImp {
    *
    */
   @Deprecated
-  @Valid
-  @Removal(version = "4.0.0", message = "Destination has no meaning for a no-op producer")
   @Getter
   @Setter
+  @Valid
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Destination has no meaning for a no-op producer", groups = Deprecated.class)
   private ProduceDestination destination;
 
 

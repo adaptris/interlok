@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,17 +19,21 @@ package com.adaptris.core.services.aggregator;
 import static com.adaptris.core.services.splitter.XpathSplitterTest.ENCODING_UTF8;
 import static com.adaptris.core.services.splitter.XpathSplitterTest.ENVELOPE_DOCUMENT;
 import static org.junit.Assert.assertEquals;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.junit.Test;
+import org.w3c.dom.Document;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
+import com.adaptris.core.services.aggregator.MessageAggregatorTest.EvenOddCondition;
 import com.adaptris.core.services.splitter.SplitJoinService;
 import com.adaptris.core.services.splitter.SplitJoinServiceTest;
 import com.adaptris.core.services.splitter.SplitterCase;
 import com.adaptris.core.services.splitter.XpathMessageSplitter;
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.TimeInterval;
 import com.adaptris.util.text.xml.InsertNode;
@@ -74,6 +78,21 @@ public class XmlAggregatorTest extends XmlAggregatorCase {
     XPath xpath = new XPath();
     assertEquals(6, xpath.selectNodeList(XmlHelper.createDocument(msg, true), ENVELOPE_DOCUMENT).getLength());
     assertEquals("ISO-8859-1", msg.getContentEncoding());
+  }
+
+  @Test
+  public void testAggregate_WithFilter() throws Exception {
+    XmlDocumentAggregator aggr = createAggregatorForTests();
+    aggr.setMergeImplementation(new InsertNode(SplitJoinServiceTest.XPATH_ENVELOPE));
+    aggr.setFilterCondition(new EvenOddCondition());
+    AdaptrisMessageFactory fac = AdaptrisMessageFactory.getDefaultInstance();
+    AdaptrisMessage original = fac.newMessage("<envelope/>");
+    AdaptrisMessage splitMsg1 = fac.newMessage("<document>hello</document>");
+    AdaptrisMessage splitMsg2 = fac.newMessage("<document>world</document>");
+    aggr.aggregate(original, Arrays.asList(new AdaptrisMessage[] {splitMsg1, splitMsg2}));
+    XPath xpath = new XPath();
+    Document d = XmlHelper.createDocument(original, DocumentBuilderFactoryBuilder.newInstance());
+    assertEquals(1, xpath.selectNodeList(d, ENVELOPE_DOCUMENT).getLength());
   }
 
   @Override

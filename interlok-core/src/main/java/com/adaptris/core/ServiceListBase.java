@@ -17,6 +17,7 @@ package com.adaptris.core;
 
 import static com.adaptris.core.CoreConstants.STOP_PROCESSING_KEY;
 import static com.adaptris.core.CoreConstants.STOP_PROCESSING_VALUE;
+import static com.adaptris.core.CoreConstants.shouldStopProcessing;
 
 public abstract class ServiceListBase extends ServiceCollectionImp {
 
@@ -41,7 +42,7 @@ public abstract class ServiceListBase extends ServiceCollectionImp {
   }
 
   protected boolean haltProcessing(AdaptrisMessage msg) {
-    if (STOP_PROCESSING_VALUE.equals(msg.getMetadataValue(STOP_PROCESSING_KEY))) {
+    if(shouldStopProcessing.apply(msg)) {
       log.trace("{}={} detected, halt processing", STOP_PROCESSING_KEY, STOP_PROCESSING_VALUE);
       return true;
     }

@@ -39,7 +39,9 @@ import javax.jms.Topic;
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQSession;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -70,6 +72,20 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   @Mock private Message mockMessage;
 
   private AutoCloseable openMocks;
+  
+  private static EmbeddedActiveMq activeMqBroker;
+
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
 
   @Before
   public void setUp() throws Exception {
@@ -325,49 +341,39 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
 
   @Test
   public void testProduce_JmsReplyToDestination() throws Exception {
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    try {
-      activeMqBroker.start();
-      Topic topic = createTopic(activeMqBroker, getName());
-      AdaptrisMessage msg = createMessage(topic);
-      JmsReplyToDestination d = new JmsReplyToDestination();
+    Topic topic = createTopic(activeMqBroker, getName());
+    AdaptrisMessage msg = createMessage(topic);
+    JmsReplyToDestination d = new JmsReplyToDestination();
 
-      JmsProducer producer = createProducer(d);
-      producer.setCaptureOutgoingMessageDetails(true);
-      StandaloneProducer sp = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
+    JmsProducer producer = createProducer(d);
+    producer.setCaptureOutgoingMessageDetails(true);
+    StandaloneProducer sp = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
 
-      ExampleServiceCase.execute(sp, msg);
-      Map objMd = msg.getObjectHeaders();
-      String prefix = Message.class.getCanonicalName() + ".";
-      assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_MESSAGE_ID));
-      assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_DESTINATION));
-      assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_PRIORITY));
-      assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_TIMESTAMP));
-
-    } finally {
-      activeMqBroker.destroy();
-    }
+    ExampleServiceCase.execute(sp, msg);
+    Map<Object, Object> objMd = msg.getObjectHeaders();
+    String prefix = Message.class.getCanonicalName() + ".";
+    assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_MESSAGE_ID));
+    assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_DESTINATION));
+    assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_PRIORITY));
+    assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_TIMESTAMP));
   }
 
   @Test
   public void testProduce_CaptureOutgoingMessageDetails() throws Exception {
     String rfc6167 = "jms:queue:" + getName();
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsProducer producer = createProducer(new ConfiguredProduceDestination(rfc6167));
     producer.setCaptureOutgoingMessageDetails(true);
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
     try {
-      activeMqBroker.start();
       AdaptrisMessage msg = createMessage();
       ExampleServiceCase.execute(standaloneProducer, msg);
-      Map objectMetadata = msg.getObjectHeaders();
+      Map<Object, Object> objectMetadata = msg.getObjectHeaders();
       assertTrue(objectMetadata.containsKey(Message.class.getCanonicalName() + "." + JmsConstants.JMS_MESSAGE_ID));
       assertTrue(objectMetadata.containsKey(Message.class.getCanonicalName() + "." + JmsConstants.JMS_DESTINATION));
       assertTrue(objectMetadata.containsKey(Message.class.getCanonicalName() + "." + JmsConstants.JMS_PRIORITY));
       assertTrue(objectMetadata.containsKey(Message.class.getCanonicalName() + "." + JmsConstants.JMS_TIMESTAMP));
     } finally {
       stop(standaloneProducer);
-      activeMqBroker.destroy();
     }
   }
 
@@ -375,7 +381,6 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   public void testProduceAndConsume_DeliveryMode() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "?deliveryMode=PERSISTENT";
 
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
     consumer.setAcknowledgeMode(String.valueOf(AcknowledgeMode.Mode.AUTO_ACKNOWLEDGE.acknowledgeMode()));
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
@@ -383,20 +388,14 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     standaloneConsumer.registerAdaptrisMessageListener(jms);
     JmsProducer producer = createProducer(new ConfiguredProduceDestination(rfc6167));
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
-    try {
-      activeMqBroker.start();
-      execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
-      assertMessages(jms, 1);
-    } finally {
-      activeMqBroker.destroy();
-    }
+    execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
+    assertMessages(jms, 1);
   }
 
   @Test
   public void testProduceAndConsume_Priority() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "?priority=5";
 
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
     consumer.setAcknowledgeMode(String.valueOf(AcknowledgeMode.Mode.AUTO_ACKNOWLEDGE.acknowledgeMode()));
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
@@ -404,20 +403,14 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     standaloneConsumer.registerAdaptrisMessageListener(jms);
     JmsProducer producer = createProducer(new ConfiguredProduceDestination(rfc6167));
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
-    try {
-      activeMqBroker.start();
-      execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
-      assertMessages(jms, 1);
-    } finally {
-      activeMqBroker.destroy();
-    }
+    execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
+    assertMessages(jms, 1);
   }
 
   @Test
   public void testProduceAndConsume_TimeToLive() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "?timeToLive=60000";
 
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
     consumer.setAcknowledgeMode(String.valueOf(AcknowledgeMode.Mode.AUTO_ACKNOWLEDGE.acknowledgeMode()));
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
@@ -425,13 +418,8 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     standaloneConsumer.registerAdaptrisMessageListener(jms);
     JmsProducer producer = createProducer(new ConfiguredProduceDestination(rfc6167));
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
-    try {
-      activeMqBroker.start();
-      execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
-      assertMessages(jms, 1);
-    } finally {
-      activeMqBroker.destroy();
-    }
+    execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
+    assertMessages(jms, 1);
   }
 
   @Test
@@ -454,7 +442,6 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   @Test
   public void testDefaultSessionFactory() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer =
@@ -466,7 +453,6 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     standaloneConsumer.registerAdaptrisMessageListener(jms);
 
     try {
-      activeMqBroker.start();
       start(standaloneConsumer, sp);
       sp.doService(createMessage());
       sp.doService(createMessage());
@@ -474,15 +460,12 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
       assertMessages(jms, 2);
     } finally {
       stop(sp, standaloneConsumer);
-
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testPerMessageSession() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer =
@@ -494,7 +477,6 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     StandaloneProducer standaloneProducer =
         new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
     try {
-      activeMqBroker.start();
       start(standaloneConsumer, standaloneProducer);
       standaloneProducer.doService(createMessage());
       // Should create a new Session now.
@@ -503,15 +485,12 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
       assertMessages(jms, 2);
     } finally {
       stop(standaloneProducer, standaloneConsumer);
-
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testTimedInactivitySession() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer =
@@ -527,7 +506,6 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
         new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
 
     try {
-      activeMqBroker.start();
       start(standaloneConsumer, standaloneProducer);
 
       standaloneProducer.doService(createMessage());
@@ -539,15 +517,12 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
       assertMessages(jms, 2);
     } finally {
       stop(standaloneProducer, standaloneConsumer);
-
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testTimedInactivitySession_SessionStillValid() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer =
@@ -561,7 +536,6 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     StandaloneProducer standaloneProducer =
         new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
     try {
-      activeMqBroker.start();
       start(standaloneConsumer, standaloneProducer);
 
       standaloneProducer.doService(createMessage());
@@ -573,14 +547,12 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
       assertMessages(jms, 2);
     } finally {
       stop(standaloneProducer, standaloneConsumer);
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testMessageCountSession() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer =
@@ -595,7 +567,6 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     StandaloneProducer standaloneProducer =
         new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
     try {
-      activeMqBroker.start();
       start(standaloneConsumer, standaloneProducer);
 
       standaloneProducer.doService(createMessage());
@@ -607,8 +578,6 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
       assertMessages(jms, 3);
     } finally {
       stop(standaloneProducer, standaloneConsumer);
-
-      activeMqBroker.destroy();
     }
   }
 
@@ -616,7 +585,6 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   public void testMessageCountSession_SessionStillValid() throws Exception {
 
     String rfc6167 = "jms:queue:" + getName() + "";
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer =
@@ -631,7 +599,6 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     StandaloneProducer standaloneProducer =
         new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
     try {
-      activeMqBroker.start();
       start(standaloneConsumer, standaloneProducer);
 
       standaloneProducer.doService(createMessage());
@@ -641,15 +608,12 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
       assertMessages(jms, 2);
     } finally {
       stop(standaloneProducer, standaloneConsumer);
-
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testMessageSizeSession() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer =
@@ -666,7 +630,6 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     StandaloneProducer standaloneProducer =
         new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
     try {
-      activeMqBroker.start();
       start(standaloneConsumer, standaloneProducer);
 
       standaloneProducer.doService(createMessage());
@@ -678,15 +641,12 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
       assertMessages(jms, 3);
     } finally {
       stop(standaloneProducer, standaloneConsumer);
-
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testMessageSizeSession_SessionStillValid() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer =
@@ -701,7 +661,6 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     StandaloneProducer standaloneProducer =
         new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
     try {
-      activeMqBroker.start();
       start(standaloneConsumer, standaloneProducer);
 
       standaloneProducer.doService(createMessage());
@@ -711,14 +670,12 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
       assertMessages(jms, 2);
     } finally {
       stop(standaloneProducer, standaloneConsumer);
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testMetadataSession() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer =
@@ -733,7 +690,6 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     StandaloneProducer standaloneProducer =
         new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
     try {
-      activeMqBroker.start();
       start(standaloneConsumer, standaloneProducer);
 
       AdaptrisMessage msg1 = createMessage();
@@ -754,15 +710,12 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
       assertMessages(jms, 4);
     } finally {
       stop(standaloneProducer, standaloneConsumer);
-
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testMultipleProducersWithSession() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer =
@@ -776,7 +729,6 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
             new StandaloneProducer(activeMqBroker.getJmsConnection(),
                 createProducer(new ConfiguredProduceDestination(rfc6167)))});
     try {
-      activeMqBroker.start();
       start(standaloneConsumer, serviceList);
       AdaptrisMessage msg1 = createMessage();
       AdaptrisMessage msg2 = createMessage();
@@ -786,14 +738,12 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
       assertMessages(jms, 4);
     } finally {
       stop(serviceList, standaloneConsumer);
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testMultipleRequestorWithSession() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     ServiceList serviceList =
         new ServiceList(new Service[] {
             new StandaloneRequestor(activeMqBroker.getJmsConnection(),
@@ -804,7 +754,6 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
                     TimeUnit.SECONDS))});
     Loopback echo = createLoopback(activeMqBroker, getName());
     try {
-      activeMqBroker.start();
       echo.start();
       start(serviceList);
       AdaptrisMessage msg1 = createMessage();
@@ -816,7 +765,6 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     } finally {
       stop(serviceList);
       echo.stop();
-      activeMqBroker.destroy();
     }
   }
 
@@ -824,14 +772,12 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   @Test
   public void testRequest_AsyncReplyTo_Metadata() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     StandaloneRequestor serviceList = new StandaloneRequestor(activeMqBroker.getJmsConnection(),
         createProducer(new ConfiguredProduceDestination(rfc6167)),
         new TimeInterval(1L, TimeUnit.SECONDS));
     Loopback echo = createLoopback(activeMqBroker, getName());
     try {
       echo.start();
-      activeMqBroker.start();
       start(serviceList);
       AdaptrisMessage msg = createMessage();
       msg.addMetadata(JmsConstants.JMS_ASYNC_STATIC_REPLY_TO, getName() + "_reply");
@@ -840,21 +786,18 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     } finally {
       stop(serviceList);
       echo.stop();
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testRequest_DefinedReplyTo() throws Exception {
     String rfc6167 = String.format("jms:queue:%1$s?replyToName=%1$s_reply", getName());
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     StandaloneRequestor serviceList = new StandaloneRequestor(activeMqBroker.getJmsConnection(),
         createProducer(new ConfiguredProduceDestination(rfc6167)),
         new TimeInterval(1L, TimeUnit.SECONDS));
     Loopback echo = createLoopback(activeMqBroker, getName());
     try {
       echo.start();
-      activeMqBroker.start();
       start(serviceList);
       AdaptrisMessage msg = createMessage();
       serviceList.doService(msg);
@@ -862,26 +805,22 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     } finally {
       stop(serviceList);
       echo.stop();
-      activeMqBroker.destroy();
     }
   }
 
   @Test(expected = ServiceException.class)
   public void testRequest_Timeout() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     JmsProducer producer = createProducer(new ConfiguredProduceDestination(rfc6167));
     producer.setPerMessageProperties(false);
     StandaloneRequestor serviceList = new StandaloneRequestor(activeMqBroker.getJmsConnection(),
         producer, new TimeInterval(1L, TimeUnit.SECONDS));
     try {
-      activeMqBroker.start();
       start(serviceList);
       AdaptrisMessage msg1 = createMessage();
       serviceList.doService(msg1);
     } finally {
       stop(serviceList);
-      activeMqBroker.destroy();
     }
   }
 

@@ -1,37 +1,45 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.interceptor;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
-import com.adaptris.annotation.*;
-import com.adaptris.core.*;
-import com.adaptris.core.util.Args;
-import com.adaptris.util.KeyValuePair;
-import com.adaptris.util.KeyValuePairList;
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.MDC;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreConstants;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.services.AddLoggingContext;
 import com.adaptris.core.services.RemoveLoggingContext;
+import com.adaptris.core.util.Args;
 import com.adaptris.util.GuidGenerator;
+import com.adaptris.util.KeyValuePair;
+import com.adaptris.util.KeyValuePairList;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
-import javax.validation.constraints.NotNull;
 
 /**
  * WorkflowInterceptor implementation that adds a mapped diagnostic context via {@code org.slf4j.MDC#put(String, String)}.
@@ -39,16 +47,16 @@ import javax.validation.constraints.NotNull;
  * An alternative to this interceptor might be {@link AddLoggingContext} and {@link RemoveLoggingContext} as part of the
  * service execution chain.
  * </p>
- * 
+ *
  * @config logging-context-workflow-interceptor
  * @see AddLoggingContext
  * @see RemoveLoggingContext
- * 
+ *
  */
 @XStreamAlias("logging-context-workflow-interceptor")
 @AdapterComponent
 @ComponentProfile(summary = "Interceptor that adds Logging Context at the start of a workflow, removes it at the end",
-    tag = "interceptor")
+tag = "interceptor")
 public class LoggingContextWorkflowInterceptor extends WorkflowInterceptorImpl {
 
   private static final GuidGenerator GUID = new GuidGenerator();
@@ -67,9 +75,11 @@ public class LoggingContextWorkflowInterceptor extends WorkflowInterceptorImpl {
   private KeyValuePairList valuesToSet;
 
   @Deprecated
+  @ConfigDeprecated(groups = Deprecated.class)
   private String key;
 
   @Deprecated
+  @ConfigDeprecated(groups = Deprecated.class)
   @InputFieldHint(expression = true)
   private String value;
 
@@ -163,7 +173,7 @@ public class LoggingContextWorkflowInterceptor extends WorkflowInterceptorImpl {
    * <li>The parent channel unique id</li>
    * <li>A generated unique id</li>
    * </ul>
-   * 
+   *
    * @param key the contextKey to set.
    */
   @Deprecated
@@ -172,8 +182,9 @@ public class LoggingContextWorkflowInterceptor extends WorkflowInterceptorImpl {
   }
 
   private String resolve(String s, AdaptrisMessage msg) {
-    if (!isEmpty(s))
+    if (!isEmpty(s)) {
       return msg.resolve(s);
+    }
     if (!isEmpty(getUniqueId())) {
       return getUniqueId();
     }
@@ -202,12 +213,12 @@ public class LoggingContextWorkflowInterceptor extends WorkflowInterceptorImpl {
    * <li>The parent channel unique id</li>
    * <li>A Generated unique id</li>
    * </ul>
-   * 
+   *
    * @param val the contextValue to set
    */
   @Deprecated
   public void setValue(String val) {
-    this.value = val;
+    value = val;
   }
 
   public KeyValuePairList getValuesToSet() {

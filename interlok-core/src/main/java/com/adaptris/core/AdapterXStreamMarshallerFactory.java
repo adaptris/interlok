@@ -206,10 +206,10 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
   protected XStream configureXStream(XStream xstream, MarshallingOutput outputMode) {
     XStream.setupDefaultSecurity(xstream);
     // CVE-2017-7957
-    xstream.denyTypes(new Class[]
-    {
-        void.class, Void.class
-    });
+    // CVE-2020-26217 - we should be on xstream 1.14 but in case people aren't...
+    xstream.denyTypes(new String[] {"javax.imageio.ImageIO$ContainsFilter"});
+    xstream.denyTypes(new Class[] {java.lang.ProcessBuilder.class, java.beans.EventHandler.class,
+        void.class, Void.class});
     Class[] annotationClassesArray = xstreamAnnotatedClasses.toArray(new Class[0]);
     xstream.allowTypes(annotationClassesArray);
     xstream.allowTypesByWildcard(new String[]

@@ -108,18 +108,25 @@ public class MimeAggregator extends MessageAggregatorImpl {
 
   @Override
   public void joinMessage(AdaptrisMessage original, Collection<AdaptrisMessage> messages) throws CoreException {
+    aggregate(original, messages);
+  }
+
+  @Override
+  public void aggregate(AdaptrisMessage original, Iterable<AdaptrisMessage> msgs)
+      throws CoreException {
     try {
       MultiPartOutput output = createInitialPart(original);
-      for (AdaptrisMessage m : filter(messages)) {
-        output.addPart(createBodyPart(m), contentId(m));
-        overwriteMetadata(m, original);
+      for (AdaptrisMessage m : msgs) {
+        if (filter(m)) {
+          output.addPart(createBodyPart(m), contentId(m));
+          overwriteMetadata(m, original);
+        }
       }
       try (OutputStream out = original.getOutputStream()) {
         output.writeTo(out);
       }
       original.addMetadata(CoreConstants.MSG_MIME_ENCODED, Boolean.TRUE.toString());
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
   }

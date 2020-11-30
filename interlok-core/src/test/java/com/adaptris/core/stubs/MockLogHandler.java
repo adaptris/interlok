@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,10 +17,10 @@
 package com.adaptris.core.stubs;
 
 import java.io.IOException;
-
 import com.adaptris.core.CoreException;
 import com.adaptris.core.LogHandlerImp;
 
+@SuppressWarnings("deprecation")
 public abstract class MockLogHandler extends LogHandlerImp {
 
   public static final String LOG_EXTRACT = "TRACE [main] [DownloadPatchRequestEvent.handle()] "
@@ -32,6 +32,7 @@ public abstract class MockLogHandler extends LogHandlerImp {
       + "TRACE [main] [DownloadPatchRequestEvent.handle()] created non-existent directory cfc137080000005d0029428e4812f3e9"
       + System.lineSeparator();
 
+  @Override
   public void clean() throws IOException {
   }
 

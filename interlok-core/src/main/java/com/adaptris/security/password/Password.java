@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.ServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.adaptris.annotation.Removal;
 import com.adaptris.security.exc.PasswordException;
 
 /**
@@ -56,18 +57,23 @@ public abstract class Password {
    */
   public static final String PORTABLE_PASSWORD = "PW:";
   /**
-   * Alternative password style which is not portable across environments and
-   * machines
+   * Alternative password style which is not portable across environments and machines
    * <p>
-   * It is not considered especially secure, but is enough to stop casual
-   * interrogation
+   * It is not considered especially secure, but is enough to stop casual interrogation
    * </p>
+   *
+   * @deprecated since 3.11.1 since the implementation {@link PbeCrypto} this uses
+   *             PBEWithSHA1AndDESede which is a weak algorithm. This will be removed w/o warning.
+   *
    */
+  @Deprecated
+  @Removal(version = "4.0.0",
+      message = "This uses PBEWithSHA1AndDESede which is now cryptographically weak")
   public static final String NON_PORTABLE_PASSWORD = "ALTPW:";
 
   private static final String[] STYLES =
   {
-      MSCAPI_STYLE, PORTABLE_PASSWORD, NON_PORTABLE_PASSWORD
+          MSCAPI_STYLE, PORTABLE_PASSWORD
   };
 
   /**

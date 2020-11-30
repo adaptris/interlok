@@ -48,8 +48,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
         CoreConstants.MESSAGE_CONSUME_LOCATION, CoreConstants.FS_CONSUME_PARENT_DIR
 },
     recommended = {NullConnection.class})
-@DisplayOrder(order = {"baseDirectoryUrl", "poller", "createDirs", "fileFilterImp", "fileSorter",
-    "wipSuffix", "resetWipFiles"})
+@DisplayOrder(order = {"baseDirectoryUrl", "poller", "createDirs", "filterExpression",
+    "fileFilterImp", "fileSorter", "wipSuffix", "resetWipFiles"})
 public class TraversingFsConsumer extends FsConsumer {
 
   public TraversingFsConsumer() {

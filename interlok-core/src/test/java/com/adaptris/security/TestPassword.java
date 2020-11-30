@@ -44,12 +44,14 @@ public class TestPassword {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testNonPortableStyle() throws Exception {
     PasswordCodec pw = Password.create(Password.NON_PORTABLE_PASSWORD);
     assertEquals(PW, pw.decode(pw.encode(PW)));
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testNonPortaableStyleWithCharset() throws Exception {
     PasswordCodec pw = Password.create(Password.NON_PORTABLE_PASSWORD);
     assertEquals(PW, pw.decode(pw.encode(PW, CHARSET), CHARSET));

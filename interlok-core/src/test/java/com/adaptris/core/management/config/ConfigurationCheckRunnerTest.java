@@ -5,17 +5,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
-
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.stream.StreamSupport;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.Channel;
@@ -61,6 +58,7 @@ public class ConfigurationCheckRunnerTest {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testSuccessRunner() throws Exception {
     String xml = this.createAdapterConfig(
         new NullConnection("SharedNullConnection"), new SharedConnection("SharedNullConnection"),
@@ -78,6 +76,7 @@ public class ConfigurationCheckRunnerTest {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testFailureRunner() throws Exception {
     String xml =
         this.createAdapterConfig(new NullConnection("SharedNullConnection"), null, null);

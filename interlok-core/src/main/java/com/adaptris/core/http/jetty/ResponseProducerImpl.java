@@ -12,19 +12,21 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.http.jetty;
 
 import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
+
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceDestination;
@@ -38,6 +40,8 @@ import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.http.server.HttpStatusProvider.Status;
 import com.adaptris.core.http.server.ResponseHeaderProvider;
 import com.adaptris.core.util.LoggingHelper;
+import com.adaptris.validation.constraints.ConfigDeprecated;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -124,7 +128,7 @@ public abstract class ResponseProducerImpl extends ProduceOnlyProducerImp {
   @Setter
   @Deprecated
   @Valid
-  @Removal(version = "4.0.0", message = "Has no meaning, and will be removed")
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Has no meaning, and will be removed", groups = Deprecated.class)
   private ProduceDestination destination;
 
   private transient boolean destWarning;

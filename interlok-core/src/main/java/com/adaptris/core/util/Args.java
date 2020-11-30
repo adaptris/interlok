@@ -22,7 +22,7 @@ package com.adaptris.core.util;
  */
 // Not deprecated because it's madness, also because really interlok-common probably shouldn't exist.
 // @Deprecated
-// @Removal(version = "4.0", message = "Use com.adaptris.interlok.util.Args instead")
+// @Removal(version = "4.0.0", message = "Use com.adaptris.interlok.util.Args instead")
 public abstract class Args extends com.adaptris.interlok.util.Args {
 
 }

@@ -37,6 +37,8 @@ import javax.jms.Message;
 import javax.jms.Session;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -78,6 +80,20 @@ public abstract class MessageTypeTranslatorCase {
   protected transient Log log = LogFactory.getLog(this.getClass());
   @Rule
   public TestName testName = new TestName();
+  
+  protected static EmbeddedActiveMq activeMqBroker;
+
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
 
   protected abstract MessageTypeTranslatorImp createTranslator() throws Exception;
 
@@ -151,12 +167,9 @@ public abstract class MessageTypeTranslatorCase {
 
   @Test
   public void testMoveMetadataJmsMessageToAdaptrisMessage() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       Message jmsMsg = createMessage(session);
       addProperties(jmsMsg);
       start(trans, session);
@@ -165,20 +178,16 @@ public abstract class MessageTypeTranslatorCase {
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
 
   }
 
   @Test
   public void testMoveMetadataJmsMessageToAdaptrisMessage_RemoveAllFilter() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     trans.setMetadataFilter(new RemoveAllMetadataFilter());
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       Message jmsMsg = createMessage(session);
       addProperties(jmsMsg);
       start(trans, session);
@@ -189,21 +198,17 @@ public abstract class MessageTypeTranslatorCase {
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
   }
 
   @Test
   public void testMoveMetadata_JmsMessageToAdaptrisMessage_WithFilter() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     RegexMetadataFilter regexp = new RegexMetadataFilter();
     regexp.addExcludePattern("IntegerMetadataKey");
     trans.setMetadataFilter(regexp);
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       Message jmsMsg = createMessage(session);
       addProperties(jmsMsg);
       start(trans, session);
@@ -214,18 +219,15 @@ public abstract class MessageTypeTranslatorCase {
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
 
   }
 
   @Test
   public void testMoveJmsHeadersJmsMessageToAdaptrisMessage() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     try {
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       Message jmsMsg = createMessage(session);
       jmsMsg.setJMSCorrelationID("ABC");
       jmsMsg.setJMSDeliveryMode(1);
@@ -246,19 +248,15 @@ public abstract class MessageTypeTranslatorCase {
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
 
   }
 
   @Test
   public void testMoveJmsHeadersAdaptrisMessageToJmsMessage() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator().withMoveJmsHeaders(true);
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
 
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
       addMetadata(msg);
@@ -278,22 +276,18 @@ public abstract class MessageTypeTranslatorCase {
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
 
   }
 
   @Test
   public void testMoveMetadataAdaptrisMessageToJmsMessage() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     try {
-      broker.start();
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
 
       addMetadata(msg);
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
 
       Message jmsMsg = trans.translate(msg);
@@ -301,23 +295,19 @@ public abstract class MessageTypeTranslatorCase {
     }
     finally {
       stop(trans);
-      broker.destroy();
 
     }
   }
 
   @Test
   public void testMoveMetadata_AdaptrisMessageToJmsMessage_RemoveAll() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans =
         createTranslator().withMetadataFilter(new RemoveAllMetadataFilter());
     try {
-      broker.start();
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
 
       addMetadata(msg);
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
 
       Message jmsMsg = trans.translate(msg);
@@ -327,24 +317,20 @@ public abstract class MessageTypeTranslatorCase {
     }
     finally {
       stop(trans);
-      broker.destroy();
 
     }
   }
 
   @Test
   public void testMoveMetadata_AdaptrisMessageToJmsMessage_WithFilter() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     RegexMetadataFilter regexp = new RegexMetadataFilter();
     regexp.addExcludePattern("IntegerMetadataKey");
     trans.setMetadataFilter(regexp);
     try {
-      broker.start();
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
       addMetadata(msg);
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
       Message jmsMsg = trans.translate(msg);
       assertEquals(STRING_VALUE, jmsMsg.getStringProperty(STRING_METADATA));
@@ -354,22 +340,18 @@ public abstract class MessageTypeTranslatorCase {
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
   }
 
   @Test
   public void testBug895() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = createTranslator();
     try {
-      broker.start();
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
 
       msg.addMetadata(JmsConstants.JMS_PRIORITY, "9");
       msg.addMetadata(JmsConstants.JMS_TYPE, "idaho");
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       trans.setMoveJmsHeaders(true);
       start(trans, session);
 
@@ -380,8 +362,6 @@ public abstract class MessageTypeTranslatorCase {
     }
     finally {
       stop(trans);
-      broker.destroy();
-
     }
   }
 

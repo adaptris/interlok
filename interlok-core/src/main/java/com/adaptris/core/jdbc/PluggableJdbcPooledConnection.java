@@ -1,7 +1,6 @@
 package com.adaptris.core.jdbc;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -34,7 +33,6 @@ public class PluggableJdbcPooledConnection extends JdbcPooledConnectionImpl {
   @Valid
   @InputFieldDefault(value = "default-jdbc-pool-factory")
   @AutoPopulated
-  @NotNull
   private ConnectionPoolBuilder builder;
   @Valid
   private KeyValuePairSet poolProperties;
@@ -61,20 +59,20 @@ public class PluggableJdbcPooledConnection extends JdbcPooledConnectionImpl {
     if (other instanceof PluggableJdbcPooledConnection) {
       PluggableJdbcPooledConnection conn = (PluggableJdbcPooledConnection) other;
 
-      return new EqualsBuilder().append(conn.getConnectUrl(), this.getConnectUrl()).append(conn.getDriverImp(), this.getDriverImp())
-          .append(conn.getAlwaysValidateConnection(), this.getAlwaysValidateConnection())
-          .append(conn.getDebugMode(), this.getDebugMode()).append(conn.getTestStatement(), this.getTestStatement())
-          .append(conn.getAutoCommit(), this.getAutoCommit()).append(conn.getConnectionProperties(), this.getConnectionProperties())
-          .append(conn.getBuilder(), this.getBuilder()).append(conn.getPoolProperties(), this.getPoolProperties()).isEquals();
+      return new EqualsBuilder().append(conn.getConnectUrl(), getConnectUrl()).append(conn.getDriverImp(), getDriverImp())
+          .append(conn.getAlwaysValidateConnection(), getAlwaysValidateConnection())
+          .append(conn.getDebugMode(), getDebugMode()).append(conn.getTestStatement(), getTestStatement())
+          .append(conn.getAutoCommit(), getAutoCommit()).append(conn.getConnectionProperties(), getConnectionProperties())
+          .append(conn.getBuilder(), getBuilder()).append(conn.getPoolProperties(), getPoolProperties()).isEquals();
     }
     return false;
   }
 
   @Override
   public int hashCode() {
-    return new HashCodeBuilder(19, 37).append(this.getConnectUrl()).append(getDriverImp())
-        .append(this.getAlwaysValidateConnection()).append(getDebugMode()).append(getTestStatement()).append(getAutoCommit())
-        .append(this.getConnectionProperties()).append(getBuilder()).append(getPoolProperties()).toHashCode();
+    return new HashCodeBuilder(19, 37).append(getConnectUrl()).append(getDriverImp())
+        .append(getAlwaysValidateConnection()).append(getDebugMode()).append(getTestStatement()).append(getAutoCommit())
+        .append(getConnectionProperties()).append(getBuilder()).append(getPoolProperties()).toHashCode();
   }
 
 
@@ -115,7 +113,7 @@ public class PluggableJdbcPooledConnection extends JdbcPooledConnectionImpl {
    * @param kvps the connection pool properties.
    */
   public void setPoolProperties(KeyValuePairSet kvps) {
-    this.poolProperties = kvps;
+    poolProperties = kvps;
   }
 
   public KeyValuePairSet poolProperties() {

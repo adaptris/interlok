@@ -2,21 +2,22 @@ package com.adaptris.core;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
-
+import javax.validation.constraints.NotBlank;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.NumberUtils;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
+import lombok.Getter;
+import lombok.Setter;
 import net.jodah.expiringmap.ExpirationListener;
 import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
@@ -30,14 +31,15 @@ import net.jodah.expiringmap.ExpiringMap;
  * {@link AdaptrisMessage#resolve(String)}. This reference will then be looked up and used for processing. A small cache (currently
  * 16 items) is used to avoid excessive lifecycle overhead for looked up services.
  * </p>
- * 
+ *
  * @config dynamic-shared-service
- * 
+ *
  */
 @XStreamAlias("dynamic-shared-service")
 @AdapterComponent
-@ComponentProfile(summary = "A Service that refers to another Service configured elsewhere", tag = "service,base")
-@DisplayOrder(order = {"uniqueId", "lookupName", "maxEntries", "expiration"})
+@ComponentProfile(summary = "A Service that refers to another Service configured elsewhere",
+    tag = "service")
+@DisplayOrder(order = {"lookupName", "maxEntries", "expiration"})
 public class DynamicSharedService extends SharedServiceImpl {
 
   private static final int DEFAULT_MAX_CACHE_SIZE = 16;
@@ -45,35 +47,54 @@ public class DynamicSharedService extends SharedServiceImpl {
 
   private transient ExpiringMap<String, Service> cachedServices;
 
+  /**
+   * Max entries to store in the internal cache.
+   *
+   */
+  @Getter
+  @Setter
   @AdvancedConfig
   @InputFieldDefault(value = "16")
   @Min(1)
   private Integer maxEntries;
+  /**
+   * Time (LRU) before expiration.
+   *
+   */
   @AdvancedConfig
   @InputFieldDefault(value = "1 Hour")
   @Valid
+  @Getter
+  @Setter
   private TimeInterval expiration;
+  /**
+   * Set the name of the service that will be looked up from
+   * {@link SharedComponentList#getServices()},
+   * <p>
+   * allows you to {@code resolve} the lookup name using {@link AdaptrisMessage#resolve(String)}.
+   * This reference will then be looked up and used for processing. A cache is used to avoid
+   * excessive lifecycle overhead for looked up services.
+   * </p>
+   *
+   */
+  @NotBlank
+  @Getter
+  @Setter
+  @InputFieldHint(expression = true)
+  private String lookupName;
 
   public DynamicSharedService() {
   }
 
   public DynamicSharedService(String lookupName) {
     this();
-    this.setLookupName(lookupName);
+    setLookupName(lookupName);
   }
-  
+
   @Override
   public void init() throws CoreException {
     cachedServices = ExpiringMap.builder().maxSize(maxEntries()).asyncExpirationListener(new ExpiredServiceListener())
         .expirationPolicy(ExpirationPolicy.ACCESSED).expiration(expirationMillis(), TimeUnit.MILLISECONDS).build();
-  }
-
-  @Override
-  public void start() throws CoreException {
-  }
-
-  @Override
-  public void stop() {
   }
 
   @Override
@@ -126,14 +147,6 @@ public class DynamicSharedService extends SharedServiceImpl {
     return cachedServices;
   }
 
-  public Integer getMaxEntries() {
-    return maxEntries;
-  }
-
-  public void setMaxEntries(Integer maxEntries) {
-    this.maxEntries = maxEntries;
-  }
-
   protected int maxEntries() {
     return NumberUtils.toIntDefaultIfNull(getMaxEntries(), DEFAULT_MAX_CACHE_SIZE);
   }
@@ -141,14 +154,6 @@ public class DynamicSharedService extends SharedServiceImpl {
   public <T extends DynamicSharedService> T withMaxEntries(Integer i) {
     setMaxEntries(i);
     return (T) this;
-  }
-
-  public TimeInterval getExpiration() {
-    return expiration;
-  }
-
-  public void setExpiration(TimeInterval expiration) {
-    this.expiration = expiration;
   }
 
   public <T extends DynamicSharedService> T withExpiration(TimeInterval i) {

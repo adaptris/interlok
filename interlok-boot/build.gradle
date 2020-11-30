@@ -1,6 +1,6 @@
 ext {
   componentName='Interlok Bootstrap'
-  springBootLoaderVersion='2.3.3.RELEASE'
+  springBootLoaderVersion='2.3.5.RELEASE'
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 }
 
@@ -13,7 +13,7 @@ dependencies {
   compileOnly "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
   annotationProcessor project(':interlok-core-apt')
   javadoc project(':interlok-core-apt')
-  testCompile "junit:junit:4.13"
+  testCompile "junit:junit:4.13.1"
   testRuntimeOnly "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
   testCompileOnly "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
 }

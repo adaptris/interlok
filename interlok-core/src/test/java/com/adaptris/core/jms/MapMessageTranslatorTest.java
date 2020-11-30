@@ -20,6 +20,9 @@ import static org.junit.Assert.assertTrue;
 import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.jms.Session;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -30,6 +33,18 @@ import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 public class MapMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
   private static final String BODY_KEY1 = "bodykey1";
 
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
+  
   /**
    * @see com.adaptris.core.jms.MessageTypeTranslatorCase#createMessage(javax.jms.Session)
    */
@@ -50,12 +65,9 @@ public class MapMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
 
   @Test
   public void testMapMessageToAdaptrisMessage() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MapMessageTranslator t = new MapMessageTranslator();
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       MapMessage jmsMsg = session.createMapMessage();
       jmsMsg.setString(BODY_KEY1, TEXT);
       addProperties(jmsMsg);
@@ -67,18 +79,14 @@ public class MapMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
     }
     finally {
       stop(t);
-      broker.destroy();
     }
   }
 
   @Test
   public void testAdaptrisMessageToMapMessage() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MapMessageTranslator t = new MapMessageTranslator();
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
 
       addMetadata(msg);
@@ -93,18 +101,14 @@ public class MapMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
     }
     finally {
       stop(t);
-      broker.destroy();
     }
   }
 
   @Test
   public void testAdaptrisMessageToMapMessageWithMetadataAsPayload() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MapMessageTranslator t = new MapMessageTranslator();
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
 
       addMetadata(msg);
@@ -122,7 +126,6 @@ public class MapMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
     }
     finally {
       stop(t);
-      broker.destroy();
     }
   }
 

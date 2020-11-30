@@ -24,6 +24,7 @@ import static com.adaptris.interlok.junit.scaffolding.util.PortManager.release;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import javax.jms.DeliveryMode;
 import javax.jms.JMSException;
 import javax.naming.Context;
@@ -48,6 +49,7 @@ import com.adaptris.interlok.junit.scaffolding.jms.JmsConfig;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.KeyValuePair;
+import com.adaptris.util.TimeInterval;
 
 public class EmbeddedActiveMq {
   private static final long MAX_WAIT = 20000;
@@ -159,6 +161,8 @@ public class EmbeddedActiveMq {
     }
     con.setClientId(createSafeUniqueId(impl));
     con.setVendorImplementation(impl);
+    con.setConnectionRetryInterval(new TimeInterval(3L, TimeUnit.SECONDS));
+    con.setConnectionAttempts(1);
     return con;
   }
 
@@ -183,7 +187,8 @@ public class EmbeddedActiveMq {
     jndi.setJndiName("topicConnectionFactory");
     result.setVendorImplementation(jndi);
     result.setClientId(createSafeUniqueId(jndi));
-
+    result.setConnectionRetryInterval(new TimeInterval(3L, TimeUnit.SECONDS));
+    result.setConnectionAttempts(1);
     return result;
   }
 
@@ -193,6 +198,8 @@ public class EmbeddedActiveMq {
     jndi.setJndiName("queueConnectionFactory");
     result.setVendorImplementation(jndi);
     result.setClientId(createSafeUniqueId(jndi));
+    result.setConnectionRetryInterval(new TimeInterval(3L, TimeUnit.SECONDS));
+    result.setConnectionAttempts(1);
     return result;
   }
 

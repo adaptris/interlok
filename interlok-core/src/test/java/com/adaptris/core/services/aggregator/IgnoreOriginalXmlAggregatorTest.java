@@ -29,7 +29,7 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
-import com.adaptris.core.services.conditional.conditions.ConditionImpl;
+import com.adaptris.core.services.aggregator.MessageAggregatorTest.EvenOddCondition;
 import com.adaptris.core.services.splitter.SplitJoinService;
 import com.adaptris.core.services.splitter.SplitJoinServiceTest;
 import com.adaptris.core.services.splitter.SplitterCase;
@@ -147,19 +147,4 @@ public class IgnoreOriginalXmlAggregatorTest extends XmlAggregatorCase {
     return new IgnoreOriginalXmlDocumentAggregator("<envelope/>");
   }
 
-  // Have a condition that every other call passes
-  private class EvenOddCondition extends ConditionImpl {
-    private int numberOfCalls = 0;
-
-    @Override
-    public boolean evaluate(AdaptrisMessage message) throws CoreException {
-      numberOfCalls++;
-      return numberOfCalls %2 == 0;
-    }
-
-    @Override
-    public void close() {
-      throw new RuntimeException();
-    }
-  }
 }

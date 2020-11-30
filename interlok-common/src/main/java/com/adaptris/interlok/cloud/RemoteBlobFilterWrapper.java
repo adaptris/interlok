@@ -2,9 +2,8 @@ package com.adaptris.interlok.cloud;
 
 
 import java.io.FileFilter;
-
 import javax.validation.constraints.NotBlank;
-
+import org.apache.commons.lang3.ObjectUtils;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.interlok.util.Args;
@@ -29,8 +28,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * is wrapped as a {@link RemoteFile}. <strong>If your filter uses anything other than the filename
  * / size / lastmodified, then results will be undefined.</strong>
  * </p>
- * 
- * 
+ *
+ *
  * @config remote-blob-filter-wrapper
  */
 @XStreamAlias("remote-blob-filter-wrapper")
@@ -48,7 +47,7 @@ public class RemoteBlobFilterWrapper implements RemoteBlobFilter {
   @Override
   public boolean accept(RemoteBlob blob) {
     if (fileFilter == null) {
-      fileFilter = FileFilterBuilder.build(getFilterExpression(), getFileFilterImp());
+      fileFilter = FileFilterBuilder.build(getFilterExpression(), fileFilterImp());
     }
     return fileFilter.accept(blob.toFile());
   }
@@ -59,7 +58,7 @@ public class RemoteBlobFilterWrapper implements RemoteBlobFilter {
 
   /**
    * Specify the file filter classname that will be used.
-   * 
+   *
    * @param fileFilterImp the classname; may not be null.
    */
   public void setFileFilterImp(String fileFilterImp) {
@@ -75,10 +74,13 @@ public class RemoteBlobFilterWrapper implements RemoteBlobFilter {
     return filterExpression;
   }
 
+  private String fileFilterImp() {
+    return ObjectUtils.defaultIfNull(getFileFilterImp(), FileFilterBuilder.DEFAULT_FILE_FILTER_IMP);
+  }
 
   /**
    * Specify the file filter expression that will be used.
-   * 
+   *
    * @param filterExpression the expression; may not be null.
    */
   public void setFilterExpression(String filterExpression) {
