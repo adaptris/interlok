@@ -16,10 +16,11 @@
 
 package com.adaptris.core.services.metadata.compare;
 
-import org.apache.commons.lang3.StringUtils;
-
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.MetadataElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 
@@ -30,6 +31,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("metadata-ends-with")
+@AdapterComponent
+@ComponentProfile(summary = "Tests that a configured metadata value ends with the supplied value.", tag = "operator,comparator,metadata")
 public class EndsWith extends ComparatorImpl {
 
   public EndsWith() {
@@ -43,7 +46,11 @@ public class EndsWith extends ComparatorImpl {
 
   @Override
   public MetadataElement compare(MetadataElement firstItem, MetadataElement secondItem) {
-    return new MetadataElement(getResultKey(), String.valueOf(StringUtils.endsWith(firstItem.getValue(),
-        secondItem.getValue())));
+    return new MetadataElement(getResultKey(), String.valueOf(compare(firstItem.getValue(), secondItem.getValue())));
+  }
+
+  @Override
+  protected boolean compare(String a, String b) {
+    return StringUtils.endsWith(a, b);
   }
 }
