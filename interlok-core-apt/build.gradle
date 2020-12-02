@@ -4,7 +4,7 @@ ext {
 }
 
 dependencies {
-  compile ("com.thoughtworks.xstream:xstream:$xstreamVersion") {  transitive= false }
+  compile ("com.thoughtworks.xstream:xstream:1.4.14") {  transitive= false }
   compile ("jakarta.validation:jakarta.validation-api:2.0.2")
   compile files("${System.getProperty('java.home')}/../lib/tools.jar")
 

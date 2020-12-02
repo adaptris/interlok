@@ -4,9 +4,11 @@ import org.apache.tools.ant.filters.*
 ext {
   componentName='Base Interlok'
   activeMqVersion='5.16.0'
-  artemisVersion='2.16.0'
   bouncyCastleVersion='1.67'
   mysqlDriverVersion='8.0.22'
+  slf4jVersion = '1.7.30'
+  mockitoVersion = '3.6.28'
+
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
   classesToTest = project.hasProperty("junit.test.classes") ? project.getProperty("junit.test.classes") : "**/*Test*"
   maxThreads = project.hasProperty("junit.threads") ? project.getProperty("junit.threads") : 1
@@ -57,7 +59,7 @@ dependencies {
   compile project(':interlok-core-apt')
   compile project(':interlok-common')
 
-  compile ("com.thoughtworks.xstream:xstream:$xstreamVersion")
+  compile ("com.thoughtworks.xstream:xstream:1.4.14")
   compile ("org.codehaus.jettison:jettison:1.2")
   compile ("io.github.classgraph:classgraph:4.8.60")
   compile ("net.jodah:expiringmap:0.5.9")
@@ -98,10 +100,10 @@ dependencies {
   compile ("org.apache.derby:derby:10.14.2.0")
   compile ("org.apache-extras.beanshell:bsh:2.0b6")
 
-  compile ("org.slf4j:slf4j-api:$slf4jVersion")
+  compile ("org.slf4j:slf4j-api:1.7.30")
 
   testCompile ("junit:junit:4.13.1")
-  testCompile ("org.apache.activemq:artemis-jms-server:$artemisVersion")
+  testCompile ("org.apache.activemq:artemis-jms-server:2.16.0")
   testCompile ("oro:oro:2.0.8")
 
   testCompile ("org.awaitility:awaitility:4.0.3")
