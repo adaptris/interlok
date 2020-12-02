@@ -1,0 +1,23 @@
+@startuml
+
+title Stream to Elastic
+participant External
+participant Interlok
+participant S3
+participant Elastic
+
+External->Interlok: start processing
+activate Interlok
+Interlok->S3: list bucket
+activate S3
+return JSON Array
+loop for each element in array
+  Interlok->Interlok: N>1 JSON path operations
+  Interlok->S3: Get JSON blob
+  activate S3
+  return  JSON blob
+  Interlok->Elastic: BatchIndex
+end
+return 202
+
+@enduml
