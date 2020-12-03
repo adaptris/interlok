@@ -18,13 +18,14 @@ package com.adaptris.core.services.metadata.compare;
 
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.services.conditional.Operator;
 
 /** Compare two items of metadata returning the result of the comparison.
  * 
  * @author lchan
  *
  */
-public interface MetadataComparator {
+public interface MetadataComparator extends Operator {
 
   MetadataElement compare(MetadataElement firstItem, MetadataElement secondItem) throws ServiceException;
 }

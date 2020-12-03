@@ -16,9 +16,8 @@
 
 package com.adaptris.core.services.metadata.compare;
 
-import org.apache.commons.lang3.StringUtils;
-
-import com.adaptris.core.MetadataElement;
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -30,20 +29,17 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("metadata-contains-ignore-case")
-public class ContainsIgnoreCase extends ComparatorImpl {
+@AdapterComponent
+@ComponentProfile(summary = "Tests that a configured metadata value contains the supplied value, ignoring case.", tag = "operator,comparator,metadata")
+public class ContainsIgnoreCase extends Contains {
 
   public ContainsIgnoreCase() {
     super();
+    setIgnoreCase(true);
   }
 
   public ContainsIgnoreCase(String result) {
     this();
     setResultKey(result);
-  }
-
-  @Override
-  public MetadataElement compare(MetadataElement firstItem, MetadataElement secondItem) {
-    return new MetadataElement(getResultKey(), String.valueOf(StringUtils.containsIgnoreCase(firstItem.getValue(),
-        secondItem.getValue())));
   }
 }
