@@ -28,11 +28,11 @@ public abstract class ComparatorImpl implements MetadataComparator {
   @AutoPopulated
   @Getter
   @Setter
-  protected String resultKey;
+  private String resultKey;
 
   @Getter
   @Setter
-  protected String value;
+  private String value;
 
   public ComparatorImpl() {
     setResultKey(getClass().getCanonicalName());
