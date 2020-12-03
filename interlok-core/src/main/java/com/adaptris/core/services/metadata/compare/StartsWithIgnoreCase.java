@@ -18,9 +18,7 @@ package com.adaptris.core.services.metadata.compare;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
-import com.adaptris.core.MetadataElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * 
@@ -33,24 +31,15 @@ import org.apache.commons.lang3.StringUtils;
 @XStreamAlias("metadata-starts-with-ignore-case")
 @AdapterComponent
 @ComponentProfile(summary = "Tests that a configured metadata value starts with the supplied value, ignoring case.", tag = "operator,comparator,metadata")
-public class StartsWithIgnoreCase extends ComparatorImpl {
+public class StartsWithIgnoreCase extends StartsWith {
 
   public StartsWithIgnoreCase() {
     super();
+    setIgnoreCase(true);
   }
 
   public StartsWithIgnoreCase(String result) {
     this();
     setResultKey(result);
-  }
-
-  @Override
-  public MetadataElement compare(MetadataElement firstItem, MetadataElement secondItem) {
-    return new MetadataElement(getResultKey(), String.valueOf(compare(firstItem.getValue(), secondItem.getValue())));
-  }
-
-  @Override
-  protected boolean compare(String a, String b) {
-    return StringUtils.startsWithIgnoreCase(a, b);
   }
 }

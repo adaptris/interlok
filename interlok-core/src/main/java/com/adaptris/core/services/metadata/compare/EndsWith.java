@@ -18,8 +18,12 @@ package com.adaptris.core.services.metadata.compare;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.MetadataElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -34,6 +38,11 @@ import org.apache.commons.lang3.StringUtils;
 @AdapterComponent
 @ComponentProfile(summary = "Tests that a configured metadata value ends with the supplied value.", tag = "operator,comparator,metadata")
 public class EndsWith extends ComparatorImpl {
+
+  @InputFieldDefault("false")
+  @Getter
+  @Setter
+  private Boolean ignoreCase;
 
   public EndsWith() {
     super();
@@ -50,7 +59,14 @@ public class EndsWith extends ComparatorImpl {
   }
 
   @Override
-  protected boolean compare(String a, String b) {
-    return StringUtils.endsWith(a, b);
+  protected boolean compare(String string, String suffix) {
+    if (ignoreCase()) {
+      return StringUtils.endsWithIgnoreCase(string, suffix);
+    }
+    return StringUtils.endsWith(string, suffix);
+  }
+
+  private boolean ignoreCase() {
+    return BooleanUtils.toBooleanDefaultIfNull(ignoreCase, false);
   }
 }

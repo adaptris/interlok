@@ -22,8 +22,6 @@ import com.adaptris.core.AdaptrisMessage;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotBlank;
-
 public abstract class ComparatorImpl implements MetadataComparator {
 
   @AffectsMetadata
