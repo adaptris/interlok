@@ -45,7 +45,7 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  */
 @XStreamAlias("metadata-compare-timestamps")
 @AdapterComponent
-@ComponentProfile(summary = "Compares a configured metadata timestamp value against teh supplied value.", tag = "operator,comparator,metadata")
+@ComponentProfile(summary = "Compares a configured metadata timestamp value against the supplied value.", tag = "operator,comparator,metadata")
 public class CompareTimestamps extends ComparatorImpl {
 
   private static final String DEFAULT_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
