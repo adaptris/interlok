@@ -118,7 +118,7 @@ dependencies {
   testCompile ("org.mockito:mockito-core:$mockitoVersion")
   testCompile ("org.mockito:mockito-inline:$mockitoVersion")
   testCompile("net.sourceforge.jtds:jtds:1.3.1")
-  testCompile("com.microsoft.sqlserver:mssql-jdbc:6.4.0.jre8")
+  testCompile("com.microsoft.sqlserver:mssql-jdbc:9.1.1.jre8-preview")
   testCompile ("mysql:mysql-connector-java:$mysqlDriverVersion")
 
   antSql("net.sourceforge.jtds:jtds:1.3.1")
