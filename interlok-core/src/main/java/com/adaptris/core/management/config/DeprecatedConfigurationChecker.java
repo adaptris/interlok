@@ -1,6 +1,9 @@
 package com.adaptris.core.management.config;
 
+import static com.adaptris.core.util.LoggingHelper.filterGuid;
+import static com.adaptris.core.util.LoggingHelper.reflectiveUniqueID;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.validation.ConstraintViolation;
@@ -35,8 +38,14 @@ public class DeprecatedConfigurationChecker extends ValidationCheckerImpl {
   private List<String> violationsToWarning(Set<ConstraintViolation<Adapter>> violations) {
     return violations.stream()
         .filter((v) -> !isListImpl(v.getPropertyPath().toString()))
-        .map(v -> String.format("Interlok Deprecation Warning: [%1$s] is deprecated. %2$s", v.getPropertyPath(), v.getMessage()))
+        .map(v -> String.format("Interlok Deprecation Warning: [%1$s][%2$s]: %3$s",
+            v.getPropertyPath(), friendlyName(v.getLeafBean()), v.getMessage()))
         .collect(Collectors.toList());
   }
 
+  public static String friendlyName(Object o) {
+    return Optional.ofNullable(o)
+        .map((obj) -> obj.getClass().getSimpleName() + filterGuid(reflectiveUniqueID(obj)))
+        .orElse("");
+  }
 }
