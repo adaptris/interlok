@@ -58,10 +58,8 @@ public class DeprecatedConfigurationCheckerTest {
     assertFalse(report.isCheckPassed());
     // Should be 2 warning, 1 for the deprecated class and 1 for the deprecated member
     assertEquals(2, report.getWarnings().size());
-    assertTrue(report.getWarnings().contains(
-        "Interlok Deprecation Warning: [sharedComponents.services[1]] is deprecated. It will be removed in a future version. No replacement."));
-    assertTrue(report.getWarnings().contains(
-        "Interlok Deprecation Warning: [sharedComponents.services[2].deprecated] is deprecated. It will be removed in a future version. No replacement."));
+    assertTrue(violationsAsExpected(report.getWarnings(), "sharedComponents.services[1]",
+        "sharedComponents.services[2]"));
     assertEquals(0, report.getFailureExceptions().size());
   }
 
