@@ -74,6 +74,14 @@ public class MetadataStreamDataOutputParameterTest {
     assertNotSame(TEXT, msg.getContent());
     assertEquals(TEXT, msg.getMetadataValue(DEFAULT_METADATA_KEY));
   }
+  
+  @Test
+  public void testInsert_NullStream() throws Exception {
+    MetadataStreamOutputParameter p = new MetadataStreamOutputParameter(DEFAULT_METADATA_KEY);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    p.insert(new InputStreamWithEncoding(null, null), msg);
+    assertEquals("", msg.getMetadataValue(DEFAULT_METADATA_KEY));
+  }
 
   @Test
   public void testInsert_Encoding() throws Exception {

@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -33,8 +34,10 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageEncoderImp;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -228,6 +231,36 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     AdaptrisMessage m2 = mock.getMessages().get(0);
     assertEquals("GET", m2.getMetadataValue(CoreConstants.HTTP_METHOD));
     assertEquals(TEXT, msg.getContent());
+  }
+  
+  @Test
+  public void testRequest_ErrorCode_NullResponseBody() throws Exception {
+    MockMessageProducer mock = new MockMessageProducer();
+    HttpConnection jc = HttpHelper.createConnection();
+    JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
+    ServiceList sl = new ServiceList();
+    sl.add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.SWITCH_PROTOCOL_101)));
+    Channel c = createChannel(jc, createWorkflow(mc, mock, sl));
+    StandardHttpProducer stdHttp = new StandardHttpProducer().withURL(HttpHelper.createURL(c));
+
+    stdHttp.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethodProvider.RequestMethod.GET));
+    stdHttp.setIgnoreServerResponseCode(true);
+    stdHttp.setResponseBody(new MetadataStreamOutputParameter());
+    StandaloneRequestor producer = new StandaloneRequestor(stdHttp);
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage();
+    try {
+      start(c);
+      start(producer);
+      producer.doService(msg);
+      waitForMessages(mock, 1);
+    }
+    finally {
+      HttpHelper.stopChannelAndRelease(c);
+      stop(producer);
+    }
+    assertEquals(1, mock.messageCount());
+    AdaptrisMessage m2 = mock.getMessages().get(0);
+    assertEquals("GET", m2.getMetadataValue(CoreConstants.HTTP_METHOD));
   }
 
   @Test
