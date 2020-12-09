@@ -1,2 +1,2 @@
 com.adaptris.core.management.config.ConsoleReporter
-com.adaptris.core.management.config.DeprecatedConfigFileReporter
+com.adaptris.core.management.config.WarningsToFile

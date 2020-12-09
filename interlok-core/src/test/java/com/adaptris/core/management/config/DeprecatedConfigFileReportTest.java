@@ -18,11 +18,11 @@ public class DeprecatedConfigFileReportTest {
     Object tracker = new Object();
     File f = TempFileUtils.createTrackedFile(tracker);
     assertFalse(f.exists());
-    System.setProperty(DeprecatedConfigFileReporter.SYSPROP_FILENAME, "");
+    System.setProperty(WarningsToFile.SYSPROP_FILENAME, "");
     ConfigurationCheckReport report = new ConfigurationCheckReport();
     report.setCheckClassName(DeprecatedConfigurationChecker.class.getCanonicalName());
     report.setCheckName("blah blah");
-    assertTrue(new DeprecatedConfigFileReporter().report(Arrays.asList(report)));
+    assertTrue(new WarningsToFile().report(Arrays.asList(report)));
     assertFalse(f.exists());
   }
 
@@ -31,12 +31,12 @@ public class DeprecatedConfigFileReportTest {
     Object tracker = new Object();
     File f = TempFileUtils.createTrackedFile(tracker);
     assertFalse(f.exists());
-    System.setProperty(DeprecatedConfigFileReporter.SYSPROP_FILENAME, f.getCanonicalPath());
+    System.setProperty(WarningsToFile.SYSPROP_FILENAME, f.getCanonicalPath());
     ConfigurationCheckReport report = new ConfigurationCheckReport();
     report.getWarnings().add("hello world");
     report.setCheckClassName(DeprecatedConfigurationChecker.class.getCanonicalName());
     report.setCheckName("blah blah");
-    assertTrue(new DeprecatedConfigFileReporter().report(Arrays.asList(report)));
+    assertTrue(new WarningsToFile().report(Arrays.asList(report)));
     assertTrue(f.exists());
     try (FileReader in = new FileReader(f)) {
       List<String> lines = IOUtils.readLines(in);
