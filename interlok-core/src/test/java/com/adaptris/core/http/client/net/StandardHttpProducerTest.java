@@ -235,16 +235,19 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   
   @Test
   public void testRequest_ErrorCode_NullResponseBody() throws Exception {
+    // INTERLOK-3527 - make sure we don't get an NPE.
     MockMessageProducer mock = new MockMessageProducer();
     HttpConnection jc = HttpHelper.createConnection();
     JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
     ServiceList sl = new ServiceList();
+    // To trigger the bug we need the getErrorStream() method to return null.  A response code > 400 will not.
     sl.add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.SWITCH_PROTOCOL_101)));
     Channel c = createChannel(jc, createWorkflow(mc, mock, sl));
     StandardHttpProducer stdHttp = new StandardHttpProducer().withURL(HttpHelper.createURL(c));
 
     stdHttp.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethodProvider.RequestMethod.GET));
     stdHttp.setIgnoreServerResponseCode(true);
+    // Metadata stream is the source of the bug, so lets use it here rather than the payload default.
     stdHttp.setResponseBody(new MetadataStreamOutputParameter());
     StandaloneRequestor producer = new StandaloneRequestor(stdHttp);
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage();

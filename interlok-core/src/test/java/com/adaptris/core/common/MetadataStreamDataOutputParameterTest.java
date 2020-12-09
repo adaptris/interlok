@@ -75,8 +75,10 @@ public class MetadataStreamDataOutputParameterTest {
     assertEquals(TEXT, msg.getMetadataValue(DEFAULT_METADATA_KEY));
   }
   
+  
   @Test
   public void testInsert_NullStream() throws Exception {
+    // INTERLOK-3527
     MetadataStreamOutputParameter p = new MetadataStreamOutputParameter(DEFAULT_METADATA_KEY);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     p.insert(new InputStreamWithEncoding(null, null), msg);
