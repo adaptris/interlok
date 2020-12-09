@@ -35,9 +35,8 @@ public class JavaxValidationChecker extends ValidationCheckerImpl {
 
   private List<Exception> violationsToException(Set<ConstraintViolation<Adapter>> violations) {
     return violations.stream().filter((v) -> !isListImpl(v.getPropertyPath().toString()))
-        .map(v -> new CoreException(
-        String.format("Interlok Validation Error: [%1$s]=[%2$s]", v.getPropertyPath(), v.getMessage())))
+        .map(v -> new CoreException(String.format("Interlok Validation Error: [%1$s][%2$s]: %3$s",
+            v.getPropertyPath(), friendlyName(v.getLeafBean()), v.getMessage())))
         .collect(Collectors.toList());
   }
-
 }
