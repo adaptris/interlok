@@ -16,17 +16,19 @@
 
 package com.adaptris.core.services.metadata.compare;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
  * 
@@ -42,6 +44,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("metadata-compare-timestamps")
+@AdapterComponent
+@ComponentProfile(summary = "Compares a configured metadata timestamp value against the supplied value.", tag = "operator,comparator,metadata")
 public class CompareTimestamps extends ComparatorImpl {
 
   private static final String DEFAULT_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
@@ -68,10 +72,7 @@ public class CompareTimestamps extends ComparatorImpl {
     MetadataElement result = new MetadataElement();
     result.setKey(getResultKey());
     try {
-      SimpleDateFormat sdf = new SimpleDateFormat(dateFormat());
-      Date firstDate = sdf.parse(firstItem.getValue());
-      Date secondDate = sdf.parse(secondItem.getValue());
-      result.setValue(String.valueOf(firstDate.compareTo(secondDate)));
+      result.setValue(String.valueOf(compareFormattedDates(firstItem.getValue(), secondItem.getValue())));
     } catch (ParseException e) {
       throw ExceptionHelper.wrapServiceException(e);
     }
@@ -95,5 +96,21 @@ public class CompareTimestamps extends ComparatorImpl {
    */
   public void setDateFormat(String f) {
     this.dateFormat = f;
+  }
+
+  @Override
+  protected boolean compare(String a, String b) {
+    try {
+      return compareFormattedDates(a, b) == 0;
+    } catch (ParseException e) {
+      return false;
+    }
+  }
+
+  private int compareFormattedDates(String a, String b) throws ParseException {
+    SimpleDateFormat sdf = new SimpleDateFormat(dateFormat());
+    Date firstDate = sdf.parse(a);
+    Date secondDate = sdf.parse(b);
+    return firstDate.compareTo(secondDate);
   }
 }

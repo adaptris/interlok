@@ -4,9 +4,11 @@ import org.apache.tools.ant.filters.*
 ext {
   componentName='Base Interlok'
   activeMqVersion='5.16.0'
-  artemisVersion='2.15.0'
   bouncyCastleVersion='1.67'
   mysqlDriverVersion='8.0.22'
+  slf4jVersion = '1.7.30'
+  mockitoVersion = '3.6.28'
+
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
   classesToTest = project.hasProperty("junit.test.classes") ? project.getProperty("junit.test.classes") : "**/*Test*"
   maxThreads = project.hasProperty("junit.threads") ? project.getProperty("junit.threads") : 1
@@ -57,7 +59,7 @@ dependencies {
   compile project(':interlok-core-apt')
   compile project(':interlok-common')
 
-  compile ("com.thoughtworks.xstream:xstream:$xstreamVersion")
+  compile ("com.thoughtworks.xstream:xstream:1.4.14")
   compile ("org.codehaus.jettison:jettison:1.2")
   compile ("io.github.classgraph:classgraph:4.8.60")
   compile ("net.jodah:expiringmap:0.5.9")
@@ -84,14 +86,14 @@ dependencies {
   compile ("org.glassfish.external:opendmk_jmxremote_optional_jar:1.0-b01-ea")
   compile ("org.glassfish.external:opendmk_jdmkrt_jar:1.0-b01-ea")
   compile ("com.jcraft:jsch:0.1.55")
-  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.34.v20201102")
+  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.35.v20201120")
   compile ("javax.servlet:javax.servlet-api:4.0.1")
   compile ("net.sf.joost:joost:0.9.1")
   compile ("org.quartz-scheduler:quartz:2.3.2") {
     exclude group: "com.zaxxer", module: "HikariCP-java7"
   }
   compile ("com.zaxxer:HikariCP:3.4.5")
-  compile ("net.sf.saxon:Saxon-HE:9.9.1-7")
+  compile ("net.sf.saxon:Saxon-HE:10.3")
   compile ("xerces:xercesImpl:2.12.0")
   compile ("com.mchange:c3p0:0.9.5.5")
   compile ("org.apache.derby:derby:10.14.2.0")
@@ -108,7 +110,7 @@ dependencies {
   compile "org.apache.logging.log4j:log4j-1.2-api:$log4j2Version", optional
 
   testCompile ("junit:junit:4.13.1")
-  testCompile ("org.apache.activemq:artemis-jms-server:$artemisVersion")
+  testCompile ("org.apache.activemq:artemis-jms-server:2.16.0")
   testCompile ("oro:oro:2.0.8")
 
   testCompile ("org.awaitility:awaitility:4.0.3")

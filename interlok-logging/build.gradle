@@ -1,6 +1,7 @@
 ext {
   componentName='Interlok Logging'
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
+  log4j2Version = "2.14.0"
 }
 
 // In this section you declare the dependencies for your production and test code

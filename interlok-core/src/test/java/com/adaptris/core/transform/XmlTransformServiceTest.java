@@ -537,7 +537,7 @@ public class XmlTransformServiceTest
       execute(service, m1);
       fail("Exception expected but none thrown");
     } catch (ServiceException expected) {
-      assertExceptionCause(expected,  TransformerException.class, UncheckedXPathException.class);
+      assertExceptionCause(expected, TransformerException.class, UncheckedXPathException.class);
     }
   }
 
@@ -750,9 +750,8 @@ public class XmlTransformServiceTest
     assertNotNull(e.getCause());
     List<Class> validClasses = Arrays.asList(classes);
     Throwable t = e.getCause();
-    boolean matches  = validClasses.stream().anyMatch((clazz) -> {
-      return t.getClass().isAssignableFrom(clazz);
-    });
+    boolean matches =
+        validClasses.stream().anyMatch((clazz) -> clazz.isAssignableFrom(t.getClass()));
     assertTrue("Exception cause is expected", matches);
   }
 

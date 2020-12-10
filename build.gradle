@@ -1,15 +1,15 @@
 plugins {
   // Manage optional dependencies in maven pom.
   id 'nebula.optional-base' version '5.0.3' apply false
-  id 'com.github.spotbugs' version '4.5.1' apply false
+  id 'com.github.spotbugs' version '4.6.0' apply false
   id "org.sonarqube" version '3.0' apply false
   id 'org.owasp.dependencycheck' version '6.0.3' apply false
   id "io.freefair.lombok" version "5.3.0" apply false
 }
 
 ext {
-  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '3.11-SNAPSHOT'
-  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '3.11-SNAPSHOT'
+  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '3.12-SNAPSHOT'
+  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '3.12-SNAPSHOT'
   nexusBaseUrl = project.hasProperty('nexusBaseUrl') ? project.getProperty('nexusBaseUrl') : 'https://nexus.adaptris.net/nexus'
   mavenPublishUrl = project.hasProperty('mavenPublishUrl') ? project.getProperty('mavenPublishUrl') : nexusBaseUrl + '/content/repositories/snapshots'
   javadocsBaseUrl = nexusBaseUrl + "/content/sites/javadocs/com/adaptris"
@@ -118,7 +118,7 @@ subprojects { subproject ->
   }
 
   dependencies {
-    mavenDeploy ("org.apache.maven.wagon:wagon-http:3.4.0")
+    mavenDeploy ("org.apache.maven.wagon:wagon-http:3.4.2")
   }
 
   configurations.all {

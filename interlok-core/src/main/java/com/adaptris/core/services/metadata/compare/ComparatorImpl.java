@@ -16,32 +16,32 @@
 
 package com.adaptris.core.services.metadata.compare;
 
-import javax.validation.constraints.NotBlank;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.core.AdaptrisMessage;
+import lombok.Getter;
+import lombok.Setter;
 
 public abstract class ComparatorImpl implements MetadataComparator {
-  
+
   @AffectsMetadata
   @AutoPopulated
-  @NotBlank
+  @Getter
+  @Setter
   private String resultKey;
-  
+
+  @Getter
+  @Setter
+  private String value;
+
   public ComparatorImpl() {
     setResultKey(getClass().getCanonicalName());
   }
 
-  public String getResultKey() {
-    return resultKey;
-  }
+  protected abstract boolean compare(String a, String b);
 
-  /**
-   * Set the key where we store the result.
-   * 
-   * @param rk the key, default is the classname
-   */
-  public void setResultKey(String rk) {
-    this.resultKey = rk;
+  @Override
+  public boolean apply(AdaptrisMessage message, String object) {
+    return compare(message.resolve(value), message.resolve(object));
   }
-
 }
