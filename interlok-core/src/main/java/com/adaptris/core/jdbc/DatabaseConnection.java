@@ -22,6 +22,8 @@ import java.util.Properties;
 import javax.sql.DataSource;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+
+import com.adaptris.annotation.Removal;
 import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -48,6 +50,8 @@ public abstract class DatabaseConnection extends AllowsRetriesConnection {
   @NotBlank
   @InputFieldHint(style = "SQL")
   @AdvancedConfig
+  @Deprecated
+  @Removal(message = "Use java.sql.Connection#isValid(int) to test a connection", version = "4.0.0")
   private String testStatement;
   @NotBlank
   @AutoPopulated
