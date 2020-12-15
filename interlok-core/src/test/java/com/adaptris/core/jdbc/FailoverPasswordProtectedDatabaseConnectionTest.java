@@ -15,13 +15,16 @@
 */
 
 package com.adaptris.core.jdbc;
-import static org.junit.Assert.fail;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.concurrent.TimeUnit;
+
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.fail;
 
 public class FailoverPasswordProtectedDatabaseConnectionTest extends PasswordProtectedDatabaseConnectionTest {
 
@@ -36,7 +39,6 @@ public class FailoverPasswordProtectedDatabaseConnectionTest extends PasswordPro
     conn1.setPassword(PROPERTIES.getProperty(KEY_JDBC_PASSWORD));
     conn1.setConnectionAttempts(1);
     conn1.setConnectionRetryInterval(new TimeInterval(10L, TimeUnit.MILLISECONDS.name()));
-    conn1.setTestStatement(PROPERTIES.getProperty(KEY_JDBC_TEST_STATEMENT));
     conn1.setDebugMode(true);
     
     return conn1;

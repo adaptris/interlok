@@ -15,18 +15,7 @@
 */
 
 package com.adaptris.core.jdbc;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
-import org.awaitility.Awaitility;
-import org.junit.Test;
+
 import com.adaptris.core.ClosedState;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.StartedState;
@@ -35,6 +24,20 @@ import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.TimeInterval;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+import org.awaitility.Awaitility;
+import org.junit.Test;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class JdbcPooledConnectionTest
     extends com.adaptris.interlok.junit.scaffolding.DatabaseConnectionCase<JdbcPooledConnection> {
@@ -133,7 +136,6 @@ public class JdbcPooledConnectionTest
     Thread.currentThread().setName("testConnectionDataSource_Poolsize");
 
     JdbcPooledConnection con = configure(createConnection());
-    con.setTestStatement("");
     con.setConnectUrl("jdbc:derby:memory:" + GUID.safeUUID() + ";create=true");
     con.setDriverImp("org.apache.derby.jdbc.EmbeddedDriver");
     con.setMinimumPoolSize(1);

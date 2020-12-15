@@ -19,7 +19,6 @@ import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_ALWAYS_VERIFY;
 import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_AUTO_COMMIT;
 import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_DEBUG;
 import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_DRIVER;
-import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_TEST_STATEMENT;
 import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_URL_ROOT;
 import static com.adaptris.jdbc.connection.FailoverConnectionTest.createTables;
 import static org.junit.Assert.assertEquals;
@@ -508,7 +507,6 @@ public class FailoverDatasourceTest extends FailoverDataSource {
     p.setProperty(JDBC_AUTO_COMMIT, "true");
     p.setProperty(JDBC_DEBUG, "true");
     p.setProperty(JDBC_ALWAYS_VERIFY, "true");
-    p.setProperty(JDBC_TEST_STATEMENT, "VALUES CURRENT_TIMESTAMP");
     p.setProperty(JDBC_URL_ROOT + ".1", "jdbc:derby:memory:jdbc-failover-ds-1;create=true");
     p.setProperty(JDBC_URL_ROOT + ".2", "jdbc:derby:memory:jdbc-failover-ds-2;create=true");
     return p;

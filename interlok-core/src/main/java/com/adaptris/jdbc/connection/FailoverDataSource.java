@@ -68,8 +68,7 @@ public class FailoverDataSource implements DataSource {
 
   private static final String[] REQUIRED_PROPERTIES =
   {
-      FailoverConfig.JDBC_DRIVER, FailoverConfig.JDBC_AUTO_COMMIT,
-      FailoverConfig.JDBC_TEST_STATEMENT
+      FailoverConfig.JDBC_DRIVER, FailoverConfig.JDBC_AUTO_COMMIT
   };
 
   /**

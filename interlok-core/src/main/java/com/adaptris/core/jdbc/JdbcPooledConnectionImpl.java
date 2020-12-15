@@ -15,15 +15,15 @@
 */
 package com.adaptris.core.jdbc;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import javax.sql.DataSource;
-import javax.validation.constraints.NotBlank;
-import org.apache.commons.io.IOUtils;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.core.util.JdbcUtil;
+import org.apache.commons.io.IOUtils;
+
+import javax.sql.DataSource;
+import javax.validation.constraints.NotBlank;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public abstract class JdbcPooledConnectionImpl extends DatabaseConnection {
   @NotBlank
@@ -92,10 +92,12 @@ public abstract class JdbcPooledConnectionImpl extends DatabaseConnection {
    * @throws SQLException if the statement could not be performed.
    */
   private Connection testConnection(Connection sqlConnection) throws SQLException {
-    if (!alwaysValidateConnection()) {
-      return sqlConnection;
+    if (alwaysValidateConnection()) {
+      if (!sqlConnection.isValid(NUM_SECONDS_TIMEOUT_CONN_VALIDATE)) {
+        throw new SQLException("Connection is not valid");
+      }
     }
-    return JdbcUtil.testConnection(sqlConnection, getTestStatement(), debugMode());
+    return sqlConnection;
   }
 
   public String getConnectUrl() {

@@ -21,6 +21,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.adaptris.core.jdbc.DatabaseConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -146,7 +147,9 @@ public final class FailoverConnection {
         this.createConnection();
       }
       if (config.getAlwaysValidateConnection()) {
-        JdbcUtil.testConnection(sqlConnection, config.getTestStatement(), config.getDebugMode());
+        if (!sqlConnection.isValid(DatabaseConnection.NUM_SECONDS_TIMEOUT_CONN_VALIDATE)) {
+          throw new SQLException();
+        }
       }
     }
     catch (SQLException e) {

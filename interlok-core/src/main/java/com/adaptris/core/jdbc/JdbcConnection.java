@@ -16,14 +16,6 @@
 
 package com.adaptris.core.jdbc;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.Properties;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -31,6 +23,13 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.security.exc.PasswordException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  * <p>
@@ -46,8 +45,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"username", "password", "driverImp", "connectUrl"})
 public class JdbcConnection extends DatabaseConnection {
 
-  private static final int NUM_SECONDS_TIMEOUT_CONN_VALIDATE = 5;
-  
+
   private String connectUrl;
   private transient Connection sqlConnection;
 
@@ -147,7 +145,7 @@ public class JdbcConnection extends DatabaseConnection {
       return new EqualsBuilder().append(getConnectUrl(), rhs.getConnectUrl())
           .append(getAlwaysValidateConnection(), rhs.getAlwaysValidateConnection()).append(getAutoCommit(), rhs.getAutoCommit())
           .append(getDebugMode(), rhs.getDebugMode()).append(getDriverImp(), rhs.getDriverImp())
-          .append(getTestStatement(), rhs.getTestStatement()).isEquals();
+          .isEquals();
     }
     return false;
   }
@@ -155,7 +153,7 @@ public class JdbcConnection extends DatabaseConnection {
   @Override
   public int hashCode() {
     return new HashCodeBuilder(11, 17).append(getConnectUrl()).append(getAlwaysValidateConnection()).append(getAutoCommit())
-        .append(getDebugMode()).append(getDriverImp()).append(getTestStatement()).toHashCode();
+        .append(getDebugMode()).append(getDriverImp()).toHashCode();
   }
 
   /** @see com.adaptris.core.jdbc.DatabaseConnection#getConnectionName() */
@@ -188,15 +186,6 @@ public class JdbcConnection extends DatabaseConnection {
         log.error("Couldn't decode password for database");
         throw new SQLException(e);
       }
-    }
-    try {
-      if (alwaysValidateConnection()) {
-        JdbcUtil.testConnection(sqlConnection, getTestStatement(), debugMode());
-      }
-    }
-    catch (SQLException e) {
-      sqlConnection = null;
-      throw e;
     }
   }
 

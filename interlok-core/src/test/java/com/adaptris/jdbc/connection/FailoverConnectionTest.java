@@ -16,12 +16,21 @@
 
 package com.adaptris.jdbc.connection;
 
+import com.adaptris.core.util.JdbcUtil;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Properties;
+
 import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_ALWAYS_VERIFY;
 import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_AUTO_COMMIT;
 import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_DEBUG;
 import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_DRIVER;
 import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_PASSWORD;
-import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_TEST_STATEMENT;
 import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_URL_ROOT;
 import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_USERNAME;
 import static org.junit.Assert.assertEquals;
@@ -29,14 +38,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Properties;
-import org.junit.Before;
-import org.junit.Test;
-import com.adaptris.core.util.JdbcUtil;
 
 /**
  *
@@ -61,13 +62,6 @@ public class FailoverConnectionTest extends com.adaptris.interlok.junit.scaffold
     }
     try {
       fc1.addConnectionUrl(null);
-      fail("Expected IllegalArgumentException");
-    }
-    catch (IllegalArgumentException expected) {
-
-    }
-    try {
-      fc1.setTestStatement(null);
       fail("Expected IllegalArgumentException");
     }
     catch (IllegalArgumentException expected) {
@@ -217,7 +211,6 @@ public class FailoverConnectionTest extends com.adaptris.interlok.junit.scaffold
     fc.setAlwaysValidateConnection(true);
     fc.setAutoCommit(true);
     fc.setDatabaseDriver(PROPERTIES.getProperty("jdbc.driver"));
-    fc.setTestStatement("SELECT seq_number from sequences where id='id'");
     fc.setDebugMode(true);
     return fc;
   }
@@ -228,7 +221,6 @@ public class FailoverConnectionTest extends com.adaptris.interlok.junit.scaffold
     p.setProperty(JDBC_AUTO_COMMIT, "true");
     p.setProperty(JDBC_DEBUG, "true");
     p.setProperty(JDBC_ALWAYS_VERIFY, "true");
-    p.setProperty(JDBC_TEST_STATEMENT, "SELECT seq_number from sequences where id='id'");
     p.setProperty(JDBC_URL_ROOT + ".1", PROPERTIES.getProperty("jdbc.url"));
     p.setProperty(JDBC_URL_ROOT + ".2", PROPERTIES.getProperty("jdbc.url.2"));
     return p;

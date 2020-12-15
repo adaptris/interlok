@@ -1,9 +1,5 @@
 package com.adaptris.core.jdbc;
 
-import javax.validation.Valid;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
@@ -12,6 +8,11 @@ import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.Args;
 import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import javax.validation.Valid;
 
 /**
  * Concrete {@link JdbcPooledConnectionImpl} that allows you to plug in connection pool
@@ -61,7 +62,7 @@ public class PluggableJdbcPooledConnection extends JdbcPooledConnectionImpl {
 
       return new EqualsBuilder().append(conn.getConnectUrl(), getConnectUrl()).append(conn.getDriverImp(), getDriverImp())
           .append(conn.getAlwaysValidateConnection(), getAlwaysValidateConnection())
-          .append(conn.getDebugMode(), getDebugMode()).append(conn.getTestStatement(), getTestStatement())
+          .append(conn.getDebugMode(), getDebugMode())
           .append(conn.getAutoCommit(), getAutoCommit()).append(conn.getConnectionProperties(), getConnectionProperties())
           .append(conn.getBuilder(), getBuilder()).append(conn.getPoolProperties(), getPoolProperties()).isEquals();
     }
@@ -71,7 +72,7 @@ public class PluggableJdbcPooledConnection extends JdbcPooledConnectionImpl {
   @Override
   public int hashCode() {
     return new HashCodeBuilder(19, 37).append(getConnectUrl()).append(getDriverImp())
-        .append(getAlwaysValidateConnection()).append(getDebugMode()).append(getTestStatement()).append(getAutoCommit())
+        .append(getAlwaysValidateConnection()).append(getDebugMode()).append(getAutoCommit())
         .append(getConnectionProperties()).append(getBuilder()).append(getPoolProperties()).toHashCode();
   }
 

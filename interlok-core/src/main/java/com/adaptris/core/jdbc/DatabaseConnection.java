@@ -16,13 +16,6 @@
 
 package com.adaptris.core.jdbc;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Properties;
-import javax.sql.DataSource;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -34,6 +27,14 @@ import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.util.KeyValuePairBag;
 import com.adaptris.util.KeyValuePairSet;
+import org.apache.commons.lang3.BooleanUtils;
+
+import javax.sql.DataSource;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  * <p>
@@ -44,11 +45,8 @@ import com.adaptris.util.KeyValuePairSet;
  */
 public abstract class DatabaseConnection extends AllowsRetriesConnection {
 
-  @AutoPopulated
-  @NotBlank
-  @InputFieldHint(style = "SQL")
-  @AdvancedConfig
-  private String testStatement;
+  public static final int NUM_SECONDS_TIMEOUT_CONN_VALIDATE = 5;
+
   @NotBlank
   @AutoPopulated
   private String driverImp;
@@ -84,7 +82,6 @@ public abstract class DatabaseConnection extends AllowsRetriesConnection {
    */
   public DatabaseConnection() {
     setDriverImp("com.mysql.jdbc.Driver");
-    setTestStatement("SELECT DATABASE(), VERSION(), NOW(), USER();");
     wrapper = new DataSourceWrapper(this);
     connectionState = ConnectionState.Closed;
   }
@@ -223,33 +220,6 @@ public abstract class DatabaseConnection extends AllowsRetriesConnection {
 
   public boolean debugMode() {
     return BooleanUtils.toBooleanDefaultIfNull(getDebugMode(), false);
-  }
-
-  /**
-   * Set the SQL statement used to test this connection.
-   * <p>
-   * The default test statement is <code>SELECT DATABASE(), VERSION(), NOW(), USER()</code> which may not be suitable for your
-   * database driver. Additionally depending on the JDBC driver implementation certain statements may be 'cached' and might never
-   * hit the database, so you need to be aware of that as you will be relying on this test-statement to verify the connection
-   * validity.
-   * </p>
-   * 
-   * @see #setAlwaysValidateConnection(Boolean)
-   * @param s the SQL statement used to test this connection; the default is SELECT DATABASE(), VERSION(), NOW(), USER()
-   */
-  public void setTestStatement(String s) {
-    testStatement = s;
-  }
-
-  /**
-   * <p>
-   * Returns the SQL statement used to test this connection.
-   * </p>
-   * 
-   * @return the SQL statement used to test this connection
-   */
-  public String getTestStatement() {
-    return testStatement;
   }
 
   /**

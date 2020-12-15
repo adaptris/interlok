@@ -42,7 +42,6 @@ public final class FailoverConfig implements Cloneable {
   private boolean verbose;
   private List<String> connectionUrls;
   private String databaseDriver;
-  private String testStatement;
   private boolean autoCommit;
   private boolean alwaysValidateConnection;
   private String username;
@@ -56,12 +55,6 @@ public final class FailoverConfig implements Cloneable {
    * resource key for driver classname
    */
   public static final String JDBC_DRIVER = "jdbc.driver.classname";
-
-  /**
-   * Resource key for testing a connection.
-   *
-   */
-  public static final String JDBC_TEST_STATEMENT = "jdbc.driver.test";
 
   /**
    * resource key for driver url
@@ -102,7 +95,6 @@ public final class FailoverConfig implements Cloneable {
   public FailoverConfig() {
     setConnectionUrls(new ArrayList<String>());
     setDatabaseDriver(MYSQL_DRIVER);
-    setTestStatement(MYSQL_TEST_STMT);
     setAutoCommit(true);
     setAlwaysValidateConnection(true);
     setConnectionProperties(new Properties());
@@ -201,25 +193,6 @@ public final class FailoverConfig implements Cloneable {
   }
 
   /**
-   * Get the statement that will test the connection.
-   *
-   * @return the statement
-   */
-  public String getTestStatement() {
-    return testStatement;
-  }
-
-  /**
-   * Set the statement that will test the connection.
-   *
-   * @param string the statement
-   * @throws IllegalArgumentException if the statement is null.
-   */
-  public void setTestStatement(String string) throws IllegalArgumentException {
-    testStatement = Args.notNull(string, "testStatement");
-  }
-
-  /**
    * @see java.lang.Object#equals(java.lang.Object)
    */
   @Override
@@ -232,7 +205,7 @@ public final class FailoverConfig implements Cloneable {
     }
     if (o instanceof FailoverConfig) {
       FailoverConfig rhs = (FailoverConfig) o;
-      return new EqualsBuilder().append(getTestStatement(), rhs.getTestStatement())
+      return new EqualsBuilder()
           .append(getDebugMode(), rhs.getDebugMode())
           .append(getDatabaseDriver(), rhs.getDatabaseDriver()).append(getAutoCommit(), rhs.getAutoCommit())
           .append(getAlwaysValidateConnection(), rhs.getAlwaysValidateConnection())
@@ -246,7 +219,7 @@ public final class FailoverConfig implements Cloneable {
    */
   @Override
   public int hashCode() {
-    return new HashCodeBuilder(31, 17).append(getTestStatement()).append(getDatabaseDriver())
+    return new HashCodeBuilder(31, 17).append(getDatabaseDriver())
         .append(getAutoCommit()).append(getAlwaysValidateConnection()).append(getConnectionUrls())
         .append(getDebugMode())
         .toHashCode();
@@ -256,7 +229,6 @@ public final class FailoverConfig implements Cloneable {
   public String toString() {
     return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("driver", getDatabaseDriver())
         .append("connectionUrls", getConnectionUrls())
-        .append("testStatement", getTestStatement())
         .append("debugMode", getDebugMode())
         .append("autoCommit", getAutoCommit())
         .append("alwaysValidate", getAlwaysValidateConnection())
@@ -329,7 +301,6 @@ public final class FailoverConfig implements Cloneable {
     // }
     // }
     setConnectionUrls(connectionUrls);
-    setTestStatement(p.getProperty(JDBC_TEST_STATEMENT, MYSQL_TEST_STMT));
   }
 
   /**
