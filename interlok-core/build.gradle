@@ -70,7 +70,7 @@ dependencies {
   compile ("org.apache.geronimo.specs:geronimo-jms_2.0_spec:1.0-alpha-2")
   compile ("org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final")
   compile ("jakarta.validation:jakarta.validation-api:2.0.2")
-  compile ("org.hibernate.validator:hibernate-validator:6.1.6.Final")
+  compile ("org.hibernate.validator:hibernate-validator:7.0.0.Final")
   compile ("org.glassfish:javax.el:3.0.1-b12")
   compile ("commons-io:commons-io:2.8.0")
   compile ("org.apache.commons:commons-lang3:3.11")
