@@ -18,9 +18,8 @@ package com.adaptris.core.jms;
 
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
-
 import org.apache.commons.lang3.BooleanUtils;
-
+import org.apache.commons.lang3.StringUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -98,7 +97,7 @@ public class PasConsumer extends JmsConsumerImpl {
     super.prepare();
     if (getDurable() != null) {
       LoggingHelper.logWarning(durableWarningLogged, () -> durableWarningLogged = true,
-          "{} uses 'durable', this will be implied if subscrption-id is not blank",
+          "{} uses 'durable', this will be implied if subscription-id is not blank",
           LoggingHelper.friendlyName(this));
 
     }
@@ -123,6 +122,9 @@ public class PasConsumer extends JmsConsumerImpl {
   }
 
   boolean durable() {
-    return BooleanUtils.toBooleanDefaultIfNull(getDurable(), false);
+    return BooleanUtils.or(new boolean[] {
+        BooleanUtils.toBooleanDefaultIfNull(getDurable(), false),
+        !StringUtils.isBlank(getSubscriptionId())
+    });
   }
 }
