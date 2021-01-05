@@ -30,8 +30,8 @@ import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.interlok.util.Args;
 import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -48,6 +48,7 @@ import lombok.Setter;
 recommended = {JmsConnection.class})
 @DisplayOrder(order = {"topic", "messageSelector", "destination", "durable",
     "subscriptionId", "acknowledgeMode", "messageTranslator"})
+@NoArgsConstructor
 public class PasConsumer extends JmsConsumerImpl {
 
   /**
@@ -83,13 +84,6 @@ public class PasConsumer extends JmsConsumerImpl {
 
   private transient boolean durableWarningLogged = false;
 
-  public PasConsumer() {
-    super();
-  }
-
-  PasConsumer(boolean b) {
-    super(b);
-  }
 
   protected String subscriptionId() {
     if (durable()) {
