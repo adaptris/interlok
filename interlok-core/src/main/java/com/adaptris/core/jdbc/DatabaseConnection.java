@@ -22,6 +22,8 @@ import java.util.Properties;
 import javax.sql.DataSource;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -48,6 +50,10 @@ public abstract class DatabaseConnection extends AllowsRetriesConnection {
   @NotBlank
   @InputFieldHint(style = "SQL")
   @AdvancedConfig
+  @Deprecated
+  @ConfigDeprecated(removalVersion = "4.0.0",
+          message = "test-statement is superseded by java.sql.Connection#isValid()",
+          groups = Deprecated.class)
   private String testStatement;
   @NotBlank
   @AutoPopulated

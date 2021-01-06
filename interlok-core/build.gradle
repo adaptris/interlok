@@ -4,7 +4,7 @@ import org.apache.tools.ant.filters.*
 ext {
   componentName='Base Interlok'
   activeMqVersion='5.16.0'
-  bouncyCastleVersion='1.67'
+  bouncyCastleVersion='1.68'
   mysqlDriverVersion='8.0.22'
   slf4jVersion = '1.7.30'
   mockitoVersion = '3.6.28'
@@ -59,7 +59,7 @@ dependencies {
   compile project(':interlok-core-apt')
   compile project(':interlok-common')
 
-  compile ("com.thoughtworks.xstream:xstream:1.4.14")
+  compile ("com.thoughtworks.xstream:xstream:1.4.15")
   compile ("org.codehaus.jettison:jettison:1.2")
   compile ("io.github.classgraph:classgraph:4.8.60")
   compile ("net.jodah:expiringmap:0.5.9")
@@ -120,7 +120,7 @@ dependencies {
   testCompile ("org.apache.activemq:activemq-kahadb-store:$activeMqVersion")
   testCompile ("org.apache.activemq.protobuf:activemq-protobuf:1.1")
 
-  testCompile ("org.jruby:jruby-complete:9.2.13.0")
+  testCompile ("org.jruby:jruby-complete:9.2.14.0")
   testCompile ("org.mockftpserver:MockFtpServer:2.7.1")
   testCompile ("org.mockito:mockito-core:$mockitoVersion")
   testCompile ("org.mockito:mockito-inline:$mockitoVersion")
