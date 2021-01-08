@@ -24,6 +24,7 @@ import static org.junit.Assert.fail;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -32,12 +33,13 @@ import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
-import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
+import com.adaptris.core.jms.activemq.EmbeddedArtemis;
 import com.adaptris.core.services.aggregator.AggregatingServiceExample;
 import com.adaptris.core.services.aggregator.ConsumeDestinationFromMetadata;
 import com.adaptris.core.services.aggregator.IgnoreOriginalMimeAggregator;
 import com.adaptris.core.services.aggregator.ReplaceWithFirstMessage;
 import com.adaptris.core.util.MimeHelper;
+import com.adaptris.interlok.junit.scaffolding.jms.JmsConfig;
 import com.adaptris.util.TimeInterval;
 import com.adaptris.util.text.mime.BodyPartIterator;
 
@@ -50,11 +52,16 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
 
   private static final String DEFAULT_FILTER_KEY = "metadataFilterKey";
   
-  private static EmbeddedActiveMq activeMqBroker;
+  private static TestJmsBroker activeMqBroker;
 
+  @Before
+  public void setUp() throws Exception {
+    activeMqBroker.perTestSetup();
+  }
+  
   @BeforeClass
   public static void setUpAll() throws Exception {
-    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker = JmsConfig.jmsTestsEnabled() ? new EmbeddedArtemis() : new MockitoBroker();
     activeMqBroker.start();
   }
   
@@ -71,7 +78,6 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
 
   @Test
   public void testNoOpMethods() throws Exception {
-    
     AggregatingJmsConsumeService service = createService(activeMqBroker);
     try {
       start(service);
@@ -144,17 +150,17 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
     }
   }
 
-  private AggregatingJmsConsumeService createService(EmbeddedActiveMq broker) {
+  private AggregatingJmsConsumeService createService(TestJmsBroker broker) {
     AggregatingQueueConsumer consumer = new AggregatingQueueConsumer();
     consumer.setMessageAggregator(new ReplaceWithFirstMessage());
     return createService(broker, consumer);
   }
 
-  private AggregatingJmsConsumeService createService(EmbeddedActiveMq broker, AggregatingQueueConsumer consumer) {
+  private AggregatingJmsConsumeService createService(TestJmsBroker broker, AggregatingQueueConsumer consumer) {
     return createService(broker, consumer, DATA_QUEUE);
   }
   
-  private AggregatingJmsConsumeService createService(EmbeddedActiveMq broker, AggregatingQueueConsumer consumer, String queue) {
+  private AggregatingJmsConsumeService createService(TestJmsBroker broker, AggregatingQueueConsumer consumer, String queue) {
     AggregatingJmsConsumeService result = new AggregatingJmsConsumeService();
     result.setConnection(broker.getJmsConnection(new BasicActiveMqImplementation(), true));
     ConsumeDestinationFromMetadata destination = new ConsumeDestinationFromMetadata();
@@ -166,11 +172,11 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
     return result;
   }
 
-  private void sendDataMessage(EmbeddedActiveMq broker) throws Exception {
+  private void sendDataMessage(TestJmsBroker broker) throws Exception {
     sendDataMessage(broker, DATA_QUEUE);
   }
   
-  private void sendDataMessage(EmbeddedActiveMq broker, String queue) throws Exception {
+  private void sendDataMessage(TestJmsBroker broker, String queue) throws Exception {
     PtpProducer producer = new PtpProducer().withQueue(queue);
     MetadataCorrelationIdSource corr = new MetadataCorrelationIdSource();
     corr.setMetadataKey(CORRELATION_ID_KEY);

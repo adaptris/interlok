@@ -32,7 +32,6 @@ import javax.jms.MessageConsumer;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -50,7 +49,7 @@ import com.adaptris.interlok.util.Closer;
 
 public class JmsConsumerTest extends com.adaptris.interlok.junit.scaffolding.jms.JmsConsumerCase {
 
-  private static EmbeddedArtemis activeMqBroker;
+  private static TestJmsBroker activeMqBroker;
   
   @Mock private BasicActiveMqImplementation mockVendor;
   @Mock MessageConsumer mockMessageConsumer;
@@ -59,6 +58,7 @@ public class JmsConsumerTest extends com.adaptris.interlok.junit.scaffolding.jms
   @Before
   public void setUp() throws Exception {
     openMocks = MockitoAnnotations.openMocks(this);
+    activeMqBroker.perTestSetup();
   }
 
   @After
@@ -68,20 +68,16 @@ public class JmsConsumerTest extends com.adaptris.interlok.junit.scaffolding.jms
   
   @BeforeClass
   public static void setUpAll() throws Exception {
-    activeMqBroker = new EmbeddedArtemis();
+    activeMqBroker = JmsConfig.jmsTestsEnabled() ? new EmbeddedArtemis() : new MockitoBroker();
     activeMqBroker.start();
   }
   
   @AfterClass
   public static void tearDownAll() throws Exception {
-    if(activeMqBroker != null)
-      activeMqBroker.destroy();
   }
 
   @Test
   public void testDeferConsumerCreationToVendor() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-
     when(mockVendor.createConsumer(any(), any(), any(JmsActorConfig.class))).thenReturn(mockMessageConsumer);
 
     when(mockVendor.getBrokerUrl())
@@ -114,25 +110,12 @@ public class JmsConsumerTest extends com.adaptris.interlok.junit.scaffolding.jms
 
   @Test
   public void testDefaultFalseDeferConsumerCreationToVendor() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-
-    when(mockVendor.createConsumer(any(JmsDestination.class), any(String.class), any(JmsActorConfig.class)))
-        .thenReturn(mockMessageConsumer);
-
-    when(mockVendor.getBrokerUrl())
-        .thenReturn("vm://" + activeMqBroker.getName());
-
-    when(mockVendor.createConnectionFactory())
-        .thenReturn(new ActiveMQConnectionFactory("vm://" + activeMqBroker.getName()));
-
     String rfc6167 = "jms:topic:" + getName() + "?subscriptionId=" + getName();
 
     JmsConsumer consumer = new JmsConsumer().withEndpoint(rfc6167);
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
-//      consumer.setDeferConsumerCreationToVendor(true);
 
     JmsConnection jmsConnection = activeMqBroker.getJmsConnection();
-    jmsConnection.setVendorImplementation(mockVendor);
 
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(jmsConnection, consumer);
 
@@ -150,8 +133,6 @@ public class JmsConsumerTest extends com.adaptris.interlok.junit.scaffolding.jms
 
   @Test
   public void testDurableTopicConsume() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-
     String rfc6167 = "jms:topic:" + getName() + "?subscriptionId=" + getName();
 
     JmsConsumer consumer = new JmsConsumer().withEndpoint(rfc6167);
@@ -172,8 +153,6 @@ public class JmsConsumerTest extends com.adaptris.interlok.junit.scaffolding.jms
 
   @Test
   public void testSharedDurableTopicConsume() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-
     String rfc6167 = "jms:topic:" + getName() + "?subscriptionId=MySubId&sharedConsumerId=" + getName();
 
     JmsConsumer consumer = new JmsConsumer().withEndpoint(rfc6167);
@@ -192,8 +171,6 @@ public class JmsConsumerTest extends com.adaptris.interlok.junit.scaffolding.jms
 
   @Test
   public void testSharedTopicConsume() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-
     String rfc6167 = "jms:topic:" + getName() + "?sharedConsumerId=" + getName();
 
     JmsConsumer consumer = new JmsConsumer().withEndpoint(rfc6167);
@@ -213,8 +190,6 @@ public class JmsConsumerTest extends com.adaptris.interlok.junit.scaffolding.jms
 
   @Test
   public void testTopicConsume() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-
     String rfc6167 = "jms:topic:" + getName();
 
     JmsConsumer consumer = new JmsConsumer().withEndpoint(rfc6167);;
@@ -233,8 +208,6 @@ public class JmsConsumerTest extends com.adaptris.interlok.junit.scaffolding.jms
 
   @Test
   public void testQueueConsume() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-
     String rfc6167 = "jms:queue:" + getName();
 
     JmsConsumer consumer = new JmsConsumer().withEndpoint(rfc6167);

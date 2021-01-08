@@ -31,7 +31,6 @@ import javax.jms.MessageConsumer;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -58,11 +57,11 @@ public class JmsSyncConsumerTest extends PollingJmsConsumerCase {
 
   private AutoCloseable openMocks;
   
-  private static EmbeddedActiveMq activeMqBroker;
+  private static TestJmsBroker activeMqBroker;
 
   @BeforeClass
   public static void setUpAll() throws Exception {
-    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker = JmsConfig.jmsTestsEnabled() ? new EmbeddedActiveMq() : new MockitoBroker();
     activeMqBroker.start();
   }
   
@@ -129,8 +128,6 @@ public class JmsSyncConsumerTest extends PollingJmsConsumerCase {
 
   @Test
   public void testDeferConsumerCreationToVendor() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-
     when(mockVendor.createConsumer(any(), any(), any(JmsActorConfig.class))).thenReturn(mockMessageConsumer);
 
     when(mockVendor.getBrokerUrl()).thenReturn("vm://" + activeMqBroker.getName());
@@ -156,17 +153,7 @@ public class JmsSyncConsumerTest extends PollingJmsConsumerCase {
 
   @Test
   public void testDefaultFalseDeferConsumerCreationToVendor() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
-
-    when(mockVendor.createConsumer(any(JmsDestination.class), any(String.class), any(JmsActorConfig.class)))
-    .thenReturn(mockMessageConsumer);
-
-    when(mockVendor.getBrokerUrl()).thenReturn("vm://" + activeMqBroker.getName());
-
-    when(mockVendor.createConnectionFactory()).thenReturn(new ActiveMQConnectionFactory("vm://" + activeMqBroker.getName()));
-
     JmsConnection jmsConnection = activeMqBroker.getJmsConnection();
-    jmsConnection.setVendorImplementation(mockVendor);
 
     StandaloneConsumer standaloneConsumer = createStandaloneConsumer(jmsConnection, false, false);
     MockMessageListener jms = new MockMessageListener();

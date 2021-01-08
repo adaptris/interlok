@@ -30,6 +30,7 @@ import org.apache.activemq.artemis.core.server.embedded.EmbeddedActiveMQ;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assume;
 import com.adaptris.core.jms.JmsConnection;
+import com.adaptris.core.jms.TestJmsBroker;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.core.util.JmxHelper;
 import com.adaptris.interlok.junit.scaffolding.jms.JmsConfig;
@@ -39,7 +40,7 @@ import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.PlainIdGenerator;
 import com.adaptris.util.TimeInterval;
 
-public class EmbeddedArtemis {
+public class EmbeddedArtemis implements TestJmsBroker {
   private static final long MAX_WAIT = 20000;
   private static final int DEFAULT_WAIT_INTERVAL = 100;
 
@@ -69,6 +70,10 @@ public class EmbeddedArtemis {
 
   public String getName() {
     return ARTEMIS_BROKER_NAME;
+  }
+
+  public void perTestSetup() throws Exception {
+    
   }
 
   public void start() throws Exception {
@@ -168,5 +173,10 @@ public class EmbeddedArtemis {
  static String createSafeUniqueId(Object o) {
    return nameGenerator.create(o).replaceAll(":", "").replaceAll("-", "");
  }
+
+  @Override
+  public JmsConnection getJmsConnection(BasicActiveMqImplementation vendorImp, boolean useTcp) {
+    return null;
+  }
 
 }

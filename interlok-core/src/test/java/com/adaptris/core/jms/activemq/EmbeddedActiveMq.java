@@ -43,6 +43,7 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.jms.FailoverJmsConnection;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.JmsConstants;
+import com.adaptris.core.jms.TestJmsBroker;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.core.stubs.ExternalResourcesHelper;
 import com.adaptris.interlok.junit.scaffolding.jms.JmsConfig;
@@ -51,7 +52,7 @@ import com.adaptris.util.IdGenerator;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.TimeInterval;
 
-public class EmbeddedActiveMq {
+public class EmbeddedActiveMq implements TestJmsBroker {
   private static final long MAX_WAIT = 20000;
   private static final int DEFAULT_WAIT_INTERVAL = 100;
 
@@ -71,6 +72,10 @@ public class EmbeddedActiveMq {
 
   public String getName() {
     return brokerName;
+  }
+  
+  public void perTestSetup() throws Exception {
+    
   }
 
   public void start() throws Exception {
