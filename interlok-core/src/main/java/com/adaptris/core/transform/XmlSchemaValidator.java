@@ -79,7 +79,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
     CacheConnection.class
 })
 @Deprecated
-@ConfigDeprecated(removalVersion = "3.12.0", message="Use basic-xml-schema-validator or extended-xml-schema-validator instead", groups = Deprecated.class)
+@ConfigDeprecated(removalVersion = "4.0.0", message="Use basic-xml-schema-validator or extended-xml-schema-validator instead", groups = Deprecated.class)
 public class XmlSchemaValidator extends MessageValidatorImpl {
 
   private static final int DEFAULT_CACHE_SIZE = 16;
