@@ -27,14 +27,14 @@ import com.adaptris.validation.constraints.ConfigDeprecated;
  * @deprecated since 3.10.2 moved to com.adaptris.interlok.util package.
  */
 @Deprecated
-@ConfigDeprecated(removalVersion = "3.12.0", groups = Deprecated.class)
+@ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
 public interface CloseableIterable<E> extends com.adaptris.interlok.util.CloseableIterable<E> {
 
   /**
    * @deprecated since 3.10.2 use {@link com.adaptris.interlok.util.CloseableIterable#ensureCloseable(Iterable)} instead.
    */
   @Deprecated
-  @Removal(version="3.12.0")
+  @Removal(version="4.0.0")
   static <E> CloseableIterable<E> ensureCloseable(final Iterable<E> iter) {
     if (iter instanceof CloseableIterable) {
       return (CloseableIterable<E>) iter;
