@@ -18,9 +18,7 @@ package com.adaptris.core.jms;
 
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -29,8 +27,8 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.CoreException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -71,6 +69,7 @@ recommended = {JmsConnection.class})
 @DisplayOrder(
     order = {"endpoint", "messageSelector", "destination", "acknowledgeMode",
     "messageTranslator"})
+@NoArgsConstructor
 public class JmsConsumer extends JmsConsumerImpl {
 
   /**
@@ -96,14 +95,6 @@ public class JmsConsumer extends JmsConsumerImpl {
   @Setter
   // Needs to be @NotBlank when destination is removed.
   private String endpoint;
-
-  public JmsConsumer() {
-  }
-
-  // Here for test purposes.
-  JmsConsumer(boolean transacted) {
-    super(transacted);
-  }
 
   public JmsConsumer withEndpoint(String s) {
     setEndpoint(s);

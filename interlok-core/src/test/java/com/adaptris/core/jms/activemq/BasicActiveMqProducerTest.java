@@ -68,32 +68,20 @@ public class BasicActiveMqProducerTest
 
   private static final int DEFAULT_TIMEOUT = 5000;
 
-  private static final String MY_CLIENT_ID;
-  private static final String MY_SUBSCRIPTION_ID;
-
   protected static EmbeddedActiveMq activeMqBroker;
+
+  private static final GuidGenerator GUID = new GuidGenerator();
 
   @BeforeClass
   public static void setUpAll() throws Exception {
     activeMqBroker = new EmbeddedActiveMq();
     activeMqBroker.start();
   }
-  
+
   @AfterClass
   public static void tearDownAll() throws Exception {
     if(activeMqBroker != null)
       activeMqBroker.destroy();
-  }
-  
-  static {
-    try {
-      GuidGenerator guid = new GuidGenerator();
-      MY_CLIENT_ID = guid.getUUID().replaceAll(":", "").replaceAll("-", "");
-      MY_SUBSCRIPTION_ID = guid.getUUID().replaceAll(":", "").replaceAll("-", "");
-    }
-    catch (Exception e) {
-      throw new RuntimeException(e);
-    }
   }
 
   @Override
@@ -333,13 +321,15 @@ public class BasicActiveMqProducerTest
   }
 
   @Test
-  public void testTopicProduceAndConsume_DurableSubscriber() throws Exception {
+  public void testTopicProduceAndConsume_DurableSubscriber_Legacy() throws Exception {
+    String subscriptionId = GUID.safeUUID();
+    String clientId = GUID.safeUUID();
     PasConsumer consumer = new PasConsumer().withTopic(getName());
     consumer.setDurable(true);
-    consumer.setSubscriptionId(MY_SUBSCRIPTION_ID);
+    consumer.setSubscriptionId(subscriptionId);
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     JmsConnection conn = activeMqBroker.getJmsConnection(createVendorImpl(), true);
-    conn.setClientId(MY_CLIENT_ID);
+    conn.setClientId(clientId);
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(conn, consumer);
     MockMessageListener jms = new MockMessageListener();
     standaloneConsumer.registerAdaptrisMessageListener(jms);
@@ -349,6 +339,38 @@ public class BasicActiveMqProducerTest
     stop(standaloneConsumer);
 
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
+            new PasProducer().withTopic(getName()));
+
+    int count = 10;
+    for (int i = 0; i < count; i++) {
+      ExampleServiceCase.execute(standaloneProducer, createMessage());
+    }
+
+    start(standaloneConsumer);
+    waitForMessages(jms, count);
+    assertMessages(jms, 10);
+  }
+
+  @Test
+  // INTERLOK-3537, if subscriptionId != "", then it should be durable.
+  public void testTopicProduceAndConsume_DurableSubscriber() throws Exception {
+    String subscriptionId = GUID.safeUUID();
+    String clientId = GUID.safeUUID();
+    PasConsumer consumer = new PasConsumer().withTopic(getName());
+    consumer.setSubscriptionId(subscriptionId);
+    consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+    JmsConnection conn = activeMqBroker.getJmsConnection(createVendorImpl(), true);
+    conn.setClientId(clientId);
+    StandaloneConsumer standaloneConsumer = new StandaloneConsumer(conn, consumer);
+    MockMessageListener jms = new MockMessageListener();
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
+
+    // Start it once to get some durable Action.
+    start(standaloneConsumer);
+    stop(standaloneConsumer);
+
+    StandaloneProducer standaloneProducer =
+        new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
             new PasProducer().withTopic(getName()));
 
     int count = 10;

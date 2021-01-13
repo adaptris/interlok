@@ -18,9 +18,8 @@ package com.adaptris.core.jms;
 
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
-
 import org.apache.commons.lang3.BooleanUtils;
-
+import org.apache.commons.lang3.StringUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -30,8 +29,8 @@ import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.interlok.util.Args;
 import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -48,6 +47,7 @@ import lombok.Setter;
 recommended = {JmsConnection.class})
 @DisplayOrder(order = {"topic", "messageSelector", "destination", "durable",
     "subscriptionId", "acknowledgeMode", "messageTranslator"})
+@NoArgsConstructor
 public class PasConsumer extends JmsConsumerImpl {
 
   /**
@@ -83,13 +83,6 @@ public class PasConsumer extends JmsConsumerImpl {
 
   private transient boolean durableWarningLogged = false;
 
-  public PasConsumer() {
-    super();
-  }
-
-  PasConsumer(boolean b) {
-    super(b);
-  }
 
   protected String subscriptionId() {
     if (durable()) {
@@ -104,7 +97,7 @@ public class PasConsumer extends JmsConsumerImpl {
     super.prepare();
     if (getDurable() != null) {
       LoggingHelper.logWarning(durableWarningLogged, () -> durableWarningLogged = true,
-          "{} uses 'durable', this will be implied if subscrption-id is not blank",
+          "{} uses 'durable', this will be implied if subscription-id is not blank",
           LoggingHelper.friendlyName(this));
 
     }
@@ -129,6 +122,9 @@ public class PasConsumer extends JmsConsumerImpl {
   }
 
   boolean durable() {
-    return BooleanUtils.toBooleanDefaultIfNull(getDurable(), false);
+    return BooleanUtils.or(new boolean[] {
+        BooleanUtils.toBooleanDefaultIfNull(getDurable(), false),
+        !StringUtils.isBlank(getSubscriptionId())
+    });
   }
 }
