@@ -171,11 +171,7 @@ public class PoolingWorkflow extends WorkflowWithObjectPool {
   @Override
   protected void initialiseWorkflow() throws CoreException {
     checkPoolConfig();
-    // simply checks that the service collection is ready for work so call prepare()
-    // to check any licensing restrictions.
-    // init() is done during start.
-    ServiceCollection prepareCheck = cloneServiceCollection(getServiceCollection());
-    LifecycleHelper.prepare(prepareCheck);
+    preFlightServiceCheck();
     LifecycleHelper.init(getProducer());
     getConsumer().registerAdaptrisMessageListener(this);
     LifecycleHelper.init(getConsumer());
@@ -244,18 +240,6 @@ public class PoolingWorkflow extends WorkflowWithObjectPool {
   @Override
   public synchronized void handleBadMessage(AdaptrisMessage msg) {
     super.handleBadMessage(msg);
-  }
-
-  @Override
-  protected void handleBadMessage(String logMsg, Exception e, AdaptrisMessage msg) {
-    if (retrieveActiveMsgErrorHandler() instanceof RetryMessageErrorHandler) {
-      log.warn("{} failed with [{}], it will be retried", msg.getUniqueId(), e.getMessage());
-    }
-    else {
-      log.error(logMsg, e);
-    }
-    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, e);
-    handleBadMessage(msg);
   }
 
   /**
@@ -407,20 +391,10 @@ public class PoolingWorkflow extends WorkflowWithObjectPool {
       String oldName = Thread.currentThread().getName();
       Thread.currentThread().setName(getThreadName());
       AdaptrisMessage result = null;
-      try {
-        processingStart(message);
-        result = worker.handleMessage(message);
-        workflowEnd(message, result);
-        objectPool.returnObject(worker);
-      } catch (Exception e) {
-        log.trace("[{}] failed pool re-entry, attempting to invalidate", toString());
-        try {
-          objectPool.invalidateObject(worker);
-          log.trace("[{}] invalidated", toString());
-        } catch (Exception ignoredIntentionally) {
-          log.trace("[{}] not invalidated", toString());
-        }
-      }
+      processingStart(message);
+      result = worker.handleMessage(message);
+      workflowEnd(message, result);
+      returnObject(objectPool, worker);
       Thread.currentThread().setName(oldName);
       return result;
     }

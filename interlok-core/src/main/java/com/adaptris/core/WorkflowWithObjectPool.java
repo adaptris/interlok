@@ -140,6 +140,14 @@ public abstract class WorkflowWithObjectPool extends WorkflowImp {
     return NumberUtils.toIntDefaultIfNull(getPoolSize(), DEFAULT_MAX_POOLSIZE);
   }
 
+  protected void preFlightServiceCheck() throws CoreException {
+    // simply checks that the service collection is ready for work so call prepare()
+    // to check any licensing restrictions.
+    // init() is done during start.
+    ServiceCollection prepareCheck = cloneServiceCollection(getServiceCollection());
+    LifecycleHelper.prepare(prepareCheck);
+
+  }
   /**
    * Check the object pool such that it isn't going to cause issues.
    *
@@ -176,7 +184,7 @@ public abstract class WorkflowWithObjectPool extends WorkflowImp {
     return pool;
   }
 
-  protected void populatePool(ObjectPool<Worker> objectPool) throws CoreException {
+  protected ObjectPool<Worker> populatePool(ObjectPool<Worker> objectPool) throws CoreException {
     int size = minIdle();
     ExecutorService populator = Executors.newCachedThreadPool();
     try {
@@ -203,6 +211,7 @@ public abstract class WorkflowWithObjectPool extends WorkflowImp {
     } finally {
       populator.shutdownNow();
     }
+    return objectPool;
   }
 
   /**
@@ -233,6 +242,20 @@ public abstract class WorkflowWithObjectPool extends WorkflowImp {
     ServiceCollection result = DefaultMarshaller.roundTrip(original);
     LifecycleHelper.registerEventHandler(result, eventHandler);
     return result;
+  }
+
+  protected void returnObject(ObjectPool<Worker> pool, Worker worker) {
+    try {
+      pool.returnObject(worker);
+    } catch (Exception e) {
+      log.trace("[{}] failed pool re-entry, attempting to invalidate", worker.toString());
+      try {
+        pool.invalidateObject(worker);
+        log.trace("[{}] invalidated", worker.toString());
+      } catch (Exception ignoredIntentionally) {
+        log.trace("[{}] not invalidated", worker.toString());
+      }
+    }
   }
 
   @Override
