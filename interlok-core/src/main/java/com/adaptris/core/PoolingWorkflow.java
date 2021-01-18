@@ -216,7 +216,7 @@ public class PoolingWorkflow extends WorkflowWithObjectPool {
   protected void onMessage(AdaptrisMessage msg) {
     try {
       addConsumeLocation(msg);
-      currentThreadName = Thread.currentThread().getName();
+      currentThreadName = friendlyName();
       if (poolLock.permitAvailable()) {
         workflowStart(msg);
         // workflowCompletion.add(msg, threadPool.submit(new CallableWorker(msg)));
