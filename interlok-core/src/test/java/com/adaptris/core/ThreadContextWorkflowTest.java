@@ -574,6 +574,27 @@ public class ThreadContextWorkflowTest
     }
   }
 
+  @Test
+  public void testFriendlyName() throws Exception {
+    String oldName = Thread.currentThread().getName();
+    MockChannel channel =
+        createChannel(new MockMessageProducer(), Arrays.asList(new Service[] {new NullService()}));
+    Thread.currentThread().setName(getName());
+    channel.setUniqueId("channel");
+    ThreadContextWorkflow workflow = (ThreadContextWorkflow) channel.getWorkflowList().get(0);
+    workflow.setUniqueId("workflow");
+    try {
+      start(channel);
+      assertTrue(workflow.friendlyName().contains(getName()));
+      workflow.setAddCurrentThreadName(Boolean.FALSE);
+      assertFalse(workflow.friendlyName().contains(getName()));
+    } finally {
+      Thread.currentThread().setName(oldName);
+      stop(channel);
+    }
+  }
+
+
   @Override
   protected Object retrieveObjectForSampleConfig() {
     Channel c = new Channel();
