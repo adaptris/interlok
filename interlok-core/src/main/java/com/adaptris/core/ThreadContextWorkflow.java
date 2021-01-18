@@ -16,15 +16,19 @@
 
 package com.adaptris.core;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.pool2.ObjectPool;
+import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.interlok.util.Closer;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Workflow that executes services in the current thread.
@@ -54,6 +58,38 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ThreadContextWorkflow extends WorkflowWithObjectPool {
 
+  private enum PoolActivity {
+    Create, Borrow, Return, Close
+  };
+
+  /**
+   * Append the current thread name to any generated friendly name.
+   * <p>
+   * If you are using this workflow, then there may be thread naming in play (by jetty or otherwise)
+   * which you may wish to preserve. Setting this flag to true means that the current thread name
+   * from {@code Thread.currentThread().currentName()} is appended to any generated friendly name.
+   * </p>
+   * <p>
+   * It defaults to true if not explicitly configured
+   * </p>
+   *
+   */
+  @Getter
+  @Setter
+  @AdvancedConfig
+  @InputFieldDefault(value = "true")
+  private Boolean addCurrentThreadName;
+
+  /**
+   * Log the internal object pool state.
+   *
+   */
+  @Getter
+  @Setter
+  @AdvancedConfig(rare = true)
+  @InputFieldDefault(value = "false")
+  private Boolean additionalDebug;
+
   @Getter(AccessLevel.PACKAGE)
   private transient ObjectPool<Worker> objectPool;
 
@@ -65,13 +101,41 @@ public class ThreadContextWorkflow extends WorkflowWithObjectPool {
       processingStart(msg);
       addConsumeLocation(msg);
       worker = objectPool.borrowObject();
+      logPoolState(PoolActivity.Borrow);
       AdaptrisMessage result = worker.handleMessage(msg);
       workflowEnd(msg, result);
       returnObject(objectPool, worker);
+      logPoolState(PoolActivity.Return);
     } catch (Exception e) {
       msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, e);
       handleBadMessage(msg);
     }
+  }
+
+  private void logPoolState(PoolActivity activity) {
+    if (additionalDebug()) {
+      log.trace("Current Pool after [{}]: Idle [{}], Active [{}], Max [{}]",
+          activity.name(),
+          objectPool.getNumIdle(),
+          objectPool.getNumActive(), poolSize());
+    }
+  }
+
+  private boolean additionalDebug() {
+    return BooleanUtils.toBooleanDefaultIfNull(getAdditionalDebug(), false);
+  }
+
+  // Override the friendly name for logging purposes.
+  //
+  @Override
+  public String friendlyName() {
+    return obtainWorkflowId() + "(" + threadName() + ")";
+  }
+
+  private String threadName() {
+    return BooleanUtils.toBooleanDefaultIfNull(getAddCurrentThreadName(), true)
+        ? Thread.currentThread().getName()
+        : "";
   }
 
   @Override
@@ -86,6 +150,7 @@ public class ThreadContextWorkflow extends WorkflowWithObjectPool {
   protected void startWorkflow() throws CoreException {
     LifecycleHelper.start(getProducer());
     objectPool = populatePool(createObjectPool());
+    logPoolState(PoolActivity.Create);
     LifecycleHelper.start(getConsumer());
   }
 
@@ -93,6 +158,7 @@ public class ThreadContextWorkflow extends WorkflowWithObjectPool {
   protected void stopWorkflow() {
     LifecycleHelper.stop(getConsumer());
     Closer.closeQuietly(objectPool);
+    logPoolState(PoolActivity.Close);
     LifecycleHelper.stop(getProducer());
   }
 

@@ -140,6 +140,7 @@ public class ThreadContextWorkflowTest
     int count = 10;
     try {
       ThreadContextWorkflow workflow = (ThreadContextWorkflow) channel.getWorkflowList().get(0);
+      workflow.setAdditionalDebug(Boolean.TRUE);
       workflow.addInterceptor(interceptor);
       channel.prepare();
       start(channel);
