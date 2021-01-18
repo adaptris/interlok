@@ -107,11 +107,6 @@ public abstract class WorkflowWithObjectPool extends WorkflowImp {
     super();
   }
 
-  public WorkflowWithObjectPool(String uniqueId) throws CoreException {
-    this();
-    setUniqueId(uniqueId);
-  }
-
   /**
    * Process a message from the <code>MessageConsumer</code>
    *
