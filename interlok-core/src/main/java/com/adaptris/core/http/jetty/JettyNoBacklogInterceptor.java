@@ -1,12 +1,12 @@
 /*
  * Copyright 2018 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,13 +20,10 @@ import static com.adaptris.core.CoreConstants.KEY_WORKFLOW_SKIP_PRODUCER;
 import static com.adaptris.core.CoreConstants.STOP_PROCESSING_KEY;
 import static com.adaptris.core.CoreConstants.STOP_PROCESSING_VALUE;
 import static com.adaptris.core.http.jetty.JettyWorkflowInterceptorImpl.messageComplete;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import javax.servlet.http.HttpServletResponse;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisMessage;
@@ -34,13 +31,14 @@ import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.PoolingWorkflow;
 import com.adaptris.core.Workflow;
+import com.adaptris.core.WorkflowWithObjectPool;
 import com.adaptris.core.interceptor.WorkflowInterceptorImpl;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * WorkflowInterceptor that automatically returns a 503 if it knows there is nothing available to handle the inbound message in the
  * parent workflow.
- * 
+ *
  * <p>
  * Note that this interceptor only works with {@link PoolingWorkflow}; results are undefined when used with other workflows. What
  * actually happens is that if the current message (during workflowStart()) increases the count of messages in flight over the
@@ -49,7 +47,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * workflow to skip processing the message (effectively the message will be discarded); you will see logging to that effect at
  * TRACE/DEBUG level.
  * </p>
- * 
+ *
  * @config jetty-no-backlog-interceptor
  * @since 3.7.3
  */
@@ -69,8 +67,8 @@ public class JettyNoBacklogInterceptor extends WorkflowInterceptorImpl {
   @Override
   public void init() throws CoreException {
     Workflow w = parentWorkflow();
-    if (PoolingWorkflow.class.isAssignableFrom(w.getClass())) {
-      maxWorkers = ((PoolingWorkflow) w).poolSize();
+    if (WorkflowWithObjectPool.class.isAssignableFrom(w.getClass())) {
+      maxWorkers = ((WorkflowWithObjectPool) w).poolSize();
     }
     log.trace("503 Server Error will be sent when there are {} messages in flight", maxWorkers);
 
