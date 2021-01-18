@@ -129,12 +129,12 @@ public class ThreadContextWorkflow extends WorkflowWithObjectPool {
   //
   @Override
   public String friendlyName() {
-    return obtainWorkflowId() + "(" + threadName() + ")";
+    return super.friendlyName() + threadName();
   }
 
   private String threadName() {
     return BooleanUtils.toBooleanDefaultIfNull(getAddCurrentThreadName(), true)
-        ? Thread.currentThread().getName()
+        ? "(" + Thread.currentThread().getName() + ")"
         : "";
   }
 
