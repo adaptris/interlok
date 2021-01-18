@@ -361,6 +361,7 @@ public class ThreadContextWorkflowTest
   public void testOnMessage_SkipProducer() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
     StaticMockMessageProducer serviceProducer = new StaticMockMessageProducer();
+    serviceProducer.getMessages().clear();
     MockChannel channel = createChannel(producer, Arrays.asList(
         new Service[] {new StandaloneProducer(serviceProducer), new MockSkipProducerService()}));
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD_1);
