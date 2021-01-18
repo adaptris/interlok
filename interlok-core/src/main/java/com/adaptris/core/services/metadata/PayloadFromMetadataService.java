@@ -56,7 +56,7 @@ public class PayloadFromMetadataService extends PayloadFromTemplateService {
   @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "true")
   @Deprecated
-  @ConfigDeprecated(removalVersion = "3.12.0", message = "use quote-replacement instead", groups = Deprecated.class)
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "use quote-replacement instead", groups = Deprecated.class)
   private Boolean escapeBackslash;
 
   private transient boolean warningLogged = false;
@@ -85,7 +85,7 @@ public class PayloadFromMetadataService extends PayloadFromTemplateService {
    * @deprecated since 3.10.0, use {@link #setQuoteReplacement(Boolean)} instead.
    */
   @Deprecated
-  @ConfigDeprecated(removalVersion = "3.12.0", message = "use quote-replacement instead", groups = Deprecated.class)
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "use quote-replacement instead", groups = Deprecated.class)
   public Boolean getEscapeBackslash() {
     return escapeBackslash;
   }
@@ -101,7 +101,7 @@ public class PayloadFromMetadataService extends PayloadFromTemplateService {
    * @param b the value to set
    */
   @Deprecated
-  @Removal(version = "3.12.0", message = "use quote-replacement instead")
+  @Removal(version = "4.0.0", message = "use quote-replacement instead")
   public void setEscapeBackslash(Boolean b) {
     escapeBackslash = b;
   }
@@ -111,7 +111,7 @@ public class PayloadFromMetadataService extends PayloadFromTemplateService {
    * @deprecated since 3.10.0, use {@link #setQuoteReplacement(Boolean)} instead.
    */
   @Deprecated
-  @Removal(version = "3.12.0", message = "use quote-replacement instead")
+  @Removal(version = "4.0.0", message = "use quote-replacement instead")
   public PayloadFromMetadataService withEscapeBackslash(Boolean b) {
     setEscapeBackslash(b);
     return this;

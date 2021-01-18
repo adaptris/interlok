@@ -36,17 +36,17 @@ public class GetOauthToken extends OauthTokenGetter {
   @AffectsMetadata
   @InputFieldDefault(value = "Authorization")
   @Deprecated
-  @ConfigDeprecated(removalVersion = "3.12.0", message = "Use a access-token-writer instead", groups = Deprecated.class)
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use a access-token-writer instead", groups = Deprecated.class)
   private String tokenKey;
   @AffectsMetadata
   @AdvancedConfig
   @Deprecated
-  @ConfigDeprecated(removalVersion = "3.12.0", message = "Use a access-token-writer instead", groups = Deprecated.class)
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use a access-token-writer instead", groups = Deprecated.class)
   private String tokenExpiryKey;
   @AffectsMetadata
   @AdvancedConfig
   @Deprecated
-  @ConfigDeprecated(removalVersion = "3.12.0", message = "Use a access-token-writer instead", groups = Deprecated.class)
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use a access-token-writer instead", groups = Deprecated.class)
   private String refreshTokenKey;
 
   private transient boolean warningLogged = false;
@@ -84,7 +84,7 @@ public class GetOauthToken extends OauthTokenGetter {
 
 
   @Deprecated
-  @ConfigDeprecated(removalVersion = "3.12.0", message = "Use a access-token-writer instead", groups = Deprecated.class)
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use a access-token-writer instead", groups = Deprecated.class)
   public String getTokenKey() {
     return tokenKey;
   }
@@ -95,21 +95,21 @@ public class GetOauthToken extends OauthTokenGetter {
    * @param key the key.
    */
   @Deprecated
-  @Removal(version = "3.12.0", message = "Use a access-token-writer instead")
+  @Removal(version = "4.0.0", message = "Use a access-token-writer instead")
   public void setTokenKey(String key) {
     tokenKey = Args.notBlank(key, "tokenMetadataKey");
   }
 
 
   @Deprecated
-  @Removal(version = "3.12.0", message = "Use a access-token-writer instead")
+  @Removal(version = "4.0.0", message = "Use a access-token-writer instead")
   public GetOauthToken withTokenExpiryKey(String b) {
     setTokenExpiryKey(b);
     return this;
   }
 
   @Deprecated
-  @ConfigDeprecated(removalVersion = "3.12.0", message = "Use a access-token-writer instead", groups = Deprecated.class)
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use a access-token-writer instead", groups = Deprecated.class)
   public String getTokenExpiryKey() {
     return tokenExpiryKey;
   }
@@ -123,20 +123,20 @@ public class GetOauthToken extends OauthTokenGetter {
    * @param key key.
    */
   @Deprecated
-  @Removal(version = "3.12.0", message = "Use a access-token-writer instead")
+  @Removal(version = "4.0.0", message = "Use a access-token-writer instead")
   public void setTokenExpiryKey(String key) {
     tokenExpiryKey = Args.notBlank(key, "tokenExpiryKey");
   }
 
   @Deprecated
-  @Removal(version = "3.12.0", message = "Use a access-token-write instead")
+  @Removal(version = "4.0.0", message = "Use a access-token-write instead")
   public GetOauthToken withRefreshTokenKey(String refreshMetadataKey) {
     setRefreshTokenKey(refreshMetadataKey);
     return this;
   }
 
   @Deprecated
-  @ConfigDeprecated(removalVersion = "3.12.0", message = "Use a access-token-write instead", groups = Deprecated.class)
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use a access-token-write instead", groups = Deprecated.class)
   public String getRefreshTokenKey() {
     return refreshTokenKey;
   }
@@ -150,7 +150,7 @@ public class GetOauthToken extends OauthTokenGetter {
    * @param key key.
    */
   @Deprecated
-  @Removal(version = "3.12.0", message = "Use a access-token-write instead")
+  @Removal(version = "4.0.0", message = "Use a access-token-write instead")
   public void setRefreshTokenKey(String key) {
     refreshTokenKey = key;
   }
