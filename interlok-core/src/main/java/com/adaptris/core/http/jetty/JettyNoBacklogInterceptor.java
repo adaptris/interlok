@@ -31,7 +31,6 @@ import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.PoolingWorkflow;
 import com.adaptris.core.Workflow;
-import com.adaptris.core.WorkflowWithObjectPool;
 import com.adaptris.core.interceptor.WorkflowInterceptorImpl;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -67,8 +66,8 @@ public class JettyNoBacklogInterceptor extends WorkflowInterceptorImpl {
   @Override
   public void init() throws CoreException {
     Workflow w = parentWorkflow();
-    if (WorkflowWithObjectPool.class.isAssignableFrom(w.getClass())) {
-      maxWorkers = ((WorkflowWithObjectPool) w).poolSize();
+    if (PoolingWorkflow.class.isAssignableFrom(w.getClass())) {
+      maxWorkers = ((PoolingWorkflow) w).poolSize();
     }
     log.trace("503 Server Error will be sent when there are {} messages in flight", maxWorkers);
 
