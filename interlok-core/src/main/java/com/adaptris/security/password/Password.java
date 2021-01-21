@@ -57,6 +57,17 @@ public abstract class Password {
    */
   public static final String PORTABLE_PASSWORD = "PW:";
   /**
+   * Standard password style which is portable across environments.
+   * <p>
+   * It uses the Advanced Encryption Standard (AES) algorithm in
+   * Galois/Counter Mode (GCM) to perform the encryption. GCM has the
+   * benefit of providing authenticity (integrity) in addition to
+   * confidentiality.
+   * </p>
+   *
+   */
+  public static final String PORTABLE_PASSWORD_2 = "PW2:";
+  /**
    * Alternative password style which is not portable across environments and machines
    * <p>
    * It is not considered especially secure, but is enough to stop casual interrogation
@@ -73,7 +84,7 @@ public abstract class Password {
 
   private static final String[] STYLES =
   {
-          MSCAPI_STYLE, PORTABLE_PASSWORD
+          MSCAPI_STYLE, PORTABLE_PASSWORD, PORTABLE_PASSWORD_2
   };
 
   /**
