@@ -128,10 +128,10 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
       receiver = currentSession().createConsumer(replyTo);
       doProduce(msg, dest, replyTo);
       Message jmsReply = receiver.receive(timeout);
-      if(jmsReply == null)
-        throw new JMSException("No Reply Received within " + timeout + "ms");
-      
-      translatedReply = MessageTypeTranslatorImp.translate(getMessageTranslator(), jmsReply);
+      translatedReply =
+          Optional.ofNullable(MessageTypeTranslatorImp.translate(getMessageTranslator(), jmsReply))
+              .orElseThrow(
+                  () -> new JMSException("No Reply Received within " + timeout + "ms"));
       acknowledge(jmsReply);
       // BUG#915
       commit();

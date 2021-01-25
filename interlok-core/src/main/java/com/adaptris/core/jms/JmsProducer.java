@@ -196,10 +196,9 @@ public class JmsProducer extends JmsProducerImpl {
    */
   protected AdaptrisMessage waitForReply(MessageConsumer receiver, long timeout) throws JMSException {
     Message jmsReply = receiver.receive(timeout);
-    if(jmsReply == null)
-      throw new JMSException("No Reply Received within " + timeout + "ms");
-        
-    AdaptrisMessage translatedReply = MessageTypeTranslatorImp.translate(getMessageTranslator(), jmsReply);
+    AdaptrisMessage translatedReply =
+        Optional.ofNullable(MessageTypeTranslatorImp.translate(getMessageTranslator(), jmsReply))
+        .orElseThrow(() -> new JMSException("No Reply Received within " + timeout + "ms"));
     acknowledge(jmsReply);
     return translatedReply;
   }
