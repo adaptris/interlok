@@ -23,9 +23,6 @@ ext {
   componentName='Interlok'
   organizationName = "Adaptris Ltd"
   organizationUrl = "http://interlok.adaptris.net"
-  slf4jVersion = "1.7.30"
-  log4j2Version = "2.13.3"
-  mockitoVersion = '3.6.0'
 }
 
 if (JavaVersion.current().isJava8Compatible()) {

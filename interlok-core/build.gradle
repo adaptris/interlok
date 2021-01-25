@@ -100,14 +100,7 @@ dependencies {
   compile ("org.apache-extras.beanshell:bsh:2.0b6")
   compile ("javax:javaee-api:8.0.1")
 
-  compile ("org.slf4j:slf4j-api:$slf4jVersion")
-  //compile "org.slf4j:jcl-over-slf4j:$slf4jVersion", optional
-  //compile "org.slf4j:jul-to-slf4j:$slf4jVersion", optional
-  //compile "org.slf4j:slf4j-log4j12:$slf4jVersion", optional
-  compile "org.apache.logging.log4j:log4j-core:$log4j2Version", optional
-  compile "org.apache.logging.log4j:log4j-api:$log4j2Version", optional
-  compile "org.apache.logging.log4j:log4j-slf4j-impl:$log4j2Version", optional
-  compile "org.apache.logging.log4j:log4j-1.2-api:$log4j2Version", optional
+  compile ("org.slf4j:slf4j-api:1.7.30")
 
   testCompile ("junit:junit:4.13.1")
   testCompile ("org.apache.activemq:artemis-jms-server:2.16.0")

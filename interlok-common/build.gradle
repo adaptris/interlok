@@ -18,8 +18,6 @@ dependencies {
   compile ("org.apache.commons:commons-pool2:2.9.0")
 
   compile ("org.slf4j:slf4j-api:$slf4jVersion")
-
-  compile "org.slf4j:slf4j-log4j12:$slf4jVersion", optional
   compile ("javax:javaee-api:8.0.1")
 
   compile ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
