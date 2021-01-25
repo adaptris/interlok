@@ -4,12 +4,10 @@ ext {
 }
 
 dependencies {
-  compile ("com.thoughtworks.xstream:xstream:$xstreamVersion") {  transitive= false }
-  compile ("org.apache.velocity:velocity:1.7") { transitive= false}
-  compile ("commons-lang:commons-lang:2.6")
-  compile ("commons-collections:commons-collections:3.2.2")
+  compile ("com.thoughtworks.xstream:xstream:1.4.15") {  transitive= false }
   compile ("javax:javaee-api:8.0.1")
   compile ("jakarta.validation:jakarta.validation-api:2.0.2")
+  // compile files("${System.getProperty('java.home')}/../lib/tools.jar")
 
   testCompile("junit:junit:4.13.1")
   testCompile("org.hibernate.validator:hibernate-validator:6.1.6.Final")
