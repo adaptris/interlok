@@ -36,7 +36,6 @@ dependencies {
 
   javadoc project(':interlok-core-apt')
 
-  testCompile ("log4j:log4j:1.2.17")
   testCompile ("junit:junit:4.13.1")
   testCompile ("org.mockito:mockito-core:$mockitoVersion")
   testCompile ("org.mockito:mockito-inline:$mockitoVersion")
