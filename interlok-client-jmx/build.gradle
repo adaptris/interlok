@@ -62,6 +62,9 @@ uploadArchives {
         properties.appendNode("target", "3.0.5+")
         properties.appendNode("license", "false")
         properties.appendNode("tags", "jmx")
+        properties.appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
+        properties.appendNode("readme", "https://github.com/adaptris/interlok/raw/develop/README.md")
+        properties.appendNode("repository", "https://github.com/adaptris/interlok")
       }
 
     }

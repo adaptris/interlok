@@ -19,7 +19,7 @@ dependencies {
 
   compile ("org.slf4j:slf4j-api:$slf4jVersion")
   compile ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
-  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.35.v20201120")
+  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.36.v20210114")
   compile "org.slf4j:jul-to-slf4j:$slf4jVersion", optional
   compile "org.apache.logging.log4j:log4j-core:$log4j2Version", optional
   compile "org.apache.logging.log4j:log4j-api:$log4j2Version", optional
@@ -75,6 +75,9 @@ uploadArchives {
         def properties = asNode().appendNode("properties")
         properties.appendNode("target", "3.8.0+")
         properties.appendNode("license", "false")
+        properties.appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
+        properties.appendNode("readme", "https://github.com/adaptris/interlok/raw/develop/README.md")
+        properties.appendNode("repository", "https://github.com/adaptris/interlok")        
       }
 
     }
