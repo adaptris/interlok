@@ -106,11 +106,69 @@ jobs:
             - ~/.gradle/wrapper
           key: dependencies-{{ .Environment.CIRCLE_JOB}}-{{ checksum "build.gradle" }}-{{ checksum "interlok-core/build.gradle" }}-{{ checksum "interlok-common/build.gradle"}}
 
+  buildjava11:
+    machine:
+      image: ubuntu-1604:201903-01
+
+    working_directory: ~/interlok
+
+    environment:
+      JAVA_TOOL_OPTIONS: -Xmx2G
+      TERM: dumb
+      DEBIAN_FRONTEND: noninteractive
+
+    steps:
+      - checkout
+
+      - run:
+          name: Configure
+          command: |
+            sudo -E apt-get -y -q update
+            sudo -E apt-get -y -q install haveged openjdk-11-jdk
+            sudo -E systemctl restart haveged
+            mkdir -p ~/.gradle
+            echo "org.gradle.warning.mode=none" > ~/.gradle/gradle.properties
+            echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
+            echo "default.jdbc.storedproc.tests.enabled=false" >> interlok-core/build.properties
+            echo "default.ftp.tests.enabled=false" >> interlok-core/build.properties
+            echo "junit.jms.tests.enabled=false" >> interlok-core/build.properties
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - dependencies-{{ .Environment.CIRCLE_JOB}}-{{ checksum "build.gradle" }}-{{ checksum "interlok-core/build.gradle" }}-{{ checksum "interlok-common/build.gradle"}}
+            - dependencies-{{ checksum "build.gradle" }}-{{ checksum "interlok-core/build.gradle" }}-{{ checksum "interlok-common/build.gradle"}}
+            - dependencies-{{ checksum "build.gradle" }}
+
+      # run tests!
+      - run:
+          name: Run Tests
+          command: |
+            chmod +x ./gradlew
+            ./gradlew -PverboseTests=true test jacocoTestReport
+
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/test-results/junit/
+            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
+          when: always
+
+      - store_test_results:
+          path: ~/test-results
+
+      - save_cache:
+          paths:
+            - ~/.gradle/caches
+            - ~/.gradle/wrapper
+          key: dependencies-{{ .Environment.CIRCLE_JOB}}-{{ checksum "build.gradle" }}-{{ checksum "interlok-core/build.gradle" }}-{{ checksum "interlok-common/build.gradle"}}
+
+
 workflows:
   version: 2
   commit:
     jobs:
-      - build
+      - buildjava11
       # - sonarbuild:
       #     context: SonarCloud
 
