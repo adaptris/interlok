@@ -16,10 +16,15 @@
 
 package com.adaptris.core.services.metadata.compare;
 
-import org.apache.commons.lang3.StringUtils;
-
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.MetadataElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Used with {@link MetadataComparisonService}.
@@ -29,7 +34,14 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * 
  */
 @XStreamAlias("metadata-equals")
+@AdapterComponent
+@ComponentProfile(summary = "Tests that a configured metadata value equals the supplied value.", tag = "operator,comparator,metadata")
 public class Equals extends ComparatorImpl {
+
+  @InputFieldDefault("false")
+  @Getter
+  @Setter
+  private Boolean ignoreCase;
 
   public Equals() {
     super();
@@ -42,6 +54,18 @@ public class Equals extends ComparatorImpl {
 
   @Override
   public MetadataElement compare(MetadataElement firstItem, MetadataElement secondItem) {
-    return new MetadataElement(getResultKey(), String.valueOf(StringUtils.equals(firstItem.getValue(), secondItem.getValue())));
+    return new MetadataElement(getResultKey(), String.valueOf(compare(firstItem.getValue(), secondItem.getValue())));
+  }
+
+  @Override
+  protected boolean compare(String value, String wanted) {
+    if (ignoreCase()) {
+      return StringUtils.equalsAnyIgnoreCase(value, wanted);
+    }
+    return StringUtils.equals(value, wanted);
+  }
+
+  private boolean ignoreCase() {
+    return BooleanUtils.toBooleanDefaultIfNull(ignoreCase, false);
   }
 }

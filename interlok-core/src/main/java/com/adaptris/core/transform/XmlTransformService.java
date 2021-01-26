@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,19 +17,15 @@
 package com.adaptris.core.transform;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
 import java.util.Map;
-
+import java.util.concurrent.TimeUnit;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.xml.transform.Transformer;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -41,10 +37,13 @@ import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.util.TimeInterval;
 import com.adaptris.util.text.xml.XmlTransformer;
 import com.adaptris.util.text.xml.XmlTransformerFactory;
 import com.adaptris.util.text.xml.XsltTransformerFactory;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import net.jodah.expiringmap.ExpirationPolicy;
+import net.jodah.expiringmap.ExpiringMap;
 
 /**
  * <p>
@@ -57,9 +56,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <p>
  * Configuration including allow over-ride behaviour matches previous implementation.
  * </p>
- * 
+ *
  * @config xml-transform-service
- * 
+ *
  */
 @XStreamAlias("xml-transform-service")
 @AdapterComponent
@@ -67,6 +66,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"url", "outputMessageEncoding", "cacheTransforms", "allowOverride", "metadataKey", "transformParameter",
     "xmlTransformerFactory"})
 public class XmlTransformService extends ServiceImp {
+  private static final int DEFAULT_MAX_CACHE_SIZE = 16;
+  private static final TimeInterval DEFAULT_EXPIRATION = new TimeInterval(1L, TimeUnit.HOURS);
 
   // marshalled
   private String url;
@@ -89,7 +90,7 @@ public class XmlTransformService extends ServiceImp {
   @Valid
   private XmlTransformParameter transformParameter;
 
-  private transient HashMap<String, Transformer> transforms = null;
+  private transient Map<String, Transformer> transforms = null;
   // This is the override value which is set to true if url is null
   private transient Boolean overrideAllowOverride;
 
@@ -102,7 +103,6 @@ public class XmlTransformService extends ServiceImp {
   public XmlTransformService() {
     setMetadataKey(CoreConstants.TRANSFORM_OVERRIDE);
     xmlTransformerFactory = new XsltTransformerFactory();
-    this.setTransforms(new HashMap<String, Transformer>());
   }
 
   @Override
@@ -129,6 +129,9 @@ public class XmlTransformService extends ServiceImp {
 
   @Override
   public void prepare() throws CoreException {
+    transforms = ExpiringMap.builder().maxSize(DEFAULT_MAX_CACHE_SIZE)
+        .expirationPolicy(ExpirationPolicy.ACCESSED)
+        .expiration(DEFAULT_EXPIRATION.toMilliseconds(), TimeUnit.MILLISECONDS).build();
   }
 
 
@@ -168,10 +171,10 @@ public class XmlTransformService extends ServiceImp {
     try {
 
       if (cacheTransforms()) {
-        transformer = this.cacheAndGetTransformer(urlToUse, this.getXmlTransformerFactory());
+        transformer = cacheAndGetTransformer(urlToUse, getXmlTransformerFactory());
       }
       else {
-        transformer = this.getXmlTransformerFactory().createTransformer(urlToUse);
+        transformer = getXmlTransformerFactory().createTransformer(urlToUse);
       }
       getXmlTransformerFactory().configure(xmlTransformerImpl);
     }
@@ -192,10 +195,10 @@ public class XmlTransformService extends ServiceImp {
   }
 
   protected Transformer cacheAndGetTransformer(String urlToUse, XmlTransformerFactory xmlTransformerFactory) throws Exception {
-    if (this.getTransforms().containsKey(urlToUse)) return this.getTransforms().get(urlToUse);
+    if (getTransforms().containsKey(urlToUse)) return getTransforms().get(urlToUse);
     else {
       Transformer transformer = xmlTransformerFactory.createTransformer(urlToUse);
-      this.getTransforms().put(urlToUse, transformer);
+      getTransforms().put(urlToUse, transformer);
       return transformer;
     }
   }
@@ -206,7 +209,7 @@ public class XmlTransformService extends ServiceImp {
    * <p>
    * Returns the URL of the XSLT to use.
    * </p>
-   * 
+   *
    * @return the URL of the XSLT to use
    */
   public String getUrl() {
@@ -217,7 +220,7 @@ public class XmlTransformService extends ServiceImp {
    * <p>
    * Sets the URL of the XSLT to use. May not be empty.
    * </p>
-   * 
+   *
    * @param s the URL of the XSLT to use
    */
   public void setUrl(String s) {
@@ -231,7 +234,7 @@ public class XmlTransformService extends ServiceImp {
    * <p>
    * Returns the metadata key against which an over-ride XSLT URL may be stored.
    * </p>
-   * 
+   *
    * @return the metadata key against which an over-ride XSLT URL may be stored
    */
   public String getMetadataKey() {
@@ -242,7 +245,7 @@ public class XmlTransformService extends ServiceImp {
    * <p>
    * Sets the metadata key against which an over-ride XSLT URL may be stored. May not be empty.
    * </p>
-   * 
+   *
    * @param s the metadata key against which an over-ride XSLT URL may be stored, defaults to
    *          {@value com.adaptris.core.CoreConstants#TRANSFORM_OVERRIDE}
    */
@@ -257,7 +260,7 @@ public class XmlTransformService extends ServiceImp {
    * <p>
    * Returns true if XSLTs should be cached.
    * </p>
-   * 
+   *
    * @see #setCacheTransforms(Boolean)
    * @return true if XSLTs should be cached, otherwise false
    */
@@ -271,7 +274,7 @@ public class XmlTransformService extends ServiceImp {
    * any changes to the XSLT will be picked up immediately, processing will take significantly longer, particularly if the XSLT is
    * on a remote machine.
    * </p>
-   * 
+   *
    * @param b whether XSLTs should be cached or not, defaults to true.
    */
   public void setCacheTransforms(Boolean b) {
@@ -286,7 +289,7 @@ public class XmlTransformService extends ServiceImp {
    * <p>
    * Returns true if a configured XSLT URL may be over-ridden by one stored against a metadata key.
    * </p>
-   * 
+   *
    * @return true if a configured XSLT URL may be over-ridden by one stored against a metadata key, otherwise false
    */
   public Boolean getAllowOverride() {
@@ -298,7 +301,7 @@ public class XmlTransformService extends ServiceImp {
    * Sets whether the configured XSLT URL may be over-ridden by one stored against a metaddata key. If URL is configured this is
    * implicitly true.
    * </p>
-   * 
+   *
    * @param b whether the configured XSLT URL may be over-ridden by one stored against a metaddata key, defaults to null (false)
    */
   public void setAllowOverride(Boolean b) {
@@ -328,7 +331,7 @@ public class XmlTransformService extends ServiceImp {
    * encoding="UTF-8" indent="yes"/&gt; and you need to ensure that the message is physically encoded using UTF-8 after the
    * transform.
    * </p>
-   * 
+   *
    * @param s the output encoding; if null, the the existing encoding specified by {@link com.adaptris.core.AdaptrisMessage#getCharEncoding()} is
    *          used.
    */
@@ -349,18 +352,14 @@ public class XmlTransformService extends ServiceImp {
   }
 
   public void setTransformParameter(XmlTransformParameter param) {
-    this.transformParameter = param;
+    transformParameter = param;
   }
 
   protected XmlTransformParameter getParameterBuilder() {
     return getTransformParameter() != null ? getTransformParameter() : new IgnoreMetadataParameter();
   }
 
-  HashMap<String, Transformer> getTransforms() {
+  Map<String, Transformer> getTransforms() {
     return transforms;
-  }
-
-  void setTransforms(HashMap<String, Transformer> transforms) {
-    this.transforms = transforms;
   }
 }

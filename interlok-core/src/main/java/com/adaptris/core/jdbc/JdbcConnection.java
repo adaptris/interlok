@@ -176,7 +176,8 @@ public class JdbcConnection extends DatabaseConnection {
     try {
       connectionNeedsRefresh = ((sqlConnection == null) || (!sqlConnection.isValid(NUM_SECONDS_TIMEOUT_CONN_VALIDATE)));
     } catch (AbstractMethodError ex) {
-      // ignore, some JDBC drivers throw an exception here for no apparent reason.
+      // ignore, some JDBC drivers throw an exception here if they are
+      // sufficiently old that they don't have the isValid() method.
     }
     if (connectionNeedsRefresh) {
       try {

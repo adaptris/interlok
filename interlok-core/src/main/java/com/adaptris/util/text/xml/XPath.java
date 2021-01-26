@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,25 +18,23 @@ package com.adaptris.util.text.xml;
 
 import static org.apache.commons.lang3.BooleanUtils.toBooleanDefaultIfNull;
 import static org.apache.commons.lang3.BooleanUtils.toBooleanObject;
-
+import java.util.Optional;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 
 /**
  * Wrapper around {@link javax.xml.xpath.XPath}/
- * 
+ *
  * @author Stuart Ellidge
- * 
+ *
  */
 // * Class which provides convenience methods for executing XPath queries.
 // * <b>!!!IMPORTANT!!! The underlying Xalan apis create a new entry in the DTM
@@ -63,16 +61,17 @@ public class XPath {
   private static final boolean useSaxonXpath = toBooleanDefaultIfNull(
       toBooleanObject(System.getProperty(SYSPROP_USE_SAXON_XPATH, "true")), true);
 
-  private static final String[] SAXON_XPATH_FACTORIES =
-  {
+  private static final String[] SAXON_XPATH_FACTORIES = {
       // Narrow down in terms of license... enterpise, then pro, then HE.
       "com.saxonica.config.EnterpriseXPathFactory", "com.saxonica.config.ProfessionalXPathFactory",
       "net.sf.saxon.xpath.XPathFactoryImpl"
   };
 
+  private static final Optional<Class> SAXON_XPATH_FACTORY = selectSaxonXpathImpl();
+
   private transient XPathFactory xpathFactory;
   private transient javax.xml.xpath.XPath xpathToUse;
-  
+
   public XPath() {
     xpathFactory = newXPathFactory();
   }
@@ -174,7 +173,7 @@ public class XPath {
 
   /**
    * Convenience method to create a new {@link XPathFactory}.
-   * 
+   *
    * @return either a Saxon based XPathFactory or one auto-found by {@link XPathFactory#newInstance()}
    */
   public static XPathFactory newXPathFactory() {
@@ -258,7 +257,7 @@ public class XPath {
    * <td align="left">false</td>
    * </tr>
    * </table>
-   * 
+   *
    * @param builder the document builder factory
    * @param namespaceCtx the namespace context (might be null, but we pass it into the XPath constructor)
    */
@@ -284,16 +283,26 @@ public class XPath {
   }
 
   static XPathFactory build(boolean useSaxon) {
-    if (useSaxon) {
-      for (String clazz : SAXON_XPATH_FACTORIES) {
-        try {
-          return (XPathFactory) Class.forName(clazz).newInstance();
-        } catch (Exception e) {
-          
-        }
+    try {
+      if (useSaxon && SAXON_XPATH_FACTORY.isPresent()) {
+        return (XPathFactory) SAXON_XPATH_FACTORY.get().newInstance();
       }
+    } catch (Exception e) {
+
     }
     return XPathFactory.newInstance();
   }
 
+  private static Optional<Class> selectSaxonXpathImpl() {
+    Optional<Class> result = Optional.empty();
+    for (String clazz : SAXON_XPATH_FACTORIES) {
+      try {
+        result = Optional.of(Class.forName(clazz));
+        break;
+      } catch (Exception e) {
+
+      }
+    }
+    return result;
+  }
 }

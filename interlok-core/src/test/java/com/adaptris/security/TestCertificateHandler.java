@@ -20,14 +20,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.UnknownHostException;
 import java.util.Calendar;
+
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import com.adaptris.security.certificate.CertificateHandler;
 import com.adaptris.security.certificate.CertificateHandlerFactory;
 import com.adaptris.security.exc.CertException;
@@ -38,7 +39,6 @@ import com.adaptris.security.keystore.KeystoreFactory;
  */
 public class TestCertificateHandler {
   private Config config;
-  private Logger logR = LoggerFactory.getLogger(this.getClass());
 
   public TestCertificateHandler() {
   }

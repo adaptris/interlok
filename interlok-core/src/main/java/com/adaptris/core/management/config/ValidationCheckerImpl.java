@@ -1,8 +1,11 @@
 package com.adaptris.core.management.config;
 
+import static com.adaptris.core.util.LoggingHelper.filterGuid;
+import static com.adaptris.core.util.LoggingHelper.reflectiveUniqueID;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -31,5 +34,12 @@ public abstract class ValidationCheckerImpl extends AdapterConfigurationChecker 
     List<Matcher> matcherList =
         ARRAY_PATTERNS.stream().map((p) -> p.matcher(path)).collect(Collectors.toList());
     return IterableUtils.matchesAny(matcherList, (matcher) -> matcher.matches());
+  }
+
+
+  public static String friendlyName(Object o) {
+    return Optional.ofNullable(o)
+        .map((obj) -> obj.getClass().getSimpleName() + filterGuid(reflectiveUniqueID(obj)))
+        .orElse("");
   }
 }

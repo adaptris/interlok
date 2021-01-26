@@ -4,9 +4,11 @@ import org.apache.tools.ant.filters.*
 ext {
   componentName='Base Interlok'
   activeMqVersion='5.16.0'
-  artemisVersion='2.15.0'
-  bouncyCastleVersion='1.67'
+  bouncyCastleVersion='1.68'
   mysqlDriverVersion='8.0.22'
+  slf4jVersion = '1.7.30'
+  mockitoVersion = '3.7.0'
+
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
   classesToTest = project.hasProperty("junit.test.classes") ? project.getProperty("junit.test.classes") : "**/*Test*"
   maxThreads = project.hasProperty("junit.threads") ? project.getProperty("junit.threads") : 1
@@ -57,7 +59,7 @@ dependencies {
   compile project(':interlok-core-apt')
   compile project(':interlok-common')
 
-  compile ("com.thoughtworks.xstream:xstream:$xstreamVersion")
+  compile ("com.thoughtworks.xstream:xstream:1.4.15")
   compile ("org.codehaus.jettison:jettison:1.2")
   compile ("io.github.classgraph:classgraph:4.8.60")
   compile ("net.jodah:expiringmap:0.5.9")
@@ -85,23 +87,23 @@ dependencies {
   compile ("org.glassfish.external:opendmk_jdmkrt_jar:1.0-b01-ea")
   compile ("javax.xml.bind:jaxb-api:2.3.1")
   compile ("com.jcraft:jsch:0.1.55")
-  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.34.v20201102")
+  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.36.v20210114")
   compile ("javax.servlet:javax.servlet-api:4.0.1")
   compile ("net.sf.joost:joost:0.9.1")
   compile ("org.quartz-scheduler:quartz:2.3.2") {
     exclude group: "com.zaxxer", module: "HikariCP-java7"
   }
   compile ("com.zaxxer:HikariCP:3.4.5")
-  compile ("net.sf.saxon:Saxon-HE:9.9.1-7")
-  compile ("xerces:xercesImpl:2.12.0")
+  compile ("net.sf.saxon:Saxon-HE:10.3")
+  compile ("xerces:xercesImpl:2.12.1")
   compile ("com.mchange:c3p0:0.9.5.5")
   compile ("org.apache.derby:derby:10.14.2.0")
   compile ("org.apache-extras.beanshell:bsh:2.0b6")
 
-  compile ("org.slf4j:slf4j-api:$slf4jVersion")
+  compile ("org.slf4j:slf4j-api:1.7.30")
 
   testCompile ("junit:junit:4.13.1")
-  testCompile ("org.apache.activemq:artemis-jms-server:$artemisVersion")
+  testCompile ("org.apache.activemq:artemis-jms-server:2.16.0")
   testCompile ("oro:oro:2.0.8")
 
   testCompile ("org.awaitility:awaitility:4.0.3")
@@ -111,7 +113,7 @@ dependencies {
   testCompile ("org.apache.activemq:activemq-kahadb-store:$activeMqVersion")
   testCompile ("org.apache.activemq.protobuf:activemq-protobuf:1.1")
 
-  testCompile ("org.jruby:jruby-complete:9.2.13.0")
+  testCompile ("org.jruby:jruby-complete:9.2.14.0")
   testCompile ("org.mockftpserver:MockFtpServer:2.7.1")
   testCompile ("org.mockito:mockito-core:$mockitoVersion")
   testCompile ("org.mockito:mockito-inline:$mockitoVersion")
@@ -317,6 +319,9 @@ uploadArchives {
         def properties = asNode().appendNode("properties")
         properties.appendNode("target", "3.8.0+")
         properties.appendNode("license", "false")
+        properties.appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
+        properties.appendNode("readme", "https://github.com/adaptris/interlok/raw/develop/README.md")
+        properties.appendNode("repository", "https://github.com/adaptris/interlok")        
       }
 
     }
@@ -339,6 +344,9 @@ uploadUnitTestStubs {
         properties.appendNode("tags", "junit")
         properties.appendNode("license", "false")
         properties.appendNode("developerOnly", "true")
+        properties.appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
+        properties.appendNode("readme", "https://github.com/adaptris/interlok/raw/develop/README.md")
+        properties.appendNode("repository", "https://github.com/adaptris/interlok")        
       }
 
     }

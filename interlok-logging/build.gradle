@@ -1,6 +1,7 @@
 ext {
   componentName='Interlok Logging'
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
+  log4j2Version = "2.14.0"
 }
 
 // In this section you declare the dependencies for your production and test code
@@ -56,6 +57,9 @@ uploadArchives {
         def properties = asNode().appendNode("properties")
         properties.appendNode("target", "3.8.0+")
         properties.appendNode("license", "false")
+        properties.appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
+        properties.appendNode("readme", "https://github.com/adaptris/interlok/raw/develop/README.md")
+        properties.appendNode("repository", "https://github.com/adaptris/interlok")        
       }
 
     }

@@ -55,11 +55,13 @@ public class MetadataStreamOutputParameter extends MetadataStreamParameter
   public void insert(InputStreamWithEncoding data, InterlokMessage message) throws InterlokException {
     try {
       StringBuilder builder = new StringBuilder();
-      try (
-          Reader in = new InputStreamReader(data.inputStream,
-              charset(defaultIfEmpty(getContentEncoding(), data.encoding)));
-          StringBuilderWriter out = new StringBuilderWriter(builder)) {
-        IOUtils.copy(in, out);
+      if(data.inputStream != null) {
+        try (
+            Reader in = new InputStreamReader(data.inputStream,
+                charset(defaultIfEmpty(getContentEncoding(), data.encoding)));
+            StringBuilderWriter out = new StringBuilderWriter(builder)) {
+          IOUtils.copy(in, out);
+        }
       }
       message.addMessageHeader(getMetadataKey(), builder.toString());
     } catch (IOException e) {

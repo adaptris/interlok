@@ -69,15 +69,15 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 public class JettyRouteSpec implements ComponentLifecycle {
 
   @Deprecated
-  @ConfigDeprecated(removalVersion = "3.12.0", message = "Use a condition instead", groups = Deprecated.class)
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use a condition instead", groups = Deprecated.class)
   private String urlPattern;
   @Deprecated
-  @ConfigDeprecated(removalVersion = "3.12.0", message = "Use a condition instead", groups = Deprecated.class)
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use a condition instead", groups = Deprecated.class)
   private String method;
   @XStreamImplicit(itemFieldName = "metadata-key")
   @AffectsMetadata
   @Deprecated
-  @ConfigDeprecated(removalVersion = "3.12.0", message = "Use a condition instead", groups = Deprecated.class)
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use a condition instead", groups = Deprecated.class)
   private List<String> metadataKeys;
   @NotBlank
   private String serviceId;
@@ -125,7 +125,7 @@ public class JettyRouteSpec implements ComponentLifecycle {
    * @deprecated since 3.9.0 use a condition instead
    */
   @Deprecated
-  @ConfigDeprecated(removalVersion = "3.12.0", message = "Use a condition instead", groups = Deprecated.class)
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use a condition instead", groups = Deprecated.class)
   public String getUrlPattern() {
     return urlPattern;
   }
@@ -137,7 +137,7 @@ public class JettyRouteSpec implements ComponentLifecycle {
    * @deprecated since 3.9.0 use a condition instead
    */
   @Deprecated
-  @Removal(version = "3.12.0", message = "Use a condition instead")
+  @Removal(version = "4.0.0", message = "Use a condition instead")
   public void setUrlPattern(String urlPattern) {
     this.urlPattern = Args.notBlank(urlPattern, "urlPattern");
   }
@@ -151,7 +151,7 @@ public class JettyRouteSpec implements ComponentLifecycle {
    * @deprecated since 3.9.0 use a condition instead
    */
   @Deprecated
-  @ConfigDeprecated(removalVersion = "3.12.0", message = "Use a condition instead", groups = Deprecated.class)
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use a condition instead", groups = Deprecated.class)
   public String getMethod() {
     return method;
   }
@@ -162,7 +162,7 @@ public class JettyRouteSpec implements ComponentLifecycle {
    * @deprecated since 3.9.0 use a condition instead
    */
   @Deprecated
-  @Removal(version = "3.12.0", message = "Use a condition instead")
+  @Removal(version = "4.0.0", message = "Use a condition instead")
   public void setMethod(String method) {
     this.method = method;
   }
@@ -172,7 +172,7 @@ public class JettyRouteSpec implements ComponentLifecycle {
    * @deprecated since 3.9.0 use a condition instead
    */
   @Deprecated
-  @ConfigDeprecated(removalVersion = "3.12.0", message = "Use a condition instead", groups = Deprecated.class)
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use a condition instead", groups = Deprecated.class)
   public List<String> getMetadataKeys() {
     return metadataKeys;
   }
@@ -191,7 +191,7 @@ public class JettyRouteSpec implements ComponentLifecycle {
    * @deprecated since 3.9.0 use a condition instead
    */
   @Deprecated
-  @Removal(version = "3.12.0", message = "Use a condition instead")
+  @Removal(version = "4.0.0", message = "Use a condition instead")
   public void setMetadataKeys(List<String> s) {
     metadataKeys = s;
   }

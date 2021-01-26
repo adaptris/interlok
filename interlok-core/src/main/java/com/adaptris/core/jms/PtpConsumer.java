@@ -24,6 +24,7 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -41,6 +42,7 @@ import lombok.Setter;
 @DisplayOrder(
     order = {"queue", "messageSelector", "destination", "acknowledgeMode",
     "messageTranslator"})
+@NoArgsConstructor
 public class PtpConsumer extends JmsConsumerImpl {
 
   /**
@@ -51,15 +53,6 @@ public class PtpConsumer extends JmsConsumerImpl {
   @Setter
   // Needs to be @NotBlank when destination is removed.
   private String queue;
-
-  public PtpConsumer() {
-    super();
-  }
-
-  PtpConsumer(boolean b) {
-    super(b);
-  }
-
 
   @Override
   protected String configuredEndpoint() {

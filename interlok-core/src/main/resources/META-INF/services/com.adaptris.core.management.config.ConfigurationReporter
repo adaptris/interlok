@@ -1,1 +1,2 @@
 com.adaptris.core.management.config.ConsoleReporter
+com.adaptris.core.management.config.WarningsToFile
