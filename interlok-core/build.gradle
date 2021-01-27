@@ -275,6 +275,7 @@ javadoc {
 
     taglets = ["com.adaptris.taglet.ConfigTaglet", "com.adaptris.taglet.LicenseTaglet"]
     options.addStringOption "tagletpath", configurations.javadoc.asPath
+    options.addBooleanOption "-no-module-directories", true
     options.tags('apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:','implNote:a:Implementation Note:')
     options.
       group ("Base Adapter Configuration", ["com.adaptris.core.*" , "com.adaptris.core"]).
@@ -321,7 +322,7 @@ uploadArchives {
         properties.appendNode("license", "false")
         properties.appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
         properties.appendNode("readme", "https://github.com/adaptris/interlok/raw/develop/README.md")
-        properties.appendNode("repository", "https://github.com/adaptris/interlok")        
+        properties.appendNode("repository", "https://github.com/adaptris/interlok")
       }
 
     }
@@ -346,7 +347,7 @@ uploadUnitTestStubs {
         properties.appendNode("developerOnly", "true")
         properties.appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
         properties.appendNode("readme", "https://github.com/adaptris/interlok/raw/develop/README.md")
-        properties.appendNode("repository", "https://github.com/adaptris/interlok")        
+        properties.appendNode("repository", "https://github.com/adaptris/interlok")
       }
 
     }

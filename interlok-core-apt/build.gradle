@@ -27,6 +27,7 @@ artifacts {
 javadoc {
   configure(options) {
     options.tags('apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:','implNote:a:Implementation Note:')
+    options.addBooleanOption "-no-module-directories", true
     title= componentName
   }
 }
@@ -55,7 +56,7 @@ uploadArchives {
         properties.appendNode("license", "false")
         properties.appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
         properties.appendNode("readme", "https://github.com/adaptris/interlok/raw/develop/README.md")
-        properties.appendNode("repository", "https://github.com/adaptris/interlok")        
+        properties.appendNode("repository", "https://github.com/adaptris/interlok")
       }
 
     }
