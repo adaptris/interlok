@@ -1,6 +1,7 @@
 extraction:
   java:
     index:
+      java_version: 11
       gradle:
         version: 5.6.3
       build_command:

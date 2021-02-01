@@ -6,6 +6,7 @@ import java.util.Set;
 
 import javax.lang.model.element.Element;
 
+import com.sun.source.doctree.BlockTagTree;
 import com.sun.source.doctree.DocTree;
 
 import jdk.javadoc.doclet.Taglet;
@@ -49,7 +50,11 @@ public abstract class AbstractTaglet implements Taglet {
       if (c) {
         sb.append(", ");
       }
-      sb.append(tag.toString());
+      if (tag instanceof BlockTagTree) {
+        sb.append(tag.toString().replace("@" + ((BlockTagTree)tag).getTagName(), ""));
+      } else {
+        sb.append(tag.toString());
+      }
       c = true;
     }
     return sb.append(getEnd()).toString();
