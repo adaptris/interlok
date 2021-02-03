@@ -603,6 +603,7 @@ public abstract class AdaptrisMessageCase {
     msg.addObjectHeader(VAL1, this);
     assertEquals("value", msg.resolveObject("%messageObject{key}"));
     assertEquals(this, msg.resolveObject("%messageObject{%message{key1}}"));
+    assertNull(msg.resolveObject("%messageObject{none}"));
 
     try {
       msg.resolve("%message{does_not_exist}");

@@ -405,12 +405,12 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     Matcher m = objectResolver.matcher(s);
     if (m.matches()) {
       String key = m.group(1);
-      Object object = objectMetadata.get(key);
-      if (object == null) {
-        throw new UnresolvedMetadataException("Could not resolve [" + key + "] as object metadata");
-      } else {
-        return object;
+      if (objectMetadata.containsKey(key)) {
+        return objectMetadata.get(key);
       }
+    }
+    if (objectMetadata.containsKey(s)) {
+      return objectMetadata.get(s);
     }
     return null;
   }
