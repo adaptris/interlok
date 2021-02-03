@@ -144,5 +144,10 @@ public class ByteArrayFromPayloadTest {
       throw new UnsupportedOperationException();
     }
 
+    @Override
+    public Object resolveObject(String s) {
+      throw new UnsupportedOperationException();
+    }
+
   }
 }

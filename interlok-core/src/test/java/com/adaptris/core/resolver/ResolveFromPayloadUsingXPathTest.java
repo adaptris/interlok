@@ -47,6 +47,7 @@ public class ResolveFromPayloadUsingXPathTest
     @Override public Map<Object, Object> getObjectHeaders() { return null; }
     @Override public boolean headersContainsKey(String key) { return false; }
     @Override public String resolve(String s, boolean multiline) { return null; }
+    @Override public Object resolveObject(String s) { return null; }
 
     private String payload = DATA;
     private String encoding = "UTF-8";
