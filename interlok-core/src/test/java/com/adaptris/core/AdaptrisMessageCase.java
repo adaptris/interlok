@@ -597,8 +597,13 @@ public abstract class AdaptrisMessageCase {
 
     assertEquals(String.format("%s_%s_%s", VAL1, VAL2, "val3"), msg.resolve("%message{key1}_%message{key2}_%message{key*3}"));
     assertEquals(String.format("%s_%s_%s", VAL1, VAL1, "val3"), msg.resolve("%message{key1}_%message{key1}_%message{key*3}"));
-    assertEquals(String.format("SELECT * FROM TABLE where key1=%s and key2=%s", VAL1, VAL2),
-        msg.resolve("SELECT * FROM TABLE where key1=%message{key1} and key2=%message{key2}"));
+    assertEquals(String.format("SELECT * FROM TABLE where key1=%s and key2=%s", VAL1, VAL2), msg.resolve("SELECT * FROM TABLE where key1=%message{key1} and key2=%message{key2}"));
+
+    msg.addObjectHeader("key", "value");
+    msg.addObjectHeader(VAL1, this);
+    assertEquals("value", msg.resolveObject("%messageObject{key}"));
+    assertEquals(this, msg.resolveObject("%messageObject{%message{key1}}"));
+
     try {
       msg.resolve("%message{does_not_exist}");
       fail();
