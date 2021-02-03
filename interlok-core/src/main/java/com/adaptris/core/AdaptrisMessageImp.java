@@ -72,6 +72,8 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   private transient Pattern normalResolver = Pattern.compile(RESOLVE_REGEXP);
   private transient Pattern dotAllResolver = Pattern.compile(RESOLVE_REGEXP, Pattern.DOTALL);
 
+  private transient Pattern objectResolver = Pattern.compile("^.*%messageObject\\{([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$");
+
   private IdGenerator guidGenerator;
   // persistent fields
   private String uniqueId;
@@ -378,6 +380,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     return resolve(s, dotAll ? dotAllResolver : normalResolver);
   }
 
+
   private String resolve(String s, Pattern pattern) {
     String result = s;
     Matcher m = pattern.matcher(s);
@@ -395,6 +398,21 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
       m = pattern.matcher(result);
     }
     return result;
+  }
+
+  public Object resolveObject(String s) {
+    s = resolve(s);
+    Matcher m = objectResolver.matcher(s);
+    if (m.matches()) {
+      String key = m.group(1);
+      Object object = objectMetadata.get(key);
+      if (object == null) {
+        throw new UnresolvedMetadataException("Could not resolve [" + key + "] as object metadata");
+      } else {
+        return object;
+      }
+    }
+    return null;
   }
 
   private String internalResolve(String key) {

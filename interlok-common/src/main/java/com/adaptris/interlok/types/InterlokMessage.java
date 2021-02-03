@@ -196,6 +196,7 @@ public interface InterlokMessage {
    */
   String resolve(String s, boolean multiline);
 
+  Object resolveObject(String s);
 
   /**
    * Wrap the interlok message as another type of thing.
