@@ -16,9 +16,6 @@
 
 package com.adaptris.core;
 
-import com.adaptris.annotation.Removal;
-import com.adaptris.core.util.DestinationHelper;
-
 /**
  * Convenience class that only supports produce rather than request.
  *
@@ -51,52 +48,9 @@ public abstract class ProduceOnlyProducerImp extends AdaptrisMessageProducerImp 
     throw new UnsupportedOperationException("Request Reply is not supported");
   }
 
-  /**
-   * UnsupportedOperationException is thrown
-   *
-   * @see com.adaptris.core.AdaptrisMessageProducerImp #request(AdaptrisMessage,ProduceDestination)
-   * @deprecated since 3.11.0 {@link ProduceDestination} is deprecated
-   */
-  @Override
-  @Deprecated
-  @Removal(version = "4.0.0")
-  public final AdaptrisMessage request(AdaptrisMessage msg,
-                                       ProduceDestination destination)
-      throws ProduceException {
-    throw new UnsupportedOperationException("Request Reply is not supported");
-  }
-
-  /**
-   * UnsupportedOperationException is thrown
-   *
-   * @see com.adaptris.core.AdaptrisMessageProducerImp #request(AdaptrisMessage, ProduceDestination,
-   *      long)
-   * @deprecated since 3.11.0 {@link ProduceDestination} is deprecated
-   */
-  @Override
-  @Deprecated
-  @Removal(version = "4.0.0")
-  public final AdaptrisMessage request(AdaptrisMessage msg,
-                                       ProduceDestination destination,
-                                       long timeout) throws ProduceException {
-    throw new UnsupportedOperationException("Request Reply is not supported");
-  }
-
   @Override
   public final void produce(AdaptrisMessage msg) throws ProduceException {
     doProduce(msg, endpoint(msg));
-  }
-
-  /**
-   *
-   * @deprecated since 3.11.0 {@link ProduceDestination} is deprecated
-   */
-  @Deprecated
-  @Removal(version = "4.0.0")
-  @Override
-  public final void produce(AdaptrisMessage msg, ProduceDestination destination)
-      throws ProduceException {
-    doProduce(msg, DestinationHelper.resolveProduceDestination(endpoint(msg), destination, msg));
   }
 
   protected abstract void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException;

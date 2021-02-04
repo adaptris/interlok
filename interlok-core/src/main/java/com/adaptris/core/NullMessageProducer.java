@@ -14,19 +14,17 @@
 
 package com.adaptris.core;
 
-import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
-
-import javax.validation.Valid;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 import lombok.Getter;
 import lombok.Setter;
+
+import javax.validation.Valid;
+
+import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
 
 /**
  * <p>
@@ -70,23 +68,6 @@ public class NullMessageProducer extends AdaptrisMessageProducerImp {
   }
 
   @Override
-  @Deprecated
-  @Removal(version = "4.0.0")
-  public AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination destination)
-      throws ProduceException {
-
-    return null;
-  }
-
-  @Override
-  @Deprecated
-  @Removal(version = "4.0.0")
-  public AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination destination, long timeout)
-      throws ProduceException {
-    return null;
-  }
-
-  @Override
   public void prepare() throws CoreException {
     logWarningIfNotNull(destWarning, () -> destWarning = true, getDestination(),
         "{} uses destination, it has no meaning", LoggingHelper.friendlyName(this));
@@ -99,12 +80,6 @@ public class NullMessageProducer extends AdaptrisMessageProducerImp {
 
   @Override
   public void produce(AdaptrisMessage msg) throws ProduceException {
-  }
-
-  @Override
-  @Deprecated
-  @Removal(version = "4.0.0")
-  public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
   }
 
 }

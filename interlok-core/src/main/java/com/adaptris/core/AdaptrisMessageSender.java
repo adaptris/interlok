@@ -16,8 +16,6 @@
 
 package com.adaptris.core;
 
-import com.adaptris.annotation.Removal;
-
 /**
  * New interface so that we can re-use producer style functionality without all the additional requirements surrounds
  * AdaptrisMessageWorker.
@@ -33,18 +31,5 @@ public interface AdaptrisMessageSender extends ComponentLifecycle {
    * @throws ProduceException wrapping any underlying Exceptions
    */
   void produce(AdaptrisMessage msg) throws ProduceException;
-
-  /**
-   * Produce the {@link com.adaptris.core.AdaptrisMessage} to the supplied
-   * {@link ProduceDestination} , over-riding any configured destinations.
-   *
-   * @param msg the {@link com.adaptris.core.AdaptrisMessage} to produce
-   * @param destination the {@link ProduceDestination} to produce to
-   * @throws ProduceException wrapping any underlying Exceptions
-   * @deprecated since 3.11.0 {@link ProduceDestination} is deprecated
-   */
-  @Deprecated
-  @Removal(version = "4.0.0")
-  void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException;
 
 }

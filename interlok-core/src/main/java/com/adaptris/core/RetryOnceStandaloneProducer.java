@@ -16,13 +16,13 @@
 
 package com.adaptris.core;
 
-import java.util.concurrent.TimeUnit;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * An implementation of StandaloneProducer that on encountering an error producing a message, waits for a configurable period,
@@ -58,31 +58,6 @@ public class RetryOnceStandaloneProducer extends StandaloneProducer {
     }
     catch (ProduceException e) {
       throw new ServiceException(e);
-    }
-  }
-
-  @Override
-  public void produce(AdaptrisMessage msg) throws ProduceException {
-    this.produce(msg, null);
-  }
-
-  @Override
-  public void produce(AdaptrisMessage msg, ProduceDestination dest) throws ProduceException {
-    try {
-      tryProduce(msg, dest);
-    }
-    catch (Exception e) {
-      restart();
-      tryProduce(msg, dest);
-    }
-  }
-
-  private void tryProduce(AdaptrisMessage msg, ProduceDestination dest) throws ProduceException {
-    if (dest != null) {
-      super.produce(msg, dest);
-    }
-    else {
-      super.produce(msg);
     }
   }
 

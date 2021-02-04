@@ -18,13 +18,17 @@ package com.adaptris.core.jms;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import javax.jms.Destination;
+
+import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.core.ProduceDestination;
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.MessageDrivenDestination;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -36,11 +40,15 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jms-reply-to-destination")
 @DisplayOrder(order = {"objectMetadataKey"})
-public class JmsReplyToDestination implements MessageDrivenDestination {
+public class JmsReplyToDestination implements ProduceDestination
+{
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
+  @Getter
+  @Setter
   @AdvancedConfig(rare = true)
+  @InputFieldHint(expression = true)
   private String objectMetadataKey;
 
   // separator char here if required
@@ -81,10 +89,7 @@ public class JmsReplyToDestination implements MessageDrivenDestination {
       throws CoreException {
     Object result = null;
     String keyToUse = deriveMetadataKey();
-    if (msg.getObjectHeaders().containsKey(keyToUse)) {
-      result = msg.getObjectHeaders().get(keyToUse);
-    }
-    else {
+    if ((result = msg.resolveObject(keyToUse)) == null) {
       log.warn(keyToUse + " not found in object metadata");
     }
     log.debug("Destination [{}]", result);
@@ -92,20 +97,7 @@ public class JmsReplyToDestination implements MessageDrivenDestination {
   }
 
   private String deriveMetadataKey() {
-    return isEmpty(getObjectMetadataKey()) ? JmsConstants.OBJ_JMS_REPLY_TO_KEY : getObjectMetadataKey();
+    return isEmpty(objectMetadataKey) ? JmsConstants.OBJ_JMS_REPLY_TO_KEY : objectMetadataKey;
   }
 
-  public String getObjectMetadataKey() {
-    return objectMetadataKey;
-  }
-
-  /**
-   * Set the object metadata key that will be used to derive the destination.
-   *
-   * @param objectMetadataKey
-   * @see JmsConstants#OBJ_JMS_REPLY_TO_KEY
-   */
-  public void setObjectMetadataKey(String objectMetadataKey) {
-    this.objectMetadataKey = objectMetadataKey;
-  }
 }
