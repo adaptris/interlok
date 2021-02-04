@@ -51,6 +51,7 @@ import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.StandaloneProducer;
+import com.adaptris.core.jms.AutoConvertMessageTranslator;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.JmsConstants;
 import com.adaptris.core.jms.MessageTypeTranslator;
@@ -199,6 +200,12 @@ public abstract class MessageTypeTranslatorCase {
     finally {
       stop(trans);
     }
+  }
+  
+  @Test
+  public void testTranslatorNullMessage() throws Exception {
+    Message nullMessage = null;
+    assertNull(MessageTypeTranslatorImp.translate(new AutoConvertMessageTranslator(), nullMessage));
   }
 
   @Test
