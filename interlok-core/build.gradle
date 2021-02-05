@@ -3,7 +3,7 @@ import org.apache.tools.ant.filters.*
 
 ext {
   componentName='Base Interlok'
-  activeMqVersion='5.16.0'
+  activeMqVersion='5.16.1'
   bouncyCastleVersion='1.68'
   mysqlDriverVersion='8.0.22'
   slf4jVersion = '1.7.30'
