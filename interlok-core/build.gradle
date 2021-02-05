@@ -7,7 +7,7 @@ ext {
   bouncyCastleVersion='1.68'
   mysqlDriverVersion='8.0.22'
   slf4jVersion = '1.7.30'
-  mockitoVersion = '3.7.0'
+  mockitoVersion = '3.7.7'
 
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
   classesToTest = project.hasProperty("junit.test.classes") ? project.getProperty("junit.test.classes") : "**/*Test*"

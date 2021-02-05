@@ -2,7 +2,7 @@ ext {
   componentName='Interlok Client API'
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
   log4j2Version = "2.14.0"
-  mockitoVersion = '3.7.0'
+  mockitoVersion = '3.7.7'
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
