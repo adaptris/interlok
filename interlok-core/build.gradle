@@ -85,9 +85,8 @@ dependencies {
   compile ("com.sun.mail:jakarta.mail:1.6.5")
   compile ("org.glassfish.external:opendmk_jmxremote_optional_jar:1.0-b01-ea")
   compile ("org.glassfish.external:opendmk_jdmkrt_jar:1.0-b01-ea")
-  compile ("javax.xml.bind:jaxb-api:2.3.1")
   compile ("com.jcraft:jsch:0.1.55")
-  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.35.v20201120")
+  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.36.v20210114")
   compile ("javax.servlet:javax.servlet-api:4.0.1")
   compile ("net.sf.joost:joost:0.9.1")
   compile ("org.quartz-scheduler:quartz:2.3.2") {
@@ -97,8 +96,10 @@ dependencies {
   compile ("net.sf.saxon:Saxon-HE:10.3")
   compile ("xerces:xercesImpl:2.12.1")
   compile ("com.mchange:c3p0:0.9.5.5")
-  compile ("org.apache.derby:derby:10.14.2.0")
+  compile ("org.apache.derby:derby:10.15.2.0")
+  compile ("org.apache.derby:derbytools:10.15.2.0")
   compile ("org.apache-extras.beanshell:bsh:2.0b6")
+  compile ("javax:javaee-api:8.0.1")
 
   compile ("org.slf4j:slf4j-api:1.7.30")
 
@@ -275,6 +276,7 @@ javadoc {
 
     taglets = ["com.adaptris.taglet.ConfigTaglet", "com.adaptris.taglet.LicenseTaglet"]
     options.addStringOption "tagletpath", configurations.javadoc.asPath
+    options.addBooleanOption "-no-module-directories", true
     options.tags('apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:','implNote:a:Implementation Note:')
     options.
       group ("Base Adapter Configuration", ["com.adaptris.core.*" , "com.adaptris.core"]).
@@ -319,6 +321,9 @@ uploadArchives {
         def properties = asNode().appendNode("properties")
         properties.appendNode("target", "3.8.0+")
         properties.appendNode("license", "false")
+        properties.appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
+        properties.appendNode("readme", "https://github.com/adaptris/interlok/raw/develop/README.md")
+        properties.appendNode("repository", "https://github.com/adaptris/interlok")
       }
 
     }
@@ -341,6 +346,9 @@ uploadUnitTestStubs {
         properties.appendNode("tags", "junit")
         properties.appendNode("license", "false")
         properties.appendNode("developerOnly", "true")
+        properties.appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
+        properties.appendNode("readme", "https://github.com/adaptris/interlok/raw/develop/README.md")
+        properties.appendNode("repository", "https://github.com/adaptris/interlok")
       }
 
     }

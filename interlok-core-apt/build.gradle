@@ -5,8 +5,9 @@ ext {
 
 dependencies {
   compile ("com.thoughtworks.xstream:xstream:1.4.15") {  transitive= false }
+  compile ("javax:javaee-api:8.0.1")
   compile ("jakarta.validation:jakarta.validation-api:2.0.2")
-  compile files("${System.getProperty('java.home')}/../lib/tools.jar")
+  // compile files("${System.getProperty('java.home')}/../lib/tools.jar")
 
   testCompile("junit:junit:4.13.1")
   testCompile("org.hibernate.validator:hibernate-validator:6.1.6.Final")
@@ -26,6 +27,7 @@ artifacts {
 javadoc {
   configure(options) {
     options.tags('apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:','implNote:a:Implementation Note:')
+    options.addBooleanOption "-no-module-directories", true
     title= componentName
   }
 }
@@ -52,11 +54,13 @@ uploadArchives {
         properties.appendNode("target", "3.8.0+")
         properties.appendNode("tags", "annotations")
         properties.appendNode("license", "false")
+        properties.appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
+        properties.appendNode("readme", "https://github.com/adaptris/interlok/raw/develop/README.md")
+        properties.appendNode("repository", "https://github.com/adaptris/interlok")
       }
 
     }
   }
 }
-
 publish.dependsOn uploadArchives
 clean.dependsOn deleteGeneratedFiles

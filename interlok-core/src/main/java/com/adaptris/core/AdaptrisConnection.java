@@ -20,7 +20,7 @@ import java.util.Set;
 
 /**
  * <p>
- * Represents a connection> to an application or of a protocol type. E.g. JMS, database, etc.
+ * Represents a connection to an application or of a protocol type. E.g. JMS, database, etc.
  * </p>
  * <p>
  * It is generally the responsibility of implementations of this interface to to deliver messages to

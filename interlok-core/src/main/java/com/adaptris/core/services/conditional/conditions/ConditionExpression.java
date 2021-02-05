@@ -55,7 +55,7 @@ import bsh.Interpreter;
  * </tr>
  * <tr>
  * <td>Is the metadata value identified by key "myKey" greater than "myOtherKey" plus 100</td>
- * <td>%message{myKey} > (%message{myOtherKey} + 100)</td>
+ * <td>%message{myKey} &gt; (%message{myOtherKey} + 100)</td>
  * </tr>
  * </table>
  * 

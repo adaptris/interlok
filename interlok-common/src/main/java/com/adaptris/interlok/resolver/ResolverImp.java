@@ -45,7 +45,7 @@ public abstract class ResolverImp implements Resolver {
   }
 
   /**
-   * Convenience method to turn a Properties into a Map<String, String>
+   * Convenience method to turn a Properties into a Map&lt;String, String&gt;
    * 
    * @param p the properties, if null, will return an empty map
    * @return a map

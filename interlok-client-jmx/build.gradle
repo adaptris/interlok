@@ -48,6 +48,17 @@ delombok {
   target = delombokTargetDir
 }
 
+javadoc {
+  configure(options) {
+    taglets = ["com.adaptris.taglet.ConfigTaglet", "com.adaptris.taglet.LicenseTaglet"]
+    options.addBooleanOption "-no-module-directories", true
+    options.addStringOption "tagletpath", configurations.javadoc.asPath
+    options.tags('apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:','implNote:a:Implementation Note:')
+    title= componentName
+  }
+}
+
+
 
 uploadArchives {
   repositories {
@@ -62,6 +73,9 @@ uploadArchives {
         properties.appendNode("target", "3.0.5+")
         properties.appendNode("license", "false")
         properties.appendNode("tags", "jmx")
+        properties.appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
+        properties.appendNode("readme", "https://github.com/adaptris/interlok/raw/develop/README.md")
+        properties.appendNode("repository", "https://github.com/adaptris/interlok")
       }
 
     }

@@ -36,7 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Integer based value match implementation of MetadataValueMatcher for {@link MetadataValueBranchingService}.
  * <p>
  * This allows a simple integer comparision to determine the branch that should be used. The key portion of the underlying
- * MetadataToServiceIdMappings field is a simple expression that follows the following syntax <code>&lt;operator>&lt;value></code>
+ * MetadataToServiceIdMappings field is a simple expression that follows the following syntax <code>&lt;operator&gt;&lt;value&gt;</code>
  * where valid operators are
  * <ol>
  * <li>&#60;</li>
@@ -45,7 +45,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <li>&#60;&#61;</li>
  * <li>&#62;&#61;</li>
  * </ol>
- * Precedence is determined by the natural ASCII sort order (0-9, &#60;, &#61;, &#62 in that order) of the key portion; the first
+ * Precedence is determined by the natural ASCII sort order (0-9, &#60;, &#61;, &#62; in that order) of the key portion; the first
  * matching condition will be used. e.g. For a given serviceKey which evaluates to <code>20</code>; if you have both &gt;10 and
  * &gt;=20 configured in MetadataToServiceIdMappings, then <code>&gt;10</code> will be the matching expression due to the natural
  * sort order of the two key values.

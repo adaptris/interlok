@@ -55,7 +55,7 @@ import lombok.Setter;
  * <li>jms:topic:MyTopicName</li>
  * <li>jms:topic:MyTopicName?subscriptionId=mySubscriptionId</li>
  * <li>jms:topic:MyTopicName?sharedConsumerId=mySharedConsumerId</li>
- * <li>jms:topic:MyTopicName?subscriptionId=mySubscriptionId&sharedConsumerId=mySharedConsumerId</li>
+ * <li>jms:topic:MyTopicName?subscriptionId=mySubscriptionId&amp;sharedConsumerId=mySharedConsumerId</li>
  * </ul>
  * </p>
  *
