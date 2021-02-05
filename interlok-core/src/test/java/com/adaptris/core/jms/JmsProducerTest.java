@@ -70,6 +70,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   @Mock private ProducerSession mockProducerSession;
   @Mock private Session mockSession;
   @Mock private Message mockMessage;
+  @Mock private MessageTypeTranslator mockTranslator;
 
   private AutoCloseable openMocks;
   
@@ -823,9 +824,27 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
       stop(serviceList);
     }
   }
-
-
-
+  
+  @Test(expected = ServiceException.class)
+  public void testRequest_TimeoutTranslatorThrowsRuntime() throws Exception {
+    doThrow(new RuntimeException("Expected"))
+        .when(mockTranslator).translate(any(AdaptrisMessage.class));
+    
+    String rfc6167 = "jms:queue:" + getName() + "";
+    JmsProducer producer = createProducer(new ConfiguredProduceDestination(rfc6167));
+    producer.setMessageTranslator(mockTranslator);
+    producer.setPerMessageProperties(false);
+    StandaloneRequestor serviceList = new StandaloneRequestor(activeMqBroker.getJmsConnection(),
+        producer, new TimeInterval(1L, TimeUnit.SECONDS));
+    try {
+      start(serviceList);
+      AdaptrisMessage msg1 = createMessage();
+      serviceList.doService(msg1);
+    } finally {
+      stop(serviceList);
+    }
+  }
+  
   @Override
   protected List retrieveObjectsForSampleConfig() {
     ArrayList result = new ArrayList();
