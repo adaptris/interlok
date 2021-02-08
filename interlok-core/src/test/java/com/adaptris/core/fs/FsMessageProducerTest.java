@@ -420,9 +420,9 @@ public class FsMessageProducerTest extends FsProducerExample {
     File parentDir = FsHelper.createFileReference(FsHelper.createUrlFromString(PROPERTIES.getProperty(BASE_KEY), true));
     try {
       File dir = new File(parentDir, subdir);
+      producer.setBaseDirectoryUrl(PROPERTIES.getProperty(BASE_KEY) + "/" + override);
       start(producer);
-      producer.produce(new DefaultMessageFactory().newMessage(TEXT),
-          new ConfiguredProduceDestination(PROPERTIES.getProperty(BASE_KEY) + "/" + override));
+      producer.produce(new DefaultMessageFactory().newMessage(TEXT));
       assertNull(new File(parentDir, subdir).listFiles());
       assertEquals(1, new File(parentDir, override).listFiles().length);
     }
@@ -497,15 +497,6 @@ public class FsMessageProducerTest extends FsProducerExample {
       FileUtils.deleteQuietly(new File(parentDir, "A Directory With Spaces"));
 
     }
-  }
-
-  @Test
-  public void testSetDestination() throws Exception {
-    String subDir = new GuidGenerator().safeUUID();
-    FsProducer producer = createProducer(subDir);
-    ProduceDestination dest = new ConfiguredProduceDestination("destination");
-    producer.setDestination(dest);
-    assertTrue(producer.getDestination().equals(dest));
   }
 
   private FsProducer createProducer(String subDir) {

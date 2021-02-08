@@ -96,8 +96,9 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
       channel.requestStart();
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
+      httpProducer.setUrl(helper.createProduceDestination());
       start(httpProducer);
-      AdaptrisMessage reply = httpProducer.request(msg, helper.createProduceDestination());
+      AdaptrisMessage reply = httpProducer.request(msg);
       assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     }
@@ -119,8 +120,9 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
       channel.requestStart();
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
+      httpProducer.setUrl(helper.createProduceDestination());
       start(httpProducer);
-      AdaptrisMessage reply = httpProducer.request(msg, helper.createProduceDestination());
+      AdaptrisMessage reply = httpProducer.request(msg);
       assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     }
@@ -159,8 +161,9 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
       httpProducer.setAuthenticator(new ConfiguredUsernamePassword("user", "password"));
+      httpProducer.setUrl(helper.createProduceDestination());
       start(httpProducer);
-      AdaptrisMessage reply = httpProducer.request(msg, helper.createProduceDestination());
+      AdaptrisMessage reply = httpProducer.request(msg);
       assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     } finally {
@@ -183,8 +186,9 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
       channel.requestStart();
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
+      httpProducer.setUrl(helper.createProduceDestination());
       start(httpProducer);
-      AdaptrisMessage reply = httpProducer.request(msg, helper.createProduceDestination());
+      AdaptrisMessage reply = httpProducer.request(msg);
       assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     }
@@ -217,8 +221,9 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
       channel.requestStart();
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
+      httpProducer.setUrl(helper.createProduceDestination());
       start(httpProducer);
-      AdaptrisMessage reply = httpProducer.request(msg, helper.createProduceDestination());
+      AdaptrisMessage reply = httpProducer.request(msg);
       assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       doAssertions(mock2);
     }
@@ -243,14 +248,15 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
       channel.requestStart();
       AdaptrisMessage msg1 = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
       msg1.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
+      httpProducer.setUrl(helper.createProduceDestination());
       start(httpProducer);
-      AdaptrisMessage reply = httpProducer.request(msg1, helper.createProduceDestination());
+      AdaptrisMessage reply = httpProducer.request(msg1);
       assertEquals("200", reply.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
       workflow1.requestClose();
 
       AdaptrisMessage msg2 = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
       msg1.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
-      AdaptrisMessage reply2 = httpProducer.request(msg2, helper.createProduceDestination());
+      AdaptrisMessage reply2 = httpProducer.request(msg2);
       assertEquals("404", reply2.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
 
     }
@@ -283,15 +289,16 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
       channel.requestStart();
       AdaptrisMessage msg1 = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
       msg1.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
+      httpProducer.setUrl(helper.createProduceDestination());
       start(httpProducer);
-      AdaptrisMessage reply = httpProducer.request(msg1, helper.createProduceDestination());
+      AdaptrisMessage reply = httpProducer.request(msg1);
       assertEquals("200", reply.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
       workflow2.requestClose();
 
       // Stopping Workflow 2 means nothing, workflow1 should still be working!
       AdaptrisMessage msg2 = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
       msg1.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
-      AdaptrisMessage reply2 = httpProducer.request(msg2, helper.createProduceDestination());
+      AdaptrisMessage reply2 = httpProducer.request(msg2);
       assertEquals("200", reply2.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
 
     }
@@ -325,8 +332,9 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
 
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
+      httpProducer.setUrl(helper.createProduceDestination());
       start(httpProducer);
-      AdaptrisMessage reply = httpProducer.request(msg, helper.createProduceDestination());
+      AdaptrisMessage reply = httpProducer.request(msg);
       assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     }
@@ -359,8 +367,9 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
 
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
+      httpProducer.setUrl(helper.createProduceDestination());
       start(httpProducer);
-      AdaptrisMessage reply = httpProducer.request(msg, helper.createProduceDestination());
+      AdaptrisMessage reply = httpProducer.request(msg);
       // Because of redmineID #4715 it should just "return immediatel" which flushes the stream so there's no content.
       assertEquals("Reply Payloads", "", reply.getContent());
     }

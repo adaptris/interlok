@@ -50,9 +50,7 @@ public class PtpProducerTest extends BasicJmsProducerCase {
   @Override
   @SuppressWarnings("deprecation")
   protected PtpProducer createProducer(ConfiguredProduceDestination dest) {
-    PtpProducer p = new PtpProducer();
-    p.setDestination(dest);
-    return p;
+    return new PtpProducer().withQueue(dest.getDestination());
   }
 
   @Override

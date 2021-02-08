@@ -163,7 +163,7 @@ public class JmsReplyToWorkflowTest {
   public void testInit() throws Exception {
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
     Channel channel = createChannel(activeMqBroker);
-    workflow.setProducer(new PtpProducer().withDestination(new JmsReplyToDestination()));
+    workflow.setProducer(new PtpProducer().withQueue("TODO"));
     workflow.setConsumer(new PtpConsumer().withQueue(testName.getMethodName()));
     channel.getWorkflowList().add(workflow);
     try {
@@ -178,7 +178,7 @@ public class JmsReplyToWorkflowTest {
   public void testPtpWorkflow() throws Exception {
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
     Channel channel = createChannel(activeMqBroker);
-    workflow.setProducer(new PtpProducer().withDestination(new JmsReplyToDestination()));
+    workflow.setProducer(new PtpProducer().withQueue("TODO"));
     workflow.setConsumer(new PtpConsumer().withQueue(testName.getMethodName()));
     workflow.setServiceCollection(createServiceList());
     channel.getWorkflowList().add(workflow);
@@ -200,7 +200,7 @@ public class JmsReplyToWorkflowTest {
   public void testPasWorkflow() throws Exception {
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
     Channel channel = createChannel(activeMqBroker);
-    workflow.setProducer(new PasProducer().withDestination(new JmsReplyToDestination()));
+    workflow.setProducer(new PasProducer().withTopic("TODO"));
     workflow.setConsumer(new PasConsumer().withTopic(testName.getMethodName()));
     workflow.setServiceCollection(createServiceList());
     channel.getWorkflowList().add(workflow);
@@ -222,7 +222,7 @@ public class JmsReplyToWorkflowTest {
   public void testWorkflow_SkipProducer_HasNoEffect() throws Exception {
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
     Channel channel = createChannel(activeMqBroker);
-    workflow.setProducer(new PtpProducer().withDestination(new JmsReplyToDestination()));
+    workflow.setProducer(new PtpProducer().withQueue("TODO"));
     workflow.setConsumer(new PtpConsumer().withQueue(testName.getMethodName()));
 
     workflow.getServiceCollection().add(new PayloadFromTemplateService().withTemplate(REPLY_TEXT));
@@ -249,7 +249,7 @@ public class JmsReplyToWorkflowTest {
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
     workflow.addInterceptor(interceptor);
     Channel channel = createChannel(activeMqBroker);
-    workflow.setProducer(new PasProducer().withDestination(new JmsReplyToDestination()));
+    workflow.setProducer(new PasProducer().withTopic("TODO"));
     workflow.setConsumer(new PasConsumer().withTopic(testName.getMethodName()));
     workflow.setServiceCollection(createServiceList());
     channel.getWorkflowList().add(workflow);
@@ -272,7 +272,7 @@ public class JmsReplyToWorkflowTest {
   public void testDoProduce_NoObjectMetadata() throws Exception {
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
     Channel channel = createChannel(activeMqBroker);
-    workflow.setProducer(new PtpProducer().withDestination(new JmsReplyToDestination()));
+    workflow.setProducer(new PtpProducer().withQueue("TODO"));
     workflow.setConsumer(new PtpConsumer().withQueue(testName.getMethodName()));
     channel.getWorkflowList().add(workflow);
     try {

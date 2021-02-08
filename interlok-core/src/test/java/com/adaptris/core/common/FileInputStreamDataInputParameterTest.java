@@ -144,7 +144,7 @@ public class FileInputStreamDataInputParameterTest {
     try {
       LifecycleHelper.initAndStart(channel);
       FileInputStreamDataInputParameter p = new FileInputStreamDataInputParameter();
-      p.setDestination(helper.createProduceDestination());
+      p.setDestination(new ConfiguredProduceDestination(helper.createProduceDestination()));
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
       assertNotNull(p.extract(msg));
     } finally {

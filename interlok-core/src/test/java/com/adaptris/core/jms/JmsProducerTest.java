@@ -100,9 +100,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
 
   @SuppressWarnings("deprecation")
   protected JmsConsumerImpl createConsumer(ConfiguredConsumeDestination dest) {
-    PtpConsumer ptp = new PtpConsumer();
-    ptp.setDestination(dest);
-    return ptp;
+    return new PtpConsumer().withQueue(dest.getDestination());
   }
 
   protected BasicJmsProducerCase.QueueLoopback createLoopback(EmbeddedActiveMq mq, String dest) {
@@ -113,7 +111,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   @SuppressWarnings("deprecation")
   protected JmsProducer createProducer(ProduceDestination dest) {
     JmsProducer p = new JmsProducer();
-    p.setDestination(dest);
+//    p.setDestination(dest);
     return p;
   }
 

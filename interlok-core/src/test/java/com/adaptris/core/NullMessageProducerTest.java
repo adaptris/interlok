@@ -28,8 +28,6 @@ public class NullMessageProducerTest {
       LifecycleHelper.initAndStart(producer);
       assertNull(producer.request(msg));
       assertNull(producer.request(msg, 10L));
-      assertNull(producer.request(msg, (m) -> null));
-      assertNull(producer.request(msg, (m) -> null, 10L));
     } finally {
       LifecycleHelper.stopAndClose(producer);
     }
@@ -44,7 +42,6 @@ public class NullMessageProducerTest {
       LifecycleHelper.prepare(producer);
       LifecycleHelper.initAndStart(producer);
       producer.produce(msg);
-      producer.produce(msg, (m) -> null);
     } finally {
       LifecycleHelper.stopAndClose(producer);
     }

@@ -118,29 +118,6 @@ public class MockNonStandardRequestReplyProducer extends
     return request(msg);
   }
 
-  @Override
-  @Deprecated
-  @Removal(version = "4.0")
-  public AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination destination)
-      throws ProduceException {
-    return request(msg);
-  }
-
-  @Override
-  @Deprecated
-  @Removal(version = "4.0")
-  public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
-    request(msg);
-  }
-
-  @Override
-  @Deprecated
-  @Removal(version = "4.0")
-  public AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination destination, long timeout)
-      throws ProduceException {
-    return request(msg);
-  }
-
   protected long defaultTimeout() {
     return 0;
   }

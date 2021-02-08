@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -127,16 +128,6 @@ public class FsProducer extends ProduceOnlyProducerImp {
   @Getter
   @Setter
   private FileNameCreator filenameCreator;
-  /**
-   * The destination represents the base-directory where you are producing files to.
-   *
-   */
-  @Getter
-  @Setter
-  @Deprecated
-  @Valid
-  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'base-directory-url' instead", groups = Deprecated.class)
-  private ProduceDestination destination;
 
   /**
    * The base directory specified as a URL.
@@ -145,7 +136,7 @@ public class FsProducer extends ProduceOnlyProducerImp {
   @InputFieldHint(expression = true)
   @Getter
   @Setter
-  // Needs to be @NotBlank when destination is removed.
+  @NotBlank
   private String baseDirectoryUrl;
 
   private transient boolean destWarning;
@@ -225,15 +216,14 @@ public class FsProducer extends ProduceOnlyProducerImp {
 
   @Override
   public void prepare() throws CoreException {
-    logWarningIfNotNull(destWarning, () -> destWarning = true, getDestination(),
+    logWarningIfNotNull(destWarning, () -> destWarning = true, getBaseDirectoryUrl(),
         "{} uses destination, use 'base-directory-url' instead", LoggingHelper.friendlyName(this));
-    mustHaveEither(getBaseDirectoryUrl(), getDestination());
     registerEncoderMessageFactory();
   }
 
   @Override
   public String endpoint(AdaptrisMessage msg) throws ProduceException {
-    return resolveProduceDestination(getBaseDirectoryUrl(), getDestination(), msg);
+    return msg.resolve(getBaseDirectoryUrl());
   }
 
   @SuppressWarnings("unchecked")

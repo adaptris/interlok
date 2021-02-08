@@ -59,7 +59,7 @@ public class PasProducerTest extends BasicJmsProducerCase {
   @Override
   @SuppressWarnings("deprecation")
   protected DefinedJmsProducer createProducer(ConfiguredProduceDestination dest) {
-    return new PasProducer().withDestination(dest);
+    return new PasProducer().withTopic(dest.getDestination());
   }
 
   @Override

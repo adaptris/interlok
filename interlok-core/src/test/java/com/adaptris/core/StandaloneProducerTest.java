@@ -62,7 +62,7 @@ public class StandaloneProducerTest extends GeneralServiceExample {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("XYZ");
     try {
       start(service);
-      service.produce(msg, new ConfiguredProduceDestination("ThisIsTheDest"));
+      service.produce(msg);//, new ConfiguredProduceDestination("ThisIsTheDest"));
       assertEquals(1, m.getMessages().size());
     }
     finally {

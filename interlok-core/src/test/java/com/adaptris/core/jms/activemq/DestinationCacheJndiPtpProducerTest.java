@@ -89,7 +89,7 @@ public class DestinationCacheJndiPtpProducerTest extends JndiPtpProducerCase {
 
     StandaloneProducer sp1 =
         new StandaloneProducer(activeMqBroker.getJndiPtpConnection(jv, false, queueName, topicName),
-            new PtpProducer().withDestination(dest));
+            new PtpProducer());//.withDestination(dest));
     jv.setUseJndiForQueues(true);
     jv.getJndiParams().addKeyValuePair(new KeyValuePair("queue.testProduceWithCacheExceeded1", "testProduceWithCacheExceeded1"));
     jv.getJndiParams().addKeyValuePair(new KeyValuePair("queue.testProduceWithCacheExceeded2", "testProduceWithCacheExceeded2"));

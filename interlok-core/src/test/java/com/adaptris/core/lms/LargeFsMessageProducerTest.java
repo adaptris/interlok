@@ -127,8 +127,8 @@ public class LargeFsMessageProducerTest extends FsProducerExample {
   public void testProduceWithOverride() throws Exception {
     LargeFsProducer producer = create();
     start(producer);
-    producer.produce(new FileBackedMessageFactory().newMessage("dummy"), new ConfiguredProduceDestination(PROPERTIES
-        .getProperty(BASE_KEY)));
+    producer.produce(new FileBackedMessageFactory().newMessage("dummy"));
+        //new ConfiguredProduceDestination(PROPERTIES.getProperty(BASE_KEY)));
     stop(producer);
   }
 

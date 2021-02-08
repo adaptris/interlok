@@ -68,8 +68,8 @@ public class EmbeddedJettyHelper {
     return "http://localhost:" + portForServer + actualUri;
   }
 
-  public ConfiguredProduceDestination createProduceDestination() {
-    return new ConfiguredProduceDestination(buildUrl(URL_TO_POST_TO));
+  public String createProduceDestination() {
+    return buildUrl(URL_TO_POST_TO);
   }
 
 }
