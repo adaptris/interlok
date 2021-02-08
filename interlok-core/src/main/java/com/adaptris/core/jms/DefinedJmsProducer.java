@@ -67,12 +67,12 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
       // First of all directly try to get a Destination object if available.
       jmsDest = createDestination(msg);
 
-//      if (jmsDest == null) {
-//        String d = dest.getDestination(msg);
-//        if (d != null) {
-//          jmsDest = createDestination(d);
-//        }
-//      }
+      if (jmsDest == null) {
+        String d = endpoint(msg);
+        if (d != null) {
+          jmsDest = createDestination(d);
+        }
+      }
       Args.notNull(jmsDest, "destination");
       doProduce(msg, jmsDest, replyTo);
       commit();

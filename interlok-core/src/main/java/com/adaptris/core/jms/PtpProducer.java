@@ -116,17 +116,6 @@ public class PtpProducer extends DefinedJmsProducer {
   @NotBlank
   private String queue;
 
-  private transient boolean destWarning;
-
-
-  @Override
-  public void prepare() throws CoreException {
-    logWarningIfNotNull(destWarning, () -> destWarning = true, queue,
-        "{} uses destination, use 'queue' instead if possible", LoggingHelper.friendlyName(this));
-    super.prepare();
-  }
-
-
   @Override
   protected Destination createDestination(AdaptrisMessage message) throws JMSException
   {
@@ -145,7 +134,8 @@ public class PtpProducer extends DefinedJmsProducer {
 
   @Override
   public String endpoint(AdaptrisMessage msg) throws ProduceException {
-    return msg.resolveObject(queue).toString();
+    Object o = msg.resolveObject(queue);
+    return o != null ? o.toString() : queue;
   }
 
   public PtpProducer withQueue(String s) {
