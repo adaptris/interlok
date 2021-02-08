@@ -98,9 +98,8 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   }
 
 
-  @SuppressWarnings("deprecation")
-  protected JmsConsumerImpl createConsumer(ConfiguredConsumeDestination dest) {
-    return new PtpConsumer().withQueue(dest.getDestination());
+  protected JmsConsumerImpl createConsumer(String dest) {
+    return new PtpConsumer().withQueue(dest);
   }
 
   protected BasicJmsProducerCase.QueueLoopback createLoopback(EmbeddedActiveMq mq, String dest) {
@@ -108,12 +107,8 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   }
 
 
-  @SuppressWarnings("deprecation")
   protected JmsProducer createProducer(String dest) {
-    JmsProducer p = new JmsProducer();
-    p.setEndpoint(dest);
-//    p.setDestination(dest);
-    return p;
+    return new JmsProducer().withEndpoint(dest);
   }
 
   private AdaptrisMessage createMessage(Destination d) throws Exception {
@@ -380,7 +375,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   public void testProduceAndConsume_DeliveryMode() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "?deliveryMode=PERSISTENT";
 
-    JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
+    JmsConsumerImpl consumer = createConsumer(getName());
     consumer.setAcknowledgeMode(String.valueOf(AcknowledgeMode.Mode.AUTO_ACKNOWLEDGE.acknowledgeMode()));
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
@@ -395,7 +390,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   public void testProduceAndConsume_Priority() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "?priority=5";
 
-    JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
+    JmsConsumerImpl consumer = createConsumer(getName());
     consumer.setAcknowledgeMode(String.valueOf(AcknowledgeMode.Mode.AUTO_ACKNOWLEDGE.acknowledgeMode()));
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
@@ -410,7 +405,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   public void testProduceAndConsume_TimeToLive() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "?timeToLive=60000";
 
-    JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
+    JmsConsumerImpl consumer = createConsumer(getName());
     consumer.setAcknowledgeMode(String.valueOf(AcknowledgeMode.Mode.AUTO_ACKNOWLEDGE.acknowledgeMode()));
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
@@ -441,7 +436,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   @Test
   public void testDefaultSessionFactory() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
-    JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
+    JmsConsumerImpl consumer = createConsumer(getName());
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer =
         new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
@@ -465,7 +460,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   @Test
   public void testPerMessageSession() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
-    JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
+    JmsConsumerImpl consumer = createConsumer(getName());
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer =
         new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
@@ -490,7 +485,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   @Test
   public void testTimedInactivitySession() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
-    JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
+    JmsConsumerImpl consumer = createConsumer(getName());
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer =
         new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
@@ -522,7 +517,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   @Test
   public void testTimedInactivitySession_SessionStillValid() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
-    JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
+    JmsConsumerImpl consumer = createConsumer(getName());
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer =
         new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
@@ -552,7 +547,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   @Test
   public void testMessageCountSession() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
-    JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
+    JmsConsumerImpl consumer = createConsumer(getName());
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer =
         new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
@@ -584,7 +579,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   public void testMessageCountSession_SessionStillValid() throws Exception {
 
     String rfc6167 = "jms:queue:" + getName() + "";
-    JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
+    JmsConsumerImpl consumer = createConsumer(getName());
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer =
         new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
@@ -613,7 +608,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   @Test
   public void testMessageSizeSession() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
-    JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
+    JmsConsumerImpl consumer = createConsumer(getName());
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer =
         new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
@@ -646,7 +641,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   @Test
   public void testMessageSizeSession_SessionStillValid() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
-    JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
+    JmsConsumerImpl consumer = createConsumer(getName());
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer =
         new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
@@ -675,7 +670,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   @Test
   public void testMetadataSession() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
-    JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
+    JmsConsumerImpl consumer = createConsumer(getName());
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer =
         new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
@@ -715,7 +710,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   @Test
   public void testMultipleProducersWithSession() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
-    JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
+    JmsConsumerImpl consumer = createConsumer(getName());
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer =
         new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);

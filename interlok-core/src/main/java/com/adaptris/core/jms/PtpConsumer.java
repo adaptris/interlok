@@ -18,6 +18,8 @@ package com.adaptris.core.jms;
 
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
+import javax.validation.constraints.NotBlank;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -51,7 +53,7 @@ public class PtpConsumer extends JmsConsumerImpl {
    */
   @Getter
   @Setter
-  // Needs to be @NotBlank when destination is removed.
+  @NotBlank
   private String queue;
 
   @Override

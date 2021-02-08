@@ -115,15 +115,6 @@ public class PasProducer extends DefinedJmsProducer {
   @NotBlank
   private String topic;
 
-  private transient boolean destWarning;
-
-  @Override
-  public void prepare() throws CoreException {
-    logWarningIfNotNull(destWarning, () -> destWarning = true, topic,
-        "{} uses destination, use 'topic' instead if possible", LoggingHelper.friendlyName(this));
-    super.prepare();
-  }
-
   @Override
   protected Destination createDestination(AdaptrisMessage message) throws JMSException
   {
@@ -142,7 +133,8 @@ public class PasProducer extends DefinedJmsProducer {
 
   @Override
   public String endpoint(AdaptrisMessage msg) throws ProduceException {
-    return msg.resolveObject(topic).toString();
+    Object o = msg.resolveObject(topic);
+    return o != null ? o.toString() : topic;
   }
 
   public PasProducer withTopic(String t) {

@@ -48,17 +48,13 @@ public class PtpProducerTest extends BasicJmsProducerCase {
   }
 
   @Override
-  @SuppressWarnings("deprecation")
-  protected PtpProducer createProducer(ConfiguredProduceDestination dest) {
-    return new PtpProducer().withQueue(dest.getDestination());
+  protected PtpProducer createProducer(String dest) {
+    return new PtpProducer().withQueue(dest);
   }
 
   @Override
-  @SuppressWarnings("deprecation")
-  protected PtpConsumer createConsumer(ConfiguredConsumeDestination dest) {
-    PtpConsumer ptp = new PtpConsumer();
-    ptp.setDestination(dest);
-    return ptp;
+  protected PtpConsumer createConsumer(String dest) {
+    return new PtpConsumer().withQueue(dest);
   }
 
   @Override
