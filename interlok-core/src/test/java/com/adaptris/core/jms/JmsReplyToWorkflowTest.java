@@ -60,7 +60,7 @@ public class JmsReplyToWorkflowTest
     c.setProduceConnection(JmsTransactedWorkflowTest.configure(new JmsConnection()));
     JmsReplyToWorkflow workflow = new JmsReplyToWorkflow();
     workflow.setUniqueId(UUID.randomUUID().toString());
-    workflow.setProducer(new PtpProducer());
+    workflow.setProducer(new PtpProducer().withQueue("Sample_Queue1"));
     workflow.setConsumer(new PtpConsumer().withQueue("Sample_Queue1"));
     c.getWorkflowList().add(workflow);
     return c;

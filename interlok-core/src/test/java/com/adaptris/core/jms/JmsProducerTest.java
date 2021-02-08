@@ -109,8 +109,9 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
 
 
   @SuppressWarnings("deprecation")
-  protected JmsProducer createProducer(ProduceDestination dest) {
+  protected JmsProducer createProducer(String dest) {
     JmsProducer p = new JmsProducer();
+    p.setEndpoint(dest);
 //    p.setDestination(dest);
     return p;
   }
@@ -137,7 +138,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     when(mockSession.getTransacted())
       .thenReturn(true);
 
-    JmsProducer producer = createProducer(new ConfiguredProduceDestination("myDestination"));
+    JmsProducer producer = createProducer("myDestination");
     producer.setSessionFactory(mockSessionFactory);
     producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
     producer.commit();
@@ -154,7 +155,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     when(mockSession.getTransacted())
       .thenReturn(false);
 
-    JmsProducer producer = createProducer(new ConfiguredProduceDestination("myDestination"));
+    JmsProducer producer = createProducer("myDestination");
     producer.setSessionFactory(mockSessionFactory);
     producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
     producer.commit();
@@ -171,7 +172,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     when(mockSession.getTransacted())
       .thenReturn(true);
 
-    JmsProducer producer = createProducer(new ConfiguredProduceDestination("myDestination"));
+    JmsProducer producer = createProducer("myDestination");
     producer.setSessionFactory(mockSessionFactory);
     producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
     producer.rollback();
@@ -190,7 +191,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     doThrow(new JMSException("expected"))
       .when(mockSession).rollback();
 
-    JmsProducer producer = createProducer(new ConfiguredProduceDestination("myDestination"));
+    JmsProducer producer = createProducer("myDestination");
     producer.setSessionFactory(mockSessionFactory);
     producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
     producer.rollback();
@@ -207,7 +208,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     when(mockSession.getTransacted())
       .thenThrow(new JMSException("expected"));
 
-    JmsProducer producer = createProducer(new ConfiguredProduceDestination("myDestination"));
+    JmsProducer producer = createProducer("myDestination");
     producer.setSessionFactory(mockSessionFactory);
     producer.setupSession(AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx"));
     producer.rollback();
@@ -343,7 +344,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     AdaptrisMessage msg = createMessage(topic);
     JmsReplyToDestination d = new JmsReplyToDestination();
 
-    JmsProducer producer = createProducer(d);
+    JmsProducer producer = createProducer("jms:topic:" + getName());
     producer.setCaptureOutgoingMessageDetails(true);
     StandaloneProducer sp = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
 
@@ -359,7 +360,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   @Test
   public void testProduce_CaptureOutgoingMessageDetails() throws Exception {
     String rfc6167 = "jms:queue:" + getName();
-    JmsProducer producer = createProducer(new ConfiguredProduceDestination(rfc6167));
+    JmsProducer producer = createProducer(rfc6167);
     producer.setCaptureOutgoingMessageDetails(true);
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
     try {
@@ -384,7 +385,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
     standaloneConsumer.registerAdaptrisMessageListener(jms);
-    JmsProducer producer = createProducer(new ConfiguredProduceDestination(rfc6167));
+    JmsProducer producer = createProducer(rfc6167);
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
     execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
     assertMessages(jms, 1);
@@ -399,7 +400,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
     standaloneConsumer.registerAdaptrisMessageListener(jms);
-    JmsProducer producer = createProducer(new ConfiguredProduceDestination(rfc6167));
+    JmsProducer producer = createProducer(rfc6167);
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
     execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
     assertMessages(jms, 1);
@@ -414,7 +415,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
     standaloneConsumer.registerAdaptrisMessageListener(jms);
-    JmsProducer producer = createProducer(new ConfiguredProduceDestination(rfc6167));
+    JmsProducer producer = createProducer(rfc6167);
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
     execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
     assertMessages(jms, 1);
@@ -424,7 +425,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   public void testSetProducerSessionFactory() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
 
-    JmsProducer producer = createProducer(new ConfiguredProduceDestination(rfc6167));
+    JmsProducer producer = createProducer(rfc6167);
     assertEquals(DefaultProducerSessionFactory.class, producer.getSessionFactory().getClass());
     try {
       producer.setSessionFactory(null);
@@ -445,7 +446,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     StandaloneConsumer standaloneConsumer =
         new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
-    JmsProducer producer = createProducer(new ConfiguredProduceDestination(rfc6167));
+    JmsProducer producer = createProducer(rfc6167);
     producer.setSessionFactory(new DefaultProducerSessionFactory());
     StandaloneProducer sp = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
     standaloneConsumer.registerAdaptrisMessageListener(jms);
@@ -470,7 +471,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
         new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
     standaloneConsumer.registerAdaptrisMessageListener(jms);
-    JmsProducer producer = createProducer(new ConfiguredProduceDestination(rfc6167));
+    JmsProducer producer = createProducer(rfc6167);
     producer.setSessionFactory(new PerMessageProducerSessionFactory());
     StandaloneProducer standaloneProducer =
         new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
@@ -494,7 +495,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     StandaloneConsumer standaloneConsumer =
         new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
-    JmsProducer producer = createProducer(new ConfiguredProduceDestination(rfc6167));
+    JmsProducer producer = createProducer(rfc6167);
     TimedInactivityProducerSessionFactory psf =
         new TimedInactivityProducerSessionFactory(new TimeInterval(10L, TimeUnit.MILLISECONDS));
     producer.setSessionFactory(psf);
@@ -526,7 +527,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     StandaloneConsumer standaloneConsumer =
         new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
-    JmsProducer producer = createProducer(new ConfiguredProduceDestination(rfc6167));
+    JmsProducer producer = createProducer(rfc6167);
     TimedInactivityProducerSessionFactory psf = new TimedInactivityProducerSessionFactory();
     producer.setSessionFactory(psf);
     standaloneConsumer.registerAdaptrisMessageListener(jms);
@@ -556,7 +557,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     StandaloneConsumer standaloneConsumer =
         new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
-    JmsProducer producer = createProducer(new ConfiguredProduceDestination(rfc6167));
+    JmsProducer producer = createProducer(rfc6167);
     MessageCountProducerSessionFactory psf = new MessageCountProducerSessionFactory(1);
     producer.setSessionFactory(psf);
 
@@ -588,7 +589,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     StandaloneConsumer standaloneConsumer =
         new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
-    JmsProducer producer = createProducer(new ConfiguredProduceDestination(rfc6167));
+    JmsProducer producer = createProducer(rfc6167);
     MessageCountProducerSessionFactory psf = new MessageCountProducerSessionFactory();
     producer.setSessionFactory(psf);
 
@@ -617,7 +618,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     StandaloneConsumer standaloneConsumer =
         new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
-    JmsProducer producer = createProducer(new ConfiguredProduceDestination(rfc6167));
+    JmsProducer producer = createProducer(rfc6167);
     MessageSizeProducerSessionFactory psf =
         new MessageSizeProducerSessionFactory(Integer.valueOf(DEFAULT_PAYLOAD.length() - 1)
             .longValue());
@@ -650,7 +651,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     StandaloneConsumer standaloneConsumer =
         new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
-    JmsProducer producer = createProducer(new ConfiguredProduceDestination(rfc6167));
+    JmsProducer producer = createProducer(rfc6167);
     MessageSizeProducerSessionFactory psf = new MessageSizeProducerSessionFactory();
     producer.setSessionFactory(psf);
 
@@ -679,7 +680,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     StandaloneConsumer standaloneConsumer =
         new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
-    JmsProducer producer = createProducer(new ConfiguredProduceDestination(rfc6167));
+    JmsProducer producer = createProducer(rfc6167);
     MetadataProducerSessionFactory psf = new MetadataProducerSessionFactory(getName());
     producer.setSessionFactory(psf);
 
@@ -723,9 +724,9 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     ServiceList serviceList =
         new ServiceList(new Service[] {
             new StandaloneProducer(activeMqBroker.getJmsConnection(),
-                createProducer(new ConfiguredProduceDestination(rfc6167))),
+                createProducer(rfc6167)),
             new StandaloneProducer(activeMqBroker.getJmsConnection(),
-                createProducer(new ConfiguredProduceDestination(rfc6167)))});
+                createProducer(rfc6167))});
     try {
       start(standaloneConsumer, serviceList);
       AdaptrisMessage msg1 = createMessage();
@@ -745,10 +746,10 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     ServiceList serviceList =
         new ServiceList(new Service[] {
             new StandaloneRequestor(activeMqBroker.getJmsConnection(),
-                createProducer(new ConfiguredProduceDestination(rfc6167)), new TimeInterval(1L,
+                createProducer(rfc6167), new TimeInterval(1L,
                     TimeUnit.SECONDS)),
             new StandaloneRequestor(activeMqBroker.getJmsConnection(),
-                createProducer(new ConfiguredProduceDestination(rfc6167)), new TimeInterval(1L,
+                createProducer(rfc6167), new TimeInterval(1L,
                     TimeUnit.SECONDS))});
     Loopback echo = createLoopback(activeMqBroker, getName());
     try {
@@ -771,7 +772,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   public void testRequest_AsyncReplyTo_Metadata() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
     StandaloneRequestor serviceList = new StandaloneRequestor(activeMqBroker.getJmsConnection(),
-        createProducer(new ConfiguredProduceDestination(rfc6167)),
+        createProducer(rfc6167),
         new TimeInterval(1L, TimeUnit.SECONDS));
     Loopback echo = createLoopback(activeMqBroker, getName());
     try {
@@ -791,7 +792,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   public void testRequest_DefinedReplyTo() throws Exception {
     String rfc6167 = String.format("jms:queue:%1$s?replyToName=%1$s_reply", getName());
     StandaloneRequestor serviceList = new StandaloneRequestor(activeMqBroker.getJmsConnection(),
-        createProducer(new ConfiguredProduceDestination(rfc6167)),
+        createProducer(rfc6167),
         new TimeInterval(1L, TimeUnit.SECONDS));
     Loopback echo = createLoopback(activeMqBroker, getName());
     try {
@@ -809,7 +810,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   @Test(expected = ServiceException.class)
   public void testRequest_Timeout() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
-    JmsProducer producer = createProducer(new ConfiguredProduceDestination(rfc6167));
+    JmsProducer producer = createProducer(rfc6167);
     producer.setPerMessageProperties(false);
     StandaloneRequestor serviceList = new StandaloneRequestor(activeMqBroker.getJmsConnection(),
         producer, new TimeInterval(1L, TimeUnit.SECONDS));
