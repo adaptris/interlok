@@ -194,7 +194,7 @@ public class BasicActiveMqProducerTest
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
               new PasProducer().withTopic(getName()));
       AdaptrisMessage msg = EmbeddedActiveMq.createMessage(null);
-      msg.addMetadata(JmsConstants.JMS_ASYNC_STATIC_REPLY_TO, getName() + "_reply");
+      msg.addObjectHeader(JmsConstants.JMS_ASYNC_STATIC_REPLY_TO, getName() + "_reply");
       ExampleServiceCase.execute(standaloneProducer, msg);
       echo.waitFor(DEFAULT_TIMEOUT);
       assertNotNull(echo.getLastMessage());
@@ -214,7 +214,7 @@ public class BasicActiveMqProducerTest
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
               new PtpProducer().withQueue(getName()));
       AdaptrisMessage msg = EmbeddedActiveMq.createMessage(null);
-      msg.addMetadata(JmsConstants.JMS_ASYNC_STATIC_REPLY_TO, getName() + "_reply");
+      msg.addObjectHeader(JmsConstants.JMS_ASYNC_STATIC_REPLY_TO, getName() + "_reply");
       ExampleServiceCase.execute(standaloneProducer, msg);
       echo.waitFor(DEFAULT_TIMEOUT);
       assertNotNull(echo.getLastMessage());

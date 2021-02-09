@@ -50,7 +50,13 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
   public void produce(AdaptrisMessage msg) throws ProduceException {
     try {
       setupSession(msg);
-      Destination replyTo = (Destination)msg.resolveObject(JMS_ASYNC_STATIC_REPLY_TO);
+      Object o = msg.resolveObject(JMS_ASYNC_STATIC_REPLY_TO);
+      Destination replyTo = null;
+      if (o instanceof Destination) {
+        replyTo = (Destination)o;
+      } else if (o instanceof String) {
+        replyTo = createDestination((String)o);
+      }
       doProduce(msg, replyTo);
     }
     catch (JMSException e) {
