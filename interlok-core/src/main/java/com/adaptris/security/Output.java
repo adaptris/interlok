@@ -48,8 +48,8 @@ import com.adaptris.security.exc.AdaptrisSecurityException;
  * <p>
  * For payloads that are both encrypted and signed, the operations
  * <ul>
- * <li><code>if (Output.getType() & Output.ENCRYPTED) > 0)</code></li>
- * <li><code>if (Output.getType() & Output.SIGNED) > 0)</code></li>
+ * <li><code>if (Output.getType() &amp; Output.ENCRYPTED) &gt; 0)</code></li>
+ * <li><code>if (Output.getType() &amp; Output.SIGNED) &gt; 0)</code></li>
  * </ul>
  * should be true
  * </p>

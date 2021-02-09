@@ -50,7 +50,7 @@ public final class HexDump {
    * </pre>
    * </p>
    * <p>
-   * Unprintable "ASCII" characters (&lt; 32, > 255) are represented by a "."
+   * Unprintable "ASCII" characters (&lt; 32, &gt; 255) are represented by a "."
    * 
    * @return a string in the format described
    * @param bytes the bytes to create hexdump of

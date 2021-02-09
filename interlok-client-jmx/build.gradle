@@ -48,6 +48,17 @@ delombok {
   target = delombokTargetDir
 }
 
+javadoc {
+  configure(options) {
+    taglets = ["com.adaptris.taglet.ConfigTaglet", "com.adaptris.taglet.LicenseTaglet"]
+    options.addBooleanOption "-no-module-directories", true
+    options.addStringOption "tagletpath", configurations.javadoc.asPath
+    options.tags('apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:','implNote:a:Implementation Note:')
+    title= componentName
+  }
+}
+
+
 
 uploadArchives {
   repositories {

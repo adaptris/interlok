@@ -32,6 +32,7 @@ public class MappingUtils {
    * @param pad - the character to be used to pad the input
    * @param justify - L or R i.e. left or right justify the result
    */
+  @Deprecated
   public static String padValue(String input, int size, char pad, char justify) {
     switch (justify) {
     case 'l':

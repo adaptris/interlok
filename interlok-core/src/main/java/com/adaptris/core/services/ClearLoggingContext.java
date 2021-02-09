@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,9 +29,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Remove all mapped diagnostic context via {@link MDC#clear()}.
  *
- * 
+ *
  * @config clear-logging-context-service
- * 
+ *
  */
 @XStreamAlias("clear-logging-context-service")
 @AdapterComponent
@@ -45,7 +45,11 @@ public class ClearLoggingContext extends ServiceImp {
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     try {
-      MDC.clear();
+      for (String key : MDC.getCopyOfContextMap().keySet())
+      {
+        MDC.remove(key);
+      }
+//      MDC.clear();
     }
     catch (IllegalArgumentException | IllegalStateException e) {
       throw ExceptionHelper.wrapServiceException(e);

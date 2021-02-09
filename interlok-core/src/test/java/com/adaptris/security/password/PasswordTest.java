@@ -58,6 +58,12 @@ public class PasswordTest {
   }
 
   @Test
+  public void testNewPortable() throws Exception {
+    String encoded = Password.encode(TEXT, Password.PORTABLE_PASSWORD_2);
+    assertEquals(TEXT, Password.decode(encoded));
+  }
+
+  @Test
   @SuppressWarnings("deprecation")
   public void testNonPortable() throws Exception {
     String encoded = Password.encode(TEXT, Password.NON_PORTABLE_PASSWORD);

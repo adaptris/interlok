@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,15 +20,17 @@ import org.eclipse.jetty.security.SecurityHandler;
 
 /**
  * This is a proxy interface for the Jetty Security Handler implementation.
- * 
+ *
  * @author lchan
- * 
+ *
+ * <!-- NB Cannot fix the warning about the link "reference not found"
+ * above because of the way the dependencies go -->
  */
 public interface SecurityHandlerWrapper {
 
   /**
    * Create a security handler implementation.
-   * 
+   *
    * @return a Jetty SecurityHandler implementation
    * @throws Exception wrapping other exceptions.
    */

@@ -31,7 +31,7 @@ public interface MessageSplitter {
    * implementation.
    * </p>
    * <p>
-   * If this method returns a {@link CloseableIterable}, it must be closed by the caller! This contract cannot be clearly 
+   * If this method returns a {@link com.adaptris.core.util.CloseableIterable}, it must be closed by the caller! This contract cannot be clearly 
    * expressed in Java code without breaking the API in uncomfortable ways for things just returning a List, which is why 
    * this method is only declared to return Iterable.
    * </p>
