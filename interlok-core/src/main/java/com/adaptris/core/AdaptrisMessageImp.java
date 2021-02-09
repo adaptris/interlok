@@ -401,6 +401,9 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   }
 
   public Object resolveObject(String s) {
+    if (s == null) {
+      return null;
+    }
     s = resolve(s);
     Matcher m = objectResolver.matcher(s);
     if (m.matches()) {
