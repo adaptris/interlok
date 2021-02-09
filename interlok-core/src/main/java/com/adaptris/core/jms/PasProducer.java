@@ -116,9 +116,15 @@ public class PasProducer extends DefinedJmsProducer {
   private String topic;
 
   @Override
-  protected Destination createDestination(AdaptrisMessage message) throws JMSException
-  {
-    return (Destination)message.resolveObject(topic);
+  protected Destination createDestination(AdaptrisMessage message) throws JMSException {
+    Object o = message.resolveObject(topic);
+    if (o instanceof Destination) {
+      return (Destination)o;
+    } else if (o != null) {
+      return createDestination((String)o);
+    } else {
+      return null;
+    }
   }
 
   @Override

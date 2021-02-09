@@ -117,9 +117,15 @@ public class PtpProducer extends DefinedJmsProducer {
   private String queue;
 
   @Override
-  protected Destination createDestination(AdaptrisMessage message) throws JMSException
-  {
-    return (Destination)message.resolveObject(queue);
+  protected Destination createDestination(AdaptrisMessage message) throws JMSException {
+    Object o = message.resolveObject(queue);
+    if (o instanceof Destination) {
+      return (Destination)o;
+    } else if (o != null) {
+      return createDestination((String)o);
+    } else {
+      return null;
+    }
   }
 
   @Override
