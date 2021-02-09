@@ -66,7 +66,7 @@ public abstract class Password {
    * </p>
    *
    */
-  public static final String PORTABLE_PASSWORD_2 = "PW2:";
+  public static final String PORTABLE_PASSWORD_2 = "AES_GCM:";
   /**
    * Alternative password style which is not portable across environments and machines
    * <p>
