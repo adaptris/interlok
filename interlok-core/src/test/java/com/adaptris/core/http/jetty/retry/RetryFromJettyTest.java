@@ -66,6 +66,54 @@ public class RetryFromJettyTest extends FailedMessageRetrierCase {
 
 
   @Test
+  public void testRetryEndpointPrefix() throws Exception {
+    RetryFromJetty retrier = create();
+    assertEquals(RetryFromJetty.DEFAULT_ENDPOINT_PREFIX, retrier.retryEndpointPrefix());
+    retrier.setRetryEndpointPrefix("/api/zzlc/");
+    assertEquals("/api/zzlc/", retrier.retryEndpointPrefix());
+  }
+
+  @Test
+  public void testReportEndpoint() throws Exception {
+    RetryFromJetty retrier = create();
+    assertEquals(RetryFromJetty.DEFAULT_REPORTING_ENDPOINT, retrier.reportingEndpoint());
+    retrier.setReportingEndpoint("/api/zzlc/");
+    assertEquals("/api/zzlc/", retrier.reportingEndpoint());
+  }
+
+  @Test
+  public void testDeleteEndpoint() throws Exception {
+    RetryFromJetty retrier = create();
+    assertEquals(RetryFromJetty.DEFAULT_DELETE_PREFIX, retrier.deleteEndpointPrefix());
+    retrier.setDeleteEndpointPrefix("/api/zzlc/");
+    assertEquals("/api/zzlc/", retrier.deleteEndpointPrefix());
+  }
+
+  @Test
+  public void testDeleteHttpMethod() throws Exception {
+    RetryFromJetty retrier = create();
+    assertEquals("DELETE", retrier.deleteHttpMethod());
+    retrier.setDeleteHttpMethod("POST");
+    assertEquals("POST", retrier.deleteHttpMethod());
+  }
+
+  @Test
+  public void testRetryHttpMethod() throws Exception {
+    RetryFromJetty retrier = create();
+    assertEquals("POST", retrier.retryHttpMethod());
+    retrier.setRetryHttpMethod("PATCH");
+    assertEquals("PATCH", retrier.retryHttpMethod());
+  }
+
+  @Test
+  public void testSetRetryEndpointPrefix() throws Exception {
+    RetryFromJetty retrier = create();
+    assertEquals(RetryFromJetty.DEFAULT_ENDPOINT_PREFIX, retrier.retryEndpointPrefix());
+    retrier.setRetryEndpointPrefix("/api/zzlc/");
+    assertEquals("/api/zzlc/", retrier.retryEndpointPrefix());
+  }
+
+  @Test
   public void testReport() throws Exception {
     RetryFromJetty retrier = create();
     try {
