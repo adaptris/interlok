@@ -298,23 +298,23 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
     return this;
   }
 
-  private String retryEndpointPrefix() {
+  String retryEndpointPrefix() {
     return StringUtils.defaultIfBlank(getRetryEndpointPrefix(), DEFAULT_ENDPOINT_PREFIX);
   }
 
-  private String reportingEndpoint() {
-    return StringUtils.defaultIfBlank(getRetryEndpointPrefix(), DEFAULT_REPORTING_ENDPOINT);
+  String reportingEndpoint() {
+    return StringUtils.defaultIfBlank(getReportingEndpoint(), DEFAULT_REPORTING_ENDPOINT);
   }
 
-  private String deleteEndpointPrefix() {
+  String deleteEndpointPrefix() {
     return StringUtils.defaultIfBlank(getDeleteEndpointPrefix(), DEFAULT_DELETE_PREFIX);
   }
 
-  private String retryHttpMethod() {
+  String retryHttpMethod() {
     return StringUtils.defaultIfBlank(getRetryHttpMethod(), HTTP_RETRY_METHOD);
   }
 
-  private String deleteHttpMethod() {
+  String deleteHttpMethod() {
     return StringUtils.defaultIfBlank(getDeleteHttpMethod(), HTTP_DELETE_METHOD);
   }
 
