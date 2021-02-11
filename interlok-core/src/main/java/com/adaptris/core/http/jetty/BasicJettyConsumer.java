@@ -47,6 +47,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -103,25 +104,13 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   @InputFieldDefault(value = "20 Seconds")
   private TimeInterval sendProcessingInterval;
 
-
-  /**
-   * The consume destination represents the path that we register with jetty for this consumer.
-   *
-   */
-  @Deprecated
-  @Getter
-  @Setter
-  @Valid
-  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'path' instead", groups = Deprecated.class)
-  private ConsumeDestination destination;
-
   /**
    * The path we register against jetty for this consumer
    *
    */
   @Getter
   @Setter
-  // Needs to be @NotBlank when destination is removed.
+  @NotBlank
   private String path;
 
   /**
@@ -148,27 +137,22 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   }
 
   protected String servletPath() {
-    return DestinationHelper.consumeDestination(getPath(), getDestination());
+    return getPath();
   }
 
   protected String validMethods() {
-    return DestinationHelper.filterExpression(getMethods(), getDestination());
+    return getMethods();
   }
 
   @Override
   protected String newThreadName() {
-    return DestinationHelper.threadName(retrieveAdaptrisMessageListener(), getDestination());
+    return retrieveAdaptrisMessageListener().friendlyName();
   }
-
 
   @Override
   public void prepare() throws CoreException {
-    DestinationHelper.logWarningIfNotNull(destinationWarningLogged,
-        () -> destinationWarningLogged = true, getDestination(),
-        "{} uses destination, use path + methods instead", LoggingHelper.friendlyName(this));
-    DestinationHelper.mustHaveEither(getPath(), getDestination());
-  }
 
+  }
 
   /**
    * Create an AdaptrisMessage from the incoming servlet request and response.

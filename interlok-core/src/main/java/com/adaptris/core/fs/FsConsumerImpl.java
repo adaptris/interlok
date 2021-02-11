@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 import javax.management.MalformedObjectNameException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -85,8 +86,7 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
    * expressions to perform filtering
    * </p>
    * <p>
-   * The expression that is used to filter messages is derived from {@link #getFilterExpression()}
-   * or from the deprecated {@link #getDestination()}.
+   * The expression that is used to filter messages is derived from {@link #getFilterExpression()}.
    * </p>
    *
    * @see #getFilterExpression()
@@ -164,23 +164,12 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
   private FileSorter fileSorter;
 
   /**
-   * The consume destination represents the base-directory where you are consuming files from.
-   *
-   */
-  @Getter
-  @Setter
-  @Deprecated
-  @Valid
-  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'base-directory-url' instead", groups = Deprecated.class)
-  private ConsumeDestination destination;
-
-  /**
    * The base directory specified as a URL.
    *
    */
   @Getter
   @Setter
-  // Needs to be @NotBlank when destination is removed.
+  @NotBlank
   private String baseDirectoryUrl;
 
   /**
@@ -209,23 +198,20 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
 
   @Override
   protected void prepareConsumer() throws CoreException {
-    DestinationHelper.logWarningIfNotNull(destinationWarningLogged, () -> destinationWarningLogged = true, getDestination(),
-        "{} uses destination, use base-directory-url and filter-expression instead",
-        LoggingHelper.friendlyName(this));
-    DestinationHelper.mustHaveEither(getBaseDirectoryUrl(), getDestination());
+
   }
 
   protected String baseDirUrl() {
-    return DestinationHelper.consumeDestination(getBaseDirectoryUrl(), getDestination());
+    return getBaseDirectoryUrl();
   }
 
   protected String filterExpression() {
-    return DestinationHelper.filterExpression(getFilterExpression(), getDestination());
+    return getFilterExpression();
   }
 
   @Override
   protected String newThreadName() {
-    return DestinationHelper.threadName(retrieveAdaptrisMessageListener(), getDestination());
+    return retrieveAdaptrisMessageListener().friendlyName();
   }
 
   /**

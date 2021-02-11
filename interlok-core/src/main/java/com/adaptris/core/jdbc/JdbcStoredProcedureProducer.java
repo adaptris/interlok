@@ -27,6 +27,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
@@ -148,25 +149,13 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
   private TimeInterval timeout;
 
   /**
-   * The ProduceDestination is the name of the stored procedure that will be executed.
-   */
-  @Getter
-  @Setter
-  @Deprecated
-  @Valid
-  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'procedure-name' instead", groups = Deprecated.class)
-  private ProduceDestination destination;
-
-  /**
    * The name of the stored procedure.
    */
   @InputFieldHint(expression = true)
   @Getter
   @Setter
-  // Needs to be @NotBlank when destination is removed.
+  @NotBlank
   private String procedureName;
-
-  private transient boolean destWarning;
 
   public JdbcStoredProcedureProducer() {
     setInParameters(new InParameters());
@@ -306,11 +295,8 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
   }
 
   @Override
-  public void prepare() throws CoreException {
-    logWarningIfNotNull(destWarning, () -> destWarning = true, getDestination(),
-        "{} uses destination, use 'procedure-name' instead if possible",
-        LoggingHelper.friendlyName(this));
-    mustHaveEither(getProcedureName(), getDestination());
+  public void prepare() {
+
   }
 
   public InParameters getInParameters() {
@@ -376,7 +362,7 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
 
   @Override
   public String endpoint(AdaptrisMessage msg) throws ProduceException {
-    return DestinationHelper.resolveProduceDestination(getProcedureName(), getDestination(), msg);
+    return msg.resolve(getProcedureName());
   }
 
 }

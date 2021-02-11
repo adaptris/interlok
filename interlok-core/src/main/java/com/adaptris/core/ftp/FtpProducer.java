@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -164,16 +165,6 @@ public class FtpProducer extends RequestReplyProducerImp {
 
   @Valid
   private FileNameCreator filenameCreator;
-  /**
-   * The ProduceDestination contains the ftp-url.
-   *
-   */
-  @Getter
-  @Setter
-  @Deprecated
-  @Valid
-  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'ftp-endpoint' instead", groups = Deprecated.class)
-  private ProduceDestination destination;
 
   /**
    * The FTP endpoint in which to deposit files.
@@ -194,7 +185,7 @@ public class FtpProducer extends RequestReplyProducerImp {
   @InputFieldHint(expression = true)
   @Getter
   @Setter
-  // Needs to be @NotBlank when destination is removed.
+  @NotBlank
   private String ftpEndpoint;
   private transient boolean destWarning;
   private transient boolean requestReplyWarning;
@@ -355,15 +346,8 @@ public class FtpProducer extends RequestReplyProducerImp {
 
   @Override
   public void prepare() throws CoreException {
-    logWarningIfNotNull(destWarning, () -> destWarning = true, getDestination(),
-        "{} uses destination, use 'ftp-url' instead", LoggingHelper.friendlyName(this));
-    logWarningIfNotNull(requestReplyWarning, () -> requestReplyWarning = true, getReplyDirectory(),
-        "{} uses reply-directory, request reply via FTP will be removed without warning",
-        LoggingHelper.friendlyName(this));
-    mustHaveEither(getFtpEndpoint(), getDestination());
-    registerEncoderMessageFactory();
-  }
 
+  }
 
   /**
    * Get the build directory.
@@ -418,6 +402,6 @@ public class FtpProducer extends RequestReplyProducerImp {
 
   @Override
   public String endpoint(AdaptrisMessage msg) throws ProduceException {
-    return DestinationHelper.resolveProduceDestination(getFtpEndpoint(), getDestination(), msg);
+    return msg.resolve(getFtpEndpoint());
   }
 }

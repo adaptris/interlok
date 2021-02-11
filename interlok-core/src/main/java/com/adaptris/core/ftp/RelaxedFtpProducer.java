@@ -22,6 +22,7 @@ import static com.adaptris.core.util.DestinationHelper.mustHaveEither;
 import java.io.InputStream;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.ObjectUtils;
 
@@ -95,17 +96,6 @@ public class RelaxedFtpProducer extends ProduceOnlyProducerImp {
   private FileNameCreator filenameCreator;
 
   /**
-   * The ProduceDestination contains the ftp-url.
-   *
-   */
-  @Getter
-  @Setter
-  @Deprecated
-  @Valid
-  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'ftp-endpoint' instead", groups = Deprecated.class)
-  private ProduceDestination destination;
-
-  /**
    * The FTP endpoint in which to deposit files.
    * <p>
    * Although nominal a URL, you can configure the following styles
@@ -124,17 +114,15 @@ public class RelaxedFtpProducer extends ProduceOnlyProducerImp {
   @InputFieldHint(expression = true)
   @Getter
   @Setter
-  // Needs to be @NotBlank when destination is removed.
+  @NotBlank
   private String ftpEndpoint;
-
-  private transient boolean destWarning;
 
   public RelaxedFtpProducer() {
   }
 
   /**
    *
-   * @see com.adaptris.core.AdaptrisMessageProducerImp#produce(AdaptrisMessage, ProduceDestination)
+   * @see com.adaptris.core.AdaptrisMessageProducerImp#produce(AdaptrisMessage)
    */
   @Override
   public void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException {
@@ -170,10 +158,7 @@ public class RelaxedFtpProducer extends ProduceOnlyProducerImp {
 
   @Override
   public void prepare() throws CoreException {
-    logWarningIfNotNull(destWarning, () -> destWarning = true, getDestination(),
-        "{} uses destination, use 'ftp-url' instead", LoggingHelper.friendlyName(this));
-    mustHaveEither(getFtpEndpoint(), getDestination());
-    registerEncoderMessageFactory();
+
   }
 
   FileNameCreator filenameCreator() {
@@ -182,6 +167,6 @@ public class RelaxedFtpProducer extends ProduceOnlyProducerImp {
 
   @Override
   public String endpoint(AdaptrisMessage msg) throws ProduceException {
-    return DestinationHelper.resolveProduceDestination(getFtpEndpoint(), getDestination(), msg);
+    return msg.resolve(getFtpEndpoint());
   }
 }

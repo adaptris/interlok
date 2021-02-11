@@ -18,6 +18,8 @@ package com.adaptris.core.jms;
 
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import com.adaptris.annotation.AdapterComponent;
@@ -78,7 +80,7 @@ public class PasConsumer extends JmsConsumerImpl {
    */
   @Getter
   @Setter
-  // Needs to be @NotBlank when destination is removed.
+  @NotBlank
   private String topic;
 
   private transient boolean durableWarningLogged = false;
@@ -90,17 +92,6 @@ public class PasConsumer extends JmsConsumerImpl {
     }
     // Should just return getSubscriptionId() once durable is removed.
     return null;
-  }
-
-  @Override
-  public void prepare() throws CoreException {
-    super.prepare();
-    if (getDurable() != null) {
-      LoggingHelper.logWarning(durableWarningLogged, () -> durableWarningLogged = true,
-          "{} uses 'durable', this will be implied if subscription-id is not blank",
-          LoggingHelper.friendlyName(this));
-
-    }
   }
 
   @Override
