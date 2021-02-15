@@ -485,7 +485,7 @@ public class FtpProducerTest extends FtpProducerCase {
       ftpProducer.setBuildDirectory(SLASH + DEFAULT_BUILD_DIR_NAME);
       ftpProducer.setDestDirectory(SLASH + DEFAULT_WORK_DIR_NAME);
     }
-    ftpProducer.setDestination(dest);
+    ftpProducer.setFtpEndpoint(dest.getDestination());
     return ftpProducer;
   }
 }

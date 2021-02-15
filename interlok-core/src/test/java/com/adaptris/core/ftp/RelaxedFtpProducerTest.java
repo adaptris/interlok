@@ -141,7 +141,7 @@ public class RelaxedFtpProducerTest extends RelaxedFtpProducerCase {
   @SuppressWarnings("deprecation")
   private RelaxedFtpProducer createForTests(ConfiguredProduceDestination dest) {
     RelaxedFtpProducer ftpProducer = new RelaxedFtpProducer();
-    ftpProducer.setDestination(dest);
+    ftpProducer.setFtpEndpoint(dest.getDestination());
     return ftpProducer;
   }
 

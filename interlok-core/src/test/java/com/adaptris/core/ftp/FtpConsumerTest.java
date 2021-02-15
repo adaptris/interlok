@@ -564,7 +564,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     else {
       ftpConsumer.setWorkDirectory(SLASH + DEFAULT_WORK_DIR_NAME);
     }
-    ftpConsumer.setDestination(dest);
+    ftpConsumer.setFtpEndpoint(dest.getDestination());
     ftpConsumer.setPoller(poller);
     ftpConsumer.registerAdaptrisMessageListener(listener);
     return ftpConsumer;

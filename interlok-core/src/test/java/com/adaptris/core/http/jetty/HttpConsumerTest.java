@@ -341,7 +341,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
     JettyMessageConsumer consumer = JettyHelper.createConsumer("/*");
-    consumer.getDestination().setFilterExpression("GET,HEAD");
+    consumer.setMethods("GET,HEAD");
     Channel channel = JettyHelper.createChannel(connection, consumer, mockProducer);
     try {
       channel.requestStart();
@@ -366,7 +366,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     HttpConnection connection = createConnection(null);
     MockMessageProducer mockProducer = new MockMessageProducer();
     JettyMessageConsumer consumer = JettyHelper.createConsumer("/*");
-    consumer.getDestination().setFilterExpression("GET,HEAD");
+    consumer.setMethods("GET,HEAD");
     Channel channel = JettyHelper.createChannel(connection, consumer, mockProducer);
     try {
       channel.requestStart();

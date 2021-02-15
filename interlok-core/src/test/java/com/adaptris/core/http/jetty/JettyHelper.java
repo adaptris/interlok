@@ -83,7 +83,7 @@ public class JettyHelper {
   public static JettyMessageConsumer createConsumer(String dest, String threadName) {
     JettyMessageConsumer consumer = new JettyMessageConsumer();
     consumer.setAdditionalDebug(true);
-    consumer.setDestination(new ConfiguredConsumeDestination(dest, null, threadName));
+    consumer.setPath(dest);
     return consumer;
   }
 

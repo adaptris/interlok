@@ -77,7 +77,7 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
     MockitoAnnotations.initMocks(this);
 
     consumeDestination = new ConfiguredConsumeDestination("myDestination");
-    consumer.setDestination(consumeDestination);
+    consumer.setFtpEndpoint(consumeDestination.getDestination());
     consumer.registerConnection(mockFtpConnection);
 
     consumer.setPoller(new FixedIntervalPoller(new TimeInterval(1L, TimeUnit.SECONDS)));
@@ -292,7 +292,8 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
         new long[] { calendarOneYearAgo.getTimeInMillis() }
     );
 
-    consumer.setDestination(new ConfiguredConsumeDestination("myDestination", "myFilter"));
+    consumer.setFtpEndpoint("myDestination");
+    consumer.setFileFilterImp("myFilter");
     consumer.setFileFilterImp(GlobFilenameFilter.class.getCanonicalName());
 
     LifecycleHelper.init(consumer);
@@ -305,7 +306,8 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
 
   @Test
   public void testWithIncorrectFilterConsume() throws Exception {
-    consumer.setDestination(new ConfiguredConsumeDestination("myDestination", "myFilter"));
+    consumer.setFtpEndpoint("myDestination");
+    consumer.setFileFilterImp("myFilter");
     consumer.setFileFilterImp("xxx");
 
     try {
