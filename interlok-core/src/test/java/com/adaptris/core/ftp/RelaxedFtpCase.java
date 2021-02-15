@@ -80,9 +80,7 @@ public abstract class RelaxedFtpCase extends FtpConsumerExample {
     if (areTestsEnabled()) {
       MockMessageListener listener = new MockMessageListener();
       RelaxedFtpConsumer ftpConsumer = new RelaxedFtpConsumer();
-      ConfiguredConsumeDestination ccd = new ConfiguredConsumeDestination(getDestinationString());
-      ccd.setConfiguredThreadName("testCasualBasicConsume");
-      ftpConsumer.setDestination(ccd);
+      ftpConsumer.setFtpEndpoint(getDestinationString());
       ftpConsumer.registerAdaptrisMessageListener(listener);
       ftpConsumer.setQuietInterval(DEFAULT_QUIET_PERIOD);
       ftpConsumer.setPoller(new QuartzCronPoller("*/1 * * * * ?"));
@@ -110,9 +108,7 @@ public abstract class RelaxedFtpCase extends FtpConsumerExample {
     if (areTestsEnabled()) {
       MockMessageListener listener = new MockMessageListener();
       RelaxedFtpConsumer ftpConsumer = new RelaxedFtpConsumer();
-      ConfiguredConsumeDestination ccd = new ConfiguredConsumeDestination(getDestinationString());
-      ccd.setConfiguredThreadName("testConsume_CachedConnection");
-      ftpConsumer.setDestination(ccd);
+      ftpConsumer.setFtpEndpoint(getDestinationString());
       ftpConsumer.registerAdaptrisMessageListener(listener);
       ftpConsumer.setQuietInterval(DEFAULT_QUIET_PERIOD);
       ftpConsumer.setPoller(new QuartzCronPoller("*/1 * * * * ?"));
@@ -144,9 +140,7 @@ public abstract class RelaxedFtpCase extends FtpConsumerExample {
     if (areTestsEnabled()) {
       MockMessageListener listener = new MockMessageListener();
       RelaxedFtpConsumer ftpConsumer = new RelaxedFtpConsumer();
-      ConfiguredConsumeDestination ccd = new ConfiguredConsumeDestination(getDestinationString());
-      ccd.setConfiguredThreadName("testCasualBasicConsume");
-      ftpConsumer.setDestination(ccd);
+      ftpConsumer.setFtpEndpoint(getDestinationString());
       ftpConsumer.registerAdaptrisMessageListener(listener);
       ftpConsumer.setQuietInterval(DEFAULT_QUIET_PERIOD);
       ftpConsumer.setPoller(new QuartzCronPoller("*/1 * * * * ?"));
@@ -181,9 +175,7 @@ public abstract class RelaxedFtpCase extends FtpConsumerExample {
       MockMessageListener listener = new MockMessageListener();
       RelaxedFtpConsumer ftpConsumer = new RelaxedFtpConsumer();
       String destination = getDestinationString() + "/";
-      ConfiguredConsumeDestination ccd = new ConfiguredConsumeDestination(destination);
-      ccd.setConfiguredThreadName("testBasicConsume_WithTrailingSlash");
-      ftpConsumer.setDestination(ccd);
+      ftpConsumer.setFtpEndpoint(getDestinationString());
       ftpConsumer.registerAdaptrisMessageListener(listener);
       ftpConsumer.setQuietInterval(DEFAULT_QUIET_PERIOD);
       ftpConsumer.setPoller(new QuartzCronPoller("*/1 * * * * ?"));
@@ -192,7 +184,7 @@ public abstract class RelaxedFtpCase extends FtpConsumerExample {
       int count = 1;
       try {
         RelaxedFtpProducer producer = createFtpProducer();
-        producer.setDestination(new ConfiguredProduceDestination(destination));
+        producer.setFtpEndpoint(destination);
         produce(new StandaloneProducer(createConnection(), producer), count);
         waitForMessages(listener, count);
         assertMessages(listener.getMessages(), count);
@@ -213,9 +205,7 @@ public abstract class RelaxedFtpCase extends FtpConsumerExample {
     if (areTestsEnabled()) {
       MockMessageListener listener = new MockMessageListener();
       RelaxedFtpConsumer ftpConsumer = new RelaxedFtpConsumer();
-      ConfiguredConsumeDestination ccd = new ConfiguredConsumeDestination(getDestinationString());
-      ccd.setConfiguredThreadName("testBasicConsumeWithEncryptedPassword");
-      ftpConsumer.setDestination(ccd);
+      ftpConsumer.setFtpEndpoint(getDestinationString());
       ftpConsumer.setQuietInterval(DEFAULT_QUIET_PERIOD);
       ftpConsumer.registerAdaptrisMessageListener(listener);
       ftpConsumer.setPoller(new QuartzCronPoller("*/1 * * * * ?"));
@@ -248,9 +238,7 @@ public abstract class RelaxedFtpCase extends FtpConsumerExample {
 
       MockMessageListener listener = new MockMessageListener();
       RelaxedFtpConsumer ftpConsumer = new RelaxedFtpConsumer();
-      ConfiguredConsumeDestination ccd = new ConfiguredConsumeDestination(getDestinationStringWithOverride());
-      ccd.setConfiguredThreadName("testBasicConsumeWithOverride");
-      ftpConsumer.setDestination(ccd);
+      ftpConsumer.setFtpEndpoint(getDestinationString());
       ftpConsumer.setQuietInterval(DEFAULT_QUIET_PERIOD);
       ftpConsumer.registerAdaptrisMessageListener(listener);
       // Pass in a QuartzId so we don't print out the uname+password.
@@ -280,9 +268,7 @@ public abstract class RelaxedFtpCase extends FtpConsumerExample {
     if (areTestsEnabled()) {
       MockMessageListener listener = new MockMessageListener();
       RelaxedFtpConsumer ftpConsumer = new RelaxedFtpConsumer();
-      ConfiguredConsumeDestination ccd = new ConfiguredConsumeDestination(getDestinationString(), "*.txt");
-      ccd.setConfiguredThreadName("testConsumeWithFilter");
-      ftpConsumer.setDestination(ccd);
+      ftpConsumer.setFtpEndpoint(getDestinationString());
       ftpConsumer.setQuietInterval(DEFAULT_QUIET_PERIOD);
 
       ftpConsumer.setFileFilterImp(GlobFilenameFilter.class.getCanonicalName());
@@ -314,9 +300,7 @@ public abstract class RelaxedFtpCase extends FtpConsumerExample {
     if (areTestsEnabled()) {
       MockMessageListener listener = new MockMessageListener();
       RelaxedFtpConsumer ftpConsumer = new RelaxedFtpConsumer();
-      ConfiguredConsumeDestination ccd = new ConfiguredConsumeDestination(getDestinationString());
-      ccd.setConfiguredThreadName("testConsumeWithQuietPeriod");
-      ftpConsumer.setDestination(ccd);
+      ftpConsumer.setFtpEndpoint(getDestinationString());
       ftpConsumer.setQuietInterval(DEFAULT_QUIET_PERIOD);
       ftpConsumer.registerAdaptrisMessageListener(listener);
       ftpConsumer.setPoller(new QuartzCronPoller("*/1 * * * * ?"));
@@ -342,9 +326,7 @@ public abstract class RelaxedFtpCase extends FtpConsumerExample {
     if (areTestsEnabled()) {
       MockMessageListener listener = new MockMessageListener();
       RelaxedFtpConsumer ftpConsumer = new RelaxedFtpConsumer();
-      ConfiguredConsumeDestination ccd = new ConfiguredConsumeDestination(getDestinationString(), "*.xml");
-      ccd.setConfiguredThreadName("testConsumeWithNonMatchingFilter");
-      ftpConsumer.setDestination(ccd);
+      ftpConsumer.setFtpEndpoint(getDestinationString());
       ftpConsumer.setQuietInterval(DEFAULT_QUIET_PERIOD);
       ftpConsumer.setFileFilterImp(GlobFilenameFilter.class.getCanonicalName());
       ftpConsumer.registerAdaptrisMessageListener(listener);
@@ -383,8 +365,7 @@ public abstract class RelaxedFtpCase extends FtpConsumerExample {
 
   protected RelaxedFtpProducer createFtpProducer() throws Exception {
     RelaxedFtpProducer p = new RelaxedFtpProducer();
-    ConfiguredProduceDestination d = new ConfiguredProduceDestination(getDestinationString());
-    p.setDestination(d);
+    p.setFtpEndpoint(getDestinationString());
     return p;
   }
 

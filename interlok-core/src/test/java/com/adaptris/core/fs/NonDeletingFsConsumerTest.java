@@ -214,7 +214,7 @@ public class NonDeletingFsConsumerTest extends FsConsumerCase {
     String subDir = new GuidGenerator().safeUUID();
     MockMessageListener stub = new MockMessageListener(10);
     NonDeletingFsConsumer fs = createConsumer(subDir, "testConsumeWithFilter");
-    ((ConfiguredConsumeDestination) fs.getDestination()).setFilterExpression(".*\\.xml");
+    fs.setFilterExpression(".*\\.xml");
     fs.setFileFilterImp(Perl5FilenameFilter.class.getName());
     fs.setPoller(new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)));
     StandaloneConsumer sc = new StandaloneConsumer(fs);
@@ -347,12 +347,9 @@ public class NonDeletingFsConsumerTest extends FsConsumerCase {
 
   protected NonDeletingFsConsumer createConsumer(String subDir, String threadname) {
     String destinationName = subDir == null ? PROPERTIES.getProperty(BASE_KEY) : PROPERTIES.getProperty(BASE_KEY) + "/" + subDir;
-    ConfiguredConsumeDestination dest = threadname != null
-        ? new ConfiguredConsumeDestination(destinationName, null, threadname)
-        : new ConfiguredConsumeDestination(destinationName);
 
     NonDeletingFsConsumer fs = new NonDeletingFsConsumer();
-    fs.setDestination(dest);
+    fs.setBaseDirectoryUrl(destinationName);
     fs.setReacquireLockBetweenMessages(true);
     fs.setCreateDirs(true);
     return fs;

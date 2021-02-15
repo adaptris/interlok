@@ -219,7 +219,7 @@ public class FsMessageConsumerTest extends FsConsumerCase {
     String subDir = new GuidGenerator().safeUUID();
     MockMessageListener stub = new MockMessageListener(10);
     FsConsumer fs = createConsumer(subDir);
-    File dir = FsHelper.createFileReference(FsHelper.createUrlFromString(fs.getDestination().getDestination(), true));
+    File dir = FsHelper.createFileReference(FsHelper.createUrlFromString(fs.getBaseDirectoryUrl(), true));
     dir.getParentFile().mkdirs(); // attempting to fix the timing issues.
     dir.createNewFile(); // makes it a file, so it should be invalid now.
     fs.setCreateDirs(false);
@@ -303,7 +303,7 @@ public class FsMessageConsumerTest extends FsConsumerCase {
     String subDir = new GuidGenerator().safeUUID();
     MockMessageListener stub = new MockMessageListener(10);
     FsConsumer fs = createConsumer(subDir);
-    ((ConfiguredConsumeDestination) fs.getDestination()).setFilterExpression(".*\\.xml");
+    fs.setFilterExpression(".*\\.xml");
     fs.setFileFilterImp(Perl5FilenameFilter.class.getName());
     fs.setPoller(new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)));
     StandaloneConsumer sc = new StandaloneConsumer(fs);
@@ -489,7 +489,7 @@ public class FsMessageConsumerTest extends FsConsumerCase {
   protected FsConsumer createConsumer(String subDir) {
     String destinationName = subDir == null ? PROPERTIES.getProperty(BASE_KEY) : PROPERTIES.getProperty(BASE_KEY) + "/" + subDir;
     FsConsumer fs = createConsumer();
-    fs.setDestination(new ConfiguredConsumeDestination(destinationName));
+    fs.setBaseDirectoryUrl(destinationName);
     fs.setCreateDirs(true);
     return fs;
   }

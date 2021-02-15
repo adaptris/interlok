@@ -117,12 +117,8 @@ public class MovingDeletingFsConsumerTest extends FsConsumerCase {
     final String destinationName =
         subDir == null ? PROPERTIES.getProperty(BASE_KEY) : PROPERTIES.getProperty(BASE_KEY) + "/" + subDir;
 
-    ConfiguredConsumeDestination dest =
-        threadname != null ? new ConfiguredConsumeDestination(destinationName, null, threadname)
-            : new ConfiguredConsumeDestination(destinationName);
-
     final MovingNonDeletingFsConsumer fs = new MovingNonDeletingFsConsumer();
-    fs.setDestination(dest);
+    fs.setBaseDirectoryUrl(destinationName);
     fs.setReacquireLockBetweenMessages(true);
     fs.setCreateDirs(true);
     return fs;

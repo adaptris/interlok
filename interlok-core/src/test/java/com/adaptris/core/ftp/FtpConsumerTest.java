@@ -167,8 +167,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     FakeFtpServer server = helper.createAndStart(helper.createFilesystem(count));
     StandaloneConsumer sc = null;
     try {
-      ConfiguredConsumeDestination ccd = new ConfiguredConsumeDestination(DESTINATION_URL_OVERRIDE, null, "testConsumeWithOverride");
-      FtpConsumer ftpConsumer = createForTests(listener, ccd);
+      FtpConsumer ftpConsumer = createForTests(listener, DESTINATION_URL_OVERRIDE);
       FtpConnection consumeConnection = create(server);
       sc = new StandaloneConsumer(consumeConnection, ftpConsumer);
       start(sc);
@@ -196,8 +195,8 @@ public class FtpConsumerTest extends FtpConsumerCase {
     FakeFtpServer server = helper.createAndStart(filesystem);
     StandaloneConsumer sc = null;
     try {
-      ConfiguredConsumeDestination ccd = new ConfiguredConsumeDestination(SERVER_ADDRESS, "*.txt", "testConsumeWithFilter");
-      FtpConsumer ftpConsumer = createForTests(listener, ccd);
+      FtpConsumer ftpConsumer = createForTests(listener, SERVER_ADDRESS);
+      ftpConsumer.setFilterExpression("*.txt");
       ftpConsumer.setFileFilterImp(GlobFilenameFilter.class.getCanonicalName());
       FtpConnection consumeConnection = create(server);
       sc = new StandaloneConsumer(consumeConnection, ftpConsumer);
@@ -252,8 +251,6 @@ public class FtpConsumerTest extends FtpConsumerCase {
     FakeFtpServer server = helper.createAndStart(filesystem);
     StandaloneConsumer sc = null;
     try {
-      ConfiguredConsumeDestination ccd = new ConfiguredConsumeDestination(SERVER_ADDRESS, "^*.xml$",
-          "testConsumeWithNonMatchingFilter");
       AtomicBoolean pollFired = new AtomicBoolean(false);
       FixedIntervalPoller poller = new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)).withPollerCallback(e -> {
         log.trace("Poll Fired {}", getName());
@@ -261,7 +258,8 @@ public class FtpConsumerTest extends FtpConsumerCase {
           pollFired.set(true);
         }
       });
-      FtpConsumer ftpConsumer = createForTests(listener, ccd, poller);
+      FtpConsumer ftpConsumer = createForTests(listener, SERVER_ADDRESS, poller);
+      ftpConsumer.setFilterExpression("^*.xml$");
       ftpConsumer.setFileFilterImp(RegexFileFilter.class.getCanonicalName());
       FtpConnection consumeConnection = create(server);
       sc = new StandaloneConsumer(consumeConnection, ftpConsumer);
@@ -547,31 +545,31 @@ public class FtpConsumerTest extends FtpConsumerCase {
     return consumeConnection;
   }
 
-  private FtpConsumer createForTests(MockMessageListener listener, String threadName) {
-    return createForTests(listener, new ConfiguredConsumeDestination(SERVER_ADDRESS, null, threadName));
+  private FtpConsumer createForTests(MockMessageListener listener) {
+    return createForTests(listener, SERVER_ADDRESS);
   }
 
-  private FtpConsumer createForTests(MockMessageListener listener, String threadName, Poller p) {
-    return createForTests(listener, new ConfiguredConsumeDestination(SERVER_ADDRESS, null, threadName), p);
+  private FtpConsumer createForTests(MockMessageListener listener, Poller p) {
+    return createForTests(listener, SERVER_ADDRESS, p);
   }
 
   @SuppressWarnings("deprecation")
-  private FtpConsumer createForTests(MockMessageListener listener, ConsumeDestination dest, Poller poller) {
+  private FtpConsumer createForTests(MockMessageListener listener, String url, Poller poller) {
     FtpConsumer ftpConsumer = new FtpConsumer();
-    if (dest.getDestination().equals(SERVER_ADDRESS)) {
+    if (url.equals(SERVER_ADDRESS)) {
       ftpConsumer.setWorkDirectory(DEFAULT_WORK_DIR_CANONICAL);
     }
     else {
       ftpConsumer.setWorkDirectory(SLASH + DEFAULT_WORK_DIR_NAME);
     }
-    ftpConsumer.setFtpEndpoint(dest.getDestination());
+    ftpConsumer.setFtpEndpoint(url);
     ftpConsumer.setPoller(poller);
     ftpConsumer.registerAdaptrisMessageListener(listener);
     return ftpConsumer;
   }
 
-  private FtpConsumer createForTests(MockMessageListener listener, ConsumeDestination dest) {
-    return createForTests(listener, dest, new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)));
+  private FtpConsumer createForTests(MockMessageListener listener, String url) {
+    return createForTests(listener, url, new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)));
   }
 
 

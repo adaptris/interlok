@@ -81,7 +81,7 @@ public class TraversingFsConsumerTest extends FsConsumerCase {
     String subDir = new GuidGenerator().safeUUID();
     MockMessageListener stub = new MockMessageListener(10);
     FsConsumer fs = createConsumer(subDir);
-    fs.getDestination().setFilterExpression(".*xml");
+    fs.setFilterExpression(".*xml");
     fs.setReacquireLockBetweenMessages(true);
     fs.setPoller(new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)));
     StandaloneConsumer sc = new StandaloneConsumer(fs);
@@ -116,7 +116,7 @@ public class TraversingFsConsumerTest extends FsConsumerCase {
   protected TraversingFsConsumer createConsumer(String subDir) {
     String destinationName = subDir == null ? PROPERTIES.getProperty(BASE_KEY) : PROPERTIES.getProperty(BASE_KEY) + "/" + subDir;
     TraversingFsConsumer fs = new TraversingFsConsumer();
-    fs.setDestination(new ConfiguredConsumeDestination(destinationName));
+    fs.setBaseDirectoryUrl(destinationName);
     fs.setCreateDirs(true);
     return fs;
   }

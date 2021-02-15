@@ -33,7 +33,7 @@ public class FsImmediateEventPollerTest {
   @SuppressWarnings("deprecation")
   public void setUp() throws Exception {
     consumer = new FsConsumer();
-    consumer.setDestination(new ConfiguredConsumeDestination("."));
+    consumer.setBaseDirectoryUrl(".");
     consumer.setCreateDirs(false);
     consumer.setQuietInterval(new TimeInterval(500L, "MILLISECONDS"));
     poller = new FsImmediateEventPoller();

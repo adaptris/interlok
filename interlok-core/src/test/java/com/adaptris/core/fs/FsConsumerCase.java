@@ -431,7 +431,7 @@ public abstract class FsConsumerCase extends ExampleConsumerCase {
     String subdir = new GuidGenerator().safeUUID();
 
     FsConsumerImpl consumer = createConsumer(subdir);
-    ((ConfiguredConsumeDestination) consumer.getDestination()).setFilterExpression(".*");
+    consumer.setFilterExpression(".*");
     assertNull(consumer.getFileFilterImp());
     assertEquals(org.apache.commons.io.filefilter.RegexFileFilter.class.getCanonicalName(), consumer.fileFilterImp());
     try {
@@ -472,16 +472,6 @@ public abstract class FsConsumerCase extends ExampleConsumerCase {
     finally {
       FileUtils.deleteQuietly(new File(PROPERTIES.getProperty(BASE_KEY), subdir));
     }
-  }
-
-  @Test
-  @SuppressWarnings("deprecation")
-  public void testSetDestination() {
-    FsConsumerImpl consumer = createConsumer();
-    assertNull(consumer.getDestination());
-    ConfiguredConsumeDestination dest = new ConfiguredConsumeDestination("dest");
-    consumer.setDestination(dest);
-    assertTrue(consumer.getDestination().equals(dest));
   }
 
   @Test
