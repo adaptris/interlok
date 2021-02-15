@@ -13,7 +13,7 @@ dependencies {
   compileOnly "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
   annotationProcessor project(':interlok-core-apt')
   javadoc project(':interlok-core-apt')
-  testCompile "junit:junit:4.13.1"
+  testCompile "junit:junit:4.13.2"
   testRuntimeOnly "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
   testCompileOnly "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
 }

@@ -103,7 +103,7 @@ dependencies {
 
   compile ("org.slf4j:slf4j-api:1.7.30")
 
-  testCompile ("junit:junit:4.13.1")
+  testCompile ("junit:junit:4.13.2")
   testCompile ("org.apache.activemq:artemis-jms-server:2.16.0")
   testCompile ("oro:oro:2.0.8")
 
