@@ -16,20 +16,20 @@
 
 package com.adaptris.core.jms;
 
-import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
-import static com.adaptris.core.jms.JmsConstants.JMS_ASYNC_STATIC_REPLY_TO;
-import java.util.Optional;
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.ProduceException;
+import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.interlok.util.Args;
+
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
-import com.adaptris.annotation.Removal;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.ProduceDestination;
-import com.adaptris.core.ProduceException;
-import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.interlok.util.Args;
+import java.util.Optional;
+
+import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
+import static com.adaptris.core.jms.JmsConstants.JMS_ASYNC_STATIC_REPLY_TO;
 
 /**
  * <p>

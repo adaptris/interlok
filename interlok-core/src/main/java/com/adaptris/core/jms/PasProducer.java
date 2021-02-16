@@ -21,12 +21,7 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
-import com.adaptris.core.util.DestinationHelper;
-import com.adaptris.core.util.LoggingHelper;
-import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,11 +30,7 @@ import lombok.Setter;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Topic;
-import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-
-import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
-import static com.adaptris.core.util.DestinationHelper.mustHaveEither;
 
 /**
  * {@link com.adaptris.core.AdaptrisMessageProducer} implementation for Topic based JMS.

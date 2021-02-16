@@ -1,16 +1,8 @@
 package com.adaptris.core.management.config;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import java.util.Arrays;
-import java.util.List;
-import org.apache.commons.collections4.IterableUtils;
-import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.Channel;
-import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.NullMessageConsumer;
@@ -22,6 +14,15 @@ import com.adaptris.core.services.metadata.AddTimestampMetadataService;
 import com.adaptris.validation.constraints.ConfigDeprecated;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.collections4.IterableUtils;
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class DeprecatedConfigurationCheckerTest {
 
@@ -134,7 +135,6 @@ public class DeprecatedConfigurationCheckerTest {
       StandardWorkflow w = new StandardWorkflow();
       if (!validates) {
         NullMessageConsumer consumer = new NullMessageConsumer();
-        consumer.setDestination(new ConfiguredConsumeDestination("dest"));
         w.setConsumer(consumer);
         w.getServiceCollection().add(new DeprecatedService());
       }

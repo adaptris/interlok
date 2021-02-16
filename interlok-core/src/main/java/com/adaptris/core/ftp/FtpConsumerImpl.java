@@ -16,39 +16,31 @@
 
 package com.adaptris.core.ftp;
 
-import static com.adaptris.core.CoreConstants.FS_CONSUME_DIRECTORY;
-import static com.adaptris.core.ftp.FtpHelper.FORWARD_SLASH;
-
-import java.io.FileFilter;
-import java.io.IOException;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-
-import org.apache.commons.lang3.ObjectUtils;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumer;
 import com.adaptris.core.AdaptrisPollingConsumer;
-import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.fs.FsHelper;
-import com.adaptris.core.util.DestinationHelper;
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.interlok.util.FileFilterBuilder;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.validation.constraints.ConfigDeprecated;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.ObjectUtils;
+
+import javax.validation.constraints.NotBlank;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
+import static com.adaptris.core.CoreConstants.FS_CONSUME_DIRECTORY;
+import static com.adaptris.core.ftp.FtpHelper.FORWARD_SLASH;
 
 /**
  * Abstract FTP Implementation of the {@link AdaptrisMessageConsumer} implementation.

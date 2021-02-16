@@ -16,16 +16,6 @@
 
 package com.adaptris.core.ftp;
 
-import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
-import static com.adaptris.core.util.DestinationHelper.mustHaveEither;
-
-import java.io.InputStream;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-
-import org.apache.commons.lang3.ObjectUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -36,17 +26,17 @@ import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FileNameCreator;
 import com.adaptris.core.FormattedFilenameCreator;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ProduceOnlyProducerImp;
-import com.adaptris.core.util.DestinationHelper;
-import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.filetransfer.FileTransferClient;
-import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.ObjectUtils;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import java.io.InputStream;
 
 /**
  * Ftp producer implementation.
@@ -77,7 +67,6 @@ import lombok.Setter;
  * @see FileNameCreator
  * @see FtpConnection
  * @see FileTransferConnection
- * @see ProduceDestination
  * @author lchan
  */
 @XStreamAlias("relaxed-ftp-producer")

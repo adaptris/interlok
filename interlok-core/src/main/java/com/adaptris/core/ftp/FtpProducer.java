@@ -16,19 +16,6 @@
 
 package com.adaptris.core.ftp;
 
-import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
-import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
-import static com.adaptris.core.util.DestinationHelper.mustHaveEither;
-
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.ObjectUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -41,20 +28,25 @@ import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FileNameCreator;
 import com.adaptris.core.FormattedFilenameCreator;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.RequestReplyProducerImp;
 import com.adaptris.core.util.Args;
-import com.adaptris.core.util.DestinationHelper;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 
 /**
  * Ftp implementation of the AdaptrisMessageProducer interface.
@@ -98,7 +90,6 @@ import lombok.Setter;
  * @see FileNameCreator
  * @see FtpConnection
  * @see FileTransferConnection
- * @see ProduceDestination
  */
 @XStreamAlias("ftp-producer")
 @AdapterComponent

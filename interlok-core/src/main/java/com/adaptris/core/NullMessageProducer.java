@@ -16,15 +16,7 @@ package com.adaptris.core;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
-import com.adaptris.core.util.LoggingHelper;
-import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.validation.Valid;
-
-import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
 
 /**
  * <p>
@@ -38,20 +30,6 @@ import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
 @ComponentProfile(summary = "Default NO-OP producer implementation", tag = "producer,base",
 recommended = {NullConnection.class})
 public class NullMessageProducer extends AdaptrisMessageProducerImp {
-
-  /**
-   * The destination is ignored.
-   *
-   */
-  @Deprecated
-  @Getter
-  @Setter
-  @Valid
-  @ConfigDeprecated(removalVersion = "4.0.0", message = "Destination has no meaning for a no-op producer", groups = Deprecated.class)
-  private ProduceDestination destination;
-
-
-  private transient boolean destWarning;
 
   public NullMessageProducer() {
     setMessageFactory(null);
@@ -69,8 +47,6 @@ public class NullMessageProducer extends AdaptrisMessageProducerImp {
 
   @Override
   public void prepare() throws CoreException {
-    logWarningIfNotNull(destWarning, () -> destWarning = true, getDestination(),
-        "{} uses destination, it has no meaning", LoggingHelper.friendlyName(this));
   }
 
   @Override

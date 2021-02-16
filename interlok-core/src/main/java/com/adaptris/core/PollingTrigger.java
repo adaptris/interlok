@@ -16,24 +16,18 @@
 
 package com.adaptris.core;
 
-import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
-
-import javax.validation.Valid;
-
-import org.apache.commons.lang3.ObjectUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.Args;
-import com.adaptris.core.util.DestinationHelper;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import org.apache.commons.lang3.ObjectUtils;
 
-import lombok.Getter;
-import lombok.Setter;
+import javax.validation.Valid;
+
+import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 
 /**
  * <p>
@@ -58,14 +52,6 @@ public class PollingTrigger extends AdaptrisPollingConsumer {
   @Valid
   @InputFieldDefault(value = "empty message")
   private MessageProvider messageProvider;
-
-  /** Specify a consume destination if you want to control the delivery thread name **/
-  @Getter
-  @Setter
-  @Deprecated
-  @Valid
-  @ConfigDeprecated(removalVersion = "4.0.0", message = "Destination doesn't have much meaning for a polling-trigger", groups = Deprecated.class)
-  private ConsumeDestination destination;
 
   public PollingTrigger() {
 
@@ -137,7 +123,7 @@ public class PollingTrigger extends AdaptrisPollingConsumer {
 
   @Override
   protected String newThreadName() {
-    return DestinationHelper.threadName(retrieveAdaptrisMessageListener(), getDestination());
+    return retrieveAdaptrisMessageListener().friendlyName();
   }
 
   /**

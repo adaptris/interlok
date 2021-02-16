@@ -16,13 +16,36 @@
 
 package com.adaptris.core.fs;
 
-import static com.adaptris.core.CoreConstants.FILE_LAST_MODIFIED_KEY;
-import static com.adaptris.core.CoreConstants.FS_CONSUME_DIRECTORY;
-import static com.adaptris.core.CoreConstants.FS_CONSUME_PARENT_DIR;
-import static com.adaptris.core.CoreConstants.FS_FILE_SIZE;
-import static com.adaptris.core.CoreConstants.ORIGINAL_NAME_KEY;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.core.AdaptrisComponent;
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisPollingConsumer;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.fs.enhanced.FileSorter;
+import com.adaptris.core.fs.enhanced.NoSorting;
+import com.adaptris.core.runtime.ParentRuntimeInfoComponent;
+import com.adaptris.core.runtime.RuntimeInfoComponent;
+import com.adaptris.core.runtime.RuntimeInfoComponentFactory;
+import com.adaptris.core.runtime.WorkflowManager;
+import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.fs.FsException;
+import com.adaptris.fs.FsWorker;
+import com.adaptris.fs.NioWorker;
+import com.adaptris.interlok.util.FileFilterBuilder;
+import com.adaptris.util.TimeInterval;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
+import javax.management.MalformedObjectNameException;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -31,42 +54,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.management.MalformedObjectNameException;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.NotBlank;
-
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.ObjectUtils;
-
-import com.adaptris.annotation.AdvancedConfig;
-import com.adaptris.annotation.AutoPopulated;
-import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.core.AdaptrisComponent;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisPollingConsumer;
-import com.adaptris.core.ConsumeDestination;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.fs.enhanced.FileSorter;
-import com.adaptris.core.fs.enhanced.NoSorting;
-import com.adaptris.core.runtime.ParentRuntimeInfoComponent;
-import com.adaptris.core.runtime.RuntimeInfoComponent;
-import com.adaptris.core.runtime.RuntimeInfoComponentFactory;
-import com.adaptris.core.runtime.WorkflowManager;
-import com.adaptris.core.util.DestinationHelper;
-import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.core.util.LoggingHelper;
-import com.adaptris.fs.FsException;
-import com.adaptris.fs.FsWorker;
-import com.adaptris.fs.NioWorker;
-import com.adaptris.interlok.util.FileFilterBuilder;
-import com.adaptris.util.TimeInterval;
-import com.adaptris.validation.constraints.ConfigDeprecated;
-
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
+import static com.adaptris.core.CoreConstants.FILE_LAST_MODIFIED_KEY;
+import static com.adaptris.core.CoreConstants.FS_CONSUME_DIRECTORY;
+import static com.adaptris.core.CoreConstants.FS_CONSUME_PARENT_DIR;
+import static com.adaptris.core.CoreConstants.FS_FILE_SIZE;
+import static com.adaptris.core.CoreConstants.ORIGINAL_NAME_KEY;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
  * <p>
