@@ -42,7 +42,8 @@ public class NullMessageConsumer extends AdaptrisMessageConsumerImp {
 
   @Override
   protected String newThreadName() {
-    return retrieveAdaptrisMessageListener().friendlyName();
+    AdaptrisMessageListener listener = retrieveAdaptrisMessageListener();
+    return listener != null ? listener.friendlyName() : this.createName();
   }
 
 }
