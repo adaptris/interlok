@@ -23,9 +23,7 @@ import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceException;
-import com.adaptris.core.util.DestinationHelper;
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.interlok.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
@@ -41,7 +39,7 @@ import javax.validation.constraints.NotBlank;
 import java.util.Optional;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
-import static com.adaptris.core.jms.JmsConstants.JMS_ASYNC_STATIC_REPLY_TO;
+import static com.adaptris.core.jms.JmsConstants.OBJ_JMS_REPLY_TO_KEY;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
@@ -166,7 +164,7 @@ public class JmsProducer extends JmsProducerImpl {
           throws JMSException {
     Destination replyTo = null;
     if (target.getReplyToDestination() == null) {
-      Object o = msg.resolveObject(JMS_ASYNC_STATIC_REPLY_TO);
+      Object o = msg.resolveObject(OBJ_JMS_REPLY_TO_KEY);
       if (o instanceof Destination) {
         replyTo = (Destination)o;
       } else if (o instanceof String) {

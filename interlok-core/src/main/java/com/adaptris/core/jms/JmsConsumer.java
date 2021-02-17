@@ -18,6 +18,8 @@ package com.adaptris.core.jms;
 
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
+import javax.validation.constraints.NotBlank;
+
 import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
@@ -93,7 +95,7 @@ public class JmsConsumer extends JmsConsumerImpl {
    */
   @Getter
   @Setter
-  // Needs to be @NotBlank when destination is removed.
+  @NotBlank
   private String endpoint;
 
   public JmsConsumer withEndpoint(String s) {
