@@ -93,7 +93,10 @@ public class JmsReplyToDestination implements ProduceDestination
       log.warn(keyToUse + " not found in object metadata");
     }
     log.debug("Destination [{}]", result);
-    return (Destination) result;
+    if (result instanceof Destination) {
+      return (Destination)result;
+    }
+    return null;
   }
 
   private String deriveMetadataKey() {

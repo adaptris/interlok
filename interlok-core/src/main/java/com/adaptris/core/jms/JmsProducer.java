@@ -89,16 +89,6 @@ public class JmsProducer extends JmsProducerImpl {
   @NotBlank
   private String endpoint;
 
-  private transient boolean destWarning;
-
-  @Override
-  public void prepare() throws CoreException {
-    DestinationHelper.logWarningIfNotNull(destWarning, () -> destWarning = true, endpoint,
-        "{} uses destination, use 'endpoint' instead if possible",
-        LoggingHelper.friendlyName(this));
-    super.prepare();
-  }
-
   protected void produce(AdaptrisMessage msg, JmsDestination jmsDest)
       throws JMSException, CoreException {
     setupSession(msg);
@@ -152,6 +142,7 @@ public class JmsProducer extends JmsProducerImpl {
         target = new MyJmsDestination((Destination)jmsDest);
       } else {
         target = new MyJmsDestination(vendorImplementation().createDestination(jmsDest.toString(), this));
+        target.setReplyTo(createReplyTo(msg, target, createReplyTo));
       }
     } else {
       target = new MyJmsDestination(vendorImplementation().createDestination(endpoint, this));
