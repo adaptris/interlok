@@ -55,19 +55,24 @@ public class PasProducerTest extends BasicJmsProducerCase {
     return result;
   }
 
-
   @Override
-  @SuppressWarnings("deprecation")
   protected DefinedJmsProducer createProducer(ConfiguredProduceDestination dest) {
-    return new PasProducer().withDestination(dest);
+    return createProducer(dest.getDestination());
   }
 
   @Override
-  @SuppressWarnings("deprecation")
   protected JmsConsumerImpl createConsumer(ConfiguredConsumeDestination dest) {
-    PasConsumer pas = new PasConsumer();
-    pas.setDestination(dest);
-    return pas;
+    return createConsumer(dest.getDestination());
+  }
+
+//  @Override
+  protected DefinedJmsProducer createProducer(String dest) {
+    return new PasProducer().withTopic(dest);
+  }
+
+//  @Override
+  protected JmsConsumerImpl createConsumer(String dest) {
+    return new PasConsumer().withTopic(dest);
   }
 
   @Override

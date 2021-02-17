@@ -16,32 +16,6 @@
 
 package com.adaptris.core.jms;
 
-import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
-import static com.adaptris.core.jms.JmsConstants.JMS_DELIVERY_MODE;
-import static com.adaptris.core.jms.JmsConstants.JMS_EXPIRATION;
-import static com.adaptris.core.jms.JmsConstants.JMS_PRIORITY;
-import static com.adaptris.core.jms.NullCorrelationIdSource.defaultIfNull;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
-import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
@@ -55,6 +29,30 @@ import com.adaptris.core.RequestReplyProducerBase;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.NumberUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
+import static com.adaptris.core.jms.JmsConstants.JMS_DELIVERY_MODE;
+import static com.adaptris.core.jms.JmsConstants.JMS_EXPIRATION;
+import static com.adaptris.core.jms.JmsConstants.JMS_PRIORITY;
+import static com.adaptris.core.jms.NullCorrelationIdSource.defaultIfNull;
 
 public abstract class JmsProducerImpl extends RequestReplyProducerBase implements JmsActorConfig {
 
@@ -199,17 +197,25 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
     return 0L;
   }
 
-  @Override
   @Deprecated
   @Removal(version = "4.0.0")
-  public AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination destination)
-      throws ProduceException {
-    return request(msg, destination, defaultTimeout());
+  public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
+    produce(msg);
   }
 
   @Override
   public AdaptrisMessage request(AdaptrisMessage msg) throws ProduceException {
     return request(msg, defaultTimeout());
+  }
+
+  @Override
+  public AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination dest) throws ProduceException {
+    return request(msg);
+  }
+
+  @Override
+  public AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination dest, long timeout) throws ProduceException {
+    return request(msg, timeout);
   }
 
   protected ProducerSession setupSession(AdaptrisMessage msg) throws JMSException {
@@ -232,15 +238,6 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
     } else {
       currentLogger().trace("No Linked Exception available");
     }
-  }
-
-  protected Destination createDestination(ProduceDestination d, AdaptrisMessage msg)
-      throws CoreException {
-    Destination dest = null;
-    if (d instanceof JmsReplyToDestination) {
-      dest = ((JmsReplyToDestination) d).retrieveJmsDestination(msg);
-    }
-    return dest;
   }
 
   protected int calculateDeliveryMode(AdaptrisMessage msg, String defaultDeliveryMode) {
