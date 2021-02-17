@@ -136,7 +136,7 @@ public class JmsProducer extends JmsProducerImpl {
     MyJmsDestination target = null;
     // First of all try and get a jms destination directory from the produce destination
     // (JmsReplyToDestination)
-    Object jmsDest = msg.resolveObject(endpoint);
+    Object jmsDest = endpoint(msg);
     if (jmsDest != null) {
       if (jmsDest instanceof Destination) {
         target = new MyJmsDestination((Destination)jmsDest);
@@ -166,9 +166,11 @@ public class JmsProducer extends JmsProducerImpl {
           throws JMSException {
     Destination replyTo = null;
     if (target.getReplyToDestination() == null) {
-      if (msg.headersContainsKey(JMS_ASYNC_STATIC_REPLY_TO)) {
-        replyTo = target.destinationType().create(vendorImplementation(), this,
-            msg.getMetadataValue(JMS_ASYNC_STATIC_REPLY_TO));
+      Object o = msg.resolveObject(JMS_ASYNC_STATIC_REPLY_TO);
+      if (o instanceof Destination) {
+        replyTo = (Destination)o;
+      } else if (o instanceof String) {
+        replyTo = target.destinationType().create(vendorImplementation(), this, (String)o);
       } else {
         replyTo = createTmpDest ? target.destinationType().createTemporaryDestination(currentSession()) : null;
       }
