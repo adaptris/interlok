@@ -67,12 +67,13 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   // If we have %message{key1}%message{key2} group(1) is key2
   // Which is then replaced so it all works out int the end.
   private static final String RESOLVE_REGEXP = "^.*%message\\{([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
+  private static final String OBJECT_RESOLVE_REGEXP = "^.*%messageObject\\{([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
 
   private transient Logger log = LoggerFactory.getLogger(AdaptrisMessage.class);
   private transient Pattern normalResolver = Pattern.compile(RESOLVE_REGEXP);
   private transient Pattern dotAllResolver = Pattern.compile(RESOLVE_REGEXP, Pattern.DOTALL);
 
-  private transient Pattern objectResolver = Pattern.compile("^.*%messageObject\\{([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$");
+  private transient Pattern objectResolver = Pattern.compile(OBJECT_RESOLVE_REGEXP);
 
   private IdGenerator guidGenerator;
   // persistent fields
