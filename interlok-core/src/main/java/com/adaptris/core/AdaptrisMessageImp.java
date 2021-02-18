@@ -404,6 +404,13 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     return result;
   }
 
+  /**
+   * Retrieve an object from headers/metadata using an expression: %messageObject{some_key}
+   *
+   * @param s The expression to use to resolve the object.
+   *
+   * @return The header/metadata object, or null.
+   */
   @Override
   public Object resolveObject(String s) {
     s = resolve(s);
