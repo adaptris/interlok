@@ -136,7 +136,7 @@ public class JmsProducer extends JmsProducerImpl {
     MyJmsDestination target = null;
     // First of all try and get a jms destination directory from the produce destination
     // (JmsReplyToDestination)
-    Object jmsDest = endpoint(msg);
+    Object jmsDest = msg.resolveObject(endpoint);
     if (jmsDest != null) {
       if (jmsDest instanceof Destination) {
         target = new MyJmsDestination((Destination)jmsDest);
