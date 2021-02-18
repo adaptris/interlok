@@ -25,11 +25,13 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+
 import org.junit.Test;
+
 import com.adaptris.core.jms.JmsConnection;
-import com.adaptris.core.jms.JmsReplyToDestination;
 import com.adaptris.core.jms.PtpConsumer;
 import com.adaptris.core.jms.PtpProducer;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
@@ -127,7 +129,6 @@ public class RequestReplyWorkflowTest
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testWorkflow_ReplyProducerFailure() throws Exception {
     Channel channel = new MockChannel();
     RequestReplyWorkflow workflow = new RequestReplyWorkflow();
@@ -167,7 +168,6 @@ public class RequestReplyWorkflowTest
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testWorkflow_NullReply() throws Exception {
     Channel channel = new MockChannel();
     RequestReplyWorkflow workflow = new RequestReplyWorkflow();
@@ -330,7 +330,6 @@ public class RequestReplyWorkflowTest
   }
 
   @Override
-  @SuppressWarnings("deprecation")
   protected Object retrieveObjectForSampleConfig() {
     Channel c = new Channel();
     try {
