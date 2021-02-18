@@ -29,11 +29,9 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.MetadataDestination;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.PtpProducer;
 import com.adaptris.core.jms.jndi.CachedDestinationJndiImplementation;
-import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.util.KeyValuePair;
 
 public class DestinationCacheJndiPtpProducerTest extends JndiPtpProducerCase {

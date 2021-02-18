@@ -16,12 +16,6 @@
 
 package com.adaptris.core.jms;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-import javax.jms.Topic;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.NotBlank;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -30,6 +24,13 @@ import com.adaptris.core.jms.JmsDestination.DestinationType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
 import lombok.Setter;
+
+import javax.jms.JMSException;
+import javax.jms.MessageConsumer;
+import javax.jms.Topic;
+import javax.validation.constraints.NotBlank;
+
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
  * Concrete {@link JmsPollingConsumerImpl} implementation that can target queues or topics via an

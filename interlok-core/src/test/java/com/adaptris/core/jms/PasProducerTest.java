@@ -55,7 +55,6 @@ public class PasProducerTest extends BasicJmsProducerCase {
     return result;
   }
 
-
   @Override
   protected DefinedJmsProducer createProducer(String dest) {
     return new PasProducer().withTopic(dest);
