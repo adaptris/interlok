@@ -112,7 +112,7 @@ public class PasProducer extends DefinedJmsProducer {
     if (o instanceof Destination) {
       return (Destination)o;
     } else if (o != null) {
-      return createDestination((String)o);
+      return createDestination(o.toString());
     } else {
       return null;
     }
