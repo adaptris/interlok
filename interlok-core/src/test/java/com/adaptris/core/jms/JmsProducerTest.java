@@ -825,7 +825,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
         .when(mockTranslator).translate(any(AdaptrisMessage.class));
     
     String rfc6167 = "jms:queue:" + getName() + "";
-    JmsProducer producer = createProducer(new ConfiguredProduceDestination(rfc6167));
+    JmsProducer producer = createProducer(rfc6167);
     producer.setMessageTranslator(mockTranslator);
     producer.setPerMessageProperties(false);
     StandaloneRequestor serviceList = new StandaloneRequestor(activeMqBroker.getJmsConnection(),
