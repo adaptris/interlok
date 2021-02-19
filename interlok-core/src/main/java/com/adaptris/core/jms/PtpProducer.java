@@ -16,33 +16,21 @@
 
 package com.adaptris.core.jms;
 
-import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
-import static com.adaptris.core.util.DestinationHelper.mustHaveEither;
-
-import java.util.Optional;
-
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Queue;
-import javax.validation.Valid;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ConfiguredProduceDestination;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
-import com.adaptris.core.util.DestinationHelper;
-import com.adaptris.core.util.LoggingHelper;
-import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Queue;
+import javax.validation.constraints.NotBlank;
 
 /**
  * {@link com.adaptris.core.AdaptrisMessageProducer} implementation for Queue based JMS.
@@ -111,39 +99,25 @@ import lombok.Setter;
 public class PtpProducer extends DefinedJmsProducer {
 
   /**
-   * The ProduceDestination is the JMS Queue to write to.
-   * <p>
-   * Note that this is deprecated, but you may need to use something like
-   * {@link JmsReplyToDestination} until support is available directly using string expressions.
-   * </p>
-   */
-  @Getter
-  @Setter
-  @Deprecated
-  @Valid
-  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'queue' instead if possible", groups = Deprecated.class)
-  private ProduceDestination destination;
-
-  /**
    * The JMS Queue
    */
   @InputFieldHint(expression = true)
   @Getter
   @Setter
-  // Needs to be @NotBlank when destination is removed.
+  @NotBlank
   private String queue;
 
-  private transient boolean destWarning;
-
-
   @Override
-  public void prepare() throws CoreException {
-    logWarningIfNotNull(destWarning, () -> destWarning = true, getDestination(),
-        "{} uses destination, use 'queue' instead if possible", LoggingHelper.friendlyName(this));
-    mustHaveEither(getQueue(), getDestination());
-    super.prepare();
+  protected Destination createDestination(AdaptrisMessage message) throws JMSException {
+    Object o = message.resolveObject(queue);
+    if (o instanceof Destination) {
+      return (Destination)o;
+    } else if (o != null) {
+      return createDestination(o.toString());
+    } else {
+      return null;
+    }
   }
-
 
   @Override
   protected Queue createDestination(String name) throws JMSException {
@@ -156,24 +130,9 @@ public class PtpProducer extends DefinedJmsProducer {
   }
 
   @Override
-  @SuppressWarnings("deprecation")
-  public AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException {
-    ProduceDestination dest = Optional.ofNullable(getDestination())
-        .orElse(new ConfiguredProduceDestination(endpoint(msg)));
-    return request(msg, dest, timeout);
-  }
-
-  @Override
-  @SuppressWarnings("deprecation")
-  public void produce(AdaptrisMessage msg) throws ProduceException {
-    ProduceDestination dest = Optional.ofNullable(getDestination())
-        .orElse(new ConfiguredProduceDestination(endpoint(msg)));
-    produce(msg, dest);
-  }
-
-  @Override
   public String endpoint(AdaptrisMessage msg) throws ProduceException {
-    return DestinationHelper.resolveProduceDestination(getQueue(), getDestination(), msg);
+    Object o = msg.resolveObject(queue);
+    return o != null ? o.toString() : queue;
   }
 
   public PtpProducer withQueue(String s) {
@@ -181,9 +140,4 @@ public class PtpProducer extends DefinedJmsProducer {
     return this;
   }
 
-  @Deprecated
-  public PtpProducer withDestination(ProduceDestination d) {
-    setDestination(d);
-    return this;
-  }
 }

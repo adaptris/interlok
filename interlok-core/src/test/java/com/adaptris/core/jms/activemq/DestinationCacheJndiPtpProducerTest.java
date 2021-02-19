@@ -29,11 +29,9 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.MetadataDestination;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.PtpProducer;
 import com.adaptris.core.jms.jndi.CachedDestinationJndiImplementation;
-import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.util.KeyValuePair;
 
 public class DestinationCacheJndiPtpProducerTest extends JndiPtpProducerCase {
@@ -80,16 +78,13 @@ public class DestinationCacheJndiPtpProducerTest extends JndiPtpProducerCase {
   @SuppressWarnings("deprecation")
   public void testProduceWithCacheExceeded() throws Exception {
     DestinationCachingJndiVendorImpl jv = new DestinationCachingJndiVendorImpl(2);
-    MockMessageListener jms = new MockMessageListener();
-    MetadataDestination dest = new MetadataDestination();
-    dest.addKey("testProduceWithCacheExceeded");
 
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
 
     StandaloneProducer sp1 =
         new StandaloneProducer(activeMqBroker.getJndiPtpConnection(jv, false, queueName, topicName),
-            new PtpProducer().withDestination(dest));
+            new PtpProducer().withQueue("%messageObject{testProduceWithCacheExceeded}"));
     jv.setUseJndiForQueues(true);
     jv.getJndiParams().addKeyValuePair(new KeyValuePair("queue.testProduceWithCacheExceeded1", "testProduceWithCacheExceeded1"));
     jv.getJndiParams().addKeyValuePair(new KeyValuePair("queue.testProduceWithCacheExceeded2", "testProduceWithCacheExceeded2"));
@@ -97,11 +92,11 @@ public class DestinationCacheJndiPtpProducerTest extends JndiPtpProducerCase {
     try {
       start(sp1);
       AdaptrisMessage m1 = createMessage(null);
-      m1.addMetadata("testProduceWithCacheExceeded", queueName);
+      m1.addObjectMetadata("testProduceWithCacheExceeded", queueName);
       AdaptrisMessage m2 = createMessage(null);
-      m2.addMetadata("testProduceWithCacheExceeded", "testProduceWithCacheExceeded2");
+      m2.addObjectMetadata("testProduceWithCacheExceeded", "testProduceWithCacheExceeded2");
       AdaptrisMessage m3 = createMessage(null);
-      m3.addMetadata("testProduceWithCacheExceeded", "testProduceWithCacheExceeded1");
+      m3.addObjectMetadata("testProduceWithCacheExceeded", "testProduceWithCacheExceeded1");
       sp1.doService(m1);
       sp1.doService(m2);
       sp1.doService(m2); // This 2nd produce will expire get(QUEUE) on a LRU

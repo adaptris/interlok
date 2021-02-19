@@ -3,9 +3,9 @@ package com.adaptris.interlok.junit.scaffolding.jms;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.jms.DefinedJmsProducer;
 import com.adaptris.core.jms.ProducerSession;
@@ -20,12 +20,6 @@ public class MockProducer extends DefinedJmsProducer {
   @Override
   public void doProduce(AdaptrisMessage msg, Destination dest, Destination replyTo)
       throws JMSException, CoreException {
-    throw new ProduceException();
-  }
-
-  @Override
-  public AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination dest, long timeout)
-      throws ProduceException {
     throw new ProduceException();
   }
 
@@ -65,9 +59,8 @@ public class MockProducer extends DefinedJmsProducer {
   }
 
   @Override
-  public Destination createDestination(ProduceDestination d, AdaptrisMessage msg)
-      throws CoreException {
-    return super.createDestination(d, msg);
+  public Destination createDestination(AdaptrisMessage msg) throws JMSException {
+    throw new JMSException("NO!");
   }
 
   @Override

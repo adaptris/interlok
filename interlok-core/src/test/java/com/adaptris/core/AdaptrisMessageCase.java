@@ -1,18 +1,18 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core;
 
@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -39,8 +40,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+
 import com.adaptris.core.stubs.MockEncoder;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.stream.StreamUtil;
@@ -65,7 +68,7 @@ public abstract class AdaptrisMessageCase {
   }
 
   private Set<MetadataElement> createMetadata() {
-    Set<MetadataElement> metadata = new HashSet(Arrays.asList(new MetadataElement[] {
+    Set<MetadataElement> metadata = new HashSet<>(Arrays.asList(new MetadataElement[] {
         new MetadataElement(KEY1, VAL1), new MetadataElement(KEY2, VAL2)
     }));
     return metadata;
@@ -177,11 +180,11 @@ public abstract class AdaptrisMessageCase {
     assertTrue(msg1.getMetadataValue("key3") == null);
     assertNull(msg1.getMetadataValue(null));
   }
-  
+
   @Test
   public void testGetReferencedMetadata() throws Exception {
     AdaptrisMessage msg1 = createMessage();
-    
+
     msg1.addMessageHeader("RefKey", "key1");
 
     assertTrue(msg1.getMetadataValue("RefKey").equals("key1"));
@@ -213,11 +216,11 @@ public abstract class AdaptrisMessageCase {
     assertTrue(msg1.headersContainsKey("key1"));
     assertTrue(!msg1.headersContainsKey("key3"));
   }
-  
+
   @Test
   public void testContainsReferencedKey() throws Exception {
     AdaptrisMessage msg1 = createMessage();
-    
+
     msg1.addMessageHeader("RefKey1", "key1");
 
     assertTrue(msg1.headersContainsKey("RefKey1"));
@@ -234,11 +237,11 @@ public abstract class AdaptrisMessageCase {
     msg1.addMetadata(new MetadataElement("key5", "val5"));
     assertTrue(msg1.getMetadataValue("key5").equals("val5"));
   }
-  
+
   @Test
   public void testAddReferencedMetadata() throws Exception {
     AdaptrisMessage msg1 = createMessage();
-    
+
     msg1.addMessageHeader("RefKey", "key999");
 
     msg1.addMetadata("$$RefKey", "val999");
@@ -261,7 +264,7 @@ public abstract class AdaptrisMessageCase {
     AdaptrisMessage msg1 = createMessage();
 
     MetadataElement mez = new MetadataElement("key6", "val6");
-    Set newMetadata = new HashSet();
+    Set<MetadataElement> newMetadata = new HashSet<>();
     newMetadata.add(mez);
 
     msg1.clearMetadata();
@@ -275,7 +278,7 @@ public abstract class AdaptrisMessageCase {
     AdaptrisMessage msg1 = createMessage();
 
     msg1.clearMetadata();
-    assertEquals(new HashSet(), msg1.getMetadata());
+    assertEquals(new HashSet<>(), msg1.getMetadata());
   }
 
   @Test
@@ -551,9 +554,9 @@ public abstract class AdaptrisMessageCase {
     Charset iso8859 = Charset.forName("ISO-8859-1");
 
     ByteBuffer inputBuffer = ByteBuffer.wrap(new byte[]
-    {
-      (byte) 0xFC // a u with an umlaut in ISO-8859-1
-    });
+        {
+            (byte) 0xFC // a u with an umlaut in ISO-8859-1
+        });
 
     CharBuffer d1 = iso8859.decode(inputBuffer);
     sb.append(d1.toString());
@@ -578,7 +581,6 @@ public abstract class AdaptrisMessageCase {
     assertTrue(Arrays.equals(PAYLOAD2.getBytes("ISO-8859-1"), msg1.getPayload()));
   }
 
-
   @Test
   public void testResolve() throws Exception {
     AdaptrisMessage msg = createMessage();
@@ -597,8 +599,8 @@ public abstract class AdaptrisMessageCase {
 
     assertEquals(String.format("%s_%s_%s", VAL1, VAL2, "val3"), msg.resolve("%message{key1}_%message{key2}_%message{key*3}"));
     assertEquals(String.format("%s_%s_%s", VAL1, VAL1, "val3"), msg.resolve("%message{key1}_%message{key1}_%message{key*3}"));
-    assertEquals(String.format("SELECT * FROM TABLE where key1=%s and key2=%s", VAL1, VAL2),
-        msg.resolve("SELECT * FROM TABLE where key1=%message{key1} and key2=%message{key2}"));
+    assertEquals(String.format("SELECT * FROM TABLE where key1=%s and key2=%s", VAL1, VAL2), msg.resolve("SELECT * FROM TABLE where key1=%message{key1} and key2=%message{key2}"));
+
     try {
       msg.resolve("%message{does_not_exist}");
       fail();
@@ -606,6 +608,18 @@ public abstract class AdaptrisMessageCase {
     catch (UnresolvedMetadataException expected) {
       assertTrue(expected.getMessage().contains("does_not_exist"));
     }
+  }
+
+  @Test
+  public void testResolveObject() throws Exception {
+    AdaptrisMessage msg = createMessage();
+
+    msg.addObjectHeader("key", "value");
+    msg.addObjectHeader(VAL1, this);
+    assertEquals("value", msg.resolveObject("%messageObject{key}"));
+    assertEquals(this, msg.resolveObject("%messageObject{%message{key1}}"));
+    assertNull(msg.resolveObject("%messageObject{does_not_exist}"));
+    assertEquals(this, msg.resolveObject(VAL1));
   }
 
   // INTERLOK-1949 - resolve() should work with MetadataResolver...

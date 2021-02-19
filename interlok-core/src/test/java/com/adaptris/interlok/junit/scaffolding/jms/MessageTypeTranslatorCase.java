@@ -101,9 +101,8 @@ public abstract class MessageTypeTranslatorCase {
   protected abstract Message createMessage(Session session) throws Exception;
 
   private StandaloneProducer createProducer(MessageTypeTranslator mt) throws Exception {
-    PasProducer producer =
-        new PasProducer()
-            .withDestination(new ConfiguredProduceDestination(testName.getMethodName()));
+    PasProducer producer = new PasProducer();
+    producer.withTopic(testName.getMethodName());
     producer.setMessageTranslator(mt);
     return new StandaloneProducer(new JmsConnection(), producer);
   }

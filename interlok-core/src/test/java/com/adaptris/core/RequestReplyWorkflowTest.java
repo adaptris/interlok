@@ -25,11 +25,13 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+
 import org.junit.Test;
+
 import com.adaptris.core.jms.JmsConnection;
-import com.adaptris.core.jms.JmsReplyToDestination;
 import com.adaptris.core.jms.PtpConsumer;
 import com.adaptris.core.jms.PtpProducer;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
@@ -127,7 +129,6 @@ public class RequestReplyWorkflowTest
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testWorkflow_ReplyProducerFailure() throws Exception {
     Channel channel = new MockChannel();
     RequestReplyWorkflow workflow = new RequestReplyWorkflow();
@@ -138,7 +139,7 @@ public class RequestReplyWorkflowTest
 
     AdaptrisMessageProducer replier = mock(AdaptrisMessageProducer.class);
     doThrow(new ProduceException()).when(replier).produce(any(AdaptrisMessage.class));
-    doThrow(new ProduceException()).when(replier).produce(any(AdaptrisMessage.class), any(ProduceDestination.class));
+    doThrow(new ProduceException()).when(replier).produce(any(AdaptrisMessage.class));
     when(replier.createName()).thenReturn("mock");
     when(replier.createQualifier()).thenReturn("mock");
     when(replier.isTrackingEndpoint()).thenReturn(false);
@@ -146,8 +147,8 @@ public class RequestReplyWorkflowTest
     AdaptrisMessageProducer requestor = mock(AdaptrisMessageProducer.class);
 
     when(requestor.request(any(AdaptrisMessage.class))).thenReturn(reply);
-    when(requestor.request(any(AdaptrisMessage.class), any(ProduceDestination.class))).thenReturn(reply);
-    when(requestor.request(any(AdaptrisMessage.class), any(ProduceDestination.class), anyLong())).thenReturn(reply);
+    when(requestor.request(any(AdaptrisMessage.class))).thenReturn(reply);
+    when(requestor.request(any(AdaptrisMessage.class), anyLong())).thenReturn(reply);
     when(requestor.request(any(AdaptrisMessage.class), anyLong())).thenReturn(reply);
     when(requestor.createName()).thenReturn("mock");
     when(requestor.createQualifier()).thenReturn("mock");
@@ -167,7 +168,6 @@ public class RequestReplyWorkflowTest
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testWorkflow_NullReply() throws Exception {
     Channel channel = new MockChannel();
     RequestReplyWorkflow workflow = new RequestReplyWorkflow();
@@ -176,7 +176,7 @@ public class RequestReplyWorkflowTest
 
     AdaptrisMessageProducer replier = mock(AdaptrisMessageProducer.class);
     doThrow(new ProduceException()).when(replier).produce(any(AdaptrisMessage.class));
-    doThrow(new ProduceException()).when(replier).produce(any(AdaptrisMessage.class), any(ProduceDestination.class));
+    doThrow(new ProduceException()).when(replier).produce(any(AdaptrisMessage.class));
     when(replier.createName()).thenReturn("mock");
     when(replier.createQualifier()).thenReturn("mock");
     when(replier.isTrackingEndpoint()).thenReturn(false);
@@ -184,8 +184,8 @@ public class RequestReplyWorkflowTest
     AdaptrisMessageProducer requestor = mock(AdaptrisMessageProducer.class);
 
     when(requestor.request(any(AdaptrisMessage.class))).thenReturn(null);
-    when(requestor.request(any(AdaptrisMessage.class), any(ProduceDestination.class))).thenReturn(null);
-    when(requestor.request(any(AdaptrisMessage.class), any(ProduceDestination.class), anyLong())).thenReturn(null);
+    when(requestor.request(any(AdaptrisMessage.class))).thenReturn(null);
+    when(requestor.request(any(AdaptrisMessage.class), anyLong())).thenReturn(null);
     when(requestor.request(any(AdaptrisMessage.class), anyLong())).thenReturn(null);
     when(requestor.createName()).thenReturn("mock");
     when(requestor.createQualifier()).thenReturn("mock");
@@ -330,7 +330,6 @@ public class RequestReplyWorkflowTest
   }
 
   @Override
-  @SuppressWarnings("deprecation")
   protected Object retrieveObjectForSampleConfig() {
     Channel c = new Channel();
     try {
@@ -340,7 +339,7 @@ public class RequestReplyWorkflowTest
       workflow.getServiceCollection().addService(new Base64DecodeService());
       workflow.setConsumer(new PtpConsumer().withQueue("inputQueue"));
       workflow.setProducer(new PtpProducer().withQueue("outputQueue"));
-      workflow.setReplyProducer(new PtpProducer().withDestination(new JmsReplyToDestination()));
+      workflow.setReplyProducer(new PtpProducer().withQueue("TODO"));
       workflow.getReplyServiceCollection().addService(new Base64EncodeService());
       c.getWorkflowList().add(workflow);
       c.setUniqueId(UUID.randomUUID().toString());
