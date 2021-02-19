@@ -46,8 +46,6 @@ import com.adaptris.util.KeyValuePairSet;
  */
 public abstract class DatabaseConnection extends AllowsRetriesConnection {
 
-  @AutoPopulated
-  @NotBlank
   @InputFieldHint(style = "SQL")
   @AdvancedConfig
   @Deprecated
@@ -90,7 +88,6 @@ public abstract class DatabaseConnection extends AllowsRetriesConnection {
    */
   public DatabaseConnection() {
     setDriverImp("com.mysql.jdbc.Driver");
-    setTestStatement("SELECT DATABASE(), VERSION(), NOW(), USER();");
     wrapper = new DataSourceWrapper(this);
     connectionState = ConnectionState.Closed;
   }
@@ -234,14 +231,14 @@ public abstract class DatabaseConnection extends AllowsRetriesConnection {
   /**
    * Set the SQL statement used to test this connection.
    * <p>
-   * The default test statement is <code>SELECT DATABASE(), VERSION(), NOW(), USER()</code> which may not be suitable for your
+   * An example test statement is <code>SELECT DATABASE(), VERSION(), NOW(), USER()</code> which may not be suitable for your
    * database driver. Additionally depending on the JDBC driver implementation certain statements may be 'cached' and might never
    * hit the database, so you need to be aware of that as you will be relying on this test-statement to verify the connection
    * validity.
    * </p>
    * 
    * @see #setAlwaysValidateConnection(Boolean)
-   * @param s the SQL statement used to test this connection; the default is SELECT DATABASE(), VERSION(), NOW(), USER()
+   * @param s the SQL statement used to test this connection
    */
   public void setTestStatement(String s) {
     testStatement = s;

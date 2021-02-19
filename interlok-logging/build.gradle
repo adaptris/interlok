@@ -13,7 +13,7 @@ dependencies {
 
   javadoc project(':interlok-core-apt')
 
-  testCompile ("junit:junit:4.13.1")
+  testCompile ("junit:junit:4.13.2")
 
 }
 

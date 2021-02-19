@@ -3,11 +3,11 @@ import org.apache.tools.ant.filters.*
 
 ext {
   componentName='Base Interlok'
-  activeMqVersion='5.16.0'
+  activeMqVersion='5.16.1'
   bouncyCastleVersion='1.68'
-  mysqlDriverVersion='8.0.22'
+  mysqlDriverVersion='8.0.23'
   slf4jVersion = '1.7.30'
-  mockitoVersion = '3.7.0'
+  mockitoVersion = '3.7.7'
 
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
   classesToTest = project.hasProperty("junit.test.classes") ? project.getProperty("junit.test.classes") : "**/*Test*"
@@ -92,17 +92,18 @@ dependencies {
   compile ("org.quartz-scheduler:quartz:2.3.2") {
     exclude group: "com.zaxxer", module: "HikariCP-java7"
   }
-  compile ("com.zaxxer:HikariCP:3.4.5")
+  compile ("com.zaxxer:HikariCP:4.0.1")
   compile ("net.sf.saxon:Saxon-HE:10.3")
   compile ("xerces:xercesImpl:2.12.1")
   compile ("com.mchange:c3p0:0.9.5.5")
-  compile ("org.apache.derby:derby:10.14.2.0")
+  compile ("org.apache.derby:derby:10.15.2.0")
+  compile ("org.apache.derby:derbytools:10.15.2.0")
   compile ("org.apache-extras.beanshell:bsh:2.0b6")
   compile ("javax:javaee-api:8.0.1")
 
   compile ("org.slf4j:slf4j-api:1.7.30")
 
-  testCompile ("junit:junit:4.13.1")
+  testCompile ("junit:junit:4.13.2")
   testCompile ("org.apache.activemq:artemis-jms-server:2.16.0")
   testCompile ("oro:oro:2.0.8")
 

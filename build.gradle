@@ -2,8 +2,8 @@ plugins {
   // Manage optional dependencies in maven pom.
   id 'nebula.optional-base' version '5.0.3' apply false
   id 'com.github.spotbugs' version '4.6.0' apply false
-  id "org.sonarqube" version '3.0' apply false
-  id 'org.owasp.dependencycheck' version '6.0.5' apply false
+  id "org.sonarqube" version '3.1.1' apply false
+  id 'org.owasp.dependencycheck' version '6.1.1' apply false
   id "io.freefair.lombok" version "5.3.0" apply false
   // id 'org.kordamp.gradle.jdeps' version '0.12.0' apply false
 }
@@ -113,6 +113,14 @@ subprojects { subproject ->
     all*.exclude group: 'javax.validation', module: 'validation-api'
     all*.exclude group: 'javax.activation', module: 'activation'
     all*.exclude group: 'javax.activation', module: 'javax.activation-api'
+
+    // module exclusions for java 11.
+    if (JavaVersion.current().ordinal() >= JavaVersion.VERSION_1_9.ordinal()) {
+      all*.exclude group: "xml-apis", module: "xml-apis"
+      all*.exclude group: "stax", module: "stax-api"
+      all*.exclude group: "org.apache.geronimo.specs", module: "geronimo-jta_1.1_spec"
+    }
+
   }
 
   dependencies {
