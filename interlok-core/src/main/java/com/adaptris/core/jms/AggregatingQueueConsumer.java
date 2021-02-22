@@ -16,12 +16,6 @@
 
 package com.adaptris.core.jms;
 
-import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageConsumer;
-import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -33,6 +27,13 @@ import com.adaptris.core.services.aggregator.AggregatingConsumerImpl;
 import com.adaptris.core.services.aggregator.ConsumeDestinationGenerator;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 /**
  * {@link com.adaptris.core.services.aggregator.AggregatingConsumer} implementation that allows you to read a separate message(s) from a queue that need to be aggregated
@@ -83,7 +84,7 @@ public class AggregatingQueueConsumer extends AggregatingConsumerImpl<Aggregatin
     try {
       startMessageTranslator(cfg, msg.getFactory());
       consumer = cfg.getConnection().retrieveConnection(JmsConnection.class).configuredVendorImplementation()
-          .createQueueReceiver(dest, cfg);
+          .createQueueReceiver(dest.getDestination(), dest.getFilterExpression(), cfg);
       Message first = firstMessage(consumer);
       result.add(getMessageTranslator().translate(first));
       Message next = nextMessage(consumer);
