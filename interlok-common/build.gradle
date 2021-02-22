@@ -1,5 +1,7 @@
 ext {
-  componentName='Interlok Common Classes'
+  componentName='Interlok Core/Common'
+  componentDesc="Common components for Interlok"
+
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
   slf4jVersion = '1.7.30'
   log4j2Version = "2.14.0"
@@ -74,7 +76,8 @@ uploadArchives {
       }
       configuration = configurations.mavenDeploy
       pom.withXml {
-        asNode().appendNode("description", "Common components for Interlok")
+        asNode().appendNode("name", componentName)
+        asNode().appendNode("description", componentDesc)
         def properties = asNode().appendNode("properties")
         properties.appendNode("target", "3.8.0+")
         properties.appendNode("license", "false")

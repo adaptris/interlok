@@ -1,5 +1,6 @@
 ext {
-  componentName='Interlok Client API'
+  componentName='Interlok Core/Client'
+  componentDesc="Interlok client API; allows you to programatically submit messages to an Interlok workflow"
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
   log4j2Version = "2.14.0"
   mockitoVersion = '3.7.7'
@@ -64,7 +65,8 @@ uploadArchives {
       }
       configuration = configurations.mavenDeploy
       pom.withXml {
-        asNode().appendNode("description", "Interlok client API; allows you to programatically submit messages to an Interlok workflow")
+        asNode().appendNode("name", componentName)
+        asNode().appendNode("description", componentDesc)
         def properties = asNode().appendNode("properties")
         properties.appendNode("target", "3.0.5+")
         properties.appendNode("license", "false")

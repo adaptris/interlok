@@ -1,5 +1,6 @@
 ext {
-  componentName='Interlok Logging'
+  componentName='Interlok Core/Logging'
+  componentDesc="Custom JMX Logger for Interlok for use with the UI"
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
   log4j2Version = "2.14.0"
 }
@@ -53,13 +54,14 @@ uploadArchives {
       }
       configuration = configurations.mavenDeploy
       pom.withXml {
-        asNode().appendNode("description", "Custom JMX Logger for Interlok")
+        asNode().appendNode("name", componentName)
+        asNode().appendNode("description", componentDesc)
         def properties = asNode().appendNode("properties")
         properties.appendNode("target", "3.8.0+")
         properties.appendNode("license", "false")
         properties.appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
         properties.appendNode("readme", "https://github.com/adaptris/interlok/raw/develop/README.md")
-        properties.appendNode("repository", "https://github.com/adaptris/interlok")        
+        properties.appendNode("repository", "https://github.com/adaptris/interlok")
       }
 
     }
