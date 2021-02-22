@@ -25,7 +25,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.InitialisedState;
 import com.adaptris.core.StartedState;
 import com.adaptris.core.StoppedState;
-import com.adaptris.core.util.DestinationHelper;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -103,6 +102,6 @@ public class MockMessageConsumer extends AdaptrisMessageConsumerImp {
 
   @Override
   protected String newThreadName() {
-    return DestinationHelper.threadName(retrieveAdaptrisMessageListener(), getDestination());
+    return retrieveAdaptrisMessageListener().friendlyName();
   }
 }

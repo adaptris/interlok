@@ -30,7 +30,6 @@ import com.adaptris.core.FormattedFilenameCreator;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ProduceOnlyProducerImp;
-import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.fs.FsWorker;
 import com.adaptris.fs.NioWorker;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -48,7 +47,6 @@ import java.net.URL;
 
 import static com.adaptris.core.CoreConstants.FS_PRODUCE_DIRECTORY;
 import static com.adaptris.core.CoreConstants.PRODUCED_NAME_KEY;
-import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
 
 /**
  * {@link com.adaptris.core.AdaptrisMessageProducer} implementation that writes to the file system.
@@ -132,8 +130,6 @@ public class FsProducer extends ProduceOnlyProducerImp {
   @NotBlank
   private String baseDirectoryUrl;
 
-  private transient boolean destWarning;
-
   public FsProducer() {
     setFilenameCreator(new FormattedFilenameCreator());
     setFsWorker(new NioWorker());
@@ -209,8 +205,6 @@ public class FsProducer extends ProduceOnlyProducerImp {
 
   @Override
   public void prepare() throws CoreException {
-    logWarningIfNotNull(destWarning, () -> destWarning = true, getBaseDirectoryUrl(),
-        "{} uses destination, use 'base-directory-url' instead", LoggingHelper.friendlyName(this));
     registerEncoderMessageFactory();
   }
 
