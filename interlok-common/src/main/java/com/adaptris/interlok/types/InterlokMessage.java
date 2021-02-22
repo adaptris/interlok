@@ -196,6 +196,20 @@ public interface InterlokMessage {
    */
   String resolve(String s, boolean multiline);
 
+  /**
+   * Resolve against this message's object metadata.
+   *
+   * <p>
+   * This is a helper method that allows you to pass in {@code %messageObject{key1}} and get the
+   * object metadata associated with {@code key1} (or null)Support for punctuation characters in the
+   * key nameis down to the implementation; the standard implementations only support a limited
+   * subset of punctuation characters in addition to standard word characters
+   * ({@code [a-zA-Z_0-9]}); They are {@code _!"#&'+,-.:=}.
+   * </p>
+   *
+   * @param s string to resolve.
+   * @return the object (or null).
+   */
   Object resolveObject(String s);
 
   /**
