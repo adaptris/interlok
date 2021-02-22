@@ -16,6 +16,16 @@
 
 package com.adaptris.core.jms;
 
+import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
+import static com.adaptris.core.jms.JmsConstants.OBJ_JMS_REPLY_TO_KEY;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import java.util.Optional;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.validation.constraints.NotBlank;
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -29,18 +39,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.commons.lang3.BooleanUtils;
-
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageConsumer;
-import javax.validation.constraints.NotBlank;
-import java.util.Optional;
-
-import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
-import static com.adaptris.core.jms.JmsConstants.OBJ_JMS_REPLY_TO_KEY;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
  * JMS Producer implementation that can target queues or topics via an RFC6167 style destination.
@@ -227,7 +225,11 @@ public class JmsProducer extends JmsProducerImpl {
 
   @Override
   public String endpoint(AdaptrisMessage msg) throws ProduceException {
-    return msg.resolveObject(endpoint).toString();
+    Object o = msg.resolveObject(getEndpoint());
+    if (o != null) {
+      return o.toString();
+    }
+    return msg.resolve(getEndpoint());
   }
 
   @Override

@@ -123,6 +123,20 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   }
 
   @Test
+  public void testEndpoint() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx");
+    msg.addObjectHeader("topicObject", "fromObjectMetadata");
+    msg.addMessageHeader("topicString", "fromMetadata");
+    JmsProducer p1 = createProducer("%messageObject{topicObject}");
+    assertEquals("fromObjectMetadata", p1.endpoint(msg));
+    JmsProducer p2 = createProducer("%message{topicString}");
+    assertEquals("fromMetadata", p2.endpoint(msg));
+    JmsProducer p3 = createProducer("XXXXX");
+    assertEquals("XXXXX", p3.endpoint(msg));
+  }
+
+
+  @Test
   public void testTransactedCommit() throws Exception {
     when(mockSessionFactory.createProducerSession(any(), any()))
       .thenReturn(mockProducerSession);
