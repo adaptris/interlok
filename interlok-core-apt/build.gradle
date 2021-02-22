@@ -1,5 +1,6 @@
 ext {
-  componentName='Interlok Annotation Support'
+  componentName='Interlok Core/Annotations'
+  componentDesc="Custom annotations for Interlok"
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 }
 
@@ -49,7 +50,8 @@ uploadArchives {
       }
       configuration = configurations.mavenDeploy
       pom.withXml {
-        asNode().appendNode("description", "Custom annotations for Interlok")
+        asNode().appendNode("name", componentName)
+        asNode().appendNode("description", componentDesc)
         def properties = asNode().appendNode("properties")
         properties.appendNode("target", "3.8.0+")
         properties.appendNode("tags", "annotations")

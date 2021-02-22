@@ -2,7 +2,8 @@ import org.apache.tools.ant.taskdefs.condition.Os
 import org.apache.tools.ant.filters.*
 
 ext {
-  componentName='Base Interlok'
+  componentName='Interlok Core/Base'
+  componentDesc="The Core Interlok framework component; this is your must have"
   activeMqVersion='5.16.1'
   bouncyCastleVersion='1.68'
   mysqlDriverVersion='8.0.23'
@@ -316,8 +317,8 @@ uploadArchives {
       }
       configuration = configurations.mavenDeploy
       pom.withXml {
-        asNode().appendNode("description", "The Core Interlok framework component; this is your must have")
-        asNode().appendNode("name", "Interlok Core")
+        asNode().appendNode("name", componentName)
+        asNode().appendNode("description", componentDesc)
         def properties = asNode().appendNode("properties")
         properties.appendNode("target", "3.8.0+")
         properties.appendNode("license", "false")
