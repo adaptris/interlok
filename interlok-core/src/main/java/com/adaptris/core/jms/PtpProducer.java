@@ -93,13 +93,16 @@ import javax.validation.constraints.NotBlank;
 @XStreamAlias("jms-queue-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Place message on a JMS Queue", tag = "producer,jms", recommended = {JmsConnection.class})
-@DisplayOrder(order = {"queue", "destination", "messageTranslator", "deliveryMode", "priority",
+@DisplayOrder(order = {"queue", "messageTranslator", "deliveryMode", "priority",
     "ttl", "acknowledgeMode"})
 @NoArgsConstructor
 public class PtpProducer extends DefinedJmsProducer {
 
   /**
-   * The JMS Queue
+   * The JMS Queue. This supports the message resolve expression:
+   * %messageObject{KEY}, which allows for the destination to be
+   * retrieved from object headers. It also allows for string
+   * expressions to be built dynamically as necessary.
    */
   @InputFieldHint(expression = true)
   @Getter

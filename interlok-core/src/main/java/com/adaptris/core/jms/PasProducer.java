@@ -92,13 +92,16 @@ import javax.validation.constraints.NotBlank;
 @XStreamAlias("jms-topic-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Place message on a JMS Topic", tag = "producer,jms", recommended = {JmsConnection.class})
-@DisplayOrder(order = {"topic", "destination", "messageTranslator", "deliveryMode", "priority",
+@DisplayOrder(order = {"topic", "messageTranslator", "deliveryMode", "priority",
     "ttl", "acknowledgeMode"})
 @NoArgsConstructor
 public class PasProducer extends DefinedJmsProducer {
 
   /**
-   * The JMS Topic
+   * The JMS Topic. This supports the message resolve expression:
+   * %messageObject{KEY}, which allows for the the destination to be
+   * retrieved from object headers. It also allows for string
+   * expressions to be built dynamically as necessary.
    */
   @InputFieldHint(expression = true)
   @Getter
