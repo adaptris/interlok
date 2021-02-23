@@ -93,7 +93,7 @@ dependencies {
   compile ("org.quartz-scheduler:quartz:2.3.2") {
     exclude group: "com.zaxxer", module: "HikariCP-java7"
   }
-  compile ("com.zaxxer:HikariCP:4.0.1")
+  compile ("com.zaxxer:HikariCP:4.0.2")
   compile ("net.sf.saxon:Saxon-HE:10.3")
   compile ("xerces:xercesImpl:2.12.1")
   compile ("com.mchange:c3p0:0.9.5.5")
