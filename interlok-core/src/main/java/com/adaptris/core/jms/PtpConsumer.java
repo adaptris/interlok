@@ -48,8 +48,10 @@ import lombok.Setter;
 public class PtpConsumer extends JmsConsumerImpl {
 
   /**
-   * The JMS Queue
-   *
+   * The JMS Queue. This supports the message resolve expression:
+   * %messageObject{KEY}, which allows for the the destination to be
+   * retrieved from object headers. It also allows for string
+   * expressions to be built dynamically as necessary.
    */
   @Getter
   @Setter
@@ -67,7 +69,6 @@ public class PtpConsumer extends JmsConsumerImpl {
         retrieveConnection(JmsConnection.class).configuredVendorImplementation();
     return jmsImpl.createQueueReceiver(endpoint(), messageSelector(), this);
   }
-
 
   public PtpConsumer withQueue(String queue) {
     setQueue(queue);

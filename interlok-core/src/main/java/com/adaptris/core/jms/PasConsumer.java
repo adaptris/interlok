@@ -75,8 +75,10 @@ public class PasConsumer extends JmsConsumerImpl {
   private String subscriptionId;
 
   /**
-   * The JMS Topic
-   *
+   * The JMS Topic. This supports the message resolve expression:
+   * %messageObject{KEY}, which allows for the the destination to be
+   * retrieved from object headers. It also allows for string
+   * expressions to be built dynamically as necessary.
    */
   @Getter
   @Setter
@@ -85,13 +87,23 @@ public class PasConsumer extends JmsConsumerImpl {
 
   private transient boolean durableWarningLogged = false;
 
-
   protected String subscriptionId() {
     if (durable()) {
       return Args.notBlank(getSubscriptionId(), "subscriptionId");
     }
     // Should just return getSubscriptionId() once durable is removed.
     return null;
+  }
+
+  @Override
+  public void prepare() throws CoreException {
+    super.prepare();
+    if (getDurable() != null) {
+      LoggingHelper.logWarning(durableWarningLogged, () -> durableWarningLogged = true,
+              "{} uses 'durable', this will be implied if subscription-id is not blank",
+              LoggingHelper.friendlyName(this));
+
+    }
   }
 
   @Override

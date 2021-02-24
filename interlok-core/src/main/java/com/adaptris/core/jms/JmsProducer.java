@@ -79,7 +79,10 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 public class JmsProducer extends JmsProducerImpl {
 
   /**
-   * The JMS Endpoint defined in an RFC6167 manner.
+   * The JMS Endpoint defined in an RFC6167 manner. This supports the
+   * message resolve expression: %messageObject{KEY}, which allows for
+   * the the destination to be retrieved from object headers. It also
+   * allows for string expressions to be built dynamically as necessary.
    */
   @InputFieldHint(expression = true)
   @Getter
