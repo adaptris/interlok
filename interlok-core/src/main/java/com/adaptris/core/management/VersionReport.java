@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,9 +18,12 @@ package com.adaptris.core.management;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
@@ -33,7 +36,7 @@ import com.adaptris.core.util.PropertyHelper;
 
 /**
  * Class to report module version numbers.
- * 
+ *
  */
 public abstract class VersionReport {
 
@@ -43,7 +46,6 @@ public abstract class VersionReport {
   private static final String NO_COMPONENT = "unknown";
   private static final String NO_GROUP = "unknown";
 
-  private static final String INTERLOK_NAME = "Base Interlok";
   private static final ComponentVersion UNSPECIFIED_VERSION = new ComponentVersion(new Properties(), NO_COMPONENT);
   private static final Pattern UNKONWN_ARTIFACT_PATTERN = Pattern.compile("jar:file:.*/(.*)!/META-INF.*");
 
@@ -59,13 +61,16 @@ public abstract class VersionReport {
   private transient Set<ComponentVersion> componentVersions;
   private transient ComponentVersion adapterVersion;
 
+  private static final List<String> INTERLOK_NAMES =
+      Collections.unmodifiableList(Arrays.asList("BASE INTERLOK", "INTERLOK CORE/BASE"));
+
   protected VersionReport() {
     buildReport();
   }
 
   /**
    * Get the singleton of the VersionReport.
-   * 
+   *
    * @return the VersionReport object
    */
   public synchronized static VersionReport getInstance() {
@@ -75,7 +80,7 @@ public abstract class VersionReport {
 
   /**
    * Get the Adapter Build Version.
-   * 
+   *
    * @return the adapter build version.
    */
   public String getAdapterBuildVersion() {
@@ -84,7 +89,7 @@ public abstract class VersionReport {
 
   /**
    * Get a report on all the modules.
-   * 
+   *
    * @return version numbers of all available adaptris modules.
    */
   public Collection<String> getReport() {
@@ -93,7 +98,7 @@ public abstract class VersionReport {
 
   /**
    * Get maven style artifact identifiers.
-   * 
+   *
    * @return version numbers of all available adaptris modules.
    */
   public Collection<String> getArtifactIdentifiers() {
@@ -131,10 +136,15 @@ public abstract class VersionReport {
         componentVersions.add(UNSPECIFIED_VERSION);
       }
       adapterVersion =
-          componentVersions.stream().filter(v -> v.name.equalsIgnoreCase(INTERLOK_NAME)).findAny().orElse(UNSPECIFIED_VERSION);
+          componentVersions.stream().filter(v -> isBaseInterlok(v.name)).findAny()
+              .orElse(UNSPECIFIED_VERSION);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private static boolean isBaseInterlok(String v) {
+    return INTERLOK_NAMES.contains(v.toUpperCase());
   }
 
   protected static class ComponentVersion {
@@ -144,12 +154,12 @@ public abstract class VersionReport {
     private transient String versionOnly;
 
     protected ComponentVersion(Properties p, String defaultComponentName) {
-      this.name = p.getProperty(COMPONENT_KEY, defaultComponentName);
-      this.groupId = p.getProperty(GROUP_KEY, NO_GROUP);
-      this.buildDate = p.getProperty(BUILD_DATE_KEY, NO_BUILD_DATE);
-      this.artifactId = p.getProperty(ARTIFACT_KEY, defaultComponentName);
-      this.version =  p.getProperty(VERSION_KEY, NO_VERSION);
-      this.buildInfo = StringUtils.trimToEmpty(StringUtils.chomp(p.getProperty(BUILD_INFO_KEY, "")));
+      name = p.getProperty(COMPONENT_KEY, defaultComponentName);
+      groupId = p.getProperty(GROUP_KEY, NO_GROUP);
+      buildDate = p.getProperty(BUILD_DATE_KEY, NO_BUILD_DATE);
+      artifactId = p.getProperty(ARTIFACT_KEY, defaultComponentName);
+      version =  p.getProperty(VERSION_KEY, NO_VERSION);
+      buildInfo = StringUtils.trimToEmpty(StringUtils.chomp(p.getProperty(BUILD_INFO_KEY, "")));
       if (!StringUtils.isEmpty(buildInfo)) {
         nameAndVersion = String.format("%1$s: %2$s(%3$s:%4$s)", name, version, buildDate, buildInfo);
         versionOnly = String.format("%1$s(%2$s:%3$s)", version, buildDate, buildInfo);
@@ -164,13 +174,13 @@ public abstract class VersionReport {
     public String toString() {
       return nameAndVersion;
     }
-    
+
     public String artifactIdentifier() {
       return artifactIdentifier;
     }
   }
-  
+
   private static class VersionReportImp extends VersionReport {
-    
+
   }
 }
