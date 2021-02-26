@@ -61,6 +61,17 @@ public class RetryOnceStandaloneProducer extends StandaloneProducer {
     }
   }
 
+  @Override
+  public void produce(AdaptrisMessage msg) throws ProduceException {
+    try {
+      super.produce(msg);
+    }
+    catch (Exception e) {
+      restart();
+      super.produce(msg);
+    }
+  }
+
   private void restart() throws ProduceException {
     log.warn("Exception producing message, sleeping for [" + waitBeforeRetry() + "] ms before retry");
     sleep();
