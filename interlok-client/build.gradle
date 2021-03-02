@@ -3,7 +3,7 @@ ext {
   componentDesc="Interlok client API; allows you to programatically submit messages to an Interlok workflow"
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
   log4j2Version = "2.14.0"
-  mockitoVersion = '3.7.7'
+  mockitoVersion = '3.8.0'
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
