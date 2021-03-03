@@ -1,28 +1,34 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.services;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.validation.constraints.NotBlank;
+
 import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -34,16 +40,19 @@ import com.adaptris.core.util.ExceptionHelper;
 
 /**
  * Base class for enabling JSR223 enabled scripting languages.
- * 
- * 
+ *
+ *
  * @author lchan
- * 
+ *
  */
 public abstract class ScriptingServiceImp extends ServiceImp implements DynamicPollingTemplate.TemplateProvider {
 
+  protected static final String NASHORN_ENGINE = "Oracle Nashorn";
+  protected static final String GRAAL_JS_ENGINE = "Graal.js";
+  protected static final String NASHORN = "Nashorn";
+
   @NotBlank
   private String language;
-  private transient ScriptEngineManager fatController;
   private transient ScriptEngine engine;
 
   @InputFieldDefault(value = "false")
@@ -73,13 +82,40 @@ public abstract class ScriptingServiceImp extends ServiceImp implements DynamicP
   @Override
   protected void initService() throws CoreException {
     try {
-      Args.notBlank(language, "language");
+      Args.notBlank(getLanguage(), "language");
+      ScriptEngineManager engineManager = new ScriptEngineManager(this.getClass().getClassLoader());
+      checkEngine(engineManager);
       String error = String.format("getEngineByName('%s')", getLanguage());
-      fatController = new ScriptEngineManager(this.getClass().getClassLoader());
-      engine = Args.notNull(fatController.getEngineByName(getLanguage()), error);
+      engine = Args.notNull(engineManager.getEngineByName(getLanguage()), error);
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
+  }
+
+  protected final void checkEngine(ScriptEngineManager engineManager) {
+    if (nashornNames(engineManager).contains(getLanguage())) {
+      // Nashorn engine javascript short names ("js", "JS", "JavaScript", "javascript", "ECMAScript", "ecmascript") are also used by GraalJS
+      // engine so we only warn the user if he uses directly nashorn or if GraalJS can not be found.
+      if (isNashorn(getLanguage()) || !hasGraalJsEngine(engineManager)) {
+        log.warn(
+            "Nashorn script engine is deprecated and will be removed in Java 17. If you want to keep using a javascript engine you should consider using GraalJS instead.");
+      }
+    }
+  }
+
+  private List<String> nashornNames(ScriptEngineManager engineManager) {
+    // List of short names which may be used to identify the Nashorn ScriptEngine.
+    return engineManager.getEngineFactories().stream().filter(e -> NASHORN_ENGINE.equals(e.getEngineName()))
+        .flatMap(e -> e.getNames().stream())
+        .collect(Collectors.toList());
+  }
+
+  private boolean isNashorn(String language) {
+    return NASHORN.equalsIgnoreCase(language);
+  }
+
+  private boolean hasGraalJsEngine(ScriptEngineManager engineManager) {
+    return Optional.ofNullable(engineManager.getEngineByName(GRAAL_JS_ENGINE)).isPresent();
   }
 
   @Override
@@ -120,20 +156,19 @@ public abstract class ScriptingServiceImp extends ServiceImp implements DynamicP
     return BooleanUtils.toBooleanDefaultIfNull(getBranchingEnabled(), false);
   }
 
-
   public Boolean getBranchingEnabled() {
     return branchingEnabled;
   }
 
   /**
    * Specify whether or not this service is branching.
-   * 
+   *
    * @param branching true to cause {@link #isBranching()} to return true; default is false.
    * @see com.adaptris.core.Service#isBranching()
    * @since 3.4.0
    */
   public void setBranchingEnabled(Boolean branching) {
-    this.branchingEnabled = branching;
+    branchingEnabled = branching;
   }
 
 }

@@ -8,7 +8,7 @@ ext {
   bouncyCastleVersion='1.68'
   mysqlDriverVersion='8.0.23'
   slf4jVersion = '1.7.30'
-  mockitoVersion = '3.7.7'
+  mockitoVersion = '3.8.0'
 
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
   classesToTest = project.hasProperty("junit.test.classes") ? project.getProperty("junit.test.classes") : "**/*Test*"
@@ -87,7 +87,7 @@ dependencies {
   compile ("org.glassfish.external:opendmk_jmxremote_optional_jar:1.0-b01-ea")
   compile ("org.glassfish.external:opendmk_jdmkrt_jar:1.0-b01-ea")
   compile ("com.jcraft:jsch:0.1.55")
-  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.36.v20210114")
+  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.38.v20210224")
   compile ("javax.servlet:javax.servlet-api:4.0.1")
   compile ("net.sf.joost:joost:0.9.1")
   compile ("org.quartz-scheduler:quartz:2.3.2") {
@@ -115,7 +115,7 @@ dependencies {
   testCompile ("org.apache.activemq:activemq-kahadb-store:$activeMqVersion")
   testCompile ("org.apache.activemq.protobuf:activemq-protobuf:1.1")
 
-  testCompile ("org.jruby:jruby-complete:9.2.14.0")
+  testCompile ("org.jruby:jruby-complete:9.2.15.0")
   testCompile ("org.mockftpserver:MockFtpServer:2.7.1")
   testCompile ("org.mockito:mockito-core:$mockitoVersion")
   testCompile ("org.mockito:mockito-inline:$mockitoVersion")

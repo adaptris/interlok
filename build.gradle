@@ -124,7 +124,7 @@ subprojects { subproject ->
   }
 
   dependencies {
-    mavenDeploy ("org.apache.maven.wagon:wagon-http:3.4.2")
+    mavenDeploy ("org.apache.maven.wagon:wagon-http:3.4.3")
   }
 
   configurations.all {
