@@ -121,11 +121,6 @@ public class PollingTrigger extends AdaptrisPollingConsumer {
     super.close();
   }
 
-  @Override
-  protected String newThreadName() {
-    return retrieveAdaptrisMessageListener().friendlyName();
-  }
-
   /**
    * @return the templateProvider
    */

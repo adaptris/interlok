@@ -144,11 +144,6 @@ public class JmsSyncConsumer extends BaseJmsPollingConsumerImpl {
   }
 
   @Override
-  protected String newThreadName() {
-    return retrieveAdaptrisMessageListener().friendlyName();
-  }
-
-  @Override
   protected Session createSession(int acknowledgeMode, boolean transacted) throws JMSException {
     return retrieveConnection(JmsConnection.class).createSession(isTransacted(), AcknowledgeMode.getMode(getAcknowledgeMode()));
   }

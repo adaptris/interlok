@@ -39,11 +39,4 @@ public class NullMessageConsumer extends AdaptrisMessageConsumerImp {
   @Override
   public void prepare() throws CoreException {
   }
-
-  @Override
-  protected String newThreadName() {
-    AdaptrisMessageListener listener = retrieveAdaptrisMessageListener();
-    return listener != null ? listener.friendlyName() : this.createName();
-  }
-
 }

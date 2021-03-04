@@ -102,12 +102,6 @@ public abstract class JmsPollingConsumerImpl extends BaseJmsPollingConsumerImpl 
     return configuredEndpoint();
   }
 
-  @Override
-  protected String newThreadName() {
-    return retrieveAdaptrisMessageListener().friendlyName();
-  }
-
-
   protected abstract String configuredEndpoint();
 
   protected ConnectionFactory createConnectionFactory() throws Exception {

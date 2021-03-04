@@ -99,9 +99,4 @@ public class MockMessageConsumer extends AdaptrisMessageConsumerImp {
   public String getUniqueId() {
     return null;
   }
-
-  @Override
-  protected String newThreadName() {
-    return retrieveAdaptrisMessageListener().friendlyName();
-  }
 }

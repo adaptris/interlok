@@ -20,6 +20,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumer;
+import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.AdaptrisPollingConsumer;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -241,12 +242,6 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
   protected String filterExpression() {
     return getFilterExpression();
   }
-
-  @Override
-  protected String newThreadName() {
-    return retrieveAdaptrisMessageListener().friendlyName();
-  }
-
 
   protected String fileFilterImp() {
     return ObjectUtils.defaultIfNull(getFileFilterImp(), FileFilterBuilder.DEFAULT_FILE_FILTER_IMP);

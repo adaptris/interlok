@@ -22,6 +22,7 @@ import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.AdaptrisPollingConsumer;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.fs.enhanced.FileSorter;
@@ -200,11 +201,6 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
 
   protected String filterExpression() {
     return getFilterExpression();
-  }
-
-  @Override
-  protected String newThreadName() {
-    return retrieveAdaptrisMessageListener().friendlyName();
   }
 
   /**

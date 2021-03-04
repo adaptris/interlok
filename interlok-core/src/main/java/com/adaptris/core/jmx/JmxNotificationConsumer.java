@@ -93,11 +93,6 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
   }
 
   @Override
-  protected String newThreadName() {
-    return retrieveAdaptrisMessageListener().friendlyName();
-  }
-
-  @Override
   public void prepare() throws CoreException {
   }
 
