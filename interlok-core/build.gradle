@@ -74,7 +74,7 @@ dependencies {
   compile ("org.hibernate.validator:hibernate-validator:6.1.6.Final")
   compile ("org.glassfish:javax.el:3.0.1-b12")
   compile ("commons-io:commons-io:2.8.0")
-  compile ("org.apache.commons:commons-lang3:3.11")
+  compile ("org.apache.commons:commons-lang3:3.12.0")
   compile ("commons-net:commons-net:3.8.0")
   compile ("org.apache.commons:commons-pool2:2.9.0")
   compile ("org.apache.commons:commons-exec:1.3")
