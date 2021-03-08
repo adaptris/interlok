@@ -16,30 +16,10 @@
 
 package com.adaptris.core.fs;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import javax.management.JMX;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.RegexFileFilter;
-import org.apache.oro.io.Perl5FilenameFilter;
-import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.Channel;
 import com.adaptris.core.ConfiguredConsumeDestination;
-import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.Poller;
@@ -60,6 +40,27 @@ import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.interlok.junit.scaffolding.ExampleConsumerCase;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.TimeInterval;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.RegexFileFilter;
+import org.apache.oro.io.Perl5FilenameFilter;
+import org.junit.Test;
+
+import javax.management.JMX;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public abstract class FsConsumerCase extends ExampleConsumerCase {
   protected static final String COLON = ":";
@@ -342,7 +343,7 @@ public abstract class FsConsumerCase extends ExampleConsumerCase {
       }
     };
 
-    public ConsumeDestination createDestination() {
+    public ConfiguredConsumeDestination createDestination() {
       return new ConfiguredConsumeDestination("file:////path/to/consume-directory", getExpression());
     }
 
@@ -600,7 +601,7 @@ public abstract class FsConsumerCase extends ExampleConsumerCase {
       for (Poller poller : POLLER_LIST) {
         for (FileSortImplementation sort : FileSortImplementation.values()) {
           StandaloneConsumer sc = new StandaloneConsumer(createConsumer(null));
-          ConsumeDestination cd = filter.createDestination();
+          ConfiguredConsumeDestination cd = filter.createDestination();
           ((FsConsumerImpl) sc.getConsumer()).setPoller(poller);
           ((FsConsumerImpl) sc.getConsumer()).setBaseDirectoryUrl(cd.getDestination());
           ((FsConsumerImpl) sc.getConsumer()).setFilterExpression(cd.getFilterExpression());

@@ -120,7 +120,7 @@ public abstract class WorkflowLifecycleStrategyCase
 
   protected Workflow configure(WorkflowImp wf, String uid) {
     wf.setUniqueId(uid);
-    wf.setConsumer(new MockMessageConsumer(new ConfiguredConsumeDestination(uid)));
+    wf.setConsumer(new MockMessageConsumer());
     return wf;
   }
 

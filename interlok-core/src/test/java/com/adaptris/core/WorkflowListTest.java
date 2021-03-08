@@ -413,7 +413,7 @@ public class WorkflowListTest extends com.adaptris.interlok.junit.scaffolding.Ba
   private StandardWorkflow createWorkflow(String uid) {
     StandardWorkflow result = new StandardWorkflow();
     result.setUniqueId(uid);
-    new MockMessageConsumer(new ConfiguredConsumeDestination(uid));
+    result.setConsumer(new MockMessageConsumer());
     return result;
   }
 }

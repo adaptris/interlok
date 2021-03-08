@@ -16,8 +16,21 @@
 
 package com.adaptris.core.fs;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageEncoder;
+import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.ServiceException;
+import com.adaptris.core.services.aggregator.AggregatingConsumerImpl;
+import com.adaptris.core.services.aggregator.ConsumeDestinationGenerator;
+import com.adaptris.fs.FsWorker;
+import com.adaptris.fs.NioWorker;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import javax.validation.Valid;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileFilter;
@@ -28,22 +41,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.Valid;
-
-import com.adaptris.annotation.AdvancedConfig;
-import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageEncoder;
-import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.ConsumeDestination;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.ServiceException;
-import com.adaptris.core.services.aggregator.AggregatingConsumerImpl;
-import com.adaptris.core.services.aggregator.ConsumeDestinationGenerator;
-import com.adaptris.fs.FsWorker;
-import com.adaptris.fs.NioWorker;
-import com.thoughtworks.xstream.annotations.XStreamAlias;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
  * {@link com.adaptris.core.services.aggregator.AggregatingConsumer} implementation that allows you to read a separate message from
@@ -54,7 +52,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * inaccessible or not a file, then an exception is thrown.
  * </p>
  * <p>
- * If a filter-expression of the generated {@link ConsumeDestination} is available, then this works as a true aggregator; it will
+ * If a filter-expression is available, then this works as a true aggregator; it will
  * trigger the use of a FileFilter, and ultimately cause multiple files to be read and passed to the configured message aggregator.
  * Note that no decision is made about the resulting size of the message, all messages that match the filter-expression will be
  * aggregated; if there a 2000 files sitting in a directory that match the filter-expression, then that is how many will be picked
@@ -95,11 +93,14 @@ public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFs
 
   @Override
   public void aggregateMessages(AdaptrisMessage msg, AggregatingFsConsumeService service) throws ServiceException {
-    ConsumeDestination dest = getDestination().generate(msg);
+
+    String endpoint = getDestination().getEndpoint(msg);
+    String filterExpression = getDestination().getFilterExpression(msg);
+
+
     List<AdaptrisMessage> result = new ArrayList<>();
     try {
-      result = isEmpty(dest.getFilterExpression()) ? readSingleFile(dest, msg.getFactory()) : readMultipleFiles(dest,
-          msg.getFactory());
+      result = isEmpty(filterExpression) ? readSingleFile(endpoint, msg.getFactory()) : readMultipleFiles(endpoint, filterExpression, msg.getFactory());
       getMessageAggregator().joinMessage(msg, result);
     }
     catch (Exception e) {
@@ -136,13 +137,12 @@ public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFs
     }
   }
 
-  private List<AdaptrisMessage> readMultipleFiles(ConsumeDestination dest, AdaptrisMessageFactory factory) throws ServiceException {
+  private List<AdaptrisMessage> readMultipleFiles(String baseUrl, String filterExpression, AdaptrisMessageFactory factory) throws ServiceException {
     ArrayList<AdaptrisMessage> result = new ArrayList<>();
     try {
-      String baseUrl = dest.getDestination();
       URL url = FsHelper.createUrlFromString(baseUrl, true);
       File directory = FsHelper.createFileReference(url);
-      FileFilter filter = createFileFilter(dest.getFilterExpression());
+      FileFilter filter = createFileFilter(filterExpression);
       File[] files = directory.listFiles(filter);
       for (File f : files) {
         result.add(read(f, factory));
@@ -154,10 +154,9 @@ public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFs
     return result;
   }
 
-  private List<AdaptrisMessage> readSingleFile(ConsumeDestination dest, AdaptrisMessageFactory factory) throws ServiceException {
+  private List<AdaptrisMessage> readSingleFile(String baseUrl, AdaptrisMessageFactory factory) throws ServiceException {
     AdaptrisMessage newMsg = null;
     try {
-      String baseUrl = dest.getDestination();
       URL url = FsHelper.createUrlFromString(baseUrl, true);
       File fileToRead = FsHelper.createFileReference(url);
       newMsg = read(fileToRead, factory);

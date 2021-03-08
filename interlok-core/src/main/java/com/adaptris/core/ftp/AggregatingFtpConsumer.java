@@ -16,17 +16,6 @@
 
 package com.adaptris.core.ftp;
 
-import static com.adaptris.core.ftp.FtpHelper.FORWARD_SLASH;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.validation.Valid;
-
-import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
@@ -34,7 +23,6 @@ import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageEncoder;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.fs.FsHelper;
@@ -43,6 +31,15 @@ import com.adaptris.core.services.aggregator.ConsumeDestinationGenerator;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import org.apache.commons.lang3.BooleanUtils;
+
+import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static com.adaptris.core.ftp.FtpHelper.FORWARD_SLASH;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
  * {@link com.adaptris.core.services.aggregator.AggregatingConsumer} implementation that allows you to read a separate message from
@@ -53,7 +50,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * exist, is inaccessible or not a file, then an exception is thrown.
  * </p>
  * <p>
- * If a filter-expression of the generated {@link ConsumeDestination} is available, then this works as a true aggregator; it will
+ * If a filter-expression of the generated is available, then this works as a true aggregator; it will
  * trigger the use of a FileFilter, and ultimately cause multiple files to be read and passed to the configured message aggregator.
  * Note that no decision is made about the resulting size of the message, all messages that match the filter-expression will be
  * aggregated; if there a 2000 files sitting on the filesystem that match the filter-expression, then that is how many will be
@@ -93,11 +90,13 @@ public class AggregatingFtpConsumer extends AggregatingConsumerImpl<AggregatingF
 
   @Override
   public void aggregateMessages(AdaptrisMessage msg, AggregatingFtpConsumeService service) throws ServiceException {
-    List<AdaptrisMessage> result = new ArrayList<>();
-    ConfigWrapper cfg = new ConfigWrapper(service.getConnection().retrieveConnection(FileTransferConnection.class),
-        getDestination().generate(msg));
+
+    String endpoint = getDestination().getEndpoint(msg);
+    String filterExpression = getDestination().getFilterExpression(msg);
+
+    ConfigWrapper cfg = new ConfigWrapper(service.getConnection().retrieveConnection(FileTransferConnection.class), endpoint, filterExpression);
     try {
-      result = isEmpty(cfg.dest.getFilterExpression()) ? single(cfg, msg.getFactory()) : multiple(cfg, msg.getFactory());
+      List<AdaptrisMessage> result = isEmpty(cfg.filterExpression) ? single(cfg, msg.getFactory()) : multiple(cfg, msg.getFactory());
       getMessageAggregator().joinMessage(msg, result);
       if (deleteAggregatedFiles()) {
         deleteFilesQuietly(result, cfg);
@@ -110,7 +109,7 @@ public class AggregatingFtpConsumer extends AggregatingConsumerImpl<AggregatingF
   }
 
   private void deleteFilesQuietly(List<AdaptrisMessage> msgs, ConfigWrapper cfg) throws Exception {
-    FileTransferClient ftpClient = cfg.remote.connect(cfg.dest.getDestination());
+    FileTransferClient ftpClient = cfg.remote.connect(cfg.endpoint);
     for (AdaptrisMessage msg : msgs) {
       String file = (String) msg.getObjectHeaders().get(OBJ_METADATA_KEY_FILENAME);
       try {
@@ -126,15 +125,15 @@ public class AggregatingFtpConsumer extends AggregatingConsumerImpl<AggregatingF
   }
 
   private List<AdaptrisMessage> multiple(ConfigWrapper cfg, AdaptrisMessageFactory factory) throws Exception {
-    FileTransferClient ftpClient = cfg.remote.connect(cfg.dest.getDestination());
-    String pollDirectory = cfg.remote.getDirectoryRoot(cfg.dest.getDestination());
+    FileTransferClient ftpClient = cfg.remote.connect(cfg.endpoint);
+    String pollDirectory = cfg.remote.getDirectoryRoot(cfg.endpoint);
     boolean additionalDebug = cfg.remote.additionalDebug();
     List<AdaptrisMessage> result = new ArrayList<>();
     try {
       if (additionalDebug) {
         log.trace("Polling {}", pollDirectory);
       }
-      String[] files = ftpClient.dir(pollDirectory, FsHelper.createFilter(cfg.dest.getFilterExpression(), fileFilterImp()));
+      String[] files = ftpClient.dir(pollDirectory, FsHelper.createFilter(cfg.filterExpression, fileFilterImp()));
       if (additionalDebug) {
         log.trace("There are potentially [{}] messages to aggregate", files.length);
       }
@@ -150,10 +149,10 @@ public class AggregatingFtpConsumer extends AggregatingConsumerImpl<AggregatingF
   }
 
   private List<AdaptrisMessage> single(ConfigWrapper cfg, AdaptrisMessageFactory factory) throws Exception {
-    FileTransferClient ftpClient = cfg.remote.connect(cfg.dest.getDestination());
+    FileTransferClient ftpClient = cfg.remote.connect(cfg.endpoint);
     List<AdaptrisMessage> result = new ArrayList<>();
     try {
-      String fullPath = cfg.remote.getDirectoryRoot(cfg.dest.getDestination());
+      String fullPath = cfg.remote.getDirectoryRoot(cfg.endpoint);
       result = Arrays.asList(fetch(ftpClient, fullPath, cfg.remote.additionalDebug(), factory));
     }
     finally {
@@ -237,11 +236,13 @@ public class AggregatingFtpConsumer extends AggregatingConsumerImpl<AggregatingF
 
   private class ConfigWrapper {
     FileTransferConnection remote;
-    ConsumeDestination dest;
+    String endpoint;
+    String filterExpression;
 
-    private ConfigWrapper(FileTransferConnection c, ConsumeDestination d) {
+    private ConfigWrapper(FileTransferConnection c, String e, String f) {
       remote = c;
-      dest = d;
+      endpoint = e;
+      filterExpression = f;
     }
   }
 }

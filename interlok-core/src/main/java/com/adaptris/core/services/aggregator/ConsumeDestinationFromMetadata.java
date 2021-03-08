@@ -16,13 +16,12 @@
 
 package com.adaptris.core.services.aggregator;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ConfiguredConsumeDestination;
-import com.adaptris.core.ConsumeDestination;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
  * A {@link ConsumeDestinationGenerator} that works with metadata.
@@ -97,10 +96,13 @@ public class ConsumeDestinationFromMetadata implements ConsumeDestinationGenerat
   }
 
   @Override
-  public ConsumeDestination generate(AdaptrisMessage msg) {
-    ConfiguredConsumeDestination result = new ConfiguredConsumeDestination(getMetadataValue(msg, getDestinationMetadataKey(),
-        getDefaultDestination()), getMetadataValue(msg, getFilterMetadataKey(), getDefaultFilterExpression()));
-    return result;
+  public String getEndpoint(AdaptrisMessage msg) {
+    return getMetadataValue(msg, getDestinationMetadataKey(), getDefaultDestination());
+  }
+
+  @Override
+  public String getFilterExpression(AdaptrisMessage msg) {
+    return getMetadataValue(msg, getFilterMetadataKey(), getDefaultFilterExpression());
   }
 
   private String getMetadataValue(AdaptrisMessage msg, String key, String defaultValue) {

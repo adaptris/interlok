@@ -16,33 +16,8 @@
 
 package com.adaptris.core.ftp;
 
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_FILENAME;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_PASSWORD;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_PROC_DIR_CANONICAL;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_USERNAME;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_WORK_DIR_CANONICAL;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_WORK_DIR_NAME;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DESTINATION_URL_OVERRIDE;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.PAYLOAD;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.SERVER_ADDRESS;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.SLASH;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import org.apache.commons.io.filefilter.RegexFileFilter;
-import org.apache.oro.io.GlobFilenameFilter;
-import org.junit.Test;
-import org.mockftpserver.fake.FakeFtpServer;
-import org.mockftpserver.fake.filesystem.FileEntry;
-import org.mockftpserver.fake.filesystem.FileSystem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.ConfiguredConsumeDestination;
-import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.MimeEncoder;
 import com.adaptris.core.Poller;
@@ -56,6 +31,31 @@ import com.adaptris.ftp.FtpDataMode;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.TimeInterval;
+import org.apache.commons.io.filefilter.RegexFileFilter;
+import org.apache.oro.io.GlobFilenameFilter;
+import org.junit.Test;
+import org.mockftpserver.fake.FakeFtpServer;
+import org.mockftpserver.fake.filesystem.FileEntry;
+import org.mockftpserver.fake.filesystem.FileSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_FILENAME;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_PASSWORD;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_PROC_DIR_CANONICAL;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_USERNAME;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_WORK_DIR_CANONICAL;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_WORK_DIR_NAME;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.DESTINATION_URL_OVERRIDE;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.PAYLOAD;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.SERVER_ADDRESS;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.SLASH;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class FtpConsumerTest extends FtpConsumerCase {
 

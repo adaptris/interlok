@@ -96,25 +96,8 @@ public class ConfiguredConsumeDestinationTest {
   }
 
   @Test
-  public void testSetConfiguredThreadName() {
-    ConfiguredConsumeDestination destination = new ConfiguredConsumeDestination(DEST_NAME, FILTER, THREAD_NAME);
-    assertEquals(destination.toString(), THREAD_NAME, destination.getConfiguredThreadName());
-    assertEquals(destination.toString(), THREAD_NAME, destination.getDeliveryThreadName());
-    try {
-      destination.setConfiguredThreadName(null);
-      fail();
-    }
-    catch (IllegalArgumentException e) {
-      // expected
-    }
-    destination.setConfiguredThreadName(EMPTY_STRING);
-    assertEquals(destination.toString(), EMPTY_STRING, destination.getConfiguredThreadName());
-    assertNotSame(destination.toString(), EMPTY_STRING, destination.getDeliveryThreadName());
-  }
-
-  @Test
   public void testXmlRoundTrip() throws Exception {
-    ConfiguredConsumeDestination input = new ConfiguredConsumeDestination(DEST_NAME, FILTER, THREAD_NAME);
+    ConfiguredConsumeDestination input = new ConfiguredConsumeDestination(DEST_NAME, FILTER);
     AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
     String xml = m.marshal(input);
     ConfiguredConsumeDestination output = (ConfiguredConsumeDestination) m.unmarshal(xml);

@@ -31,7 +31,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("configured-consume-destination")
 @DisplayOrder(order = {"destination", "filterExpression"})
-public final class ConfiguredConsumeDestination extends ConsumeDestinationImp {
+public final class ConfiguredConsumeDestination {
 
   private String destination;
   @AdvancedConfig
@@ -66,15 +66,8 @@ public final class ConfiguredConsumeDestination extends ConsumeDestinationImp {
    * @param filter the filter expression
    */
   public ConfiguredConsumeDestination(String dest, String filter) {
-
     this(dest);
     this.setFilterExpression(filter);
-  }
-
-  public ConfiguredConsumeDestination(String dest, String filter, String threadname) {
-    this(dest);
-    this.setFilterExpression(filter);
-    setConfiguredThreadName(threadname);
   }
 
   /**
@@ -90,8 +83,8 @@ public final class ConfiguredConsumeDestination extends ConsumeDestinationImp {
   @Override
   public boolean equals(Object obj) {
     if (obj != null) { // changed from _destination
-      if (obj instanceof ConsumeDestination) {
-        ConsumeDestination dest = (ConsumeDestination) obj;
+      if (obj instanceof ConfiguredConsumeDestination) {
+        ConfiguredConsumeDestination dest = (ConfiguredConsumeDestination) obj;
         int count = 0;
         count += areEqual(this.getDestination(), dest.getDestination()) ? 1 : 0;
         count += areEqual(this.getFilterExpression(), dest.getFilterExpression()) ? 1 : 0;
@@ -143,27 +136,18 @@ public final class ConfiguredConsumeDestination extends ConsumeDestinationImp {
     return result;
   }
 
-  /**
-   * @see com.adaptris.core.ConsumeDestination #setDestination(java.lang.String)
-   */
   public void setDestination(String s) {
     destination = s;
   }
 
-  /** @see com.adaptris.core.ConsumeDestination#getDestination() */
   public String getDestination() {
     return destination;
   }
 
-  /**
-   * @see com.adaptris.core.ConsumeDestination
-   *      #setFilterExpression(java.lang.String)
-   */
   public void setFilterExpression(String s) {
     filterExpression = s;
   }
 
-  /** @see com.adaptris.core.ConsumeDestination#getFilterExpression() */
   public String getFilterExpression() {
     return filterExpression;
   }

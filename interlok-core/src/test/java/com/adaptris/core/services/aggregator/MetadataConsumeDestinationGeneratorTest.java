@@ -16,14 +16,12 @@
 
 package com.adaptris.core.services.aggregator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.DefaultMessageFactory;
 import org.junit.Test;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ConsumeDestination;
-import com.adaptris.core.DefaultMessageFactory;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class MetadataConsumeDestinationGeneratorTest {
   private static final String DEFAULT_FILTER_KEY = "metadataFilterKey";
@@ -70,9 +68,8 @@ public class MetadataConsumeDestinationGeneratorTest {
     dest.setFilterMetadataKey(DEFAULT_FILTER_KEY);
     msg.addMetadata(DEFAULT_FILTER_KEY, "filterMetadataValue");
     msg.addMetadata(DEFAULT_DESTINATION_KEY, "destinationMetadataValue");
-    ConsumeDestination cd = dest.generate(msg);
-    assertEquals("filterMetadataValue", cd.getFilterExpression());
-    assertEquals("destinationMetadataValue", cd.getDestination());
+    assertEquals("filterMetadataValue", dest.getFilterExpression(msg));
+    assertEquals("destinationMetadataValue", dest.getEndpoint(msg));
 
   }
 
@@ -87,9 +84,8 @@ public class MetadataConsumeDestinationGeneratorTest {
     dest.setDestinationMetadataKey("unknownKey");
     dest.setDefaultFilterExpression("defaultFilterValue");
     dest.setDefaultDestination("defaultDestinationValue");
-    ConsumeDestination cd = dest.generate(msg);
-    assertEquals("defaultFilterValue", cd.getFilterExpression());
-    assertEquals("defaultDestinationValue", cd.getDestination());
+    assertEquals("defaultFilterValue", dest.getFilterExpression(msg));
+    assertEquals("defaultDestinationValue", dest.getEndpoint(msg));
   }
 
 }

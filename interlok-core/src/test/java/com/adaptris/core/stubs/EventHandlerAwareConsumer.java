@@ -17,7 +17,6 @@
 package com.adaptris.core.stubs;
 
 import com.adaptris.core.AdaptrisMessageListener;
-import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.EventHandler;
 import com.adaptris.core.EventHandlerAware;
 
@@ -34,14 +33,6 @@ public class EventHandlerAwareConsumer extends MockMessageConsumer implements Ev
 
   public EventHandlerAwareConsumer() {
     super();
-  }
-
-  public EventHandlerAwareConsumer(ConsumeDestination d, AdaptrisMessageListener m) {
-    super(d, m);
-  }
-
-  public EventHandlerAwareConsumer(ConsumeDestination d) {
-    super(d);
   }
 
   public EventHandlerAwareConsumer(AdaptrisMessageListener aml) {

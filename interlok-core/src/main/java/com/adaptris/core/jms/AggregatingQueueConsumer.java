@@ -20,7 +20,6 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.aggregator.AggregatingConsumerImpl;
@@ -38,9 +37,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * {@link com.adaptris.core.services.aggregator.AggregatingConsumer} implementation that allows you to read a separate message(s) from a queue that need to be aggregated
  * with the current message.
- * <p>
- * The JMS Queue and message selector are created from the generated {@link ConsumeDestination#getDestination()} and
- * {@link ConsumeDestination#getFilterExpression()} respectively.
  * <ul>
  * <li>If the first message is received within the correct timeframe (based on {@link #getTimeout()}), then additional messages are
  * waited for based on the same timeout. Once the timeout expires then all the messages are aggregated using the configured
@@ -78,13 +74,16 @@ public class AggregatingQueueConsumer extends AggregatingConsumerImpl<Aggregatin
 
   @Override
   public void aggregateMessages(AdaptrisMessage msg, AggregatingJmsConsumeService cfg) throws ServiceException {
-    ConsumeDestination dest = getDestination().generate(msg);
+
+    String endpoint = getDestination().getEndpoint(msg);
+    String filterExpression = getDestination().getFilterExpression(msg);
+
     MessageConsumer consumer = null;
     ArrayList<AdaptrisMessage> result = new ArrayList<>();
     try {
       startMessageTranslator(cfg, msg.getFactory());
       consumer = cfg.getConnection().retrieveConnection(JmsConnection.class).configuredVendorImplementation()
-          .createQueueReceiver(dest.getDestination(), dest.getFilterExpression(), cfg);
+          .createQueueReceiver(endpoint, filterExpression, cfg);
       Message first = firstMessage(consumer);
       result.add(getMessageTranslator().translate(first));
       Message next = nextMessage(consumer);
