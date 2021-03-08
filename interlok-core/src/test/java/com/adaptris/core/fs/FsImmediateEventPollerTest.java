@@ -16,13 +16,13 @@
 
 package com.adaptris.core.fs;
 
-import static org.junit.Assert.fail;
-import org.junit.Before;
-import org.junit.Test;
-import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.PollingTrigger;
 import com.adaptris.util.TimeInterval;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.fail;
 
 public class FsImmediateEventPollerTest {
 

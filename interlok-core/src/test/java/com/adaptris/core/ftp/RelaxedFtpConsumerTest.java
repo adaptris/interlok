@@ -16,30 +16,6 @@
 
 package com.adaptris.core.ftp;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.anyObject;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.ArgumentMatchers.matches;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
-import java.io.FileFilter;
-import java.io.OutputStream;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.concurrent.TimeUnit;
-import org.apache.oro.io.GlobFilenameFilter;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.StandaloneConsumer;
@@ -50,6 +26,31 @@ import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.util.TimeInterval;
+import org.apache.oro.io.GlobFilenameFilter;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
+import java.io.FileFilter;
+import java.io.OutputStream;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.anyObject;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.ArgumentMatchers.matches;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 
 @SuppressWarnings("deprecation")
 public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
@@ -57,7 +58,7 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
   private static final String DIR_ROOT = "/";
 
   private RelaxedFtpConsumer consumer;
-  private ConfiguredConsumeDestination consumeDestination;
+  private String consumeDestination;
 
   @Mock private FtpConnection mockFtpConnection;
 
@@ -76,8 +77,8 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
 
     MockitoAnnotations.initMocks(this);
 
-    consumeDestination = new ConfiguredConsumeDestination("myDestination");
-    consumer.setFtpEndpoint(consumeDestination.getDestination());
+    consumeDestination = "myDestination";
+    consumer.setFtpEndpoint(consumeDestination);
     consumer.registerConnection(mockFtpConnection);
 
     consumer.setPoller(new FixedIntervalPoller(new TimeInterval(1L, TimeUnit.SECONDS)));
@@ -89,8 +90,8 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
     standaloneConsumer.setConnection(mockFtpConnection);
 
     when(mockFtpConnection.retrieveConnection(FileTransferConnection.class)).thenReturn(mockFtpConnection);
-    when(mockFtpConnection.connect(consumeDestination.getDestination())).thenReturn(mockFileTransferClient);
-    when(mockFtpConnection.getDirectoryRoot(consumeDestination.getDestination())).thenReturn(DIR_ROOT);
+    when(mockFtpConnection.connect(consumeDestination)).thenReturn(mockFileTransferClient);
+    when(mockFtpConnection.getDirectoryRoot(consumeDestination)).thenReturn(DIR_ROOT);
 
     calendarNow = new GregorianCalendar();
     calendarOneYearAgo = new GregorianCalendar();
@@ -249,7 +250,7 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
 
   @Test
   public void testIncorrectPathConsume() throws Exception {
-    when(mockFtpConnection.connect(consumeDestination.getDestination()))
+    when(mockFtpConnection.connect(consumeDestination))
         .thenThrow(new FileTransferException("testIncorrectPathConsume"));
 
     setFilesToConsume(

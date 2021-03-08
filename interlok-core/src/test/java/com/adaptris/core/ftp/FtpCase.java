@@ -13,24 +13,8 @@
 
 package com.adaptris.core.ftp;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import java.time.Duration;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import org.apache.oro.io.GlobFilenameFilter;
-import org.awaitility.Awaitility;
-import org.junit.After;
-import org.junit.Assume;
-import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.ConfiguredConsumeDestination;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataFileNameCreator;
@@ -42,6 +26,22 @@ import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.TimeInterval;
+import org.apache.oro.io.GlobFilenameFilter;
+import org.awaitility.Awaitility;
+import org.junit.After;
+import org.junit.Assume;
+import org.junit.Test;
+
+import java.time.Duration;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("deprecation")
 public abstract class FtpCase extends FtpConsumerExample {

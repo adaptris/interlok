@@ -15,18 +15,9 @@
 */
 
 package com.adaptris.core.ftp;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import org.apache.oro.io.GlobFilenameFilter;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.ConfiguredConsumeDestination;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataFileNameCreator;
@@ -40,6 +31,16 @@ import com.adaptris.security.password.Password;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.SafeGuidGenerator;
 import com.adaptris.util.TimeInterval;
+import org.apache.oro.io.GlobFilenameFilter;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("deprecation")
 public abstract class RelaxedFtpCase extends FtpConsumerExample {

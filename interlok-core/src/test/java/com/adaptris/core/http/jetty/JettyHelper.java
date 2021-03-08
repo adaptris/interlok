@@ -16,11 +16,9 @@
 
 package com.adaptris.core.http.jetty;
 
-import static com.adaptris.core.http.jetty.HttpConsumerTest.URL_TO_POST_TO;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessageProducer;
 import com.adaptris.core.Channel;
-import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.DefaultEventHandler;
 import com.adaptris.core.EventHandler;
 import com.adaptris.core.NullProcessingExceptionHandler;
@@ -33,6 +31,8 @@ import com.adaptris.core.http.client.net.HttpRequestService;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.interlok.junit.scaffolding.util.PortManager;
+
+import static com.adaptris.core.http.jetty.HttpConsumerTest.URL_TO_POST_TO;
 
 /**
  * @author lchan
