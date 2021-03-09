@@ -9,6 +9,7 @@ ext {
   mysqlDriverVersion='8.0.23'
   slf4jVersion = '1.7.30'
   mockitoVersion = '3.8.0'
+  jschVersion = '0.1.62'
 
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
   classesToTest = project.hasProperty("junit.test.classes") ? project.getProperty("junit.test.classes") : "**/*Test*"
@@ -86,7 +87,7 @@ dependencies {
   compile ("com.sun.mail:jakarta.mail:1.6.5")
   compile ("org.glassfish.external:opendmk_jmxremote_optional_jar:1.0-b01-ea")
   compile ("org.glassfish.external:opendmk_jdmkrt_jar:1.0-b01-ea")
-  compile ("com.jcraft:jsch:0.1.55")
+  compile ("com.github.mwiede:jsch:$jschVersion")
   compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.38.v20210224")
   compile ("javax.servlet:javax.servlet-api:4.0.1")
   compile ("net.sf.joost:joost:0.9.1")
