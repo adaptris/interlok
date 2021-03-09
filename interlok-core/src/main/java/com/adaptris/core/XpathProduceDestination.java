@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,15 +16,6 @@
 
 package com.adaptris.core;
 
-import static com.adaptris.core.util.XmlHelper.createXmlUtils;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.xml.namespace.NamespaceContext;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.Args;
@@ -33,6 +24,17 @@ import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.XmlUtils;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.xml.namespace.NamespaceContext;
+
+import static com.adaptris.core.util.XmlHelper.createXmlUtils;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * <p>
@@ -42,7 +44,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Only the first match for the supplied xpath is used. If the xpath does not return any results, then the default destination is
  * returned.
  * </p>
- * 
+ *
  * @config xpath-produce-destination
  */
 @XStreamAlias("xpath-produce-destination")
@@ -111,9 +113,6 @@ public class XpathProduceDestination implements MessageDrivenDestination {
         .toHashCode();
   }
 
-  /**
-   * @see ProduceDestination#getDestination(com.adaptris.core.AdaptrisMessage)
-   */
   @Override
   public String getDestination(AdaptrisMessage msg) {
     String result = defaultDestination;
@@ -189,7 +188,7 @@ public class XpathProduceDestination implements MessageDrivenDestination {
    * <li>The key is the namespace prefix</li>
    * <li>The value is the namespace uri</li>
    * </ul>
-   * 
+   *
    * @param kvps the namespace context
    * @see SimpleNamespaceContext#create(KeyValuePairSet)
    */

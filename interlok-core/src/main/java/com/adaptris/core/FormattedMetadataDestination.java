@@ -16,23 +16,25 @@
 
 package com.adaptris.core;
 
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.metadata.ElementFormatter;
 import com.adaptris.core.metadata.ElementValueFormatter;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
 /**
- * Implementation of {@link ProduceDestination} that uses {@link String#format(String, Object...)} along with metadata to create a
+ * Implementation of {@link MessageDrivenDestination} that uses {@link String#format(String, Object...)} along with metadata to create a
  * dynamic destination.
  * <p>
  * The following rules will apply when you are constructing your formatted destination
@@ -98,7 +100,7 @@ public class FormattedMetadataDestination implements MessageDrivenDestination {
 
   /**
    * Get the element formatter.
-   * 
+   *
    * @return The element formatter.
    */
   public ElementFormatter getElementFormatter() {
@@ -107,7 +109,7 @@ public class FormattedMetadataDestination implements MessageDrivenDestination {
 
   /**
    * Set the element formatter.
-   * 
+   *
    * @param elementFormatter The element formatter.
    */
   public void setElementFormatter(ElementFormatter elementFormatter) {

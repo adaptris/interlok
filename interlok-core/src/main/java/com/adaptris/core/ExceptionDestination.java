@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,26 +16,25 @@
 
 package com.adaptris.core;
 
-import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION;
-
-import javax.validation.constraints.NotNull;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.Args;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairCollection;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.validation.constraints.NotNull;
+
+import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION;
 
 /**
  * <p>
- * Implementation of {@link ProduceDestination} which matches the Exception class in object metadata to generate a destination
+ * Implementation of {@link MessageDrivenDestination} which matches the Exception class in object metadata to generate a destination
  * string.
  * </p>
- * 
+ *
  * @config exception-destination
  */
 @XStreamAlias("exception-destination")

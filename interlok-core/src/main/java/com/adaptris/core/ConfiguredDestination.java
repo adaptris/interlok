@@ -16,13 +16,13 @@
 
 package com.adaptris.core;
 
-import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * Effectively replaces {@link ConfiguredProduceDestination} because of the introduction of {@link MessageDrivenDestination} to
@@ -48,6 +48,7 @@ public class ConfiguredDestination implements MessageDrivenDestination {
     this.setDestination(s);
   }
 
+  @Override
   public String getDestination(AdaptrisMessage msg) {
     return msg.resolve(destination);
   }
