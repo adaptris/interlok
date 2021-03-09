@@ -15,19 +15,22 @@
 */
 
 package com.adaptris.core;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+
+import com.adaptris.core.metadata.ElementFormatter;
+import com.adaptris.core.metadata.ElementKeyAndValueFormatter;
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.IllegalFormatConversionException;
 import java.util.List;
 import java.util.Set;
-import org.junit.Test;
-import com.adaptris.core.metadata.ElementFormatter;
-import com.adaptris.core.metadata.ElementKeyAndValueFormatter;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class FormattedMetadataDestinationTest
     extends com.adaptris.interlok.junit.scaffolding.ExampleProduceDestinationCase {
@@ -250,7 +253,7 @@ public class FormattedMetadataDestinationTest
   }
 
   @Override
-  protected ProduceDestination createDestinationForExamples() {
+  protected Object createDestinationForExamples() {
     FormattedMetadataDestination input = new FormattedMetadataDestination();
     input.addMetadataKey("metadata_key1");
     input.addMetadataKey("metadata_key2");

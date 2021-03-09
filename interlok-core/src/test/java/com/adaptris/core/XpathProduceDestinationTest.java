@@ -16,15 +16,16 @@
 
 package com.adaptris.core;
 
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
+import com.adaptris.util.KeyValuePair;
+import com.adaptris.util.KeyValuePairSet;
+import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
-import org.junit.Test;
-import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
-import com.adaptris.util.KeyValuePair;
-import com.adaptris.util.KeyValuePairSet;
 
 public class XpathProduceDestinationTest
     extends com.adaptris.interlok.junit.scaffolding.ExampleProduceDestinationCase {
@@ -156,7 +157,7 @@ public class XpathProduceDestinationTest
   }
 
   @Override
-  protected ProduceDestination createDestinationForExamples() {
+  protected Object createDestinationForExamples() {
     XpathProduceDestination dest = new XpathProduceDestination();
     dest.setXpath(DEST_XPATH_WITH_FUNCTION);
     dest.setDefaultDestination("The Default Destination If the XPath does not resolve");

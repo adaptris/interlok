@@ -16,14 +16,16 @@
 
 package com.adaptris.core;
 
+import com.adaptris.util.KeyValuePair;
+import com.adaptris.util.KeyValuePairCollection;
+import org.junit.Test;
+
+import java.io.IOException;
+
 import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import java.io.IOException;
-import org.junit.Test;
-import com.adaptris.util.KeyValuePair;
-import com.adaptris.util.KeyValuePairCollection;
 
 public class ExceptionDestinationTest
     extends com.adaptris.interlok.junit.scaffolding.ExampleProduceDestinationCase {
@@ -118,7 +120,7 @@ public class ExceptionDestinationTest
   }
 
   @Override
-  protected ProduceDestination createDestinationForExamples() {
+  protected Object createDestinationForExamples() {
     ExceptionDestination dest = new ExceptionDestination();
     KeyValuePairCollection kvps = new KeyValuePairCollection();
     kvps.add(new KeyValuePair(CoreException.class.getName(), "The Destination associated with CoreException"));

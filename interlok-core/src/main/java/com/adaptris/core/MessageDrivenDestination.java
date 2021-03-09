@@ -23,6 +23,8 @@ package com.adaptris.core;
  * (e.g. queue name, URL) to be used by <code>AdaptrisMessageProducer</code>.
  * </p>
  */
-public interface MessageDrivenDestination extends ProduceDestination {
+public interface MessageDrivenDestination {
+
+	String getDestination(AdaptrisMessage msg) throws CoreException;
 
 }

@@ -16,24 +16,21 @@
 
 package com.adaptris.core.stubs;
 
-import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
-import java.util.ArrayList;
-import java.util.List;
-import javax.validation.Valid;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageProducerImp;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.MleMarker;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.interlok.util.Args;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.PlainIdGenerator;
-import lombok.Getter;
-import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 
 /**
  * <p>
@@ -50,13 +47,6 @@ public class MockNonStandardRequestReplyProducer extends
   private List producedMessages;
 
   private static IdGenerator uniqueIdGenerator;
-
-  @Getter
-  @Setter
-  @Deprecated
-  @Valid
-  @Removal(version = "4.0.0")
-  private ProduceDestination destination;
 
   static {
     try {

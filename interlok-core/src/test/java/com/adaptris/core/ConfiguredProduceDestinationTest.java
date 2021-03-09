@@ -16,9 +16,10 @@
 
 package com.adaptris.core;
 
+import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import org.junit.Test;
 
 
 public class ConfiguredProduceDestinationTest
@@ -46,7 +47,7 @@ public class ConfiguredProduceDestinationTest
   }
 
   @Override
-  protected ProduceDestination createDestinationForExamples() {
+  protected Object createDestinationForExamples() {
     return new ConfiguredProduceDestination("The_Destination_String");
   }
 

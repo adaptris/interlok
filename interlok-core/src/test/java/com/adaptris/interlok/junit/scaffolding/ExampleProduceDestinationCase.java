@@ -16,7 +16,6 @@
 
 package com.adaptris.interlok.junit.scaffolding;
 
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.stubs.DummyMessageProducer;
 
@@ -50,23 +49,16 @@ public abstract class ExampleProduceDestinationCase extends ExampleConfigGenerat
 
   @Override
   protected Object retrieveObjectForSampleConfig() {
-    return new StandaloneProducer(new DummyMessageProducer(createDestinationForExamples()));
+    return new StandaloneProducer(new DummyMessageProducer());
   }
 
-  protected abstract ProduceDestination createDestinationForExamples();
+  protected abstract Object createDestinationForExamples();
 
   @Override
   protected String getExampleCommentHeader(Object object) {
     return "<!--\n\nThis example simply shows the usage for a particular ProduceDestination;"
         + "\nthe wrapping producer may not be suitable for the destination at all."
         + "\nAs always, check the javadocs for more information." + "\n\n-->\n";
-  }
-
-  @Override
-  @SuppressWarnings("deprecation")
-  protected String createBaseFileName(Object object) {
-    DummyMessageProducer p = (DummyMessageProducer) ((StandaloneProducer) object).getProducer();
-    return p.getDestination().getClass().getCanonicalName();
   }
 
 }

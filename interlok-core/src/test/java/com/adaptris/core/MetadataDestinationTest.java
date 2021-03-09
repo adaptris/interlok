@@ -16,13 +16,15 @@
 
 package com.adaptris.core;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class MetadataDestinationTest
     extends com.adaptris.interlok.junit.scaffolding.ExampleProduceDestinationCase {
@@ -82,7 +84,7 @@ public class MetadataDestinationTest
 
 
   @Override
-  protected ProduceDestination createDestinationForExamples() {
+  protected Object createDestinationForExamples() {
     MetadataDestination input = new MetadataDestination();
     input.addKey("metadata_key1");
     input.addKey("metadata_key2");
