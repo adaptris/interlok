@@ -184,7 +184,6 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
   // not marshalled
   protected transient FileFilter fileFilter;
   protected transient FsWorker fsWorker = new NioWorker();
-  private transient boolean destinationWarningLogged = false;
 
   public FsConsumerImpl() {
     setFileSorter(new NoSorting());
