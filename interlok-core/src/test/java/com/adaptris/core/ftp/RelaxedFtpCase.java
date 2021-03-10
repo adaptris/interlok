@@ -42,7 +42,6 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@SuppressWarnings("deprecation")
 public abstract class RelaxedFtpCase extends FtpConsumerExample {
   private static final TimeInterval DEFAULT_QUIET_PERIOD = new TimeInterval(1L, TimeUnit.SECONDS);
   protected static final String COLON = ":";
@@ -239,7 +238,7 @@ public abstract class RelaxedFtpCase extends FtpConsumerExample {
 
       MockMessageListener listener = new MockMessageListener();
       RelaxedFtpConsumer ftpConsumer = new RelaxedFtpConsumer();
-      ftpConsumer.setFtpEndpoint(getDestinationString());
+      ftpConsumer.setFtpEndpoint(getDestinationStringWithOverride());
       ftpConsumer.setQuietInterval(DEFAULT_QUIET_PERIOD);
       ftpConsumer.registerAdaptrisMessageListener(listener);
       // Pass in a QuartzId so we don't print out the uname+password.
@@ -274,6 +273,7 @@ public abstract class RelaxedFtpCase extends FtpConsumerExample {
 
       ftpConsumer.setFileFilterImp(GlobFilenameFilter.class.getCanonicalName());
       ftpConsumer.registerAdaptrisMessageListener(listener);
+      ftpConsumer.setFilterExpression(".txt");
       ftpConsumer.setPoller(new QuartzCronPoller("*/1 * * * * ?"));
       StandaloneConsumer sc = new StandaloneConsumer(createConnection(), ftpConsumer);
       start(sc);
@@ -331,6 +331,7 @@ public abstract class RelaxedFtpCase extends FtpConsumerExample {
       ftpConsumer.setQuietInterval(DEFAULT_QUIET_PERIOD);
       ftpConsumer.setFileFilterImp(GlobFilenameFilter.class.getCanonicalName());
       ftpConsumer.registerAdaptrisMessageListener(listener);
+      ftpConsumer.setFilterExpression(".xml");
       ftpConsumer.setPoller(new QuartzCronPoller("*/1 * * * * ?"));
       StandaloneConsumer sc = new StandaloneConsumer(createConnection(), ftpConsumer);
 

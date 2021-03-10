@@ -52,7 +52,6 @@ import static org.mockito.ArgumentMatchers.matches;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
-@SuppressWarnings("deprecation")
 public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
 
   private static final String DIR_ROOT = "/";
@@ -308,7 +307,6 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
   @Test
   public void testWithIncorrectFilterConsume() throws Exception {
     consumer.setFtpEndpoint("myDestination");
-    consumer.setFileFilterImp("myFilter");
     consumer.setFileFilterImp("xxx");
 
     try {

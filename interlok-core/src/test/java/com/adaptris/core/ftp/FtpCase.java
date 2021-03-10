@@ -43,7 +43,6 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-@SuppressWarnings("deprecation")
 public abstract class FtpCase extends FtpConsumerExample {
 
   public static final String DEFAULT_WORK_DIR = "/work";
@@ -168,7 +167,7 @@ public abstract class FtpCase extends FtpConsumerExample {
 
     MockMessageListener listener = new MockMessageListener();
     FtpConsumer ftpConsumer = new FtpConsumer();
-    ftpConsumer.setFtpEndpoint(getDestinationString());
+    ftpConsumer.setFtpEndpoint(getDestinationStringWithOverride());
     ftpConsumer.setWorkDirectory(DEFAULT_WORK_DIR);
     ftpConsumer.registerAdaptrisMessageListener(listener);
     // Pass in a QuartzId so we don't print out the uname+password.
@@ -197,6 +196,7 @@ public abstract class FtpCase extends FtpConsumerExample {
     ftpConsumer.setFtpEndpoint(getDestinationString());
     ftpConsumer.setWorkDirectory(DEFAULT_WORK_DIR);
     ftpConsumer.setFileFilterImp(GlobFilenameFilter.class.getCanonicalName());
+    ftpConsumer.setFilterExpression(".txt");
     ftpConsumer.registerAdaptrisMessageListener(listener);
     ftpConsumer.setPoller(new QuartzCronPoller("*/1 * * * * ?"));
     StandaloneConsumer sc = new StandaloneConsumer(createConnection(), ftpConsumer);
@@ -253,6 +253,7 @@ public abstract class FtpCase extends FtpConsumerExample {
     ftpConsumer.setWorkDirectory(DEFAULT_WORK_DIR);
     ftpConsumer.setFileFilterImp(GlobFilenameFilter.class.getCanonicalName());
     ftpConsumer.registerAdaptrisMessageListener(listener);
+    ftpConsumer.setFilterExpression(".xml");
     ftpConsumer.setPoller(new QuartzCronPoller("*/1 * * * * ?"));
     StandaloneConsumer sc = new StandaloneConsumer(createConnection(), ftpConsumer);
 
