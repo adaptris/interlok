@@ -17,12 +17,16 @@
 package com.adaptris.core;
 
 
+import com.adaptris.annotation.Removal;
+
 /**
  * <p>
  * Implementations of this interface return a <code>String</code> destination
  * (e.g. queue name, URL) to be used by <code>AdaptrisMessageProducer</code>.
  * </p>
  */
+@Deprecated
+@Removal(version = "5.0.0", message = "To be removed as part of the ongoing removal of Destination objects")
 public interface MessageDrivenDestination {
 
 	String getDestination(AdaptrisMessage msg) throws CoreException;

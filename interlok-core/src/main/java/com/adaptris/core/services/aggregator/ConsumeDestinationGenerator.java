@@ -16,8 +16,11 @@
 
 package com.adaptris.core.services.aggregator;
 
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 
+@Deprecated
+@Removal(version = "5.0.0", message = "To be removed as part of the ongoing removal of Destination objects")
 public interface ConsumeDestinationGenerator {
 
   String getEndpoint(AdaptrisMessage msg);
