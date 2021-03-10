@@ -20,7 +20,6 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumer;
-import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.AdaptrisPollingConsumer;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -116,7 +115,6 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
 
   protected transient FileFilter fileFilter;
   protected transient FileTransferClient ftpClient = null;
-  private transient boolean destinationWarningLogged = false;
 
   public FtpConsumerImpl() {
     setReacquireLockBetweenMessages(true);

@@ -85,7 +85,6 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
   private transient Servlet jettyServlet;
   private transient ServletWrapper servletWrapper = null;
   private transient List<String> acceptedMethods = new ArrayList<>(HTTP_METHODS);
-  private transient boolean destinationWarningLogged = false;
 
   @InputFieldDefault(value = "false")
   @AdvancedConfig

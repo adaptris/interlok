@@ -178,8 +178,6 @@ public class FtpProducer extends RequestReplyProducerImp {
   @Setter
   @NotBlank
   private String ftpEndpoint;
-  private transient boolean destWarning;
-  private transient boolean requestReplyWarning;
 
 
   /**
