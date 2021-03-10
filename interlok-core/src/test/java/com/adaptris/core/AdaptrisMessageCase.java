@@ -620,6 +620,7 @@ public abstract class AdaptrisMessageCase {
     assertEquals(this, msg.resolveObject("%messageObject{%message{key1}}"));
     assertNull(msg.resolveObject("%messageObject{does_not_exist}"));
     assertEquals(this, msg.resolveObject(VAL1));
+    assertNull(msg.resolveObject(null));
   }
 
   // INTERLOK-1949 - resolve() should work with MetadataResolver...
