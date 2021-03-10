@@ -47,7 +47,7 @@ import lombok.Setter;
 @AdapterComponent
 @ComponentProfile(summary = "Listen for JMS messages on the specified topic", tag = "consumer,jms",
 recommended = {JmsConnection.class})
-@DisplayOrder(order = {"topic", "messageSelector", "destination", "durable",
+@DisplayOrder(order = {"topic", "messageSelector", "durable",
     "subscriptionId", "acknowledgeMode", "messageTranslator"})
 @NoArgsConstructor
 public class PasConsumer extends JmsConsumerImpl {

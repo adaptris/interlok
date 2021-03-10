@@ -69,8 +69,7 @@ import lombok.Setter;
 @ComponentProfile(summary = "Listen for JMS messages on the specified queue or topic", tag = "consumer,jms",
 recommended = {JmsConnection.class})
 @DisplayOrder(
-    order = {"endpoint", "messageSelector", "destination", "acknowledgeMode",
-    "messageTranslator"})
+    order = {"endpoint", "messageSelector", "acknowledgeMode", "messageTranslator"})
 @NoArgsConstructor
 public class JmsConsumer extends JmsConsumerImpl {
 
