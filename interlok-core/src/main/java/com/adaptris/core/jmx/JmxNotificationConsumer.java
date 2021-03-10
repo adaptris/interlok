@@ -174,7 +174,7 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
    * Whether or not to fail if the ObjectName is not found.
    * <p>
    * If set to false, and the object is not found, then an attempt will be made periodically to check the MBeanServeConnection for
-   * the object instance availability; when it becomes available, the notificaiton listener will be added at that point.
+   * the object instance availability; when it becomes available, the notification listener will be added at that point.
    * </p>
    *
    *

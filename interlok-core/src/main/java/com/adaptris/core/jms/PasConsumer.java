@@ -16,12 +16,6 @@
 
 package com.adaptris.core.jms;
 
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.NotBlank;
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -34,6 +28,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.jms.JMSException;
+import javax.jms.MessageConsumer;
+import javax.validation.constraints.NotBlank;
 
 /**
  * <p>
