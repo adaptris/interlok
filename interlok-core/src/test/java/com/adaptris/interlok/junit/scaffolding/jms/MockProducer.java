@@ -1,9 +1,5 @@
 package com.adaptris.interlok.junit.scaffolding.jms;
 
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Message;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceException;
