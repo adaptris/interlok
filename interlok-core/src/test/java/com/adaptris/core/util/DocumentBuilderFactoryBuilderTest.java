@@ -16,6 +16,7 @@
 package com.adaptris.core.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
@@ -52,26 +53,71 @@ public class DocumentBuilderFactoryBuilderTest {
   public void tearDown() throws Exception {}
 
   @Test
-  public void testNewInstance() {
+  public void testNewLenientInstance() throws Exception {
+    DocumentBuilderFactoryBuilder b = DocumentBuilderFactoryBuilder.newLenientInstance();
+    assertNotNull(b.getFeatures());
+    assertEquals(1, b.getFeatures().size());
+    assertTrue(b.getNamespaceAware());
+    assertTrue(b.getExpandEntityReferences());
+
+    assertEquals(b, DocumentBuilderFactoryBuilder.newLenientInstanceIfNull(b));
+    assertNotSame(b, DocumentBuilderFactoryBuilder.newLenientInstanceIfNull(null));
+
+    DocumentBuilderFactory f = b.build();
+    assertFalse(f.isCoalescing());
+    assertTrue(f.isExpandEntityReferences());
+    assertFalse(f.isIgnoringComments());
+    assertFalse(f.isIgnoringElementContentWhitespace());
+    assertFalse(f.isValidating());
+    assertTrue(f.isNamespaceAware());
+    assertFalse(f.isXIncludeAware());
+    assertFalse(f.getFeature(DISALLOW_DOCTYPE));
+
+  }
+
+
+  @Test
+  public void testNewInstance() throws Exception {
     DocumentBuilderFactoryBuilder b = DocumentBuilderFactoryBuilder.newInstance();
     assertNotNull(b.getFeatures());
-    assertEquals(0, b.getFeatures().size());
+    assertEquals(1, b.getFeatures().size());
     assertEquals(true, b.getNamespaceAware());
+    assertEquals(false, b.getExpandEntityReferences());
 
     assertEquals(b, DocumentBuilderFactoryBuilder.newInstanceIfNull(b));
     assertNotSame(b, DocumentBuilderFactoryBuilder.newInstanceIfNull(null));
+
+    DocumentBuilderFactory f = b.build();
+    assertFalse(f.isCoalescing());
+    assertFalse(f.isExpandEntityReferences());
+    assertFalse(f.isIgnoringComments());
+    assertFalse(f.isIgnoringElementContentWhitespace());
+    assertFalse(f.isValidating());
+    assertTrue(f.isNamespaceAware());
+    assertFalse(f.isXIncludeAware());
+    assertTrue(f.getFeature(DISALLOW_DOCTYPE));
   }
 
   @Test
-  public void testNewRestrictedInstance() {
+  public void testNewRestrictedInstance() throws Exception {
     DocumentBuilderFactoryBuilder b = DocumentBuilderFactoryBuilder.newRestrictedInstance();
     assertNotNull(b.getFeatures());
     assertEquals(1, b.getFeatures().size());
-    assertNotNull(b.getFeatures().getKeyValuePair(DocumentBuilderFactoryBuilder.DISABLE_DOCTYP));
+    assertNotNull(b.getFeatures().getKeyValuePair(DocumentBuilderFactoryBuilder.DISABLE_DOCTYPE));
     assertEquals(true, b.getNamespaceAware());
     assertEquals(false, b.getExpandEntityReferences());
     assertEquals(b, DocumentBuilderFactoryBuilder.newRestrictedInstanceIfNull(b));
     assertNotSame(b, DocumentBuilderFactoryBuilder.newRestrictedInstanceIfNull(null));
+
+    DocumentBuilderFactory f = b.build();
+    assertFalse(f.isCoalescing());
+    assertFalse(f.isExpandEntityReferences());
+    assertFalse(f.isIgnoringComments());
+    assertFalse(f.isIgnoringElementContentWhitespace());
+    assertFalse(f.isValidating());
+    assertTrue(f.isNamespaceAware());
+    assertFalse(f.isXIncludeAware());
+    assertTrue(f.getFeature(DISALLOW_DOCTYPE));
   }
 
   @Test
@@ -117,12 +163,13 @@ public class DocumentBuilderFactoryBuilderTest {
     assertTrue(DocumentBuilderFactory.class.isAssignableFrom(b.build().getClass()));
     DocumentBuilderFactory f = b.build();
     assertEquals(false, f.isCoalescing());
-    assertEquals(true, f.isExpandEntityReferences());
+    assertEquals(false, f.isExpandEntityReferences());
     assertEquals(false, f.isIgnoringComments());
     assertEquals(false, f.isIgnoringElementContentWhitespace());
     assertEquals(false, f.isValidating());
     assertEquals(true, f.isNamespaceAware());
     assertEquals(false, f.isXIncludeAware());
+    assertEquals(true, f.getFeature(DISALLOW_DOCTYPE));
   }
 
   @Test

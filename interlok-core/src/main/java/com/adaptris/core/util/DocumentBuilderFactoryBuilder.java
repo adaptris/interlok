@@ -13,6 +13,7 @@ import org.xml.sax.EntityResolver;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -24,13 +25,25 @@ import lombok.Setter;
  * Allows simple configuration of a {@link DocumentBuilderFactory}.
  *
  * <p>
- * Note that unless explicitly specified then the corresponding {@link DocumentBuilderFactory} will
- * not have its corresponding setter called.
+ * For security reasons the default behaviour is to mitigate against XXE attacks and the like. It is
+ * still possible to explicitly configure whatever behaviour is required, but we no longer rely on
+ * the underlying {@code DocumentBuilderFactory} defaults. As a result the vanilla configuration for
+ * a {@code DocumentBuilderFactory} that is created by this class will have the following defaults:
+ * <ul>
+ * <li>expandEntityReferences will be set to false if not otherwise specified</li>
+ * <li>The feature {@value #DISABLE_DOCTYP} will be automatically set to true if not otherwise
+ * specified</li>
+ * </ul>
+ * </p>
+ * <p>
+ * Note that the static convenience methods have also been modified to reflect this behaviour. There
+ * are the two new {@link #newLenientInstance()} and
+ * {@link #newLenientInstanceIfNull(DocumentBuilderFactoryBuilder)} methods if the more secure
+ * default is not appropriate.
  * </p>
  *
- * @config xml-document-builder-configuration
- * @author lchan
  *
+ * @config xml-document-builder-configuration
  */
 @XStreamAlias("xml-document-builder-configuration")
 @DisplayOrder(
@@ -38,7 +51,8 @@ order = {"validating", "namespaceAware", "xincludeAware", "expandEntityReference
     "ignoreWhitespace", "features"})
 public class DocumentBuilderFactoryBuilder {
 
-  public static final String DISABLE_DOCTYP =
+
+  public static final String DISABLE_DOCTYPE =
       "http://apache.org/xml/features/disallow-doctype-decl";
 
   /**
@@ -47,6 +61,9 @@ public class DocumentBuilderFactoryBuilder {
    * No validation of the features is done and are passed as-is through to the underlying
    * DocumentBuilderFactory.
    * </p>
+   *
+   * @since 4.0 By default the XML Feature {@value #DISABLE_DOCTYP} will be set to true to disable
+   *        doctype declarations.
    */
   @NotNull
   @AutoPopulated
@@ -80,10 +97,13 @@ public class DocumentBuilderFactoryBuilder {
   @Setter
   private Boolean ignoreWhitespace;
   /**
-   * Calls {@link DocumentBuilderFactory#setExpandEntityReferences(boolean)} if non-null
+   * Wraps {@link DocumentBuilderFactory#setExpandEntityReferences(boolean)}.
    *
+   * @since 4.0 If not specified, then the default is 'false' so that we mitigate against XXE
+   *        attacks when parsing XML.
    */
   @AdvancedConfig
+  @InputFieldDefault(value = "false")
   @Getter
   @Setter
   private Boolean expandEntityReferences;
@@ -154,6 +174,9 @@ public class DocumentBuilderFactoryBuilder {
 
       @Override
       void applyConfig(DocumentBuilderFactoryBuilder b, DocumentBuilderFactory f) throws ParserConfigurationException {
+        // INTERLOK-3573
+        // Default expand entity ref to false, and then override.
+        f.setExpandEntityReferences(false);
         if (b.getExpandEntityReferences() != null) {
           f.setExpandEntityReferences(b.getExpandEntityReferences());
         }
@@ -193,6 +216,9 @@ public class DocumentBuilderFactoryBuilder {
 
       @Override
       void applyConfig(DocumentBuilderFactoryBuilder b, DocumentBuilderFactory f) throws ParserConfigurationException {
+        // INTERLOK-3573
+        // Disable DOCTYPS, and then override.
+        f.setFeature(DISABLE_DOCTYPE, true);
         for (KeyValuePair entry : b.getFeatures()) {
           f.setFeature(entry.getKey(), BooleanUtils.toBoolean(entry.getValue()));
         }
@@ -208,10 +234,11 @@ public class DocumentBuilderFactoryBuilder {
   /**
    * Create a new instance that is namespace aware.
    *
-   * @return a new instance.
+   *
+   * @return a new instance which is basically the same as {@link #newRestrictedInstance()}.
    */
   public static final DocumentBuilderFactoryBuilder newInstance() {
-    return new DocumentBuilderFactoryBuilder().withNamespaceAware(true);
+    return newRestrictedInstance();
   }
 
   /**
@@ -223,22 +250,68 @@ public class DocumentBuilderFactoryBuilder {
    */
   public static final DocumentBuilderFactoryBuilder newRestrictedInstance() {
     return new DocumentBuilderFactoryBuilder().withNamespaceAware(true).withExpandEntityReferences(false)
-        .addFeature(DISABLE_DOCTYP, Boolean.TRUE);
+        .addFeature(DISABLE_DOCTYPE, Boolean.TRUE);
   }
 
+  /**
+   * Return a DocumentBuilderFactoryBuilder instance that explicitly does not mitigate against XXE
+   * and is also namespace aware.
+   *
+   * <p>
+   * This is included for completeness, it's not expected that you'll want to use this, however if
+   * you were using {@link #newInstance()} and you don't like the new defaults then well, here it
+   * is.
+   * </p>
+   *
+   * @return a new instance
+   */
+  public static final DocumentBuilderFactoryBuilder newLenientInstance() {
+    return new DocumentBuilderFactoryBuilder().withNamespaceAware(true)
+        .withExpandEntityReferences(true).addFeature(DISABLE_DOCTYPE, Boolean.FALSE);
+  }
+
+
+  /**
+   * Convenient method to create a new default instance if required.
+   *
+   * @param b an existing configured DocumentBuilderFactoryBuilder, if null, then
+   *        {@link #newInstance()} is used.
+   *
+   * @return a DocumentBuilderFactoryBuilder instance.
+   */
   public static final DocumentBuilderFactoryBuilder newInstanceIfNull(DocumentBuilderFactoryBuilder b) {
     return ObjectUtils.defaultIfNull(b, newInstance());
   }
 
+  /**
+   * Convenient method to create a new default instance if required.
+   *
+   * @param b an existing configured DocumentBuilderFactoryBuilder, if null, then
+   *        {@link #newRestrictedInstance()} is used.
+   *
+   * @return a DocumentBuilderFactoryBuilder instance.
+   */
   public static final DocumentBuilderFactoryBuilder newRestrictedInstanceIfNull(DocumentBuilderFactoryBuilder b) {
     return ObjectUtils.defaultIfNull(b, newRestrictedInstance());
+  }
+
+  /**
+   * Convenient method to create a new default instance if required.
+   *
+   * @param b an existing configured DocumentBuilderFactoryBuilder, if null, then
+   *        {@link #newLenientInstance()()} is used.
+   *
+   * @return a DocumentBuilderFactoryBuilder instance.
+   */
+  public static final DocumentBuilderFactoryBuilder newLenientInstanceIfNull(DocumentBuilderFactoryBuilder b) {
+    return ObjectUtils.defaultIfNull(b, newLenientInstance());
   }
 
   public static final DocumentBuilderFactoryBuilder newInstanceIfNull(DocumentBuilderFactoryBuilder b, NamespaceContext ctx) {
     if (b != null) {
       return b;
     }
-    return ctx == null ? newInstance() : newInstance().withNamespaceAware(true);
+    return ctx == null ? newRestrictedInstance() : newRestrictedInstance().withNamespaceAware(true);
   }
 
 
