@@ -42,6 +42,7 @@ import javax.management.Notification;
 import javax.management.NotificationListener;
 import javax.management.ObjectName;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.concurrent.Executors;
@@ -74,6 +75,7 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
    */
   @Getter
   @Setter
+  @NotBlank
   private String objectName;
 
   private transient MBeanServerConnection connection;
