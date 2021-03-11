@@ -103,7 +103,7 @@ public class DocumentBuilderFactoryBuilderTest {
     DocumentBuilderFactoryBuilder b = DocumentBuilderFactoryBuilder.newRestrictedInstance();
     assertNotNull(b.getFeatures());
     assertEquals(1, b.getFeatures().size());
-    assertNotNull(b.getFeatures().getKeyValuePair(DocumentBuilderFactoryBuilder.DISABLE_DOCTYP));
+    assertNotNull(b.getFeatures().getKeyValuePair(DocumentBuilderFactoryBuilder.DISABLE_DOCTYPE));
     assertEquals(true, b.getNamespaceAware());
     assertEquals(false, b.getExpandEntityReferences());
     assertEquals(b, DocumentBuilderFactoryBuilder.newRestrictedInstanceIfNull(b));

@@ -51,7 +51,8 @@ order = {"validating", "namespaceAware", "xincludeAware", "expandEntityReference
     "ignoreWhitespace", "features"})
 public class DocumentBuilderFactoryBuilder {
 
-  public static final String DISABLE_DOCTYP =
+
+  public static final String DISABLE_DOCTYPE =
       "http://apache.org/xml/features/disallow-doctype-decl";
 
   /**
@@ -217,7 +218,7 @@ public class DocumentBuilderFactoryBuilder {
       void applyConfig(DocumentBuilderFactoryBuilder b, DocumentBuilderFactory f) throws ParserConfigurationException {
         // INTERLOK-3573
         // Disable DOCTYPS, and then override.
-        f.setFeature(DISABLE_DOCTYP, true);
+        f.setFeature(DISABLE_DOCTYPE, true);
         for (KeyValuePair entry : b.getFeatures()) {
           f.setFeature(entry.getKey(), BooleanUtils.toBoolean(entry.getValue()));
         }
@@ -249,7 +250,7 @@ public class DocumentBuilderFactoryBuilder {
    */
   public static final DocumentBuilderFactoryBuilder newRestrictedInstance() {
     return new DocumentBuilderFactoryBuilder().withNamespaceAware(true).withExpandEntityReferences(false)
-        .addFeature(DISABLE_DOCTYP, Boolean.TRUE);
+        .addFeature(DISABLE_DOCTYPE, Boolean.TRUE);
   }
 
   /**
@@ -266,7 +267,7 @@ public class DocumentBuilderFactoryBuilder {
    */
   public static final DocumentBuilderFactoryBuilder newLenientInstance() {
     return new DocumentBuilderFactoryBuilder().withNamespaceAware(true)
-        .withExpandEntityReferences(true).addFeature(DISABLE_DOCTYP, Boolean.FALSE);
+        .withExpandEntityReferences(true).addFeature(DISABLE_DOCTYPE, Boolean.FALSE);
   }
 
 
