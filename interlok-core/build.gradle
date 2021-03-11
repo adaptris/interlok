@@ -117,7 +117,7 @@ dependencies {
   testCompile ("org.apache.activemq.protobuf:activemq-protobuf:1.1")
 
   testCompile ("org.jruby:jruby-complete:9.2.16.0")
-  testCompile ("org.mockftpserver:MockFtpServer:2.7.1")
+  testCompile ("org.mockftpserver:MockFtpServer:2.8.0")
   testCompile ("org.mockito:mockito-core:$mockitoVersion")
   testCompile ("org.mockito:mockito-inline:$mockitoVersion")
   testCompile("net.sourceforge.jtds:jtds:1.3.1")
