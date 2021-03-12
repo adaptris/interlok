@@ -25,7 +25,6 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.aggregator.AggregatingConsumerImpl;
-import com.adaptris.core.services.aggregator.ConsumeDestinationGenerator;
 import com.adaptris.fs.FsWorker;
 import com.adaptris.fs.NioWorker;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -46,11 +45,6 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 /**
  * {@link com.adaptris.core.services.aggregator.AggregatingConsumer} implementation that allows you to read a separate message from
  * the filesystem that is correlated in some way to the current message.
- * <p>
- * You need to configure a {@link ConsumeDestinationGenerator} implementation; which is subsequently used to generate the fully
- * qualified URL to the destination message e.g. <code>file:///C:/path/to/correlated/message</code>. If the file does not exist, is
- * inaccessible or not a file, then an exception is thrown.
- * </p>
  * <p>
  * If a filter-expression is available, then this works as a true aggregator; it will
  * trigger the use of a FileFilter, and ultimately cause multiple files to be read and passed to the configured message aggregator.
@@ -82,21 +76,18 @@ public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFs
 
   private transient FsWorker fsWorker = new NioWorker();
 
-  public AggregatingFsConsumer() {
-
-  }
-
-  public AggregatingFsConsumer(ConsumeDestinationGenerator d) {
-    this();
-    setDestination(d);
-  }
 
   @Override
   public void aggregateMessages(AdaptrisMessage msg, AggregatingFsConsumeService service) throws ServiceException {
 
-    String endpoint = getDestination().getEndpoint(msg);
-    String filterExpression = getDestination().getFilterExpression(msg);
-
+    String endpoint = getEndpoint();
+    if (endpoint != null) {
+      endpoint = msg.resolveObject(endpoint).toString();
+    }
+    String filterExpression = getFilterExpression();
+    if (filterExpression != null) {
+      filterExpression = msg.resolveObject(filterExpression).toString();
+    }
 
     List<AdaptrisMessage> result = new ArrayList<>();
     try {

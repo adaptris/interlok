@@ -27,7 +27,6 @@ import com.adaptris.core.CoreConstants;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.services.aggregator.AggregatingConsumerImpl;
-import com.adaptris.core.services.aggregator.ConsumeDestinationGenerator;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -44,11 +43,6 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 /**
  * {@link com.adaptris.core.services.aggregator.AggregatingConsumer} implementation that allows you to read a separate message from
  * an FTP filesystem that is correlated in some way to the current message.
- * <p>
- * You need to configure a {@link ConsumeDestinationGenerator} implementation; which is subsequently used to generate the fully
- * qualified URL to the destination message e.g. {@code ftp://localhost:22///path/to/correlated/message}. If the file does not
- * exist, is inaccessible or not a file, then an exception is thrown.
- * </p>
  * <p>
  * If a filter-expression of the generated is available, then this works as a true aggregator; it will
  * trigger the use of a FileFilter, and ultimately cause multiple files to be read and passed to the configured message aggregator.
@@ -79,20 +73,17 @@ public class AggregatingFtpConsumer extends AggregatingConsumerImpl<AggregatingF
   @AdvancedConfig
   private AdaptrisMessageEncoder encoder;
 
-  public AggregatingFtpConsumer() {
-
-  }
-
-  public AggregatingFtpConsumer(ConsumeDestinationGenerator d) {
-    this();
-    setDestination(d);
-  }
-
   @Override
   public void aggregateMessages(AdaptrisMessage msg, AggregatingFtpConsumeService service) throws ServiceException {
 
-    String endpoint = getDestination().getEndpoint(msg);
-    String filterExpression = getDestination().getFilterExpression(msg);
+    String endpoint = getEndpoint();
+    if (endpoint != null) {
+      endpoint = msg.resolveObject(endpoint).toString();
+    }
+    String filterExpression = getFilterExpression();
+    if (filterExpression != null) {
+      filterExpression = msg.resolveObject(filterExpression).toString();
+    }
 
     ConfigWrapper cfg = new ConfigWrapper(service.getConnection().retrieveConnection(FileTransferConnection.class), endpoint, filterExpression);
     try {

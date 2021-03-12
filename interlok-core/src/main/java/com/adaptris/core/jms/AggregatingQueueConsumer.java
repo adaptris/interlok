@@ -23,7 +23,6 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.aggregator.AggregatingConsumerImpl;
-import com.adaptris.core.services.aggregator.ConsumeDestinationGenerator;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -67,16 +66,17 @@ public class AggregatingQueueConsumer extends AggregatingConsumerImpl<Aggregatin
     setMessageTranslator(new AutoConvertMessageTranslator());
   }
 
-  public AggregatingQueueConsumer(ConsumeDestinationGenerator d) {
-    this();
-    setDestination(d);
-  }
-
   @Override
   public void aggregateMessages(AdaptrisMessage msg, AggregatingJmsConsumeService cfg) throws ServiceException {
 
-    String endpoint = getDestination().getEndpoint(msg);
-    String filterExpression = getDestination().getFilterExpression(msg);
+    String endpoint = getEndpoint();
+    if (endpoint != null) {
+      endpoint = msg.resolveObject(endpoint).toString();
+    }
+    String filterExpression = getFilterExpression();
+    if (filterExpression != null) {
+      filterExpression = msg.resolveObject(filterExpression).toString();
+    }
 
     MessageConsumer consumer = null;
     ArrayList<AdaptrisMessage> result = new ArrayList<>();

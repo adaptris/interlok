@@ -16,16 +16,20 @@
 
 package com.adaptris.core.services.aggregator;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
+import lombok.Getter;
+import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 
 /**
@@ -41,12 +45,16 @@ public abstract class AggregatingConsumerImpl<E extends AggregatingConsumeServic
   @NotNull
   @Valid
   private MessageAggregator messageAggregator;
-  @NotNull
-  @Valid
-  private ConsumeDestinationGenerator destination;
-  
-  public AggregatingConsumerImpl() {
-  }
+
+  @NotBlank
+  @Getter
+  @Setter
+  private String endpoint;
+
+  @NotBlank
+  @Getter
+  @Setter
+  private String filterExpression;
 
   /**
    * @return the messageHandler
@@ -67,7 +75,6 @@ public abstract class AggregatingConsumerImpl<E extends AggregatingConsumeServic
   @Override
   public void init() throws CoreException {
     try {
-      Args.notNull(getDestination(), "destination");
       Args.notNull(getMessageAggregator(), "messageAggregator");
     }
     catch (Exception e) {
@@ -86,19 +93,6 @@ public abstract class AggregatingConsumerImpl<E extends AggregatingConsumeServic
 
   @Override
   public void close() {
-  }
-
-  public ConsumeDestinationGenerator getDestination() {
-    return destination;
-  }
-
-  /**
-   * Set the destination generator.
-   * 
-   * @param cd the destination generator.
-   */
-  public void setDestination(ConsumeDestinationGenerator cd) {
-    this.destination = Args.notNull(cd, "destination");
   }
 
   protected static void rethrowServiceException(Exception e) throws ServiceException {

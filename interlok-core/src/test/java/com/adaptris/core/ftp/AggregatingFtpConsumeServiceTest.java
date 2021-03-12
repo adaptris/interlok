@@ -16,24 +16,11 @@
 
 package com.adaptris.core.ftp;
 
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_FILENAME;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_PASSWORD;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_USERNAME;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_WORK_DIR_CANONICAL;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.PAYLOAD;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.SLASH;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import org.junit.Test;
-import org.mockftpserver.fake.FakeFtpServer;
-import org.mockftpserver.fake.filesystem.FileSystem;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.aggregator.AggregatingServiceExample;
-import com.adaptris.core.services.aggregator.ConsumeDestinationFromMetadata;
-import com.adaptris.core.services.aggregator.ConsumeDestinationGenerator;
 import com.adaptris.core.services.aggregator.IgnoreOriginalMimeAggregator;
 import com.adaptris.core.services.aggregator.MessageAggregator;
 import com.adaptris.core.services.aggregator.ReplaceWithFirstMessage;
@@ -42,6 +29,18 @@ import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.MimeHelper;
 import com.adaptris.util.text.mime.BodyPartIterator;
+import org.junit.Test;
+import org.mockftpserver.fake.FakeFtpServer;
+import org.mockftpserver.fake.filesystem.FileSystem;
+
+import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_FILENAME;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_PASSWORD;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_USERNAME;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_WORK_DIR_CANONICAL;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.PAYLOAD;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.SLASH;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class AggregatingFtpConsumeServiceTest extends AggregatingServiceExample {
 
@@ -78,7 +77,7 @@ public class AggregatingFtpConsumeServiceTest extends AggregatingServiceExample 
 
     }
     service = new AggregatingFtpConsumeService(new FtpConnection(),
-        createConsumer(createConsumeDestination("ftp://localhost/work", null), new ReplaceWithFirstMessage()));
+        createConsumer("ftp://localhost/work", null, new ReplaceWithFirstMessage()));
     LifecycleHelper.prepare(service);
     LifecycleHelper.init(service);
     LifecycleHelper.close(service);
@@ -96,9 +95,8 @@ public class AggregatingFtpConsumeServiceTest extends AggregatingServiceExample 
       // should be ftp://localhost/home/user/work/file0 which is created when you
       // create the filesystem.
       String ftpConsumeUrl = "ftp://localhost" + DEFAULT_WORK_DIR_CANONICAL + SLASH + DEFAULT_FILENAME + 0;
-      ConsumeDestinationFromMetadata dest = createConsumeDestination(ftpConsumeUrl, null);
       FtpConnection conn = createConnection(server);
-      AggregatingFtpConsumer consumer = createConsumer(dest, new ReplaceWithFirstMessage());
+      AggregatingFtpConsumer consumer = createConsumer(ftpConsumeUrl, null, new ReplaceWithFirstMessage());
       AggregatingFtpConsumeService service = new AggregatingFtpConsumeService(conn, consumer);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
       execute(service, msg);
@@ -120,9 +118,8 @@ public class AggregatingFtpConsumeServiceTest extends AggregatingServiceExample 
       // should be ftp://localhost/home/user/work/file0 which is created when you
       // create the filesystem.
       String ftpConsumeUrl = "ftp://localhost" + DEFAULT_WORK_DIR_CANONICAL + SLASH + DEFAULT_FILENAME + 0;
-      ConsumeDestinationFromMetadata dest = createConsumeDestination(ftpConsumeUrl, null);
       FtpConnection conn = createConnection(server);
-      AggregatingFtpConsumer consumer = createConsumer(dest, new ReplaceWithFirstMessage());
+      AggregatingFtpConsumer consumer = createConsumer(ftpConsumeUrl, null, new ReplaceWithFirstMessage());
       AggregatingFtpConsumeService service = new AggregatingFtpConsumeService(conn, consumer);
       AdaptrisMessage msg = new DefectiveMessageFactory().newMessage();
       try {
@@ -150,10 +147,9 @@ public class AggregatingFtpConsumeServiceTest extends AggregatingServiceExample 
       // should be ftp://localhost/home/user/work/file0 which is created when you
       // create the filesystem.
       String ftpConsumeUrl = "ftp://localhost" + DEFAULT_WORK_DIR_CANONICAL + SLASH + DEFAULT_FILENAME + 0;
-      ConsumeDestinationFromMetadata dest = createConsumeDestination(ftpConsumeUrl, null);
       FtpConnection conn = createConnection(server);
       conn.setAdditionalDebug(false);
-      AggregatingFtpConsumer consumer = createConsumer(dest, new ReplaceWithFirstMessage());
+      AggregatingFtpConsumer consumer = createConsumer(ftpConsumeUrl, null, new ReplaceWithFirstMessage());
       consumer.setDeleteAggregatedFiles(Boolean.FALSE);
       AggregatingFtpConsumeService service = new AggregatingFtpConsumeService(conn, consumer);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -179,9 +175,8 @@ public class AggregatingFtpConsumeServiceTest extends AggregatingServiceExample 
       // should be ftp://localhost/home/user/work/ which is created when you
       // create the filesystem.
       String ftpConsumeUrl = "ftp://localhost" + DEFAULT_WORK_DIR_CANONICAL;
-      ConsumeDestinationFromMetadata dest = createConsumeDestination(ftpConsumeUrl, ".*");
       FtpConnection conn = createConnection(server);
-      AggregatingFtpConsumer consumer = createConsumer(dest, new IgnoreOriginalMimeAggregator());
+      AggregatingFtpConsumer consumer = createConsumer(ftpConsumeUrl, ".*", new IgnoreOriginalMimeAggregator());
       AggregatingFtpConsumeService service = new AggregatingFtpConsumeService(conn, consumer);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
       execute(service, msg);
@@ -205,10 +200,9 @@ public class AggregatingFtpConsumeServiceTest extends AggregatingServiceExample 
     try {
       // should be ftp://localhost/home/user/work
       String ftpConsumeUrl = "ftp://localhost" + DEFAULT_WORK_DIR_CANONICAL;
-      ConsumeDestinationFromMetadata dest = createConsumeDestination(ftpConsumeUrl, ".*");
       FtpConnection conn = createConnection(server);
       conn.setAdditionalDebug(false);
-      AggregatingFtpConsumer consumer = createConsumer(dest, new IgnoreOriginalMimeAggregator());
+      AggregatingFtpConsumer consumer = createConsumer(ftpConsumeUrl, ".*", new IgnoreOriginalMimeAggregator());
       consumer.setDeleteAggregatedFiles(Boolean.FALSE);
       AggregatingFtpConsumeService service = new AggregatingFtpConsumeService(conn, consumer);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -235,9 +229,8 @@ public class AggregatingFtpConsumeServiceTest extends AggregatingServiceExample 
       // should be ftp://localhost/home/user/work/ which is created when you
       // create the filesystem.
       String ftpConsumeUrl = "ftp://localhost" + DEFAULT_WORK_DIR_CANONICAL;
-      ConsumeDestinationFromMetadata dest = createConsumeDestination(ftpConsumeUrl, ".*");
       FtpConnection conn = createConnection(server);
-      AggregatingFtpConsumer consumer = createConsumer(dest, new IgnoreOriginalMimeAggregator());
+      AggregatingFtpConsumer consumer = createConsumer(ftpConsumeUrl, ".*", new IgnoreOriginalMimeAggregator());
       AggregatingFtpConsumeService service = new AggregatingFtpConsumeService(conn, consumer);
       AdaptrisMessage msg = new DefectiveMessageFactory().newMessage();
       try {
@@ -253,15 +246,10 @@ public class AggregatingFtpConsumeServiceTest extends AggregatingServiceExample 
     }
   }
 
-  private ConsumeDestinationFromMetadata createConsumeDestination(String dir, String filterExp) {
-    ConsumeDestinationFromMetadata d = new ConsumeDestinationFromMetadata();
-    d.setDefaultDestination(dir);
-    d.setDefaultFilterExpression(filterExp);
-    return d;
-  }
-
-  private AggregatingFtpConsumer createConsumer(ConsumeDestinationGenerator cdg, MessageAggregator aggr) {
-    AggregatingFtpConsumer consumer = new AggregatingFtpConsumer(cdg);
+  private AggregatingFtpConsumer createConsumer(String endpoint, String filterExpression, MessageAggregator aggr) {
+    AggregatingFtpConsumer consumer = new AggregatingFtpConsumer();
+    consumer.setEndpoint(endpoint);
+    consumer.setFilterExpression(filterExpression);
     consumer.setMessageAggregator(aggr);
     return consumer;
   }
@@ -278,11 +266,9 @@ public class AggregatingFtpConsumeServiceTest extends AggregatingServiceExample 
 
   @Override
   protected Object retrieveObjectForSampleConfig() {
-    ConsumeDestinationFromMetadata mfd = new ConsumeDestinationFromMetadata();
-    mfd.setDestinationMetadataKey("url");
-    mfd.setDefaultDestination("ftp://localhost:22/path/to/default");
-    mfd.setDefaultFilterExpression(".*\\*.xml");
-    AggregatingFtpConsumer consumer = new AggregatingFtpConsumer(mfd);
+    AggregatingFtpConsumer consumer = new AggregatingFtpConsumer();
+    consumer.setEndpoint("ftp://localhost:22/path/to/default");
+    consumer.setFilterExpression(".*\\*.xml");
     consumer.setMessageAggregator(new IgnoreOriginalMimeAggregator());
     FtpConnection conn = FtpExampleHelper.ftpConnection();
     return new AggregatingFtpConsumeService(conn, consumer);
