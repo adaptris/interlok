@@ -16,6 +16,37 @@
 
 package com.adaptris.interlok.junit.scaffolding.jms;
 
+import com.adaptris.core.AdaptrisMarshaller;
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.BaseCase;
+import com.adaptris.core.DefaultMarshaller;
+import com.adaptris.core.DefaultMessageFactory;
+import com.adaptris.core.MetadataElement;
+import com.adaptris.core.StandaloneProducer;
+import com.adaptris.core.jms.AutoConvertMessageTranslator;
+import com.adaptris.core.jms.JmsConnection;
+import com.adaptris.core.jms.JmsConstants;
+import com.adaptris.core.jms.MessageTypeTranslator;
+import com.adaptris.core.jms.MessageTypeTranslatorImp;
+import com.adaptris.core.jms.PasProducer;
+import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
+import com.adaptris.core.metadata.NoOpMetadataFilter;
+import com.adaptris.core.metadata.RegexMetadataFilter;
+import com.adaptris.core.metadata.RemoveAllMetadataFilter;
+import com.adaptris.core.util.LifecycleHelper;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
+
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
+
 import static com.adaptris.core.jms.JmsConstants.JMS_CORRELATION_ID;
 import static com.adaptris.core.jms.JmsConstants.JMS_DELIVERY_MODE;
 import static com.adaptris.core.jms.JmsConstants.JMS_DESTINATION;
@@ -32,36 +63,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
-import com.adaptris.core.AdaptrisMarshaller;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.BaseCase;
-import com.adaptris.core.ConfiguredProduceDestination;
-import com.adaptris.core.DefaultMarshaller;
-import com.adaptris.core.DefaultMessageFactory;
-import com.adaptris.core.MetadataElement;
-import com.adaptris.core.StandaloneProducer;
-import com.adaptris.core.jms.AutoConvertMessageTranslator;
-import com.adaptris.core.jms.JmsConnection;
-import com.adaptris.core.jms.JmsConstants;
-import com.adaptris.core.jms.MessageTypeTranslator;
-import com.adaptris.core.jms.MessageTypeTranslatorImp;
-import com.adaptris.core.jms.PasProducer;
-import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
-import com.adaptris.core.metadata.NoOpMetadataFilter;
-import com.adaptris.core.metadata.RegexMetadataFilter;
-import com.adaptris.core.metadata.RemoveAllMetadataFilter;
-import com.adaptris.core.util.LifecycleHelper;
 
 /**
  */

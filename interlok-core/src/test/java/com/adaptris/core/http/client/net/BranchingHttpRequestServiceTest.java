@@ -16,10 +16,6 @@
 
 package com.adaptris.core.http.client.net;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.BranchingServiceCollection;
 import com.adaptris.core.Channel;
@@ -35,6 +31,11 @@ import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.core.stubs.DefectiveMessageFactory;
 import com.adaptris.core.stubs.MockMessageProducer;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class BranchingHttpRequestServiceTest extends HttpServiceExample {
   private static final String TEXT = "ABCDEFG";
@@ -72,7 +73,7 @@ public class BranchingHttpRequestServiceTest extends HttpServiceExample {
     BranchingHttpRequestService service =
         new BranchingHttpRequestService()
             .withDefaultServiceId("DefaultServiceId")
-            .withUrl(HttpHelper.createProduceDestination(c).getDestination())
+            .withUrl(HttpHelper.createProduceDestination(c))
             .withContentType("text/complicated");
 
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
@@ -94,7 +95,7 @@ public class BranchingHttpRequestServiceTest extends HttpServiceExample {
     Channel c = HttpHelper.createAndStartChannel(mock);
     BranchingHttpRequestService service =
         new BranchingHttpRequestService()
-            .withUrl(HttpHelper.createProduceDestination(c).getDestination())
+            .withUrl(HttpHelper.createProduceDestination(c))
             .withContentType("text/complicated");
 
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
@@ -117,7 +118,7 @@ public class BranchingHttpRequestServiceTest extends HttpServiceExample {
 
     BranchingHttpRequestService service = new BranchingHttpRequestService()
         .withDefaultServiceId(null)
-        .withUrl(HttpHelper.createProduceDestination(c).getDestination())
+        .withUrl(HttpHelper.createProduceDestination(c))
         .withContentType("text/complicated");
 
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
@@ -139,7 +140,7 @@ public class BranchingHttpRequestServiceTest extends HttpServiceExample {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock, getName());
     BranchingHttpRequestService service =
-        new BranchingHttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
+        new BranchingHttpRequestService(HttpHelper.createProduceDestination(c))
             .withDefaultServiceId("DefaultServiceId")
             .withStatusMatches(new ExactMatch(500, "500 Server Error"),
                 new ExactMatch(200, "200 OK"))
@@ -163,7 +164,7 @@ public class BranchingHttpRequestServiceTest extends HttpServiceExample {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock, "This is the reply body", HttpStatus.INTERNAL_ERROR_500);
     BranchingHttpRequestService service =
-        new BranchingHttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
+        new BranchingHttpRequestService(HttpHelper.createProduceDestination(c))
             .withDefaultServiceId("DefaultServiceId")
             .withStatusMatches(new ExactMatch(500, "500 Server Error"),
                 new ExactMatch(200, "200 OK"))
@@ -187,7 +188,7 @@ public class BranchingHttpRequestServiceTest extends HttpServiceExample {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock);
     BranchingHttpRequestService service =
-        new BranchingHttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
+        new BranchingHttpRequestService(HttpHelper.createProduceDestination(c))
     .withDefaultServiceId("DefaultServiceId")
             .withStatusMatches(new RangeMatch(100, 199, "1XX Informational"),
                 new RangeMatch(300, 399, "3XX Moved"), new RangeMatch(200, 299, "2XX OK"))

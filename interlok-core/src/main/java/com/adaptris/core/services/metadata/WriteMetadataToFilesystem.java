@@ -16,18 +16,6 @@
 
 package com.adaptris.core.services.metadata;
 
-import static com.adaptris.core.util.MetadataHelper.convertToProperties;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URL;
-import java.util.Collection;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -37,7 +25,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FileNameCreator;
 import com.adaptris.core.FormattedFilenameCreator;
-import com.adaptris.core.MessageDrivenDestination;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
@@ -47,6 +34,22 @@ import com.adaptris.core.metadata.NoOpMetadataFilter;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URL;
+import java.util.Collection;
+
+import static com.adaptris.core.util.MetadataHelper.convertToProperties;
 
 /**
  * <p>
@@ -73,9 +76,11 @@ public class WriteMetadataToFilesystem extends ServiceImp {
   @Valid
   private FileNameCreator filenameCreator;
   private OutputStyle outputStyle;
-  @NotNull
-  @Valid
-  private MessageDrivenDestination destination;
+
+  @Getter
+  @NotBlank
+  private String baseUrl;
+
   @InputFieldDefault(value = "false")
   private Boolean overwriteIfExists;
   @AdvancedConfig
@@ -103,15 +108,9 @@ public class WriteMetadataToFilesystem extends ServiceImp {
     super();
   }
 
-  public WriteMetadataToFilesystem(MessageDrivenDestination d) {
-    this();
-    setDestination(d);
-  }
-
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     try {
-      String baseUrl = getDestination().getDestination(msg);
       URL url = FsHelper.createUrlFromString(baseUrl, true);
       validateDir(url);
       File fileToWrite = new File(FsHelper.createFileReference(url), filenameCreator().createName(msg));
@@ -135,7 +134,7 @@ public class WriteMetadataToFilesystem extends ServiceImp {
   @Override
   protected void initService() throws CoreException {
     try {
-      Args.notNull(getDestination(), "destination");
+      Args.notBlank(baseUrl, "Base URL");
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
@@ -144,6 +143,11 @@ public class WriteMetadataToFilesystem extends ServiceImp {
   @Override
   protected void closeService() {
 
+  }
+
+  public void setBaseUrl(String baseUrl) {
+    Args.notBlank(baseUrl, "Base URL");
+    this.baseUrl = baseUrl;
   }
 
 
@@ -176,19 +180,6 @@ public class WriteMetadataToFilesystem extends ServiceImp {
    */
   public void setOutputStyle(OutputStyle style) {
     outputStyle = style;
-  }
-
-  public MessageDrivenDestination getDestination() {
-    return destination;
-  }
-
-  /**
-   * Set the destination where things are written.
-   *
-   * @param d the destination.
-   */
-  public void setDestination(MessageDrivenDestination d) {
-    destination = Args.notNull(d, "destination");
   }
 
   /**

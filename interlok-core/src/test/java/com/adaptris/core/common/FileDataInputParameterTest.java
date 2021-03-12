@@ -15,28 +15,9 @@
  */
 package com.adaptris.core.common;
 
-import static com.adaptris.core.http.jetty.EmbeddedJettyHelper.URL_TO_POST_TO;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.fail;
-
-import java.io.File;
-import java.io.InputStream;
-import java.util.List;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
-import org.mockito.Mockito;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
-import com.adaptris.core.ConfiguredDestination;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.http.jetty.EmbeddedConnection;
@@ -46,6 +27,22 @@ import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.TempFileUtils;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.interlok.types.InterlokMessage;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
+import org.mockito.Mockito;
+
+import java.io.File;
+import java.io.InputStream;
+import java.util.List;
+
+import static com.adaptris.core.http.jetty.EmbeddedJettyHelper.URL_TO_POST_TO;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings("deprecation")
 public class FileDataInputParameterTest {
@@ -66,10 +63,10 @@ public class FileDataInputParameterTest {
     } catch (IllegalArgumentException e) {
       // ok
     }
-    p.setDestination(new ConfiguredProduceDestination("file:////tmp/abc"));
+    p.setEndPoint("file:////tmp/abc");
     assertEquals("file:////tmp/abc", p.url(m));
     try {
-      p.setDestination(null);
+      p.setEndPoint(null);
       fail();
     } catch (IllegalArgumentException e) {
 
@@ -81,7 +78,7 @@ public class FileDataInputParameterTest {
   public void testInterlokMessage() throws Exception {
     InterlokMessage msg = Mockito.mock(InterlokMessage.class);
     FileDataInputParameter p = new FileDataInputParameter();
-    p.setDestination(new ConfiguredProduceDestination("file:////tmp/doesnotexist"));
+    p.setEndPoint("file:////tmp/doesnotexist");
     p.url(msg);
   }
   
@@ -95,7 +92,7 @@ public class FileDataInputParameterTest {
     } catch (IllegalArgumentException e) {
       // ok
     }
-    p.setDestination(new ConfiguredProduceDestination("file:////tmp/doesnotexist"));
+    p.setEndPoint("file:////tmp/doesnotexist");
     assertEquals("file:////tmp/doesnotexist", p.url(m));
     String result = p.extract(m);
   }
@@ -105,7 +102,7 @@ public class FileDataInputParameterTest {
   public void testExtract() throws Exception {
     FileDataInputParameter p = new FileDataInputParameter();
     File f = TempFileUtils.createTrackedFile(testName.getMethodName(), "", p);
-    p.setDestination(new ConfiguredDestination("file:///" + f.getCanonicalPath()));
+    p.setEndPoint("file:///" + f.getCanonicalPath());
     FileUtils.write(f, TEXT, false);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     assertNotSame(TEXT, msg.getContent());
@@ -116,7 +113,7 @@ public class FileDataInputParameterTest {
   public void testExtractDestination() throws Exception {
     FileDataInputParameter p = new FileDataInputParameter();
     File f = TempFileUtils.createTrackedFile(testName.getMethodName(), "", p);
-    p.setDestination(new ConfiguredProduceDestination("file:///" + f.getCanonicalPath()));
+    p.setEndPoint("file:///" + f.getCanonicalPath());
     FileUtils.write(f, TEXT, false);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     assertNotSame(TEXT, msg.getContent());
@@ -126,7 +123,7 @@ public class FileDataInputParameterTest {
   @Test
   public void testExtractFromClasspath() throws Exception {
     FileDataInputParameter p = new FileDataInputParameter();
-    p.setDestination(new ConfiguredProduceDestination("xstream-standalone.xml"));
+    p.setEndPoint("xstream-standalone.xml");
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     assertNotNull(p.extract(msg));
   }
@@ -141,7 +138,7 @@ public class FileDataInputParameterTest {
     try {
       LifecycleHelper.initAndStart(channel);
       FileDataInputParameter p = new FileDataInputParameter();
-      p.setDestination(new ConfiguredProduceDestination(helper.createProduceDestination()));
+      p.setEndPoint(helper.createProduceDestination());
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
       assertNotNull(p.extract(msg));
     } finally {
@@ -154,7 +151,7 @@ public class FileDataInputParameterTest {
   public void testWrap() throws Exception {
     FileInputMessageWrapper p = new FileInputMessageWrapper();
     File f = TempFileUtils.createTrackedFile(testName.getMethodName(), "", p);
-    p.withDestination(new ConfiguredDestination("file:///" + f.getCanonicalPath()));
+    p.setEndPoint("file:///" + f.getCanonicalPath());
     FileUtils.write(f, TEXT, false);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     try (InputStream in = p.wrap(msg)) {

@@ -16,15 +16,6 @@
 
 package com.adaptris.core.http.client.net;
 
-import static com.adaptris.core.http.jetty.JettyHelper.createChannel;
-import static com.adaptris.core.http.jetty.JettyHelper.createConsumer;
-import static com.adaptris.core.http.jetty.JettyHelper.createWorkflow;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import java.util.Arrays;
-import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
@@ -51,6 +42,17 @@ import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.services.metadata.PayloadFromTemplateService;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
+import org.junit.Test;
+
+import java.util.Arrays;
+
+import static com.adaptris.core.http.jetty.JettyHelper.createChannel;
+import static com.adaptris.core.http.jetty.JettyHelper.createConsumer;
+import static com.adaptris.core.http.jetty.JettyHelper.createWorkflow;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class HttpRequestServiceTest extends HttpServiceExample {
   private static final String TEXT = "ABCDEFG";
@@ -78,7 +80,7 @@ public class HttpRequestServiceTest extends HttpServiceExample {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock);
     HttpRequestService service =
-        new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
+        new HttpRequestService(HttpHelper.createProduceDestination(c))
             .withContentType("%message{" + HttpHelper.CONTENT_TYPE + "}");
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
     msg.addMetadata(HttpHelper.CONTENT_TYPE, "text/complicated");
@@ -101,7 +103,7 @@ public class HttpRequestServiceTest extends HttpServiceExample {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock);
     HttpRequestService service =
-        new HttpRequestService().withUrl(HttpHelper.createProduceDestination(c).getDestination())
+        new HttpRequestService().withUrl(HttpHelper.createProduceDestination(c))
             .withRequestHeaderProvider(new MetadataRequestHeaders(new RegexMetadataFilter()));
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
     msg.addMetadata(getName(), getName());
@@ -128,7 +130,7 @@ public class HttpRequestServiceTest extends HttpServiceExample {
             new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200))})));
 
     HttpRequestService service =
-        new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
+        new HttpRequestService(HttpHelper.createProduceDestination(c))
             .withMethod("%message{httpMethod}");
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage();
     msg.addMetadata("httpMethod", "get");
@@ -155,7 +157,7 @@ public class HttpRequestServiceTest extends HttpServiceExample {
             new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200))})));
 
     HttpRequestService service =
-        new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
+        new HttpRequestService(HttpHelper.createProduceDestination(c))
             .withMethod("GET");
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage();
     try {
@@ -184,7 +186,7 @@ public class HttpRequestServiceTest extends HttpServiceExample {
         })));
 
     HttpRequestService service =
-        new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
+        new HttpRequestService(HttpHelper.createProduceDestination(c))
             .withMethod("POST");
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage();
     try {
@@ -214,7 +216,7 @@ public class HttpRequestServiceTest extends HttpServiceExample {
     })));
 
     HttpRequestService service =
-        new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
+        new HttpRequestService(HttpHelper.createProduceDestination(c))
             .withMethod("POST");
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
     try {
@@ -235,7 +237,7 @@ public class HttpRequestServiceTest extends HttpServiceExample {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock);
     HttpRequestService service =
-        new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
+        new HttpRequestService(HttpHelper.createProduceDestination(c))
             .withContentType("%message{" + HttpHelper.CONTENT_TYPE + "}")
             .withResponseHeaderHandler(new ResponseHeadersAsMetadata("", "|"));
 
@@ -261,7 +263,7 @@ public class HttpRequestServiceTest extends HttpServiceExample {
     MockMessageProducer mock = new MockMessageProducer();
     Channel c = HttpHelper.createAndStartChannel(mock);
 
-    HttpRequestService service = new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
+    HttpRequestService service = new HttpRequestService(HttpHelper.createProduceDestination(c))
             .withContentType("%message{" + HttpHelper.CONTENT_TYPE + "}")
             .withResponseHeaderHandler(new ResponseHeadersAsObjectMetadata());
 
@@ -290,7 +292,7 @@ public class HttpRequestServiceTest extends HttpServiceExample {
         new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200))
     })));
 
-    HttpRequestService service = new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
+    HttpRequestService service = new HttpRequestService(HttpHelper.createProduceDestination(c))
             .withMethod("GET");
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("Hello World");
     try {
@@ -319,7 +321,7 @@ public class HttpRequestServiceTest extends HttpServiceExample {
         new StandaloneProducer(new StandardResponseProducer(HttpStatus.UNAUTHORIZED_401))
     })));
     HttpRequestService service =
-        new HttpRequestService(HttpHelper.createProduceDestination(c).getDestination())
+        new HttpRequestService(HttpHelper.createProduceDestination(c))
             .withMethod("GET");
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
     try {
@@ -365,7 +367,7 @@ public class HttpRequestServiceTest extends HttpServiceExample {
     HttpAuthenticator auth = buildAuthenticator(getName(), getName());
     
     HttpRequestService service =
-        new HttpRequestService(HttpHelper.createProduceDestination(channel).getDestination())
+        new HttpRequestService(HttpHelper.createProduceDestination(channel))
             .withAuthenticator(auth).withMethod("POST");
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
     try {
