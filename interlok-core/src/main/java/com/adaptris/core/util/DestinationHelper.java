@@ -12,6 +12,10 @@ import java.util.Optional;
 
 public class DestinationHelper {
 
+  /** 
+   * @deprecated will be removed w/o warning since it has no meaning since {@code destination} was removed.
+   */
+  @Deprecated
   public static void mustHaveEither(String configured) {
     if (configured == null) {
       throw new IllegalArgumentException("Must have string configuration");
@@ -29,7 +33,7 @@ public class DestinationHelper {
    * No longer accepts a legacy destination (as they no longer exists), but does perform any
    * validity checks on {@code configured}.
    * </p>
-   *
+   * @deprecated will be removed w/o warning since it has no meaning since {@code destination} was removed.
    * @return {@code configured}.
    */
   @Deprecated
@@ -48,7 +52,7 @@ public class DestinationHelper {
    * No longer accepts a legacy destination (as they no longer exists), but does perform any
    * validity checks on {@code configured}.
    * </p>
-   *
+   * @deprecated will be removed w/o warning since it has no meaning since {@code destination} was removed.
    * @return {@code configured}.
    */
   @Deprecated
@@ -100,11 +104,12 @@ public class DestinationHelper {
    * configurations.
    * </p>
    *
-   * @return {@code legacy.getDestination(msg)} if legacy is non-null;
+   * @deprecated just ms msg.resolve() instead.
+    * @return {@code legacy.getDestination(msg)} if legacy is non-null;
    *         {@code msg.resolve(configured)} otherwise.
    */
   @Deprecated
-  public static String resolveProduceDestination(String configured, AdaptrisMessage msg) throws ProduceException {
+  public static String resolveProduceDestination(String configured, AdaptrisMessage msg) {
     return msg.resolve(configured);
   }
 
@@ -112,9 +117,7 @@ public class DestinationHelper {
    * Log a warning if consume destination is not null.
    *
    * @see LoggingHelper#logWarning(boolean, WarningLoggedCallback, String, Object...)
-   * @deprecated use
-   *             {@code logWarningIfNotNull(boolean, WarningLoggedCallback, Object, String, Object...)}
-   *             instead.
+   * @deprecated will be removed w/o warning since it has no meaning since {@code destination} was removed.
    */
   @Deprecated
   public static void logConsumeDestinationWarning(boolean alreadyLogged,
