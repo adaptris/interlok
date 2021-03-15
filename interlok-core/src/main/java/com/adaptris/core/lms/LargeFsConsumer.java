@@ -16,29 +16,27 @@
 
 package com.adaptris.core.lms;
 
-import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
-import java.io.File;
-import java.io.IOException;
-import org.apache.commons.io.FileCleaningTracker;
-import org.apache.commons.io.FileDeleteStrategy;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullConnection;
 import com.adaptris.core.fs.FsConsumer;
 import com.adaptris.fs.FsException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import org.apache.commons.io.FileCleaningTracker;
+import org.apache.commons.io.FileDeleteStrategy;
+
+import java.io.File;
+import java.io.IOException;
+
+import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 
 /**
  * <p>
  * File system implementation of <code>AdaptrisMessageConsumer</code> with large message support.
- * </p>
- * <p>
- * The configured {@link ConsumeDestination} may return a string in one of two formats
  * </p>
  * <ul>
  * <li>If a <code>file</code> based url is used. e.g. file:///c:/path/to/my/directory or file:////path/to/my/directory then the

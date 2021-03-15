@@ -16,15 +16,6 @@
 
 package com.adaptris.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-import org.junit.Test;
 import com.adaptris.core.event.AdapterCloseEvent;
 import com.adaptris.core.event.AdapterInitEvent;
 import com.adaptris.core.event.AdapterStartEvent;
@@ -40,6 +31,17 @@ import com.adaptris.core.stubs.StubAdapterStartUpEvent;
 import com.adaptris.core.stubs.StubEventHandler;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
+import org.junit.Test;
+
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class AdapterTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
 
@@ -760,7 +762,6 @@ public class AdapterTest extends com.adaptris.interlok.junit.scaffolding.BaseCas
     for (int i = 0; i < count; i++) {
       StandardWorkflow swf = new StandardWorkflow();
       PollingTrigger pt = new PollingTrigger(new QuartzCronPoller("*/1 * * * * ?"), new StaticPollingTemplate("<dummy>"));
-      pt.setDestination(new ConfiguredConsumeDestination(prefix + "_wf" + i));
       swf.setConsumer(pt);
       wf.add(swf);
     }

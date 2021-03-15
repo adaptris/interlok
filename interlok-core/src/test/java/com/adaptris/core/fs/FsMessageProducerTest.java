@@ -16,26 +16,13 @@
 
 package com.adaptris.core.fs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.commons.io.FileUtils;
-import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.EmptyFileNameCreator;
 import com.adaptris.core.FileNameCreator;
 import com.adaptris.core.FormattedFilenameCreator;
 import com.adaptris.core.MetadataFileNameCreator;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ServiceCase;
 import com.adaptris.core.StandaloneProducer;
@@ -46,6 +33,19 @@ import com.adaptris.fs.NioWorker;
 import com.adaptris.fs.OverwriteIfExistsWorker;
 import com.adaptris.fs.StandardWorker;
 import com.adaptris.util.GuidGenerator;
+import org.apache.commons.io.FileUtils;
+import org.junit.Test;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings("deprecation")
 public class FsMessageProducerTest extends FsProducerExample {
@@ -420,9 +420,9 @@ public class FsMessageProducerTest extends FsProducerExample {
     File parentDir = FsHelper.createFileReference(FsHelper.createUrlFromString(PROPERTIES.getProperty(BASE_KEY), true));
     try {
       File dir = new File(parentDir, subdir);
+      producer.setBaseDirectoryUrl(PROPERTIES.getProperty(BASE_KEY) + "/" + override);
       start(producer);
-      producer.produce(new DefaultMessageFactory().newMessage(TEXT),
-          new ConfiguredProduceDestination(PROPERTIES.getProperty(BASE_KEY) + "/" + override));
+      producer.produce(new DefaultMessageFactory().newMessage(TEXT));
       assertNull(new File(parentDir, subdir).listFiles());
       assertEquals(1, new File(parentDir, override).listFiles().length);
     }
@@ -497,15 +497,6 @@ public class FsMessageProducerTest extends FsProducerExample {
       FileUtils.deleteQuietly(new File(parentDir, "A Directory With Spaces"));
 
     }
-  }
-
-  @Test
-  public void testSetDestination() throws Exception {
-    String subDir = new GuidGenerator().safeUUID();
-    FsProducer producer = createProducer(subDir);
-    ProduceDestination dest = new ConfiguredProduceDestination("destination");
-    producer.setDestination(dest);
-    assertTrue(producer.getDestination().equals(dest));
   }
 
   private FsProducer createProducer(String subDir) {

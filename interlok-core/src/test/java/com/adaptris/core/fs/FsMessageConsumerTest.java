@@ -16,23 +16,7 @@
 
 package com.adaptris.core.fs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import org.apache.commons.io.FileUtils;
-import org.apache.oro.io.Perl5FilenameFilter;
-import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FixedIntervalPoller;
@@ -43,6 +27,23 @@ import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.TimeInterval;
+import org.apache.commons.io.FileUtils;
+import org.apache.oro.io.Perl5FilenameFilter;
+import org.junit.Test;
+
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings("deprecation")
 public class FsMessageConsumerTest extends FsConsumerCase {
@@ -219,7 +220,7 @@ public class FsMessageConsumerTest extends FsConsumerCase {
     String subDir = new GuidGenerator().safeUUID();
     MockMessageListener stub = new MockMessageListener(10);
     FsConsumer fs = createConsumer(subDir);
-    File dir = FsHelper.createFileReference(FsHelper.createUrlFromString(fs.getDestination().getDestination(), true));
+    File dir = FsHelper.createFileReference(FsHelper.createUrlFromString(fs.getBaseDirectoryUrl(), true));
     dir.getParentFile().mkdirs(); // attempting to fix the timing issues.
     dir.createNewFile(); // makes it a file, so it should be invalid now.
     fs.setCreateDirs(false);
@@ -303,7 +304,7 @@ public class FsMessageConsumerTest extends FsConsumerCase {
     String subDir = new GuidGenerator().safeUUID();
     MockMessageListener stub = new MockMessageListener(10);
     FsConsumer fs = createConsumer(subDir);
-    ((ConfiguredConsumeDestination) fs.getDestination()).setFilterExpression(".*\\.xml");
+    fs.setFilterExpression(".*\\.xml");
     fs.setFileFilterImp(Perl5FilenameFilter.class.getName());
     fs.setPoller(new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)));
     StandaloneConsumer sc = new StandaloneConsumer(fs);
@@ -489,7 +490,7 @@ public class FsMessageConsumerTest extends FsConsumerCase {
   protected FsConsumer createConsumer(String subDir) {
     String destinationName = subDir == null ? PROPERTIES.getProperty(BASE_KEY) : PROPERTIES.getProperty(BASE_KEY) + "/" + subDir;
     FsConsumer fs = createConsumer();
-    fs.setDestination(new ConfiguredConsumeDestination(destinationName));
+    fs.setBaseDirectoryUrl(destinationName);
     fs.setCreateDirs(true);
     return fs;
   }

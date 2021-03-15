@@ -16,27 +16,9 @@
 
 package com.adaptris.core.http.jetty;
 
-import static com.adaptris.core.http.jetty.JettyHelper.createChannel;
-import static com.adaptris.core.http.jetty.JettyHelper.createConsumer;
-import static com.adaptris.core.http.jetty.JettyHelper.createWorkflow;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.Properties;
-import java.util.Set;
-import javax.servlet.http.HttpServletResponse;
-import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageEncoderImp;
 import com.adaptris.core.Channel;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.MetadataElement;
@@ -59,6 +41,25 @@ import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.text.mime.MultiPartOutput;
+import org.junit.Test;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.Properties;
+import java.util.Set;
+
+import static com.adaptris.core.http.jetty.JettyHelper.createChannel;
+import static com.adaptris.core.http.jetty.JettyHelper.createConsumer;
+import static com.adaptris.core.http.jetty.JettyHelper.createWorkflow;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings("deprecation")
 public class StandardResponseProducerTest extends HttpProducerExample {
@@ -421,10 +422,6 @@ public class StandardResponseProducerTest extends HttpProducerExample {
     return c;
   }
 
-  @Deprecated
-  protected static ConfiguredProduceDestination createProduceDestination(int port) {
-    return new ConfiguredProduceDestination(createURL(port));
-  }
 
   protected static String createURL(int port) {
     return "http://localhost:" + port + URL_TO_POST_TO;

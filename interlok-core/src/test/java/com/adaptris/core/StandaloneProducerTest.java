@@ -55,22 +55,6 @@ public class StandaloneProducerTest extends GeneralServiceExample {
   }
 
   @Test
-  public void testDoProduceWithDest() throws Exception {
-    MockMessageProducer m = new MockMessageProducer();
-    StandaloneProducer service = new StandaloneProducer(m);
-    service.setProducer(m);
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("XYZ");
-    try {
-      start(service);
-      service.produce(msg, new ConfiguredProduceDestination("ThisIsTheDest"));
-      assertEquals(1, m.getMessages().size());
-    }
-    finally {
-      stop(service);
-    }
-  }
-
-  @Test
   public void testCreateName() throws Exception {
     StandaloneProducer service = new StandaloneProducer(new MockMessageProducer());
     assertEquals(MockMessageProducer.class.getName(), service.createName());

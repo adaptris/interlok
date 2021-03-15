@@ -16,15 +16,15 @@
 
 package com.adaptris.core.http.jetty;
 
-import java.util.Properties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.management.jetty.JettyServerComponent;
 import com.adaptris.core.management.jetty.ServerBuilder;
 import com.adaptris.core.management.webserver.ServerManager;
 import com.adaptris.core.management.webserver.WebServerManagementUtil;
 import com.adaptris.interlok.junit.scaffolding.util.PortManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Properties;
 
 /**
  * @author gcsiki
@@ -68,8 +68,8 @@ public class EmbeddedJettyHelper {
     return "http://localhost:" + portForServer + actualUri;
   }
 
-  public ConfiguredProduceDestination createProduceDestination() {
-    return new ConfiguredProduceDestination(buildUrl(URL_TO_POST_TO));
+  public String createProduceDestination() {
+    return buildUrl(URL_TO_POST_TO);
   }
 
 }

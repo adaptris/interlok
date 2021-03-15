@@ -413,6 +413,9 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
    */
   @Override
   public Object resolveObject(String s) {
+    if (s == null) {
+      return null;
+    }
     s = resolve(s);
     Matcher m = objectResolver.matcher(s);
     if (m.matches()) {
@@ -420,11 +423,12 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
       if (objectMetadata.containsKey(key)) {
         return objectMetadata.get(key);
       }
+      return null;
     }
     if (objectMetadata.containsKey(s)) {
       return objectMetadata.get(s);
     }
-    return null;
+    return s;
   }
 
   private String internalResolve(String key) {

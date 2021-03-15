@@ -16,33 +16,8 @@
 
 package com.adaptris.core.ftp;
 
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_FILENAME;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_PASSWORD;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_PROC_DIR_CANONICAL;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_USERNAME;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_WORK_DIR_CANONICAL;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_WORK_DIR_NAME;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DESTINATION_URL_OVERRIDE;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.PAYLOAD;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.SERVER_ADDRESS;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.SLASH;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import org.apache.commons.io.filefilter.RegexFileFilter;
-import org.apache.oro.io.GlobFilenameFilter;
-import org.junit.Test;
-import org.mockftpserver.fake.FakeFtpServer;
-import org.mockftpserver.fake.filesystem.FileEntry;
-import org.mockftpserver.fake.filesystem.FileSystem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.ConfiguredConsumeDestination;
-import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.MimeEncoder;
 import com.adaptris.core.Poller;
@@ -56,6 +31,31 @@ import com.adaptris.ftp.FtpDataMode;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.TimeInterval;
+import org.apache.commons.io.filefilter.RegexFileFilter;
+import org.apache.oro.io.GlobFilenameFilter;
+import org.junit.Test;
+import org.mockftpserver.fake.FakeFtpServer;
+import org.mockftpserver.fake.filesystem.FileEntry;
+import org.mockftpserver.fake.filesystem.FileSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_FILENAME;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_PASSWORD;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_PROC_DIR_CANONICAL;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_USERNAME;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_WORK_DIR_CANONICAL;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_WORK_DIR_NAME;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.DESTINATION_URL_OVERRIDE;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.PAYLOAD;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.SERVER_ADDRESS;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.SLASH;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class FtpConsumerTest extends FtpConsumerCase {
 
@@ -114,7 +114,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     FakeFtpServer server = helper.createAndStart(helper.createFilesystem(count));
     StandaloneConsumer sc = null;
     try {
-      FtpConsumer ftpConsumer = createForTests(listener, "testBasicConsume");
+      FtpConsumer ftpConsumer = createForTests(listener);
       FtpConnection consumeConnection = create(server);
       sc = new StandaloneConsumer(consumeConnection, ftpConsumer);
       // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
@@ -141,7 +141,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     FakeFtpServer server = helper.createAndStart(helper.createFilesystem(count));
     StandaloneConsumer sc = null;
     try {
-      FtpConsumer ftpConsumer = createForTests(listener, "testBasicConsume");
+      FtpConsumer ftpConsumer = createForTests(listener);
       FtpConnection consumeConnection = create(server);
       consumeConnection.setAdditionalDebug(false);
       sc = new StandaloneConsumer(consumeConnection, ftpConsumer);
@@ -167,8 +167,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     FakeFtpServer server = helper.createAndStart(helper.createFilesystem(count));
     StandaloneConsumer sc = null;
     try {
-      ConfiguredConsumeDestination ccd = new ConfiguredConsumeDestination(DESTINATION_URL_OVERRIDE, null, "testConsumeWithOverride");
-      FtpConsumer ftpConsumer = createForTests(listener, ccd);
+      FtpConsumer ftpConsumer = createForTests(listener, DESTINATION_URL_OVERRIDE);
       FtpConnection consumeConnection = create(server);
       sc = new StandaloneConsumer(consumeConnection, ftpConsumer);
       start(sc);
@@ -196,8 +195,8 @@ public class FtpConsumerTest extends FtpConsumerCase {
     FakeFtpServer server = helper.createAndStart(filesystem);
     StandaloneConsumer sc = null;
     try {
-      ConfiguredConsumeDestination ccd = new ConfiguredConsumeDestination(SERVER_ADDRESS, "*.txt", "testConsumeWithFilter");
-      FtpConsumer ftpConsumer = createForTests(listener, ccd);
+      FtpConsumer ftpConsumer = createForTests(listener, SERVER_ADDRESS);
+      ftpConsumer.setFilterExpression("*.txt");
       ftpConsumer.setFileFilterImp(GlobFilenameFilter.class.getCanonicalName());
       FtpConnection consumeConnection = create(server);
       sc = new StandaloneConsumer(consumeConnection, ftpConsumer);
@@ -223,7 +222,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     FakeFtpServer server = helper.createAndStart(helper.createFilesystem(count));
     StandaloneConsumer sc = null;
     try {
-      FtpConsumer ftpConsumer = createForTests(listener, "testConsumeWithQuietPeriod");
+      FtpConsumer ftpConsumer = createForTests(listener);
       ftpConsumer.setQuietInterval(new TimeInterval(1L, TimeUnit.SECONDS));
       FtpConnection consumeConnection = create(server);
       sc = new StandaloneConsumer(consumeConnection, ftpConsumer);
@@ -252,8 +251,6 @@ public class FtpConsumerTest extends FtpConsumerCase {
     FakeFtpServer server = helper.createAndStart(filesystem);
     StandaloneConsumer sc = null;
     try {
-      ConfiguredConsumeDestination ccd = new ConfiguredConsumeDestination(SERVER_ADDRESS, "^*.xml$",
-          "testConsumeWithNonMatchingFilter");
       AtomicBoolean pollFired = new AtomicBoolean(false);
       FixedIntervalPoller poller = new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)).withPollerCallback(e -> {
         log.trace("Poll Fired {}", getName());
@@ -261,7 +258,8 @@ public class FtpConsumerTest extends FtpConsumerCase {
           pollFired.set(true);
         }
       });
-      FtpConsumer ftpConsumer = createForTests(listener, ccd, poller);
+      FtpConsumer ftpConsumer = createForTests(listener, SERVER_ADDRESS, poller);
+      ftpConsumer.setFilterExpression("^*.xml$");
       ftpConsumer.setFileFilterImp(RegexFileFilter.class.getCanonicalName());
       FtpConnection consumeConnection = create(server);
       sc = new StandaloneConsumer(consumeConnection, ftpConsumer);
@@ -289,7 +287,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     FakeFtpServer server = helper.createAndStart(helper.createFilesystem(count));
     StandaloneConsumer sc = null;
     try {
-      FtpConsumer ftpConsumer = createForTests(listener, "testActiveModeConsume");
+      FtpConsumer ftpConsumer = createForTests(listener);
       FtpConnection consumeConnection = create(server);
       consumeConnection.setFtpDataMode(FtpDataMode.ACTIVE);
       sc = new StandaloneConsumer(consumeConnection, ftpConsumer);
@@ -315,7 +313,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     FakeFtpServer server = helper.createAndStart(helper.createFilesystem(count));
     StandaloneConsumer sc = null;
     try {
-      FtpConsumer ftpConsumer = createForTests(listener, "testPassiveModeConsume");
+      FtpConsumer ftpConsumer = createForTests(listener);
       FtpConnection consumeConnection = create(server);
       consumeConnection.setFtpDataMode(FtpDataMode.PASSIVE);
       sc = new StandaloneConsumer(consumeConnection, ftpConsumer);
@@ -340,7 +338,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     FakeFtpServer server = helper.createAndStart(helper.createFilesystem(count));
     StandaloneConsumer sc = null;
     try {
-      FtpConsumer ftpConsumer = createForTests(listener, "testConsume_ForceRelativePath");
+      FtpConsumer ftpConsumer = createForTests(listener);
       ftpConsumer.setWorkDirectory(SLASH + DEFAULT_WORK_DIR_NAME);
       FtpConnection consumeConnection = create(server);
       consumeConnection.setForceRelativePath(Boolean.TRUE);
@@ -405,7 +403,6 @@ public class FtpConsumerTest extends FtpConsumerCase {
 
   @Test
   public void testConsume_WithProcDirectory() throws Exception {
-
     int count = 1;
     EmbeddedFtpServer helper = new EmbeddedFtpServer();
     MockMessageListener listener = new MockMessageListener(100);
@@ -416,7 +413,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     FakeFtpServer server = helper.createAndStart(filesystem);
     StandaloneConsumer sc = null;
     try {
-      FtpConsumer ftpConsumer = createForTests(listener, "testConsume_WithProcDirectory");
+      FtpConsumer ftpConsumer = createForTests(listener);
       ftpConsumer.setProcDirectory(DEFAULT_PROC_DIR_CANONICAL);
       FtpConnection consumeConnection = create(server);
       sc = new StandaloneConsumer(consumeConnection, ftpConsumer);
@@ -424,8 +421,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
       waitForMessages(listener, count);
       Thread.sleep(500);
       helper.assertMessages(listener.getMessages(), count);
-      // assertEquals(count, filesystem.listFiles(DEFAULT_PROC_DIR_CANONICAL).size());
-
+      assertEquals(count, filesystem.listFiles(DEFAULT_PROC_DIR_CANONICAL).size());
     }
     catch (Exception e) {
       throw e;
@@ -449,7 +445,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     FakeFtpServer server = helper.createAndStart(filesystem);
     StandaloneConsumer sc = null;
     try {
-      FtpConsumer ftpConsumer = createForTests(listener, "testConsume_WithProcDirectory_FileAlreadyExists");
+      FtpConsumer ftpConsumer = createForTests(listener);
       ftpConsumer.setProcDirectory(DEFAULT_PROC_DIR_CANONICAL);
       FtpConnection consumeConnection = create(server);
       sc = new StandaloneConsumer(consumeConnection, ftpConsumer);
@@ -484,7 +480,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     FakeFtpServer server = helper.createAndStart(filesystem);
     StandaloneConsumer sc = null;
     try {
-      FtpConsumer ftpConsumer = createForTests(listener, "testConsumeWithEncoder");
+      FtpConsumer ftpConsumer = createForTests(listener);
       ftpConsumer.setEncoder(new MimeEncoder());
       FtpConnection consumeConnection = create(server);
       sc = new StandaloneConsumer(consumeConnection, ftpConsumer);
@@ -507,7 +503,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     int count = 1;
     EmbeddedFtpServer helper = new EmbeddedFtpServer();
     MockMessageListener listener = new MockMessageListener(100);
-    FtpConsumer ftpConsumer = createForTests(listener, "testConsume_IgnoresWipFiles");
+    FtpConsumer ftpConsumer = createForTests(listener);
     FileSystem filesystem = helper.createFilesystem_DirsOnly();
     for (int i = 0; i < count; i++) {
       filesystem.add(new FileEntry(DEFAULT_WORK_DIR_CANONICAL + SLASH + DEFAULT_FILENAME + i + ".txt", PAYLOAD));
@@ -547,31 +543,31 @@ public class FtpConsumerTest extends FtpConsumerCase {
     return consumeConnection;
   }
 
-  private FtpConsumer createForTests(MockMessageListener listener, String threadName) {
-    return createForTests(listener, new ConfiguredConsumeDestination(SERVER_ADDRESS, null, threadName));
+  private FtpConsumer createForTests(MockMessageListener listener) {
+    return createForTests(listener, SERVER_ADDRESS);
   }
 
-  private FtpConsumer createForTests(MockMessageListener listener, String threadName, Poller p) {
-    return createForTests(listener, new ConfiguredConsumeDestination(SERVER_ADDRESS, null, threadName), p);
+  private FtpConsumer createForTests(MockMessageListener listener, Poller p) {
+    return createForTests(listener, SERVER_ADDRESS, p);
   }
 
   @SuppressWarnings("deprecation")
-  private FtpConsumer createForTests(MockMessageListener listener, ConsumeDestination dest, Poller poller) {
+  private FtpConsumer createForTests(MockMessageListener listener, String url, Poller poller) {
     FtpConsumer ftpConsumer = new FtpConsumer();
-    if (dest.getDestination().equals(SERVER_ADDRESS)) {
+    if (url.equals(SERVER_ADDRESS)) {
       ftpConsumer.setWorkDirectory(DEFAULT_WORK_DIR_CANONICAL);
     }
     else {
       ftpConsumer.setWorkDirectory(SLASH + DEFAULT_WORK_DIR_NAME);
     }
-    ftpConsumer.setDestination(dest);
+    ftpConsumer.setFtpEndpoint(url);
     ftpConsumer.setPoller(poller);
     ftpConsumer.registerAdaptrisMessageListener(listener);
     return ftpConsumer;
   }
 
-  private FtpConsumer createForTests(MockMessageListener listener, ConsumeDestination dest) {
-    return createForTests(listener, dest, new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)));
+  private FtpConsumer createForTests(MockMessageListener listener, String url) {
+    return createForTests(listener, url, new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)));
   }
 
 
@@ -583,7 +579,7 @@ public class FtpConsumerTest extends FtpConsumerCase {
     FakeFtpServer server = helper.createAndStart(helper.createFilesystem(count));
     StandaloneConsumer sc = null;
     try {
-      FtpConsumer ftpConsumer = createForTests(listener, "testBasicConsume");
+      FtpConsumer ftpConsumer = createForTests(listener);
       ftpConsumer.setMessageFactory(new FileBackedMessageFactory());
       FtpConnection consumeConnection = create(server);
       sc = new StandaloneConsumer(consumeConnection, ftpConsumer);

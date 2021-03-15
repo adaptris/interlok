@@ -15,6 +15,19 @@
  */
 package com.adaptris.core.common;
 
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.DefaultMessageFactory;
+import com.adaptris.core.stubs.TempFileUtils;
+import org.apache.commons.io.FileUtils;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
+
+import java.io.File;
+import java.io.OutputStream;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -23,22 +36,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-
-import java.io.File;
-import java.io.OutputStream;
-
-import org.apache.commons.io.FileUtils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
-
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.ConfiguredDestination;
-import com.adaptris.core.ConfiguredProduceDestination;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.DefaultMessageFactory;
-import com.adaptris.core.stubs.TempFileUtils;
 
 @SuppressWarnings("deprecation")
 public class FileDataOutputParameterTest {
@@ -60,10 +57,10 @@ public class FileDataOutputParameterTest {
     } catch (IllegalArgumentException e) {
       // ok
     }
-    p.setDestination(new ConfiguredProduceDestination("file:////tmp/abc"));
+    p.setEndPoint("file:////tmp/abc");
     assertEquals("file:////tmp/abc", p.url(m));
     try {
-      p.setDestination(null);
+      p.setEndPoint(null);
       fail();
     } catch (IllegalArgumentException e) {
 
@@ -75,7 +72,7 @@ public class FileDataOutputParameterTest {
   public void testInsert() throws Exception {
     FileDataOutputParameter p = new FileDataOutputParameter();
     File f = TempFileUtils.createTrackedFile(testName.getMethodName(), "", p);
-    p.setDestination(new ConfiguredDestination("file:///" + f.getCanonicalPath()));
+    p.setEndPoint("file:///" + f.getCanonicalPath());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     p.insert(TEXT, msg);
     // It doesn't insert into the msg; so message should still be blank
@@ -87,7 +84,7 @@ public class FileDataOutputParameterTest {
   public void testInsertDestination() throws Exception {
     FileDataOutputParameter p = new FileDataOutputParameter();
     File f = TempFileUtils.createTrackedFile(testName.getMethodName(), "", p);
-    p.setDestination(new ConfiguredProduceDestination("file:///" + f.getCanonicalPath()));
+    p.setEndPoint("file:///" + f.getCanonicalPath());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     p.insert(TEXT, msg);
     // It doesn't insert into the msg; so message should still be blank
@@ -99,7 +96,7 @@ public class FileDataOutputParameterTest {
   public void testInsertDestination_Exception() throws Exception {
     FileDataOutputParameter p = new FileDataOutputParameter();
     File f = TempFileUtils.createTrackedFile(testName.getMethodName(), "", p);
-    p.setDestination(new ConfiguredProduceDestination("file:///" + f.getCanonicalPath()));
+    p.setEndPoint("file:///" + f.getCanonicalPath());
     AdaptrisMessage msg = mock(AdaptrisMessage.class);
     doThrow(new RuntimeException()).when(msg).getContentEncoding();
     try {
@@ -116,7 +113,7 @@ public class FileDataOutputParameterTest {
     FileOutputMessageWrapper p = new FileOutputMessageWrapper();
     File f = TempFileUtils.createTrackedFile(testName.getMethodName(), "", p);
     assertFalse(f.exists());
-    p.withDestination(new ConfiguredDestination("file:///" + f.getCanonicalPath()));
+    p.setEndPoint("file:///" + f.getCanonicalPath());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     try (OutputStream out = p.wrap(msg)) {
       assertNotNull(out);

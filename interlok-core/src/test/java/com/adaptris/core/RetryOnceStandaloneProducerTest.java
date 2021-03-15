@@ -89,7 +89,7 @@ public class RetryOnceStandaloneProducerTest extends GeneralServiceExample {
   @Test
   public void testProducerFailsFirstTimeOnlyAsService() {
 	  StaticCounterFailFirstMockMessageProducer producer = new StaticCounterFailFirstMockMessageProducer();
-	  producer.setFailUntilCount(0);
+	  producer.setFailUntilCount(1);
 	  producer.resetCount();
     service.setProducer(producer);
 

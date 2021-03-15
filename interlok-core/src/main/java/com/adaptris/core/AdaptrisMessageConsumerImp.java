@@ -65,7 +65,9 @@ public abstract class AdaptrisMessageConsumerImp extends
     return oldName;
   }
 
-  protected abstract String newThreadName();
+  protected String newThreadName() {
+    return listener != null ? listener.friendlyName() : this.createName();
+  }
 
   @Override
   public void changeState(ComponentState newState) {

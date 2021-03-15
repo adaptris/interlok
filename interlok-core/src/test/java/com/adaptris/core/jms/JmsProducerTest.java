@@ -16,6 +16,7 @@
 
 package com.adaptris.core.jms;
 
+import static com.adaptris.core.jms.JmsConstants.OBJ_JMS_REPLY_TO_KEY;
 import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.DEFAULT_PAYLOAD;
 import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.MESSAGE_TRANSLATOR_LIST;
 import static org.junit.Assert.assertEquals;
@@ -111,7 +112,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
 
   private AdaptrisMessage createMessage(Destination d) throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx");
-    msg.addObjectHeader(JmsConstants.OBJ_JMS_REPLY_TO_KEY, d);
+    msg.addObjectHeader(OBJ_JMS_REPLY_TO_KEY, d);
     return msg;
 
   }
@@ -349,8 +350,9 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   public void testProduce_HasReplyToDestination() throws Exception {
     Topic topic = createTopic(activeMqBroker, getName());
     AdaptrisMessage msg = createMessage(topic);
+    msg.addObjectHeader(OBJ_JMS_REPLY_TO_KEY, "jms:topic:" + getName());
 
-    JmsProducer producer = createProducer("jms:topic:" + getName());
+    JmsProducer producer = createProducer("%messageObject{" + OBJ_JMS_REPLY_TO_KEY + "}");
     producer.setCaptureOutgoingMessageDetails(true);
     StandaloneProducer sp = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
 

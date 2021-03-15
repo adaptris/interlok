@@ -16,23 +16,22 @@
 
 package com.adaptris.core.http.client.net;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
 import com.adaptris.core.http.client.RequestHeaderProvider;
 import com.adaptris.core.metadata.RegexMetadataFilter;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class CompositeRequestHeadersTest extends RequestHeadersCase {
 
@@ -59,7 +58,7 @@ public class CompositeRequestHeadersTest extends RequestHeadersCase {
     HttpURLConnection urlC = null;
     try {
       c = HttpHelper.createAndStartChannel();
-      URL url = new URL(HttpHelper.createProduceDestination(c).getDestination());
+      URL url = new URL(HttpHelper.createProduceDestination(c));
       urlC = (HttpURLConnection) url.openConnection();
       CompositeRequestHeaders headers = new CompositeRequestHeaders();
       MetadataRequestHeaders meta = new MetadataRequestHeaders();

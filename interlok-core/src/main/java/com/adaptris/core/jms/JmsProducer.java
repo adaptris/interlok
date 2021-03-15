@@ -71,13 +71,16 @@ import lombok.Setter;
 @XStreamAlias("jms-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Place message on a JMS queue or topic", tag = "producer,jms", recommended = {JmsConnection.class})
-@DisplayOrder(order = {"endpoint", "destination", "messageTranslator", "deliveryMode",
+@DisplayOrder(order = {"endpoint", "messageTranslator", "deliveryMode",
     "priority", "ttl", "acknowledgeMode"})
 @NoArgsConstructor
 public class JmsProducer extends JmsProducerImpl {
 
   /**
-   * The JMS Endpoint defined in an RFC6167 manner.
+   * The JMS Endpoint defined in an RFC6167 manner. This supports the
+   * message resolve expression: %messageObject{KEY}, which allows for
+   * the the destination to be retrieved from object headers. It also
+   * allows for string expressions to be built dynamically as necessary.
    */
   @InputFieldHint(expression = true)
   @Getter
@@ -150,10 +153,10 @@ public class JmsProducer extends JmsProducerImpl {
 
   /**
    * Create a Destination for JMSReplyTo if one doesn't already exist or if
-   * {@code JMS_ASYNC_STATIC_REPLY_TO} exists as metadata.
+   * {@code OBJ_JMS_REPLY_TO_KEY} exists as metadata.
    *
-   * @param msg the message (which will be checked for {@code JMS_ASYNC_STATIC_REPLY_TO}.
-   * @param createTmpDest - create a temporary destination if {@code JMS_ASYNC_STATIC_REPLY_TO}
+   * @param msg the message (which will be checked for {@code OBJ_JMS_REPLY_TO_KEY}.
+   * @param createTmpDest - create a temporary destination if {@code OBJ_JMS_REPLY_TO_KEY}
    *        isn't available.
    * @return a javax.jms.Destination
    */

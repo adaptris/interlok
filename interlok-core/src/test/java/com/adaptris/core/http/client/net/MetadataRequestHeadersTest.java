@@ -16,23 +16,22 @@
 
 package com.adaptris.core.http.client.net;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
 import com.adaptris.core.metadata.NoOpMetadataFilter;
 import com.adaptris.core.metadata.RegexMetadataFilter;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class MetadataRequestHeadersTest extends RequestHeadersCase {
 
@@ -63,7 +62,7 @@ public class MetadataRequestHeadersTest extends RequestHeadersCase {
     HttpURLConnection urlC = null;
     try {
       c = HttpHelper.createAndStartChannel();
-      URL url = new URL(HttpHelper.createProduceDestination(c).getDestination());
+      URL url = new URL(HttpHelper.createProduceDestination(c));
       urlC = (HttpURLConnection) url.openConnection();
       MetadataRequestHeaders headers = new MetadataRequestHeaders();
       headers.setFilter(new RegexMetadataFilter());
@@ -83,7 +82,7 @@ public class MetadataRequestHeadersTest extends RequestHeadersCase {
     HttpURLConnection urlC = null;
     try {
       c = HttpHelper.createAndStartChannel();
-      URL url = new URL(HttpHelper.createProduceDestination(c).getDestination());
+      URL url = new URL(HttpHelper.createProduceDestination(c));
       urlC = (HttpURLConnection) url.openConnection();
       MetadataRequestHeaders headers = new MetadataRequestHeaders();
       headers.setUnfold(true);

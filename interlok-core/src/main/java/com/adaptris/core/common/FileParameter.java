@@ -13,48 +13,39 @@
  */
 package com.adaptris.core.common;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.MessageDrivenDestination;
 import com.adaptris.core.util.Args;
 import com.adaptris.interlok.types.InterlokMessage;
+import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.validation.constraints.NotBlank;
 
 public abstract class FileParameter {
   protected transient Logger log = LoggerFactory.getLogger(this.getClass());
 
-  @Valid
-  @NotNull(message = "destination may not be null")
-  private MessageDrivenDestination destination;
-
+  @Getter
+  @NotBlank
+  private String endPoint;
 
   protected String url(InterlokMessage msg) throws CoreException {
-    Args.notNull(getDestination(), "destination");
+    Args.notNull(endPoint, "End Point");
     if (msg instanceof AdaptrisMessage) {
-      return getDestination().getDestination((AdaptrisMessage) msg);
+      return msg.resolveObject(endPoint).toString();
     } else {
       throw new RuntimeException("Message is not instance of Adaptris Message");
     }
   }
 
-  public MessageDrivenDestination getDestination() {
-    return destination;
+  public void setEndPoint(String endPoint) {
+    Args.notNull(endPoint, "End Point");
+    this.endPoint = endPoint;
   }
 
-  /**
-   * Set the destination for the file data input.
-   *
-   * @param d the destination.
-   */
-  public void setDestination(MessageDrivenDestination d) {
-    destination = Args.notNull(d, "destination");
-  }
-
-  public <T extends FileParameter> T withDestination(MessageDrivenDestination d) {
-    setDestination(d);
+  public <T extends FileParameter> T withEndPoint(String e) {
+    endPoint = e;
     return (T) this;
   }
 }

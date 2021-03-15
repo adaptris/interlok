@@ -16,6 +16,19 @@
 
 package com.adaptris.core.lms;
 
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.DefaultMessageFactory;
+import com.adaptris.core.MimeEncoder;
+import com.adaptris.core.StandaloneProducer;
+import com.adaptris.core.fs.FsHelper;
+import com.adaptris.core.fs.FsProducerExample;
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.File;
+
 import static com.adaptris.core.fs.FsHelper.createFileReference;
 import static com.adaptris.core.fs.FsHelper.createUrlFromString;
 import static com.adaptris.core.fs.FsMessageProducerTest.BASE_KEY;
@@ -23,18 +36,6 @@ import static com.adaptris.core.fs.FsMessageProducerTest.BASE_TEMP_DIR;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import java.io.File;
-import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ConfiguredProduceDestination;
-import com.adaptris.core.DefaultMessageFactory;
-import com.adaptris.core.MimeEncoder;
-import com.adaptris.core.StandaloneProducer;
-import com.adaptris.core.fs.FsHelper;
-import com.adaptris.core.fs.FsProducerExample;
 
 public class LargeFsMessageProducerTest extends FsProducerExample {
 
@@ -123,12 +124,11 @@ public class LargeFsMessageProducerTest extends FsProducerExample {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testProduceWithOverride() throws Exception {
     LargeFsProducer producer = create();
     start(producer);
-    producer.produce(new FileBackedMessageFactory().newMessage("dummy"), new ConfiguredProduceDestination(PROPERTIES
-        .getProperty(BASE_KEY)));
+    producer.produce(new FileBackedMessageFactory().newMessage("dummy"));
+    producer.setBaseDirectoryUrl(PROPERTIES.getProperty(BASE_KEY));
     stop(producer);
   }
 

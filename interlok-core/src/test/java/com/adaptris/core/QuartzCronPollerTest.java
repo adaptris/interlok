@@ -15,15 +15,18 @@
 */
 
 package com.adaptris.core;
+
+import com.adaptris.core.stubs.MockChannel;
+import com.adaptris.core.stubs.MockMessageProducer;
+import org.junit.Test;
+import org.quartz.Scheduler;
+
+import java.util.Iterator;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import java.util.Iterator;
-import org.junit.Test;
-import org.quartz.Scheduler;
-import com.adaptris.core.stubs.MockChannel;
-import com.adaptris.core.stubs.MockMessageProducer;
 
 public class QuartzCronPollerTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
 
@@ -46,7 +49,7 @@ public class QuartzCronPollerTest extends com.adaptris.interlok.junit.scaffoldin
     QuartzCronPoller p1 = new QuartzCronPoller();
     p1.setCronExpression("*/5 * * * * ?");
     p1.setSchedulerGroup("MYGROUP");
-    StandardWorkflow wf1 = createWorkflow(null, p1, new MockMessageProducer());
+    StandardWorkflow wf1 = createWorkflow(p1, new MockMessageProducer());
     Channel channel = new MockChannel();
     channel.getWorkflowList().add(wf1);
     channel.prepare();
@@ -63,7 +66,7 @@ public class QuartzCronPollerTest extends com.adaptris.interlok.junit.scaffoldin
   public void testGeneratedSchedulerGroup_NoGroup() throws Exception {
     QuartzCronPoller p1 = new QuartzCronPoller();
     p1.setCronExpression("*/5 * * * * ?");
-    StandardWorkflow wf1 = createWorkflow(null, p1, new MockMessageProducer());
+    StandardWorkflow wf1 = createWorkflow(p1, new MockMessageProducer());
     Channel channel = new MockChannel();
     channel.getWorkflowList().add(wf1);
     channel.prepare();
@@ -93,7 +96,7 @@ public class QuartzCronPollerTest extends com.adaptris.interlok.junit.scaffoldin
     QuartzCronPoller p1 = new QuartzCronPoller();
     p1.setCronExpression("*/5 * * * * ?");
     p1.setQuartzId("quartzId");
-    StandardWorkflow wf1 = createWorkflow(null, p1, new MockMessageProducer());
+    StandardWorkflow wf1 = createWorkflow(p1, new MockMessageProducer());
     Channel channel = new MockChannel();
     channel.getWorkflowList().add(wf1);
     channel.prepare();
@@ -110,7 +113,7 @@ public class QuartzCronPollerTest extends com.adaptris.interlok.junit.scaffoldin
   public void testGeneratedQuartzId_NoDestination() throws Exception {
     QuartzCronPoller p1 = new QuartzCronPoller();
     p1.setCronExpression("*/5 * * * * ?");
-    StandardWorkflow wf1 = createWorkflow(null, p1, new MockMessageProducer());
+    StandardWorkflow wf1 = createWorkflow(p1, new MockMessageProducer());
     Channel channel = new MockChannel();
     channel.getWorkflowList().add(wf1);
     channel.prepare();
@@ -127,7 +130,7 @@ public class QuartzCronPollerTest extends com.adaptris.interlok.junit.scaffoldin
   public void testGeneratedQuartzId_HasDestination() throws Exception {
     QuartzCronPoller p1 = new QuartzCronPoller();
     p1.setCronExpression("*/5 * * * * ?");
-    StandardWorkflow wf1 = createWorkflow(new ConfiguredConsumeDestination("MyDestination"), p1, new MockMessageProducer());
+    StandardWorkflow wf1 = createWorkflow(p1, new MockMessageProducer());
     Channel channel = new MockChannel();
     channel.getWorkflowList().add(wf1);
     channel.prepare();
@@ -144,7 +147,7 @@ public class QuartzCronPollerTest extends com.adaptris.interlok.junit.scaffoldin
   public void testBug917() throws Exception {
     QuartzCronPoller p1 = new QuartzCronPoller();
     p1.setCronExpression("*/5 * * * * ?");
-    StandardWorkflow wf1 = createWorkflow(null, p1, new MockMessageProducer());
+    StandardWorkflow wf1 = createWorkflow(p1, new MockMessageProducer());
     Channel channel = new MockChannel();
     channel.getWorkflowList().add(wf1);
     channel.prepare();
@@ -162,9 +165,8 @@ public class QuartzCronPollerTest extends com.adaptris.interlok.junit.scaffoldin
 
     MockMessageProducer mock1 = new MockMessageProducer();
     MockMessageProducer mock2 = new MockMessageProducer();
-    StandardWorkflow wf1 = createWorkflow(new ConfiguredConsumeDestination("2Secs"), new QuartzCronPoller("*/2 * * * * ?"), mock1);
-    StandardWorkflow wf2 = createWorkflow(new ConfiguredConsumeDestination("VeryRare"), new QuartzCronPoller("0 00 00 31 * ?"),
-        mock2);
+    StandardWorkflow wf1 = createWorkflow(new QuartzCronPoller("*/2 * * * * ?"), mock1);
+    StandardWorkflow wf2 = createWorkflow(new QuartzCronPoller("0 00 00 31 * ?"), mock2);
     Channel channel = new MockChannel();
     channel.getWorkflowList().add(wf1);
     channel.getWorkflowList().add(wf2);
@@ -189,10 +191,8 @@ public class QuartzCronPollerTest extends com.adaptris.interlok.junit.scaffoldin
 
     MockMessageProducer mock1 = new MockMessageProducer();
     MockMessageProducer mock2 = new MockMessageProducer();
-    StandardWorkflow wf1 = createWorkflow(new ConfiguredConsumeDestination("2Secs"), new QuartzCronPoller("*/2 * * * * ?", false),
-        mock1);
-    StandardWorkflow wf2 = createWorkflow(new ConfiguredConsumeDestination("VeryRare"), new QuartzCronPoller("0 00 00 31 * ?", false),
-        mock2);
+    StandardWorkflow wf1 = createWorkflow(new QuartzCronPoller("*/2 * * * * ?", false), mock1);
+    StandardWorkflow wf2 = createWorkflow(new QuartzCronPoller("0 00 00 31 * ?", false), mock2);
     Channel channel = new MockChannel();
     channel.getWorkflowList().add(wf1);
     channel.getWorkflowList().add(wf2);
@@ -213,11 +213,8 @@ public class QuartzCronPollerTest extends com.adaptris.interlok.junit.scaffoldin
   }
 
   @SuppressWarnings("deprecation")
-  private StandardWorkflow createWorkflow(ConsumeDestination d, QuartzCronPoller poller, AdaptrisMessageProducer prod) {
+  private StandardWorkflow createWorkflow(QuartzCronPoller poller, AdaptrisMessageProducer prod) {
     PollingTrigger trigger = new PollingTrigger(poller, new StaticPollingTemplate(PAYLOAD));
-    if (d != null) {
-      trigger.setDestination(d);
-    }
     StandardWorkflow result = new StandardWorkflow();
     result.setConsumer(trigger);
     result.setProducer(prod);

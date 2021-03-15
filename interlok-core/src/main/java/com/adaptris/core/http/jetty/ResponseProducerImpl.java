@@ -16,20 +16,11 @@
 
 package com.adaptris.core.http.jetty;
 
-import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
-import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ProduceOnlyProducerImp;
 import com.adaptris.core.http.ContentTypeProvider;
@@ -39,12 +30,14 @@ import com.adaptris.core.http.server.HttpStatusProvider;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.http.server.HttpStatusProvider.Status;
 import com.adaptris.core.http.server.ResponseHeaderProvider;
-import com.adaptris.core.util.LoggingHelper;
-import com.adaptris.validation.constraints.ConfigDeprecated;
-
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import org.apache.commons.lang3.BooleanUtils;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author lchan
@@ -120,18 +113,6 @@ public abstract class ResponseProducerImpl extends ProduceOnlyProducerImp {
   @Getter
   @Setter
   private Boolean flushBuffer;
-  /**
-   * The destination has no meaning for a response producer since it uses object metadata.
-   *
-   */
-  @Getter
-  @Setter
-  @Deprecated
-  @Valid
-  @ConfigDeprecated(removalVersion = "4.0.0", message = "Has no meaning, and will be removed", groups = Deprecated.class)
-  private ProduceDestination destination;
-
-  private transient boolean destWarning;
 
   public ResponseProducerImpl() {
     setResponseHeaderProvider(new NoOpResponseHeaderProvider());
@@ -139,13 +120,10 @@ public abstract class ResponseProducerImpl extends ProduceOnlyProducerImp {
     setStatusProvider(new ConfiguredStatusProvider(HttpStatus.INTERNAL_ERROR_500));
   }
 
-
   @Override
-  public void prepare() throws CoreException {
-    logWarningIfNotNull(destWarning, () -> destWarning = true, getDestination(),
-        "{} uses destination, just remove it", LoggingHelper.friendlyName(this));
+  public void prepare() throws CoreException
+  {
   }
-
 
   @Override
   public String endpoint(AdaptrisMessage msg) throws ProduceException {

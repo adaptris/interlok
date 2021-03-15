@@ -16,17 +16,6 @@
 
 package com.adaptris.core.jms;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
-
-import java.util.concurrent.TimeUnit;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceException;
@@ -34,12 +23,21 @@ import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 import com.adaptris.core.services.aggregator.AggregatingServiceExample;
-import com.adaptris.core.services.aggregator.ConsumeDestinationFromMetadata;
 import com.adaptris.core.services.aggregator.IgnoreOriginalMimeAggregator;
 import com.adaptris.core.services.aggregator.ReplaceWithFirstMessage;
 import com.adaptris.core.util.MimeHelper;
 import com.adaptris.util.TimeInterval;
 import com.adaptris.util.text.mime.BodyPartIterator;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample {
 
@@ -157,10 +155,8 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
   private AggregatingJmsConsumeService createService(EmbeddedActiveMq broker, AggregatingQueueConsumer consumer, String queue) {
     AggregatingJmsConsumeService result = new AggregatingJmsConsumeService();
     result.setConnection(broker.getJmsConnection(new BasicActiveMqImplementation(), true));
-    ConsumeDestinationFromMetadata destination = new ConsumeDestinationFromMetadata();
-    destination.setFilterMetadataKey(DEFAULT_FILTER_KEY);
-    destination.setDefaultDestination(queue);
-    consumer.setDestination(destination);
+    consumer.setEndpoint(queue);
+    consumer.setFilterExpression("%message{" + DEFAULT_FILTER_KEY + "}");
     consumer.setTimeout(new TimeInterval(5L, TimeUnit.SECONDS));
     result.setJmsConsumer(consumer);
     return result;
@@ -192,14 +188,13 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
     AggregatingJmsConsumeService service = null;
 
     service = new AggregatingJmsConsumeService();
-    ConsumeDestinationFromMetadata mfd = new ConsumeDestinationFromMetadata();
-    mfd.setDefaultDestination("SampleQ1");
-    mfd.setFilterMetadataKey("filterSelectorKey");
     JmsConnection jmsConnection = new JmsConnection(new BasicActiveMqImplementation("tcp://localhost:61616"));
     jmsConnection.setConnectionAttempts(2);
     jmsConnection.setConnectionRetryInterval(new TimeInterval(3L, "SECONDS"));
     service.setConnection(jmsConnection);
-    AggregatingQueueConsumer consumer = new AggregatingQueueConsumer(mfd);
+    AggregatingQueueConsumer consumer = new AggregatingQueueConsumer();
+    consumer.setEndpoint("SampleQ1");
+    consumer.setFilterExpression("filterSelectorKey");
     consumer.setMessageAggregator(new ReplaceWithFirstMessage());
     consumer.setMessageTranslator(new TextMessageTranslator());
     service.setJmsConsumer(consumer);

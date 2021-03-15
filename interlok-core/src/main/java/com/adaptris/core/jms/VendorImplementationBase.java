@@ -1,14 +1,13 @@
 package com.adaptris.core.jms;
 
+import com.adaptris.core.ComponentLifecycleExtension;
+
 import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.Topic;
-import com.adaptris.annotation.Removal;
-import com.adaptris.core.ComponentLifecycleExtension;
-import com.adaptris.core.ConsumeDestination;
 
 public interface VendorImplementationBase
     extends ComponentLifecycleExtension, ConnectionComparator<VendorImplementationBase> {
@@ -108,48 +107,12 @@ public interface VendorImplementationBase
   /**
    * Create or otherwise get a MessageConsumer
    *
-   * @param dest the destination
-   * @param c the configuration.
-   * @implNote The default implementation just calls
-   *           {@link #createQueueReceiver(String, String, JmsActorConfig)} with the destination and
-   *           filter expression from the destination.
-   * @deprecated since 3.11.0 since {@link ConsumeDestination} is considered deprecated.
-   */
-  @Deprecated
-  @Removal(version = "4.0.0")
-  default MessageConsumer createQueueReceiver(ConsumeDestination dest, JmsActorConfig c)
-      throws JMSException {
-    return createQueueReceiver(dest.getDestination(), dest.getFilterExpression(), c);
-  }
-
-
-  /**
-   * Create or otherwise get a MessageConsumer
-   *
    * @param queue the Queue
    * @param filter the filter expression if any
    * @param c the configuration.
    */
   MessageConsumer createQueueReceiver(String queue, String filter, JmsActorConfig c)
       throws JMSException;
-
-  /**
-   * Create or otherwise get a MessageConsumer
-   *
-   * @param dest the destination
-   * @param c the configuration.
-   * @implNote The default implementation just calls
-   *           {@link #createTopicSubscriber(String, String, String, JmsActorConfig)} with the
-   *           destination and filter expression from the destination.
-   * @deprecated since 3.11.0 since {@link ConsumeDestination} is considered deprecated.
-   */
-  @Deprecated
-  @Removal(version = "4.0.0")
-  default MessageConsumer createTopicSubscriber(ConsumeDestination dest, String subscriptionId,
-      JmsActorConfig c)
-      throws JMSException {
-    return createTopicSubscriber(dest.getDestination(), dest.getFilterExpression(), subscriptionId, c);
-  }
 
   /**
    * Create or otherwise get a TopicSubscriber.

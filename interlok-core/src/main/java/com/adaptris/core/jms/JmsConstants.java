@@ -36,7 +36,7 @@ public final class JmsConstants {
    * as AdaptrisMessage <code>Object</code> metadata.
    * </p>
    */
-  public static final String OBJ_JMS_REPLY_TO_KEY = "jmsreplyto";
+  public static final String OBJ_JMS_REPLY_TO_KEY = "JMSReplyTo";
 
   /**
    * Key used to store the JMSType header property.
@@ -54,7 +54,7 @@ public final class JmsConstants {
    * Key used to store the JMSReplyTo header property.
    *
    */
-  public static final String JMS_REPLY_TO = "JMSReplyTo";
+  public static final String JMS_REPLY_TO = OBJ_JMS_REPLY_TO_KEY;
 
   /**
    * Key used to store the JMSRedelivered header property.

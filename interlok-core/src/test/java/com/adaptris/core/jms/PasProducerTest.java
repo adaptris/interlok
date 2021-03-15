@@ -16,8 +16,6 @@
 
 package com.adaptris.core.jms;
 
-import com.adaptris.core.ConfiguredConsumeDestination;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
@@ -56,21 +54,11 @@ public class PasProducerTest extends BasicJmsProducerCase {
   }
 
   @Override
-  protected DefinedJmsProducer createProducer(ConfiguredProduceDestination dest) {
-    return createProducer(dest.getDestination());
-  }
-
-  @Override
-  protected JmsConsumerImpl createConsumer(ConfiguredConsumeDestination dest) {
-    return createConsumer(dest.getDestination());
-  }
-
-//  @Override
   protected DefinedJmsProducer createProducer(String dest) {
     return new PasProducer().withTopic(dest);
   }
 
-//  @Override
+  @Override
   protected JmsConsumerImpl createConsumer(String dest) {
     return new PasConsumer().withTopic(dest);
   }

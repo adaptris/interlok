@@ -16,6 +16,18 @@
 
 package com.adaptris.core.ftp;
 
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.FormattedFilenameCreator;
+import com.adaptris.core.MetadataFileNameCreator;
+import com.adaptris.core.MimeEncoder;
+import com.adaptris.core.StandaloneProducer;
+import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
+import org.junit.Test;
+import org.mockftpserver.fake.FakeFtpServer;
+import org.mockftpserver.fake.filesystem.FileSystem;
+
 import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_PASSWORD;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_USERNAME;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_WORK_DIR_CANONICAL;
@@ -24,18 +36,6 @@ import static com.adaptris.core.ftp.EmbeddedFtpServer.DESTINATION_URL;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.PAYLOAD;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.SLASH;
 import static org.junit.Assert.assertEquals;
-import org.junit.Test;
-import org.mockftpserver.fake.FakeFtpServer;
-import org.mockftpserver.fake.filesystem.FileSystem;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.ConfiguredProduceDestination;
-import com.adaptris.core.FormattedFilenameCreator;
-import com.adaptris.core.MetadataFileNameCreator;
-import com.adaptris.core.MimeEncoder;
-import com.adaptris.core.StandaloneProducer;
-import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
 
 public class RelaxedFtpProducerTest extends RelaxedFtpProducerCase {
 
@@ -73,8 +73,7 @@ public class RelaxedFtpProducerTest extends RelaxedFtpProducerCase {
     FileSystem filesystem = helper.createFilesystem_DirsOnly();
     FakeFtpServer server = helper.createAndStart(filesystem);
     try {
-      RelaxedFtpProducer ftpProducer = createForTests(new ConfiguredProduceDestination(DESTINATION_URL + SLASH
-          + DEFAULT_WORK_DIR_NAME));
+      RelaxedFtpProducer ftpProducer = createForTests(DESTINATION_URL + SLASH + DEFAULT_WORK_DIR_NAME);
       FtpConnection produceConnection = create(server);
       StandaloneProducer sp = new StandaloneProducer(produceConnection, ftpProducer);
       // INTERLOK-3329 For coverage so the prepare() warning is executed 2x
@@ -94,8 +93,7 @@ public class RelaxedFtpProducerTest extends RelaxedFtpProducerCase {
     FileSystem filesystem = helper.createFilesystem_DirsOnly();
     FakeFtpServer server = helper.createAndStart(filesystem);
     try {
-      RelaxedFtpProducer ftpProducer = createForTests(new ConfiguredProduceDestination(DESTINATION_URL + SLASH
-          + DEFAULT_WORK_DIR_NAME));
+      RelaxedFtpProducer ftpProducer = createForTests(DESTINATION_URL + SLASH + DEFAULT_WORK_DIR_NAME);
       FtpConnection produceConnection = create(server);
       produceConnection.setAdditionalDebug(false);
       StandaloneProducer sp = new StandaloneProducer(produceConnection, ftpProducer);
@@ -114,8 +112,7 @@ public class RelaxedFtpProducerTest extends RelaxedFtpProducerCase {
     FileSystem filesystem = helper.createFilesystem_DirsOnly();
     FakeFtpServer server = helper.createAndStart(filesystem);
     try {
-      RelaxedFtpProducer ftpProducer = createForTests(new ConfiguredProduceDestination(DESTINATION_URL + SLASH
-          + DEFAULT_WORK_DIR_NAME));
+      RelaxedFtpProducer ftpProducer = createForTests(DESTINATION_URL + SLASH + DEFAULT_WORK_DIR_NAME);
       ftpProducer.setEncoder(new MimeEncoder());
       FtpConnection produceConnection = create(server);
       StandaloneProducer sp = new StandaloneProducer(produceConnection, ftpProducer);
@@ -138,10 +135,9 @@ public class RelaxedFtpProducerTest extends RelaxedFtpProducerCase {
     return consumeConnection;
   }
 
-  @SuppressWarnings("deprecation")
-  private RelaxedFtpProducer createForTests(ConfiguredProduceDestination dest) {
+  private RelaxedFtpProducer createForTests(String endpoint) {
     RelaxedFtpProducer ftpProducer = new RelaxedFtpProducer();
-    ftpProducer.setDestination(dest);
+    ftpProducer.setFtpEndpoint(endpoint);
     return ftpProducer;
   }
 

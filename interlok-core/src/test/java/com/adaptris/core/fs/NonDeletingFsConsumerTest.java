@@ -16,9 +16,20 @@
 
 package com.adaptris.core.fs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreConstants;
+import com.adaptris.core.FixedIntervalPoller;
+import com.adaptris.core.PollerImp;
+import com.adaptris.core.StandaloneConsumer;
+import com.adaptris.core.stubs.MockMessageListener;
+import com.adaptris.core.stubs.TempFileUtils;
+import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.util.GuidGenerator;
+import com.adaptris.util.TimeInterval;
+import org.apache.commons.io.FileUtils;
+import org.apache.oro.io.Perl5FilenameFilter;
+import org.junit.Test;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
@@ -29,20 +40,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.apache.commons.io.FileUtils;
-import org.apache.oro.io.Perl5FilenameFilter;
-import org.junit.Test;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ConfiguredConsumeDestination;
-import com.adaptris.core.CoreConstants;
-import com.adaptris.core.FixedIntervalPoller;
-import com.adaptris.core.PollerImp;
-import com.adaptris.core.StandaloneConsumer;
-import com.adaptris.core.stubs.MockMessageListener;
-import com.adaptris.core.stubs.TempFileUtils;
-import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.GuidGenerator;
-import com.adaptris.util.TimeInterval;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("deprecation")
 public class NonDeletingFsConsumerTest extends FsConsumerCase {
@@ -214,7 +215,7 @@ public class NonDeletingFsConsumerTest extends FsConsumerCase {
     String subDir = new GuidGenerator().safeUUID();
     MockMessageListener stub = new MockMessageListener(10);
     NonDeletingFsConsumer fs = createConsumer(subDir, "testConsumeWithFilter");
-    ((ConfiguredConsumeDestination) fs.getDestination()).setFilterExpression(".*\\.xml");
+    fs.setFilterExpression(".*\\.xml");
     fs.setFileFilterImp(Perl5FilenameFilter.class.getName());
     fs.setPoller(new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)));
     StandaloneConsumer sc = new StandaloneConsumer(fs);
@@ -347,12 +348,9 @@ public class NonDeletingFsConsumerTest extends FsConsumerCase {
 
   protected NonDeletingFsConsumer createConsumer(String subDir, String threadname) {
     String destinationName = subDir == null ? PROPERTIES.getProperty(BASE_KEY) : PROPERTIES.getProperty(BASE_KEY) + "/" + subDir;
-    ConfiguredConsumeDestination dest = threadname != null
-        ? new ConfiguredConsumeDestination(destinationName, null, threadname)
-        : new ConfiguredConsumeDestination(destinationName);
 
     NonDeletingFsConsumer fs = new NonDeletingFsConsumer();
-    fs.setDestination(dest);
+    fs.setBaseDirectoryUrl(destinationName);
     fs.setReacquireLockBetweenMessages(true);
     fs.setCreateDirs(true);
     return fs;

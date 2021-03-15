@@ -16,8 +16,6 @@
 
 package com.adaptris.core.jms;
 
-import com.adaptris.core.ConfiguredConsumeDestination;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
@@ -48,21 +46,11 @@ public class PtpProducerTest extends BasicJmsProducerCase {
   }
 
   @Override
-  protected DefinedJmsProducer createProducer(ConfiguredProduceDestination dest) {
-    return createProducer(dest.getDestination());
-  }
-
-  @Override
-  protected JmsConsumerImpl createConsumer(ConfiguredConsumeDestination dest) {
-    return createConsumer(dest.getDestination());
-  }
-
-//  @Override
   protected PtpProducer createProducer(String dest) {
     return new PtpProducer().withQueue(dest);
   }
 
-//  @Override
+  @Override
   protected PtpConsumer createConsumer(String dest) {
     return new PtpConsumer().withQueue(dest);
   }

@@ -44,7 +44,7 @@ public class ProduceOnlyProducerImpTest {
     MockMessageProducer mock = createAndStart();
     try {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
-      mock.produce(msg, (m) -> null);
+      mock.produce(msg);
       assertEquals(1, mock.getMessages().size());
     } finally {
       LifecycleHelper.stopAndClose(mock);
@@ -81,7 +81,7 @@ public class ProduceOnlyProducerImpTest {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
     MockMessageProducer mock = createAndStart();
     try {
-      mock.request(msg, (m) -> null);
+      mock.request(msg);
     } finally {
       LifecycleHelper.stopAndClose(mock);
     }
@@ -93,7 +93,7 @@ public class ProduceOnlyProducerImpTest {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
     MockMessageProducer mock = createAndStart();
     try {
-      mock.request(msg, (m) -> null, 100L);
+      mock.request(msg, 100L);
     } finally {
       LifecycleHelper.stopAndClose(mock);
     }

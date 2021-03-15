@@ -69,8 +69,7 @@ import lombok.Setter;
 @ComponentProfile(summary = "Listen for JMS messages on the specified queue or topic", tag = "consumer,jms",
 recommended = {JmsConnection.class})
 @DisplayOrder(
-    order = {"endpoint", "messageSelector", "destination", "acknowledgeMode",
-    "messageTranslator"})
+    order = {"endpoint", "messageSelector", "acknowledgeMode", "messageTranslator"})
 @NoArgsConstructor
 public class JmsConsumer extends JmsConsumerImpl {
 
@@ -90,8 +89,10 @@ public class JmsConsumer extends JmsConsumerImpl {
   private Boolean deferConsumerCreationToVendor;
 
   /**
-   * The RFC6167 format topic/queue.
-   *
+   * The RFC6167 format topic/queue. This supports the message resolve
+   * expression: %messageObject{KEY}, which allows for the the
+   * destination to be retrieved from object headers. It also allows for
+   * string expressions to be built dynamically as necessary.
    */
   @Getter
   @Setter

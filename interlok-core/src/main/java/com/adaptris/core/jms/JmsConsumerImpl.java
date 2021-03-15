@@ -123,11 +123,6 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
     return configuredEndpoint();
   }
 
-  @Override
-  protected String newThreadName() {
-    return retrieveAdaptrisMessageListener().friendlyName();
-  }
-
   protected abstract String configuredEndpoint();
 
 

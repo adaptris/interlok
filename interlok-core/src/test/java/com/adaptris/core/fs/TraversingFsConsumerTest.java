@@ -16,24 +16,25 @@
 
 package com.adaptris.core.fs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-import org.apache.commons.io.FileUtils;
-import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.TimeInterval;
+import org.apache.commons.io.FileUtils;
+import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("deprecation")
 public class TraversingFsConsumerTest extends FsConsumerCase {
@@ -81,7 +82,7 @@ public class TraversingFsConsumerTest extends FsConsumerCase {
     String subDir = new GuidGenerator().safeUUID();
     MockMessageListener stub = new MockMessageListener(10);
     FsConsumer fs = createConsumer(subDir);
-    fs.getDestination().setFilterExpression(".*xml");
+    fs.setFilterExpression(".*xml");
     fs.setReacquireLockBetweenMessages(true);
     fs.setPoller(new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)));
     StandaloneConsumer sc = new StandaloneConsumer(fs);
@@ -116,7 +117,7 @@ public class TraversingFsConsumerTest extends FsConsumerCase {
   protected TraversingFsConsumer createConsumer(String subDir) {
     String destinationName = subDir == null ? PROPERTIES.getProperty(BASE_KEY) : PROPERTIES.getProperty(BASE_KEY) + "/" + subDir;
     TraversingFsConsumer fs = new TraversingFsConsumer();
-    fs.setDestination(new ConfiguredConsumeDestination(destinationName));
+    fs.setBaseDirectoryUrl(destinationName);
     fs.setCreateDirs(true);
     return fs;
   }

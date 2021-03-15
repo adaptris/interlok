@@ -35,7 +35,7 @@ import lombok.Setter;
 @XStreamAlias("jms-async-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Place message on a JMS queue or topic asynchronously", tag = "producer,jms", recommended = {JmsConnection.class})
-@DisplayOrder(order = {"endpoint", "destination", "asyncMessageErrorHandler",
+@DisplayOrder(order = {"endpoint", "asyncMessageErrorHandler",
     "messageTranslator", "deliveryMode", "priority", "ttl", "acknowledgeMode"})
 public class JmsAsyncProducer extends JmsProducer {
 

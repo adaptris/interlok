@@ -16,13 +16,37 @@
 
 package com.adaptris.core.fs;
 
-import static com.adaptris.core.CoreConstants.FILE_LAST_MODIFIED_KEY;
-import static com.adaptris.core.CoreConstants.FS_CONSUME_DIRECTORY;
-import static com.adaptris.core.CoreConstants.FS_CONSUME_PARENT_DIR;
-import static com.adaptris.core.CoreConstants.FS_FILE_SIZE;
-import static com.adaptris.core.CoreConstants.ORIGINAL_NAME_KEY;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.core.AdaptrisComponent;
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageListener;
+import com.adaptris.core.AdaptrisPollingConsumer;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.fs.enhanced.FileSorter;
+import com.adaptris.core.fs.enhanced.NoSorting;
+import com.adaptris.core.runtime.ParentRuntimeInfoComponent;
+import com.adaptris.core.runtime.RuntimeInfoComponent;
+import com.adaptris.core.runtime.RuntimeInfoComponentFactory;
+import com.adaptris.core.runtime.WorkflowManager;
+import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.fs.FsException;
+import com.adaptris.fs.FsWorker;
+import com.adaptris.fs.NioWorker;
+import com.adaptris.interlok.util.FileFilterBuilder;
+import com.adaptris.util.TimeInterval;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
+import javax.management.MalformedObjectNameException;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -31,41 +55,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.management.MalformedObjectNameException;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.ObjectUtils;
-
-import com.adaptris.annotation.AdvancedConfig;
-import com.adaptris.annotation.AutoPopulated;
-import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.core.AdaptrisComponent;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisPollingConsumer;
-import com.adaptris.core.ConsumeDestination;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.fs.enhanced.FileSorter;
-import com.adaptris.core.fs.enhanced.NoSorting;
-import com.adaptris.core.runtime.ParentRuntimeInfoComponent;
-import com.adaptris.core.runtime.RuntimeInfoComponent;
-import com.adaptris.core.runtime.RuntimeInfoComponentFactory;
-import com.adaptris.core.runtime.WorkflowManager;
-import com.adaptris.core.util.DestinationHelper;
-import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.core.util.LoggingHelper;
-import com.adaptris.fs.FsException;
-import com.adaptris.fs.FsWorker;
-import com.adaptris.fs.NioWorker;
-import com.adaptris.interlok.util.FileFilterBuilder;
-import com.adaptris.util.TimeInterval;
-import com.adaptris.validation.constraints.ConfigDeprecated;
-
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
+import static com.adaptris.core.CoreConstants.FILE_LAST_MODIFIED_KEY;
+import static com.adaptris.core.CoreConstants.FS_CONSUME_DIRECTORY;
+import static com.adaptris.core.CoreConstants.FS_CONSUME_PARENT_DIR;
+import static com.adaptris.core.CoreConstants.FS_FILE_SIZE;
+import static com.adaptris.core.CoreConstants.ORIGINAL_NAME_KEY;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
  * <p>
@@ -85,8 +80,7 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
    * expressions to perform filtering
    * </p>
    * <p>
-   * The expression that is used to filter messages is derived from {@link #getFilterExpression()}
-   * or from the deprecated {@link #getDestination()}.
+   * The expression that is used to filter messages is derived from {@link #getFilterExpression()}.
    * </p>
    *
    * @see #getFilterExpression()
@@ -164,23 +158,12 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
   private FileSorter fileSorter;
 
   /**
-   * The consume destination represents the base-directory where you are consuming files from.
-   *
-   */
-  @Getter
-  @Setter
-  @Deprecated
-  @Valid
-  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'base-directory-url' instead", groups = Deprecated.class)
-  private ConsumeDestination destination;
-
-  /**
    * The base directory specified as a URL.
    *
    */
   @Getter
   @Setter
-  // Needs to be @NotBlank when destination is removed.
+  @NotBlank
   private String baseDirectoryUrl;
 
   /**
@@ -201,7 +184,6 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
   // not marshalled
   protected transient FileFilter fileFilter;
   protected transient FsWorker fsWorker = new NioWorker();
-  private transient boolean destinationWarningLogged = false;
 
   public FsConsumerImpl() {
     setFileSorter(new NoSorting());
@@ -209,23 +191,15 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
 
   @Override
   protected void prepareConsumer() throws CoreException {
-    DestinationHelper.logWarningIfNotNull(destinationWarningLogged, () -> destinationWarningLogged = true, getDestination(),
-        "{} uses destination, use base-directory-url and filter-expression instead",
-        LoggingHelper.friendlyName(this));
-    DestinationHelper.mustHaveEither(getBaseDirectoryUrl(), getDestination());
+
   }
 
   protected String baseDirUrl() {
-    return DestinationHelper.consumeDestination(getBaseDirectoryUrl(), getDestination());
+    return getBaseDirectoryUrl();
   }
 
   protected String filterExpression() {
-    return DestinationHelper.filterExpression(getFilterExpression(), getDestination());
-  }
-
-  @Override
-  protected String newThreadName() {
-    return DestinationHelper.threadName(retrieveAdaptrisMessageListener(), getDestination());
+    return getFilterExpression();
   }
 
   /**

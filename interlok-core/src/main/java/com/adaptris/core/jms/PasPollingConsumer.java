@@ -56,7 +56,7 @@ public class PasPollingConsumer extends JmsPollingConsumerImpl {
    */
   @Getter
   @Setter
-  // Needs to be @NotBlank when destination is removed.
+  @NotBlank
   private String topic;
 
   @NotNull

@@ -18,6 +18,8 @@ package com.adaptris.core.jms;
 
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
+import javax.validation.constraints.NotBlank;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -40,18 +42,20 @@ import lombok.Setter;
 @ComponentProfile(summary = "Listen for JMS messages on the specified queue", tag = "consumer,jms",
     recommended = {JmsConnection.class})
 @DisplayOrder(
-    order = {"queue", "messageSelector", "destination", "acknowledgeMode",
+    order = {"queue", "messageSelector", "acknowledgeMode",
     "messageTranslator"})
 @NoArgsConstructor
 public class PtpConsumer extends JmsConsumerImpl {
 
   /**
-   * The JMS Queue
-   *
+   * The JMS Queue. This supports the message resolve expression:
+   * %messageObject{KEY}, which allows for the the destination to be
+   * retrieved from object headers. It also allows for string
+   * expressions to be built dynamically as necessary.
    */
   @Getter
   @Setter
-  // Needs to be @NotBlank when destination is removed.
+  @NotBlank
   private String queue;
 
   @Override
@@ -65,7 +69,6 @@ public class PtpConsumer extends JmsConsumerImpl {
         retrieveConnection(JmsConnection.class).configuredVendorImplementation();
     return jmsImpl.createQueueReceiver(endpoint(), messageSelector(), this);
   }
-
 
   public PtpConsumer withQueue(String queue) {
     setQueue(queue);

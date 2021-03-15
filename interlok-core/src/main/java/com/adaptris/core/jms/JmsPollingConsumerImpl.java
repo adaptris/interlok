@@ -16,7 +16,19 @@
 
 package com.adaptris.core.jms;
 
-import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.core.AdaptrisPollingConsumer;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.jms.jndi.StandardJndiImplementation;
+import com.adaptris.core.util.LifecycleHelper;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+import org.apache.commons.lang3.BooleanUtils;
+import org.slf4j.Logger;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -26,25 +38,7 @@ import javax.jms.Session;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.lang3.BooleanUtils;
-import org.slf4j.Logger;
-
-import com.adaptris.annotation.AdvancedConfig;
-import com.adaptris.annotation.AutoPopulated;
-import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.annotation.Removal;
-import com.adaptris.core.AdaptrisPollingConsumer;
-import com.adaptris.core.ConsumeDestination;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.jms.jndi.StandardJndiImplementation;
-import com.adaptris.core.util.DestinationHelper;
-import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.core.util.LoggingHelper;
-
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
+import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 
 /**
  * Abstract implementation of {@link AdaptrisPollingConsumer} for queues and topics.
@@ -86,27 +80,7 @@ public abstract class JmsPollingConsumerImpl extends BaseJmsPollingConsumerImpl 
   @Setter
   private Boolean additionalDebug;
 
-  /**
-   * The consume destination represents the endpoint that we will receive JMS messages from.
-   * <p>
-   * Depending on the flavour of the concrete consumer it may be a RFC6167 style string, a queue or
-   * a topic
-   * </p>
-   *
-   * @deprecated since 3.11.0 use the endpoint/queue/topic configuration available on the concrete
-   *             consumer
-   */
-  @Deprecated
-  @Valid
-  @Getter
-  @Setter
-  @Removal(version = "4.0.0",
-  message = "since 3.11.0 use the endpoint/queue/topic configuration available on the concrete consumer")
-  private ConsumeDestination destination;
-
   private transient Connection connection;
-  private transient boolean destinationWarningLogged = false;
-
 
   public JmsPollingConsumerImpl() {
     // defaults...
@@ -115,28 +89,18 @@ public abstract class JmsPollingConsumerImpl extends BaseJmsPollingConsumerImpl 
   }
 
   @Override
-  protected void prepareConsumer() throws CoreException {
-    DestinationHelper.logWarningIfNotNull(destinationWarningLogged,
-        () -> destinationWarningLogged = true, getDestination(),
-        "{} uses destination, this will be removed in a future release",
-        LoggingHelper.friendlyName(this));
-    DestinationHelper.mustHaveEither(configuredEndpoint(), getDestination());
+  protected void prepareConsumer() throws CoreException
+  {
   }
 
   protected String messageSelector() {
-    return DestinationHelper.filterExpression(getMessageSelector(), getDestination());
+    return getMessageSelector();
   }
 
 
   protected String endpoint() {
-    return DestinationHelper.consumeDestination(configuredEndpoint(), getDestination());
+    return configuredEndpoint();
   }
-
-  @Override
-  protected String newThreadName() {
-    return DestinationHelper.threadName(retrieveAdaptrisMessageListener(), getDestination());
-  }
-
 
   protected abstract String configuredEndpoint();
 

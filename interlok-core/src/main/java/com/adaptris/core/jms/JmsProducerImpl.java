@@ -19,11 +19,9 @@ package com.adaptris.core.jms;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.RequestReplyProducerBase;
 import com.adaptris.core.util.Args;
@@ -197,25 +195,9 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
     return 0L;
   }
 
-  @Deprecated
-  @Removal(version = "4.0.0")
-  public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
-    produce(msg);
-  }
-
   @Override
   public AdaptrisMessage request(AdaptrisMessage msg) throws ProduceException {
     return request(msg, defaultTimeout());
-  }
-
-  @Override
-  public AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination dest) throws ProduceException {
-    return request(msg);
-  }
-
-  @Override
-  public AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination dest, long timeout) throws ProduceException {
-    return request(msg, timeout);
   }
 
   protected ProducerSession setupSession(AdaptrisMessage msg) throws JMSException {

@@ -15,21 +15,6 @@
  */
 package com.adaptris.core.jmx;
 
-import java.io.IOException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanServerConnection;
-import javax.management.Notification;
-import javax.management.NotificationListener;
-import javax.management.ObjectName;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
-import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -40,20 +25,29 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumerImp;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ClosedState;
-import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
-import com.adaptris.core.util.DestinationHelper;
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.util.FifoMutexLock;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.BooleanUtils;
+
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanServerConnection;
+import javax.management.Notification;
+import javax.management.NotificationListener;
+import javax.management.ObjectName;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @XStreamAlias("jmx-notification-consumer")
 @AdapterComponent
@@ -76,22 +70,12 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
   private Boolean failIfNotFound;
 
   /**
-   * The consume destination is the ObjectName that we listen for notifications from.
-   *
-   */
-  @Deprecated
-  @Valid
-  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'object-name' instead", groups = Deprecated.class)
-  @Getter
-  @Setter
-  private ConsumeDestination destination;
-
-  /**
    * The object name which we will register as a listener for.
    *
    */
   @Getter
   @Setter
+  @NotBlank
   private String objectName;
 
   private transient MBeanServerConnection connection;
@@ -99,7 +83,6 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
   private transient ScheduledExecutorService scheduler;
   private transient FifoMutexLock locker;
   private transient TimeInterval retryInterval;
-  private transient boolean destinationWarningLogged;
 
   public JmxNotificationConsumer() {
     setSerializer(new SimpleNotificationSerializer());
@@ -108,23 +91,12 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
   }
 
   protected String objectName() {
-    return DestinationHelper.consumeDestination(getObjectName(), getDestination());
-  }
-
-  @Override
-  protected String newThreadName() {
-    return DestinationHelper.threadName(retrieveAdaptrisMessageListener(), getDestination());
+    return getObjectName();
   }
 
   @Override
   public void prepare() throws CoreException {
-    DestinationHelper.logWarningIfNotNull(destinationWarningLogged,
-        () -> destinationWarningLogged = true, getDestination(),
-        "{} uses destination, use objectName instead",
-        LoggingHelper.friendlyName(this));
-    DestinationHelper.mustHaveEither(getObjectName(), getDestination());
   }
-
 
   @Override
   public void init() throws CoreException {
@@ -204,7 +176,7 @@ public class JmxNotificationConsumer extends AdaptrisMessageConsumerImp implemen
    * Whether or not to fail if the ObjectName is not found.
    * <p>
    * If set to false, and the object is not found, then an attempt will be made periodically to check the MBeanServeConnection for
-   * the object instance availability; when it becomes available, the notificaiton listener will be added at that point.
+   * the object instance availability; when it becomes available, the notification listener will be added at that point.
    * </p>
    *
    *

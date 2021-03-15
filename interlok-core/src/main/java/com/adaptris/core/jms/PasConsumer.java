@@ -16,10 +16,6 @@
 
 package com.adaptris.core.jms;
 
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -32,6 +28,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.jms.JMSException;
+import javax.jms.MessageConsumer;
+import javax.validation.constraints.NotBlank;
 
 /**
  * <p>
@@ -45,7 +47,7 @@ import lombok.Setter;
 @AdapterComponent
 @ComponentProfile(summary = "Listen for JMS messages on the specified topic", tag = "consumer,jms",
 recommended = {JmsConnection.class})
-@DisplayOrder(order = {"topic", "messageSelector", "destination", "durable",
+@DisplayOrder(order = {"topic", "messageSelector", "durable",
     "subscriptionId", "acknowledgeMode", "messageTranslator"})
 @NoArgsConstructor
 public class PasConsumer extends JmsConsumerImpl {
@@ -73,16 +75,17 @@ public class PasConsumer extends JmsConsumerImpl {
   private String subscriptionId;
 
   /**
-   * The JMS Topic
-   *
+   * The JMS Topic. This supports the message resolve expression:
+   * %messageObject{KEY}, which allows for the the destination to be
+   * retrieved from object headers. It also allows for string
+   * expressions to be built dynamically as necessary.
    */
   @Getter
   @Setter
-  // Needs to be @NotBlank when destination is removed.
+  @NotBlank
   private String topic;
 
   private transient boolean durableWarningLogged = false;
-
 
   protected String subscriptionId() {
     if (durable()) {
@@ -97,8 +100,8 @@ public class PasConsumer extends JmsConsumerImpl {
     super.prepare();
     if (getDurable() != null) {
       LoggingHelper.logWarning(durableWarningLogged, () -> durableWarningLogged = true,
-          "{} uses 'durable', this will be implied if subscription-id is not blank",
-          LoggingHelper.friendlyName(this));
+              "{} uses 'durable', this will be implied if subscription-id is not blank",
+              LoggingHelper.friendlyName(this));
 
     }
   }

@@ -16,18 +16,6 @@
 
 package com.adaptris.core.ftp;
 
-import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
-import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
-import static com.adaptris.core.util.DestinationHelper.mustHaveEither;
-
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import javax.validation.Valid;
-
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.ObjectUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -40,20 +28,25 @@ import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FileNameCreator;
 import com.adaptris.core.FormattedFilenameCreator;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.RequestReplyProducerImp;
 import com.adaptris.core.util.Args;
-import com.adaptris.core.util.DestinationHelper;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ObjectUtils;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 
 /**
  * Ftp implementation of the AdaptrisMessageProducer interface.
@@ -97,7 +90,6 @@ import lombok.Setter;
  * @see FileNameCreator
  * @see FtpConnection
  * @see FileTransferConnection
- * @see ProduceDestination
  */
 @XStreamAlias("ftp-producer")
 @AdapterComponent
@@ -164,16 +156,6 @@ public class FtpProducer extends RequestReplyProducerImp {
 
   @Valid
   private FileNameCreator filenameCreator;
-  /**
-   * The ProduceDestination contains the ftp-url.
-   *
-   */
-  @Getter
-  @Setter
-  @Deprecated
-  @Valid
-  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'ftp-endpoint' instead", groups = Deprecated.class)
-  private ProduceDestination destination;
 
   /**
    * The FTP endpoint in which to deposit files.
@@ -194,10 +176,8 @@ public class FtpProducer extends RequestReplyProducerImp {
   @InputFieldHint(expression = true)
   @Getter
   @Setter
-  // Needs to be @NotBlank when destination is removed.
+  @NotBlank
   private String ftpEndpoint;
-  private transient boolean destWarning;
-  private transient boolean requestReplyWarning;
 
 
   /**
@@ -355,15 +335,8 @@ public class FtpProducer extends RequestReplyProducerImp {
 
   @Override
   public void prepare() throws CoreException {
-    logWarningIfNotNull(destWarning, () -> destWarning = true, getDestination(),
-        "{} uses destination, use 'ftp-url' instead", LoggingHelper.friendlyName(this));
-    logWarningIfNotNull(requestReplyWarning, () -> requestReplyWarning = true, getReplyDirectory(),
-        "{} uses reply-directory, request reply via FTP will be removed without warning",
-        LoggingHelper.friendlyName(this));
-    mustHaveEither(getFtpEndpoint(), getDestination());
-    registerEncoderMessageFactory();
-  }
 
+  }
 
   /**
    * Get the build directory.
@@ -418,6 +391,6 @@ public class FtpProducer extends RequestReplyProducerImp {
 
   @Override
   public String endpoint(AdaptrisMessage msg) throws ProduceException {
-    return DestinationHelper.resolveProduceDestination(getFtpEndpoint(), getDestination(), msg);
+    return msg.resolve(getFtpEndpoint());
   }
 }

@@ -16,6 +16,26 @@
 
 package com.adaptris.core.ftp;
 
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.CoreConstants;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.FormattedFilenameCreator;
+import com.adaptris.core.MetadataFileNameCreator;
+import com.adaptris.core.MimeEncoder;
+import com.adaptris.core.ServiceCase;
+import com.adaptris.core.ServiceException;
+import com.adaptris.core.StandaloneProducer;
+import com.adaptris.core.StandaloneRequestor;
+import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.util.TimeInterval;
+import org.junit.Test;
+import org.mockftpserver.fake.FakeFtpServer;
+import org.mockftpserver.fake.filesystem.FileEntry;
+import org.mockftpserver.fake.filesystem.FileSystem;
+
+import java.util.concurrent.TimeUnit;
+
 import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_BUILD_DIR_CANONICAL;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_BUILD_DIR_NAME;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_PASSWORD;
@@ -31,25 +51,6 @@ import static com.adaptris.core.ftp.EmbeddedFtpServer.SERVER_ADDRESS;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.SLASH;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import java.util.concurrent.TimeUnit;
-import org.junit.Test;
-import org.mockftpserver.fake.FakeFtpServer;
-import org.mockftpserver.fake.filesystem.FileEntry;
-import org.mockftpserver.fake.filesystem.FileSystem;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.ConfiguredProduceDestination;
-import com.adaptris.core.CoreConstants;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.FormattedFilenameCreator;
-import com.adaptris.core.MetadataFileNameCreator;
-import com.adaptris.core.MimeEncoder;
-import com.adaptris.core.ServiceCase;
-import com.adaptris.core.ServiceException;
-import com.adaptris.core.StandaloneProducer;
-import com.adaptris.core.StandaloneRequestor;
-import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.TimeInterval;
 
 @SuppressWarnings("deprecation")
 public class FtpProducerTest extends FtpProducerCase {
@@ -471,13 +472,13 @@ public class FtpProducerTest extends FtpProducerCase {
   }
 
   private FtpProducer createForTests() {
-    return createForTests(new ConfiguredProduceDestination(SERVER_ADDRESS));
+    return createForTests(SERVER_ADDRESS);
   }
 
   @SuppressWarnings("deprecation")
-  private FtpProducer createForTests(ConfiguredProduceDestination dest) {
+  private FtpProducer createForTests(String endPoint) {
     FtpProducer ftpProducer = new FtpProducer();
-    if (dest.getDestination().equals(SERVER_ADDRESS)) {
+    if (endPoint.equals(SERVER_ADDRESS)) {
       ftpProducer.setBuildDirectory(DEFAULT_BUILD_DIR_CANONICAL);
       ftpProducer.setDestDirectory(DEFAULT_WORK_DIR_CANONICAL);
     }
@@ -485,7 +486,7 @@ public class FtpProducerTest extends FtpProducerCase {
       ftpProducer.setBuildDirectory(SLASH + DEFAULT_BUILD_DIR_NAME);
       ftpProducer.setDestDirectory(SLASH + DEFAULT_WORK_DIR_NAME);
     }
-    ftpProducer.setDestination(dest);
+    ftpProducer.setFtpEndpoint(endPoint);
     return ftpProducer;
   }
 }

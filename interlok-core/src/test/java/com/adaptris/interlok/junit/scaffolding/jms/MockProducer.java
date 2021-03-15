@@ -1,14 +1,14 @@
 package com.adaptris.interlok.junit.scaffolding.jms;
 
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Message;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.jms.DefinedJmsProducer;
 import com.adaptris.core.jms.ProducerSession;
+
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Message;
 
 public class MockProducer extends DefinedJmsProducer {
 

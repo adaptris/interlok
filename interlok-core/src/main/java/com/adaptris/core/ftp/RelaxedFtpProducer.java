@@ -16,15 +16,6 @@
 
 package com.adaptris.core.ftp;
 
-import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
-import static com.adaptris.core.util.DestinationHelper.mustHaveEither;
-
-import java.io.InputStream;
-
-import javax.validation.Valid;
-
-import org.apache.commons.lang3.ObjectUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -35,17 +26,17 @@ import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FileNameCreator;
 import com.adaptris.core.FormattedFilenameCreator;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ProduceOnlyProducerImp;
-import com.adaptris.core.util.DestinationHelper;
-import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.filetransfer.FileTransferClient;
-import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.ObjectUtils;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import java.io.InputStream;
 
 /**
  * Ftp producer implementation.
@@ -76,7 +67,6 @@ import lombok.Setter;
  * @see FileNameCreator
  * @see FtpConnection
  * @see FileTransferConnection
- * @see ProduceDestination
  * @author lchan
  */
 @XStreamAlias("relaxed-ftp-producer")
@@ -93,17 +83,6 @@ public class RelaxedFtpProducer extends ProduceOnlyProducerImp {
   @Getter
   @Setter
   private FileNameCreator filenameCreator;
-
-  /**
-   * The ProduceDestination contains the ftp-url.
-   *
-   */
-  @Getter
-  @Setter
-  @Deprecated
-  @Valid
-  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'ftp-endpoint' instead", groups = Deprecated.class)
-  private ProduceDestination destination;
 
   /**
    * The FTP endpoint in which to deposit files.
@@ -124,17 +103,15 @@ public class RelaxedFtpProducer extends ProduceOnlyProducerImp {
   @InputFieldHint(expression = true)
   @Getter
   @Setter
-  // Needs to be @NotBlank when destination is removed.
+  @NotBlank
   private String ftpEndpoint;
-
-  private transient boolean destWarning;
 
   public RelaxedFtpProducer() {
   }
 
   /**
    *
-   * @see com.adaptris.core.AdaptrisMessageProducerImp#produce(AdaptrisMessage, ProduceDestination)
+   * @see com.adaptris.core.AdaptrisMessageProducerImp#produce(AdaptrisMessage)
    */
   @Override
   public void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException {
@@ -170,10 +147,7 @@ public class RelaxedFtpProducer extends ProduceOnlyProducerImp {
 
   @Override
   public void prepare() throws CoreException {
-    logWarningIfNotNull(destWarning, () -> destWarning = true, getDestination(),
-        "{} uses destination, use 'ftp-url' instead", LoggingHelper.friendlyName(this));
-    mustHaveEither(getFtpEndpoint(), getDestination());
-    registerEncoderMessageFactory();
+
   }
 
   FileNameCreator filenameCreator() {
@@ -182,6 +156,6 @@ public class RelaxedFtpProducer extends ProduceOnlyProducerImp {
 
   @Override
   public String endpoint(AdaptrisMessage msg) throws ProduceException {
-    return DestinationHelper.resolveProduceDestination(getFtpEndpoint(), getDestination(), msg);
+    return msg.resolve(getFtpEndpoint());
   }
 }
