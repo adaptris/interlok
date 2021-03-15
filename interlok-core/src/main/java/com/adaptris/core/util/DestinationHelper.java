@@ -1,12 +1,11 @@
 package com.adaptris.core.util;
 
+import java.util.Optional;
+import org.apache.commons.lang3.StringUtils;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.util.LoggingHelper.WarningLoggedCallback;
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.Optional;
 
 public class DestinationHelper {
 
@@ -106,7 +105,7 @@ public class DestinationHelper {
       WarningLoggedCallback callback,
       String text,
       Object... args) {
-    logWarningIfNotNull(alreadyLogged, callback, text, args);
+    logWarningIfNotNull(alreadyLogged, callback, null, text, args);
   }
 
   /**
@@ -120,7 +119,11 @@ public class DestinationHelper {
    * @see LoggingHelper#logWarning(boolean, WarningLoggedCallback, String, Object...)
    */
   public static void logWarningIfNotNull(boolean alreadyLogged,
-      WarningLoggedCallback callback, String text, Object... args) {
+      WarningLoggedCallback callback, Object d, String text, Object... args) {
+    if (d != null) {
+      LoggingHelper.logWarning(alreadyLogged, callback, text, args);
+    } else {
       callback.warningLogged();
+    }
   }
 }
