@@ -12,7 +12,7 @@ ext {
 dependencies {
 
   compile project(':interlok-core-apt')
-  compile ("com.thoughtworks.xstream:xstream:1.4.15")
+  compile ("com.thoughtworks.xstream:xstream:1.4.16")
   compile ("commons-io:commons-io:2.8.0")
   compile ("commons-net:commons-net:3.8.0")
   compile ("commons-pool:commons-pool:1.6")
