@@ -48,5 +48,21 @@
     ]]></notes>
     <cve>CVE-2020-7712</cve>
   </suppress>
-
+  <suppress>
+    <notes><![CDATA[
+    file name: mxparser-1.2.1.jar matched from : cpe:2.3:a:xstream_project:xstream:*:*:*:*:*:*:*:* versions up to (including) 1.4.6
+     - This is the replacement for xpp3 which is made by xstream but isn't xstream so the regexp is all wrong.
+     - we can't do
+      <packageUrl regex="true">^pkg:maven/io\.github\.x\-stream/mxparser@.*$</packageUrl>
+      <cpe>cpe:/a:xstream_project:xstream</cpe>
+      Because this causes it to have a low-confidence match against some oracle crap so just exclude the explicit CVEs
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/io\.github\.x\-stream/mxparser@.*$</packageUrl>
+    <cve>CVE-2013-7285</cve>
+    <cve>CVE-2016-3674</cve>
+    <cve>CVE-2017-7957</cve>
+    <cve>CVE-2020-26217</cve>
+    <cve>CVE-2020-26258</cve>
+    <cve>CVE-2020-26259</cve>
+  </suppress>
 </suppressions>
