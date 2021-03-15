@@ -34,8 +34,7 @@ public class DestinationHelper {
    */
   @Deprecated
   public static String consumeDestination(final String configured) {
-    Object legacy = null;
-    return Optional.ofNullable(legacy).map((d) -> d.toString()).orElse(configured);
+    return configured;
   }
 
   /**
@@ -54,8 +53,7 @@ public class DestinationHelper {
    */
   @Deprecated
   public static String filterExpression(final String configured) {
-    String legacy = null;
-    return Optional.ofNullable(legacy).map((d) -> d.toString()).orElse(configured);
+    return configured;
   }
 
 
@@ -92,9 +90,7 @@ public class DestinationHelper {
    * @return {@code listener#friendlyName()}.
    */
   public static String threadName(final AdaptrisMessageListener listener, String defaultName) {
-    Object legacy = null;
-    String threadName = Optional.ofNullable(listener).map((l) -> l.friendlyName()).orElse(defaultName);
-    return Optional.ofNullable(legacy).map((d) -> d.toString()).filter((s) -> StringUtils.isNotEmpty(s)).orElse(threadName);
+    return Optional.ofNullable(listener).map((l) -> l.friendlyName()).orElse(defaultName);
   }
 
   /**
@@ -125,7 +121,7 @@ public class DestinationHelper {
       WarningLoggedCallback callback,
       String text,
       Object... args) {
-    logWarningIfNotNull(alreadyLogged, callback, text, args);
+    logWarningIfNotNull(alreadyLogged, callback, null, text, args);
   }
 
   /**
@@ -140,7 +136,11 @@ public class DestinationHelper {
    */
   @Deprecated
   public static void logWarningIfNotNull(boolean alreadyLogged,
-      WarningLoggedCallback callback, String text, Object... args) {
+      WarningLoggedCallback callback, Object d, String text, Object... args) {
+    if (d != null) {
+      LoggingHelper.logWarning(alreadyLogged, callback, text, args);
+    } else {
       callback.warningLogged();
+    }
   }
 }
