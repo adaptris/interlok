@@ -22,7 +22,6 @@ import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
 import static com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase.assertMessages;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -366,7 +365,6 @@ public class BasicActiveMqConsumerTest
     c.setConsumeConnection(conn);
     StandardWorkflow swf = new StandardWorkflow();
     PasConsumer pasConsumer = new PasConsumer().withTopic(new GuidGenerator().safeUUID());
-    pasConsumer.setDurable(true);
     pasConsumer.setSubscriptionId(MY_SUBSCRIPTION_ID);
     swf.setConsumer(pasConsumer);
     c.getWorkflowList().add(swf);
