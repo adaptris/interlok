@@ -69,14 +69,8 @@ public class AggregatingQueueConsumer extends AggregatingConsumerImpl<Aggregatin
   @Override
   public void aggregateMessages(AdaptrisMessage msg, AggregatingJmsConsumeService cfg) throws ServiceException {
 
-    String endpoint = getEndpoint();
-    if (endpoint != null) {
-      endpoint = msg.resolve(endpoint);
-    }
-    String filterExpression = getFilterExpression();
-    if (filterExpression != null) {
-      filterExpression = msg.resolve(filterExpression);
-    }
+    String endpoint = msg.resolve(getEndpoint());
+    String filterExpression = msg.resolve(getFilterExpression());
 
     MessageConsumer consumer = null;
     ArrayList<AdaptrisMessage> result = new ArrayList<>();
