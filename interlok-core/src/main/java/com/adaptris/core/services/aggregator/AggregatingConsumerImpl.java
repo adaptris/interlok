@@ -16,6 +16,7 @@
 
 package com.adaptris.core.services.aggregator;
 
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -49,6 +50,7 @@ public abstract class AggregatingConsumerImpl<E extends AggregatingConsumeServic
   @NotBlank
   @Getter
   @Setter
+  @InputFieldHint(expression = true)
   private String endpoint;
 
   @NotBlank
