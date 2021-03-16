@@ -26,7 +26,7 @@ import com.adaptris.core.Service;
 import com.adaptris.core.services.mime.MimeJunitHelper;
 import com.adaptris.core.services.splitter.LineCountSplitter;
 import com.adaptris.core.services.splitter.MimePartSplitter;
-import com.adaptris.core.services.splitter.SplitJoinService;
+import com.adaptris.core.services.splitter.PooledSplitJoinService;
 import com.adaptris.core.services.splitter.SplitterCase;
 import com.adaptris.core.util.MimeHelper;
 import com.adaptris.util.TimeInterval;
@@ -40,7 +40,7 @@ public class IgnoreOriginalMimeAggregatorTest extends MimeAggregatorCase {
   public void testService_ContentEncoding() throws Exception {
     // This is a 100 line message, so we expect to get 10 parts.
     AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
-    SplitJoinService service = new SplitJoinService();
+    PooledSplitJoinService service = new PooledSplitJoinService();
     // The service doesn't actually matter right now.
     service.setService(new NullService());
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
@@ -57,7 +57,7 @@ public class IgnoreOriginalMimeAggregatorTest extends MimeAggregatorCase {
   public void testService_ContentIdProvided() throws Exception {
     // This is a 100 line message, so we expect to get 10 parts.
     AdaptrisMessage msg = SplitterCase.createLineCountMessageInput();
-    SplitJoinService service = new SplitJoinService();
+    PooledSplitJoinService service = new PooledSplitJoinService();
     // The service doesn't actually matter right now.
     service.setService(createAddMetadataService(getName()));
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
@@ -74,7 +74,7 @@ public class IgnoreOriginalMimeAggregatorTest extends MimeAggregatorCase {
   public void testService_MimeSplitter() throws Exception {
     // This is a 3 part message, so that should generate 3 split messages; which should generate 3 parts at the end.
     AdaptrisMessage msg = MimeJunitHelper.create();
-    SplitJoinService service = new SplitJoinService();
+    PooledSplitJoinService service = new PooledSplitJoinService();
     // The service doesn't actually matter right now.
     service.setService(new NullService());
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
