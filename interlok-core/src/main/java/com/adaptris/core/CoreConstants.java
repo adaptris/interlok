@@ -17,10 +17,7 @@
 package com.adaptris.core;
 
 import java.util.function.Function;
-
 import org.apache.commons.lang3.BooleanUtils;
-
-import com.adaptris.validation.constraints.ConfigDeprecated;
 
 /**
  * <p>
@@ -188,14 +185,6 @@ public abstract class CoreConstants {
    */
   public static final String SECURITY_V1_COMPATIBILITY = "v1encryption" + "compatibility";
 
-  /**
-   * Metadata key for the FTP reply to name override.
-   *
-   * @deprecated since 3.11.0 if you're using FTP to do request reply, then please don't.
-   */
-  @Deprecated
-  @ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
-  public static final String FTP_REPLYTO_NAME = "ftpreplytoname";
 
   /**
    * Metadata key that allows override of the transform services.
