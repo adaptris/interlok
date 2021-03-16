@@ -17,12 +17,9 @@
 package com.adaptris.core.interceptor;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.MDC;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -38,7 +35,6 @@ import com.adaptris.core.util.Args;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairList;
-import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -74,15 +70,6 @@ public class LoggingContextWorkflowInterceptor extends WorkflowInterceptorImpl {
   @InputFieldHint(expression = true)
   private KeyValuePairList valuesToSet;
 
-  @Deprecated
-  @ConfigDeprecated(groups = Deprecated.class)
-  private String key;
-
-  @Deprecated
-  @ConfigDeprecated(groups = Deprecated.class)
-  @InputFieldHint(expression = true)
-  private String value;
-
   public LoggingContextWorkflowInterceptor() {
     super();
     valuesToSet = new KeyValuePairList();
@@ -103,15 +90,6 @@ public class LoggingContextWorkflowInterceptor extends WorkflowInterceptorImpl {
       addDefaultKey(inputMsg, CoreConstants.WORKFLOW_ID_KEY, parentWorkflow().getUniqueId());
       addDefaultKey(inputMsg, CoreConstants.MESSAGE_UNIQUE_ID_KEY, inputMsg.getUniqueId());
     }
-
-    String keyToUse = resolve(getKey(), inputMsg);
-    if(!isEmpty(keyToUse)) {
-      String valueToUse = resolve(getValue(), inputMsg);
-      if(!isEmpty(valueToUse)) {
-        MDC.put(keyToUse, valueToUse);
-      }
-    }
-
     for(KeyValuePair pair: getValuesToSet()) {
       MDC.put(pair.getKey(), inputMsg.resolve(pair.getValue()));
     }
@@ -131,12 +109,6 @@ public class LoggingContextWorkflowInterceptor extends WorkflowInterceptorImpl {
     for(KeyValuePair pair: getValuesToSet()) {
       MDC.remove(pair.getKey());
     }
-
-    String keyToUse = resolve(getKey(), inputMsg);
-    if(!isEmpty(keyToUse)) {
-      MDC.remove(keyToUse);
-    }
-
     if(useDefaultKeys()) {
       MDC.remove(CoreConstants.CHANNEL_ID_KEY);
       MDC.remove(CoreConstants.WORKFLOW_ID_KEY);
@@ -156,70 +128,6 @@ public class LoggingContextWorkflowInterceptor extends WorkflowInterceptorImpl {
 
   @Override
   public void close() {}
-
-  @Deprecated
-  public String getKey() {
-    return key;
-  }
-
-  /**
-   * Set the context key.
-   * <p>
-   * If not specified then we will try to use one of the following values in order of preference provided they are not null/blank
-   * </p>
-   * <ul>
-   * <li>The interceptors unique id</li>
-   * <li>The parent workflow unique id</li>
-   * <li>The parent channel unique id</li>
-   * <li>A generated unique id</li>
-   * </ul>
-   *
-   * @param key the contextKey to set.
-   */
-  @Deprecated
-  public void setKey(String key) {
-    this.key = key;
-  }
-
-  private String resolve(String s, AdaptrisMessage msg) {
-    if (!isEmpty(s)) {
-      return msg.resolve(s);
-    }
-    if (!isEmpty(getUniqueId())) {
-      return getUniqueId();
-    }
-    if (!isEmpty(parentWorkflow().getUniqueId())) {
-      return parentWorkflow().getUniqueId();
-    }
-    if (!isEmpty(parentChannel().getUniqueId())) {
-      return parentChannel().getUniqueId();
-    }
-    return GUID.safeUUID();
-  }
-
-  @Deprecated
-  public String getValue() {
-    return value;
-  }
-
-  /**
-   * Set the context value.
-   * <p>
-   * If not specified then we will try to use one of the following values in order of preference provided they are not null/blank
-   * </p>
-   * <ul>
-   * <li>The interceptors unique id</li>
-   * <li>The parent workflow unique id</li>
-   * <li>The parent channel unique id</li>
-   * <li>A Generated unique id</li>
-   * </ul>
-   *
-   * @param val the contextValue to set
-   */
-  @Deprecated
-  public void setValue(String val) {
-    value = val;
-  }
 
   public KeyValuePairList getValuesToSet() {
     return valuesToSet;
