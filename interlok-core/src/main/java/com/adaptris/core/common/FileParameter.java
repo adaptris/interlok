@@ -13,6 +13,7 @@
  */
 package com.adaptris.core.common;
 
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
@@ -28,12 +29,13 @@ public abstract class FileParameter {
 
   @Getter
   @NotBlank
+  @InputFieldHint(expression = true)
   private String endPoint;
 
   protected String url(InterlokMessage msg) throws CoreException {
     Args.notNull(endPoint, "End Point");
     if (msg instanceof AdaptrisMessage) {
-      return msg.resolveObject(endPoint).toString();
+      return msg.resolve(endPoint);
     } else {
       throw new RuntimeException("Message is not instance of Adaptris Message");
     }

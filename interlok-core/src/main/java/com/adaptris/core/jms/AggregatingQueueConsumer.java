@@ -71,11 +71,11 @@ public class AggregatingQueueConsumer extends AggregatingConsumerImpl<Aggregatin
 
     String endpoint = getEndpoint();
     if (endpoint != null) {
-      endpoint = msg.resolveObject(endpoint).toString();
+      endpoint = msg.resolve(endpoint);
     }
     String filterExpression = getFilterExpression();
     if (filterExpression != null) {
-      filterExpression = msg.resolveObject(filterExpression).toString();
+      filterExpression = msg.resolve(filterExpression);
     }
 
     MessageConsumer consumer = null;
