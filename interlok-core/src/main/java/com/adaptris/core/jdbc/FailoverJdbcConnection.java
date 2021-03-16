@@ -20,12 +20,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
@@ -127,7 +124,6 @@ public class FailoverJdbcConnection extends DatabaseConnection {
       config.setAutoCommit(autoCommit());
       config.setDatabaseDriver(getDriverImp());
       config.setDebugMode(debugMode());
-      config.setTestStatement(getTestStatement());
       config.setAlwaysValidateConnection(alwaysValidateConnection());
       config.setConnectionProperties(connectionProperties());
       failover = new FailoverConnection(config);
@@ -177,13 +173,12 @@ public class FailoverJdbcConnection extends DatabaseConnection {
       FailoverJdbcConnection c = (FailoverJdbcConnection) o;
       
       return new EqualsBuilder()
-          .append(c.getConnectUrls(), this.getConnectUrls())
-          .append(c.getDriverImp(), this.getDriverImp())
-          .append(c.getAlwaysValidateConnection(), this.getAlwaysValidateConnection())
-          .append(c.getDebugMode(), this.getDebugMode())
-          .append(c.getTestStatement(), this.getTestStatement())
-          .append(c.getAutoCommit(), this.getAutoCommit())
-          .append(c.getConnectionProperties(), this.getConnectionProperties())
+          .append(c.getConnectUrls(), getConnectUrls())
+          .append(c.getDriverImp(), getDriverImp())
+          .append(c.getAlwaysValidateConnection(), getAlwaysValidateConnection())
+          .append(c.getDebugMode(), getDebugMode())
+          .append(c.getAutoCommit(), getAutoCommit())
+          .append(c.getConnectionProperties(), getConnectionProperties())
           .isEquals();
     }
     return false;
@@ -193,13 +188,12 @@ public class FailoverJdbcConnection extends DatabaseConnection {
   @Override
   public int hashCode() {
     return new HashCodeBuilder(29, 31)
-        .append(this.getConnectUrls())
+        .append(getConnectUrls())
         .append(getDriverImp())
-        .append(this.getAlwaysValidateConnection())
+        .append(getAlwaysValidateConnection())
         .append(getDebugMode())
-        .append(getTestStatement())
         .append(getAutoCommit())
-        .append(this.getConnectionProperties())
+        .append(getConnectionProperties())
         .toHashCode();
   }
 
