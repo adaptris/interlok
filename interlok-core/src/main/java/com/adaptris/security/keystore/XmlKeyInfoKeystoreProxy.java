@@ -81,12 +81,13 @@ class XmlKeyInfoKeystoreProxy extends SingleEntryKeystoreProxy {
    * @throws IOException if the keystore is not found
    */
   @Override
+  @SuppressWarnings({"lgtm [java/xxe]"})
   public void load() throws AdaptrisSecurityException, IOException {
 
     try (InputStream in = getKeystoreLocation().openInput()) {
       // new RestrictedInstance does the right thing for XXE
       Document doc = DocumentBuilderFactoryBuilder.newRestrictedInstance().withNamespaceAware(true)
-          .newDocumentBuilder(DocumentBuilderFactory.newInstance()).parse(in); // lgtm [java/xxe]
+          .newDocumentBuilder(DocumentBuilderFactory.newInstance()).parse(in);
       loadCertificates(doc);
     }
     catch (SAXException | ParserConfigurationException | MarshalException e) {

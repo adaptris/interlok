@@ -36,6 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class ExecuteQueryCallableStatementExecutor implements CallableStatementExecutor {
 
   @Override
+  @SuppressWarnings({"lgtm [java/database-resource-leak]"})
   public JdbcResult executeCallableStatement(CallableStatement statement) throws SQLException {
     ResultSet resultSet = statement.executeQuery(); // lgtm
     
