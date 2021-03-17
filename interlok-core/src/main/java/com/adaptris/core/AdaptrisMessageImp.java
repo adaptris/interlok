@@ -409,7 +409,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
    *
    * @param s The expression to use to resolve the object.
    *
-   * @return The header object, or null.
+   * @return The header object, or the original s.
    */
   @Override
   public Object resolveObject(String s) {

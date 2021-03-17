@@ -111,7 +111,7 @@ public class PasProducer extends DefinedJmsProducer {
 
   @Override
   protected Destination createDestination(AdaptrisMessage message) throws JMSException {
-    Object o = message.resolveObject(topic);
+    Object o = resolveEndpoint(message);
     if (o instanceof Destination) {
       return (Destination)o;
     } else if (o != null) {
@@ -133,8 +133,8 @@ public class PasProducer extends DefinedJmsProducer {
 
   @Override
   public String endpoint(AdaptrisMessage msg) throws ProduceException {
-    Object o = msg.resolveObject(topic);
-    return o != null ? o.toString() : topic;
+    Object s = resolveEndpoint(msg);
+    return s != null ? s.toString() : null;
   }
 
   public PasProducer withTopic(String t) {
@@ -142,4 +142,11 @@ public class PasProducer extends DefinedJmsProducer {
     return this;
   }
 
+  private Object resolveEndpoint(AdaptrisMessage message) {
+    Object o = message.resolveObject(topic);
+    if (!(o instanceof String)) {
+      return o;
+    }
+    return message.resolve(topic);
+  }
 }

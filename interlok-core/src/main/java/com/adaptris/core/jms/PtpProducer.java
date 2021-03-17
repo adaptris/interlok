@@ -112,7 +112,7 @@ public class PtpProducer extends DefinedJmsProducer {
 
   @Override
   protected Destination createDestination(AdaptrisMessage message) throws JMSException {
-    Object o = message.resolveObject(queue);
+    Object o = resolveEndpoint(message);
     if (o instanceof Destination) {
       return (Destination)o;
     } else if (o != null) {
@@ -134,8 +134,8 @@ public class PtpProducer extends DefinedJmsProducer {
 
   @Override
   public String endpoint(AdaptrisMessage msg) throws ProduceException {
-    Object o = msg.resolveObject(queue);
-    return o != null ? o.toString() : queue;
+    Object s = resolveEndpoint(msg);
+    return s != null ? s.toString() : null;
   }
 
   public PtpProducer withQueue(String s) {
@@ -143,4 +143,11 @@ public class PtpProducer extends DefinedJmsProducer {
     return this;
   }
 
+  private Object resolveEndpoint(AdaptrisMessage message) {
+    Object o = message.resolveObject(queue);
+    if (!(o instanceof String)) {
+      return o;
+    }
+    return message.resolve(queue);
+  }
 }

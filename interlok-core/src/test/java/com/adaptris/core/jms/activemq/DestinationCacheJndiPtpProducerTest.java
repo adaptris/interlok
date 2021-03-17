@@ -84,7 +84,8 @@ public class DestinationCacheJndiPtpProducerTest extends JndiPtpProducerCase {
 
     StandaloneProducer sp1 =
         new StandaloneProducer(activeMqBroker.getJndiPtpConnection(jv, false, queueName, topicName),
-            new PtpProducer().withQueue("%messageObject{testProduceWithCacheExceeded}"));
+            new PtpProducer().withQueue("%message{testProduceWithCacheExceeded}"));
+
     jv.setUseJndiForQueues(true);
     jv.getJndiParams().addKeyValuePair(new KeyValuePair("queue.testProduceWithCacheExceeded1", "testProduceWithCacheExceeded1"));
     jv.getJndiParams().addKeyValuePair(new KeyValuePair("queue.testProduceWithCacheExceeded2", "testProduceWithCacheExceeded2"));
@@ -92,11 +93,11 @@ public class DestinationCacheJndiPtpProducerTest extends JndiPtpProducerCase {
     try {
       start(sp1);
       AdaptrisMessage m1 = createMessage(null);
-      m1.addObjectMetadata("testProduceWithCacheExceeded", queueName);
+      m1.addMetadata("testProduceWithCacheExceeded", queueName);
       AdaptrisMessage m2 = createMessage(null);
-      m2.addObjectMetadata("testProduceWithCacheExceeded", "testProduceWithCacheExceeded2");
+      m2.addMetadata("testProduceWithCacheExceeded", "testProduceWithCacheExceeded2");
       AdaptrisMessage m3 = createMessage(null);
-      m3.addObjectMetadata("testProduceWithCacheExceeded", "testProduceWithCacheExceeded1");
+      m3.addMetadata("testProduceWithCacheExceeded", "testProduceWithCacheExceeded1");
       sp1.doService(m1);
       sp1.doService(m2);
       sp1.doService(m2); // This 2nd produce will expire get(QUEUE) on a LRU
