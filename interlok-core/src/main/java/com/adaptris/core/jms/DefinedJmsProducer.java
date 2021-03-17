@@ -54,8 +54,8 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
       Destination replyTo = null;
       if (o instanceof Destination) {
         replyTo = (Destination)o;
-      } else if (o instanceof String) {
-        replyTo = createDestination((String)o);
+//      } else if (o instanceof String) {
+//        replyTo = createDestination((String)o);
       }
       if (replyTo == null) {
         if (msg.headersContainsKey(JMS_ASYNC_STATIC_REPLY_TO)) {
