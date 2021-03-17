@@ -285,7 +285,7 @@ public class XPath {
   static XPathFactory build(boolean useSaxon) {
     try {
       if (useSaxon && SAXON_XPATH_FACTORY.isPresent()) {
-        return (XPathFactory) SAXON_XPATH_FACTORY.get().newInstance();
+        return (XPathFactory) SAXON_XPATH_FACTORY.get().getDeclaredConstructor().newInstance();
       }
     } catch (Exception e) {
 
