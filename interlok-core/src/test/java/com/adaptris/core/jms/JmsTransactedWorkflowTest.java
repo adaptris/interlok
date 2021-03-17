@@ -18,16 +18,13 @@ package com.adaptris.core.jms;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import com.adaptris.core.Channel;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullProcessingExceptionHandler;
@@ -45,6 +42,7 @@ import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.TimeInterval;
 
+@SuppressWarnings("deprecation")
 public class JmsTransactedWorkflowTest
     extends com.adaptris.interlok.junit.scaffolding.ExampleWorkflowCase {
 
@@ -55,13 +53,13 @@ public class JmsTransactedWorkflowTest
     activeMqBroker = new EmbeddedActiveMq();
     activeMqBroker.start();
   }
-  
+
   @AfterClass
   public static void tearDownAll() throws Exception {
     if(activeMqBroker != null)
       activeMqBroker.destroy();
   }
-  
+
   @Test
   public void testSetStrict() throws Exception {
     JmsTransactedWorkflow workflow = new JmsTransactedWorkflow();

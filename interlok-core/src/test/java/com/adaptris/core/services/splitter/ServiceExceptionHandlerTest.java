@@ -46,6 +46,7 @@ public class ServiceExceptionHandlerTest {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testThrowFirst_NoExceptions() throws Exception {
     ServiceExceptionHandler handler = new ServiceExceptionHandler();
     handler.throwFirstException();
@@ -53,6 +54,7 @@ public class ServiceExceptionHandlerTest {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testThrowFirst() throws Exception {
     ServiceExceptionHandler handler = new ServiceExceptionHandler();
     handler.uncaughtException(Thread.currentThread(), new ServiceException("first"));

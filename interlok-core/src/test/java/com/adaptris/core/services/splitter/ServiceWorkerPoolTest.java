@@ -32,6 +32,7 @@ import com.adaptris.core.NullService;
 import com.adaptris.core.stubs.MockService;
 import com.adaptris.core.stubs.MockService.FailureCondition;
 import com.adaptris.core.util.ManagedThreadFactory;
+import com.adaptris.interlok.util.Closer;
 import com.adaptris.util.TimeInterval;
 
 public class ServiceWorkerPoolTest extends ServiceWorkerPool {
@@ -106,7 +107,7 @@ public class ServiceWorkerPoolTest extends ServiceWorkerPool {
     GenericObjectPool<ServiceWorkerPool.Worker> objPool = createCommonsObjectPool();
     warmup(objPool);
     assertEquals(10, objPool.getNumIdle());
-    closeQuietly(objPool);
+    Closer.closeQuietly(objPool);
   }
 
   @Test
@@ -120,7 +121,7 @@ public class ServiceWorkerPoolTest extends ServiceWorkerPool {
     } catch (CoreException expected) {
 
     } finally {
-      closeQuietly(objPool);
+      Closer.closeQuietly(objPool);
     }
   }
 
