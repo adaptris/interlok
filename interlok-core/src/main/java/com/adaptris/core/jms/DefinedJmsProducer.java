@@ -57,6 +57,11 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
       } else if (o instanceof String) {
         replyTo = createDestination((String)o);
       }
+      if (replyTo == null) {
+        if (msg.headersContainsKey(JMS_ASYNC_STATIC_REPLY_TO)) {
+          replyTo = createDestination(msg.getMetadataValue(JMS_ASYNC_STATIC_REPLY_TO));
+        }
+      }
       doProduce(msg, replyTo);
     }
     catch (JMSException e) {
