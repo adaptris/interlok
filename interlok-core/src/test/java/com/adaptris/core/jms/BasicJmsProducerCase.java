@@ -458,6 +458,75 @@ public abstract class BasicJmsProducerCase
     }
   }
 
+  /**
+   * Test that if the destination is thrown into object metadata it can
+   * be retrieved, and everything continues as expected. Just use the
+   * result of {@code getName()} as above but put it in to object
+   * metadata instead of using it directly.
+   */
+  @Test
+  public void testResolveDestination() throws Exception {
+    JmsConsumerImpl consumer = createConsumer(getName());
+    consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+    StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
+    MockMessageListener jms = new MockMessageListener();
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
+
+    DefinedJmsProducer producer = createProducer("%messageObject{some-destination}");
+    producer.setSessionFactory(new DefaultProducerSessionFactory());
+    StandaloneProducer sp = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
+
+    try {
+      start(standaloneConsumer, sp);
+
+      AdaptrisMessage message = createMessage();
+      message.addObjectHeader("some-destination", getName());
+
+      sp.doService(message);
+
+      waitForMessages(jms, 1);
+      assertMessages(jms, 1);
+      assertEquals(getName(), producer.endpoint(message));
+    }
+    finally {
+      stop(sp, standaloneConsumer);
+    }
+  }
+
+  /**
+   * Test that if an Object that's not a Destination is used then the
+   * workflow times-out as expected.
+   */
+  @Test
+  public void testResolveDestinationObject() throws Exception {
+    JmsConsumerImpl consumer = createConsumer(getName());
+    consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+    StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
+    MockMessageListener jms = new MockMessageListener();
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
+
+    DefinedJmsProducer producer = createProducer("%messageObject{some-destination}");
+    producer.setSessionFactory(new DefaultProducerSessionFactory());
+    StandaloneProducer sp = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
+
+    try {
+      start(standaloneConsumer, sp);
+
+      AdaptrisMessage message = createMessage();
+      Object object = new Object();
+      message.addObjectHeader("some-destination", object);
+      assertEquals(object.toString(), producer.endpoint(message));
+
+      sp.doService(message);
+
+      waitForMessages(jms, 1);
+      assertMessages(jms, 0); // no messages received - an Object isn't a great destination
+    }
+    finally {
+      stop(sp, standaloneConsumer);
+    }
+  }
+
   protected static abstract class Loopback implements MessageListener {
     protected String listenQueueOrTopic;
     protected EmbeddedActiveMq broker;
