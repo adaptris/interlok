@@ -103,7 +103,7 @@ public class SimpleHttpProducer extends HttpProducer {
 
     try {
       HttpClientConnection c = retrieveConnection(HttpClientConnection.class);
-      HttpClientTransport client = c.initialiseClient(destination);
+      HttpClientTransport client = c.initialiseClient(msg.resolve(destination));
       client.setMethod(getMethod());
       HttpMessage m = HttpMessageFactory.getDefaultInstance().create();
       applyHeaders(getAdditionalHeaders(msg), m);

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -788,6 +788,38 @@ public class HttpConsumerTest extends HttpConsumerExample {
     finally {
       stop(httpProducer);
       adapter.requestClose();
+      PortManager.release(connection.getPort());
+    }
+  }
+
+  @Test
+  public void testDestinationResolver() throws Exception {
+    HttpConnection connection = createConnection(null);
+    MockMessageProducer mockProducer = new MockMessageProducer();
+
+    Channel channel = JettyHelper.createChannel(connection, JettyHelper.createConsumer(URL_TO_POST_TO), mockProducer);
+    try {
+      channel.requestStart();
+
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
+      msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
+
+      String pd = createProduceDestinationUrl(connection.getPort());
+      httpProducer.setUrl("%message{urlFromMetadata}");
+      msg.addMetadata("urlFromMetadata", pd);
+
+      assertEquals(pd, httpProducer.endpoint(msg));
+
+      start(httpProducer);
+      AdaptrisMessage reply = httpProducer.request(msg);
+      AdaptrisMessage consumedMessage = doAssertions(mockProducer);
+      assertFalse(consumedMessage.headersContainsKey(JettyConstants.JETTY_USER_ROLES));
+      assertFalse(consumedMessage.headersContainsKey(JettyConstants.JETTY_QUERY_STRING));
+
+    }
+    finally {
+      stop(httpProducer);
+      channel.requestClose();
       PortManager.release(connection.getPort());
     }
   }
