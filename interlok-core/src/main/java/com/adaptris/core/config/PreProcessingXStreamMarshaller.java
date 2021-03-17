@@ -61,10 +61,11 @@ public class PreProcessingXStreamMarshaller extends com.adaptris.core.XStreamMar
   }
 
   @Override
+  @SuppressWarnings({"lgtm[java/unsafe-deserialization]"})
   public Object unmarshal(String input) throws CoreException {
     Args.notNull(input, "input");
     return invokeDeserialize(() -> {
-      return getInstance().fromXML(preProcess(input)); // lgtm [java/unsafe-deserialization]
+      return getInstance().fromXML(preProcess(input));
     });
   }
 

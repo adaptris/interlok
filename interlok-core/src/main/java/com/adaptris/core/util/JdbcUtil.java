@@ -18,11 +18,8 @@ package com.adaptris.core.util;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Savepoint;
-import java.sql.Statement;
 import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +38,7 @@ import com.adaptris.security.password.Password;
 public abstract class JdbcUtil {
 
   private static Logger log = LoggerFactory.getLogger(JdbcUtil.class);
+  public static final int NUM_SECONDS_TIMEOUT_CONN_VALIDATE = 5;
 
   public static void closeQuietly(AutoCloseable... closeables) {
     Closer.closeQuietly(closeables);
@@ -133,33 +131,12 @@ public abstract class JdbcUtil {
     return null;
   }
 
-  public static Connection testConnection(Connection sqlConnection, String testStatement, boolean debugMode) throws SQLException {
-    Statement stmt = sqlConnection.createStatement();
-    ResultSet rs = null;
-    try {
-      if (isEmpty(testStatement)) {
-        return sqlConnection;
+  public static Connection testConnection(Connection sqlConnection, boolean execute)
+      throws SQLException {
+    if (execute) {
+      if (!sqlConnection.isValid(NUM_SECONDS_TIMEOUT_CONN_VALIDATE)) {
+        throw new SQLException("Connection is not valid");
       }
-      if (debugMode) {
-        rs = stmt.executeQuery(testStatement);
-        if (rs.next()) {
-          StringBuffer sb = new StringBuffer("TestStatement Results - ");
-          ResultSetMetaData rsm = rs.getMetaData();
-          for (int i = 1; i <= rsm.getColumnCount(); i++) {
-            sb.append("[");
-            sb.append(rsm.getColumnName(i));
-            sb.append("=");
-            sb.append(rs.getObject(i));
-            sb.append("] ");
-          }
-          log.trace(sb.toString());
-        }
-      } else {
-        stmt.execute(testStatement);
-      }
-    } finally {
-      JdbcUtil.closeQuietly(rs);
-      JdbcUtil.closeQuietly(stmt);
     }
     return sqlConnection;
   }

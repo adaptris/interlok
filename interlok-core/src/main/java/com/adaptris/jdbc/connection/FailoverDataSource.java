@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
  * of the pool is 10 with a wait time of 20seconds. If the pool is exhausted,
  * then a NoSuchElementException will be thrown after the wait time.
  * </p>
- * 
+ *
  * @see DataSource
  * @see FailoverConnection
  * @see FailoverConfig
@@ -74,12 +74,12 @@ public class FailoverDataSource implements DataSource {
 
   /**
    * Resource Key for the maximum size of the pool.
-   * 
+   *
    */
   public static final String POOL_MAX_SIZE = "failover.pool.maximum";
   /**
    * Resource Key for the time to wait for an available connection.
-   * 
+   *
    */
   public static final String POOL_TIME_TO_WAIT = "failover.pool.timetowait";
 
@@ -139,7 +139,7 @@ public class FailoverDataSource implements DataSource {
 
   /**
    * Get the configured connection.
-   * 
+   *
    * @see javax.sql.DataSource#getConnection()
    */
   @Override
@@ -166,7 +166,7 @@ public class FailoverDataSource implements DataSource {
    * this is the desired behaviour when you are failing over to multiple
    * databases.
    * </p>
-   * 
+   *
    * @see DataSource#getConnection(String, String)
    */
   @Override
@@ -280,9 +280,9 @@ public class FailoverDataSource implements DataSource {
      * <p>
      * Basically attempts to get an instance of the underlying connection. If
      * the database has failed, it will throw an SQLException.
-     * 
+     *
      * @see PoolableObjectFactory#validateObject(java.lang.Object)
-     * 
+     *
      */
     @Override
     public boolean validateObject(Object obj) {
@@ -312,7 +312,7 @@ public class FailoverDataSource implements DataSource {
 
     /**
      * In this implementation it does nothing.
-     * 
+     *
      * @see PoolableObjectFactory#activateObject(java.lang.Object)
      */
     @Override
@@ -321,7 +321,7 @@ public class FailoverDataSource implements DataSource {
 
     /**
      * In this implementation it does nothing.
-     * 
+     *
      * @see PoolableObjectFactory#passivateObject(java.lang.Object)
      */
     @Override
@@ -371,6 +371,7 @@ public class FailoverDataSource implements DataSource {
      * @see java.sql.Connection#prepareCall(java.lang.String)
      */
     @Override
+    @SuppressWarnings({"lgtm[java/sql-injection]"})
     public CallableStatement prepareCall(String sql) throws SQLException {
       return getWrappedConnection().prepareCall(sql);
     }
@@ -767,7 +768,7 @@ public class FailoverDataSource implements DataSource {
     public <T> T unwrap(Class<T> iface) throws SQLException {
       return getWrappedConnection().unwrap(iface);
     }
-    
+
     @Override
     public void setSchema(String schema) throws SQLException {
       getWrappedConnection().setSchema(schema);

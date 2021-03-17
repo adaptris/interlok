@@ -63,6 +63,7 @@ public class PbeCrypto extends PasswordImpl {
   }
 
   @Override
+  @SuppressWarnings({"lgtm [java/weak-cryptographic-algorithm]"})
   public String decode(String encrypted, String charset) throws PasswordException {
     String encryptedString = encrypted;
     String result = null;
@@ -72,9 +73,9 @@ public class PbeCrypto extends PasswordImpl {
     try {
       PBEParameterSpec pbeParamSpec = new PBEParameterSpec(SALT, ITERATIONS);
       PBEKeySpec pbeKeySpec = new PBEKeySpec(hostname.toCharArray());
-      SecretKeyFactory keyFac = SecretKeyFactory.getInstance(ALGORITHM); // lgtm [java/weak-cryptographic-algorithm]
+      SecretKeyFactory keyFac = SecretKeyFactory.getInstance(ALGORITHM);
       SecretKey pbeKey = keyFac.generateSecret(pbeKeySpec);
-      Cipher pbeCipher = Cipher.getInstance(ALGORITHM); // lgtm [java/weak-cryptographic-algorithm]
+      Cipher pbeCipher = Cipher.getInstance(ALGORITHM);
       pbeCipher.init(Cipher.DECRYPT_MODE, pbeKey, pbeParamSpec);
       byte[] decrypted = pbeCipher.doFinal(base64.translate(encryptedString));
       result = unseed(decrypted, charset);
@@ -86,14 +87,15 @@ public class PbeCrypto extends PasswordImpl {
   }
 
   @Override
+  @SuppressWarnings({"lgtm [java/weak-cryptographic-algorithm]"})
   public String encode(String plainText, String charset) throws PasswordException {
     byte[] encrypted = new byte[0];
     try {
       PBEParameterSpec pbeParamSpec = new PBEParameterSpec(SALT, ITERATIONS);
       PBEKeySpec pbeKeySpec = new PBEKeySpec(hostname.toCharArray());
-      SecretKeyFactory keyFac = SecretKeyFactory.getInstance(ALGORITHM); // lgtm [java/weak-cryptographic-algorithm]
+      SecretKeyFactory keyFac = SecretKeyFactory.getInstance(ALGORITHM);
       SecretKey pbeKey = keyFac.generateSecret(pbeKeySpec);
-      Cipher pbeCipher = Cipher.getInstance(ALGORITHM); // lgtm [java/weak-cryptographic-algorithm]
+      Cipher pbeCipher = Cipher.getInstance(ALGORITHM);
       pbeCipher.init(Cipher.ENCRYPT_MODE, pbeKey, pbeParamSpec);
       encrypted = pbeCipher.doFinal(seed(plainText, charset));
     }

@@ -54,6 +54,7 @@ public class ResolveFromPayloadUsingXPath extends ResolverImp
    * @return The resolved value.
    */
   @Override
+  @SuppressWarnings({"lgtm [java/xxe]"})  
   public String resolve(String value, InterlokMessage target)
   {
     Document document;
@@ -62,7 +63,7 @@ public class ResolveFromPayloadUsingXPath extends ResolverImp
       DocumentBuilderFactory factory =
           DocumentBuilderFactoryBuilder.newRestrictedInstance().build();
       DocumentBuilder builder = factoryBuilder.newDocumentBuilder(factory);
-      document = builder.parse(inputStream); // lgtm [java/xxe]
+      document = builder.parse(inputStream);
     }
     catch (Exception e)
     {

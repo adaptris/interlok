@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,10 +20,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -36,9 +34,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <p>
  * Implementation of <code>AdaptrisConnectionImp</code> for JDBC.
  * </p>
- * 
+ *
  * @config jdbc-connection
- * 
+ *
  */
 @XStreamAlias("jdbc-connection")
 @AdapterComponent
@@ -46,8 +44,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"username", "password", "driverImp", "connectUrl"})
 public class JdbcConnection extends DatabaseConnection {
 
-  private static final int NUM_SECONDS_TIMEOUT_CONN_VALIDATE = 5;
-  
   private String connectUrl;
   private transient Connection sqlConnection;
 
@@ -57,7 +53,7 @@ public class JdbcConnection extends DatabaseConnection {
 
   /**
    * Convenience constructor.
-   * 
+   *
    * @param url the URL.
    * @param driver the JDBC driver.
    */
@@ -100,7 +96,7 @@ public class JdbcConnection extends DatabaseConnection {
   @Override
   protected void closeDatabaseConnection() {
     JdbcUtil.closeQuietly(sqlConnection);
-    
+
     sqlConnection = null;
   }
 
@@ -116,7 +112,7 @@ public class JdbcConnection extends DatabaseConnection {
    * <p>
    * Returns the connection string to use for this JDBC source.
    * </p>
-   * 
+   *
    * @return the connection string to use for this JDBC source
    */
   public String getConnectUrl() {
@@ -127,7 +123,7 @@ public class JdbcConnection extends DatabaseConnection {
    * <p>
    * Sets the connection string to use for this JDBC source.
    * </p>
-   * 
+   *
    * @param s the connection string to use for this JDBC source
    */
   public void setConnectUrl(String s) {
@@ -147,7 +143,7 @@ public class JdbcConnection extends DatabaseConnection {
       return new EqualsBuilder().append(getConnectUrl(), rhs.getConnectUrl())
           .append(getAlwaysValidateConnection(), rhs.getAlwaysValidateConnection()).append(getAutoCommit(), rhs.getAutoCommit())
           .append(getDebugMode(), rhs.getDebugMode()).append(getDriverImp(), rhs.getDriverImp())
-          .append(getTestStatement(), rhs.getTestStatement()).isEquals();
+          .isEquals();
     }
     return false;
   }
@@ -155,7 +151,7 @@ public class JdbcConnection extends DatabaseConnection {
   @Override
   public int hashCode() {
     return new HashCodeBuilder(11, 17).append(getConnectUrl()).append(getAlwaysValidateConnection()).append(getAutoCommit())
-        .append(getDebugMode()).append(getDriverImp()).append(getTestStatement()).toHashCode();
+        .append(getDebugMode()).append(getDriverImp()).toHashCode();
   }
 
   /** @see com.adaptris.core.jdbc.DatabaseConnection#getConnectionName() */
@@ -168,17 +164,13 @@ public class JdbcConnection extends DatabaseConnection {
    * <p>
    * Validate the underlying connection.
    * </p>
-   * 
+   *
    * @throws SQLException if we could not validate the connection.
    */
   private void validateConnection() throws SQLException {
     boolean connectionNeedsRefresh = false;
-    try {
-      connectionNeedsRefresh = ((sqlConnection == null) || (!sqlConnection.isValid(NUM_SECONDS_TIMEOUT_CONN_VALIDATE)));
-    } catch (AbstractMethodError ex) {
-      // ignore, some JDBC drivers throw an exception here if they are
-      // sufficiently old that they don't have the isValid() method.
-    }
+
+    connectionNeedsRefresh = (sqlConnection == null);
     if (connectionNeedsRefresh) {
       try {
         Properties p = connectionProperties();
@@ -191,9 +183,10 @@ public class JdbcConnection extends DatabaseConnection {
       }
     }
     try {
-      if (alwaysValidateConnection()) {
-        JdbcUtil.testConnection(sqlConnection, getTestStatement(), debugMode());
-      }
+      // If the driver throws an AbstractMethodError because it's too old
+      // We're running in J11 which means it must have been compiled against
+      // J8 or higher... How the hell is it getting away with that?
+      JdbcUtil.testConnection(sqlConnection, alwaysValidateConnection());
     }
     catch (SQLException e) {
       sqlConnection = null;

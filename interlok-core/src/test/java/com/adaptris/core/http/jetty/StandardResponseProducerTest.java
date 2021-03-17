@@ -16,6 +16,23 @@
 
 package com.adaptris.core.http.jetty;
 
+import static com.adaptris.core.http.jetty.JettyHelper.createChannel;
+import static com.adaptris.core.http.jetty.JettyHelper.createConsumer;
+import static com.adaptris.core.http.jetty.JettyHelper.createWorkflow;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.Properties;
+import java.util.Set;
+import javax.servlet.http.HttpServletResponse;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageEncoderImp;
 import com.adaptris.core.Channel;
@@ -35,31 +52,12 @@ import com.adaptris.core.http.client.net.StandardHttpProducer;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.services.metadata.AddMetadataService;
-import com.adaptris.core.services.metadata.PayloadFromMetadataService;
+import com.adaptris.core.services.metadata.PayloadFromTemplateService;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.text.mime.MultiPartOutput;
-import org.junit.Test;
-
-import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.Properties;
-import java.util.Set;
-
-import static com.adaptris.core.http.jetty.JettyHelper.createChannel;
-import static com.adaptris.core.http.jetty.JettyHelper.createConsumer;
-import static com.adaptris.core.http.jetty.JettyHelper.createWorkflow;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 @SuppressWarnings("deprecation")
 public class StandardResponseProducerTest extends HttpProducerExample {
@@ -287,7 +285,7 @@ public class StandardResponseProducerTest extends HttpProducerExample {
     StandardResponseProducer r1 = new StandardResponseProducer(HttpStatus.OK_200);
     // 2nd responder will not fire...
     StandardResponseProducer r2 = new StandardResponseProducer(HttpStatus.INTERNAL_ERROR_500);
-    PayloadFromMetadataService pms = new PayloadFromMetadataService();
+    PayloadFromTemplateService pms = new PayloadFromTemplateService();
     pms.setTemplate("");
     HttpConnection httpConnection = createConnection();
     Channel c = createChannel(httpConnection, createWorkflow(createConsumer(URL_TO_POST_TO), new MockMessageProducer(),
@@ -313,7 +311,7 @@ public class StandardResponseProducerTest extends HttpProducerExample {
   @Test
   public void testResponseWithZeroLengthPayload() throws Exception {
     StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.OK_200);
-    PayloadFromMetadataService pms = new PayloadFromMetadataService();
+    PayloadFromTemplateService pms = new PayloadFromTemplateService();
     pms.setTemplate("");
     HttpConnection httpConnection = createConnection();
     Channel c = createChannel(httpConnection,

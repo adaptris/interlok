@@ -29,8 +29,7 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
 import com.adaptris.core.services.aggregator.MessageAggregatorTest.EvenOddCondition;
-import com.adaptris.core.services.splitter.SplitJoinService;
-import com.adaptris.core.services.splitter.SplitJoinServiceTest;
+import com.adaptris.core.services.splitter.PooledSplitJoinService;
 import com.adaptris.core.services.splitter.SplitterCase;
 import com.adaptris.core.services.splitter.XpathMessageSplitter;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
@@ -42,17 +41,18 @@ import com.adaptris.util.text.xml.XPath;
 @SuppressWarnings("deprecation")
 public class XmlAggregatorTest extends XmlAggregatorCase {
 
+  public static final String XPATH_ENVELOPE = "/envelope";
 
   @Test
   public void testSplitJoinService_WithExplicitDocumentEnoding() throws Exception {
     // This is a XML doc with 3 iterable elements...
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(SplitterCase.XML_MESSAGE);
-    SplitJoinService service = new SplitJoinService();
+    PooledSplitJoinService service = new PooledSplitJoinService();
     // The service doesn't actually matter right now.
     service.setService(asCollection(new NullService()));
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
     service.setSplitter(new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8));
-    XmlDocumentAggregator aggr = new XmlDocumentAggregator(new InsertNode(SplitJoinServiceTest.XPATH_ENVELOPE));
+    XmlDocumentAggregator aggr = new XmlDocumentAggregator(new InsertNode(XPATH_ENVELOPE));
     aggr.setDocumentEncoding("UTF-8");
     service.setAggregator(aggr);
     execute(service, msg);
@@ -67,12 +67,12 @@ public class XmlAggregatorTest extends XmlAggregatorCase {
   public void testSplitJoinService_WithImplicitDocumentEnoding() throws Exception {
     // This is a XML doc with 3 iterable elements...
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(SplitterCase.XML_MESSAGE, "ISO-8859-1");
-    SplitJoinService service = new SplitJoinService();
+    PooledSplitJoinService service = new PooledSplitJoinService();
     // The service doesn't actually matter right now.
     service.setService(asCollection(new NullService()));
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
     service.setSplitter(new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8));
-    service.setAggregator(new XmlDocumentAggregator(new InsertNode(SplitJoinServiceTest.XPATH_ENVELOPE)));
+    service.setAggregator(new XmlDocumentAggregator(new InsertNode(XPATH_ENVELOPE)));
     execute(service, msg);
     // Should now be 6 document nodes
     XPath xpath = new XPath();
@@ -83,7 +83,7 @@ public class XmlAggregatorTest extends XmlAggregatorCase {
   @Test
   public void testAggregate_WithFilter() throws Exception {
     XmlDocumentAggregator aggr = createAggregatorForTests();
-    aggr.setMergeImplementation(new InsertNode(SplitJoinServiceTest.XPATH_ENVELOPE));
+    aggr.setMergeImplementation(new InsertNode(XPATH_ENVELOPE));
     aggr.setFilterCondition(new EvenOddCondition());
     AdaptrisMessageFactory fac = AdaptrisMessageFactory.getDefaultInstance();
     AdaptrisMessage original = fac.newMessage("<envelope/>");
@@ -106,7 +106,7 @@ public class XmlAggregatorTest extends XmlAggregatorCase {
   @Override
   protected List<Service> retrieveObjectsForSampleConfig() {
     return createExamples(new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8),
-        new XmlDocumentAggregator(new InsertNode(SplitJoinServiceTest.XPATH_ENVELOPE)));
+        new XmlDocumentAggregator(new InsertNode(XPATH_ENVELOPE)));
   }
 
   @Override

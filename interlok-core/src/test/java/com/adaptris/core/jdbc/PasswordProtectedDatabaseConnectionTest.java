@@ -35,7 +35,6 @@ public class PasswordProtectedDatabaseConnectionTest
   protected static final String KEY_JDBC_VENDOR = "jdbc.storedproc.vendor";
   protected static final String KEY_JDBC_URL = "jdbc.storedproc.url.noacl";
   protected static final String KEY_JDBC_DRIVER = "jdbc.storedproc.driver";
-  protected static final String KEY_JDBC_TEST_STATEMENT = "jdbc.storedproc.teststatement";
 
 
   @Test

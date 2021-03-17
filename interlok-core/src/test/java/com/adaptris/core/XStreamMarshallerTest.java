@@ -16,6 +16,18 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import com.adaptris.core.services.LogMessageService;
 import com.adaptris.core.services.metadata.AddMetadataService;
 import com.adaptris.core.services.metadata.XpathMetadataService;
@@ -25,20 +37,6 @@ import com.adaptris.core.stubs.XStreamCDataWrapper;
 import com.adaptris.core.stubs.XStreamImplicitWrapper;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.text.xml.XPath;
-import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 
 @SuppressWarnings("deprecation")
@@ -104,7 +102,6 @@ public class XStreamMarshallerTest
   public static void adapterInstanceFieldChecks(Adapter fromXML) {
     assertNotNull(fromXML);
     assertEquals("SimpleAdapterTest", fromXML.getUniqueId());
-    assertTrue(fromXML.logHandler() instanceof NullLogHandler);
 
     assertTrue(fromXML.getEventHandler() instanceof DefaultEventHandler);
     assertTrue(((DefaultEventHandler)fromXML.getEventHandler()).getConnection() instanceof NullConnection);
