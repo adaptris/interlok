@@ -1,13 +1,13 @@
 package com.adaptris.core.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.stubs.MockMessageListener;
-import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
+@SuppressWarnings("deprecation")
 public class DestinationHelperTest extends DestinationHelper {
 
   @Test

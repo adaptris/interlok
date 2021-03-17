@@ -61,10 +61,10 @@ public class RuntimeVersionControlLoader {
     RuntimeVersionControl result = vcs;
     try {
       if (result != null) {
-        result = result.getClass().newInstance();
+        result = result.getClass().getDeclaredConstructor().newInstance();
       }
     }
-    catch (InstantiationException | IllegalAccessException e) {
+    catch (Exception e) {
     }
     return result;
   }

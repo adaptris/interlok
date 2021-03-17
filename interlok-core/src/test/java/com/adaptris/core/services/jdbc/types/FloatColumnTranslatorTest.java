@@ -18,12 +18,9 @@ package com.adaptris.core.services.jdbc.types;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-
 import java.sql.Types;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import com.adaptris.jdbc.JdbcResultRow;
 
 public class FloatColumnTranslatorTest {
@@ -39,7 +36,7 @@ public class FloatColumnTranslatorTest {
   @Test
   public void testFormattedFloat() throws Exception {
     translator.setFormat("%f");
-    Float floatVal = new Float("123");
+    Float floatVal = Float.valueOf("123");
     JdbcResultRow row = new JdbcResultRow();
     row.setFieldValue("testField", floatVal, Types.FLOAT);
     {
@@ -55,7 +52,7 @@ public class FloatColumnTranslatorTest {
   @Test
   public void testFormattedDouble() throws Exception {
     translator.setFormat("%f");
-    Double floatVal = new Double("123");
+    Double floatVal = Double.valueOf("123");
     JdbcResultRow row = new JdbcResultRow();
     row.setFieldValue("testField", floatVal, Types.FLOAT);
     {
@@ -71,7 +68,7 @@ public class FloatColumnTranslatorTest {
   @Test
   public void testFormattedInteger() throws Exception {
     translator.setFormat("%f");
-    Integer floatVal = new Integer("123");
+    Integer floatVal = Integer.valueOf("123");
     JdbcResultRow row = new JdbcResultRow();
     row.setFieldValue("testField", floatVal, Types.FLOAT);
     {
