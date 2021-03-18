@@ -228,8 +228,9 @@ public class JmsProducer extends JmsProducerImpl {
 
   @Override
   public String endpoint(AdaptrisMessage msg) throws ProduceException {
+    String src = getEndpoint();
     Object o = msg.resolveObject(getEndpoint());
-    if (o != null) {
+    if (o != null && o != src) {
       return o.toString();
     }
     return msg.resolve(getEndpoint());

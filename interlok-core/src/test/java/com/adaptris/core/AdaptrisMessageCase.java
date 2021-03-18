@@ -23,7 +23,6 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -40,10 +39,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-
 import com.adaptris.core.stubs.MockEncoder;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.stream.StreamUtil;
@@ -616,10 +613,9 @@ public abstract class AdaptrisMessageCase {
 
     msg.addObjectHeader("key", "value");
     msg.addObjectHeader(VAL1, this);
+    assertEquals("%message{hello}", msg.resolveObject("%message{hello}"));
     assertEquals("value", msg.resolveObject("%messageObject{key}"));
-    assertEquals(this, msg.resolveObject("%messageObject{%message{key1}}"));
     assertNull(msg.resolveObject("%messageObject{does_not_exist}"));
-    assertEquals(this, msg.resolveObject(VAL1));
     assertNull(msg.resolveObject(null));
   }
 

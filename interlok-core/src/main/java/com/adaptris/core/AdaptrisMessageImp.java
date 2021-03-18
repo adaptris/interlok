@@ -18,7 +18,6 @@ package com.adaptris.core;
 
 import static com.adaptris.core.metadata.MetadataResolver.resolveKey;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -34,12 +33,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.MessageHelper;
 import com.adaptris.interlok.resolver.ExternalResolver;
@@ -418,7 +415,6 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     if (s == null) {
       return null;
     }
-    s = resolve(s);
     Matcher m = objectResolver.matcher(s);
     if (m.matches()) {
       String key = m.group(1);

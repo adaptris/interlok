@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,12 @@
 
 package com.adaptris.core.jms;
 
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -25,13 +31,6 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.aggregator.AggregatingConsumerImpl;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageConsumer;
-import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 /**
  * {@link com.adaptris.core.services.aggregator.AggregatingConsumer} implementation that allows you to read a separate message(s) from a queue that need to be aggregated
@@ -45,9 +44,9 @@ import java.util.concurrent.TimeUnit;
  * the first message, and then subsequently wait for another minute if the Timeout is 1 minute).</li>
  * </ul>
  * </p>
- * 
+ *
  * @config aggregating-queue-consumer
- * 
+ *
  */
 @XStreamAlias("aggregating-queue-consumer")
 @DisplayOrder(order = {"destination", "messageAggregator", "messageTranslator", "timeout"})
@@ -69,14 +68,8 @@ public class AggregatingQueueConsumer extends AggregatingConsumerImpl<Aggregatin
   @Override
   public void aggregateMessages(AdaptrisMessage msg, AggregatingJmsConsumeService cfg) throws ServiceException {
 
-    String endpoint = getEndpoint();
-    if (endpoint != null) {
-      endpoint = msg.resolveObject(endpoint).toString();
-    }
-    String filterExpression = getFilterExpression();
-    if (filterExpression != null) {
-      filterExpression = msg.resolveObject(filterExpression).toString();
-    }
+    String endpoint = msg.resolve(getEndpoint());
+    String filterExpression = msg.resolve(getFilterExpression());
 
     MessageConsumer consumer = null;
     ArrayList<AdaptrisMessage> result = new ArrayList<>();
@@ -123,11 +116,11 @@ public class AggregatingQueueConsumer extends AggregatingConsumerImpl<Aggregatin
 
   /**
    * Set the timeout to wait for the correlated message.
-   * 
+   *
    * @param t the timeout to set, if not specified then it defaults to 30 seconds.
    */
   public void setTimeout(TimeInterval t) {
-    this.timeout = t;
+    timeout = t;
   }
 
   long timeoutMs() {
@@ -146,10 +139,10 @@ public class AggregatingQueueConsumer extends AggregatingConsumerImpl<Aggregatin
 
   /**
    * Set the jms message translator.
-   * 
+   *
    * @param translator the translator.
    */
   public void setMessageTranslator(MessageTypeTranslator translator) {
-    this.messageTranslator = translator;
+    messageTranslator = translator;
   }
 }
