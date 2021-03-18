@@ -402,7 +402,6 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_TIMESTAMP));
     String capturedTopic = (String) objMd.get(prefix + JmsConstants.JMS_DESTINATION);
     assertTrue(capturedTopic.contains(getName()));
-
   }
 
   @Test
@@ -421,7 +420,24 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_DESTINATION));
     String capturedTopic = (String) objMd.get(prefix + JmsConstants.JMS_DESTINATION);
     assertTrue(capturedTopic.contains(getName()));
+  }
 
+  @Test
+  public void testProduce_Destination_IsString() throws Exception {
+    String topic = "jms:topic:" + getName();
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx");
+    msg.addMetadata("topicObject", topic);
+
+    JmsProducer producer = createProducer("%message{topicObject}");
+    producer.setCaptureOutgoingMessageDetails(true);
+    StandaloneProducer sp = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
+
+    ExampleServiceCase.execute(sp, msg);
+    Map<Object, Object> objMd = msg.getObjectHeaders();
+    String prefix = Message.class.getCanonicalName() + ".";
+    assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_DESTINATION));
+    String capturedTopic = (String) objMd.get(prefix + JmsConstants.JMS_DESTINATION);
+    assertTrue(capturedTopic.contains(getName()));
   }
 
   @Test

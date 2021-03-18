@@ -133,18 +133,21 @@ public class JmsProducer extends JmsProducerImpl {
   protected JmsDestination buildDestination(AdaptrisMessage msg, boolean createReplyTo)
       throws JMSException, CoreException {
     MyJmsDestination target = null;
-    // First of all try and get a jms destination directory from the produce destination
-    // (JmsReplyToDestination)
+    /*
+     * First try and get a jms destination as an object from object
+     * metadata; if it's a String (and different) to the parameter
+     * passed in then resolveObject actually resolved something-good
+     * stuff. Otherwise attempt to create a new destination from the
+     * endpoint (resolving from metadata as necessary).
+     */
     Object jmsDest = msg.resolveObject(endpoint);
-    if (jmsDest != null) {
-      if (jmsDest instanceof Destination) {
-        target = new MyJmsDestination((Destination)jmsDest);
-      } else {
-        target = new MyJmsDestination(vendorImplementation().createDestination(jmsDest.toString(), this));
-        target.setReplyTo(createReplyTo(msg, target, createReplyTo));
-      }
+    if (jmsDest instanceof Destination) {
+      target = new MyJmsDestination((Destination)jmsDest);
+    } else if (jmsDest instanceof String && !jmsDest.equals(endpoint)) {
+      target = new MyJmsDestination(vendorImplementation().createDestination((String)jmsDest, this));
+      target.setReplyTo(createReplyTo(msg, target, createReplyTo));
     } else {
-      target = new MyJmsDestination(vendorImplementation().createDestination(endpoint, this));
+      target = new MyJmsDestination(vendorImplementation().createDestination(msg.resolve(endpoint), this));
       target.setReplyTo(createReplyTo(msg, target, createReplyTo));
     }
     return target;
