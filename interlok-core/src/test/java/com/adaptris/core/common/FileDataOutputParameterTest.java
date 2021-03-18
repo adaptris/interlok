@@ -55,10 +55,10 @@ public class FileDataOutputParameterTest {
     } catch (IllegalArgumentException e) {
       // ok
     }
-    p.setEndpoint("file:////tmp/abc");
+    p.setUrl("file:////tmp/abc");
     assertEquals("file:////tmp/abc", p.url(m));
     try {
-      p.setEndpoint(null);
+      p.setUrl(null);
       fail();
     } catch (IllegalArgumentException e) {
 
@@ -70,7 +70,7 @@ public class FileDataOutputParameterTest {
   public void testInsert() throws Exception {
     FileDataOutputParameter p = new FileDataOutputParameter();
     File f = TempFileUtils.createTrackedFile(testName.getMethodName(), "", p);
-    p.setEndpoint("file:///" + f.getCanonicalPath());
+    p.setUrl("file:///" + f.getCanonicalPath());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     p.insert(TEXT, msg);
     // It doesn't insert into the msg; so message should still be blank
@@ -82,7 +82,7 @@ public class FileDataOutputParameterTest {
   public void testInsertDestination() throws Exception {
     FileDataOutputParameter p = new FileDataOutputParameter();
     File f = TempFileUtils.createTrackedFile(testName.getMethodName(), "", p);
-    p.setEndpoint("file:///" + f.getCanonicalPath());
+    p.withUrl("file:///" + f.getCanonicalPath());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     p.insert(TEXT, msg);
     // It doesn't insert into the msg; so message should still be blank
@@ -94,7 +94,7 @@ public class FileDataOutputParameterTest {
   public void testInsertDestination_Exception() throws Exception {
     FileDataOutputParameter p = new FileDataOutputParameter();
     File f = TempFileUtils.createTrackedFile(testName.getMethodName(), "", p);
-    p.setEndpoint("file:///" + f.getCanonicalPath());
+    p.setUrl("file:///" + f.getCanonicalPath());
     AdaptrisMessage msg = mock(AdaptrisMessage.class);
     doThrow(new RuntimeException()).when(msg).getContentEncoding();
     try {
@@ -111,7 +111,7 @@ public class FileDataOutputParameterTest {
     FileOutputMessageWrapper p = new FileOutputMessageWrapper();
     File f = TempFileUtils.createTrackedFile(testName.getMethodName(), "", p);
     assertFalse(f.exists());
-    p.setEndpoint("file:///" + f.getCanonicalPath());
+    p.setUrl("file:///" + f.getCanonicalPath());
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     try (OutputStream out = p.wrap(msg)) {
       assertNotNull(out);

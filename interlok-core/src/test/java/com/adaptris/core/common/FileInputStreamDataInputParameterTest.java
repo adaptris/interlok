@@ -59,10 +59,10 @@ public class FileInputStreamDataInputParameterTest {
     } catch (IllegalArgumentException e) {
       // ok
     }
-    p.setEndpoint("file:////tmp/abc");
+    p.setUrl("file:////tmp/abc");
     assertEquals("file:////tmp/abc", p.url(m));
     try {
-      p.setEndpoint(null);
+      p.setUrl(null);
       fail();
     } catch (IllegalArgumentException e) {
 
@@ -74,7 +74,7 @@ public class FileInputStreamDataInputParameterTest {
   public void testInterlokMessage() throws Exception {
     InterlokMessage msg = Mockito.mock(InterlokMessage.class);
     FileInputStreamDataInputParameter p = new FileInputStreamDataInputParameter();
-    p.setEndpoint("file:////tmp/doesnotexist");
+    p.setUrl("file:////tmp/doesnotexist");
     p.url(msg);
   }
 
@@ -88,7 +88,7 @@ public class FileInputStreamDataInputParameterTest {
     } catch (IllegalArgumentException e) {
       // ok
     }
-    p.setEndpoint("file:////tmp/doesnotexist");
+    p.setUrl("file:////tmp/doesnotexist");
     assertEquals("file:////tmp/doesnotexist", p.url(m));
     InputStream result = p.extract(m);
   }
@@ -98,7 +98,7 @@ public class FileInputStreamDataInputParameterTest {
   public void testExtract() throws Exception {
     FileInputStreamDataInputParameter p = new FileInputStreamDataInputParameter();
     File f = TempFileUtils.createTrackedFile(testName.getMethodName(), "", p);
-    p.setEndpoint("file:///" + f.getCanonicalPath());
+    p.setUrl("file:///" + f.getCanonicalPath());
     FileUtils.write(f, TEXT, false);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     assertNotSame(TEXT, msg.getContent());
@@ -112,7 +112,7 @@ public class FileInputStreamDataInputParameterTest {
   public void testExtractDestination() throws Exception {
     FileInputStreamDataInputParameter p = new FileInputStreamDataInputParameter();
     File f = TempFileUtils.createTrackedFile(testName.getMethodName(), "", p);
-    p.setEndpoint("file:///" + f.getCanonicalPath());
+    p.setUrl("file:///" + f.getCanonicalPath());
     FileUtils.write(f, TEXT, false);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     assertNotSame(TEXT, msg.getContent());
@@ -125,7 +125,7 @@ public class FileInputStreamDataInputParameterTest {
   @Test
   public void testExtractFromClasspath() throws Exception {
     FileInputStreamDataInputParameter p = new FileInputStreamDataInputParameter();
-    p.setEndpoint("xstream-standalone.xml");
+    p.setUrl("xstream-standalone.xml");
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     assertNotNull(p.extract(msg));
   }
@@ -140,7 +140,7 @@ public class FileInputStreamDataInputParameterTest {
     try {
       LifecycleHelper.initAndStart(channel);
       FileInputStreamDataInputParameter p = new FileInputStreamDataInputParameter();
-      p.setEndpoint(helper.createProduceDestination());
+      p.setUrl(helper.createProduceDestination());
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
       assertNotNull(p.extract(msg));
     } finally {

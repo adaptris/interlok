@@ -27,24 +27,24 @@ public abstract class FileParameter {
 
   @Getter
   @NotBlank
-  private String endpoint;
+  private String url;
 
   protected String url(InterlokMessage msg) throws CoreException {
-    Args.notNull(getEndpoint(), "End Point");
+    Args.notNull(getUrl(), "End Point");
     if (msg instanceof AdaptrisMessage) {
-      return msg.resolve(getEndpoint());
+      return msg.resolve(getUrl());
     } else {
       throw new RuntimeException("Message is not instance of Adaptris Message");
     }
   }
 
-  public void setEndpoint(String s) {
+  public void setUrl(String s) {
     Args.notNull(s, "End Point");
-    endpoint = s;
+    url = s;
   }
 
-  public <T extends FileParameter> T withEndpoint(String e) {
-    setEndpoint(e);
+  public <T extends FileParameter> T withUrl(String e) {
+    setUrl(e);
     return (T) this;
   }
 }
