@@ -16,16 +16,15 @@
 
 package com.adaptris.core.jms.activemq;
 
-import static com.adaptris.core.BaseCase.start;
-import static com.adaptris.core.BaseCase.stop;
-import static com.adaptris.core.BaseCase.waitForMessages;
-import static com.adaptris.core.jms.JmsProducerCase.assertMessages;
-import static com.adaptris.core.jms.JmsProducerCase.createMessage;
+import static com.adaptris.interlok.junit.scaffolding.BaseCase.start;
+import static com.adaptris.interlok.junit.scaffolding.BaseCase.stop;
+import static com.adaptris.interlok.junit.scaffolding.BaseCase.waitForMessages;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase.assertMessages;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase.createMessage;
 import static org.junit.Assert.fail;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -53,7 +52,7 @@ public class ActiveMqPasPollingConsumerTest {
 
   @Rule
   public TestName testName = new TestName();
-  
+
   private static EmbeddedActiveMq activeMqBroker;
 
   @BeforeClass
@@ -61,7 +60,7 @@ public class ActiveMqPasPollingConsumerTest {
     activeMqBroker = new EmbeddedActiveMq();
     activeMqBroker.start();
   }
-  
+
   @AfterClass
   public static void tearDownAll() throws Exception {
     if(activeMqBroker != null)
@@ -166,7 +165,8 @@ public class ActiveMqPasPollingConsumerTest {
     consumer.setSubscriptionId(MY_SUBSCRIPTION_ID);
     consumer.setReacquireLockBetweenMessages(true);
     consumer.setAdditionalDebug(true);
-    consumer.setReceiveTimeout(new TimeInterval(new Integer(new Random().nextInt(100) + 100).longValue(), TimeUnit.MILLISECONDS));
+    consumer.setReceiveTimeout(new TimeInterval(
+        Integer.valueOf(new Random().nextInt(100) + 100).longValue(), TimeUnit.MILLISECONDS));
     StandaloneConsumer sc = new StandaloneConsumer(consumer);
     return sc;
   }

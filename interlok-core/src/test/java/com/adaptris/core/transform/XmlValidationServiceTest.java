@@ -16,19 +16,17 @@
 
 package com.adaptris.core.transform;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.cache.ExpiringMapCache;
 import com.adaptris.core.services.cache.CacheConnection;
 import com.adaptris.core.stubs.MessageHelper;
+import com.adaptris.core.transform.schema.BasicXmlSchemaValidator;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.transform.validate.NotNullContentValidation;
@@ -48,24 +46,13 @@ public class XmlValidationServiceTest
 
 
   @Test
-  public void testSchemaValidator_SetUrl() {
-    XmlSchemaValidator v = new XmlSchemaValidator();
-    assertNull(v.getSchema());
-    v.setSchema("schema");
-    assertEquals("schema", v.getSchema());
-    v.setSchema(null);
-    assertNull(v.getSchema());
-
-  }
-
-  @Test
   public void testSchemaValidator_InitDefault() {
-    XmlValidationService service = new XmlValidationService(new XmlSchemaValidator());
+    XmlValidationService service = new XmlValidationService(new BasicXmlSchemaValidator());
     try {
       LifecycleHelper.init(service);
       fail();
     }
-    catch (CoreException expected) {
+    catch (Exception expected) {
     }
     finally {
       LifecycleHelper.close(service);
@@ -79,7 +66,7 @@ public class XmlValidationServiceTest
     // log.debug(schemaUrl + " not available, ignoring testValidXmlConfiguredSchemaOnly test");
     // return;
     // }
-    XmlSchemaValidator validator = new XmlSchemaValidator(schemaUrl);
+    BasicXmlSchemaValidator validator = new BasicXmlSchemaValidator().withSchema(schemaUrl);
     AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
     XmlValidationService service = new XmlValidationService(validator);
     execute(service, msg);
@@ -92,7 +79,7 @@ public class XmlValidationServiceTest
     // log.debug(schemaUrl + " not available, ignoring testValidXmlConfiguredSchemaOnly test");
     // return;
     // }
-    XmlSchemaValidator validator = new XmlSchemaValidator(schemaUrl);
+    BasicXmlSchemaValidator validator = new BasicXmlSchemaValidator().withSchema(schemaUrl);
     AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
     XmlValidationService service = new XmlValidationService(validator);
     try {
@@ -111,7 +98,7 @@ public class XmlValidationServiceTest
     // log.debug(schemaUrl + " not available, ignoring testMetadataSchemaKeyIsEmpty test");
     // return;
     // }
-    XmlSchemaValidator validator = new XmlSchemaValidator();
+    BasicXmlSchemaValidator validator = new BasicXmlSchemaValidator();
     validator.setSchema("%message{schema-key}");
     AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
     msg.addMetadata("schema-key", schemaUrl);
@@ -126,7 +113,8 @@ public class XmlValidationServiceTest
     // log.debug(schemaUrl + " not available, ignoring testMetadataSchemaKeyIsEmpty test");
     // return;
     // }
-    XmlSchemaValidator validator = new XmlSchemaValidator("%message{schema-key}")
+    BasicXmlSchemaValidator validator =
+        new BasicXmlSchemaValidator().withSchema("%message{schema-key}")
         .withSchemaCache(new CacheConnection(new ExpiringMapCache().withMaxEntries(1)));
     AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
     msg.addMetadata("schema-key", schemaUrl);
@@ -149,7 +137,7 @@ public class XmlValidationServiceTest
     // log.debug(schemaUrl + " not available, ignoring testInvalidXml test");
     // return;
     // }
-    XmlSchemaValidator validator = new XmlSchemaValidator();
+    BasicXmlSchemaValidator validator = new BasicXmlSchemaValidator();
     validator.setSchema(schemaUrl);
     XmlValidationService service = new XmlValidationService(validator);
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("<?xml version=\"1.0\"?><Root></Root>");
@@ -170,7 +158,7 @@ public class XmlValidationServiceTest
     // return;
     // }
 
-    XmlSchemaValidator validator = new XmlSchemaValidator();
+    BasicXmlSchemaValidator validator = new BasicXmlSchemaValidator();
     validator.setSchema("%message{schema-key}");
     AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_INPUT_FILE));
     msg.addMetadata("schema-key", schemaUrl);
@@ -245,7 +233,7 @@ public class XmlValidationServiceTest
     KeyValuePair disableDoctypeDecl = new KeyValuePair("http://apache.org/xml/features/disallow-doctype-decl", "true");
     return new XmlValidationService(new XmlBasicValidator(new DocumentBuilderFactoryBuilder().withNamespaceAware(true).withFeatures(
         new KeyValuePairSet(Arrays.asList(disableExternalEntities, disableDoctypeDecl)))),
-        new XmlSchemaValidator("http://host/schema.xsd or %message{metadatKey}"),
+        new BasicXmlSchemaValidator().withSchema("http://host/schema.xsd or %message{metadatKey}"),
         new XmlRuleValidator(vs));
   }
 

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,7 +17,6 @@
 package com.adaptris.core.management.properties;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -26,10 +25,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.util.PropertyHelper;
 
 /**
@@ -63,7 +60,7 @@ public abstract class PropertyResolver {
 
   /**
    * Convenience method to get a default instance of the PropertyResolver.
-   * 
+   *
    * @return an already initialised default instance.
    * @throws Exception on exception
    */
@@ -84,7 +81,7 @@ public abstract class PropertyResolver {
   /**
    * If the property needs decoding, then this method returns the decoded property. If the property is not encoded, then it simply
    * returns the same value.
-   * 
+   *
    * @param s - The current value for the property.
    * @return The decoded property.
    * @throws Exception
@@ -127,7 +124,7 @@ public abstract class PropertyResolver {
       for (Iterator i = p.keySet().iterator(); i.hasNext();) {
         String key = (String) i.next();
         String clazz = p.getProperty(key);
-        schemes.put(key, (Decoder) Class.forName(clazz).newInstance());
+        schemes.put(key, (Decoder) Class.forName(clazz).getDeclaredConstructor().newInstance());
       }
     }
 

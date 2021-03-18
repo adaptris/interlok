@@ -128,8 +128,6 @@ junit.jdbc.storedproc.url.noacl=${default.jdbc.storedproc.url}${default.jdbc.sto
 junit.jdbc.storedproc.username=${default.jdbc.storedproc.username}
 junit.jdbc.storedproc.password=${default.jdbc.storedproc.password}
 junit.jdbc.storedproc.vendor=${default.jdbc.storedproc.vendor}
-junit.jdbc.storedproc.teststatement=${default.jdbc.storedproc.teststatement}
-
 
 junit.test.cfg.root=@BUILD_DIR@
 junit.security.password=ctec123
@@ -230,4 +228,3 @@ junit.urlhelper.remote=https://raw.githubusercontent.com/adaptris-labs/interlok-
 junit.urlhelper.classpath=xstream-standard.xml
 
 junit.retry.baseUrl=file://localhost/@BUILD_DIR@/tmp/retry-store
-

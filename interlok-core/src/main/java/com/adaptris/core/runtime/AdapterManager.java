@@ -86,7 +86,6 @@ public class AdapterManager extends ComponentManagerImpl<Adapter> implements Ada
     registerChildRuntime(adapter.getMessageErrorDigester());
     registerChildRuntime(adapter.getFailedMessageRetrier());
     registerChildRuntime(adapter.getMessageErrorHandler());
-    registerChildRuntime(adapter.logHandler());
     marshalConfig();
   }
 

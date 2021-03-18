@@ -15,7 +15,6 @@
  */
 
 package com.adaptris.core.jdbc;
-import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -31,19 +30,6 @@ public class FailoverJdbcConnectionTest
 
   }
 
-
-  @Test
-  public void testBug2082() throws Exception {
-    FailoverJdbcConnection conn = configure(createConnection());
-    conn.setTestStatement("SELECT 1;");
-    try {
-      LifecycleHelper.init(conn);
-      conn.connect();
-      fail("Expected exception");
-    } catch (Exception expected) {
-      ;
-    }
-  }
 
   @Test
   public void testInitialUrlConnectFailure() throws Exception {
@@ -65,18 +51,6 @@ public class FailoverJdbcConnectionTest
     conn.connect();
   }
 
-  @Test
-  public void testTestStatementEmptyString() throws Exception {
-    FailoverJdbcConnection conn = configure(createConnection());
-    conn.setAlwaysValidateConnection(true);
-    conn.setTestStatement("");
-    List<String> urls = conn.getConnectUrls();
-    conn.setConnectUrls(Arrays.asList(new String[] {PROPERTIES.getProperty("jdbc.url") + nameGen.create(this), urls.get(0)}));
-
-    LifecycleHelper.init(conn);
-    conn.connect();
-  }
-
   @Override
   protected FailoverJdbcConnection createConnection() {
     return new FailoverJdbcConnection();
@@ -87,7 +61,6 @@ public class FailoverJdbcConnectionTest
     String url = initialiseDatabase();
     conn1.addConnectUrl(url);
     conn1.setDriverImp(DRIVER_IMP);
-    conn1.setTestStatement(DEFAULT_TEST_STATEMENT);
     conn1.setDebugMode(true);
     conn1.setConnectionAttempts(1);
     conn1.setConnectionRetryInterval(new TimeInterval(10L, TimeUnit.MILLISECONDS.name()));

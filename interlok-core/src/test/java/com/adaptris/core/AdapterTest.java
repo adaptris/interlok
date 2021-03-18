@@ -16,6 +16,14 @@
 
 package com.adaptris.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import java.util.concurrent.TimeUnit;
+import org.junit.Test;
 import com.adaptris.core.event.AdapterCloseEvent;
 import com.adaptris.core.event.AdapterInitEvent;
 import com.adaptris.core.event.AdapterStartEvent;
@@ -24,24 +32,12 @@ import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.PtpProducer;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 import com.adaptris.core.runtime.AdapterManager;
-import com.adaptris.core.stubs.MockLogHandler;
 import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.StubAdapterStartUpEvent;
 import com.adaptris.core.stubs.StubEventHandler;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.TimeInterval;
-import org.junit.Test;
-
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class AdapterTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
 
@@ -283,20 +279,6 @@ public class AdapterTest extends com.adaptris.interlok.junit.scaffolding.BaseCas
     });
     a.requestStart();
     a.requestClose();
-  }
-
-  // Probably a redundant test, but you get a nice warm feeling from have 100%
-  // code coverage don't you
-  @Test
-  public void testAdapterLogHandlerFails() throws Exception {
-    Adapter a = createAdapter("testAdapterLogFileHandlerFails", new StubEventHandler());
-    a.setLogHandler(new MockLogHandler() {
-      @Override
-      public void clean() throws IOException {
-        throw new IOException();
-      }
-    });
-    a.prepare();
   }
 
   @Test
@@ -607,8 +589,6 @@ public class AdapterTest extends com.adaptris.interlok.junit.scaffolding.BaseCas
     catch (IllegalArgumentException expected) {
 
     }
-    a.setLogHandler(new FileLogHandler());
-
     try {
       a.setMessageErrorHandler(null);
       fail();

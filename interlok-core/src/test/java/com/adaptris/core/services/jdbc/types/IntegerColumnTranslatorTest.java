@@ -17,12 +17,9 @@
 package com.adaptris.core.services.jdbc.types;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-
 import java.sql.Types;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import com.adaptris.jdbc.JdbcResultRow;
 
 public class IntegerColumnTranslatorTest {
@@ -38,7 +35,7 @@ public class IntegerColumnTranslatorTest {
   @Test
   public void testFormattedFloat() throws Exception {
     translator.setFormat("%05d");
-    Float intVal = new Float("123");
+    Float intVal = Float.valueOf("123");
 
     JdbcResultRow row = new JdbcResultRow();
     row.setFieldValue("testField", intVal, Types.INTEGER);
@@ -59,7 +56,7 @@ public class IntegerColumnTranslatorTest {
   @Test
   public void testFormattedDouble() throws Exception {
     translator.setFormat("%05d");
-    Double doubleVal = new Double("123");
+    Double doubleVal = Double.valueOf("123");
     JdbcResultRow row = new JdbcResultRow();
     row.setFieldValue("testField", doubleVal, Types.INTEGER);
     try {
@@ -79,7 +76,7 @@ public class IntegerColumnTranslatorTest {
   @Test
   public void testFormattedInteger() throws Exception {
     translator.setFormat("%05d");
-    Integer intVal = new Integer("123");
+    Integer intVal = Integer.valueOf("123");
 
     JdbcResultRow row = new JdbcResultRow();
     row.setFieldValue("testField", intVal, Types.INTEGER);
@@ -96,7 +93,7 @@ public class IntegerColumnTranslatorTest {
   @Test
   public void testFormattedString() throws Exception {
     translator.setFormat("%05d");
-    String stringVal = new String("123");
+    String stringVal = "123";
 
     JdbcResultRow row = new JdbcResultRow();
     row.setFieldValue("testField", stringVal, Types.INTEGER);
@@ -113,7 +110,7 @@ public class IntegerColumnTranslatorTest {
   @Test
   public void testIllegalFormat() throws Exception {
     translator.setFormat("%zZX");
-    Integer intVal = new Integer("123");
+    Integer intVal = Integer.valueOf("123");
 
     JdbcResultRow row = new JdbcResultRow();
     row.setFieldValue("testField", intVal, Types.INTEGER);

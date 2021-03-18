@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,11 +43,11 @@ public class StoredProcedure {
   private CallableStatementCreator statementCreator;
 
   private CallableStatementExecutor statementExecutor;
-  
+
   private AdaptrisMessage adaptrisMessage;
-  
+
   private ResultSetTranslator resultSetTranslator;
-  
+
   private long timeout;
 
   public StoredProcedure() {
@@ -61,19 +61,20 @@ public class StoredProcedure {
     setParameters(new ArrayList<StoredProcedureParameter>());
   }
 
+  @SuppressWarnings({"lgtm[java/sql-injection]", "lgtm [java/database-resource-leak]"})
   public JdbcResult execute() throws CoreException {
-    
+
     try {
       String sqlStatement =getStatementCreator().createCall(getName(), getParameters().size());
       log.trace("Generated SQL Statement [{}]", sqlStatement);
-      CallableStatement statement = getConnection().prepareCall(sqlStatement); // lgtm [java/database-resource-leak]
+      CallableStatement statement = getConnection().prepareCall(sqlStatement);
       if (timeout > 0) {
-        statement.setQueryTimeout((int) TimeUnit.MILLISECONDS.toSeconds(this.getTimeout()));
+        statement.setQueryTimeout((int) TimeUnit.MILLISECONDS.toSeconds(getTimeout()));
       }
       applyInParameters(statement);
 
       JdbcResult results = statementExecutor.executeCallableStatement(statement);
-      
+
       translateResultSet(getAdaptrisMessage(), results);
 
       applyOutParameters(statement);
@@ -85,7 +86,7 @@ public class StoredProcedure {
       throw new CoreException(e);
     }
   }
-  
+
   private void translateResultSet(AdaptrisMessage msg, JdbcResult jdbcResult) throws ServiceException, SQLException {
     if(getResultSetTranslator() != null) {
       getResultSetTranslator().translate(jdbcResult, msg);
@@ -119,7 +120,7 @@ public class StoredProcedure {
           log.debug("Applying 'IN' parameter with order '" + param.getOrder() + "' and value '" + param.getInValue() + "'");
         }
       }
-        
+
       if(param.getParameterType().equals(ParameterType.OUT) || param.getParameterType().equals(ParameterType.INOUT)) {
         if(!isEmpty(param.getName())){
           statement.registerOutParameter(param.getName(), param.getParameterValueType().getValue());
@@ -183,7 +184,7 @@ public class StoredProcedure {
 
   /**
    * Set the timeout in ms.
-   * 
+   *
    * @param timeout
    */
   public void setTimeout(long timeout) {

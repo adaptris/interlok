@@ -321,37 +321,6 @@ public class BasicActiveMqProducerTest
   }
 
   @Test
-  public void testTopicProduceAndConsume_DurableSubscriber_Legacy() throws Exception {
-    String subscriptionId = GUID.safeUUID();
-    String clientId = GUID.safeUUID();
-    PasConsumer consumer = new PasConsumer().withTopic(getName());
-    consumer.setDurable(true);
-    consumer.setSubscriptionId(subscriptionId);
-    consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
-    JmsConnection conn = activeMqBroker.getJmsConnection(createVendorImpl(), true);
-    conn.setClientId(clientId);
-    StandaloneConsumer standaloneConsumer = new StandaloneConsumer(conn, consumer);
-    MockMessageListener jms = new MockMessageListener();
-    standaloneConsumer.registerAdaptrisMessageListener(jms);
-
-    // Start it once to get some durable Action.
-    start(standaloneConsumer);
-    stop(standaloneConsumer);
-
-    StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
-            new PasProducer().withTopic(getName()));
-
-    int count = 10;
-    for (int i = 0; i < count; i++) {
-      ExampleServiceCase.execute(standaloneProducer, createMessage());
-    }
-
-    start(standaloneConsumer);
-    waitForMessages(jms, count);
-    assertMessages(jms, 10);
-  }
-
-  @Test
   // INTERLOK-3537, if subscriptionId != "", then it should be durable.
   public void testTopicProduceAndConsume_DurableSubscriber() throws Exception {
     String subscriptionId = GUID.safeUUID();
