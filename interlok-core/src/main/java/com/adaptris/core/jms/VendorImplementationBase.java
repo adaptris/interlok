@@ -1,13 +1,13 @@
 package com.adaptris.core.jms;
 
-import com.adaptris.core.ComponentLifecycleExtension;
-
 import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.Topic;
+
+import com.adaptris.core.ComponentLifecycleExtension;
 
 public interface VendorImplementationBase
     extends ComponentLifecycleExtension, ConnectionComparator<VendorImplementationBase> {
@@ -102,7 +102,6 @@ public interface VendorImplementationBase
    */
   MessageConsumer createConsumer(JmsDestination dest, String msgSelector,
       JmsActorConfig c) throws JMSException;
-
 
   /**
    * Create or otherwise get a MessageConsumer

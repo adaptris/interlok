@@ -19,11 +19,16 @@ package com.adaptris.core.jms;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.validation.constraints.NotBlank;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
+import com.adaptris.interlok.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -40,8 +45,7 @@ import lombok.Setter;
 @AdapterComponent
 @ComponentProfile(summary = "Listen for JMS messages on the specified topic", tag = "consumer,jms",
 recommended = {JmsConnection.class})
-@DisplayOrder(order = {"topic", "messageSelector", "durable",
-    "subscriptionId", "acknowledgeMode", "messageTranslator"})
+@DisplayOrder(order = {"topic", "messageSelector", "durable", "subscriptionId", "acknowledgeMode", "messageTranslator"})
 @NoArgsConstructor
 public class PasConsumer extends JmsConsumerImpl {
 
@@ -57,7 +61,8 @@ public class PasConsumer extends JmsConsumerImpl {
   private String subscriptionId;
 
   /**
-   * The JMS Topic.
+   * The JMS Topic
+   *
    */
   @Getter
   @Setter
@@ -65,7 +70,11 @@ public class PasConsumer extends JmsConsumerImpl {
   private String topic;
 
   protected String subscriptionId() {
-    return getSubscriptionId();
+    if (durable()) {
+      return Args.notBlank(getSubscriptionId(), "subscriptionId");
+    }
+    // Should just return getSubscriptionId() once durable is removed.
+    return null;
   }
 
   @Override
@@ -83,7 +92,7 @@ public class PasConsumer extends JmsConsumerImpl {
     VendorImplementation jmsImpl =
         retrieveConnection(JmsConnection.class).configuredVendorImplementation();
     return jmsImpl.createTopicSubscriber(
-        endpoint(), messageSelector(), subscriptionId(), this);
+        getTopic(), getMessageSelector(), subscriptionId(), this);
   }
 
   public PasConsumer withTopic(String t) {
@@ -91,4 +100,7 @@ public class PasConsumer extends JmsConsumerImpl {
     return this;
   }
 
+  boolean durable() {
+    return Boolean.valueOf(!StringUtils.isBlank(getSubscriptionId()));
+  }
 }

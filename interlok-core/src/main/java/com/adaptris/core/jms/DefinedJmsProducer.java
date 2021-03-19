@@ -16,20 +16,21 @@
 
 package com.adaptris.core.jms;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.ProduceException;
-import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.interlok.util.Args;
+import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
+import static com.adaptris.core.jms.JmsConstants.JMS_ASYNC_STATIC_REPLY_TO;
+
+import java.util.Optional;
 
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
-import java.util.Optional;
 
-import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
-import static com.adaptris.core.jms.JmsConstants.JMS_ASYNC_STATIC_REPLY_TO;
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.ProduceException;
+import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.interlok.util.Args;
 
 /**
  * <p>
@@ -46,18 +47,14 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
     super();
   }
 
-  @Override
-  public void produce(AdaptrisMessage msg) throws ProduceException {
+  public void produce(AdaptrisMessage msg, String destination) throws ProduceException {
     try {
       setupSession(msg);
-      Object o = msg.resolveObject(JMS_ASYNC_STATIC_REPLY_TO);
       Destination replyTo = null;
-      if (o instanceof Destination) {
-        replyTo = (Destination)o;
-      } else if (o instanceof String) {
-        replyTo = createDestination((String)o);
+      if (msg.headersContainsKey(JMS_ASYNC_STATIC_REPLY_TO)) {
+        replyTo = createDestination(msg.getMetadataValue(JMS_ASYNC_STATIC_REPLY_TO));
       }
-      doProduce(msg, replyTo);
+      doProduce(msg, destination, replyTo);
     }
     catch (JMSException e) {
       logLinkedException("Creating Destination", e);
@@ -65,34 +62,29 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
     }
   }
 
-  protected void doProduce(AdaptrisMessage msg, Destination replyTo)
-      throws ProduceException {
-
+  protected void doProduce(AdaptrisMessage msg, String dest, Destination replyTo) throws ProduceException {
     Destination jmsDest = null;
     try {
+      Args.notNull(dest, "destination");
       // First of all directly try to get a Destination object if available.
-      jmsDest = createDestination(msg);
+      jmsDest = retrieveObjectDestination(dest, msg);
 
       if (jmsDest == null) {
-        String d = endpoint(msg);
-        if (d != null) {
-          jmsDest = createDestination(d);
-        }
+        jmsDest = createDestination(dest);
       }
       Args.notNull(jmsDest, "destination");
       doProduce(msg, jmsDest, replyTo);
       commit();
     }
     catch (Exception e) {
-      log.warn("Error producing to destination [{}]", jmsDest);
+      log.warn("Error producing to destination [{}]", dest);
       logLinkedException("Produce", e);
       rollback();
       throw ExceptionHelper.wrapProduceException(e);
     }
   }
 
-  protected void doProduce(AdaptrisMessage msg, Destination destination, Destination replyTo)
-      throws JMSException, CoreException {
+  protected void doProduce(AdaptrisMessage msg, Destination destination, Destination replyTo) throws JMSException, CoreException {
     setupSession(msg);
     Message jmsMsg = translate(msg, replyTo);
     if (!perMessageProperties()) {
@@ -107,9 +99,7 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
     log.info("msg produced to destination [{}]", destination);
   }
 
-  @Override
-  public AdaptrisMessage request(AdaptrisMessage msg, long timeout)
-      throws ProduceException {
+  public AdaptrisMessage request(AdaptrisMessage msg, String dest, long timeout) throws ProduceException {
 
     AdaptrisMessage translatedReply = defaultIfNull(getMessageFactory()).newMessage();
     Destination replyTo = null;
@@ -124,7 +114,7 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
         replyTo = createTemporaryDestination();
       }
       receiver = currentSession().createConsumer(replyTo);
-      doProduce(msg, replyTo);
+      doProduce(msg, dest, replyTo);
       Message jmsReply = receiver.receive(timeout);
       translatedReply =
           Optional.ofNullable(MessageTypeTranslatorImp.translate(getMessageTranslator(), jmsReply))
@@ -145,8 +135,6 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
     }
     return mergeReply(translatedReply, msg);
   }
-
-  protected abstract Destination createDestination(AdaptrisMessage message) throws JMSException;
 
   protected abstract Destination createDestination(String name) throws JMSException;
 

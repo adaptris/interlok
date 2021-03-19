@@ -16,19 +16,7 @@
 
 package com.adaptris.core.jms;
 
-import com.adaptris.annotation.AdvancedConfig;
-import com.adaptris.annotation.AutoPopulated;
-import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.core.AdaptrisPollingConsumer;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.jms.jndi.StandardJndiImplementation;
-import com.adaptris.core.util.LifecycleHelper;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
-import org.apache.commons.lang3.BooleanUtils;
-import org.slf4j.Logger;
+import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -38,7 +26,23 @@ import javax.jms.Session;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
+import org.apache.commons.lang3.BooleanUtils;
+import org.slf4j.Logger;
+
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.core.AdaptrisPollingConsumer;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.jms.jndi.StandardJndiImplementation;
+import com.adaptris.core.util.DestinationHelper;
+import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.util.Args;
+
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 
 /**
  * Abstract implementation of {@link AdaptrisPollingConsumer} for queues and topics.
@@ -89,17 +93,13 @@ public abstract class JmsPollingConsumerImpl extends BaseJmsPollingConsumerImpl 
   }
 
   @Override
-  protected void prepareConsumer() throws CoreException
-  {
+  protected void prepareConsumer() throws CoreException {
+    Args.notNull(configuredEndpoint(), "endpoint");
   }
 
-  protected String messageSelector() {
-    return getMessageSelector();
-  }
-
-
-  protected String endpoint() {
-    return configuredEndpoint();
+  @Override
+  protected String newThreadName() {
+    return DestinationHelper.threadName(retrieveAdaptrisMessageListener());
   }
 
   protected abstract String configuredEndpoint();

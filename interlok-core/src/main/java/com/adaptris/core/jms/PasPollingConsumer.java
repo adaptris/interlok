@@ -88,8 +88,7 @@ public class PasPollingConsumer extends JmsPollingConsumerImpl {
 
   @Override
   protected MessageConsumer createConsumer() throws JMSException {
-    return getVendorImplementation().createTopicSubscriber(endpoint(), messageSelector(),
-        getSubscriptionId(), this);
+    return getVendorImplementation().createTopicSubscriber(getTopic(), getMessageSelector(), getSubscriptionId(), this);
   }
 
   public PasPollingConsumer withTopic(String s) {

@@ -16,6 +16,10 @@
 
 package com.adaptris.core.jms;
 
+import javax.jms.JMSException;
+import javax.jms.MessageConsumer;
+import javax.validation.constraints.NotBlank;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -23,10 +27,6 @@ import com.adaptris.core.NullConnection;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-import javax.validation.constraints.NotBlank;
 
 /**
  * <p>
@@ -60,7 +60,7 @@ public class PtpPollingConsumer extends JmsPollingConsumerImpl {
 
   @Override
   protected MessageConsumer createConsumer() throws JMSException {
-    return getVendorImplementation().createQueueReceiver(endpoint(), messageSelector(), this);
+    return getVendorImplementation().createQueueReceiver(getQueue(), getMessageSelector(), this);
   }
 
   @Override
