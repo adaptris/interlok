@@ -16,6 +16,9 @@
 
 package com.adaptris.core.jms;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 
@@ -50,5 +53,15 @@ public class PasConsumerTest extends com.adaptris.interlok.junit.scaffolding.jms
     result.setConsumer(pc);
 
     return result;
+  }
+
+  @Test
+  public void testDurable_WithSubscriptionId() throws Exception {
+    JmsConnection c = new JmsConnection(new BasicActiveMqImplementation("tcp://localhost:16161"));
+    PasConsumer pas = new PasConsumer();
+    pas.setTopic("destination");
+    assertFalse(pas.durable());
+    pas.setSubscriptionId("MySubscriptionId");
+    assertTrue(pas.durable());
   }
 }

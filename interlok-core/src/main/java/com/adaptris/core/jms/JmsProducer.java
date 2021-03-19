@@ -181,13 +181,13 @@ public class JmsProducer extends JmsProducerImpl {
   protected JmsDestination buildDestination(String dest, AdaptrisMessage msg, boolean createReplyTo)
       throws JMSException, CoreException {
     MyJmsDestination target = null;
-    // First of all try and get a jms destination directory from the produce destination
+    // First of all try and get a jms destination from the produce destination
     // (JmsReplyToDestination)
     Destination jmsDest = retrieveObjectDestination(dest, msg);
     if (jmsDest != null) {
       target = new MyJmsDestination(jmsDest);
     } else {
-      target = new MyJmsDestination(vendorImplementation().createDestination(dest, this));
+      target = new MyJmsDestination(vendorImplementation().createDestination(msg.resolve(dest), this));
       target.setReplyTo(createReplyTo(msg, target, createReplyTo));
     }
     return target;

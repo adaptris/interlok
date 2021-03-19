@@ -59,11 +59,6 @@ public class MockProducer extends DefinedJmsProducer {
   }
 
   @Override
-  public Destination createDestination(AdaptrisMessage msg) throws JMSException {
-    throw new JMSException("NO!");
-  }
-
-  @Override
   public int calculateDeliveryMode(AdaptrisMessage msg, String defaultDeliveryMode) {
     return super.calculateDeliveryMode(msg, defaultDeliveryMode);
   }

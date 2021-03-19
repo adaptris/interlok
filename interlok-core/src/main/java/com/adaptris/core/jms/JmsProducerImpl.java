@@ -225,7 +225,8 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
   }
 
   protected Destination retrieveObjectDestination(String endpoint, AdaptrisMessage msg) throws CoreException {
-    return (Destination) msg.resolveObject(endpoint);
+    Object resolveObject = msg.resolveObject(endpoint);
+    return resolveObject instanceof Destination ? (Destination) resolveObject : null;
   }
 
   protected int calculateDeliveryMode(AdaptrisMessage msg, String defaultDeliveryMode) {

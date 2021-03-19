@@ -75,7 +75,7 @@ public class AggregatingQueueConsumer extends AggregatingConsumerImpl<Aggregatin
     try {
       startMessageTranslator(cfg, msg.getFactory());
       consumer = cfg.getConnection().retrieveConnection(JmsConnection.class).configuredVendorImplementation()
-          .createQueueReceiver(getEndpoint(), getFilterExpression(), cfg);
+          .createQueueReceiver(getEndpoint(), msg.resolve(getFilterExpression()), cfg);
       Message first = firstMessage(consumer);
       result.add(getMessageTranslator().translate(first));
       Message next = nextMessage(consumer);

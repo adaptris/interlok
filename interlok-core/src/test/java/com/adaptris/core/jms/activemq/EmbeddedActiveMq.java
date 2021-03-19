@@ -225,7 +225,6 @@ public class EmbeddedActiveMq {
     msg.addMetadata(JmsConstants.JMS_PRIORITY, String.valueOf(HIGHEST_PRIORITY));
     msg.addMetadata(JmsConstants.JMS_DELIVERY_MODE, String.valueOf(DeliveryMode.NON_PERSISTENT));
     msg.addMetadata(JmsConstants.JMS_EXPIRATION, String.valueOf(DEFAULT_TTL));
-    msg.addObjectHeader(JmsConstants.JMS_ASYNC_STATIC_REPLY_TO, null);
     return msg;
   }
 
