@@ -32,7 +32,7 @@ public class PtpConsumerTest extends com.adaptris.interlok.junit.scaffolding.jms
 
   @Override
   protected String createBaseFileName(Object object) {
-    JmsConsumerImpl p = (JmsConsumerImpl) ((StandaloneConsumer) object).getConsumer();
+    ((StandaloneConsumer) object).getConsumer();
     return super.createBaseFileName(object);
   }
 

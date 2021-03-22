@@ -33,7 +33,7 @@ public class PasProducerTest extends BasicJmsProducerCase {
 
   @Override
   protected String createBaseFileName(Object object) {
-    PasProducer p = (PasProducer) ((StandaloneProducer) object).getProducer();
+    ((StandaloneProducer) object).getProducer();
     return super.createBaseFileName(object);
   }
 
@@ -55,13 +55,11 @@ public class PasProducerTest extends BasicJmsProducerCase {
 
 
   @Override
-  @SuppressWarnings("deprecation")
   protected DefinedJmsProducer createProducer(String dest) {
     return new PasProducer().withTopic(dest);
   }
 
   @Override
-  @SuppressWarnings("deprecation")
   protected JmsConsumerImpl createConsumer(String dest) {
     PasConsumer pas = new PasConsumer();
     pas.setTopic(dest);

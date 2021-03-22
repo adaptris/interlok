@@ -166,7 +166,7 @@ public class ActiveMqPasPollingConsumerTest {
     consumer.setSubscriptionId(MY_SUBSCRIPTION_ID);
     consumer.setReacquireLockBetweenMessages(true);
     consumer.setAdditionalDebug(true);
-    consumer.setReceiveTimeout(new TimeInterval(new Integer(new Random().nextInt(100) + 100).longValue(), TimeUnit.MILLISECONDS));
+    consumer.setReceiveTimeout(new TimeInterval(Integer.valueOf(new Random().nextInt(100) + 100).longValue(), TimeUnit.MILLISECONDS));
     StandaloneConsumer sc = new StandaloneConsumer(consumer);
     return sc;
   }

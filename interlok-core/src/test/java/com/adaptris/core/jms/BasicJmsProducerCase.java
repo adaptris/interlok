@@ -174,6 +174,37 @@ public abstract class BasicJmsProducerCase
       stop(sp, standaloneConsumer);
     }
   }
+  
+  @Test
+  public void testResolvableEndpoint() throws Exception {
+    String resolveString = "%message{endpoint}";
+    
+    AdaptrisMessage adaptrisMessage1 = createMessage();
+    adaptrisMessage1.addMessageHeader("endpoint", getName());
+    
+    AdaptrisMessage adaptrisMessage2 = createMessage();
+    adaptrisMessage2.addMessageHeader("endpoint", getName());
+    
+    JmsConsumerImpl consumer = createConsumer(getName());
+    consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+    StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
+    MockMessageListener jms = new MockMessageListener();
+    DefinedJmsProducer producer = createProducer(resolveString);
+    producer.setSessionFactory(new DefaultProducerSessionFactory());
+    StandaloneProducer sp = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
+
+    try {
+      start(standaloneConsumer, sp);
+      sp.doService(adaptrisMessage1);
+      sp.doService(adaptrisMessage2);
+      waitForMessages(jms, 2);
+      assertMessages(jms, 2);
+    }
+    finally {
+      stop(sp, standaloneConsumer);
+    }
+  }
 
   @Test
   public void testPerMessageSession() throws Exception {

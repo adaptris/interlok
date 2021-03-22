@@ -33,14 +33,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
-import javax.jms.Topic;
 
-import org.apache.activemq.ActiveMQConnection;
-import org.apache.activemq.ActiveMQSession;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -98,8 +94,6 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     Closer.closeQuietly(openMocks);
   }
 
-
-  @SuppressWarnings("deprecation")
   protected JmsConsumerImpl createConsumer(String dest) {
     PtpConsumer ptp = new PtpConsumer();
     ptp.setQueue(dest);
@@ -111,24 +105,10 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   }
 
 
-  @SuppressWarnings("deprecation")
   protected JmsProducer createProducer(String dest) {
     JmsProducer p = new JmsProducer();
     p.setEndpoint(dest);
     return p;
-  }
-
-  private AdaptrisMessage createMessage(Destination d) throws Exception {
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx");
-    msg.addObjectHeader(JmsConstants.OBJ_JMS_REPLY_TO_KEY, d);
-    return msg;
-
-  }
-
-  private Topic createTopic(EmbeddedActiveMq broker, String name) throws Exception {
-    ActiveMQConnection conn = broker.createConnection();
-    ActiveMQSession session = (ActiveMQSession) conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
-    return session.createTopic(name);
   }
 
   @Test
@@ -457,6 +437,38 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
       start(standaloneConsumer, sp);
       sp.doService(createMessage());
       sp.doService(createMessage());
+      waitForMessages(jms, 2);
+      assertMessages(jms, 2);
+    } finally {
+      stop(sp, standaloneConsumer);
+    }
+  }
+  
+  @Test
+  public void testProducerResolveFromMetadataFactory() throws Exception {
+    String resolveString = "%message{endpoint}";
+    String rfc6167 = "jms:queue:" + getName() + "";
+    
+    AdaptrisMessage adaptrisMessage1 = createMessage();
+    adaptrisMessage1.addMessageHeader("endpoint", rfc6167);
+    
+    AdaptrisMessage adaptrisMessage2 = createMessage();
+    adaptrisMessage2.addMessageHeader("endpoint", rfc6167);
+    
+    JmsConsumerImpl consumer = createConsumer(getName());
+    consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+    StandaloneConsumer standaloneConsumer =
+        new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
+    MockMessageListener jms = new MockMessageListener();
+    JmsProducer producer = createProducer(resolveString);
+    producer.setSessionFactory(new DefaultProducerSessionFactory());
+    StandaloneProducer sp = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
+
+    try {
+      start(standaloneConsumer, sp);
+      sp.doService(adaptrisMessage1);
+      sp.doService(adaptrisMessage2);
       waitForMessages(jms, 2);
       assertMessages(jms, 2);
     } finally {
@@ -828,8 +840,8 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
 
 
   @Override
-  protected List retrieveObjectsForSampleConfig() {
-    ArrayList result = new ArrayList();
+  protected List<Object> retrieveObjectsForSampleConfig() {
+    ArrayList<Object> result = new ArrayList<>();
     boolean useQueue = true;
     for (MessageTypeTranslator t : MESSAGE_TRANSLATOR_LIST) {
       StandaloneProducer p = retrieveSampleConfig(useQueue);
