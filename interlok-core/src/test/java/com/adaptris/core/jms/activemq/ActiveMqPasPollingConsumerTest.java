@@ -16,11 +16,11 @@
 
 package com.adaptris.core.jms.activemq;
 
-import static com.adaptris.core.BaseCase.start;
-import static com.adaptris.core.BaseCase.stop;
-import static com.adaptris.core.BaseCase.waitForMessages;
-import static com.adaptris.core.jms.JmsProducerCase.assertMessages;
-import static com.adaptris.core.jms.JmsProducerCase.createMessage;
+import static com.adaptris.interlok.junit.scaffolding.BaseCase.start;
+import static com.adaptris.interlok.junit.scaffolding.BaseCase.stop;
+import static com.adaptris.interlok.junit.scaffolding.BaseCase.waitForMessages;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase.assertMessages;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase.createMessage;
 import static org.junit.Assert.fail;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;

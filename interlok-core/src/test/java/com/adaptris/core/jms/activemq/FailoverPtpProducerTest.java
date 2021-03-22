@@ -16,8 +16,8 @@
 
 package com.adaptris.core.jms.activemq;
 
-import static com.adaptris.core.BaseCase.execute;
-import static com.adaptris.core.jms.JmsProducerCase.assertMessages;
+import static com.adaptris.interlok.junit.scaffolding.BaseCase.execute;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase.assertMessages;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
 
 import org.junit.AfterClass;
