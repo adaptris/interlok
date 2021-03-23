@@ -26,7 +26,6 @@ public class JettyMgmtComponentTest {
       Properties jettyConfig = new Properties();
       jettyConfig.setProperty(ServerBuilder.WEB_SERVER_PORT_CFG_KEY, String.valueOf(portForServer));
       jetty.init(jettyConfig);
-      jetty.setClassLoader(Thread.currentThread().getContextClassLoader());
       jetty.start();
       Thread.sleep(250);
       final ServerManager mgr = WebServerManagementUtil.getServerManager();
@@ -46,7 +45,6 @@ public class JettyMgmtComponentTest {
       jettyConfig.setProperty(ServerBuilder.WEB_SERVER_PORT_CFG_KEY, String.valueOf(portForServer));
       jettyConfig.setProperty(ServerBuilder.WEB_SERVER_WEBAPP_URL_CFG_KEY, "./webapps");
       jetty.init(jettyConfig);
-      jetty.setClassLoader(Thread.currentThread().getContextClassLoader());
       jetty.start();
       Thread.sleep(250);
       final ServerManager mgr = WebServerManagementUtil.getServerManager();
