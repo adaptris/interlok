@@ -1,5 +1,15 @@
 package com.adaptris.core.jms;
 
+import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
+
+import javax.jms.JMSException;
+import javax.jms.MessageConsumer;
+import javax.jms.Session;
+import javax.validation.constraints.NotBlank;
+
+import org.apache.commons.lang3.BooleanUtils;
+import org.slf4j.Logger;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -7,20 +17,13 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.util.DestinationHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import org.apache.commons.lang3.BooleanUtils;
-import org.slf4j.Logger;
-
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-import javax.jms.Session;
-import javax.validation.constraints.NotBlank;
-
-import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 
 /**
  * JMS synchronous consumer implementation that can target queues or topics via an
@@ -141,6 +144,11 @@ public class JmsSyncConsumer extends BaseJmsPollingConsumerImpl {
 
   protected String endpoint() {
     return getEndpoint();
+  }
+
+  @Override
+  protected String newThreadName() {
+    return DestinationHelper.threadName(retrieveAdaptrisMessageListener(), null);
   }
 
   @Override

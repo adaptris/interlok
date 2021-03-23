@@ -16,21 +16,24 @@
 
 package com.adaptris.core.jms;
 
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Queue;
+import javax.validation.constraints.NotBlank;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceException;
+import com.adaptris.interlok.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Queue;
-import javax.validation.constraints.NotBlank;
 
 /**
  * {@link com.adaptris.core.AdaptrisMessageProducer} implementation for Queue based JMS.
@@ -93,16 +96,13 @@ import javax.validation.constraints.NotBlank;
 @XStreamAlias("jms-queue-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Place message on a JMS Queue", tag = "producer,jms", recommended = {JmsConnection.class})
-@DisplayOrder(order = {"queue", "messageTranslator", "deliveryMode", "priority",
+@DisplayOrder(order = {"queue", "destination", "messageTranslator", "deliveryMode", "priority",
     "ttl", "acknowledgeMode"})
 @NoArgsConstructor
 public class PtpProducer extends DefinedJmsProducer {
 
   /**
-   * The JMS Queue. This supports the message resolve expression:
-   * %messageObject{KEY}, which allows for the destination to be
-   * retrieved from object headers. It also allows for string
-   * expressions to be built dynamically as necessary.
+   * The JMS Queue
    */
   @InputFieldHint(expression = true)
   @Getter
@@ -111,16 +111,11 @@ public class PtpProducer extends DefinedJmsProducer {
   private String queue;
 
   @Override
-  protected Destination createDestination(AdaptrisMessage message) throws JMSException {
-    Object o = message.resolveObject(queue);
-    if (o instanceof Destination) {
-      return (Destination)o;
-    } else if (o != null) {
-      return createDestination(o.toString());
-    } else {
-      return null;
-    }
+  public void prepare() throws CoreException {
+    Args.notNull(getQueue(), "queue");
+    super.prepare();
   }
+
 
   @Override
   protected Queue createDestination(String name) throws JMSException {
@@ -133,14 +128,22 @@ public class PtpProducer extends DefinedJmsProducer {
   }
 
   @Override
+  public AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException {
+    return request(msg, endpoint(msg), timeout);
+  }
+
+  @Override
+  public void produce(AdaptrisMessage msg) throws ProduceException {
+    produce(msg, endpoint(msg));
+  }
+
+  @Override
   public String endpoint(AdaptrisMessage msg) throws ProduceException {
-    Object o = msg.resolveObject(queue);
-    return o != null ? o.toString() : queue;
+    return msg.resolve(getQueue());
   }
 
   public PtpProducer withQueue(String s) {
     setQueue(s);
     return this;
   }
-
 }

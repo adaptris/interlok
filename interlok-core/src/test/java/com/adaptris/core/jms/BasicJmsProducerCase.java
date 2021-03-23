@@ -16,25 +16,17 @@
 
 package com.adaptris.core.jms;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.Service;
-import com.adaptris.core.ServiceList;
-import com.adaptris.core.StandaloneConsumer;
-import com.adaptris.core.StandaloneProducer;
-import com.adaptris.core.StandaloneRequestor;
-import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
-import com.adaptris.core.stubs.MockMessageListener;
-import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
-import com.adaptris.util.TimeInterval;
-import org.apache.activemq.ActiveMQConnection;
-import org.apache.activemq.ActiveMQQueueSender;
-import org.apache.activemq.ActiveMQSession;
-import org.apache.activemq.ActiveMQTopicPublisher;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static com.adaptris.core.jms.JmsUtils.closeQuietly;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.DEFAULT_PAYLOAD;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.jms.Destination;
 import javax.jms.Message;
@@ -45,17 +37,27 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.jms.Topic;
 import javax.jms.TopicSubscriber;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
-import static com.adaptris.core.jms.JmsUtils.closeQuietly;
-import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.DEFAULT_PAYLOAD;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.apache.activemq.ActiveMQConnection;
+import org.apache.activemq.ActiveMQQueueSender;
+import org.apache.activemq.ActiveMQSession;
+import org.apache.activemq.ActiveMQTopicPublisher;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.Service;
+import com.adaptris.core.ServiceList;
+import com.adaptris.core.StandaloneConsumer;
+import com.adaptris.core.StandaloneProducer;
+import com.adaptris.core.StandaloneRequestor;
+import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
+import com.adaptris.core.stubs.MockMessageListener;
+import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
+import com.adaptris.util.TimeInterval;
 
 public abstract class BasicJmsProducerCase
     extends com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase {
@@ -165,6 +167,37 @@ public abstract class BasicJmsProducerCase
       start(standaloneConsumer, sp);
       sp.doService(createMessage());
       sp.doService(createMessage());
+      waitForMessages(jms, 2);
+      assertMessages(jms, 2);
+    }
+    finally {
+      stop(sp, standaloneConsumer);
+    }
+  }
+  
+  @Test
+  public void testResolvableEndpoint() throws Exception {
+    String resolveString = "%message{endpoint}";
+    
+    AdaptrisMessage adaptrisMessage1 = createMessage();
+    adaptrisMessage1.addMessageHeader("endpoint", getName());
+    
+    AdaptrisMessage adaptrisMessage2 = createMessage();
+    adaptrisMessage2.addMessageHeader("endpoint", getName());
+    
+    JmsConsumerImpl consumer = createConsumer(getName());
+    consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+    StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
+    MockMessageListener jms = new MockMessageListener();
+    DefinedJmsProducer producer = createProducer(resolveString);
+    producer.setSessionFactory(new DefaultProducerSessionFactory());
+    StandaloneProducer sp = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
+
+    try {
+      start(standaloneConsumer, sp);
+      sp.doService(adaptrisMessage1);
+      sp.doService(adaptrisMessage2);
       waitForMessages(jms, 2);
       assertMessages(jms, 2);
     }

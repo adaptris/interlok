@@ -17,6 +17,7 @@
 package com.adaptris.core.management;
 
 import java.util.Properties;
+import com.adaptris.annotation.Removal;
 
 /**
  * Interface for management components that exist outside of the standard adapter lifecycle.
@@ -25,6 +26,8 @@ import java.util.Properties;
  */
 public interface ManagementComponent {
 
+  @Deprecated
+  @Removal(version = "5.0.0", message = "Is ignored, and has no purpose.")
   default void setClassLoader(ClassLoader classLoader) {
 
   }

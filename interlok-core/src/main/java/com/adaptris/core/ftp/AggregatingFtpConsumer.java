@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,13 @@
 
 package com.adaptris.core.ftp;
 
+import static com.adaptris.core.ftp.FtpHelper.FORWARD_SLASH;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import javax.validation.Valid;
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
@@ -30,15 +37,6 @@ import com.adaptris.core.services.aggregator.AggregatingConsumerImpl;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import org.apache.commons.lang3.BooleanUtils;
-
-import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static com.adaptris.core.ftp.FtpHelper.FORWARD_SLASH;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
  * {@link com.adaptris.core.services.aggregator.AggregatingConsumer} implementation that allows you to read a separate message from
@@ -50,9 +48,9 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  * aggregated; if there a 2000 files sitting on the filesystem that match the filter-expression, then that is how many will be
  * picked up.
  * </p>
- * 
+ *
  * @config aggregating-ftp-consumer
- * 
+ *
  */
 @XStreamAlias("aggregating-ftp-consumer")
 @DisplayOrder(order =
@@ -76,14 +74,8 @@ public class AggregatingFtpConsumer extends AggregatingConsumerImpl<AggregatingF
   @Override
   public void aggregateMessages(AdaptrisMessage msg, AggregatingFtpConsumeService service) throws ServiceException {
 
-    String endpoint = getEndpoint();
-    if (endpoint != null) {
-      endpoint = msg.resolveObject(endpoint).toString();
-    }
-    String filterExpression = getFilterExpression();
-    if (filterExpression != null) {
-      filterExpression = msg.resolveObject(filterExpression).toString();
-    }
+    String endpoint = msg.resolve(getEndpoint());
+    String filterExpression = msg.resolve(getFilterExpression());
 
     ConfigWrapper cfg = new ConfigWrapper(service.getConnection().retrieveConnection(FileTransferConnection.class), endpoint, filterExpression);
     try {
@@ -182,11 +174,11 @@ public class AggregatingFtpConsumer extends AggregatingConsumerImpl<AggregatingF
 
   /**
    * Set the file filter implementation that will be used.
-   * 
+   *
    * @param classname the fileFilterImp to set, defaults to
    */
   public void setFileFilterImp(String classname) {
-    this.fileFilterImp = classname;
+    fileFilterImp = classname;
   }
 
   /**
@@ -198,11 +190,11 @@ public class AggregatingFtpConsumer extends AggregatingConsumerImpl<AggregatingF
 
   /**
    * Set the encoder to use when reading files.
-   * 
+   *
    * @param ame the encoder to set
    */
   public void setEncoder(AdaptrisMessageEncoder ame) {
-    this.encoder = ame;
+    encoder = ame;
   }
 
   /**
@@ -218,7 +210,7 @@ public class AggregatingFtpConsumer extends AggregatingConsumerImpl<AggregatingF
    * @param b defaults to true.
    */
   public void setDeleteAggregatedFiles(Boolean b) {
-    this.deleteAggregatedFiles = b;
+    deleteAggregatedFiles = b;
   }
 
   boolean deleteAggregatedFiles() {

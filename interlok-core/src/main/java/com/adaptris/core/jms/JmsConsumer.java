@@ -89,10 +89,8 @@ public class JmsConsumer extends JmsConsumerImpl {
   private Boolean deferConsumerCreationToVendor;
 
   /**
-   * The RFC6167 format topic/queue. This supports the message resolve
-   * expression: %messageObject{KEY}, which allows for the the
-   * destination to be retrieved from object headers. It also allows for
-   * string expressions to be built dynamically as necessary.
+   * The RFC6167 format topic/queue.
+   *
    */
   @Getter
   @Setter
@@ -111,8 +109,8 @@ public class JmsConsumer extends JmsConsumerImpl {
 
   @Override
   protected MessageConsumer createConsumer() throws JMSException, CoreException {
-    String rfc6167 = endpoint();
-    String filterExp = messageSelector();
+    String rfc6167 = getEndpoint();
+    String filterExp = getMessageSelector();
 
     VendorImplementation vendor = retrieveConnection(JmsConnection.class).configuredVendorImplementation();
     return new JmsMessageConsumerFactory(vendor, currentSession(), rfc6167, deferConsumerCreationToVendor(), filterExp,

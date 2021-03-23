@@ -16,18 +16,8 @@
 
 package com.adaptris.core.jms;
 
-import com.adaptris.annotation.AdvancedConfig;
-import com.adaptris.annotation.AutoPopulated;
-import com.adaptris.core.AdaptrisMessageConsumerImp;
-import com.adaptris.core.AdaptrisMessageListener;
-import com.adaptris.core.ClosedState;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.util.Args;
-import com.adaptris.core.util.LifecycleHelper;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.commons.lang3.BooleanUtils;
-import org.slf4j.Logger;
+import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
+import static com.adaptris.core.jms.NullCorrelationIdSource.defaultIfNull;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -38,8 +28,21 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
-import static com.adaptris.core.jms.NullCorrelationIdSource.defaultIfNull;
+import org.apache.commons.lang3.BooleanUtils;
+import org.slf4j.Logger;
+
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.AutoPopulated;
+import com.adaptris.core.AdaptrisMessageConsumerImp;
+import com.adaptris.core.AdaptrisMessageListener;
+import com.adaptris.core.ClosedState;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.DestinationHelper;
+import com.adaptris.core.util.LifecycleHelper;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * <p>
@@ -112,15 +115,13 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
 
   @Override
   public void prepare() throws CoreException {
+    Args.notNull(configuredEndpoint(), "endpoint");
     LifecycleHelper.prepare(getMessageTranslator());
   }
 
-  protected String messageSelector() {
-    return getMessageSelector();
-  }
-
-  protected String endpoint() {
-    return configuredEndpoint();
+  @Override
+  protected String newThreadName() {
+    return DestinationHelper.threadName(retrieveAdaptrisMessageListener());
   }
 
   protected abstract String configuredEndpoint();

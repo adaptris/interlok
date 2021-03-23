@@ -16,9 +16,9 @@
 
 package com.adaptris.interlok.junit.scaffolding.jms;
 
-import static com.adaptris.core.jms.JmsConfig.DEFAULT_PAYLOAD;
-import static com.adaptris.core.jms.JmsConfig.DEFAULT_TTL;
-import static com.adaptris.core.jms.JmsConfig.HIGHEST_PRIORITY;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.DEFAULT_PAYLOAD;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.DEFAULT_TTL;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.HIGHEST_PRIORITY;
 import static com.adaptris.core.jms.JmsConstants.JMS_DELIVERY_MODE;
 import static com.adaptris.core.jms.JmsConstants.JMS_EXPIRATION;
 import static com.adaptris.core.jms.JmsConstants.JMS_PRIORITY;

@@ -33,7 +33,7 @@ public class PtpProducerTest extends BasicJmsProducerCase {
 
   @Override
   protected String createBaseFileName(Object object) {
-    PtpProducer p = (PtpProducer) ((StandaloneProducer) object).getProducer();
+    ((StandaloneProducer) object).getProducer();
     return super.createBaseFileName(object);
   }
 
@@ -47,12 +47,16 @@ public class PtpProducerTest extends BasicJmsProducerCase {
 
   @Override
   protected PtpProducer createProducer(String dest) {
-    return new PtpProducer().withQueue(dest);
+    PtpProducer p = new PtpProducer();
+    p.setQueue(dest);
+    return p;
   }
 
   @Override
   protected PtpConsumer createConsumer(String dest) {
-    return new PtpConsumer().withQueue(dest);
+    PtpConsumer ptp = new PtpConsumer();
+    ptp.setQueue(dest);
+    return ptp;
   }
 
   @Override

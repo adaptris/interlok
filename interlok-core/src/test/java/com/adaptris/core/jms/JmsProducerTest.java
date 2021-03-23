@@ -16,7 +16,6 @@
 
 package com.adaptris.core.jms;
 
-import static com.adaptris.core.jms.JmsConstants.OBJ_JMS_REPLY_TO_KEY;
 import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.DEFAULT_PAYLOAD;
 import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.MESSAGE_TRANSLATOR_LIST;
 import static org.junit.Assert.assertEquals;
@@ -32,13 +31,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
+import javax.jms.Queue;
 import javax.jms.Session;
-import javax.jms.Topic;
-import org.apache.activemq.ActiveMQConnection;
-import org.apache.activemq.ActiveMQSession;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -68,7 +64,6 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   @Mock private ProducerSession mockProducerSession;
   @Mock private Session mockSession;
   @Mock private Message mockMessage;
-  @Mock private MessageTypeTranslator mockTranslator;
 
   private AutoCloseable openMocks;
 
@@ -96,9 +91,10 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     Closer.closeQuietly(openMocks);
   }
 
-
   protected JmsConsumerImpl createConsumer(String dest) {
-    return new PtpConsumer().withQueue(dest);
+    PtpConsumer ptp = new PtpConsumer();
+    ptp.setQueue(dest);
+    return ptp;
   }
 
   protected BasicJmsProducerCase.QueueLoopback createLoopback(EmbeddedActiveMq mq, String dest) {
@@ -107,35 +103,10 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
 
 
   protected JmsProducer createProducer(String dest) {
-    return new JmsProducer().withEndpoint(dest);
+    JmsProducer p = new JmsProducer();
+    p.setEndpoint(dest);
+    return p;
   }
-
-  private AdaptrisMessage createMessage(Destination d) throws Exception {
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx");
-    msg.addObjectHeader(OBJ_JMS_REPLY_TO_KEY, d);
-    return msg;
-
-  }
-
-  private Topic createTopic(EmbeddedActiveMq broker, String name) throws Exception {
-    ActiveMQConnection conn = broker.createConnection();
-    ActiveMQSession session = (ActiveMQSession) conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
-    return session.createTopic(name);
-  }
-
-  @Test
-  public void testEndpoint() throws Exception {
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx");
-    msg.addObjectHeader("topicObject", "fromObjectMetadata");
-    msg.addMessageHeader("topicString", "fromMetadata");
-    JmsProducer p1 = createProducer("%messageObject{topicObject}");
-    assertEquals("fromObjectMetadata", p1.endpoint(msg));
-    JmsProducer p2 = createProducer("%message{topicString}");
-    assertEquals("fromMetadata", p2.endpoint(msg));
-    JmsProducer p3 = createProducer("XXXXX");
-    assertEquals("XXXXX", p3.endpoint(msg));
-  }
-
 
   @Test
   public void testTransactedCommit() throws Exception {
@@ -346,86 +317,24 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     verify(mockMessage).acknowledge();
   }
 
-  @Test
-  public void testProduce_HasReplyToDestination() throws Exception {
-    Topic topic = createTopic(activeMqBroker, getName());
-    AdaptrisMessage msg = createMessage(topic);
-    msg.addObjectHeader(OBJ_JMS_REPLY_TO_KEY, "jms:topic:" + getName());
-
-    JmsProducer producer = createProducer("%messageObject{" + OBJ_JMS_REPLY_TO_KEY + "}");
-    producer.setCaptureOutgoingMessageDetails(true);
-    StandaloneProducer sp = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
-
-    ExampleServiceCase.execute(sp, msg);
-    Map<Object, Object> objMd = msg.getObjectHeaders();
-    String prefix = Message.class.getCanonicalName() + ".";
-    assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_MESSAGE_ID));
-    assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_DESTINATION));
-    assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_PRIORITY));
-    assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_TIMESTAMP));
-
-  }
-
-  @Test
-  public void testProduce_HasReplyToDestination_String() throws Exception {
-    String jmsReplyTo = "jms:topic:replyToDestination";
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx");
-    msg.addObjectHeader(JmsConstants.OBJ_JMS_REPLY_TO_KEY, jmsReplyTo);
-
-    JmsProducer producer = createProducer("jms:topic:" + getName());
-    producer.setCaptureOutgoingMessageDetails(true);
-    StandaloneProducer sp = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
-
-    ExampleServiceCase.execute(sp, msg);
-    Map<Object, Object> objMd = msg.getObjectHeaders();
-    String prefix = Message.class.getCanonicalName() + ".";
-    assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_MESSAGE_ID));
-    assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_DESTINATION));
-    assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_PRIORITY));
-    assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_TIMESTAMP));
-
-  }
-
-  @Test
-  public void testProduce_ObjectDestination() throws Exception {
-    Topic topic = createTopic(activeMqBroker, getName());
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx");
-    msg.addObjectHeader("topicObject", topic);
-
-    JmsProducer producer = createProducer("%messageObject{topicObject}");
-    producer.setCaptureOutgoingMessageDetails(true);
-    StandaloneProducer sp = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
-
-    ExampleServiceCase.execute(sp, msg);
-    Map<Object, Object> objMd = msg.getObjectHeaders();
-    String prefix = Message.class.getCanonicalName() + ".";
-    assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_MESSAGE_ID));
-    assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_DESTINATION));
-    assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_PRIORITY));
-    assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_TIMESTAMP));
-    String capturedTopic = (String) objMd.get(prefix + JmsConstants.JMS_DESTINATION);
-    assertTrue(capturedTopic.contains(getName()));
-
-  }
-
-  @Test
-  public void testProduce_ObjectDestination_IsString() throws Exception {
-    String topic = "jms:topic:" + getName();
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("xxx");
-    msg.addObjectHeader("topicObject", topic);
-
-    JmsProducer producer = createProducer("%messageObject{topicObject}");
-    producer.setCaptureOutgoingMessageDetails(true);
-    StandaloneProducer sp = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
-
-    ExampleServiceCase.execute(sp, msg);
-    Map<Object, Object> objMd = msg.getObjectHeaders();
-    String prefix = Message.class.getCanonicalName() + ".";
-    assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_DESTINATION));
-    String capturedTopic = (String) objMd.get(prefix + JmsConstants.JMS_DESTINATION);
-    assertTrue(capturedTopic.contains(getName()));
-
-  }
+//  @Test
+//  public void testProduce_JmsReplyToDestination() throws Exception {
+//    Topic topic = createTopic(activeMqBroker, getName());
+//    AdaptrisMessage msg = createMessage(topic);
+//    JmsReplyToDestination d = new JmsReplyToDestination();
+//
+//    JmsProducer producer = createProducer(d);
+//    producer.setCaptureOutgoingMessageDetails(true);
+//    StandaloneProducer sp = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
+//
+//    ExampleServiceCase.execute(sp, msg);
+//    Map<Object, Object> objMd = msg.getObjectHeaders();
+//    String prefix = Message.class.getCanonicalName() + ".";
+//    assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_MESSAGE_ID));
+//    assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_DESTINATION));
+//    assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_PRIORITY));
+//    assertTrue(objMd.containsKey(prefix + JmsConstants.JMS_TIMESTAMP));
+//  }
 
   @Test
   public void testProduce_CaptureOutgoingMessageDetails() throws Exception {
@@ -447,16 +356,67 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   }
 
   @Test
-  public void testProduceAndConsume_DeliveryMode() throws Exception {
-    String rfc6167 = "jms:queue:" + getName() + "?deliveryMode=PERSISTENT";
+  public void testProduceAndConsume_ObjectEndpoint() throws Exception {
+    Queue queue = activeMqBroker.createQueue(getName());
+
+    String endpoint = "%messageObject{objectEndpoint}";
 
     JmsConsumerImpl consumer = createConsumer(getName());
     consumer.setAcknowledgeMode(String.valueOf(AcknowledgeMode.Mode.AUTO_ACKNOWLEDGE.acknowledgeMode()));
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
     standaloneConsumer.registerAdaptrisMessageListener(jms);
-    JmsProducer producer = createProducer(rfc6167);
+
+    JmsProducer producer = createProducer(endpoint);
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
+
+    AdaptrisMessage msg = createMessage();
+    msg.addObjectHeader("objectEndpoint", queue);
+
+    execute(standaloneConsumer, standaloneProducer, msg, jms);
+    assertMessages(jms, 1);
+  }
+
+  @Test
+  public void testProduceAndConsume_ResolvedEndpoint() throws Exception {
+    Queue queue = activeMqBroker.createQueue(getName());
+
+    String endpoint = "%message{metadataEndpoint}";
+    String rfc6167 = "jms:queue:" + getName();
+
+    JmsConsumerImpl consumer = createConsumer(getName());
+    consumer.setAcknowledgeMode(
+        String.valueOf(AcknowledgeMode.Mode.AUTO_ACKNOWLEDGE.acknowledgeMode()));
+    StandaloneConsumer standaloneConsumer =
+        new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
+    MockMessageListener jms = new MockMessageListener();
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
+
+    JmsProducer producer = createProducer(endpoint);
+    StandaloneProducer standaloneProducer =
+        new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
+
+    AdaptrisMessage msg = createMessage();
+    msg.addMessageHeader("metadataEndpoint", rfc6167);
+
+    execute(standaloneConsumer, standaloneProducer, msg, jms);
+    assertMessages(jms, 1);
+  }
+
+  @Test
+  public void testProduceAndConsume_DeliveryMode() throws Exception {
+    String rfc6167 = "jms:queue:" + getName() + "?deliveryMode=PERSISTENT";
+
+    JmsConsumerImpl consumer = createConsumer(getName());
+    consumer.setAcknowledgeMode(
+        String.valueOf(AcknowledgeMode.Mode.AUTO_ACKNOWLEDGE.acknowledgeMode()));
+    StandaloneConsumer standaloneConsumer =
+        new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
+    MockMessageListener jms = new MockMessageListener();
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
+    JmsProducer producer = createProducer(rfc6167);
+    StandaloneProducer standaloneProducer =
+        new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
     execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
     assertMessages(jms, 1);
   }
@@ -525,6 +485,38 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
       start(standaloneConsumer, sp);
       sp.doService(createMessage());
       sp.doService(createMessage());
+      waitForMessages(jms, 2);
+      assertMessages(jms, 2);
+    } finally {
+      stop(sp, standaloneConsumer);
+    }
+  }
+
+  @Test
+  public void testProducerResolveFromMetadataFactory() throws Exception {
+    String resolveString = "%message{endpoint}";
+    String rfc6167 = "jms:queue:" + getName() + "";
+
+    AdaptrisMessage adaptrisMessage1 = createMessage();
+    adaptrisMessage1.addMessageHeader("endpoint", rfc6167);
+
+    AdaptrisMessage adaptrisMessage2 = createMessage();
+    adaptrisMessage2.addMessageHeader("endpoint", rfc6167);
+
+    JmsConsumerImpl consumer = createConsumer(getName());
+    consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+    StandaloneConsumer standaloneConsumer =
+        new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
+    MockMessageListener jms = new MockMessageListener();
+    JmsProducer producer = createProducer(resolveString);
+    producer.setSessionFactory(new DefaultProducerSessionFactory());
+    StandaloneProducer sp = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
+
+    try {
+      start(standaloneConsumer, sp);
+      sp.doService(adaptrisMessage1);
+      sp.doService(adaptrisMessage2);
       waitForMessages(jms, 2);
       assertMessages(jms, 2);
     } finally {
@@ -893,29 +885,11 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     }
   }
 
-  @Test(expected = ServiceException.class)
-  public void testRequest_TimeoutTranslatorThrowsRuntime() throws Exception {
-    doThrow(new RuntimeException("Expected"))
-        .when(mockTranslator).translate(any(AdaptrisMessage.class));
 
-    String rfc6167 = "jms:queue:" + getName() + "";
-    JmsProducer producer = createProducer(rfc6167);
-    producer.setMessageTranslator(mockTranslator);
-    producer.setPerMessageProperties(false);
-    StandaloneRequestor serviceList = new StandaloneRequestor(activeMqBroker.getJmsConnection(),
-        producer, new TimeInterval(1L, TimeUnit.SECONDS));
-    try {
-      start(serviceList);
-      AdaptrisMessage msg1 = createMessage();
-      serviceList.doService(msg1);
-    } finally {
-      stop(serviceList);
-    }
-  }
 
   @Override
-  protected List retrieveObjectsForSampleConfig() {
-    ArrayList result = new ArrayList();
+  protected List<Object> retrieveObjectsForSampleConfig() {
+    ArrayList<Object> result = new ArrayList<>();
     boolean useQueue = true;
     for (MessageTypeTranslator t : MESSAGE_TRANSLATOR_LIST) {
       StandaloneProducer p = retrieveSampleConfig(useQueue);

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,17 @@
 
 package com.adaptris.core.fs;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileFilter;
+import java.lang.reflect.Constructor;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import javax.validation.Valid;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
@@ -29,19 +40,6 @@ import com.adaptris.fs.FsWorker;
 import com.adaptris.fs.NioWorker;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-import javax.validation.Valid;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileFilter;
-import java.lang.reflect.Constructor;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 /**
  * {@link com.adaptris.core.services.aggregator.AggregatingConsumer} implementation that allows you to read a separate message from
  * the filesystem that is correlated in some way to the current message.
@@ -52,9 +50,9 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  * aggregated; if there a 2000 files sitting in a directory that match the filter-expression, then that is how many will be picked
  * up.
  * </p>
- * 
+ *
  * @config aggregating-fs-consumer
- * 
+ *
  */
 @XStreamAlias("aggregating-fs-consumer")
 @DisplayOrder(order = {"destination", "messageAggregator", "filterFilterImp", "wipSuffix", "encoder"})
@@ -80,14 +78,8 @@ public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFs
   @Override
   public void aggregateMessages(AdaptrisMessage msg, AggregatingFsConsumeService service) throws ServiceException {
 
-    String endpoint = getEndpoint();
-    if (endpoint != null) {
-      endpoint = msg.resolveObject(endpoint).toString();
-    }
-    String filterExpression = getFilterExpression();
-    if (filterExpression != null) {
-      filterExpression = msg.resolveObject(filterExpression).toString();
-    }
+    String endpoint = msg.resolve(getEndpoint());
+    String filterExpression = msg.resolve(getFilterExpression());
 
     List<AdaptrisMessage> result = new ArrayList<>();
     try {
@@ -190,11 +182,11 @@ public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFs
 
   /**
    * Set the file filter implementation that will be used.
-   * 
+   *
    * @param classname the fileFilterImp to set, defaults to
    */
   public void setFileFilterImp(String classname) {
-    this.fileFilterImp = classname;
+    fileFilterImp = classname;
   }
 
   private FileFilter createFileFilter(String filterExpression) throws Exception {
@@ -230,11 +222,11 @@ public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFs
 
   /**
    * Set the encoder to use when reading files.
-   * 
+   *
    * @param ame the encoder to set
    */
   public void setEncoder(AdaptrisMessageEncoder ame) {
-    this.encoder = ame;
+    encoder = ame;
   }
 
   /**
@@ -249,11 +241,11 @@ public class AggregatingFsConsumer extends AggregatingConsumerImpl<AggregatingFs
    * <p>
    * This suffix is added to the original file name while the file is being processed.
    * </p>
-   * 
+   *
    * @param suffix the wipSuffix to set, if not explicitly configured defaults to '_wip'
    */
   public void setWipSuffix(String suffix) {
-    this.wipSuffix = suffix;
+    wipSuffix = suffix;
   }
 
   String wipSuffix() {

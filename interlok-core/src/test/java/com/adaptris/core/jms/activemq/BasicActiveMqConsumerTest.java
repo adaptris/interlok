@@ -22,6 +22,7 @@ import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
 import static com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase.assertMessages;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -355,7 +356,6 @@ public class BasicActiveMqConsumerTest
     testStartWithDurableSubscribers_WithNonBlockingChannelStrategy();
   }
 
-  @SuppressWarnings("deprecation")
   private Adapter createDurableSubsAdapter(String adapterName, EmbeddedActiveMq activeMqBroker) throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(adapterName);

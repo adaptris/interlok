@@ -16,21 +16,24 @@
 
 package com.adaptris.core.jms;
 
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Topic;
+import javax.validation.constraints.NotBlank;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceException;
+import com.adaptris.interlok.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Topic;
-import javax.validation.constraints.NotBlank;
 
 /**
  * {@link com.adaptris.core.AdaptrisMessageProducer} implementation for Topic based JMS.
@@ -98,10 +101,7 @@ import javax.validation.constraints.NotBlank;
 public class PasProducer extends DefinedJmsProducer {
 
   /**
-   * The JMS Topic. This supports the message resolve expression:
-   * %messageObject{KEY}, which allows for the the destination to be
-   * retrieved from object headers. It also allows for string
-   * expressions to be built dynamically as necessary.
+   * The JMS Topic
    */
   @InputFieldHint(expression = true)
   @Getter
@@ -110,15 +110,9 @@ public class PasProducer extends DefinedJmsProducer {
   private String topic;
 
   @Override
-  protected Destination createDestination(AdaptrisMessage message) throws JMSException {
-    Object o = message.resolveObject(topic);
-    if (o instanceof Destination) {
-      return (Destination)o;
-    } else if (o != null) {
-      return createDestination(o.toString());
-    } else {
-      return null;
-    }
+  public void prepare() throws CoreException {
+    Args.notNull(getTopic(), "topic");
+    super.prepare();
   }
 
   @Override
@@ -132,9 +126,18 @@ public class PasProducer extends DefinedJmsProducer {
   }
 
   @Override
+  public AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException {
+    return request(msg, endpoint(msg), timeout);
+  }
+
+  @Override
+  public void produce(AdaptrisMessage msg) throws ProduceException {
+    produce(msg, endpoint(msg));
+  }
+
+  @Override
   public String endpoint(AdaptrisMessage msg) throws ProduceException {
-    Object o = msg.resolveObject(topic);
-    return o != null ? o.toString() : topic;
+    return msg.resolve(getTopic());
   }
 
   public PasProducer withTopic(String t) {

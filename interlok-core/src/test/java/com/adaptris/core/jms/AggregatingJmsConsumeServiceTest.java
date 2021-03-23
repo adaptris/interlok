@@ -16,6 +16,17 @@
 
 package com.adaptris.core.jms;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+
+import java.util.concurrent.TimeUnit;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceException;
@@ -28,16 +39,6 @@ import com.adaptris.core.services.aggregator.ReplaceWithFirstMessage;
 import com.adaptris.core.util.MimeHelper;
 import com.adaptris.util.TimeInterval;
 import com.adaptris.util.text.mime.BodyPartIterator;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
 
 public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample {
 
@@ -155,8 +156,9 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
   private AggregatingJmsConsumeService createService(EmbeddedActiveMq broker, AggregatingQueueConsumer consumer, String queue) {
     AggregatingJmsConsumeService result = new AggregatingJmsConsumeService();
     result.setConnection(broker.getJmsConnection(new BasicActiveMqImplementation(), true));
-    consumer.setEndpoint(queue);
+    
     consumer.setFilterExpression("%message{" + DEFAULT_FILTER_KEY + "}");
+    consumer.setEndpoint(queue);
     consumer.setTimeout(new TimeInterval(5L, TimeUnit.SECONDS));
     result.setJmsConsumer(consumer);
     return result;
@@ -193,8 +195,8 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
     jmsConnection.setConnectionRetryInterval(new TimeInterval(3L, "SECONDS"));
     service.setConnection(jmsConnection);
     AggregatingQueueConsumer consumer = new AggregatingQueueConsumer();
-    consumer.setEndpoint("SampleQ1");
-    consumer.setFilterExpression("filterSelectorKey");
+    consumer.setEndpoint("Sample.Q1");
+    consumer.setFilterExpression("%message{filterSelectorKey}");
     consumer.setMessageAggregator(new ReplaceWithFirstMessage());
     consumer.setMessageTranslator(new TextMessageTranslator());
     service.setJmsConsumer(consumer);

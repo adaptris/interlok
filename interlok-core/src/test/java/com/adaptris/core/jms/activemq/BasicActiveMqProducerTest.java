@@ -194,7 +194,7 @@ public class BasicActiveMqProducerTest
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
               new PasProducer().withTopic(getName()));
       AdaptrisMessage msg = EmbeddedActiveMq.createMessage(null);
-      msg.addObjectHeader(JmsConstants.JMS_ASYNC_STATIC_REPLY_TO, getName() + "_reply");
+      msg.addMetadata(JmsConstants.JMS_ASYNC_STATIC_REPLY_TO, getName() + "_reply");
       ExampleServiceCase.execute(standaloneProducer, msg);
       echo.waitFor(DEFAULT_TIMEOUT);
       assertNotNull(echo.getLastMessage());
@@ -214,7 +214,7 @@ public class BasicActiveMqProducerTest
       StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
               new PtpProducer().withQueue(getName()));
       AdaptrisMessage msg = EmbeddedActiveMq.createMessage(null);
-      msg.addObjectHeader(JmsConstants.JMS_ASYNC_STATIC_REPLY_TO, getName() + "_reply");
+      msg.addMetadata(JmsConstants.JMS_ASYNC_STATIC_REPLY_TO, getName() + "_reply");
       ExampleServiceCase.execute(standaloneProducer, msg);
       echo.waitFor(DEFAULT_TIMEOUT);
       assertNotNull(echo.getLastMessage());
@@ -321,6 +321,36 @@ public class BasicActiveMqProducerTest
   }
 
   @Test
+  public void testTopicProduceAndConsume_DurableSubscriber_Legacy() throws Exception {
+    String subscriptionId = GUID.safeUUID();
+    String clientId = GUID.safeUUID();
+    PasConsumer consumer = new PasConsumer().withTopic(getName());
+    consumer.setSubscriptionId(subscriptionId);
+    consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+    JmsConnection conn = activeMqBroker.getJmsConnection(createVendorImpl(), true);
+    conn.setClientId(clientId);
+    StandaloneConsumer standaloneConsumer = new StandaloneConsumer(conn, consumer);
+    MockMessageListener jms = new MockMessageListener();
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
+
+    // Start it once to get some durable Action.
+    start(standaloneConsumer);
+    stop(standaloneConsumer);
+
+    StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
+            new PasProducer().withTopic(getName()));
+
+    int count = 10;
+    for (int i = 0; i < count; i++) {
+      ExampleServiceCase.execute(standaloneProducer, createMessage());
+    }
+
+    start(standaloneConsumer);
+    waitForMessages(jms, count);
+    assertMessages(jms, 10);
+  }
+
+  @Test
   // INTERLOK-3537, if subscriptionId != "", then it should be durable.
   public void testTopicProduceAndConsume_DurableSubscriber() throws Exception {
     String subscriptionId = GUID.safeUUID();
@@ -381,6 +411,49 @@ public class BasicActiveMqProducerTest
             new PtpProducer().withQueue((getName())));
 
     execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
+    assertMessages(jms, 1);
+  }
+
+  @Test
+  public void testQueueProduceAndConsume_ResolveableEndpoint() throws Exception {
+    PtpConsumer consumer = new PtpConsumer().withQueue(getName());
+    consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+
+    StandaloneConsumer standaloneConsumer =
+        new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
+    MockMessageListener jms = new MockMessageListener();
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
+
+    StandaloneProducer standaloneProducer =
+        new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
+            new PtpProducer().withQueue("%message{metadataEndpoint}"));
+
+    AdaptrisMessage msg = createMessage();
+    msg.addMessageHeader("metadataEndpoint", getName());
+
+    execute(standaloneConsumer, standaloneProducer, msg, jms);
+    assertMessages(jms, 1);
+  }
+
+  @Test
+  public void testQueueProduceAndConsume_ObjectEndpoint() throws Exception {
+    Queue queue = activeMqBroker.createQueue(getName());
+    PtpConsumer consumer = new PtpConsumer().withQueue(getName());
+    consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+
+    StandaloneConsumer standaloneConsumer =
+        new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
+    MockMessageListener jms = new MockMessageListener();
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
+
+    StandaloneProducer standaloneProducer =
+        new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
+            new PtpProducer().withQueue("%messageObject{objectEndpoint}"));
+
+    AdaptrisMessage msg = createMessage();
+    msg.addObjectHeader("objectEndpoint", queue);
+
+    execute(standaloneConsumer, standaloneProducer, msg, jms);
     assertMessages(jms, 1);
   }
 
@@ -600,6 +673,7 @@ public class BasicActiveMqProducerTest
   protected BasicActiveMqImplementation createVendorImpl() {
     return new BasicActiveMqImplementation();
   }
+
 
   private abstract class Loopback implements MessageListener {
     protected String listenQueueOrTopic;

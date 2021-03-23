@@ -16,6 +16,15 @@
 
 package com.adaptris.core.http.client.net;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintWriter;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
@@ -35,16 +44,6 @@ import com.adaptris.core.http.client.ResponseHeaderHandler;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import org.apache.commons.lang3.BooleanUtils;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintWriter;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
 
 /**
  *
@@ -202,7 +201,7 @@ public abstract class HttpProducer<A, B> extends RequestReplyProducerImp {
 
   @Override
   public String endpoint(AdaptrisMessage msg) throws ProduceException {
-    return (String)msg.resolveObject(getUrl());
+    return msg.resolve(getUrl());
   }
 
   public <T extends HttpProducer> T withURL(String s) {
