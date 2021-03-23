@@ -27,16 +27,14 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
+import javax.jms.Queue;
 import javax.jms.Session;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -44,7 +42,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Service;
@@ -69,7 +66,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   @Mock private Message mockMessage;
 
   private AutoCloseable openMocks;
-  
+
   private static EmbeddedActiveMq activeMqBroker;
 
   @BeforeClass
@@ -77,7 +74,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     activeMqBroker = new EmbeddedActiveMq();
     activeMqBroker.start();
   }
-  
+
   @AfterClass
   public static void tearDownAll() throws Exception {
     if(activeMqBroker != null)
@@ -359,16 +356,67 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   }
 
   @Test
-  public void testProduceAndConsume_DeliveryMode() throws Exception {
-    String rfc6167 = "jms:queue:" + getName() + "?deliveryMode=PERSISTENT";
+  public void testProduceAndConsume_ObjectEndpoint() throws Exception {
+    Queue queue = activeMqBroker.createQueue(getName());
+
+    String endpoint = "%messageObject{objectEndpoint}";
 
     JmsConsumerImpl consumer = createConsumer(getName());
     consumer.setAcknowledgeMode(String.valueOf(AcknowledgeMode.Mode.AUTO_ACKNOWLEDGE.acknowledgeMode()));
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
     standaloneConsumer.registerAdaptrisMessageListener(jms);
-    JmsProducer producer = createProducer(rfc6167);
+
+    JmsProducer producer = createProducer(endpoint);
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
+
+    AdaptrisMessage msg = createMessage();
+    msg.addObjectHeader("objectEndpoint", queue);
+
+    execute(standaloneConsumer, standaloneProducer, msg, jms);
+    assertMessages(jms, 1);
+  }
+
+  @Test
+  public void testProduceAndConsume_ResolvedEndpoint() throws Exception {
+    Queue queue = activeMqBroker.createQueue(getName());
+
+    String endpoint = "%message{metadataEndpoint}";
+    String rfc6167 = "jms:queue:" + getName();
+
+    JmsConsumerImpl consumer = createConsumer(getName());
+    consumer.setAcknowledgeMode(
+        String.valueOf(AcknowledgeMode.Mode.AUTO_ACKNOWLEDGE.acknowledgeMode()));
+    StandaloneConsumer standaloneConsumer =
+        new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
+    MockMessageListener jms = new MockMessageListener();
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
+
+    JmsProducer producer = createProducer(endpoint);
+    StandaloneProducer standaloneProducer =
+        new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
+
+    AdaptrisMessage msg = createMessage();
+    msg.addMessageHeader("metadataEndpoint", rfc6167);
+
+    execute(standaloneConsumer, standaloneProducer, msg, jms);
+    assertMessages(jms, 1);
+  }
+
+  @Test
+  public void testProduceAndConsume_DeliveryMode() throws Exception {
+    String rfc6167 = "jms:queue:" + getName() + "?deliveryMode=PERSISTENT";
+
+    JmsConsumerImpl consumer = createConsumer(getName());
+    consumer.setAcknowledgeMode(
+        String.valueOf(AcknowledgeMode.Mode.AUTO_ACKNOWLEDGE.acknowledgeMode()));
+    StandaloneConsumer standaloneConsumer =
+        new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
+    MockMessageListener jms = new MockMessageListener();
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
+    JmsProducer producer = createProducer(rfc6167);
+    StandaloneProducer standaloneProducer =
+        new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
     execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
     assertMessages(jms, 1);
   }
@@ -443,18 +491,18 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
       stop(sp, standaloneConsumer);
     }
   }
-  
+
   @Test
   public void testProducerResolveFromMetadataFactory() throws Exception {
     String resolveString = "%message{endpoint}";
     String rfc6167 = "jms:queue:" + getName() + "";
-    
+
     AdaptrisMessage adaptrisMessage1 = createMessage();
     adaptrisMessage1.addMessageHeader("endpoint", rfc6167);
-    
+
     AdaptrisMessage adaptrisMessage2 = createMessage();
     adaptrisMessage2.addMessageHeader("endpoint", rfc6167);
-    
+
     JmsConsumerImpl consumer = createConsumer(getName());
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer =

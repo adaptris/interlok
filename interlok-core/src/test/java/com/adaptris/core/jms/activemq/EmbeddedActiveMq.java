@@ -27,9 +27,13 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.jms.DeliveryMode;
 import javax.jms.JMSException;
+import javax.jms.Queue;
+import javax.jms.Session;
+import javax.jms.Topic;
 import javax.naming.Context;
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.ActiveMQSession;
 import org.apache.activemq.broker.Broker;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.region.Destination;
@@ -237,6 +241,29 @@ public class EmbeddedActiveMq {
     ActiveMQConnectionFactory fact = new ActiveMQConnectionFactory("vm://" + getName());
     return (ActiveMQConnection) fact.createConnection();
   }
+
+
+  public Queue createQueue(String queueName) throws Exception {
+    Queue queue = null;
+    try (ActiveMQConnection conn = createConnection();
+        ActiveMQSession session =
+            (ActiveMQSession) conn.createSession(false, Session.AUTO_ACKNOWLEDGE)) {
+      queue = session.createQueue(queueName);
+    }
+    return queue;
+  }
+
+
+  public Topic createTopic(String topicName) throws Exception {
+    Topic topic = null;
+    try (ActiveMQConnection conn = createConnection();
+        ActiveMQSession session =
+            (ActiveMQSession) conn.createSession(false, Session.AUTO_ACKNOWLEDGE)) {
+      topic = session.createTopic(topicName);
+    }
+    return topic;
+  }
+
 
   public long messagesOnQueue(String queueName) throws Exception {
     Broker b = broker.getBroker();
