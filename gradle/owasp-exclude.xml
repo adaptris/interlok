@@ -64,5 +64,16 @@
     <cve>CVE-2020-26217</cve>
     <cve>CVE-2020-26258</cve>
     <cve>CVE-2020-26259</cve>
+    <cve>CVE-2021-21341</cve>
+    <cve>CVE-2021-21342</cve>
+    <cve>CVE-2021-21343</cve>
+    <cve>CVE-2021-21344</cve>
+    <cve>CVE-2021-21345</cve>
+    <cve>CVE-2021-21346</cve>
+    <cve>CVE-2021-21347</cve>
+    <cve>CVE-2021-21348</cve>
+    <cve>CVE-2021-21349</cve>
+    <cve>CVE-2021-21350</cve>
+    <cve>CVE-2021-21351</cve>
   </suppress>
 </suppressions>
