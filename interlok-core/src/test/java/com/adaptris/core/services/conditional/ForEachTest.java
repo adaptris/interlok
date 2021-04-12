@@ -7,15 +7,12 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMessageFactory;
@@ -45,12 +42,12 @@ public class ForEachTest extends ConditionalServiceExample
 	public void setUp() throws Exception
 	{
 		MockitoAnnotations.openMocks(this);
-		
+
 		when(mock.retrieveComponentState())
             .thenReturn(StartedState.getInstance());
 		when(mock.createName())
 		    .thenReturn(mock.getClass().getName());
-		
+
 		forEach = new ForEach();
 		then = new ThenService();
 		then.setService(mock);
@@ -63,7 +60,7 @@ public class ForEachTest extends ConditionalServiceExample
 	public void testForEach() throws Exception
 	{
 		forEach.doService(message);
-		assertEquals(new Integer(1), forEach.getThreadCount());
+    assertEquals(Integer.valueOf(1), forEach.getThreadCount());
 		verify(mock, times(2)).doService(any(AdaptrisMessage.class));
 	}
 
@@ -79,7 +76,7 @@ public class ForEachTest extends ConditionalServiceExample
 	public void testParallelForEach() throws Exception
 	{
 		forEach.setThreadCount(0);
-		assertEquals(new Integer(0), forEach.getThreadCount());
+    assertEquals(Integer.valueOf(0), forEach.getThreadCount());
 		forEach.doService(message);
 		verify(mock, times(2)).doService(any(AdaptrisMessage.class));
 	}
@@ -88,7 +85,7 @@ public class ForEachTest extends ConditionalServiceExample
 	public void testBadThreadCount()
 	{
 		forEach.setThreadCount(-1);
-		assertEquals(new Integer(0), forEach.getThreadCount());
+    assertEquals(Integer.valueOf(0), forEach.getThreadCount());
 	}
 
 	@Test
@@ -98,7 +95,7 @@ public class ForEachTest extends ConditionalServiceExample
 		forEach.doService(message);
 		verify(mock, times(2)).doService(any(AdaptrisMessage.class));
 	}
-	
+
 	@Test
   @SuppressWarnings("serial")
 	public void testNonCloneableMessage() throws Exception

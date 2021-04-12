@@ -20,7 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * Factory Class that creates the required Marshaller ie the DataBinder instance that allows
- * us to marshal & unmarshal our objects eg XStream, Castor etc<br />
+ * us to marshal &amp; unmarshal our objects eg XStream, Castor etc<br />
  * This factory also allows the DataBinder to be configured to output to a given format eg JSON/XML. 
  * 
  * @author bklair

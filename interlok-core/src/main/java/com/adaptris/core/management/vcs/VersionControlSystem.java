@@ -124,7 +124,7 @@ public interface VersionControlSystem {
    * Will return a list of {@link RevisionHistoryItem}'s from the remote repository.
    * </p>
    * <p>
-   * The results returned may also be limited by providing a limit > zero. If your supplied limit
+   * The results returned may also be limited by providing a limit &gt; zero. If your supplied limit
    * equals zero then the results will not be limited.
    * </p>
    * 

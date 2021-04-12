@@ -1,14 +1,16 @@
 ext {
-  componentName='Interlok Annotation Support'
+  componentName='Interlok Core/Annotations'
+  componentDesc="Custom annotations for Interlok"
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 }
 
 dependencies {
-  compile ("com.thoughtworks.xstream:xstream:1.4.15") {  transitive= false }
+  compile ("com.thoughtworks.xstream:xstream:1.4.16") {  transitive= false }
+  compile ("javax:javaee-api:8.0.1")
   compile ("jakarta.validation:jakarta.validation-api:2.0.2")
-  compile files("${System.getProperty('java.home')}/../lib/tools.jar")
+  // compile files("${System.getProperty('java.home')}/../lib/tools.jar")
 
-  testCompile("junit:junit:4.13.1")
+  testCompile("junit:junit:4.13.2")
   testCompile("org.hibernate.validator:hibernate-validator:6.1.6.Final")
   testCompile("org.glassfish:javax.el:3.0.1-b12")
 }
@@ -26,6 +28,7 @@ artifacts {
 javadoc {
   configure(options) {
     options.tags('apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:','implNote:a:Implementation Note:')
+    options.addBooleanOption "-no-module-directories", true
     title= componentName
   }
 }
@@ -47,19 +50,19 @@ uploadArchives {
       }
       configuration = configurations.mavenDeploy
       pom.withXml {
-        asNode().appendNode("description", "Custom annotations for Interlok")
+        asNode().appendNode("name", componentName)
+        asNode().appendNode("description", componentDesc)
         def properties = asNode().appendNode("properties")
         properties.appendNode("target", "3.8.0+")
         properties.appendNode("tags", "annotations")
         properties.appendNode("license", "false")
         properties.appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
         properties.appendNode("readme", "https://github.com/adaptris/interlok/raw/develop/README.md")
-        properties.appendNode("repository", "https://github.com/adaptris/interlok")        
+        properties.appendNode("repository", "https://github.com/adaptris/interlok")
       }
 
     }
   }
 }
-
 publish.dependsOn uploadArchives
 clean.dependsOn deleteGeneratedFiles

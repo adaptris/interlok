@@ -35,7 +35,7 @@ public class PasConsumerTest extends com.adaptris.interlok.junit.scaffolding.jms
 
   @Override
   protected String createBaseFileName(Object object) {
-    JmsConsumerImpl p = (JmsConsumerImpl) ((StandaloneConsumer) object).getConsumer();
+    ((StandaloneConsumer) object).getConsumer();
     return super.createBaseFileName(object);
   }
 
@@ -56,19 +56,8 @@ public class PasConsumerTest extends com.adaptris.interlok.junit.scaffolding.jms
   }
 
   @Test
-  @SuppressWarnings("deprecation")
-  public void testDurable_Deprecated() throws Exception {
-    JmsConnection c = new JmsConnection(new BasicActiveMqImplementation("tcp://localhost:16161"));
-    PasConsumer pas = new PasConsumer();
-    pas.setTopic("destination");
-    assertFalse(pas.durable());
-    pas.setDurable(Boolean.TRUE);
-    assertTrue(pas.durable());
-  }
-
-  @Test
   public void testDurable_WithSubscriptionId() throws Exception {
-    JmsConnection c = new JmsConnection(new BasicActiveMqImplementation("tcp://localhost:16161"));
+    new JmsConnection(new BasicActiveMqImplementation("tcp://localhost:16161"));
     PasConsumer pas = new PasConsumer();
     pas.setTopic("destination");
     assertFalse(pas.durable());

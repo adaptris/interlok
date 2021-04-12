@@ -19,21 +19,16 @@ package com.adaptris.core.management;
 import static com.adaptris.core.management.Constants.CFG_KEY_MANAGEMENT_COMPONENT;
 import static com.adaptris.core.util.PropertyHelper.getPropertyIgnoringCase;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.ClosedState;
-import com.adaptris.core.management.classloader.ClassLoaderFactory;
 
 /**
  * Simple factory that creates management components.
@@ -47,11 +42,10 @@ public class ManagementComponentFactory {
   private static final String COMPONENT_SEPARATOR = ":";
   private static final String PROPERTY_KEY = "class";
   private static final String RESOURCE_PATH = "META-INF/com/adaptris/core/management/components/";
-  private static final String CLASSLOADER_KEY = "classloader";
   private static final ManagementComponentFactory INSTANCE = new ManagementComponentFactory();
 
   private final Map<Properties, List<ManagementComponentInfo>> managementComponents = new HashMap<>();
-  
+
   private ManagementComponentFactory() {
   }
 
@@ -122,13 +116,13 @@ public class ManagementComponentFactory {
       final String components[] = componentList.split(COMPONENT_SEPARATOR);
       for (final String componentName : components) {
         ManagementComponent resolvedComponent = resolve(componentName, bootstropProperties);
-        
+
         ManagementComponentInfo mcInfo = new ManagementComponentInfo();
         mcInfo.setClassName(resolvedComponent.getClass().getName());
         mcInfo.setState(ClosedState.getInstance());
         mcInfo.setName(componentName);
         mcInfo.setInstance(resolvedComponent);
-        
+
         result.add(mcInfo);
       }
     }
@@ -142,23 +136,12 @@ public class ManagementComponentFactory {
       if (in != null) {
         final Properties p = new Properties();
         p.load(in);
-
-        final String classloaderProperty = p.getProperty(CLASSLOADER_KEY);
-        if (classloaderProperty != null) {
-          log.debug("Using custom class loader " + classloaderProperty);
-          final Class<ClassLoaderFactory> classLoaderFactoryClass = (Class<ClassLoaderFactory>)Class.forName(classloaderProperty);
-          final Constructor<ClassLoaderFactory> constructor = classLoaderFactoryClass.getConstructor(BootstrapProperties.class);
-          final ClassLoaderFactory classLoaderFactory = constructor.newInstance(bootstrapProperties);
-          classLoader = classLoaderFactory.create(classLoader);
-          Thread.currentThread().setContextClassLoader(classLoader);
-        }
-        final ManagementComponent component = (ManagementComponent) Class.forName(p.getProperty(PROPERTY_KEY), true, classLoader).newInstance();
-        if (classloaderProperty != null) {
-          component.setClassLoader(classLoader);
-        }
+        final ManagementComponent component =
+            (ManagementComponent) Class.forName(p.getProperty(PROPERTY_KEY), true, classLoader)
+                .getDeclaredConstructor().newInstance();
         return component;
       }
-      return (ManagementComponent) Class.forName(name).newInstance();
+      return (ManagementComponent) Class.forName(name).getDeclaredConstructor().newInstance();
     } finally {
       Thread.currentThread().setContextClassLoader(originalContectClassLoader);
     }

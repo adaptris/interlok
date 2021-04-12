@@ -45,11 +45,9 @@ import org.slf4j.Logger;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.RequestReplyProducerBase;
 import com.adaptris.core.util.Args;
@@ -200,14 +198,6 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
   }
 
   @Override
-  @Deprecated
-  @Removal(version = "4.0.0")
-  public AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination destination)
-      throws ProduceException {
-    return request(msg, destination, defaultTimeout());
-  }
-
-  @Override
   public AdaptrisMessage request(AdaptrisMessage msg) throws ProduceException {
     return request(msg, defaultTimeout());
   }
@@ -234,13 +224,9 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
     }
   }
 
-  protected Destination createDestination(ProduceDestination d, AdaptrisMessage msg)
-      throws CoreException {
-    Destination dest = null;
-    if (d instanceof JmsReplyToDestination) {
-      dest = ((JmsReplyToDestination) d).retrieveJmsDestination(msg);
-    }
-    return dest;
+  protected Destination retrieveObjectDestination(String endpoint, AdaptrisMessage msg) throws CoreException {
+    Object resolveObject = msg.resolveObject(endpoint);
+    return resolveObject instanceof Destination ? (Destination) resolveObject : null;
   }
 
   protected int calculateDeliveryMode(AdaptrisMessage msg, String defaultDeliveryMode) {

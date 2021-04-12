@@ -1,16 +1,8 @@
 package com.adaptris.core.management.config;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import java.util.Arrays;
-import java.util.List;
-import org.apache.commons.collections4.IterableUtils;
-import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.Channel;
-import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.NullMessageConsumer;
@@ -22,6 +14,15 @@ import com.adaptris.core.services.metadata.AddTimestampMetadataService;
 import com.adaptris.validation.constraints.ConfigDeprecated;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.collections4.IterableUtils;
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class DeprecatedConfigurationCheckerTest {
 
@@ -72,10 +73,10 @@ public class DeprecatedConfigurationCheckerTest {
     checker.validate(createAdapterConfig(false, true), report);
 
     assertFalse(report.isCheckPassed());
-    // Should be 4 warnings,
-    // deprecated class, deprecated member, consumer destination, deprecated service inside a
+    // Should be 3 warnings,
+    // deprecated class, deprecated member, deprecated service inside a
     // service list.
-    assertEquals(4, report.getWarnings().size());
+    assertEquals(3, report.getWarnings().size());
     assertTrue(violationsAsExpected(report.getWarnings(), "sharedComponents.services[1]",
         "sharedComponents.services[2]",
         "channelList.channels[0].workflowList.workflows[0].serviceCollection.services[0]",
@@ -134,7 +135,6 @@ public class DeprecatedConfigurationCheckerTest {
       StandardWorkflow w = new StandardWorkflow();
       if (!validates) {
         NullMessageConsumer consumer = new NullMessageConsumer();
-        consumer.setDestination(new ConfiguredConsumeDestination("dest"));
         w.setConsumer(consumer);
         w.getServiceCollection().add(new DeprecatedService());
       }

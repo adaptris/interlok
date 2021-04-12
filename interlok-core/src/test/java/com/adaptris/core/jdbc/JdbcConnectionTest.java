@@ -16,7 +16,9 @@
 
 package com.adaptris.core.jdbc;
 
+import static org.junit.Assert.assertTrue;
 import java.util.concurrent.TimeUnit;
+import org.junit.Test;
 import com.adaptris.util.TimeInterval;
 
 public class JdbcConnectionTest
@@ -37,5 +39,16 @@ public class JdbcConnectionTest
     conn1.setConnectionAttempts(1);
     conn1.setConnectionRetryInterval(new TimeInterval(10L, TimeUnit.MILLISECONDS.name()));
     return conn1;
+  }
+
+
+  @Test
+  public void testLoadDriverClass() throws Exception {
+    DatabaseConnection.loadDriverClass(DRIVER_IMP);
+    try {
+      DatabaseConnection.loadDriverClass("hello.world.does.not.exist");
+    } catch (RuntimeException e) {
+      assertTrue(e.getMessage().contains("No available driver implementation"));
+    }
   }
 }

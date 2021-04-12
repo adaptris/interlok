@@ -16,20 +16,7 @@
 
 package com.adaptris.core.services.metadata;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.util.Properties;
-import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ConfiguredDestination;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.EmptyFileNameCreator;
@@ -38,6 +25,19 @@ import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.services.metadata.ReadMetadataFromFilesystem.InputStyle;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.GuidGenerator;
+import org.junit.Test;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.util.Properties;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class ReadMetadataFromFilesystemTest extends MetadataServiceExample {
 
@@ -47,7 +47,7 @@ public class ReadMetadataFromFilesystemTest extends MetadataServiceExample {
   @Test
   public void testDestination() throws Exception {
     ReadMetadataFromFilesystem service = new ReadMetadataFromFilesystem();
-    assertNull(service.getDestination());
+    assertNull(service.getBaseUrl());
     try {
       LifecycleHelper.init(service);
       fail("Service initialised with a null destination");
@@ -55,18 +55,16 @@ public class ReadMetadataFromFilesystemTest extends MetadataServiceExample {
     catch (CoreException expected) {
 
     }
-    service.setDestination(new ConfiguredProduceDestination("dest"));
-    assertNotNull(service.getDestination());
-    assertEquals("dest", service.getDestination().getDestination(new DefaultMessageFactory().newMessage()));
+    service.setBaseUrl("dest");
+    assertNotNull(service.getBaseUrl());
+    assertEquals("dest", service.getBaseUrl());
     try {
-      service.setDestination(null);
+      service.setBaseUrl(null);
       fail();
     }
     catch (IllegalArgumentException e) {
 
     }
-    assertNotNull(service.getDestination());
-    assertEquals("dest", service.getDestination().getDestination(new DefaultMessageFactory().newMessage()));
   }
 
   @Test
@@ -224,14 +222,15 @@ public class ReadMetadataFromFilesystemTest extends MetadataServiceExample {
 
   private ReadMetadataFromFilesystem createService(String subDir) {
     String baseString = PROPERTIES.getProperty(BASE_DIR);
-    ReadMetadataFromFilesystem service = new ReadMetadataFromFilesystem(new ConfiguredProduceDestination(baseString + "/" + subDir));
+    ReadMetadataFromFilesystem service = new ReadMetadataFromFilesystem();
+    service.setBaseUrl(baseString + "/" + subDir);
     return service;
   }
 
   @Override
   protected ReadMetadataFromFilesystem retrieveObjectForSampleConfig() {
     ReadMetadataFromFilesystem service = new ReadMetadataFromFilesystem();
-    service.setDestination(new ConfiguredDestination("file:////path/to/directory"));
+    service.setBaseUrl("file:////path/to/directory");
     service.setInputStyle(InputStyle.Text);
     return service;
   }

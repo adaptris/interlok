@@ -23,7 +23,6 @@ import com.adaptris.core.Service;
 import com.adaptris.core.services.LogMessageService;
 import com.adaptris.core.services.splitter.MessageSplitter;
 import com.adaptris.core.services.splitter.PooledSplitJoinService;
-import com.adaptris.core.services.splitter.SplitJoinService;
 
 public abstract class AggregatingServiceExample
     extends com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase {
@@ -52,16 +51,6 @@ public abstract class AggregatingServiceExample
 
   protected static PooledSplitJoinService configureExample(PooledSplitJoinService service,
       MessageSplitter splitter, MessageAggregator agg, Service... services) {
-    service.setAggregator(agg);
-    service.setSplitter(splitter);
-    service.setService(asCollection(services));
-    return service;
-  }
-
-  @Deprecated
-  @SuppressWarnings("deprecation")
-  protected static SplitJoinService configure(SplitJoinService service, MessageSplitter splitter, MessageAggregator agg,
-                                    Service... services) {
     service.setAggregator(agg);
     service.setSplitter(splitter);
     service.setService(asCollection(services));

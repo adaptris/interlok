@@ -136,7 +136,7 @@ public class ActiveJmsConnectionErrorHandler extends JmsConnectionErrorHandlerIm
   /**
    * Set interval between each attempt to veri
    *
-   * @param checkInterval the retry interval, if <=0 then the default is assumed (5 seconds).
+   * @param checkInterval the retry interval, if &lt;=0 then the default is assumed (5 seconds).
    */
   public void setCheckInterval(TimeInterval checkInterval) {
     this.checkInterval = checkInterval;

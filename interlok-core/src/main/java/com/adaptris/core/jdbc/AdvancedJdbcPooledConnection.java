@@ -54,10 +54,10 @@ public class AdvancedJdbcPooledConnection extends JdbcPooledConnectionImpl {
     ComboPooledDataSource pool = new ComboPooledDataSource();
     pool = new ComboPooledDataSource();
     pool.setProperties(connectionProperties());
-    pool.setDriverClass(this.getDriverImp());
-    pool.setJdbcUrl(this.getConnectUrl());
-    pool.setUser(this.getUsername());
-    pool.setPassword(Password.decode(ExternalResolver.resolve(this.getPassword())));
+    pool.setDriverClass(getDriverImp());
+    pool.setJdbcUrl(getConnectUrl());
+    pool.setUser(getUsername());
+    pool.setPassword(Password.decode(ExternalResolver.resolve(getPassword())));
 
     pool.setAcquireRetryDelay(Long.valueOf(connectionRetryInterval()).intValue());
     pool.setAcquireRetryAttempts(connectionAttempts());
@@ -79,14 +79,13 @@ public class AdvancedJdbcPooledConnection extends JdbcPooledConnectionImpl {
       AdvancedJdbcPooledConnection conn = (AdvancedJdbcPooledConnection) ajpc;
       
       return new EqualsBuilder()
-          .append(conn.getConnectUrl(), this.getConnectUrl())
-          .append(conn.getDriverImp(), this.getDriverImp())
-          .append(conn.getAlwaysValidateConnection(), this.getAlwaysValidateConnection())
-          .append(conn.getDebugMode(), this.getDebugMode())
-          .append(conn.getTestStatement(), this.getTestStatement())
-          .append(conn.getAutoCommit(), this.getAutoCommit())
-          .append(conn.getConnectionProperties(), this.getConnectionProperties())
-          .append(conn.getConnectionPoolProperties(), this.getConnectionPoolProperties())
+          .append(conn.getConnectUrl(), getConnectUrl())
+          .append(conn.getDriverImp(), getDriverImp())
+          .append(conn.getAlwaysValidateConnection(), getAlwaysValidateConnection())
+          .append(conn.getDebugMode(), getDebugMode())
+          .append(conn.getAutoCommit(), getAutoCommit())
+          .append(conn.getConnectionProperties(), getConnectionProperties())
+          .append(conn.getConnectionPoolProperties(), getConnectionPoolProperties())
           .isEquals();
     }
     return false;
@@ -95,13 +94,12 @@ public class AdvancedJdbcPooledConnection extends JdbcPooledConnectionImpl {
   @Override
   public int hashCode() {
     return new HashCodeBuilder(17, 31)
-        .append(this.getConnectUrl())
+        .append(getConnectUrl())
         .append(getDriverImp())
-        .append(this.getAlwaysValidateConnection())
+        .append(getAlwaysValidateConnection())
         .append(getDebugMode())
-        .append(getTestStatement())
         .append(getAutoCommit())
-        .append(this.getConnectionProperties())
+        .append(getConnectionProperties())
         .append(getConnectionPoolProperties())
         .toHashCode();
   }
@@ -111,7 +109,7 @@ public class AdvancedJdbcPooledConnection extends JdbcPooledConnectionImpl {
   }
 
   public void setConnectionPoolProperties(KeyValuePairSet kvps) {
-    this.connectionPoolProperties = kvps;
+    connectionPoolProperties = kvps;
   }
 
   public int currentBusyConnectionCount() throws SQLException {

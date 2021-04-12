@@ -19,7 +19,6 @@ package com.adaptris.core.ftp;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_BUILD_DIR_CANONICAL;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_BUILD_DIR_NAME;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_PASSWORD;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_PROC_DIR_CANONICAL;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_PROC_DIR_NAME;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_REPLY_DIR_CANONICAL;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_USERNAME;
@@ -38,8 +37,6 @@ import org.mockftpserver.fake.filesystem.FileEntry;
 import org.mockftpserver.fake.filesystem.FileSystem;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.ConfiguredProduceDestination;
-import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FormattedFilenameCreator;
 import com.adaptris.core.MetadataFileNameCreator;
@@ -104,18 +101,6 @@ public class FtpProducerTest extends FtpProducerCase {
     FtpProducer ftpProducer = new FtpProducer();
     ftpProducer.setBuildDirectory("buildDir");
     ftpProducer.setDestDirectory("destDir");
-    ftpProducer.init();
-    ftpProducer.close();
-    ftpProducer.setReplyDirectory("/replyDir");
-    ftpProducer.init();
-    ftpProducer.close();
-    ftpProducer.setReplyDirectory("replyDir");
-    ftpProducer.init();
-    ftpProducer.close();
-    ftpProducer.setReplyProcDirectory("replyProcDir");
-    ftpProducer.init();
-    ftpProducer.close();
-    ftpProducer.setReplyProcDirectory("/replyProcDir");
     ftpProducer.init();
     ftpProducer.close();
   }
@@ -239,57 +224,6 @@ public class FtpProducerTest extends FtpProducerCase {
   }
 
   @Test
-  public void testBasicRequestReply() throws Exception {
-    EmbeddedFtpServer helper = new EmbeddedFtpServer();
-    FileSystem filesystem = helper.createFilesystem_DirsOnly();
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD);
-    filesystem.add(new FileEntry(DEFAULT_REPLY_DIR_CANONICAL + SLASH + msg.getUniqueId(), PAYLOAD_ALTERNATE));
-    FakeFtpServer server = helper.createAndStart(filesystem);
-    StandaloneRequestor requestor = null;
-    try {
-      FtpProducer ftpProducer = createForTests();
-      ftpProducer.setReplyDirectory(DEFAULT_REPLY_DIR_CANONICAL);
-      FtpConnection produceConnection = create(server);
-      requestor = new StandaloneRequestor(produceConnection, ftpProducer);
-      requestor.setReplyTimeout(DEFAULT_TIMEOUT);
-
-      start(requestor);
-      requestor.doService(msg);
-      assertEquals(PAYLOAD_ALTERNATE, msg.getContent());
-    }
-    finally {
-      stop(requestor);
-      server.stop();
-    }
-  }
-
-  @Test
-  public void testBasicRequestReply_NoDebug() throws Exception {
-    EmbeddedFtpServer helper = new EmbeddedFtpServer();
-    FileSystem filesystem = helper.createFilesystem_DirsOnly();
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD);
-    filesystem.add(new FileEntry(DEFAULT_REPLY_DIR_CANONICAL + SLASH + msg.getUniqueId(), PAYLOAD_ALTERNATE));
-    FakeFtpServer server = helper.createAndStart(filesystem);
-    StandaloneRequestor requestor = null;
-    try {
-      FtpProducer ftpProducer = createForTests();
-      ftpProducer.setReplyDirectory(DEFAULT_REPLY_DIR_CANONICAL);
-      FtpConnection produceConnection = create(server);
-      produceConnection.setAdditionalDebug(false);
-      requestor = new StandaloneRequestor(produceConnection, ftpProducer);
-      requestor.setReplyTimeout(DEFAULT_TIMEOUT);
-
-      start(requestor);
-      requestor.doService(msg);
-      assertEquals(PAYLOAD_ALTERNATE, msg.getContent());
-    }
-    finally {
-      stop(requestor);
-      server.stop();
-    }
-  }
-
-  @Test
   public void testRequestReply_NoReplyDirectory() throws Exception {
     EmbeddedFtpServer helper = new EmbeddedFtpServer();
     FileSystem filesystem = helper.createFilesystem_DirsOnly();
@@ -316,150 +250,6 @@ public class FtpProducerTest extends FtpProducerCase {
     }
   }
 
-  @Test
-  public void testRequestReply_ReplyEncoderEnabled() throws Exception {
-    EmbeddedFtpServer helper = new EmbeddedFtpServer();
-    FileSystem filesystem = helper.createFilesystem_DirsOnly();
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD);
-    byte[] encodedReply = new MimeEncoder().encode(AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD_ALTERNATE));
-    FileEntry ftpReplyFile = new FileEntry(DEFAULT_REPLY_DIR_CANONICAL + SLASH + msg.getUniqueId());
-    ftpReplyFile.setContents(encodedReply);
-    filesystem.add(ftpReplyFile);
-    FakeFtpServer server = helper.createAndStart(filesystem);
-    StandaloneRequestor requestor = null;
-    try {
-      FtpProducer ftpProducer = createForTests();
-      ftpProducer.setEncoder(new MimeEncoder());
-      ftpProducer.setReplyDirectory(DEFAULT_REPLY_DIR_CANONICAL);
-      ftpProducer.setReplyUsesEncoder(true);
-      FtpConnection produceConnection = create(server);
-      requestor = new StandaloneRequestor(produceConnection, ftpProducer);
-      requestor.setReplyTimeout(DEFAULT_TIMEOUT);
-      start(requestor);
-
-      requestor.doService(msg);
-      assertEquals(PAYLOAD_ALTERNATE, msg.getContent());
-    }
-    finally {
-      stop(requestor);
-      server.stop();
-    }
-  }
-
-  @Test
-  public void testRequestReply_ReplyEncoderDefault() throws Exception {
-    EmbeddedFtpServer helper = new EmbeddedFtpServer();
-    FileSystem filesystem = helper.createFilesystem_DirsOnly();
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD);
-    byte[] encodedReply = new MimeEncoder().encode(AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD_ALTERNATE));
-    FileEntry ftpReplyFile = new FileEntry(DEFAULT_REPLY_DIR_CANONICAL + SLASH + msg.getUniqueId());
-    ftpReplyFile.setContents(encodedReply);
-    filesystem.add(ftpReplyFile);
-    FakeFtpServer server = helper.createAndStart(filesystem);
-    StandaloneRequestor requestor = null;
-    try {
-      FtpProducer ftpProducer = createForTests();
-      ftpProducer.setEncoder(new MimeEncoder());
-      ftpProducer.setReplyDirectory(DEFAULT_REPLY_DIR_CANONICAL);
-      FtpConnection produceConnection = create(server);
-      requestor = new StandaloneRequestor(produceConnection, ftpProducer);
-      requestor.setReplyTimeout(DEFAULT_TIMEOUT);
-      start(requestor);
-
-      requestor.doService(msg);
-      assertEquals(PAYLOAD_ALTERNATE, msg.getContent());
-    }
-    finally {
-      stop(requestor);
-      server.stop();
-    }
-  }
-
-  @Test
-  public void testRequestReply_ReplyEncoderDisabled() throws Exception {
-
-    EmbeddedFtpServer helper = new EmbeddedFtpServer();
-    FileSystem filesystem = helper.createFilesystem_DirsOnly();
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD);
-    filesystem.add(new FileEntry(DEFAULT_REPLY_DIR_CANONICAL + SLASH + msg.getUniqueId(), PAYLOAD_ALTERNATE));
-    FakeFtpServer server = helper.createAndStart(filesystem);
-    StandaloneRequestor requestor = null;
-    try {
-      FtpProducer ftpProducer = createForTests();
-      ftpProducer.setReplyDirectory(DEFAULT_REPLY_DIR_CANONICAL);
-      ftpProducer.setEncoder(new MimeEncoder());
-      ftpProducer.setReplyUsesEncoder(false);
-      FtpConnection produceConnection = create(server);
-      requestor = new StandaloneRequestor(produceConnection, ftpProducer);
-      requestor.setReplyTimeout(DEFAULT_TIMEOUT);
-
-      start(requestor);
-      requestor.doService(msg);
-      assertEquals(PAYLOAD_ALTERNATE, msg.getContent());
-    }
-    finally {
-      stop(requestor);
-      server.stop();
-    }
-  }
-
-  @Test
-  public void testRequestReply_ReplyToNameSet() throws Exception {
-
-    EmbeddedFtpServer helper = new EmbeddedFtpServer();
-    FileSystem filesystem = helper.createFilesystem_DirsOnly();
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD);
-    String replyFilename = "testRequestReply_ReplyToNameSet";
-    msg.addMetadata(CoreConstants.FTP_REPLYTO_NAME, replyFilename);
-    filesystem.add(new FileEntry(DEFAULT_REPLY_DIR_CANONICAL + SLASH + replyFilename, PAYLOAD_ALTERNATE));
-    FakeFtpServer server = helper.createAndStart(filesystem);
-    StandaloneRequestor requestor = null;
-    try {
-      FtpProducer ftpProducer = createForTests();
-      ftpProducer.setReplyDirectory(DEFAULT_REPLY_DIR_CANONICAL);
-      FtpConnection produceConnection = create(server);
-      requestor = new StandaloneRequestor(produceConnection, ftpProducer);
-      requestor.setReplyTimeout(DEFAULT_TIMEOUT);
-
-      start(requestor);
-      requestor.doService(msg);
-      assertEquals(PAYLOAD_ALTERNATE, msg.getContent());
-    }
-    finally {
-      stop(requestor);
-      server.stop();
-    }
-  }
-
-  @Test
-  public void testRequestReply_ReplyProcDirectory() throws Exception {
-
-    EmbeddedFtpServer helper = new EmbeddedFtpServer();
-    FileSystem filesystem = helper.createFilesystem_DirsOnly();
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD);
-    filesystem.add(new FileEntry(DEFAULT_REPLY_DIR_CANONICAL + SLASH + msg.getUniqueId(), PAYLOAD_ALTERNATE));
-    FakeFtpServer server = helper.createAndStart(filesystem);
-    StandaloneRequestor requestor = null;
-    try {
-      FtpProducer ftpProducer = createForTests();
-      ftpProducer.setReplyDirectory(DEFAULT_REPLY_DIR_CANONICAL);
-      ftpProducer.setReplyProcDirectory(DEFAULT_PROC_DIR_CANONICAL);
-      FtpConnection produceConnection = create(server);
-      requestor = new StandaloneRequestor(produceConnection, ftpProducer);
-      requestor.setReplyTimeout(DEFAULT_TIMEOUT);
-
-      start(requestor);
-      requestor.doService(msg);
-      assertEquals(PAYLOAD_ALTERNATE, msg.getContent());
-      assertEquals(1, filesystem.listFiles(DEFAULT_PROC_DIR_CANONICAL).size());
-
-    }
-    finally {
-      stop(requestor);
-      server.stop();
-    }
-  }
-
   private FtpConnection create(FakeFtpServer server) {
     FtpConnection consumeConnection = new FtpConnection();
     consumeConnection.setDefaultControlPort(server.getServerControlPort());
@@ -471,13 +261,13 @@ public class FtpProducerTest extends FtpProducerCase {
   }
 
   private FtpProducer createForTests() {
-    return createForTests(new ConfiguredProduceDestination(SERVER_ADDRESS));
+    return createForTests(SERVER_ADDRESS);
   }
 
   @SuppressWarnings("deprecation")
-  private FtpProducer createForTests(ConfiguredProduceDestination dest) {
+  private FtpProducer createForTests(String endPoint) {
     FtpProducer ftpProducer = new FtpProducer();
-    if (dest.getDestination().equals(SERVER_ADDRESS)) {
+    if (endPoint.equals(SERVER_ADDRESS)) {
       ftpProducer.setBuildDirectory(DEFAULT_BUILD_DIR_CANONICAL);
       ftpProducer.setDestDirectory(DEFAULT_WORK_DIR_CANONICAL);
     }
@@ -485,7 +275,7 @@ public class FtpProducerTest extends FtpProducerCase {
       ftpProducer.setBuildDirectory(SLASH + DEFAULT_BUILD_DIR_NAME);
       ftpProducer.setDestDirectory(SLASH + DEFAULT_WORK_DIR_NAME);
     }
-    ftpProducer.setDestination(dest);
+    ftpProducer.setFtpEndpoint(endPoint);
     return ftpProducer;
   }
 }

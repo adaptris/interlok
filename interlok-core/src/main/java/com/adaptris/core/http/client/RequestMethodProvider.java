@@ -25,7 +25,7 @@ import com.adaptris.core.AdaptrisMessage;
 public interface RequestMethodProvider {
 
   /**
-   * Valid methods as defined by RFC2616 & RFC5789 (PATCH method).
+   * Valid methods as defined by RFC2616 &amp; RFC5789 (PATCH method).
    * <p>Note that this is simply a list of methods, and there may be limited/no support for those methods within configured
    * components that make use of the {@link RequestMethodProvider} interface.</p>
    */

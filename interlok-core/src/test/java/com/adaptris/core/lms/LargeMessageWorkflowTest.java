@@ -36,7 +36,7 @@ import com.adaptris.core.StandardWorkflowTest;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.core.services.metadata.AddMetadataService;
-import com.adaptris.core.services.metadata.PayloadFromMetadataService;
+import com.adaptris.core.services.metadata.PayloadFromTemplateService;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
 
@@ -59,7 +59,8 @@ public class LargeMessageWorkflowTest extends StandardWorkflowTest {
         new AddMetadataService(Arrays.asList(new MetadataElement[]
         {
           new MetadataElement(METADATA_KEY, METADATA_VALUE)
-        })), new PayloadFromMetadataService(PAYLOAD_2), new ThrowExceptionService(new ConfiguredException("Fail"))
+        })), new PayloadFromTemplateService().withTemplate(PAYLOAD_2),
+        new ThrowExceptionService(new ConfiguredException("Fail"))
     }));
     try {
       LargeMessageWorkflow workflow = (LargeMessageWorkflow) channel.getWorkflowList().get(0);
@@ -108,7 +109,7 @@ public class LargeMessageWorkflowTest extends StandardWorkflowTest {
         new AddMetadataService(Arrays.asList(new MetadataElement[]
         {
           new MetadataElement(METADATA_KEY, METADATA_VALUE)
-        })), new PayloadFromMetadataService(PAYLOAD_2)
+        })), new PayloadFromTemplateService().withTemplate(PAYLOAD_2)
     }));
     try {
       LargeMessageWorkflow workflow = (LargeMessageWorkflow) channel.getWorkflowList().get(0);
@@ -154,7 +155,7 @@ public class LargeMessageWorkflowTest extends StandardWorkflowTest {
         new AddMetadataService(Arrays.asList(new MetadataElement[]
         {
           new MetadataElement(METADATA_KEY, METADATA_VALUE)
-        })), new PayloadFromMetadataService(PAYLOAD_2)
+        })), new PayloadFromTemplateService().withTemplate(PAYLOAD_2)
     }));
     try {
       LargeMessageWorkflow workflow = (LargeMessageWorkflow) channel.getWorkflowList().get(0);

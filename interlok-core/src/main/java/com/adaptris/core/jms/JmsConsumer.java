@@ -18,6 +18,8 @@ package com.adaptris.core.jms;
 
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
+import javax.validation.constraints.NotBlank;
+
 import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
@@ -55,7 +57,7 @@ import lombok.Setter;
  * <li>jms:topic:MyTopicName</li>
  * <li>jms:topic:MyTopicName?subscriptionId=mySubscriptionId</li>
  * <li>jms:topic:MyTopicName?sharedConsumerId=mySharedConsumerId</li>
- * <li>jms:topic:MyTopicName?subscriptionId=mySubscriptionId&sharedConsumerId=mySharedConsumerId</li>
+ * <li>jms:topic:MyTopicName?subscriptionId=mySubscriptionId&amp;sharedConsumerId=mySharedConsumerId</li>
  * </ul>
  * </p>
  *
@@ -67,8 +69,7 @@ import lombok.Setter;
 @ComponentProfile(summary = "Listen for JMS messages on the specified queue or topic", tag = "consumer,jms",
 recommended = {JmsConnection.class})
 @DisplayOrder(
-    order = {"endpoint", "messageSelector", "destination", "acknowledgeMode",
-    "messageTranslator"})
+    order = {"endpoint", "messageSelector", "acknowledgeMode", "messageTranslator"})
 @NoArgsConstructor
 public class JmsConsumer extends JmsConsumerImpl {
 
@@ -93,7 +94,7 @@ public class JmsConsumer extends JmsConsumerImpl {
    */
   @Getter
   @Setter
-  // Needs to be @NotBlank when destination is removed.
+  @NotBlank
   private String endpoint;
 
   public JmsConsumer withEndpoint(String s) {
@@ -108,8 +109,8 @@ public class JmsConsumer extends JmsConsumerImpl {
 
   @Override
   protected MessageConsumer createConsumer() throws JMSException, CoreException {
-    String rfc6167 = endpoint();
-    String filterExp = messageSelector();
+    String rfc6167 = getEndpoint();
+    String filterExp = getMessageSelector();
 
     VendorImplementation vendor = retrieveConnection(JmsConnection.class).configuredVendorImplementation();
     return new JmsMessageConsumerFactory(vendor, currentSession(), rfc6167, deferConsumerCreationToVendor(), filterExp,

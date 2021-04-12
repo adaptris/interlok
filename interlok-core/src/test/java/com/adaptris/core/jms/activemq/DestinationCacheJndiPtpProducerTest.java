@@ -15,25 +15,26 @@
 */
 
 package com.adaptris.core.jms.activemq;
-import static com.adaptris.core.BaseCase.start;
-import static com.adaptris.core.BaseCase.stop;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
+import static com.adaptris.interlok.junit.scaffolding.BaseCase.start;
+import static com.adaptris.interlok.junit.scaffolding.BaseCase.stop;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
 import java.util.Map;
+
 import javax.jms.Queue;
 import javax.jms.Topic;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.MetadataDestination;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.PtpProducer;
 import com.adaptris.core.jms.jndi.CachedDestinationJndiImplementation;
-import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.util.KeyValuePair;
 
 public class DestinationCacheJndiPtpProducerTest extends JndiPtpProducerCase {
@@ -77,19 +78,14 @@ public class DestinationCacheJndiPtpProducerTest extends JndiPtpProducerCase {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testProduceWithCacheExceeded() throws Exception {
     DestinationCachingJndiVendorImpl jv = new DestinationCachingJndiVendorImpl(2);
-    MockMessageListener jms = new MockMessageListener();
-    MetadataDestination dest = new MetadataDestination();
-    dest.addKey("testProduceWithCacheExceeded");
-
     String queueName = testName.getMethodName() + "_queue";
     String topicName = testName.getMethodName() + "_topic";
 
     StandaloneProducer sp1 =
         new StandaloneProducer(activeMqBroker.getJndiPtpConnection(jv, false, queueName, topicName),
-            new PtpProducer().withDestination(dest));
+            new PtpProducer().withQueue("%message{testProduceWithCacheExceeded}")) ;
     jv.setUseJndiForQueues(true);
     jv.getJndiParams().addKeyValuePair(new KeyValuePair("queue.testProduceWithCacheExceeded1", "testProduceWithCacheExceeded1"));
     jv.getJndiParams().addKeyValuePair(new KeyValuePair("queue.testProduceWithCacheExceeded2", "testProduceWithCacheExceeded2"));

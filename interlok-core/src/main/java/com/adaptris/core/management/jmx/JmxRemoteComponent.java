@@ -63,7 +63,7 @@ public class JmxRemoteComponent extends JmxComponentImpl {
    * of the property <code>jmxserviceurl.env.myEnvironment=ABCDE</code> would cause an environment containing
    * <code>myEnvironment=ABCDE</code> to be passed through to
    * {@link JMXConnectorServerFactory#newJMXConnectorServer(JMXServiceURL, Map, MBeanServer)}. Obviously due to the inherent
-   * restrictions on properties, the environment will be the equivalent to a <code>Map<String, String></code>
+   * restrictions on properties, the environment will be the equivalent to a <code>Map&lt;String, String&gt;</code>
    * </p>
    *
    * @see JMXConnectorServerFactory#newJMXConnectorServer(JMXServiceURL, Map, MBeanServer)

@@ -39,10 +39,7 @@ public abstract class AdaptrisMessageProducerImp extends AdaptrisMessageWorkerIm
    * parent super-classes w/o impacting concrete sub-classes "too much".
    * </p>
    *
-   * @see AdaptrisMessageProducer#request(AdaptrisMessage, ProduceDestination)
-   * @see AdaptrisMessageProducer#request(AdaptrisMessage, ProduceDestination, long)
    * @see AdaptrisMessageSender#produce(AdaptrisMessage)
-   * @see AdaptrisMessageSender#produce(AdaptrisMessage, ProduceDestination)
    */
   public abstract String endpoint(AdaptrisMessage msg) throws ProduceException;
 

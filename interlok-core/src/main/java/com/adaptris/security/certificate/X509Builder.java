@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,7 +31,6 @@ import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
@@ -40,7 +39,6 @@ import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
-
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.exc.CertException;
 import com.adaptris.security.util.SecurityUtil;
@@ -63,6 +61,7 @@ final class X509Builder implements CertificateBuilder {
   /**
    * @see CertificateBuilder#setCertificateParameters(CertificateParameter)
    */
+  @Override
   public void setCertificateParameters(CertificateParameter cm) {
     certificateParm = cm;
   }
@@ -70,6 +69,7 @@ final class X509Builder implements CertificateBuilder {
   /**
    * @see CertificateBuilder#getPrivateKey()
    */
+  @Override
   public PrivateKey getPrivateKey() {
     return privateKey;
   }
@@ -77,6 +77,7 @@ final class X509Builder implements CertificateBuilder {
   /**
    * @see CertificateBuilder#getPublicKey()
    */
+  @Override
   public PublicKey getPublicKey() {
     return publicKey;
   }
@@ -84,6 +85,7 @@ final class X509Builder implements CertificateBuilder {
   /**
    * @see CertificateBuilder#reset()
    */
+  @Override
   public void reset() {
     certificate = null;
     publicKey = null;
@@ -93,6 +95,7 @@ final class X509Builder implements CertificateBuilder {
   /**
    * @see CertificateBuilder#createSelfSignedCertificate()
    */
+  @Override
   public Certificate createSelfSignedCertificate()
       throws AdaptrisSecurityException {
     try {
@@ -109,6 +112,7 @@ final class X509Builder implements CertificateBuilder {
   /**
    * @see CertificateBuilder#createSelfSignedCertificate(OutputStream)
    */
+  @Override
   public void createSelfSignedCertificate(OutputStream output)
       throws AdaptrisSecurityException {
     try {
@@ -138,7 +142,7 @@ final class X509Builder implements CertificateBuilder {
       throws NoSuchAlgorithmException, CertificateException, OperatorCreationException {
     X509Certificate result = null;
     if (privateKey == null) {
-      this.createKeyPair();
+      createKeyPair();
     }
 
     // The certificate is self-signed, so use the current
@@ -147,7 +151,8 @@ final class X509Builder implements CertificateBuilder {
 
     // The certificate is self-signed, do we exactly care what
     // the serial number that uniquely identifies is
-    BigInteger serial = BigInteger.valueOf(new Integer(SecurityUtil.getSecureRandom().nextInt(10000)).longValue());
+    BigInteger serial = BigInteger
+        .valueOf(Integer.valueOf(SecurityUtil.getSecureRandom().nextInt(10000)).longValue());
 
     GregorianCalendar valid = new GregorianCalendar();
     Date notBefore = valid.getTime();
@@ -159,7 +164,7 @@ final class X509Builder implements CertificateBuilder {
     X509v3CertificateBuilder certGen = new X509v3CertificateBuilder(name, serial, notBefore, notAfter, name, pubKeyInfo);
     String alg = certificateParm.getSignatureAlgorithm();
     JcaContentSignerBuilder builder = new JcaContentSignerBuilder(alg);
- 
+
     // build and sign the certificate
     X509CertificateHolder certHolder = certGen.build(builder.build(privateKey));
 

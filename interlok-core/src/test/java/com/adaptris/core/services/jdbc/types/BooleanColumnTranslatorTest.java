@@ -16,12 +16,9 @@
 
 package com.adaptris.core.services.jdbc.types;
 import static org.junit.Assert.assertEquals;
-
 import java.sql.Types;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import com.adaptris.jdbc.JdbcResultRow;
 
 public class BooleanColumnTranslatorTest {
@@ -66,7 +63,7 @@ public class BooleanColumnTranslatorTest {
   @Test
   public void testFalseBoolean() throws Exception {
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", new Boolean("false"), Types.BOOLEAN);
+    row.setFieldValue("testField", Boolean.valueOf("false"), Types.BOOLEAN);
 
     String translated = translator.translate(row, 0);
 
@@ -76,7 +73,7 @@ public class BooleanColumnTranslatorTest {
   @Test
   public void testTrueBoolean() throws Exception {
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", new Boolean("true"), Types.BOOLEAN);
+    row.setFieldValue("testField", Boolean.valueOf("true"), Types.BOOLEAN);
 
     String translated = translator.translate(row, 0);
 

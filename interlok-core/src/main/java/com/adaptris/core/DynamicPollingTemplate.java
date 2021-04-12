@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,7 +43,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <strong>metadata/xpath driven parameters</strong> or use of some {@link ResultSetTranslator}
  * implementations (most notably {@link SplittingXmlPayloadTranslator}
  * </p>
- * 
+ *
  * @config dynamic-polling-trigger-template
  */
 @XStreamAlias("dynamic-polling-trigger-template")
@@ -106,7 +106,7 @@ public class DynamicPollingTemplate implements PollingTrigger.MessageProvider {
 
   /**
    * Marker interface so that not all services can be configured.
-   * 
+   *
    *
    */
   public interface TemplateProvider extends Service {

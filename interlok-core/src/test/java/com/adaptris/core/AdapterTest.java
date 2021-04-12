@@ -22,7 +22,6 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import com.adaptris.core.event.AdapterCloseEvent;
@@ -33,7 +32,6 @@ import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.PtpProducer;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 import com.adaptris.core.runtime.AdapterManager;
-import com.adaptris.core.stubs.MockLogHandler;
 import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.StubAdapterStartUpEvent;
@@ -281,20 +279,6 @@ public class AdapterTest extends com.adaptris.interlok.junit.scaffolding.BaseCas
     });
     a.requestStart();
     a.requestClose();
-  }
-
-  // Probably a redundant test, but you get a nice warm feeling from have 100%
-  // code coverage don't you
-  @Test
-  public void testAdapterLogHandlerFails() throws Exception {
-    Adapter a = createAdapter("testAdapterLogFileHandlerFails", new StubEventHandler());
-    a.setLogHandler(new MockLogHandler() {
-      @Override
-      public void clean() throws IOException {
-        throw new IOException();
-      }
-    });
-    a.prepare();
   }
 
   @Test
@@ -605,8 +589,6 @@ public class AdapterTest extends com.adaptris.interlok.junit.scaffolding.BaseCas
     catch (IllegalArgumentException expected) {
 
     }
-    a.setLogHandler(new FileLogHandler());
-
     try {
       a.setMessageErrorHandler(null);
       fail();
@@ -760,7 +742,6 @@ public class AdapterTest extends com.adaptris.interlok.junit.scaffolding.BaseCas
     for (int i = 0; i < count; i++) {
       StandardWorkflow swf = new StandardWorkflow();
       PollingTrigger pt = new PollingTrigger(new QuartzCronPoller("*/1 * * * * ?"), new StaticPollingTemplate("<dummy>"));
-      pt.setDestination(new ConfiguredConsumeDestination(prefix + "_wf" + i));
       swf.setConsumer(pt);
       wf.add(swf);
     }

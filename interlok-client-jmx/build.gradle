@@ -1,15 +1,16 @@
 ext {
-  componentName='Interlok Client API/JMX'
+  componentName='Interlok Core/JMX Client'
+  componentDesc="JMX implementation of the Interlok Client API"
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
-  log4j2Version = "2.14.0"
-  mockitoVersion = '3.7.0'
+  log4j2Version = "2.14.1"
+  mockitoVersion = '3.8.0'
 }
 
 dependencies {
   compile project(':interlok-common')
   compile project(':interlok-client')
   compile ("org.slf4j:slf4j-api:1.7.30")
-  testCompile ('junit:junit:4.13.1')
+  testCompile ('junit:junit:4.13.2')
   // testCompile ("com.adaptris:interlok-stubs:$interlokCoreVersion") { changing= true}
   testCompile ("org.apache.logging.log4j:log4j-core:$log4j2Version")
   testCompile ("org.apache.logging.log4j:log4j-1.2-api:$log4j2Version")
@@ -48,6 +49,17 @@ delombok {
   target = delombokTargetDir
 }
 
+javadoc {
+  configure(options) {
+    taglets = ["com.adaptris.taglet.ConfigTaglet", "com.adaptris.taglet.LicenseTaglet"]
+    options.addBooleanOption "-no-module-directories", true
+    options.addStringOption "tagletpath", configurations.javadoc.asPath
+    options.tags('apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:','implNote:a:Implementation Note:')
+    title= componentName
+  }
+}
+
+
 
 uploadArchives {
   repositories {
@@ -57,7 +69,8 @@ uploadArchives {
       }
       configuration = configurations.mavenDeploy
       pom.withXml {
-        asNode().appendNode("description", "JMX implementation of the Interlok Client API")
+        asNode().appendNode("name", componentName)
+        asNode().appendNode("description", componentDesc)
         def properties = asNode().appendNode("properties")
         properties.appendNode("target", "3.0.5+")
         properties.appendNode("license", "false")

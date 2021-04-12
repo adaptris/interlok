@@ -16,19 +16,9 @@
 
 package com.adaptris.core.fs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.services.aggregator.AggregatingServiceExample;
-import com.adaptris.core.services.aggregator.ConsumeDestinationFromMetadata;
-import com.adaptris.core.services.aggregator.ConsumeDestinationGenerator;
 import com.adaptris.core.services.aggregator.IgnoreOriginalMimeAggregator;
 import com.adaptris.core.services.aggregator.MessageAggregator;
 import com.adaptris.core.services.aggregator.ReplaceWithFirstMessage;
@@ -36,6 +26,16 @@ import com.adaptris.core.stubs.TempFileUtils;
 import com.adaptris.core.util.MimeHelper;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.text.mime.BodyPartIterator;
+import org.junit.Test;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
 public class AggregatingFsConsumeServiceTest extends AggregatingServiceExample {
 
@@ -47,8 +47,7 @@ public class AggregatingFsConsumeServiceTest extends AggregatingServiceExample {
     Object o = new Object();
     File tempFile = TempFileUtils.createTrackedFile(o);
     String url = "file://localhost/" + tempFile.getCanonicalPath().replaceAll("\\\\", "/");
-    ConsumeDestinationGenerator cdg = createConsumeDestination(url, null);
-    AggregatingFsConsumer afc = createConsumer(cdg, new ReplaceWithFirstMessage());
+    AggregatingFsConsumer afc = createConsumer(url, null, new ReplaceWithFirstMessage());
     AggregatingFsConsumeService service = createAggregatingService(afc);
     File wipFile = new File(tempFile.getParent(), tempFile.getName() + afc.wipSuffix());
     try {
@@ -71,8 +70,7 @@ public class AggregatingFsConsumeServiceTest extends AggregatingServiceExample {
     Object o = new Object();
     File tempFile = TempFileUtils.createTrackedFile(o);
     String url = "file://localhost/" + tempFile.getCanonicalPath().replaceAll("\\\\", "/");
-    ConsumeDestinationGenerator cdg = createConsumeDestination(url, null);
-    AggregatingFsConsumer afc = createConsumer(cdg, new ReplaceWithFirstMessage());
+    AggregatingFsConsumer afc = createConsumer(url, null, new ReplaceWithFirstMessage());
     afc.setDeleteAggregatedFiles(false);
     AggregatingFsConsumeService service = createAggregatingService(afc);
     File wipFile = new File(tempFile.getParent(), tempFile.getName() + afc.wipSuffix());
@@ -96,8 +94,7 @@ public class AggregatingFsConsumeServiceTest extends AggregatingServiceExample {
     GuidGenerator o = new GuidGenerator();
     File tempDir = TempFileUtils.createTrackedDir(o);
     String url = "file://localhost/" + tempDir.getCanonicalPath().replaceAll("\\\\", "/");
-    ConsumeDestinationGenerator cdg = createConsumeDestination(url, ".*");
-    AggregatingFsConsumer afc = createConsumer(cdg, new IgnoreOriginalMimeAggregator());
+    AggregatingFsConsumer afc = createConsumer(url, ".*", new IgnoreOriginalMimeAggregator());
     AggregatingFsConsumeService service = createAggregatingService(afc);
 
     try {
@@ -114,22 +111,16 @@ public class AggregatingFsConsumeServiceTest extends AggregatingServiceExample {
     }
   }
 
-  private ConsumeDestinationFromMetadata createConsumeDestination(String dir, String filterExp) {
-    ConsumeDestinationFromMetadata d = new ConsumeDestinationFromMetadata();
-    d.setDefaultDestination(dir);
-    d.setDefaultFilterExpression(filterExp);
-    return d;
-  }
-
   private AggregatingFsConsumeService createAggregatingService(AggregatingFsConsumer fsConsumer) {
     AggregatingFsConsumeService service = new AggregatingFsConsumeService();
     service.setFsConsumer(fsConsumer);
     return service;
   }
 
-  private AggregatingFsConsumer createConsumer(ConsumeDestinationGenerator cdg, MessageAggregator aggr) {
+  private AggregatingFsConsumer createConsumer(String endpoint, String filterExpression, MessageAggregator aggr) {
     AggregatingFsConsumer consumer = new AggregatingFsConsumer();
-    consumer.setDestination(cdg);
+    consumer.setEndpoint(endpoint);
+    consumer.setFilterExpression(filterExpression);
     consumer.setMessageAggregator(aggr);
     return consumer;
   }
@@ -147,10 +138,9 @@ public class AggregatingFsConsumeServiceTest extends AggregatingServiceExample {
   @Override
   protected Object retrieveObjectForSampleConfig() {
     AggregatingFsConsumeService service = new AggregatingFsConsumeService();
-    ConsumeDestinationFromMetadata mfd = new ConsumeDestinationFromMetadata();
-    mfd.setDestinationMetadataKey("aggrDir");
-    mfd.setDefaultFilterExpression(".*\\*.xml");
-    AggregatingFsConsumer consumer = new AggregatingFsConsumer(mfd);
+    AggregatingFsConsumer consumer = new AggregatingFsConsumer();
+    consumer.setEndpoint("aggrDir");
+    consumer.setFilterExpression(".*\\*.xml");
     consumer.setMessageAggregator(new IgnoreOriginalMimeAggregator());
     service.setFsConsumer(consumer);
     return service;

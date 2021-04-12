@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,8 +30,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
 import com.adaptris.core.services.aggregator.MessageAggregatorTest.EvenOddCondition;
-import com.adaptris.core.services.splitter.SplitJoinService;
-import com.adaptris.core.services.splitter.SplitJoinServiceTest;
+import com.adaptris.core.services.splitter.PooledSplitJoinService;
 import com.adaptris.core.services.splitter.SplitterCase;
 import com.adaptris.core.services.splitter.XpathMessageSplitter;
 import com.adaptris.core.stubs.DefectiveMessageFactory;
@@ -48,7 +47,7 @@ public class IgnoreOriginalXmlAggregatorTest extends XmlAggregatorCase {
   public void testSplitJoinService_WithExplicitDocumentEnoding() throws Exception {
     // This is a XML doc with 3 iterable elements...
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(SplitterCase.XML_MESSAGE);
-    SplitJoinService service = new SplitJoinService();
+    PooledSplitJoinService service = new PooledSplitJoinService();
     // The service doesn't actually matter right now.
     service.setService(asCollection(new NullService()));
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
@@ -69,7 +68,7 @@ public class IgnoreOriginalXmlAggregatorTest extends XmlAggregatorCase {
   public void testSplitJoinService_WithImplicitDocumentEnoding() throws Exception {
     // This is a XML doc with 3 iterable elements...
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(SplitterCase.XML_MESSAGE, "ISO-8859-1");
-    SplitJoinService service = new SplitJoinService();
+    PooledSplitJoinService service = new PooledSplitJoinService();
     // The service doesn't actually matter right now.
     service.setService(asCollection(new NullService()));
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));
@@ -85,7 +84,7 @@ public class IgnoreOriginalXmlAggregatorTest extends XmlAggregatorCase {
   @Test
   public void testJoinMessage_NoTemplate() throws Exception {
     XmlDocumentAggregator aggr = new IgnoreOriginalXmlDocumentAggregator();
-    aggr.setMergeImplementation(new InsertNode(SplitJoinServiceTest.XPATH_ENVELOPE));
+    aggr.setMergeImplementation(new InsertNode(XPATH_ENVELOPE));
     AdaptrisMessage original = AdaptrisMessageFactory.getDefaultInstance().newMessage("<envelope/>");
     AdaptrisMessage splitMsg1 = AdaptrisMessageFactory.getDefaultInstance().newMessage("<document>hello</document>");
     AdaptrisMessage splitMsg2 = new DefectiveMessageFactory().newMessage("<document>world</document>");
@@ -105,7 +104,7 @@ public class IgnoreOriginalXmlAggregatorTest extends XmlAggregatorCase {
   public void testSplitJoinService_withFilter() throws Exception {
     // This is a XML doc with 3 iterable elements...
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(SplitterCase.XML_MESSAGE);
-    SplitJoinService service = new SplitJoinService();
+    PooledSplitJoinService service = new PooledSplitJoinService();
     // The service doesn't actually matter right now.
     service.setService(asCollection(new NullService()));
     service.setTimeout(new TimeInterval(10L, TimeUnit.SECONDS));

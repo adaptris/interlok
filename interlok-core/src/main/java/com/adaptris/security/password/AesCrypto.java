@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,19 +17,16 @@
 package com.adaptris.security.password;
 
 import static com.adaptris.security.password.Password.PORTABLE_PASSWORD;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.util.SecurityUtil;
 import com.adaptris.util.text.Base64ByteTranslator;
@@ -46,10 +43,13 @@ public class AesCrypto extends PasswordImpl {
     base64 = new Base64ByteTranslator();
   }
 
+  @Override
   public boolean canHandle(String type) {
     return type != null && type.startsWith(PORTABLE_PASSWORD);
   }
 
+  @Override
+  @SuppressWarnings({"lgtm [java/weak-cryptographic-algorithm]"})
   public String decode(String encrypted, String charset) throws PasswordException {
 
     String encryptedString = encrypted;
@@ -79,6 +79,8 @@ public class AesCrypto extends PasswordImpl {
     return result;
   }
 
+  @Override
+  @SuppressWarnings({"lgtm [java/weak-cryptographic-algorithm]"})
   public String encode(String plainText, String charset) throws PasswordException {
     String result = null;
     try {
@@ -108,7 +110,7 @@ public class AesCrypto extends PasswordImpl {
     private byte[] encryptedData;
 
     Input(String s) {
-      this.encrypted = s;
+      encrypted = s;
     }
 
     void read() throws IOException {
@@ -149,15 +151,15 @@ public class AesCrypto extends PasswordImpl {
     private byte[] encryptedData;
 
     void setSessionKey(byte[] b) {
-      this.sessionKey = b;
+      sessionKey = b;
     }
 
     void setSessionVector(byte[] b) {
-      this.sessionVector = b;
+      sessionVector = b;
     }
 
     void setEncryptedData(byte[] b) {
-      this.encryptedData = b;
+      encryptedData = b;
     }
 
     String write() throws IOException {

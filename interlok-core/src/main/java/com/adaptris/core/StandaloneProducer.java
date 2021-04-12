@@ -16,9 +16,6 @@
 
 package com.adaptris.core;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
@@ -26,6 +23,11 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
  * <p>
@@ -74,13 +76,6 @@ public class StandaloneProducer extends ServiceImp implements AdaptrisMessageSen
   @Override
   public void produce(AdaptrisMessage msg) throws ProduceException {
     getProducer().produce(msg);
-  }
-
-
-  @Override
-  @SuppressWarnings("deprecation")
-  public void produce(AdaptrisMessage msg, ProduceDestination dest) throws ProduceException {
-    getProducer().produce(msg, dest);
   }
 
   @Override

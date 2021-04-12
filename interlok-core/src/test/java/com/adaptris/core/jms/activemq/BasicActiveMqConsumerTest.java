@@ -356,7 +356,6 @@ public class BasicActiveMqConsumerTest
     testStartWithDurableSubscribers_WithNonBlockingChannelStrategy();
   }
 
-  @SuppressWarnings("deprecation")
   private Adapter createDurableSubsAdapter(String adapterName, EmbeddedActiveMq activeMqBroker) throws Exception {
     Adapter adapter = new Adapter();
     adapter.setUniqueId(adapterName);
@@ -366,7 +365,6 @@ public class BasicActiveMqConsumerTest
     c.setConsumeConnection(conn);
     StandardWorkflow swf = new StandardWorkflow();
     PasConsumer pasConsumer = new PasConsumer().withTopic(new GuidGenerator().safeUUID());
-    pasConsumer.setDurable(true);
     pasConsumer.setSubscriptionId(MY_SUBSCRIPTION_ID);
     swf.setConsumer(pasConsumer);
     c.getWorkflowList().add(swf);

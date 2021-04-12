@@ -61,7 +61,7 @@ public class PluggableJdbcPooledConnection extends JdbcPooledConnectionImpl {
 
       return new EqualsBuilder().append(conn.getConnectUrl(), getConnectUrl()).append(conn.getDriverImp(), getDriverImp())
           .append(conn.getAlwaysValidateConnection(), getAlwaysValidateConnection())
-          .append(conn.getDebugMode(), getDebugMode()).append(conn.getTestStatement(), getTestStatement())
+          .append(conn.getDebugMode(), getDebugMode())
           .append(conn.getAutoCommit(), getAutoCommit()).append(conn.getConnectionProperties(), getConnectionProperties())
           .append(conn.getBuilder(), getBuilder()).append(conn.getPoolProperties(), getPoolProperties()).isEquals();
     }
@@ -71,7 +71,7 @@ public class PluggableJdbcPooledConnection extends JdbcPooledConnectionImpl {
   @Override
   public int hashCode() {
     return new HashCodeBuilder(19, 37).append(getConnectUrl()).append(getDriverImp())
-        .append(getAlwaysValidateConnection()).append(getDebugMode()).append(getTestStatement()).append(getAutoCommit())
+        .append(getAlwaysValidateConnection()).append(getDebugMode()).append(getAutoCommit())
         .append(getConnectionProperties()).append(getBuilder()).append(getPoolProperties()).toHashCode();
   }
 
@@ -86,7 +86,7 @@ public class PluggableJdbcPooledConnection extends JdbcPooledConnectionImpl {
 
   /**
    * Set the builder to use when creating the connection pool.
-   * 
+   *
    * @param builder the builder, if not specified, then defaults to {@link DefaultPoolFactory}.
    */
   public void setBuilder(ConnectionPoolBuilder builder) {
@@ -109,7 +109,7 @@ public class PluggableJdbcPooledConnection extends JdbcPooledConnectionImpl {
    * the specific keys and values required here will be dependent on the pool implementation. Please
    * consult their documentation to figure out the correct values.
    * </p>
-   * 
+   *
    * @param kvps the connection pool properties.
    */
   public void setPoolProperties(KeyValuePairSet kvps) {

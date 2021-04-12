@@ -291,7 +291,9 @@ public class BootstrapProperties extends Properties {
   public synchronized AdapterConfigManager getConfigManager() throws Exception {
     if (configManager == null) {
       configManager = (AdapterConfigManager) Class
-          .forName(PropertyHelper.getPropertyIgnoringCase(this, CFG_KEY_CONFIG_MANAGER, DEFAULT_CONFIG_MANAGER)).newInstance();
+          .forName(PropertyHelper.getPropertyIgnoringCase(this, CFG_KEY_CONFIG_MANAGER,
+              DEFAULT_CONFIG_MANAGER))
+          .getDeclaredConstructor().newInstance();
       configManager.configure(this);
     }
     return configManager;

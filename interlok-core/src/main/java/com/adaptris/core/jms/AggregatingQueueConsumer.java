@@ -18,19 +18,19 @@ package com.adaptris.core.jms;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.validation.constraints.NotNull;
+
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.aggregator.AggregatingConsumerImpl;
-import com.adaptris.core.services.aggregator.ConsumeDestinationGenerator;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -38,8 +38,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * {@link com.adaptris.core.services.aggregator.AggregatingConsumer} implementation that allows you to read a separate message(s) from a queue that need to be aggregated
  * with the current message.
  * <p>
- * The JMS Queue and message selector are created from the generated {@link ConsumeDestination#getDestination()} and
- * {@link ConsumeDestination#getFilterExpression()} respectively.
  * <ul>
  * <li>If the first message is received within the correct timeframe (based on {@link #getTimeout()}), then additional messages are
  * waited for based on the same timeout. Once the timeout expires then all the messages are aggregated using the configured
@@ -70,20 +68,14 @@ public class AggregatingQueueConsumer extends AggregatingConsumerImpl<Aggregatin
     setMessageTranslator(new AutoConvertMessageTranslator());
   }
 
-  public AggregatingQueueConsumer(ConsumeDestinationGenerator d) {
-    this();
-    setDestination(d);
-  }
-
   @Override
   public void aggregateMessages(AdaptrisMessage msg, AggregatingJmsConsumeService cfg) throws ServiceException {
-    ConsumeDestination dest = getDestination().generate(msg);
     MessageConsumer consumer = null;
     ArrayList<AdaptrisMessage> result = new ArrayList<>();
     try {
       startMessageTranslator(cfg, msg.getFactory());
       consumer = cfg.getConnection().retrieveConnection(JmsConnection.class).configuredVendorImplementation()
-          .createQueueReceiver(dest, cfg);
+          .createQueueReceiver(getEndpoint(), msg.resolve(getFilterExpression()), cfg);
       Message first = firstMessage(consumer);
       result.add(getMessageTranslator().translate(first));
       Message next = nextMessage(consumer);
@@ -127,7 +119,7 @@ public class AggregatingQueueConsumer extends AggregatingConsumerImpl<Aggregatin
    * @param t the timeout to set, if not specified then it defaults to 30 seconds.
    */
   public void setTimeout(TimeInterval t) {
-    this.timeout = t;
+    timeout = t;
   }
 
   long timeoutMs() {
@@ -150,6 +142,6 @@ public class AggregatingQueueConsumer extends AggregatingConsumerImpl<Aggregatin
    * @param translator the translator.
    */
   public void setMessageTranslator(MessageTypeTranslator translator) {
-    this.messageTranslator = translator;
+    messageTranslator = translator;
   }
 }

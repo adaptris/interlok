@@ -265,6 +265,8 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
    * @throws JMSException if the message could not be translated.
    */
   public static AdaptrisMessage translate(MessageTypeTranslator translator, Message msg) throws JMSException {
+    if(msg == null)
+      return null;
     Logger logR = LoggerFactory.getLogger(translator.getClass());
     AdaptrisMessage result = null;
     try {

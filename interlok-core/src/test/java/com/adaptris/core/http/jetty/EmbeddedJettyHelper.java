@@ -19,7 +19,6 @@ package com.adaptris.core.http.jetty;
 import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.management.jetty.JettyServerComponent;
 import com.adaptris.core.management.jetty.ServerBuilder;
 import com.adaptris.core.management.webserver.ServerManager;
@@ -46,7 +45,6 @@ public class EmbeddedJettyHelper {
   public void startServer() throws Exception {
     jetty = new JettyServerComponent();
     jetty.init(jettyConfig);
-    jetty.setClassLoader(Thread.currentThread().getContextClassLoader());
     jetty.start();
     Thread.sleep(250);
     final ServerManager mgr = WebServerManagementUtil.getServerManager();
@@ -68,8 +66,8 @@ public class EmbeddedJettyHelper {
     return "http://localhost:" + portForServer + actualUri;
   }
 
-  public ConfiguredProduceDestination createProduceDestination() {
-    return new ConfiguredProduceDestination(buildUrl(URL_TO_POST_TO));
+  public String createProduceDestination() {
+    return buildUrl(URL_TO_POST_TO);
   }
 
 }

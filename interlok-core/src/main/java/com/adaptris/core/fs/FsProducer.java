@@ -16,21 +16,6 @@
 
 package com.adaptris.core.fs;
 
-import static com.adaptris.core.CoreConstants.FS_PRODUCE_DIRECTORY;
-import static com.adaptris.core.CoreConstants.PRODUCED_NAME_KEY;
-import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
-import static com.adaptris.core.util.DestinationHelper.mustHaveEither;
-import static com.adaptris.core.util.DestinationHelper.resolveProduceDestination;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
-import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -43,18 +28,25 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.FileNameCreator;
 import com.adaptris.core.FormattedFilenameCreator;
 import com.adaptris.core.NullConnection;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.ProduceOnlyProducerImp;
-import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.fs.FsWorker;
 import com.adaptris.fs.NioWorker;
-import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import org.apache.commons.lang3.BooleanUtils;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+
+import static com.adaptris.core.CoreConstants.FS_PRODUCE_DIRECTORY;
+import static com.adaptris.core.CoreConstants.PRODUCED_NAME_KEY;
 
 /**
  * {@link com.adaptris.core.AdaptrisMessageProducer} implementation that writes to the file system.
@@ -127,16 +119,6 @@ public class FsProducer extends ProduceOnlyProducerImp {
   @Getter
   @Setter
   private FileNameCreator filenameCreator;
-  /**
-   * The destination represents the base-directory where you are producing files to.
-   *
-   */
-  @Getter
-  @Setter
-  @Deprecated
-  @Valid
-  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'base-directory-url' instead", groups = Deprecated.class)
-  private ProduceDestination destination;
 
   /**
    * The base directory specified as a URL.
@@ -145,10 +127,8 @@ public class FsProducer extends ProduceOnlyProducerImp {
   @InputFieldHint(expression = true)
   @Getter
   @Setter
-  // Needs to be @NotBlank when destination is removed.
+  @NotBlank
   private String baseDirectoryUrl;
-
-  private transient boolean destWarning;
 
   public FsProducer() {
     setFilenameCreator(new FormattedFilenameCreator());
@@ -225,15 +205,12 @@ public class FsProducer extends ProduceOnlyProducerImp {
 
   @Override
   public void prepare() throws CoreException {
-    logWarningIfNotNull(destWarning, () -> destWarning = true, getDestination(),
-        "{} uses destination, use 'base-directory-url' instead", LoggingHelper.friendlyName(this));
-    mustHaveEither(getBaseDirectoryUrl(), getDestination());
     registerEncoderMessageFactory();
   }
 
   @Override
   public String endpoint(AdaptrisMessage msg) throws ProduceException {
-    return resolveProduceDestination(getBaseDirectoryUrl(), getDestination(), msg);
+    return msg.resolve(getBaseDirectoryUrl());
   }
 
   @SuppressWarnings("unchecked")

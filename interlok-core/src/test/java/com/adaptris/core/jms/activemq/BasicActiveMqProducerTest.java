@@ -325,7 +325,6 @@ public class BasicActiveMqProducerTest
     String subscriptionId = GUID.safeUUID();
     String clientId = GUID.safeUUID();
     PasConsumer consumer = new PasConsumer().withTopic(getName());
-    consumer.setDurable(true);
     consumer.setSubscriptionId(subscriptionId);
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     JmsConnection conn = activeMqBroker.getJmsConnection(createVendorImpl(), true);
@@ -412,6 +411,49 @@ public class BasicActiveMqProducerTest
             new PtpProducer().withQueue((getName())));
 
     execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
+    assertMessages(jms, 1);
+  }
+
+  @Test
+  public void testQueueProduceAndConsume_ResolveableEndpoint() throws Exception {
+    PtpConsumer consumer = new PtpConsumer().withQueue(getName());
+    consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+
+    StandaloneConsumer standaloneConsumer =
+        new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
+    MockMessageListener jms = new MockMessageListener();
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
+
+    StandaloneProducer standaloneProducer =
+        new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
+            new PtpProducer().withQueue("%message{metadataEndpoint}"));
+
+    AdaptrisMessage msg = createMessage();
+    msg.addMessageHeader("metadataEndpoint", getName());
+
+    execute(standaloneConsumer, standaloneProducer, msg, jms);
+    assertMessages(jms, 1);
+  }
+
+  @Test
+  public void testQueueProduceAndConsume_ObjectEndpoint() throws Exception {
+    Queue queue = activeMqBroker.createQueue(getName());
+    PtpConsumer consumer = new PtpConsumer().withQueue(getName());
+    consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+
+    StandaloneConsumer standaloneConsumer =
+        new StandaloneConsumer(activeMqBroker.getJmsConnection(createVendorImpl()), consumer);
+    MockMessageListener jms = new MockMessageListener();
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
+
+    StandaloneProducer standaloneProducer =
+        new StandaloneProducer(activeMqBroker.getJmsConnection(createVendorImpl()),
+            new PtpProducer().withQueue("%messageObject{objectEndpoint}"));
+
+    AdaptrisMessage msg = createMessage();
+    msg.addObjectHeader("objectEndpoint", queue);
+
+    execute(standaloneConsumer, standaloneProducer, msg, jms);
     assertMessages(jms, 1);
   }
 
@@ -631,6 +673,7 @@ public class BasicActiveMqProducerTest
   protected BasicActiveMqImplementation createVendorImpl() {
     return new BasicActiveMqImplementation();
   }
+
 
   private abstract class Loopback implements MessageListener {
     protected String listenQueueOrTopic;

@@ -13,24 +13,8 @@
 
 package com.adaptris.core.ftp;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import java.time.Duration;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import org.apache.oro.io.GlobFilenameFilter;
-import org.awaitility.Awaitility;
-import org.junit.After;
-import org.junit.Assume;
-import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.ConfiguredConsumeDestination;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataFileNameCreator;
@@ -42,8 +26,23 @@ import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.TimeInterval;
+import org.apache.oro.io.GlobFilenameFilter;
+import org.awaitility.Awaitility;
+import org.junit.After;
+import org.junit.Assume;
+import org.junit.Test;
 
-@SuppressWarnings("deprecation")
+import java.time.Duration;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 public abstract class FtpCase extends FtpConsumerExample {
 
   public static final String DEFAULT_WORK_DIR = "/work";
@@ -83,9 +82,7 @@ public abstract class FtpCase extends FtpConsumerExample {
     Assume.assumeTrue(areTestsEnabled());
     MockMessageListener listener = new MockMessageListener();
     FtpConsumer ftpConsumer = new FtpConsumer();
-    ConfiguredConsumeDestination ccd = new ConfiguredConsumeDestination(getDestinationString());
-    ccd.setConfiguredThreadName("testBasicConsume");
-    ftpConsumer.setDestination(ccd);
+    ftpConsumer.setFtpEndpoint(getDestinationString());
     ftpConsumer.setWorkDirectory(DEFAULT_WORK_DIR);
     ftpConsumer.registerAdaptrisMessageListener(listener);
     ftpConsumer.setPoller(new QuartzCronPoller("*/1 * * * * ?"));
@@ -107,9 +104,7 @@ public abstract class FtpCase extends FtpConsumerExample {
     Assume.assumeTrue(areTestsEnabled());
     MockMessageListener listener = new MockMessageListener();
     FtpConsumer ftpConsumer = new FtpConsumer();
-    ConfiguredConsumeDestination ccd = new ConfiguredConsumeDestination(getDestinationString());
-    ccd.setConfiguredThreadName("testCasualBasicConsume");
-    ftpConsumer.setDestination(ccd);
+    ftpConsumer.setFtpEndpoint(getDestinationString());
     ftpConsumer.registerAdaptrisMessageListener(listener);
     ftpConsumer.setQuietInterval(new TimeInterval(300l, TimeUnit.MILLISECONDS));
     ftpConsumer.setPoller(new QuartzCronPoller("*/1 * * * * ?"));
@@ -139,9 +134,7 @@ public abstract class FtpCase extends FtpConsumerExample {
     Assume.assumeTrue(areTestsEnabled());
     MockMessageListener listener = new MockMessageListener();
     FtpConsumer ftpConsumer = new FtpConsumer();
-    ConfiguredConsumeDestination ccd = new ConfiguredConsumeDestination(getDestinationString());
-    ccd.setConfiguredThreadName("testCasualBasicConsume");
-    ftpConsumer.setDestination(ccd);
+    ftpConsumer.setFtpEndpoint(getDestinationString());
     ftpConsumer.registerAdaptrisMessageListener(listener);
     ftpConsumer.setQuietInterval(new TimeInterval(300l, TimeUnit.MILLISECONDS));
     ftpConsumer.setPoller(new QuartzCronPoller("*/1 * * * * ?"));
@@ -174,9 +167,7 @@ public abstract class FtpCase extends FtpConsumerExample {
 
     MockMessageListener listener = new MockMessageListener();
     FtpConsumer ftpConsumer = new FtpConsumer();
-    ConfiguredConsumeDestination ccd = new ConfiguredConsumeDestination(getDestinationStringWithOverride());
-    ccd.setConfiguredThreadName("testBasicConsumeWithOverride");
-    ftpConsumer.setDestination(ccd);
+    ftpConsumer.setFtpEndpoint(getDestinationStringWithOverride());
     ftpConsumer.setWorkDirectory(DEFAULT_WORK_DIR);
     ftpConsumer.registerAdaptrisMessageListener(listener);
     // Pass in a QuartzId so we don't print out the uname+password.
@@ -202,12 +193,10 @@ public abstract class FtpCase extends FtpConsumerExample {
     Assume.assumeTrue(areTestsEnabled());
     MockMessageListener listener = new MockMessageListener();
     FtpConsumer ftpConsumer = new FtpConsumer();
-    ConfiguredConsumeDestination ccd = new ConfiguredConsumeDestination(getDestinationString(), "*.txt");
-    ccd.setConfiguredThreadName("testConsumeWithFilter");
-    ftpConsumer.setDestination(ccd);
-
+    ftpConsumer.setFtpEndpoint(getDestinationString());
     ftpConsumer.setWorkDirectory(DEFAULT_WORK_DIR);
     ftpConsumer.setFileFilterImp(GlobFilenameFilter.class.getCanonicalName());
+    ftpConsumer.setFilterExpression(".txt");
     ftpConsumer.registerAdaptrisMessageListener(listener);
     ftpConsumer.setPoller(new QuartzCronPoller("*/1 * * * * ?"));
     StandaloneConsumer sc = new StandaloneConsumer(createConnection(), ftpConsumer);
@@ -235,9 +224,7 @@ public abstract class FtpCase extends FtpConsumerExample {
     Assume.assumeTrue(areTestsEnabled());
     MockMessageListener listener = new MockMessageListener();
     FtpConsumer ftpConsumer = new FtpConsumer();
-    ConfiguredConsumeDestination ccd = new ConfiguredConsumeDestination(getDestinationString());
-    ccd.setConfiguredThreadName("testConsumeWithQuietPeriod");
-    ftpConsumer.setDestination(ccd);
+    ftpConsumer.setFtpEndpoint(getDestinationString());
     ftpConsumer.setWorkDirectory(DEFAULT_WORK_DIR);
     ftpConsumer.setQuietInterval(new TimeInterval(3L, TimeUnit.SECONDS));
     ftpConsumer.registerAdaptrisMessageListener(listener);
@@ -262,12 +249,11 @@ public abstract class FtpCase extends FtpConsumerExample {
     Assume.assumeTrue(areTestsEnabled());
     MockMessageListener listener = new MockMessageListener();
     FtpConsumer ftpConsumer = new FtpConsumer();
-    ConfiguredConsumeDestination ccd = new ConfiguredConsumeDestination(getDestinationString(), "*.xml");
-    ccd.setConfiguredThreadName("testConsumeWithNonMatchingFilter");
-    ftpConsumer.setDestination(ccd);
+    ftpConsumer.setFtpEndpoint(getDestinationString());
     ftpConsumer.setWorkDirectory(DEFAULT_WORK_DIR);
     ftpConsumer.setFileFilterImp(GlobFilenameFilter.class.getCanonicalName());
     ftpConsumer.registerAdaptrisMessageListener(listener);
+    ftpConsumer.setFilterExpression(".xml");
     ftpConsumer.setPoller(new QuartzCronPoller("*/1 * * * * ?"));
     StandaloneConsumer sc = new StandaloneConsumer(createConnection(), ftpConsumer);
 
@@ -373,8 +359,7 @@ public abstract class FtpCase extends FtpConsumerExample {
 
   protected FtpProducer createFtpProducer() throws Exception {
     FtpProducer p = new FtpProducer();
-    ConfiguredProduceDestination d = new ConfiguredProduceDestination(getDestinationString());
-    p.setDestination(d);
+    p.setFtpEndpoint(getDestinationString());
     p.setBuildDirectory(DEFAULT_BUILD_DIR);
     p.setDestDirectory(DEFAULT_WORK_DIR);
     return p;

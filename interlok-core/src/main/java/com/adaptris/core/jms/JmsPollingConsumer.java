@@ -20,6 +20,8 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.Topic;
+import javax.validation.constraints.NotBlank;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -77,7 +79,7 @@ public class JmsPollingConsumer extends JmsPollingConsumerImpl {
    */
   @Getter
   @Setter
-  // Needs to be @NotBlank when destination is removed.
+  @NotBlank
   private String endpoint;
 
   public JmsPollingConsumer() {
@@ -91,8 +93,8 @@ public class JmsPollingConsumer extends JmsPollingConsumerImpl {
 
   @Override
   protected MessageConsumer createConsumer() throws JMSException {
-    String rfc6167 = endpoint();
-    String filterExp = messageSelector();
+    String rfc6167 = getEndpoint();
+    String filterExp = getMessageSelector();
     MessageConsumer consumer = null;
 
     VendorImplementation vendor = configuredVendorImplementation();

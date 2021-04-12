@@ -16,21 +16,22 @@
 
 package com.adaptris.core.ftp;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import org.junit.Test;
-import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.Poller;
 import com.adaptris.core.QuartzCronPoller;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.util.TimeInterval;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings("deprecation")
 public abstract class FtpConsumerCase extends FtpConsumerExample {
@@ -53,8 +54,8 @@ public abstract class FtpConsumerCase extends FtpConsumerExample {
     FtpConsumer consumer = new FtpConsumer();
     FileTransferConnection con = createConnectionForExamples();
     consumer.setProcDirectory("/proc");
-    consumer.setDestination(new ConfiguredConsumeDestination(getScheme()
-        + "://overrideuser:overridepassword@hostname:port/path/to/directory", "*.xml"));
+    consumer.setFtpEndpoint(getScheme() + "://overrideuser:overridepassword@hostname:port/path/to/directory");
+    consumer.setFileFilterImp("*.xml");
     consumer.setPoller(pollingImp);
     StandaloneConsumer result = new StandaloneConsumer();
     result.setConnection(con);
@@ -84,7 +85,8 @@ public abstract class FtpConsumerCase extends FtpConsumerExample {
   @Test
   public void testInit_UnknownFileFilter() throws Exception {
     FtpConsumer ftpConsumer = new FtpConsumer();
-    ftpConsumer.setDestination(new ConfiguredConsumeDestination(getDestinationString(), ".*", "testInit_UnknownFileFilter"));
+    ftpConsumer.setFtpEndpoint(getDestinationString());
+    ftpConsumer.setFileFilterImp(".*");
     ftpConsumer.setFileFilterImp("BlahDeBlahDeBlah");
     ftpConsumer.setPoller(new QuartzCronPoller("*/1 * * * * ?"));
     try {
@@ -100,7 +102,8 @@ public abstract class FtpConsumerCase extends FtpConsumerExample {
   @Test
   public void testInit_WorkDir() throws Exception {
     FtpConsumer ftpConsumer = new FtpConsumer();
-    ftpConsumer.setDestination(new ConfiguredConsumeDestination(getDestinationString(), null, "testInit_NoWorkDir"));
+    ftpConsumer.setFtpEndpoint(getDestinationString());
+    ftpConsumer.setFileFilterImp(null);
     ftpConsumer.setWorkDirectory(null);
     ftpConsumer.setPoller(new QuartzCronPoller("*/1 * * * * ?"));
     try {
@@ -122,7 +125,7 @@ public abstract class FtpConsumerCase extends FtpConsumerExample {
   @Test
   public void testInit_ProcDir() throws Exception {
     FtpConsumer ftpConsumer = new FtpConsumer();
-    ftpConsumer.setDestination(new ConfiguredConsumeDestination(getDestinationString(), null, "testInit_NoWorkDir"));
+    ftpConsumer.setFtpEndpoint(getDestinationString());
     ftpConsumer.setWorkDirectory("/work");
     ftpConsumer.setPoller(new QuartzCronPoller("*/1 * * * * ?"));
     ftpConsumer.init();

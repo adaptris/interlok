@@ -52,7 +52,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * whether your conditions continue to evaluate to true. <br/>
  * 
  * <pre>
- *  <max-loops>5</max-loops>
+ *  &lt;max-loops&gt;57&lt;/max-loops&gt;
  * </pre>
  * 
  * The default value for the max-loops is 10. Setting this value to 0, will loop forever until your

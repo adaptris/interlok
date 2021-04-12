@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,7 +34,6 @@ import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
-
 import com.adaptris.core.util.JdbcUtil;
 
 public class ProxySqlConnection implements Connection {
@@ -65,6 +64,7 @@ public class ProxySqlConnection implements Connection {
    * @see java.sql.Connection#prepareCall(java.lang.String)
    */
   @Override
+  @SuppressWarnings({"lgtm[java/sql-injection]"})
   public CallableStatement prepareCall(String sql) throws SQLException {
     return getConnection().prepareCall(sql);
   }
@@ -116,7 +116,7 @@ public class ProxySqlConnection implements Connection {
   public void close() throws SQLException {
     getConnection().close();
   }
-  
+
   public void stop() {
     JdbcUtil.closeQuietly(getConnection());
   }
@@ -455,22 +455,27 @@ public class ProxySqlConnection implements Connection {
     return getConnection().unwrap(iface);
   }
 
+  @Override
   public void setSchema(String schema) throws SQLException {
     getConnection().setSchema(schema);
   }
 
+  @Override
   public String getSchema() throws SQLException {
     return getConnection().getSchema();
   }
 
+  @Override
   public void abort(Executor executor) throws SQLException {
     getConnection().abort(executor);
   }
 
+  @Override
   public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
     getConnection().setNetworkTimeout(executor, milliseconds);
   }
 
+  @Override
   public int getNetworkTimeout() throws SQLException {
     return getConnection().getNetworkTimeout();
   }
@@ -482,5 +487,5 @@ public class ProxySqlConnection implements Connection {
   public void setConnection(Connection connection) {
     this.connection = connection;
   }
-  
+
 }

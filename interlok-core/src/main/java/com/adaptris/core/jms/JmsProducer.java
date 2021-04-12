@@ -18,8 +18,6 @@ package com.adaptris.core.jms;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import static com.adaptris.core.jms.JmsConstants.JMS_ASYNC_STATIC_REPLY_TO;
-import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
-import static com.adaptris.core.util.DestinationHelper.mustHaveEither;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.util.Optional;
@@ -28,7 +26,7 @@ import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
-import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.BooleanUtils;
 
@@ -36,17 +34,11 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
-import com.adaptris.core.util.DestinationHelper;
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.interlok.util.Args;
-import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 import lombok.Getter;
@@ -84,24 +76,9 @@ import lombok.Setter;
 @XStreamAlias("jms-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Place message on a JMS queue or topic", tag = "producer,jms", recommended = {JmsConnection.class})
-@DisplayOrder(order = {"endpoint", "destination", "messageTranslator", "deliveryMode",
-    "priority", "ttl", "acknowledgeMode"})
+@DisplayOrder(order = {"endpoint", "messageTranslator", "deliveryMode", "priority", "ttl", "acknowledgeMode"})
 @NoArgsConstructor
 public class JmsProducer extends JmsProducerImpl {
-
-  /**
-   * The ProduceDestination is the JMS Endpoint to write to.
-   * <p>
-   * Note that this is deprecated, but you may need to use something like
-   * {@link JmsReplyToDestination} until support is available directly using string expressions.
-   * </p>
-   */
-  @Getter
-  @Setter
-  @Deprecated
-  @Valid
-  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'endpoint' instead if possible", groups = Deprecated.class)
-  private ProduceDestination destination;
 
   /**
    * The JMS Endpoint defined in an RFC6167 manner.
@@ -109,24 +86,16 @@ public class JmsProducer extends JmsProducerImpl {
   @InputFieldHint(expression = true)
   @Getter
   @Setter
-  // Needs to be @NotBlank when destination is removed.
+  @NotBlank
   private String endpoint;
-
-  private transient boolean destWarning;
 
   @Override
   public void prepare() throws CoreException {
-    logWarningIfNotNull(destWarning, () -> destWarning = true, getDestination(),
-        "{} uses destination, use 'endpoint' instead if possible",
-        LoggingHelper.friendlyName(this));
-    mustHaveEither(getEndpoint(), getDestination());
+    Args.notNull(getEndpoint(), "endpoint");
     super.prepare();
   }
 
-  @Override
-  @Deprecated
-  @Removal(version = "4.0.0")
-  public void produce(AdaptrisMessage msg, ProduceDestination dest) throws ProduceException {
+  public void produce(AdaptrisMessage msg, String dest) throws ProduceException {
     try {
       setupSession(msg);
       JmsDestination target = buildDestination(dest, msg, false);
@@ -156,11 +125,7 @@ public class JmsProducer extends JmsProducerImpl {
     log.info("msg produced to destination [{}]", jmsDest);
   }
 
-  @Override
-  @Deprecated
-  @Removal(version = "4.0.0")
-  public AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination dest, long timeout)
-      throws ProduceException {
+  public AdaptrisMessage request(AdaptrisMessage msg, String dest, long timeout) throws ProduceException {
 
     AdaptrisMessage translatedReply = defaultIfNull(getMessageFactory()).newMessage();
     Destination replyTo = null;
@@ -213,17 +178,16 @@ public class JmsProducer extends JmsProducerImpl {
    *        {@link #createReplyTo(AdaptrisMessage, JmsDestination, boolean)}
    * @return a JMSDestination instanced.
    */
-  protected JmsDestination buildDestination(ProduceDestination dest, AdaptrisMessage msg, boolean createReplyTo)
+  protected JmsDestination buildDestination(String dest, AdaptrisMessage msg, boolean createReplyTo)
       throws JMSException, CoreException {
     MyJmsDestination target = null;
-    // First of all try and get a jms destination directory from the produce destination
+    // First of all try and get a jms destination from the produce destination
     // (JmsReplyToDestination)
-    Destination jmsDest = createDestination(dest, msg);
+    Destination jmsDest = retrieveObjectDestination(dest, msg);
     if (jmsDest != null) {
       target = new MyJmsDestination(jmsDest);
     } else {
-      String destString = dest.getDestination(msg);
-      target = new MyJmsDestination(vendorImplementation().createDestination(destString, this));
+      target = new MyJmsDestination(vendorImplementation().createDestination(msg.resolve(dest), this));
       target.setReplyTo(createReplyTo(msg, target, createReplyTo));
     }
     return target;
@@ -239,8 +203,7 @@ public class JmsProducer extends JmsProducerImpl {
    *        isn't available.
    * @return a javax.jms.Destination
    */
-  protected Destination createReplyTo(AdaptrisMessage msg, JmsDestination target,
-      boolean createTmpDest)
+  protected Destination createReplyTo(AdaptrisMessage msg, JmsDestination target, boolean createTmpDest)
           throws JMSException {
     Destination replyTo = null;
     if (target.getReplyToDestination() == null) {
@@ -262,21 +225,17 @@ public class JmsProducer extends JmsProducerImpl {
 
   @Override
   public AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException {
-    ProduceDestination dest = Optional.ofNullable(getDestination())
-        .orElse(new ConfiguredProduceDestination(endpoint(msg)));
-    return request(msg, dest, timeout);
+    return request(msg, endpoint(msg), timeout);
   }
 
   @Override
   public void produce(AdaptrisMessage msg) throws ProduceException {
-    ProduceDestination dest = Optional.ofNullable(getDestination())
-        .orElse(new ConfiguredProduceDestination(endpoint(msg)));
-    produce(msg, dest);
+    produce(msg, endpoint(msg));
   }
 
   @Override
   public String endpoint(AdaptrisMessage msg) throws ProduceException {
-    return DestinationHelper.resolveProduceDestination(getEndpoint(), getDestination(), msg);
+    return msg.resolve(getEndpoint());
   }
 
   @Override

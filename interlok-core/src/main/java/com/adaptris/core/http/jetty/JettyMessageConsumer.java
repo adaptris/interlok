@@ -87,8 +87,7 @@ import lombok.Setter;
 {
     EmbeddedConnection.class, JettyConnection.class
 })
-@DisplayOrder(
-    order = {"path", "destination", "methods", "checkCharset", "parameterHandler", "headerHandler"})
+@DisplayOrder(order = {"path", "methods", "checkCharset", "parameterHandler", "headerHandler"})
 @NoArgsConstructor
 public class JettyMessageConsumer extends BasicJettyConsumer {
 

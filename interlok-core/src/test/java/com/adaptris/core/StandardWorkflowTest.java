@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.core.services.metadata.AddMetadataService;
-import com.adaptris.core.services.metadata.PayloadFromMetadataService;
+import com.adaptris.core.services.metadata.PayloadFromTemplateService;
 import com.adaptris.core.stubs.EventHandlerAwareConsumer;
 import com.adaptris.core.stubs.EventHandlerAwareProducer;
 import com.adaptris.core.stubs.EventHandlerAwareService;
@@ -87,7 +87,7 @@ public class StandardWorkflowTest
         new AddMetadataService(Arrays.asList(new MetadataElement[]
         {
           new MetadataElement(METADATA_KEY, METADATA_VALUE)
-        })), new PayloadFromMetadataService(PAYLOAD_2)
+        })), new PayloadFromTemplateService().withTemplate(PAYLOAD_2)
     }));
     StandardWorkflow workflow = (StandardWorkflow) channel.getWorkflowList().get(0);
     channel.setUniqueId(null);
@@ -113,7 +113,7 @@ public class StandardWorkflowTest
         new AddMetadataService(Arrays.asList(new MetadataElement[]
         {
           new MetadataElement(METADATA_KEY, METADATA_VALUE)
-        })), new PayloadFromMetadataService(PAYLOAD_2)
+        })), new PayloadFromTemplateService().withTemplate(PAYLOAD_2)
     }));
     channel.setUniqueId("Channel");
     StandardWorkflow workflow = (StandardWorkflow) channel.getWorkflowList().get(0);
@@ -129,7 +129,7 @@ public class StandardWorkflowTest
         new AddMetadataService(Arrays.asList(new MetadataElement[]
         {
           new MetadataElement(METADATA_KEY, METADATA_VALUE)
-        })), new PayloadFromMetadataService(PAYLOAD_2)
+        })), new PayloadFromTemplateService().withTemplate(PAYLOAD_2)
     }));
     channel.setUniqueId("Channel");
     StandardWorkflow workflow = (StandardWorkflow) channel.getWorkflowList().get(0);
@@ -148,7 +148,7 @@ public class StandardWorkflowTest
         new AddMetadataService(Arrays.asList(new MetadataElement[]
         {
           new MetadataElement(METADATA_KEY, METADATA_VALUE)
-        })), new PayloadFromMetadataService(PAYLOAD_2)
+        })), new PayloadFromTemplateService().withTemplate(PAYLOAD_2)
     }));
     try {
       channel.setEventHandler(evtHandler);
@@ -184,7 +184,7 @@ public class StandardWorkflowTest
         new AddMetadataService(Arrays.asList(new MetadataElement[]
         {
           new MetadataElement(METADATA_KEY, METADATA_VALUE)
-        })), new PayloadFromMetadataService(PAYLOAD_2)
+        })), new PayloadFromTemplateService().withTemplate(PAYLOAD_2)
     }));
     try {
       channel.setEventHandler(evtHandler);
@@ -219,7 +219,7 @@ public class StandardWorkflowTest
         new AddMetadataService(Arrays.asList(new MetadataElement[]
         {
           new MetadataElement(METADATA_KEY, METADATA_VALUE)
-        })), new PayloadFromMetadataService(PAYLOAD_2)
+        })), new PayloadFromTemplateService().withTemplate(PAYLOAD_2)
     }));
     int count = 10;
     try {
@@ -253,7 +253,7 @@ public class StandardWorkflowTest
         new AddMetadataService(Arrays.asList(new MetadataElement[]
         {
           new MetadataElement(METADATA_KEY, METADATA_VALUE)
-        })), new PayloadFromMetadataService(PAYLOAD_2)
+        })), new PayloadFromTemplateService().withTemplate(PAYLOAD_2)
     }));
     try {
       StandardWorkflow workflow = (StandardWorkflow) channel.getWorkflowList().get(0);
@@ -293,7 +293,7 @@ public class StandardWorkflowTest
         new AddMetadataService(Arrays.asList(new MetadataElement[]
         {
           new MetadataElement(METADATA_KEY, METADATA_VALUE)
-        })), new PayloadFromMetadataService(PAYLOAD_2)
+        })), new PayloadFromTemplateService().withTemplate(PAYLOAD_2)
     }));
     MockMessageProducer meh = new MockMessageProducer();
 
@@ -415,7 +415,7 @@ public class StandardWorkflowTest
         new AddMetadataService(Arrays.asList(new MetadataElement[]
         {
           new MetadataElement(METADATA_KEY, METADATA_VALUE)
-        })), new PayloadFromMetadataService(PAYLOAD_2)
+        })), new PayloadFromTemplateService().withTemplate(PAYLOAD_2)
     }));
     try {
       StandardWorkflow workflow = (StandardWorkflow) channel.getWorkflowList().get(0);

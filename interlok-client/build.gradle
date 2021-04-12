@@ -1,8 +1,9 @@
 ext {
-  componentName='Interlok Client API'
+  componentName='Interlok Core/Client'
+  componentDesc="Interlok client API; allows you to programatically submit messages to an Interlok workflow"
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
-  log4j2Version = "2.14.0"
-  mockitoVersion = '3.7.0'
+  log4j2Version = "2.14.1"
+  mockitoVersion = '3.8.0'
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -18,7 +19,7 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 dependencies {
   compile project(':interlok-common')
   compile ("org.slf4j:slf4j-api:1.7.30")
-  testCompile ('junit:junit:4.13.1')
+  testCompile ('junit:junit:4.13.2')
   // testCompile ("com.adaptris:interlok-stubs:$interlokCoreVersion") { changing= true}
   testCompile ("org.apache.logging.log4j:log4j-core:$log4j2Version")
   testCompile ("org.apache.logging.log4j:log4j-1.2-api:$log4j2Version")
@@ -31,6 +32,17 @@ dependencies {
 
   javadoc project(':interlok-core-apt')
 }
+
+javadoc {
+  configure(options) {
+    taglets = ["com.adaptris.taglet.ConfigTaglet", "com.adaptris.taglet.LicenseTaglet"]
+    options.addBooleanOption "-no-module-directories", true
+    options.addStringOption "tagletpath", configurations.javadoc.asPath
+    options.tags('apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:','implNote:a:Implementation Note:')
+    title= componentName
+  }
+}
+
 
 task deleteGeneratedFiles(type: Delete) {
   delete delombokTargetDir
@@ -53,13 +65,14 @@ uploadArchives {
       }
       configuration = configurations.mavenDeploy
       pom.withXml {
-        asNode().appendNode("description", "Interlok client API; allows you to programatically submit messages to an Interlok workflow")
+        asNode().appendNode("name", componentName)
+        asNode().appendNode("description", componentDesc)
         def properties = asNode().appendNode("properties")
         properties.appendNode("target", "3.0.5+")
         properties.appendNode("license", "false")
         properties.appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
         properties.appendNode("readme", "https://github.com/adaptris/interlok/raw/develop/README.md")
-        properties.appendNode("repository", "https://github.com/adaptris/interlok")        
+        properties.appendNode("repository", "https://github.com/adaptris/interlok")
       }
 
     }

@@ -15,27 +15,19 @@
  */
 package com.adaptris.core.http.jetty;
 
-import java.util.Collections;
-import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-
-import org.apache.commons.lang3.ObjectUtils;
-
-import com.adaptris.annotation.AffectsMetadata;
+import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.annotation.Removal;
 import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.http.jetty.JettyRouteCondition.JettyRoute;
 import com.adaptris.core.services.metadata.ExtractMetadataService;
-import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.core.util.LoggingHelper;
-import com.adaptris.validation.constraints.ConfigDeprecated;
+import com.adaptris.interlok.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamImplicit;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Used with {@link JettyRoutingService} to help decide which branch to execute.
@@ -63,148 +55,51 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  */
 @DisplayOrder(order =
 {
-    "condition", "method", "urlPattern", "serviceId", "metadataKeys"
+    "serviceId", "condition"
 })
 @XStreamAlias("jetty-route-spec")
 public class JettyRouteSpec implements ComponentLifecycle {
 
-  @Deprecated
-  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use a condition instead", groups = Deprecated.class)
-  private String urlPattern;
-  @Deprecated
-  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use a condition instead", groups = Deprecated.class)
-  private String method;
-  @XStreamImplicit(itemFieldName = "metadata-key")
-  @AffectsMetadata
-  @Deprecated
-  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use a condition instead", groups = Deprecated.class)
-  private List<String> metadataKeys;
+  /**
+   * The service-id that will be used if the route matches.
+   *
+   */
   @NotBlank
+  @Getter
+  @Setter
   private String serviceId;
+  /**
+   * The condition that causes a match.
+   *
+   */
   @Valid
+  @NotNull
+  @Getter
+  @Setter
   private JettyRouteCondition condition;
-
-  private transient boolean warningLogged;
-  private transient JettyRouteCondition conditionToUse = null;
 
   public JettyRouteSpec() {
   }
 
-  @Deprecated
-  public JettyRouteSpec(String urlPattern, String method, List<String> keys, String serviceId) {
-    this();
-    setUrlPattern(urlPattern);
-    setMethod(method);
-    setMetadataKeys(keys);
-    setServiceId(serviceId);
-  }
-
   @Override
   public void init() throws CoreException {
-    conditionToUse = build();
-    LifecycleHelper.init(conditionToUse);
+    Args.notNull(getCondition(), "condition");
+    LifecycleHelper.init(getCondition());
   }
 
   @Override
   public void start() throws CoreException {
-    LifecycleHelper.start(conditionToUse);
+    LifecycleHelper.start(getCondition());
   }
 
   @Override
   public void stop() {
-    LifecycleHelper.stop(conditionToUse);
+    LifecycleHelper.stop(getCondition());
   }
 
   @Override
   public void close() {
-    LifecycleHelper.close(conditionToUse);
-  }
-
-  /**
-   *
-   * @deprecated since 3.9.0 use a condition instead
-   */
-  @Deprecated
-  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use a condition instead", groups = Deprecated.class)
-  public String getUrlPattern() {
-    return urlPattern;
-  }
-
-  /**
-   * Set the URL pattern that you want to match against.
-   *
-   * @param urlPattern the pattern.
-   * @deprecated since 3.9.0 use a condition instead
-   */
-  @Deprecated
-  @Removal(version = "4.0.0", message = "Use a condition instead")
-  public void setUrlPattern(String urlPattern) {
-    this.urlPattern = Args.notBlank(urlPattern, "urlPattern");
-  }
-
-  private String urlPattern() {
-    return Args.notBlank(urlPattern, "urlPattern");
-  }
-
-  /**
-   *
-   * @deprecated since 3.9.0 use a condition instead
-   */
-  @Deprecated
-  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use a condition instead", groups = Deprecated.class)
-  public String getMethod() {
-    return method;
-  }
-
-  /**
-   * Specify a method to match against (optional).
-   *
-   * @deprecated since 3.9.0 use a condition instead
-   */
-  @Deprecated
-  @Removal(version = "4.0.0", message = "Use a condition instead")
-  public void setMethod(String method) {
-    this.method = method;
-  }
-
-  /**
-   *
-   * @deprecated since 3.9.0 use a condition instead
-   */
-  @Deprecated
-  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use a condition instead", groups = Deprecated.class)
-  public List<String> getMetadataKeys() {
-    return metadataKeys;
-  }
-
-  private List<String> metadataKeys() {
-    return ObjectUtils.defaultIfNull(getMetadataKeys(), Collections.emptyList());
-  }
-
-  /**
-   * Specify the metadata that should be populated based on any captured groups in your url pattern.
-   * <p>
-   * The list of keys is processed in order, against each capturing match group in order
-   * </p>
-   *
-   * @param s list of keys.
-   * @deprecated since 3.9.0 use a condition instead
-   */
-  @Deprecated
-  @Removal(version = "4.0.0", message = "Use a condition instead")
-  public void setMetadataKeys(List<String> s) {
-    metadataKeys = s;
-  }
-
-  public String getServiceId() {
-    return serviceId;
-  }
-
-  /**
-   * Set the service-id that will be used if the route matches.
-   */
-  public void setServiceId(String serviceId) {
-    this.serviceId = serviceId;
+    LifecycleHelper.close(getCondition());
   }
 
   public JettyRouteSpec withServiceId(String s) {
@@ -212,42 +107,17 @@ public class JettyRouteSpec implements ComponentLifecycle {
     return this;
   }
 
-  public JettyRouteCondition getCondition() {
-    return condition;
-  }
-
-  /**
-   * Specify the conditions for the route.
-   *
-   * @param condition the condition.
-   */
-  public void setCondition(JettyRouteCondition condition) {
-    this.condition = condition;
-  }
-
   public JettyRouteSpec withCondition(JettyRouteCondition condition) {
     setCondition(condition);
     return this;
   }
 
-  private JettyRouteCondition build() {
-    if (getCondition() == null) {
-      LoggingHelper.logWarning(warningLogged, () -> {
-        warningLogged = true;
-      }, "Direct use of urlPattern/metadataKeys/method is deprecated; use a condition instead");
-      return new JettyRouteCondition().withMetadataKeys(metadataKeys()).withMethod(getMethod()).withUrlPattern(urlPattern());
-    }
-    return getCondition();
-  }
-
   public JettyRoute build(String method, String uri) throws CoreException {
-    return conditionToUse.build(method, uri);
+    return getCondition().build(method, uri);
   }
-
 
   @Override
   public String toString() {
-    JettyRouteCondition condition = build();
-    return String.format("[%s][%s]", condition.getMethod(), condition.getUrlPattern());
+    return String.format("[%s][%s]", getCondition().getMethod(), getCondition().getUrlPattern());
   }
 }

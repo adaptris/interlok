@@ -36,7 +36,6 @@ import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageEncoderImp;
 import com.adaptris.core.Channel;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.MetadataElement;
@@ -53,7 +52,7 @@ import com.adaptris.core.http.client.net.StandardHttpProducer;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.services.metadata.AddMetadataService;
-import com.adaptris.core.services.metadata.PayloadFromMetadataService;
+import com.adaptris.core.services.metadata.PayloadFromTemplateService;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
@@ -286,7 +285,7 @@ public class StandardResponseProducerTest extends HttpProducerExample {
     StandardResponseProducer r1 = new StandardResponseProducer(HttpStatus.OK_200);
     // 2nd responder will not fire...
     StandardResponseProducer r2 = new StandardResponseProducer(HttpStatus.INTERNAL_ERROR_500);
-    PayloadFromMetadataService pms = new PayloadFromMetadataService();
+    PayloadFromTemplateService pms = new PayloadFromTemplateService();
     pms.setTemplate("");
     HttpConnection httpConnection = createConnection();
     Channel c = createChannel(httpConnection, createWorkflow(createConsumer(URL_TO_POST_TO), new MockMessageProducer(),
@@ -312,7 +311,7 @@ public class StandardResponseProducerTest extends HttpProducerExample {
   @Test
   public void testResponseWithZeroLengthPayload() throws Exception {
     StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.OK_200);
-    PayloadFromMetadataService pms = new PayloadFromMetadataService();
+    PayloadFromTemplateService pms = new PayloadFromTemplateService();
     pms.setTemplate("");
     HttpConnection httpConnection = createConnection();
     Channel c = createChannel(httpConnection,
@@ -421,10 +420,6 @@ public class StandardResponseProducerTest extends HttpProducerExample {
     return c;
   }
 
-  @Deprecated
-  protected static ConfiguredProduceDestination createProduceDestination(int port) {
-    return new ConfiguredProduceDestination(createURL(port));
-  }
 
   protected static String createURL(int port) {
     return "http://localhost:" + port + URL_TO_POST_TO;
