@@ -1,6 +1,7 @@
 package com.adaptris.core.http.jetty.retry;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -13,6 +14,7 @@ import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.junit.AfterClass;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreConstants;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.lms.FileBackedMessageFactory;
@@ -37,15 +39,37 @@ public class FilesystemRetryStoreTest {
   }
 
   @Test
-  public void testWrite() throws Exception {
+  public void testWrite_PayloadMessage() throws Exception {
     FilesystemRetryStore store =
         new FilesystemRetryStore().withBaseUrl(BaseCase.getConfiguration(TEST_BASE_URL));
     try {
       LifecycleHelper.initAndStart(store);
       AdaptrisMessage msg = new DefaultMessageFactory().newMessage("hello");
       store.write(msg);
-      File dir = FsHelper.toFile(BaseCase.getConfiguration(TEST_BASE_URL));
-      assertTrue(dir.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY).length >= 1);
+      File retryDir = FsHelper.toFile(BaseCase.getConfiguration(TEST_BASE_URL));
+      File msgDir = new File(retryDir, msg.getUniqueId());
+      assertTrue(retryDir.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY).length >= 1);
+      assertTrue(msgDir.exists());
+      assertEquals(2, msgDir.listFiles().length);
+    } finally {
+      LifecycleHelper.stopAndClose(store);
+    }
+  }
+
+  @Test
+  public void testWrite_PayloadMetadataException() throws Exception {
+    FilesystemRetryStore store =
+        new FilesystemRetryStore().withBaseUrl(BaseCase.getConfiguration(TEST_BASE_URL));
+    try {
+      LifecycleHelper.initAndStart(store);
+      AdaptrisMessage msg = new DefaultMessageFactory().newMessage("hello");
+      msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception());
+      store.write(msg);
+      File retryDir = FsHelper.toFile(BaseCase.getConfiguration(TEST_BASE_URL));
+      File msgDir = new File(retryDir, msg.getUniqueId());
+      assertTrue(retryDir.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY).length >= 1);
+      assertTrue(msgDir.exists());
+      assertEquals(3, msgDir.listFiles().length);
     } finally {
       LifecycleHelper.stopAndClose(store);
     }
@@ -189,6 +213,9 @@ public class FilesystemRetryStoreTest {
       AdaptrisMessage msg = new DefaultMessageFactory().newMessage("hello");
       store.write(msg);
       assertTrue(store.delete(msg.getUniqueId()));
+      File retryDir = FsHelper.toFile(BaseCase.getConfiguration(TEST_BASE_URL));
+      File msgDir = new File(retryDir, msg.getUniqueId());
+      assertFalse(msgDir.exists());
     } finally {
       LifecycleHelper.stopAndClose(store);
     }
