@@ -82,4 +82,11 @@ public class MessageHelperTest {
     assertEquals("ISO-8859-2", msg.getContentEncoding());
   }
 
+  @Test
+  public void testStackTraceToString() throws Exception {
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage();
+    assertFalse(MessageHelper.stackTraceAsString(msg).isPresent());
+    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception());
+    assertTrue(MessageHelper.stackTraceAsString(msg).isPresent());
+  }
 }

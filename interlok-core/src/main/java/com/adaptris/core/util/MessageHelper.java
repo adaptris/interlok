@@ -6,9 +6,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
+import java.util.Map;
 import java.util.Optional;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.lms.FileBackedMessage;
 import lombok.AccessLevel;
@@ -79,4 +81,19 @@ public class MessageHelper {
     return msg;
   }
 
+
+  /**
+   * Get a stacktrace from the message if available.
+   *
+   * @param msg the message
+   * @return An optional wrapping {@code ExceptionUtils#getStackTrace(Throwable)}.
+   */
+  public static Optional<String> stackTraceAsString(AdaptrisMessage msg) {
+    Map hdrs = msg.getObjectHeaders();
+    if (hdrs.containsKey(OBJ_METADATA_EXCEPTION)) {
+      return Optional
+          .ofNullable(ExceptionUtils.getStackTrace((Throwable) hdrs.get(OBJ_METADATA_EXCEPTION)));
+    }
+    return Optional.empty();
+  }
 }

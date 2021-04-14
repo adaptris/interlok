@@ -4,8 +4,10 @@ package com.adaptris.core.http.jetty.retry;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +27,7 @@ import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.lms.FileBackedMessage;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.core.util.MessageHelper;
 import com.adaptris.core.util.MetadataHelper;
 import com.adaptris.fs.FsWorker;
 import com.adaptris.fs.NioWorker;
@@ -60,6 +63,7 @@ public class FilesystemRetryStore implements RetryStore {
 
   private static final String PAYLOAD_FILE_NAME = "payload.blob";
   private static final String METADATA_FILE_NAME = "metadata.properties";
+  private static final String STACKTRACE_FILENAME = "stacktrace.txt";
 
   /**
    * The base URL {@code file:///...} where we can discover files.
@@ -84,23 +88,43 @@ public class FilesystemRetryStore implements RetryStore {
       log.trace("Created [{}]", dir.getCanonicalPath());
       File payloadFile = new File(dir, PAYLOAD_FILE_NAME);
       File metadataFile = new File(dir, METADATA_FILE_NAME);
-      if (msg instanceof FileBackedMessage) {
-        FileUtils.copyFile(((FileBackedMessage) msg).currentSource(), payloadFile);
-      } else {
-        try (InputStream in = msg.getInputStream();
-            OutputStream out = new FileOutputStream(payloadFile)) {
-          IOUtils.copy(in, out);
-        }
-      }
-      log.trace("Wrote [{}]", payloadFile.getCanonicalPath());
-      try (OutputStream out = new FileOutputStream(metadataFile)) {
-        Properties p = MetadataHelper.convertToProperties(msg.getMetadata());
-        p.store(out, "Metadata for " + msg.getUniqueId());
-      }
-      log.trace("Wrote [{}]", metadataFile.getCanonicalPath());
+      File exceptionFile = new File(dir, STACKTRACE_FILENAME);
+      storePayload(msg, payloadFile);
+      storeMetadata(msg, metadataFile);
+      storeException(msg, exceptionFile);
     } catch (Exception e) {
       throw ExceptionHelper.wrapInterlokException(e);
     }
+  }
+
+  private void storeException(AdaptrisMessage msg, File exceptionFile) throws Exception {
+    Optional<String> exception = MessageHelper.stackTraceAsString(msg);
+    if (exception.isPresent()) {
+      try (PrintWriter out = new PrintWriter(new FileWriter(exceptionFile))) {
+        out.println(exception.get());
+      }
+      log.trace("Wrote [{}]", exceptionFile.getCanonicalPath());
+    }
+  }
+
+  private void storeMetadata(AdaptrisMessage msg, File metadataFile) throws Exception {
+    try (OutputStream out = new FileOutputStream(metadataFile)) {
+      Properties p = MetadataHelper.convertToProperties(msg.getMetadata());
+      p.store(out, "Metadata for " + msg.getUniqueId());
+    }
+    log.trace("Wrote [{}]", metadataFile.getCanonicalPath());
+  }
+
+  private void storePayload(AdaptrisMessage msg, File payloadFile) throws Exception {
+    if (msg instanceof FileBackedMessage) {
+      FileUtils.copyFile(((FileBackedMessage) msg).currentSource(), payloadFile);
+    } else {
+      try (InputStream in = msg.getInputStream();
+          OutputStream out = new FileOutputStream(payloadFile)) {
+        IOUtils.copy(in, out);
+      }
+    }
+    log.trace("Wrote [{}]", payloadFile.getCanonicalPath());
   }
 
   private File validateMsgId(String msgId, boolean mustAlreadyExist) throws Exception {
