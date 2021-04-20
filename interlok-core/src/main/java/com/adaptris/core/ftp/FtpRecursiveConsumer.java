@@ -54,11 +54,13 @@ import static com.adaptris.core.ftp.FtpHelper.FORWARD_SLASH;
  * work. Other filter implementations (such as those based on size /last modified) may not work.
  * </p>
  * <p>
- * TODO Update about recursion...
+ * Unlike the original FTP consumer, this will recurse into any directories found.
+ * </p>
  *
  * @author lchan
- * @config ftp-consumer
+ * @config ftp-recursive-consumer
  * @see FtpConnection
+ * @see FtpConsumer
  * @see FileTransferConnection
  */
 @XStreamAlias("ftp-recursive-consumer")
@@ -73,41 +75,6 @@ import static com.adaptris.core.ftp.FtpHelper.FORWARD_SLASH;
     "workDirectory", "procDirectory", "wipSuffix", "quietInterval" })
 public class FtpRecursiveConsumer extends FtpConsumer
 {
-
-  private static final String DEFAULT_WIP_SUFFIX = "_wip";
-
-  @NotNull
-  @AutoPopulated
-  @Getter
-  @Setter
-  private String workDirectory = "/work";
-
-  @Getter
-  @Setter
-  @AdvancedConfig(rare = true)
-  private String procDirectory;
-
-  @Getter
-  @Setter
-  @AdvancedConfig(rare = true)
-  private String wipSuffix;
-
-  public FtpRecursiveConsumer()
-  {
-    setReacquireLockBetweenMessages(true);
-  }
-
-  @Override
-  protected boolean fetchAndProcess(String fullPath) throws Exception
-  {
-    String procDir = null;
-    String hostUrl = ftpURL();
-    if (procDirectory != null)
-    {
-      procDir = retrieveConnection(FileTransferConnection.class).getDirectoryRoot(hostUrl) + procDirectory;
-    }
-    return processMessage(fullPath, procDir);
-  }
 
   @Override
   protected int processMessages()
@@ -176,68 +143,6 @@ public class FtpRecursiveConsumer extends FtpConsumer
       }
     }
     return count;
-  }
-
-  private boolean processMessage(String fullPath, String procDir) throws Exception
-  {
-    String wipFile = fullPath + wipSuffix();
-    String filename = FtpHelper.getFilename(fullPath);
-    if (additionalDebug())
-    {
-      log.trace("Renaming [{}] to [{}]", fullPath, wipFile);
-    }
-    ftpClient.rename(fullPath, wipFile);
-    EncoderWrapper encWrapper = new EncoderWrapper(defaultIfNull(getMessageFactory()).newMessage(), getEncoder());
-    try (EncoderWrapper wrapper = encWrapper)
-    {
-      ftpClient.get(wrapper, wipFile);
-    }
-    AdaptrisMessage adpMsg = addStandardMetadata(encWrapper.build(), filename, FtpHelper.getDirectory(fullPath));
-    retrieveAdaptrisMessageListener().onAdaptrisMessage(adpMsg);
-
-    if (procDir != null)
-    {
-      moveToProcDir(wipFile, filename, procDir);
-    }
-    else
-    {
-      ftpClient.delete(wipFile);
-    }
-    return true;
-  }
-
-  private void moveToProcDir(String wipFile, final String filename, String procDir)
-  {
-    try
-    {
-      String[] existingFileNames = ftpClient.dir(procDir, f ->
-      {
-        boolean result = f.getName().equals(filename);
-        return result;
-      });
-
-      String procFile = procDir + FORWARD_SLASH + filename;
-      if (existingFileNames.length != 0)
-      {
-        procFile = procFile + "-" + System.currentTimeMillis();
-      }
-      log.trace("Renaming processed file to [{}]", procFile);
-      ftpClient.rename(wipFile, procFile);
-    }
-    catch (Exception e)
-    {
-      log.warn("Failed to rename to [{}] to [{}]", filename, procDir);
-    }
-  }
-
-  /**
-   * Return the wip Suffix with null protection.
-   *
-   * @return the suffix, default is "_wip" if not configured.
-   */
-  String wipSuffix()
-  {
-    return getWipSuffix() != null ? getWipSuffix() : DEFAULT_WIP_SUFFIX;
   }
 
 }
