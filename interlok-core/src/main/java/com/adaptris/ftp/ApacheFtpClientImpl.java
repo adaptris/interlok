@@ -378,6 +378,42 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
   }
 
   /**
+   * Indicate whether the given path is a directory or not.
+   *
+   * @param path The path/filename to query.
+   *
+   * @return True if path points to a directory, false otherwise.
+   */
+  @Override
+  public boolean isDirectory(String path) throws IOException {
+    try {
+      acquireLock();
+      log("{} {}", FTPCmd.STAT, path);
+      ftpClient().stat(path);
+      Reply reply = validateReply(ftpClient().getReplyString(), "213");
+      String[] lines = reply.getReplyText().split("\n");
+      /*
+line 0 * 213-Status follows:
+line 1 * drwxr-xr-x    2 1000     1000         4096 Apr 19 15:20 .
+       * drwxr-xr-x    3 1000     1000         4096 Apr 20 13:58 ..
+       * -rw-r--r--    1 1000     1000         3314 Apr 19 15:20 f1
+       * 213 End of status
+       *
+line 0 * 213-Status follows:
+line 1 * -rw-r--r--    1 1000     1000            6 Apr 20 13:58 world
+       * 213 End of status
+       */
+      if (lines[1].startsWith("d")) {
+        return true;
+      }
+      return false;
+    } finally {
+      logReply(ftpClient().getReplyStrings());
+      releaseLock();
+    }
+  }
+
+  /**
    * disconnect from the server
    */
   @Override

@@ -439,6 +439,21 @@ public class SftpClient extends FileTransferClientImp {
     }
   }
 
+  @Override
+  public boolean isDirectory(String path) throws IOException {
+    checkConnected();
+    try {
+      acquireLock();
+      log("STAT {}", path);
+      SftpATTRS attrs = sftpChannel.stat(path);
+      return attrs.isDir();
+    } catch (Exception e) {
+      throw SftpException.wrapException("Could not stat [" + path + "]", e);
+    } finally {
+      releaseLock();
+    }
+  }
+
   /**
    *
    * @see FileTransferClient#lastModifiedDate(java.lang.String)
