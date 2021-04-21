@@ -388,24 +388,51 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
   public boolean isDirectory(String path) throws IOException {
     try {
       acquireLock();
-      log("{} {}", FTPCmd.STAT, path);
-      ftpClient().stat(path);
-      Reply reply = validateReply(ftpClient().getReplyString(), "213");
-      String[] lines = reply.getReplyText().split("\n");
-      /*
-line 0 * 213-Status follows:
-line 1 * drwxr-xr-x    2 1000     1000         4096 Apr 19 15:20 .
-       * drwxr-xr-x    3 1000     1000         4096 Apr 20 13:58 ..
-       * -rw-r--r--    1 1000     1000         3314 Apr 19 15:20 f1
-       * 213 End of status
-       *
-line 0 * 213-Status follows:
-line 1 * -rw-r--r--    1 1000     1000            6 Apr 20 13:58 world
-       * 213 End of status
-       */
-      if (lines[1].startsWith("d")) {
+      String cwd = ftpClient().printWorkingDirectory();
+      if (ftpClient().changeWorkingDirectory(path)) {
+        log("Successfully changed to {} - must be a directory", path);
+        ftpClient().changeWorkingDirectory(cwd);
         return true;
       }
+      log("Could not change to {} - must not be a directory", path);
+//      log("{} {}", FTPCmd.STAT, path);
+//      int i = ftpClient().stat(path);
+//      /*
+//       * So STAT can do one of 2 things: return the system status or
+//       * the details of a file, and while my FTP server (vsftpd) does
+//       * both depending on whether you give it a path, the Mock FTP
+//       * server only does the first - perhaps others do too.
+//       */
+//      log("{} returned {}", FTPCmd.STAT, i);
+//      Reply reply = null;
+//      if (i > 502) {
+//        // try something else, like MLST
+//        log("{} {}", FTPCmd.MLST, path);
+//        i = ftpClient().mlst(path);
+//        log("{} returned {}", FTPCmd.MLST, i);
+//
+//
+//      } else if (i == 213) {
+//        reply = validateReply(ftpClient().getReplyString(), "213");
+//      }
+//      if (reply != null) {
+//        String[] lines = reply.getReplyText().split("\n");
+//        /*
+//
+//  line 0 * 213-Status follows:
+//  line 1 * drwxr-xr-x    2 1000     1000         4096 Apr 19 15:20 .
+//         * drwxr-xr-x    3 1000     1000         4096 Apr 20 13:58 ..
+//         * -rw-r--r--    1 1000     1000         3314 Apr 19 15:20 f1
+//         * 213 End of status
+//         *
+//  line 0 * 213-Status follows:
+//  line 1 * -rw-r--r--    1 1000     1000            6 Apr 20 13:58 world
+//         * 213 End of status
+//         */
+//        if (lines[1].startsWith("d")) {
+//          return true;
+//        }
+//      }
       return false;
     } finally {
       logReply(ftpClient().getReplyStrings());
