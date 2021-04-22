@@ -16,11 +16,16 @@
 
 package com.adaptris.core.services.metadata.xpath;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-import javax.validation.constraints.NotBlank;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+
+import javax.validation.constraints.NotBlank;
+
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
  * Abstract base class for {@linkplain XpathQuery} implementations that are statically configured.
@@ -30,15 +35,9 @@ import com.adaptris.core.util.Args;
  */
 public abstract class ConfiguredXpathQueryImpl extends XpathQueryImpl {
 
+  @Getter
   @NotBlank
   private String xpathQuery;
-
-  public ConfiguredXpathQueryImpl() {
-  }
-
-  public String getXpathQuery() {
-    return xpathQuery;
-  }
 
   /**
    * Set the xpath.
@@ -51,7 +50,7 @@ public abstract class ConfiguredXpathQueryImpl extends XpathQueryImpl {
 
   @Override
   public String createXpathQuery(AdaptrisMessage msg) {
-    return xpathQuery;
+    return msg == null ? xpathQuery : msg.resolve(xpathQuery);
   }
 
   @Override

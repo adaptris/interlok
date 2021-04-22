@@ -17,6 +17,10 @@
 package com.adaptris.core.services.metadata.xpath;
 
 import javax.validation.constraints.NotBlank;
+
+import com.adaptris.annotation.InputFieldHint;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,21 +39,16 @@ public abstract class XpathQueryImpl implements XpathMetadataQuery {
 
   protected transient Logger logR = LoggerFactory.getLogger(this.getClass());
 
+  @Getter
+  @Setter
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean allowEmptyResults;
+
+  @Getter
   @NotBlank
   @AffectsMetadata
   private String metadataKey;
-
-  public XpathQueryImpl() {
-  }
-
-
-  @Override
-  public String getMetadataKey() {
-    return metadataKey;
-  }
 
   /**
    * Set the metadata key that will be associated with the resolved xpath expression.
@@ -58,20 +57,6 @@ public abstract class XpathQueryImpl implements XpathMetadataQuery {
    */
   public void setMetadataKey(String key) {
     metadataKey = Args.notBlank(key, "metadataKey");
-  }
-
-  public Boolean getAllowEmptyResults() {
-    return allowEmptyResults;
-  }
-
-  /**
-   * Specify whether or not an xpath that does not resolve should throw an exception.
-   *
-   *
-   * @param b true to allow no results (which may result in an empty string being added as metadata), default false.
-   */
-  public void setAllowEmptyResults(Boolean b) {
-    allowEmptyResults = b;
   }
 
   protected boolean allowEmptyResults() {
