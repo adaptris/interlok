@@ -106,4 +106,23 @@ public class ConfiguredXpathQueryTest extends ConfiguredXpathQueryCase {
     assertEquals("2", result.getValue());
   }
 
+  @Test
+  public void testMessageResolveXpath() throws Exception {
+    ConfiguredXpathQuery query = init(create(), "//message/extra[%message{which-extra}]");
+    query.setAllowEmptyResults(Boolean.FALSE);
+    Document doc = XmlHelper.createDocument(XML);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
+
+    msg.addMetadata("which-extra", "1");
+    MetadataElement result = query.resolveXpath(doc, new XPath(), query.createXpathQuery(msg));
+    assertEquals("one", result.getValue());
+
+    msg.addMetadata("which-extra", "2");
+    result = query.resolveXpath(doc, new XPath(), query.createXpathQuery(msg));
+    assertEquals("two", result.getValue());
+
+    msg.addMetadata("which-extra", "3");
+    result = query.resolveXpath(doc, new XPath(), query.createXpathQuery(msg));
+    assertEquals("three", result.getValue());
+  }
 }
