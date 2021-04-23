@@ -139,11 +139,8 @@ public class FsConsumer extends FsConsumerImpl {
         }
       }
     }
-    catch (FsException e) {
-      throw new CoreException(e);
-    }
-    catch (IOException e) {
-      throw new CoreException(e);
+    catch (Throwable t) {
+      throw ExceptionHelper.wrapCoreException(t);
     }
     return rc;
   }

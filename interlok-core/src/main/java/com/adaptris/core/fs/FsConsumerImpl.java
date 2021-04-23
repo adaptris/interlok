@@ -323,8 +323,8 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
     try {
       msg = decode(fsWorker.get(fileToProcess));
     }
-    catch (FsException e) {
-      throw new CoreException(e);
+    catch (Throwable t) {
+      throw ExceptionHelper.wrapCoreException(t);
     }
     return msg;
   }
