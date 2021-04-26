@@ -324,6 +324,7 @@ public abstract class FsConsumerImpl extends AdaptrisPollingConsumer {
       msg = decode(fsWorker.get(fileToProcess));
     }
     catch (Throwable t) {
+      log.error("Unexpected error creating message from file {}", fileToProcess, t);
       throw ExceptionHelper.wrapCoreException(t);
     }
     return msg;
