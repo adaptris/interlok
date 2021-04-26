@@ -17,20 +17,14 @@
 package com.adaptris.core.ftp;
 
 import com.adaptris.annotation.AdapterComponent;
-import com.adaptris.annotation.AdvancedConfig;
-import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import lombok.Getter;
-import lombok.Setter;
 
-import javax.validation.constraints.NotNull;
 import java.io.IOException;
 
-import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import static com.adaptris.core.ftp.FtpHelper.FORWARD_SLASH;
 
 /**
@@ -143,6 +137,14 @@ public class FtpRecursiveConsumer extends FtpConsumer
       }
     }
     return count;
+  }
+
+  @Override
+  protected AdaptrisMessage addStandardMetadata(AdaptrisMessage msg, String filename, String dir) {
+    super.addStandardMetadata(msg, filename, dir);
+    String parent = FtpHelper.getParentDirectoryName(dir);
+    msg.addMetadata(CoreConstants.FS_CONSUME_PARENT_DIR, parent);
+    return msg;
   }
 
 }

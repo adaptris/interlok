@@ -18,6 +18,7 @@ package com.adaptris.core.ftp;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.CoreConstants;
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.MimeEncoder;
 import com.adaptris.core.Poller;
@@ -38,22 +39,17 @@ import org.mockftpserver.fake.FakeFtpServer;
 import org.mockftpserver.fake.filesystem.DirectoryEntry;
 import org.mockftpserver.fake.filesystem.FileEntry;
 import org.mockftpserver.fake.filesystem.FileSystem;
-import org.mockftpserver.fake.filesystem.FileSystemEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_BUILD_DIR_NAME;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_FILENAME;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_HOME_DIR;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_PASSWORD;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_PROC_DIR_CANONICAL;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_PROC_DIR_NAME;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_USERNAME;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_WORK_DIR_CANONICAL;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_WORK_DIR_NAME;
@@ -131,7 +127,11 @@ public class FtpRecursiveConsumerTest extends FtpConsumerCase {
       LifecycleHelper.prepare(sc);
       start(sc);
       waitForMessages(listener, count + (count * subDirectories.length)); // account for files in sub directories
-      helper.assertMessages(listener.getMessages(), count + (count * subDirectories.length));
+      List<AdaptrisMessage> messages = listener.getMessages();
+      helper.assertMessages(messages, count + (count * subDirectories.length));
+      for (AdaptrisMessage message : messages) {
+        assertTrue(message.headersContainsKey(CoreConstants.FS_CONSUME_PARENT_DIR));
+      }
     }
     catch (Exception e) {
       throw e;
