@@ -39,12 +39,14 @@ public abstract class XpathQueryImpl implements XpathMetadataQuery {
 
   protected transient Logger logR = LoggerFactory.getLogger(this.getClass());
 
+  /** Specify whether or not an xpath that does not resolve should throw an exception. */
   @Getter
   @Setter
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean allowEmptyResults;
 
+  /** The metadata key that will be associated with the resolved xpath expression. */
   @Getter
   @NotBlank
   @AffectsMetadata

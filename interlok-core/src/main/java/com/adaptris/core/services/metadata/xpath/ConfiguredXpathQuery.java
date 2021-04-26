@@ -16,12 +16,11 @@
 
 package com.adaptris.core.services.metadata.xpath;
 
-import org.w3c.dom.Document;
-
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.util.text.xml.XPath;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import org.w3c.dom.Document;
 
 /**
  * {@linkplain XpathQuery} implementation that retuns a single text item from the configured xpath.

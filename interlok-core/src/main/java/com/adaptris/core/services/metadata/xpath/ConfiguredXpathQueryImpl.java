@@ -16,12 +16,11 @@
 
 package com.adaptris.core.services.metadata.xpath;
 
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
 import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 
@@ -35,8 +34,10 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  */
 public abstract class ConfiguredXpathQueryImpl extends XpathQueryImpl {
 
+  /** The XPath query string. */
   @Getter
   @NotBlank
+  @InputFieldHint(expression = true)
   private String xpathQuery;
 
   /**
