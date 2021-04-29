@@ -59,17 +59,4 @@ public abstract class FtpHelper {
   public static String getDirectory(String fullPath) {
     return getDirectory(fullPath, false);
   }
-
-  public static String getParentDirectoryName(String fullPath, boolean windows) {
-    String result = fullPath;
-    int slash = lastSlash(result, windows);
-    if (slash >= 0) {
-      result = result.substring(0, slash); // this is now the full path to the parent
-    }
-    return getFilename(result, windows);
-  }
-
-  public static String getParentDirectoryName(String fullPath) {
-    return getParentDirectoryName(fullPath, false);
-  }
 }

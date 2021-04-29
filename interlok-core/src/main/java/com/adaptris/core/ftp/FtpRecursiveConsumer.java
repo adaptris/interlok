@@ -23,6 +23,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import java.io.File;
 import java.io.IOException;
 
 import static com.adaptris.core.ftp.FtpHelper.FORWARD_SLASH;
@@ -142,8 +143,10 @@ public class FtpRecursiveConsumer extends FtpConsumer
   @Override
   protected AdaptrisMessage addStandardMetadata(AdaptrisMessage msg, String filename, String dir) {
     super.addStandardMetadata(msg, filename, dir);
-    String parent = FtpHelper.getParentDirectoryName(dir);
-    msg.addMetadata(CoreConstants.FS_CONSUME_PARENT_DIR, parent);
+    File parent = new File(dir);
+    if (parent != null) {
+      msg.addMetadata(CoreConstants.FS_CONSUME_PARENT_DIR, parent.getName());
+    }
     return msg;
   }
 
