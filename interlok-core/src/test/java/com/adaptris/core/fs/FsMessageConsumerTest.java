@@ -23,6 +23,8 @@ import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.fs.enhanced.AlphabeticAscending;
 import com.adaptris.core.fs.enhanced.LastModifiedAscending;
+import com.adaptris.core.lms.LargeFsConsumer;
+import com.adaptris.core.management.Constants;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.GuidGenerator;
@@ -32,6 +34,7 @@ import org.apache.oro.io.Perl5FilenameFilter;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,6 +42,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -473,6 +477,43 @@ public class FsMessageConsumerTest extends FsConsumerCase {
       FileUtils.deleteQuietly(new File(PROPERTIES.getProperty(BASE_KEY), consumeDir));
     }
   }
+
+  @Test
+  public void testConsumeBug3304OversizedFiles() throws Exception {
+    String subDir = new GuidGenerator().safeUUID();
+    MockMessageListener stub = new MockMessageListener(10);
+    FsConsumer fs = createConsumer(subDir);
+    if (fs instanceof LargeFsConsumer) {
+      return; // The large FS consumer should (by definition) handle large files
+    }
+    fs.setReacquireLockBetweenMessages(true);
+    fs.setPoller(new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)));
+    StandaloneConsumer sc = new StandaloneConsumer(fs);
+    sc.registerAdaptrisMessageListener(stub);
+    int count = 1;
+    File parentDir = FsHelper.createFileReference(FsHelper.createUrlFromString(PROPERTIES.getProperty(BASE_KEY), true));
+    try {
+      File baseDir = new File(parentDir, subDir);
+      LifecycleHelper.init(sc);
+
+      File largeFile = File.createTempFile("3304", null, baseDir);
+      try (FileOutputStream fos = new FileOutputStream(largeFile)) {
+        byte[] oneMegabyte = new byte[0x00100000];
+        for (int i = 0; i < 0x00000400; i++) {
+          fos.write(oneMegabyte);
+        }
+      }
+
+      LifecycleHelper.prepare(sc);
+      LifecycleHelper.start(sc);
+      waitForMessages(stub, count);
+      assertTrue(stub.getMessages().size() == 0);
+    } finally {
+      stop(sc);
+      FileUtils.deleteQuietly(new File(parentDir, subDir));
+    }
+  }
+
 
   @Override
   protected void assertMessages(List<AdaptrisMessage> list, int count, File[] remaining) {
