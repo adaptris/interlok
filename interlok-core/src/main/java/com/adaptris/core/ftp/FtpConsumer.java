@@ -41,22 +41,29 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 /**
  * FTP implementation of the AdaptrisMessageConsumer interface.
  * <p>
- * The connection type for this consumer should always be a concrete implementation of {@link FileTransferConnection}.
+ * The connection type for this consumer should always be a concrete
+ * implementation of {@link FileTransferConnection}.
  * </p>
  * <p>
- * The destination returned by the ConsumeDestination implementation should be in the form in the URL form dictated by the
- * <code>FileTransferConnection</code> flavour or simply the IP Address / DNS name of the target Server. If the URL form is used,
- * then it is possible to override the username, password, and port settings of the server, in all other cases the configuration
- * specified in the <code>FileTransferConnection</code> object will be used.
+ * The destination should be in the form in the URL form dictated by the
+ * <code>FileTransferConnection</code> flavour or simply the IP
+ * Address/DNS name of the target Server. If the URL form is used, then
+ * it is possible to override the username, password, and port settings
+ * of the server, in all other cases the configuration specified in the
+ * <code>FileTransferConnection</code> object will be used.
  * </p>
  * <p>
- * In the event the proc-directory is not configured, then after processing the file, it is deleted. If proc-directory is
- * configured, then the remote file will be renamed to this directory
+ * In the event the proc-directory is not configured, then after
+ * processing the file, it is deleted. If proc-directory is configured,
+ * then the remote file will be renamed to this directory
  * </p>
  * <p>
- * The configuration of this consumer closely mirrors that of the FsConsumer though it does not, at the moment, share any common
- * hierarchy with a key difference; although multiple file-filters can be configured only filters that work with the filepath will
- * work. Other filter implementations (such as those based on size /last modified) may not work.
+ * The configuration of this consumer closely mirrors that of the
+ * FsConsumer though it does not, at the moment, share any common
+ * hierarchy with a key difference; although multiple file-filters can
+ * be configured only filters that work with the filepath will work.
+ * Other filter implementations (such as those based on size/last
+ * modified) may not work.
  * </p>
  *
  * @config ftp-consumer
@@ -78,17 +85,28 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 public class FtpConsumer extends FtpConsumerImpl {
   private static final String DEFAULT_WIP_SUFFIX = "_wip";
 
+  /**
+   * The working directory for the consumer. Files are consumed from
+   * here.
+   */
   @NotNull
   @AutoPopulated
   @Getter
   @Setter
   private String workDirectory = "/work";
 
+  /**
+   * The directory where files are moved to after processing. If null,
+   * the file will be deleted instead.
+   */
   @AdvancedConfig(rare = true)
   @Getter
   @Setter
   private String procDirectory;
 
+  /**
+   * The suffix of the file to indicate it is being processed.
+   */
   @AdvancedConfig(rare = true)
   @Getter
   @Setter

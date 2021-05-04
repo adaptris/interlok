@@ -42,6 +42,7 @@ import org.mockftpserver.fake.filesystem.FileSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -131,6 +132,8 @@ public class FtpRecursiveConsumerTest extends FtpConsumerCase {
       helper.assertMessages(messages, count + (count * subDirectories.length));
       for (AdaptrisMessage message : messages) {
         assertTrue(message.headersContainsKey(CoreConstants.FS_CONSUME_PARENT_DIR));
+        String path = message.getMetadataValue(CoreConstants.FS_CONSUME_DIRECTORY);
+        assertEquals(new File(path).getName(), message.getMetadataValue(CoreConstants.FS_CONSUME_PARENT_DIR));
       }
     }
     catch (Exception e) {
