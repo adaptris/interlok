@@ -271,6 +271,8 @@ public interface FileTransferClient extends Closeable {
    */
   void chdir(String dir) throws IOException, FileTransferException;
 
+  boolean isDirectory(String path) throws IOException;
+
   /**
    * Quit the FTP session
    *

@@ -13,6 +13,7 @@
 
 package com.adaptris.sftp.test;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
@@ -49,6 +50,7 @@ public class TestSftp extends FtpCase {
       try {
         Random r = new Random();
         String dir = config.getProperty(SFTP_GET_REMOTEDIR) + "/" + r.nextInt();
+        assertFalse(client.isDirectory(dir));
         client.dir(dir);
         fail("LS of  " + dir + " should not work");
       } catch (Exception e) {

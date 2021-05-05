@@ -206,7 +206,7 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
     return count;
   }
 
-  private boolean handle(String fileToGet) {
+  protected boolean handle(String fileToGet) {
     try {
       if (accept(fileToGet)) {
         return fetchAndProcess(fileToGet);
