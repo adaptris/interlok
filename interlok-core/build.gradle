@@ -109,7 +109,7 @@ dependencies {
   testCompile ("org.apache.activemq:artemis-jms-server:2.17.0")
   testCompile ("oro:oro:2.0.8")
 
-  testCompile ("org.awaitility:awaitility:4.0.3")
+  testCompile ("org.awaitility:awaitility:4.1.0")
 
   testCompile ("org.apache.activemq:activemq-broker:$activeMqVersion")
   testCompile ("org.apache.activemq:activemq-jaas:$activeMqVersion")
