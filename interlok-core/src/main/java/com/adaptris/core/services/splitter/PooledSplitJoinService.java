@@ -64,10 +64,8 @@ import lombok.Setter;
  * Implementation of the Splitter and Aggregator enterprise integration pattern.
  *
  * <p>
- * This supersedes {@link SplitJoinService} and {@link PoolingSplitJoinService} as our preferred
- * service for handling split/aggregation since it has more predictable peformance characteristics
- * in constrained environments where the numbers of messages that are generated and aggregated can
- * be large/unknown.
+ * This has more predictable peformance characteristics in constrained environments where the
+ * numbers of messages that are generated and aggregated can be large/unknown.
  * </p>
  * <p>
  * This service splits a message according to the configured {@link MessageSplitter} implementation,

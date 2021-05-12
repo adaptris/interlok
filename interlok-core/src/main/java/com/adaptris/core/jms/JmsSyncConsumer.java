@@ -1,15 +1,12 @@
 package com.adaptris.core.jms;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
-
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.Session;
 import javax.validation.constraints.NotBlank;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -20,28 +17,29 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.util.DestinationHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
 /**
- * JMS synchronous consumer implementation that can target queues or topics via an
- * RFC6167 style endpoint.
+ * JMS synchronous consumer implementation that can target queues or topics via an RFC6167 style
+ * endpoint.
  * <p>
- * For instance
- * {@code jms:queue:myQueueName} will consume from a queue called {@code myQueueName} and
- * {@code jms:topic:myTopicName} from a topic called {@code myTopicName}
+ * For instance {@code jms:queue:myQueueName} will consume from a queue called {@code myQueueName}
+ * and {@code jms:topic:myTopicName} from a topic called {@code myTopicName}
  * </p>
  * <p>
- * While RFC6167 defines the ability to use jndi to lookup the (as part of the 'jndi' variant section); this is not supported. There
- * is also support for {@code subscriptionId} which indicates the subscriptionId that should be used when attaching a subscriber to
- * a topic; {@code jms:topic:MyTopicName?subscriptionId=myId} would return a {@link JmsDestination#subscriptionId()} of
- * {@code myId}. If a subscription ID is not specified, then a durable subscriber is never created; specifying a subscription ID
- * automatically means a durable subscriber.
+ * While RFC6167 defines the ability to use jndi to lookup the (as part of the 'jndi' variant
+ * section); this is not supported. There is also support for {@code subscriptionId} which indicates
+ * the subscriptionId that should be used when attaching a subscriber to a topic;
+ * {@code jms:topic:MyTopicName?subscriptionId=myId} would return a
+ * {@link JmsDestination#subscriptionId()} of {@code myId}. If a subscription ID is not specified,
+ * then a durable subscriber is never created; specifying a subscription ID automatically means a
+ * durable subscriber.
  * </p>
  * <p>
- * Also supported is the JMS 2.0 sharedConsumerId, should you wish to create a multiple load balancing consumers on a single topic endpoint;
+ * Also supported is the JMS 2.0 sharedConsumerId, should you wish to create a multiple load
+ * balancing consumers on a single topic endpoint;
  * {@code jms:topic:MyTopicName?sharedConsumerId=12345}
  * </p>
  * For instance you could have the following destinations:
@@ -50,7 +48,7 @@ import lombok.Setter;
  * <li>jms:topic:MyTopicName</li>
  * <li>jms:topic:MyTopicName?subscriptionId=mySubscriptionId</li>
  * <li>jms:topic:MyTopicName?sharedConsumerId=mySharedConsumerId</li>
- * <li>jms:topic:MyTopicName?subscriptionId=mySubscriptionId&sharedConsumerId=mySharedConsumerId</li>
+ * <li>jms:topic:MyTopicName?subscriptionId=mySubscriptionId&amp;sharedConsumerId=mySharedConsumerId</li>
  * </ul>
  * </p>
  *

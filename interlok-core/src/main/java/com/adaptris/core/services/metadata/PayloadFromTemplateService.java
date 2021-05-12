@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,24 +43,24 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Replaces the payload with something built from a template and optional metadata keys.
  * <p>
- * Takes the template stored in {@link #setTemplate(String)} and replaces parts of the template either by resolving the
- * {@code %message} expression language or with values from various metadata keys specified in
- * {@link #setMetadataTokens(KeyValuePairSet)} to create a new payload. This replaces {@link PayloadFromMetadataService}.
+ * Takes the template stored in {@link #setTemplate(String)} and replaces parts of the template
+ * either by resolving the {@code %message} expression language or with values from various metadata
+ * keys specified in {@link #setMetadataTokens(KeyValuePairSet)} to create a new payload.
  * </p>
  * <p>
- * Since under the covers it uses the JDK regular expression engine, take care when your replacement may contain special regular
- * expression characters (such as {@code \} and {@code $}
+ * Since under the covers it uses the JDK regular expression engine, take care when your replacement
+ * may contain special regular expression characters (such as {@code \} and {@code $}
  * </p>
- * 
+ *
  * @config payload-from-template
- * 
+ *
  */
 @XStreamAlias("payload-from-template")
 @AdapterComponent
 @ComponentProfile(summary = "Construct a new payload based on metadata and a template", tag = "service,metadata", since = "3.10.0")
 @DisplayOrder(order = {"template", "metadataTokens", "multiLineExpression", "quoteReplacement", "quiet"})
 public class PayloadFromTemplateService extends ServiceImp {
-  
+
   @NotNull
   @AutoPopulated
   @Valid
@@ -101,7 +101,7 @@ public class PayloadFromTemplateService extends ServiceImp {
     }
     msg.setContent(payload, msg.getContentEncoding());
   }
-  
+
 
   private String munge(String s) {
     return quoteReplacement() ? Matcher.quoteReplacement(s) : s;
@@ -184,9 +184,9 @@ public class PayloadFromTemplateService extends ServiceImp {
   public void setQuoteReplacement(Boolean b) {
     quoteReplacement = b;
   }
-  
+
   public <T extends PayloadFromTemplateService> T withQuoteReplacement(Boolean b) {
-    setQuoteReplacement(b); 
+    setQuoteReplacement(b);
     return (T) this;
   }
 
@@ -200,7 +200,7 @@ public class PayloadFromTemplateService extends ServiceImp {
 
   /**
    * Normally this service logs everything that is being replaced with can lead to excessive logging.
-   * 
+   *
    * @param quiet true or false, default false if not specified.
    */
   public void setQuiet(Boolean quiet) {
@@ -211,7 +211,7 @@ public class PayloadFromTemplateService extends ServiceImp {
     setQuiet(quiet);
     return (T) this;
   }
-  
+
   private boolean quiet() {
     return BooleanUtils.toBooleanDefaultIfNull(getQuiet(), false);
   }
@@ -222,32 +222,32 @@ public class PayloadFromTemplateService extends ServiceImp {
 
   /**
    * Whether or not to handle expressions using {@code Pattern#DOTALL} mode for matching.
-   * 
+   *
    * <p>
    * The value here is passed to {@link InterlokMessage#resolve(String, boolean)}. True will allow you to do replacements on
    * multi-line templates; It defaults to true which means that multi-line templates along the lines of will be supported.
-   * 
+   *
    * <pre>
-   * {@code 
-   * { 
-   *   "key": "%message{metadataKey}", 
-   *   "key2: "%message{anotherMetadatKey}", 
-   * } 
+   * {@code
+   * {
+   *   "key": "%message{metadataKey}",
+   *   "key2: "%message{anotherMetadatKey}",
+   * }
    * }
    * </pre>
    * </p>
-   * 
+   *
    * @param b true/false, default is true if not specified.
    */
   public void setMultiLineExpression(Boolean b) {
-    this.multiLineExpression = b;
+    multiLineExpression = b;
   }
-  
+
   public <T extends PayloadFromTemplateService> T withMultiLineExpression(Boolean b) {
-    setMultiLineExpression(b); 
+    setMultiLineExpression(b);
     return (T) this;
   }
-  
+
   protected boolean multiLineExpression() {
     return BooleanUtils.toBooleanDefaultIfNull(getMultiLineExpression(), true);
   }
