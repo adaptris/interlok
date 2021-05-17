@@ -61,7 +61,7 @@ dependencies {
   compile project(':interlok-core-apt')
   compile project(':interlok-common')
 
-  compile ("com.thoughtworks.xstream:xstream:1.4.16")
+  compile ("com.thoughtworks.xstream:xstream:1.4.17")
   compile ("org.codehaus.jettison:jettison:1.2")
   compile ("io.github.classgraph:classgraph:4.8.60")
   compile ("net.jodah:expiringmap:0.5.9")
