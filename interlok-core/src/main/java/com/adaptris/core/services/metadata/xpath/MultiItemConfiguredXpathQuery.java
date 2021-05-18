@@ -59,10 +59,10 @@ public class MultiItemConfiguredXpathQuery extends ConfiguredXpathQueryImpl impl
   /**
    * Get the raw XML as the result, instead of text() values.
    */
-  @AdvancedConfig()
   @Getter
   @Setter
-  @InputFieldDefault("false")
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean asXmlString;
 
   public MultiItemConfiguredXpathQuery() {
@@ -83,7 +83,7 @@ public class MultiItemConfiguredXpathQuery extends ConfiguredXpathQueryImpl impl
   @Override
   public MetadataElement resolveXpath(Document doc, XPath xpath, String expr) throws CoreException {
     String items = "";
-    if (allowNodeResults()) {
+    if (asXmlString()) {
       NodeList nodes = XpathQueryHelper.resolveNodeList(doc, xpath, expr, allowEmptyResults());
       for (int i = 0; i < nodes.getLength(); i++) {
         Node node = nodes.item(i);
@@ -104,7 +104,7 @@ public class MultiItemConfiguredXpathQuery extends ConfiguredXpathQueryImpl impl
     separator = Args.notNull(s, "separator");
   }
 
-  private boolean allowNodeResults() {
+  private boolean asXmlString() {
     return BooleanUtils.toBooleanDefaultIfNull(getAsXmlString(), false);
   }
 }

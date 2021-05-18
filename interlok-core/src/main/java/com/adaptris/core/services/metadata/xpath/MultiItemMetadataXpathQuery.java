@@ -44,8 +44,7 @@ import javax.validation.constraints.NotNull;
  */
 @XStreamAlias("multi-item-metadata-xpath-query")
 @DisplayOrder(order = {"metadataKey", "xpathMetadataKey"})
-public class MultiItemMetadataXpathQuery extends MetadataXpathQueryImpl implements XpathQuery
-{
+public class MultiItemMetadataXpathQuery extends MetadataXpathQueryImpl implements XpathQuery {
 
   /**
    * The separator used to separate items.
@@ -60,12 +59,11 @@ public class MultiItemMetadataXpathQuery extends MetadataXpathQueryImpl implemen
   /**
    * Get the raw XML as the result, instead of text() values.
    */
-  @AdvancedConfig()
   @Getter
   @Setter
-  @InputFieldDefault("false")
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
   private Boolean asXmlString;
-
 
   public MultiItemMetadataXpathQuery()
   {
@@ -88,7 +86,7 @@ public class MultiItemMetadataXpathQuery extends MetadataXpathQueryImpl implemen
   @Override
   public MetadataElement resolveXpath(Document doc, XPath xpath, String expr) throws CoreException {
     String items = "";
-    if (allowNodeResults()) {
+    if (asXmlString()) {
       NodeList nodes = XpathQueryHelper.resolveNodeList(doc, xpath, expr, allowEmptyResults());
       for (int i = 0; i < nodes.getLength(); i++) {
         Node node = nodes.item(i);
@@ -109,7 +107,7 @@ public class MultiItemMetadataXpathQuery extends MetadataXpathQueryImpl implemen
     separator = Args.notNull(s, "separator");
   }
 
-  private boolean allowNodeResults() {
+  private boolean asXmlString() {
     return BooleanUtils.toBooleanDefaultIfNull(getAsXmlString(), false);
   }
 }
