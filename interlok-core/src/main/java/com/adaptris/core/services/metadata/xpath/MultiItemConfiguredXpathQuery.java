@@ -16,19 +16,25 @@
 
 package com.adaptris.core.services.metadata.xpath;
 
-import javax.validation.constraints.NotNull;
-
-import org.w3c.dom.Document;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.text.xml.XPath;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.lang3.BooleanUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * {@linkplain XpathQuery} implementation that retuns a multiple text items from the configured xpath.
@@ -40,11 +46,24 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"metadataKey", "xpathQuery"})
 public class MultiItemConfiguredXpathQuery extends ConfiguredXpathQueryImpl implements XpathQuery {
 
+  /**
+   * The separator used to separate items.
+   */
   @NotNull
   @AdvancedConfig
   @AutoPopulated
+  @Getter
   @InputFieldHint(style = "BLANKABLE")
   private String separator;
+
+  /**
+   * Get the raw XML as the result, instead of text() values.
+   */
+  @AdvancedConfig()
+  @Getter
+  @Setter
+  @InputFieldDefault("false")
+  private Boolean asXmlString;
 
   public MultiItemConfiguredXpathQuery() {
     setSeparator("|");
@@ -63,12 +82,17 @@ public class MultiItemConfiguredXpathQuery extends ConfiguredXpathQueryImpl impl
 
   @Override
   public MetadataElement resolveXpath(Document doc, XPath xpath, String expr) throws CoreException {
-    return new MetadataElement(getMetadataKey(),
-        XpathQueryHelper.resolveMultipleTextItems(doc, xpath, expr, allowEmptyResults(), getSeparator()));
-  }
-
-  public String getSeparator() {
-    return separator;
+    String items = "";
+    if (allowNodeResults()) {
+      NodeList nodes = XpathQueryHelper.resolveNodeList(doc, xpath, expr, allowEmptyResults());
+      for (int i = 0; i < nodes.getLength(); i++) {
+        Node node = nodes.item(i);
+        items += XmlHelper.nodeToString(node) + "\n";
+      }
+    } else {
+      items = XpathQueryHelper.resolveMultipleTextItems(doc, xpath, expr, allowEmptyResults(), getSeparator());
+    }
+    return new MetadataElement(getMetadataKey(), items);
   }
 
   /**
@@ -78,7 +102,9 @@ public class MultiItemConfiguredXpathQuery extends ConfiguredXpathQueryImpl impl
    */
   public void setSeparator(String s) {
     separator = Args.notNull(s, "separator");
-
   }
 
+  private boolean allowNodeResults() {
+    return BooleanUtils.toBooleanDefaultIfNull(getAsXmlString(), false);
+  }
 }

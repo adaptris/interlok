@@ -24,12 +24,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
@@ -37,6 +40,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.apache.xerces.util.XMLChar;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -419,6 +423,26 @@ public class XmlHelper {
       encoding = msg.getContentEncoding();
     }
     return encoding;
+  }
+
+  /**
+   * Convert an XML Node into a String snippet.
+   *
+   * @param node The node to get as an XML String.
+   *
+   * @return The XML String representation of the Node.
+   */
+  public static String nodeToString(Node node) {
+    try (Writer out = new StringWriter()) {
+      Transformer tf = TransformerFactory.newInstance().newTransformer();
+      tf.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+      tf.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+      tf.setOutputProperty(OutputKeys.INDENT, "yes");
+      tf.transform(new DOMSource(node), new StreamResult(out));
+      return out.toString();
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   private static Transformer configure(Transformer serializer, String encoding)
