@@ -84,7 +84,7 @@ dependencies {
   compile ("org.bouncycastle:bcprov-jdk15on:$bouncyCastleVersion")
   compile ("org.bouncycastle:bcpkix-jdk15on:$bouncyCastleVersion")
   compile ("org.bouncycastle:bcmail-jdk15on:$bouncyCastleVersion")
-  compile ("com.sun.mail:jakarta.mail:1.6.5")
+  compile ("com.sun.mail:jakarta.mail:1.6.7")
   compile ("org.glassfish.external:opendmk_jmxremote_optional_jar:1.0-b01-ea")
   compile ("org.glassfish.external:opendmk_jdmkrt_jar:1.0-b01-ea")
   compile ("com.github.mwiede:jsch:$jschVersion")
