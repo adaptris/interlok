@@ -51,8 +51,9 @@ public class ConditionMetadata extends ConditionWithOperator {
   @Override
   public boolean evaluate(AdaptrisMessage message) throws CoreException {
     if(!StringUtils.isEmpty(this.getMetadataKey())) {
-      log.trace("Testing metadata condition with key: {}", this.getMetadataKey());
-      return operator().apply(message, message.getMetadataValue(this.getMetadataKey()));
+      boolean result = operator().apply(message, message.getMetadataValue(this.getMetadataKey()));
+      logCondition("{}: evaluating {} {} : result {}", getClass().getSimpleName(), this.getMetadataKey(), getOperator(), result);
+      return result;
     } else {
       log.warn("No metadata key supplied, returning false.");
       return false;

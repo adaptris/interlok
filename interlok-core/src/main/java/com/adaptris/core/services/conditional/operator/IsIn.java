@@ -48,4 +48,8 @@ public class IsIn implements Operator {
   public void setValues(List<String> values) {
     this.values =  Args.notNull(values,"values");
   }
+  
+  public String toString() {
+    return "is in " + getValues();
+  }
 }

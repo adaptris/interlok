@@ -73,4 +73,7 @@ public class Matches implements Operator {
     this.value = value;
   }
 
+  public String toString() {
+    return "matches " + getValue();
+  }
 }

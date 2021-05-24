@@ -47,4 +47,7 @@ public class NotNull implements Operator {
     return object != null;
   }
 
+  public String toString() {
+    return "is not null";
+  }
 }

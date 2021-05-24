@@ -52,4 +52,8 @@ public class IsEmpty implements Operator {
   public void setIgnoreWhitespace(Boolean ignoreWhitespace) {
     this.ignoreWhitespace = ignoreWhitespace;
   }
+  
+  public String toString() {
+    return "is empty";
+  }
 }
