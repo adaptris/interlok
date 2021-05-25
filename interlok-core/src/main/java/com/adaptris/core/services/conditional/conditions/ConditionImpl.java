@@ -14,12 +14,12 @@ public abstract class ConditionImpl implements Condition {
   
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
-  @Getter
-  @Setter
-  @InputFieldDefault(value = "false")
   /**
    * Log the details of the conditions source and the result of the evaluation.
    */
+  @Setter
+  @Getter
+  @InputFieldDefault(value = "false")
   private Boolean additionalLogging;
   
   protected void logCondition(String message, Object... args) {

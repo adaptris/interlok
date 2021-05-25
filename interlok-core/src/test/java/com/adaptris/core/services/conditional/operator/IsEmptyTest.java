@@ -70,4 +70,9 @@ public class IsEmptyTest {
     ((IsEmpty)operator).setIgnoreWhitespace(true);
     assertTrue(operator.apply(message, null));
   }
+  
+  @Test
+  public void testToString() {
+    assertTrue(operator.toString().contains("is empty"));
+  }
 }
