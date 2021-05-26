@@ -18,9 +18,11 @@ package com.adaptris.core.services.metadata.xpath;
 
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.MetadataElement;
+import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.text.xml.XPath;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 /**
  * {@linkplain XpathQuery} implementation that retuns a single text item from the configured xpath.
@@ -43,7 +45,13 @@ public class ConfiguredXpathQuery extends ConfiguredXpathQueryImpl implements Xp
 
   @Override
   public MetadataElement resolveXpath(Document doc, XPath xpath, String expr) throws Exception {
-    return new MetadataElement(getMetadataKey(), XpathQueryHelper.resolveSingleTextItem(doc, xpath, expr,
-        allowEmptyResults()));
+    String result;
+    if (asXmlString()) {
+      Node node = XpathQueryHelper.resolveSingleNode(doc, xpath, expr, allowEmptyResults());
+      result = XmlHelper.nodeToString(node);
+    } else {
+      result = XpathQueryHelper.resolveSingleTextItem(doc, xpath, expr, allowEmptyResults());
+    }
+    return new MetadataElement(getMetadataKey(), result);
   }
 }

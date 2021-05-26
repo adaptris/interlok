@@ -19,7 +19,6 @@ package com.adaptris.core.services.metadata.xpath;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
@@ -28,8 +27,6 @@ import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.text.xml.XPath;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.commons.lang3.BooleanUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -55,15 +52,6 @@ public class MultiItemMetadataXpathQuery extends MetadataXpathQueryImpl implemen
   @Getter
   @InputFieldHint(style = "BLANKABLE")
   private String separator;
-
-  /**
-   * Get the raw XML as the result, instead of text() values.
-   */
-  @Getter
-  @Setter
-  @AdvancedConfig
-  @InputFieldDefault(value = "false")
-  private Boolean asXmlString;
 
   public MultiItemMetadataXpathQuery()
   {
@@ -105,9 +93,5 @@ public class MultiItemMetadataXpathQuery extends MetadataXpathQueryImpl implemen
    */
   public void setSeparator(String s) {
     separator = Args.notNull(s, "separator");
-  }
-
-  private boolean asXmlString() {
-    return BooleanUtils.toBooleanDefaultIfNull(getAsXmlString(), false);
   }
 }
