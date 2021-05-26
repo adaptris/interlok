@@ -17,6 +17,7 @@
 package com.adaptris.core.services.metadata.xpath;
 
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.text.xml.XPath;
@@ -28,8 +29,12 @@ import org.w3c.dom.Node;
  * {@linkplain XpathQuery} implementation that retuns a single text item from an xpath derived from metadata.
  * 
  * @config metadata-xpath-query
- * 
+ *
+ * @deprecated Use ConfiguredXpathQuery with %message{metadata} syntax to extract XPath from metadata.
+ *
  */
+@Deprecated(since = "4.1.0")
+@Removal(message = "Use ConfiguredXpathQuery with %message{metadata} syntax to extract XPath from metadata.")
 @XStreamAlias("metadata-xpath-query")
 @DisplayOrder(order = {"metadataKey", "xpathMetadataKey"})
 public class MetadataXpathQuery extends MetadataXpathQueryImpl implements XpathQuery {

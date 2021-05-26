@@ -20,6 +20,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.util.Args;
@@ -37,8 +38,12 @@ import javax.validation.constraints.NotNull;
  * {@linkplain XpathQuery} implementation that retuns a multiple text items from an xpath derived from metadata.
  * 
  * @config multi-item-metadata-xpath-query
- * 
+ *
+ * @deprecated Use MultiItemConfiguredXpathQuery with %message{metadata} syntax to extract XPath from metadata.
+ *
  */
+@Deprecated(since = "4.1.0")
+@Removal(message = "Use MultiItemConfiguredXpathQuery with %message{metadata} syntax to extract XPath from metadata.")
 @XStreamAlias("multi-item-metadata-xpath-query")
 @DisplayOrder(order = {"metadataKey", "xpathMetadataKey"})
 public class MultiItemMetadataXpathQuery extends MetadataXpathQueryImpl implements XpathQuery {
