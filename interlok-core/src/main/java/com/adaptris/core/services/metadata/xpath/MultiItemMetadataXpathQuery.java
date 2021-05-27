@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,10 @@
 
 package com.adaptris.core.services.metadata.xpath;
 
+import javax.validation.constraints.NotNull;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
@@ -28,28 +32,28 @@ import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.text.xml.XPath;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import javax.validation.constraints.NotNull;
 
 /**
  * {@linkplain XpathQuery} implementation that retuns a multiple text items from an xpath derived from metadata.
- * 
+ *
  * @config multi-item-metadata-xpath-query
  *
  * @deprecated Use MultiItemConfiguredXpathQuery with %message{metadata} syntax to extract XPath from metadata.
  *
  */
 @Deprecated(since = "4.1.0")
-@Removal(message = "Use MultiItemConfiguredXpathQuery with %message{metadata} syntax to extract XPath from metadata.")
+@Removal(version = "5.0.0",
+    message = "Use MultiItemConfiguredXpathQuery with %message{metadata} syntax to extract XPath from metadata.")
 @XStreamAlias("multi-item-metadata-xpath-query")
 @DisplayOrder(order = {"metadataKey", "xpathMetadataKey"})
 public class MultiItemMetadataXpathQuery extends MetadataXpathQueryImpl implements XpathQuery {
 
   /**
    * The separator used to separate items.
+   * <p>
+   * Note that this item will be ignored in when you have specified {@link #setAsXmlString(Boolean)}
+   * to be true since that renders the nodelist as pseudo XML.
+   * </p>
    */
   @NotNull
   @AdvancedConfig

@@ -22,12 +22,8 @@ import com.adaptris.core.CoreException;
 /**
  * Base interface for generating metadata from an xpath.
  * 
- * @author lchan
- *
- * @deprecated Use XpathQuery with %message{metadata} syntax to extract XPath from metadata.
  *
  */
-@Deprecated(since = "4.1.0")
 public interface XpathMetadataQuery {
   /**
    * Get the key that this Xpath query will be associated with.
