@@ -16,16 +16,17 @@
 
 package com.adaptris.core.services.metadata.xpath;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import org.junit.Test;
-import org.w3c.dom.Document;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.text.xml.XPath;
+import org.junit.Test;
+import org.w3c.dom.Document;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings("deprecation")
 public class MetadataXpathQueryTest extends MetadataXpathQueryCase {
@@ -115,4 +116,13 @@ public class MetadataXpathQueryTest extends MetadataXpathQueryCase {
     assertEquals("2", result.getValue());
   }
 
+  @Test
+  public void testResolveNodesAsString() throws Exception {
+    MetadataXpathQuery query = init(create());
+    query.setAsXmlString(true);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
+    msg.addMetadata("xpathMetadataKey", "//source-id");
+    MetadataElement result = query.resolveXpath(XmlHelper.createDocument(msg.getContent()), new XPath(), query.createXpathQuery(msg));
+    assertEquals("<source-id>partnera</source-id>", result.getValue().strip());
+  }
 }

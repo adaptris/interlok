@@ -16,16 +16,17 @@
 
 package com.adaptris.core.services.metadata.xpath;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import org.junit.Test;
-import org.w3c.dom.Document;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.text.xml.XPath;
+import org.junit.Test;
+import org.w3c.dom.Document;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings("deprecation")
 public class ConfiguredXpathQueryTest extends ConfiguredXpathQueryCase {
@@ -124,5 +125,14 @@ public class ConfiguredXpathQueryTest extends ConfiguredXpathQueryCase {
     msg.addMetadata("which-extra", "3");
     result = query.resolveXpath(doc, new XPath(), query.createXpathQuery(msg));
     assertEquals("three", result.getValue());
+  }
+
+  @Test
+  public void testResolveNodesAsString() throws Exception {
+    ConfiguredXpathQuery query = new ConfiguredXpathQuery("result", "//source-id");
+    query.setAsXmlString(true);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
+    MetadataElement result = query.resolveXpath(XmlHelper.createDocument(msg.getContent()), new XPath(), query.createXpathQuery(msg));
+    assertEquals("<source-id>partnera</source-id>", result.getValue().strip());
   }
 }
