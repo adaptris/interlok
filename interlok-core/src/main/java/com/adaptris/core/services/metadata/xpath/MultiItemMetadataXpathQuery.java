@@ -49,7 +49,8 @@ import javax.validation.constraints.NotNull;
 public class MultiItemMetadataXpathQuery extends MetadataXpathQueryImpl implements XpathQuery {
 
   /**
-   * The separator used to separate items.
+   * The separator used to separate items. This is ignored if
+   * as-xml-string=true.
    */
   @NotNull
   @AdvancedConfig

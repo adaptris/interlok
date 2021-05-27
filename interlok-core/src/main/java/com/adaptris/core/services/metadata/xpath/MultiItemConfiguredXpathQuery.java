@@ -44,7 +44,8 @@ import javax.validation.constraints.NotNull;
 public class MultiItemConfiguredXpathQuery extends ConfiguredXpathQueryImpl implements XpathQuery {
 
   /**
-   * The separator used to separate items.
+   * The separator used to separate items. This is ignored if
+   * as-xml-string=true.
    */
   @NotNull
   @AdvancedConfig
