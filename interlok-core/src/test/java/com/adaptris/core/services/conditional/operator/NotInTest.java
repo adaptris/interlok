@@ -62,5 +62,8 @@ public class NotInTest {
     assertTrue(operator.apply(message, "xyz"));
   }
 
-
+  @Test
+  public void testToString() {
+    assertTrue(operator.toString().contains("not in"));
+  }
 }

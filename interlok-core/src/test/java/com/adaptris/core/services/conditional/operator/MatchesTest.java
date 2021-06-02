@@ -38,4 +38,10 @@ public class MatchesTest {
     assertFalse(operator.apply(AdaptrisMessageFactory.getDefaultInstance().newMessage(), "xxxx"));
   }
   
+  @Test
+  public void testToString() {
+    Matches operator = new Matches();
+    operator.setValue(".*");
+    assertTrue(operator.toString().contains("matches"));
+  }
 }

@@ -28,4 +28,8 @@ public class NotIn extends IsIn {
   public boolean apply(AdaptrisMessage message, String object) {
     return !(super.apply(message, object));
   }
+  
+  public String toString() {
+    return "is not in " + getValues();
+  }
 }

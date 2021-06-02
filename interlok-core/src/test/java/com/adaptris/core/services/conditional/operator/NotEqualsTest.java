@@ -54,4 +54,8 @@ public class NotEqualsTest {
     assertTrue(operator.apply(message, "xxxx"));
   }
   
+  @Test
+  public void testToString() {
+    assertTrue(operator.toString().contains("not equals"));
+  }
 }
