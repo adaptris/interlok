@@ -1,0 +1,29 @@
+@startuml "Triggered Error Handler"
+
+participant Parent
+participant LifecycleHelper
+participant Child
+participant Member
+
+== Runtime Processing ==
+Parent->LifecycleHelper: LifecycleHelper.prepare(child)
+LifecycleHelper->Child: Get annotated members
+note left of Child
+ Probably via reflections; but
+ get all the members that have
+ 'HasLifecycle' annotated;
+ Also requires a publicgetter/setter
+end note
+activate Child
+Child->LifecycleHelper: All the members
+deactivate Child
+LifecycleHelper->Child: prepare(child)
+loop foreach member
+  LifecycleHelper->Child: getMember()
+  Child-->LifecycleHelper: return obj
+  LifecycleHelper->Member: prepare(obj)
+  activate Member
+  Member-->LifecycleHelper: ...
+  deactivate
+end loop
+@enduml
