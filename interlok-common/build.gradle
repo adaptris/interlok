@@ -5,7 +5,7 @@ ext {
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
   slf4jVersion = '1.7.30'
   log4j2Version = "2.14.1"
-  mockitoVersion = '3.10.0'
+  mockitoVersion = '3.11.0'
 }
 
 // In this section you declare the dependencies for your production and test code
