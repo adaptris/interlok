@@ -9,7 +9,7 @@ ext {
   mysqlDriverVersion='8.0.25'
   slf4jVersion = '1.7.30'
   mockitoVersion = '3.11.0'
-  jschVersion = '0.1.62'
+  jschVersion = '0.1.63'
 
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
   classesToTest = project.hasProperty("junit.test.classes") ? project.getProperty("junit.test.classes") : "**/*Test*"
