@@ -86,13 +86,15 @@ public class DefaultSerializableMessageTranslator implements SerializableMessage
       if (StringUtils.isEmpty(message.getContentEncoding())) {
         adaptrisMessage = messageFactory.newMessage(message.getContent(), convertMap(message.getMessageHeaders()));
       }
-      else if (message.getContentEncoding().equals("BASE64")) {
-        adaptrisMessage = messageFactory.newMessage("", convertMap(message.getMessageHeaders()));
-        adaptrisMessage.setPayload(Base64.getDecoder().decode(message.getContent()));
-      }
       else {
         adaptrisMessage = messageFactory.newMessage(message.getContent(), message.getContentEncoding(),
             convertMap(message.getMessageHeaders()));
+      }
+
+      if (message.getMessageHeaders().containsKey("_interlokMessageSerialization")) {
+        if (message.getMessageHeaders().get("_interlokMessageSerialization").equals("BASE64")) {
+          adaptrisMessage.setPayload(Base64.getDecoder().decode(message.getContent()));
+        }
       }
 
       if(StringUtils.isEmpty(message.getUniqueId()))
