@@ -88,7 +88,7 @@ dependencies {
   compile ("org.glassfish.external:opendmk_jmxremote_optional_jar:1.0-b01-ea")
   compile ("org.glassfish.external:opendmk_jdmkrt_jar:1.0-b01-ea")
   compile ("com.github.mwiede:jsch:$jschVersion")
-  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.41.v20210516")
+  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.42.v20210604")
   compile ("javax.servlet:javax.servlet-api:4.0.1")
   compile ("net.sf.joost:joost:0.9.1")
   compile ("org.quartz-scheduler:quartz:2.3.2") {
