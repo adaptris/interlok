@@ -18,7 +18,6 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ClassUtils;
 import com.adaptris.interlok.util.Args;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import lombok.Synchronized;
 
 /**
@@ -131,18 +130,16 @@ public abstract class ObjectScanner<T> {
     }
   }
 
-  private static Scanner handlerFor(Object o, Class<?> clazz) {
-    Scanner result = null;
-    for (Scanner h : Scanner.values()) {
-      if (h.traversable(o, clazz)) {
-        result = h;
-        break;
-      }
-    }
+  private static Scanner handlerFor(final Object o, final Class<?> clazz) {
+    Scanner result = List.of(Scanner.values()).stream()
+        .filter((scanner) -> scanner.traversable(o, clazz))
+        .findFirst().orElse(null);
     return Args.notNull(result, "handler-for-class");
   }
 
-  private static List<Field> getAllFields(@NonNull List<Field> fields, @NonNull Class<?> clazz) {
+  private static List<Field> getAllFields(List<Field> fields, Class<?> clazz) {
+    Args.notNull(fields, "fields");
+    Args.notNull(clazz, "class");
     fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
     if (clazz.getSuperclass() != null) {
       getAllFields(fields, clazz.getSuperclass());
