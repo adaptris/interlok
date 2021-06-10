@@ -5,9 +5,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import com.adaptris.core.Adapter;
-import com.adaptris.core.management.config.ConfigurationCheckReport;
-import com.adaptris.core.management.config.NashornChecker;
 import com.adaptris.core.services.EmbeddedScriptingService;
+import com.adaptris.core.services.ScriptingServiceImp;
+import com.adaptris.core.util.ObjectScanner;
 import com.adaptris.util.GuidGenerator;
 
 public class NashornCheckerTest {
@@ -39,6 +39,18 @@ public class NashornCheckerTest {
     assertEquals(0, report.getWarnings().size());
   }
 
+  @Test
+  public void testWithException() throws Exception {
+    DefectiveNashornChecker checker = new DefectiveNashornChecker();
+
+    ConfigurationCheckReport report = new ConfigurationCheckReport();
+    report.setCheckName(checker.getFriendlyName());
+    checker.validate(createAdapterConfig(false), report);
+    assertFalse(report.isCheckPassed());
+    assertEquals(1, report.getFailureExceptions().size());
+  }
+
+
   private Adapter createAdapterConfig(boolean hasNashorn) {
     Adapter result = new Adapter();
     result.setUniqueId(GUID.safeUUID());
@@ -55,4 +67,10 @@ public class NashornCheckerTest {
     return result;
   }
 
+  private class DefectiveNashornChecker extends NashornChecker {
+    @Override
+    protected ObjectScanner<ScriptingServiceImp> scanner() {
+      throw new RuntimeException();
+    }
+  }
 }

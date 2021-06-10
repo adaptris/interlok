@@ -24,7 +24,7 @@ public class NashornChecker extends ValidationCheckerImpl {
   protected void validate(Adapter adapter, ConfigurationCheckReport report) {
     try {
       ScriptEngineManager engineManager = new ScriptEngineManager(this.getClass().getClassLoader());
-      Collection<ScriptingServiceImp> scripts = new ScriptingServiceScanner().scan(adapter);
+      Collection<ScriptingServiceImp> scripts = scanner().scan(adapter);
       for (ScriptingServiceImp s : scripts) {
         if (ScriptingUtil.dependsOnNashorn(engineManager, s.getLanguage())) {
           report.getWarnings()
@@ -41,6 +41,10 @@ public class NashornChecker extends ValidationCheckerImpl {
   @Override
   public String getFriendlyName() {
     return FRIENDLY_NAME;
+  }
+
+  protected ObjectScanner<ScriptingServiceImp> scanner() {
+    return new ScriptingServiceScanner();
   }
 
   private class ScriptingServiceScanner extends ObjectScanner<ScriptingServiceImp> {
