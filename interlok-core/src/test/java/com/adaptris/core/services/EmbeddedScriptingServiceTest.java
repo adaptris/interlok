@@ -22,19 +22,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineFactory;
-import javax.script.ScriptEngineManager;
-
 import org.junit.Test;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BranchingServiceCollection;
@@ -140,80 +130,6 @@ public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
     LifecycleHelper.close(service);
   }
 
-  @Test
-  public void testLanguageJavascriptEngineNashorn() throws Exception {
-    EmbeddedScriptingService service = new EmbeddedScriptingService();
-    service.setLanguage("javascript");
-
-    ScriptEngineManager engineManager = initEngineManager();
-
-    ScriptEngine scriptEngine = mock(ScriptEngine.class);
-    when(engineManager.getEngineByName(ScriptingService.NASHORN_ENGINE)).thenReturn(scriptEngine);
-
-    service.checkEngine(engineManager);
-  }
-
-  @Test
-  public void testLanguageJavascriptEngineGraalJs() throws Exception {
-    EmbeddedScriptingService service = new EmbeddedScriptingService();
-    service.setLanguage("javascript");
-
-    ScriptEngineManager engineManager = initEngineManager();
-
-    ScriptEngine scriptEngine = mock(ScriptEngine.class);
-    when(engineManager.getEngineByName(ScriptingService.GRAAL_JS_ENGINE)).thenReturn(scriptEngine);
-
-    service.checkEngine(engineManager);
-  }
-
-  @Test
-  public void testLanguageJavascriptEngineNoNashorn() throws Exception {
-    EmbeddedScriptingService service = new EmbeddedScriptingService();
-    service.setLanguage("javascript");
-
-    ScriptEngineManager engineManager = initEngineManager();
-
-    when(engineManager.getEngineByName(ScriptingService.NASHORN_ENGINE)).thenReturn(null);
-
-    service.checkEngine(engineManager);
-  }
-
-  @Test
-  public void testLanguageNashornEngineNashorn() throws Exception {
-    EmbeddedScriptingService service = new EmbeddedScriptingService();
-    service.setLanguage(ScriptingService.NASHORN);
-
-    ScriptEngine scriptEngine = mock(ScriptEngine.class);
-    ScriptEngineManager engineManager = mock(ScriptEngineManager.class);
-    when(engineManager.getEngineByName(ScriptingService.NASHORN_ENGINE)).thenReturn(scriptEngine);
-
-    service.checkEngine(engineManager);
-  }
-
-  @Test
-  public void testLanguageNashornEngineNashornAndGraalJs() throws Exception {
-    EmbeddedScriptingService service = new EmbeddedScriptingService();
-    service.setLanguage(ScriptingService.NASHORN);
-
-    ScriptEngine scriptEngine = mock(ScriptEngine.class);
-    ScriptEngineManager engineManager = mock(ScriptEngineManager.class);
-    when(engineManager.getEngineByName(ScriptingService.NASHORN_ENGINE)).thenReturn(scriptEngine);
-    when(engineManager.getEngineByName(ScriptingService.GRAAL_JS_ENGINE)).thenReturn(scriptEngine);
-
-    service.checkEngine(engineManager);
-  }
-
-  @Test
-  public void testLanguageJruby() throws Exception {
-    EmbeddedScriptingService service = new EmbeddedScriptingService();
-    service.setLanguage("jruby");
-
-    ScriptEngine scriptEngine = mock(ScriptEngine.class);
-    ScriptEngineManager engineManager = mock(ScriptEngineManager.class);
-    when(engineManager.getEngineByName("jruby")).thenReturn(scriptEngine);
-
-    service.checkEngine(engineManager);
-  }
 
   @Test
   public void testDoServiceWithEmptyScript() throws Exception {
@@ -269,19 +185,6 @@ public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
         + "\nThe example below simply reverses an item of metadata using jruby as the scripting"
         + "\nlanguage. This isn't something that is easily supported with existing services "
         +"\n(but why would you want to do it?)" + "\n-->\n";
-  }
-
-  private ScriptEngineManager initEngineManager() {
-    ScriptEngineManager engineManager = mock(ScriptEngineManager.class);
-
-    ScriptEngineFactory graaljsEngineFactory = mock(ScriptEngineFactory.class);
-    when(graaljsEngineFactory.getEngineName()).thenReturn(ScriptingService.GRAAL_JS_ENGINE);
-    ScriptEngineFactory nashornEngineFactory = mock(ScriptEngineFactory.class);
-    when(nashornEngineFactory.getEngineName()).thenReturn(ScriptingService.NASHORN_ENGINE);
-    when(nashornEngineFactory.getNames())
-    .thenReturn(List.of("nashorn", "Nashorn", "js", "JS", "JavaScript", "javascript", "ECMAScript", "ecmascript"));
-    when(engineManager.getEngineFactories()).thenReturn(List.of(graaljsEngineFactory, nashornEngineFactory));
-    return engineManager;
   }
 
 }
