@@ -10,6 +10,10 @@ import com.adaptris.core.util.ObjectScanner;
 import com.adaptris.core.util.ScriptingUtil;
 import lombok.NoArgsConstructor;
 
+/**
+ * Configuration check that checks if a scripting service impl requires nashorn and warns about it.
+ *
+ */
 @NoArgsConstructor
 public class NashornChecker extends ValidationCheckerImpl {
 

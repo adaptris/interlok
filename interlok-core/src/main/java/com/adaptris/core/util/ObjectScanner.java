@@ -97,6 +97,12 @@ public abstract class ObjectScanner<T> {
   private transient Function<Object, Boolean> objectMatcher;
   private final transient Object locker = new Object();
 
+  /**
+   * Scan the tree for a match.
+   *
+   * @param root the top of the tree
+   * @return a collection of matching objects.
+   */
   @Synchronized(value = "locker")
   public Collection<T> scan(Object root) {
     if (root == null) {
@@ -112,6 +118,10 @@ public abstract class ObjectScanner<T> {
     return Collections.unmodifiableCollection(matches);
   }
 
+  /**
+   * Return the function doing the match.
+   *
+   */
   protected abstract Function<Object, Boolean> objectMatcher();
 
   private void addIfNotVisited(Object object, Class<?> clazz) {
