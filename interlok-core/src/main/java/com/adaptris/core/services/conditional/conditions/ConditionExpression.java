@@ -85,7 +85,7 @@ public class ConditionExpression extends ConditionImpl {
       String expr = msg.resolve(this.getAlgorithm());
       interpreter.eval("result = (" + expr + ")");
       String stringResult = interpreter.get("result").toString();
-      log.trace("{} evaluated to : {}", expr, stringResult);
+      logCondition("{}: {} evaluated to : {}", getClass().getSimpleName(), expr, stringResult);
       rc = BooleanUtils.toBoolean(stringResult);
     } catch (Exception ex) {
       throw new ServiceException(ex);

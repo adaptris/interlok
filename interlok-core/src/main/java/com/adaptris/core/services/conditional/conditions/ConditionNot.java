@@ -29,8 +29,9 @@ public class ConditionNot extends ConditionImpl {
 
   @Override
   public boolean evaluate(AdaptrisMessage message) throws CoreException {
-    log.trace("Testing not condition");
-    return !getCondition().evaluate(message);
+    boolean result = !getCondition().evaluate(message);
+    logCondition("{}: evaluated to : {}", getClass().getSimpleName(), result);
+    return result;
   }
 
   public Condition getCondition() {

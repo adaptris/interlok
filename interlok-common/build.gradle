@@ -5,7 +5,7 @@ ext {
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
   slf4jVersion = '1.7.30'
   log4j2Version = "2.14.1"
-  mockitoVersion = '3.10.0'
+  mockitoVersion = '3.11.1'
 }
 
 // In this section you declare the dependencies for your production and test code
@@ -13,17 +13,17 @@ dependencies {
 
   compile project(':interlok-core-apt')
   compile ("com.thoughtworks.xstream:xstream:1.4.17")
-  compile ("commons-io:commons-io:2.8.0")
+  compile ("commons-io:commons-io:2.9.0")
   compile ("commons-net:commons-net:3.8.0")
   compile ("commons-pool:commons-pool:1.6")
   compile ("org.apache.commons:commons-lang3:3.12.0")
-  compile ("org.apache.commons:commons-pool2:2.9.0")
+  compile ("org.apache.commons:commons-pool2:2.10.0")
 
   compile ("org.slf4j:slf4j-api:$slf4jVersion")
   compile ("javax:javaee-api:8.0.1")
 
   compile ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
-  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.41.v20210516")
+  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.42.v20210604")
   compile "org.slf4j:jul-to-slf4j:$slf4jVersion", optional
   compile "org.apache.logging.log4j:log4j-core:$log4j2Version", optional
   compile "org.apache.logging.log4j:log4j-api:$log4j2Version", optional

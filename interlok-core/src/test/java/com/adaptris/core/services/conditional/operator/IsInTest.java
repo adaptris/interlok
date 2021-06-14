@@ -60,4 +60,9 @@ public class IsInTest {
   public void testNotInEmptyArray() {
     assertFalse(operator.apply(message, "xyz"));
   }
+  
+  @Test
+  public void testToString() {
+    assertTrue(operator.toString().contains("is in"));
+  }
 }

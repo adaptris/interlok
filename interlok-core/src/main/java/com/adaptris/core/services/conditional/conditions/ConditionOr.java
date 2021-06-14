@@ -53,6 +53,7 @@ public class ConditionOr extends ConditionListImpl {
         break;
       }
     }
+    logCondition("{}: evaluated to : {}", getClass().getSimpleName(), returnValue);
     return returnValue;
   }
 }

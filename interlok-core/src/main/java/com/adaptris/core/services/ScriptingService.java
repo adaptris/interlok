@@ -103,9 +103,4 @@ public class ScriptingService extends ScriptingServiceImp {
   protected Reader createReader() throws IOException {
     return new FileReader(getScriptFilename());
   }
-
-  @Override
-  public void prepare() throws CoreException {
-  }
-
 }
