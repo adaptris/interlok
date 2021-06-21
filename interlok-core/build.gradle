@@ -103,7 +103,7 @@ dependencies {
   compile ("org.apache-extras.beanshell:bsh:2.0b6")
   compile ("javax:javaee-api:8.0.1")
 
-  compile ("org.slf4j:slf4j-api:1.7.30")
+  compile ("org.slf4j:slf4j-api:1.7.31")
 
   testCompile ("junit:junit:4.13.2")
   testCompile ("org.apache.activemq:artemis-jms-server:2.17.0")
