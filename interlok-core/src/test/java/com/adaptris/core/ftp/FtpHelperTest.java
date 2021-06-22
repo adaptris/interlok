@@ -1,8 +1,11 @@
 package com.adaptris.core.ftp;
 
+import org.junit.Test;
+
+import java.io.File;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import org.junit.Test;
 
 public class FtpHelperTest extends FtpHelper {
 
@@ -27,7 +30,6 @@ public class FtpHelperTest extends FtpHelper {
     filename = getFilename(WINDOWS_PATH, false);
     assertNotEquals(FILENAME, filename);
     assertEquals(WINDOWS_PATH, filename);
-
   }
 
   @Test
@@ -45,8 +47,5 @@ public class FtpHelperTest extends FtpHelper {
     directory = getDirectory(WINDOWS_PATH, false);
     assertNotEquals(WINDOWS_DIR, directory);
     assertEquals(WINDOWS_PATH, directory);
-
   }
-
-
 }

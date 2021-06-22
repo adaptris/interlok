@@ -36,12 +36,13 @@ public interface AdaptrisMessageProducer extends AdaptrisMessageWorker, Adaptris
   AdaptrisMessage request(AdaptrisMessage msg) throws ProduceException;
 
   /**
-   * Produces the {@link com.adaptris.core.AdaptrisMessage} to the configured {@link ProduceDestination} and blocks for the specified timeout for a
-   * reply.
+   * Produces the {@link com.adaptris.core.AdaptrisMessage} and blocks for the specified timeout for
+   * a reply.
    *
    * @param msg the {@link com.adaptris.core.AdaptrisMessage} to produce
    * @param timeout the time to wait for a reply in milliseconds
-   * @return a reply {@link com.adaptris.core.AdaptrisMessage} which is generally the same as supplied parameter
+   * @return a reply {@link com.adaptris.core.AdaptrisMessage} which is generally the same as
+   *         supplied parameter
    * @throws ProduceException wrapping any underlying Exceptions
    */
   AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException;

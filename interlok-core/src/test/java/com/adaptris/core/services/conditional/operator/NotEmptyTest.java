@@ -96,4 +96,8 @@ public class NotEmptyTest {
     assertTrue(operator.apply(message, " string \t"));
   }
 
+  @Test
+  public void testToString() {
+    assertTrue(operator.toString().contains("not empty"));
+  }
 }

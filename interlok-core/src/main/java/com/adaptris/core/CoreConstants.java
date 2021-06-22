@@ -75,7 +75,6 @@ public abstract class CoreConstants {
    * available will still be invoked.</li>
    * <li>{@link com.adaptris.core.PoolingWorkflow} - will cause the producer to be skipped</li>
    * <li>{@link com.adaptris.core.lms.LargeMessageWorkflow} - will cause the producer to be skipped</li>
-   * <li>{@link com.adaptris.core.jms.JmsReplyToWorkflow} - unaffected by this metadata key to ensure that the reply is still sent</li>
    * <li>{@link RequestReplyWorkflow} - unaffected by this metadata key to ensure that a reply to the triggering application can
    * still be sent</li>
    * </ul>

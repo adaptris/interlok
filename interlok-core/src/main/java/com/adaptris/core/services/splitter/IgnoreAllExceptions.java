@@ -16,6 +16,7 @@ package com.adaptris.core.services.splitter;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.aggregator.AppendingMessageAggregator;
+import com.adaptris.core.services.conditional.Condition;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.extern.slf4j.Slf4j;
 

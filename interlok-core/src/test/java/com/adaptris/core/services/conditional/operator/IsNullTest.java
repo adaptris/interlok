@@ -47,4 +47,8 @@ public class IsNullTest {
     assertTrue(operator.apply(message, null));
   }
 
+  @Test
+  public void testToString() {
+    assertTrue(operator.toString().contains("is null"));
+  }
 }

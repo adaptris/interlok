@@ -64,6 +64,7 @@ public class ConditionFunction extends ConditionImpl {
   public boolean evaluate(AdaptrisMessage msg) throws ServiceException {
     try {
       Object o = ((Invocable) engine).invokeFunction("evaluateScript", msg);
+      logCondition("{}: evaluated to : {}", getClass().getSimpleName(), o.toString());
       return BooleanUtils.toBoolean(o.toString());
     } catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);

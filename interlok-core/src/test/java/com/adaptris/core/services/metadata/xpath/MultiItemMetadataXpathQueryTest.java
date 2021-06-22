@@ -16,16 +16,17 @@
 
 package com.adaptris.core.services.metadata.xpath;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import org.junit.Test;
-import org.w3c.dom.Document;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.text.xml.XPath;
+import org.junit.Test;
+import org.w3c.dom.Document;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings("deprecation")
 public class MultiItemMetadataXpathQueryTest extends MetadataXpathQueryCase {
@@ -98,4 +99,16 @@ public class MultiItemMetadataXpathQueryTest extends MetadataXpathQueryCase {
     assertEquals("two|three", result.getValue());
   }
 
+  @Test
+  public void testResolveNodesAsString() throws Exception {
+    MultiItemMetadataXpathQuery query = new MultiItemMetadataXpathQuery("result", "xpathMetadataKey", "");
+    query.setAsXmlString(true);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(MultiItemConfiguredXpathQueryTest.XML_WITH_EMPTY_NODES);
+    msg.addMetadata("xpathMetadataKey", "//PXREF1[string-length(text()) > 0]");
+    MetadataElement result = query.resolveXpath(XmlHelper.createDocument(msg.getContent()), new XPath(), query.createXpathQuery(msg));
+
+    assertEquals("<PXREF1>91/01</PXREF1>\n" +
+            "<PXREF1>91/01</PXREF1>\n" +
+            "<PXREF1>91/01</PXREF1>", result.getValue().strip());
+  }
 }

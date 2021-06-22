@@ -22,11 +22,11 @@ import static org.junit.Assert.assertTrue;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
-import com.adaptris.core.services.conditional.conditions.ConditionMetadata;
-import com.adaptris.core.services.conditional.operator.NotNull;
 import com.adaptris.core.services.conditional.operator.IsNull;
+import com.adaptris.core.services.conditional.operator.NotNull;
 import com.adaptris.core.util.LifecycleHelper;
 
 public class ConditionMetadataTest {
@@ -38,6 +38,7 @@ public class ConditionMetadataTest {
   public void setUp() throws Exception {
     message = DefaultMessageFactory.getDefaultInstance().newMessage();
     condition = new ConditionMetadata();
+    condition.setAdditionalLogging(true);
     LifecycleHelper.initAndStart(condition);
   }
 

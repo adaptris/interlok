@@ -88,7 +88,8 @@ public class ServiceWorkerPool {
 
 
   /**
-   * @deprecated since 3.11.0 use {@link Closer#closeQuietly(Closeable)} instead.
+   * @deprecated since 3.11.0 use {@code com.adaptris.interlok.util.Closer#closeQuietly(Closeable)}
+   *             instead.
    *
    */
   @Deprecated

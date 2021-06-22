@@ -30,4 +30,8 @@ public class NotEmpty extends IsEmpty {
   public boolean apply(AdaptrisMessage message, String object) {
     return !(super.apply(message, object));
   }
+  
+  public String toString() {
+    return "not empty";
+  }
 }

@@ -31,7 +31,7 @@ import lombok.Setter;
  * a {@code DocumentBuilderFactory} that is created by this class will have the following defaults:
  * <ul>
  * <li>expandEntityReferences will be set to false if not otherwise specified</li>
- * <li>The feature {@value #DISABLE_DOCTYP} will be automatically set to true if not otherwise
+ * <li>The feature {@value #DISABLE_DOCTYPE} will be automatically set to true if not otherwise
  * specified</li>
  * </ul>
  * </p>
@@ -62,7 +62,7 @@ public class DocumentBuilderFactoryBuilder {
    * DocumentBuilderFactory.
    * </p>
    *
-   * @since 4.0 By default the XML Feature {@value #DISABLE_DOCTYP} will be set to true to disable
+   * @since 4.0 By default the XML Feature {@value #DISABLE_DOCTYPE} will be set to true to disable
    *        doctype declarations.
    */
   @NotNull
@@ -299,7 +299,7 @@ public class DocumentBuilderFactoryBuilder {
    * Convenient method to create a new default instance if required.
    *
    * @param b an existing configured DocumentBuilderFactoryBuilder, if null, then
-   *        {@link #newLenientInstance()()} is used.
+   *        {@link #newLenientInstance()} is used.
    *
    * @return a DocumentBuilderFactoryBuilder instance.
    */
