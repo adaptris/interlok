@@ -1,0 +1,89 @@
+ext {
+  componentName='Interlok Test Scaffolding'
+  componentDesc="Test Scaffolding for custom Interlok components; of no consequence at runtime"
+
+  unitTestStubsIncludes = [ '**/core/BaseCase*', '**/core/Example*',  '**/core/PortManager*', '**/core/ProducerCase*', '**/core/ConsumerCase*', '**/core/ServiceCase*',
+                         '**/core/ServiceCollection*', '**/core/MarshallingBaseCase*' ,'**/core/jms/JmsConsumerCase*', '**/core/jms/JmsProducerCase*',
+                         '**/core/jms/JmsProducerExample*','**/core/jms/MockJmsConnectionErrorHandler*',   '**/core/jms/MessageTypeTranslatorCase*',
+                         '**/core/jms/JmsConfig*', '**/core/jms/MockProducer*', '**/core/jms/**/JndiImplementationCase*',
+                         '**/core/jms/ActiveJmsConnectionErrorHandlerCase*', '**/core/transform/TransformServiceExample*',
+                         '**/core/services/cache/*Example*', '**/core/services/mime/MimeJunitHelper*', '**/core/jdbc/JdbcServiceCase*',
+                         '**/core/jdbc/DatabaseConnectionCase*', '**/stubs/**', '**/scaffolding/**', '**/util/system/*', '**/META-INF/**']
+  delombokTargetDir = new File("${project.projectDir}/src/main/generated")
+  slf4jVersion = '1.7.31'
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+  	from project(':interlok-core').sourceSets.test.allSource
+    includeEmptyDirs false
+    include unitTestStubsIncludes
+}
+
+jar {
+  manifest {
+    attributes("Built-By": System.getProperty('user.name'),
+               "Build-Jdk": System.getProperty('java.version'),
+               "Implementation-Title": componentName,
+               "Implementation-Version": project.version,
+               "Implementation-Vendor-Id": project.group,
+               "Implementation-Vendor": organizationName)
+  }
+	from project(':interlok-core').sourceSets.test.output
+  includeEmptyDirs false
+  include unitTestStubsIncludes
+}
+
+
+artifacts {
+  archives sourcesJar
+}
+
+dependencies {
+  api project (":interlok-core")
+  api ("junit:junit:4.13.2")
+  api ("org.slf4j:slf4j-api:$slf4jVersion")
+  api ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
+}
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      from components.java
+
+      artifact sourcesJar { classifier "sources" }
+      pom.withXml {
+        asNode().appendNode("name", componentName)
+        asNode().appendNode("description", componentDesc)
+        def properties = asNode().appendNode("properties")
+        properties.appendNode("target", "3.8.0+")
+        properties.appendNode("tags", "junit")
+        properties.appendNode("license", "false")
+        properties.appendNode("developerOnly", "true")
+        properties.appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
+        properties.appendNode("readme", "https://github.com/adaptris/interlok/raw/develop/README.md")
+        properties.appendNode("repository", "https://github.com/adaptris/interlok")
+      }
+    }
+
+  }
+  repositories {
+    maven {
+      credentials {
+        username repoUsername
+        password repoPassword
+      }
+      url mavenPublishUrl
+    }
+  }
+}
+
+delombok {
+  target = delombokTargetDir
+}
+
+task deleteGeneratedFiles(type: Delete) {
+  delete delombokTargetDir
+}
+
+clean.dependsOn deleteGeneratedFiles

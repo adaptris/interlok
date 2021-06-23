@@ -26,17 +26,9 @@ ext {
   organizationUrl = "http://interlok.adaptris.net"
 }
 
-if (JavaVersion.current().isJava8Compatible()) {
-  allprojects {
-    tasks.withType(Javadoc) {
-      options.addStringOption('Xdoclint:none', '-quiet')
-    }
-  }
-}
-
 ext.buildDetails = [
   jacocoEnabled: { subproject ->
-    return !subproject.name.equals("interlok-core-apt")
+    return !subproject.name.equals("interlok-core-apt") && !subproject.name.equals("interlok-stubs")
   },
 
   gitBranchNameOrTimestamp: { branchName ->
@@ -68,8 +60,7 @@ task clean(type: Delete) {
 }
 
 subprojects { subproject ->
-  apply plugin: 'java'
-  apply plugin: 'maven'
+  apply plugin: 'java-library'
   apply plugin: 'maven-publish'
   apply plugin: 'nebula.optional-base'
   apply plugin: 'com.github.spotbugs'
@@ -93,10 +84,12 @@ subprojects { subproject ->
   def versionDir = "$buildDir/version"
   generateLombokConfig.enabled = false
 
-  // In this section you declare where to find the dependencies of your project
   repositories {
     mavenCentral()
-    maven { url "$defaultNexusRepo" }
+    maven {
+      url "$defaultNexusRepo"
+      allowInsecureProtocol true
+    }
     maven { url "$nexusBaseUrl/content/groups/public" }
     maven { url "$nexusBaseUrl/content/groups/interlok" }
   }
@@ -143,9 +136,6 @@ subprojects { subproject ->
 
 
   if (buildDetails.jacocoEnabled(subproject)) {
-    jacoco {
-      toolVersion="0.8.2"
-    }
     jacocoTestReport {
       reports {
         xml.enabled true
