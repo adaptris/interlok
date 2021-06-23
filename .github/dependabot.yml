@@ -1,0 +1,33 @@
+version: 2
+registries:
+  maven-github:
+    type: maven-repository
+    url: https://nexus.adaptris.net/nexus/content/groups/interlok
+    username: dummy
+    password: dummy-since-this-is-a-public-repo
+
+updates:
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    allow:
+      - dependency-type: "all"
+    reviewers:
+      - quotidian-ennui
+      - mcwarman
+      - aaron-mcgrath-adp
+      - sebastien-belin-adp
+      - higgyfella
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    allow:
+      - dependency-type: "all"
+    reviewers:
+      - quotidian-ennui
+      - mcwarman
+      - aaron-mcgrath-adp
+      - sebastien-belin-adp
+      - higgyfella

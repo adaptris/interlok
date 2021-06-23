@@ -12,23 +12,24 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2.3.4
     - name: Set up JDK 11
-      uses: actions/setup-java@v1
+      uses: actions/setup-java@v2.1.0
       with:
         java-version: 11
+        distribution: 'adopt'
     - name: Setup Ubuntu
       run: |
         sudo apt-get -y install haveged
         sudo systemctl enable haveged
         sudo systemctl restart haveged
     - name: Gradle Wrapper Cache
-      uses: actions/cache@v1
+      uses: actions/cache@v2.1.6
       with:
         path: ~/.gradle/wrapper
         key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle-wrapper.properties') }}
     - name: Gradle Dependencies Cache
-      uses: actions/cache@v1
+      uses: actions/cache@v2.1.6
       with:
         path: ~/.gradle/caches
         key: ${{ runner.os }}-gradle-cache-${{ hashFiles('**/*.gradle') }}
