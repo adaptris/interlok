@@ -65,7 +65,7 @@ dependencies {
   compile ("org.codehaus.jettison:jettison:1.2")
   compile ("io.github.classgraph:classgraph:4.8.60")
   compile ("net.jodah:expiringmap:0.5.9")
-  compile ("com.sun.activation:jakarta.activation:1.2.2")
+  compile ("com.sun.activation:jakarta.activation:2.0.1")
   compile ("org.apache.activemq:activemq-client:$activeMqVersion") {
     exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_1.1_spec"
   }
