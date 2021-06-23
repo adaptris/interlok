@@ -74,6 +74,11 @@ subprojects { subproject ->
     apply plugin: "jacoco"
   }
 
+
+  tasks.withType(GenerateModuleMetadata) {
+    enabled = false
+  }
+
   java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
