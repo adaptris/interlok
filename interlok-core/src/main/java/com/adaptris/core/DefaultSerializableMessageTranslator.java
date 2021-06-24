@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.adaptris.util.text.mime.MimeConstants;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -91,10 +92,8 @@ public class DefaultSerializableMessageTranslator implements SerializableMessage
             convertMap(message.getMessageHeaders()));
       }
 
-      if (message.getMessageHeaders().containsKey("_interlokMessageSerialization")) {
-        if (message.getMessageHeaders().get("_interlokMessageSerialization").equals("BASE64")) {
-          adaptrisMessage.setPayload(Base64.getDecoder().decode(message.getContent()));
-        }
+      if (MimeConstants.ENCODING_BASE64.equalsIgnoreCase(message.getMessageHeaders().get(CoreConstants.SERIALIZED_MESSAGE_ENCODING))) {
+        adaptrisMessage.setPayload(Base64.getDecoder().decode(message.getContent()));
       }
 
       if(StringUtils.isEmpty(message.getUniqueId()))
