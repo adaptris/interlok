@@ -105,6 +105,7 @@ public class XPath {
    * @return the string extracted
    * @throws XPathExpressionException on error
    */
+  @SuppressWarnings({"lgtm[java/xml/xpath-injection]"})
   public String selectSingleTextItem(Node context, String xpath)
       throws XPathExpressionException {
     return (String) createXpath().evaluate(xpath, context, XPathConstants.STRING);
@@ -153,6 +154,7 @@ public class XPath {
    * @return NodeList of returned Nodes
    * @throws XPathExpressionException on error.
    */
+  @SuppressWarnings({"lgtm[java/xml/xpath-injection]"})
   public NodeList selectNodeList(Node context, String xpath)
       throws XPathExpressionException {
     return (NodeList) createXpath().evaluate(xpath, context, XPathConstants.NODESET);
@@ -166,6 +168,7 @@ public class XPath {
    * @return the Node extracted
    * @throws XPathExpressionException on error.
    */
+  @SuppressWarnings({"lgtm[java/xml/xpath-injection]"})
   public Node selectSingleNode(Node context, String xpath)
       throws XPathExpressionException {
     return (Node) createXpath().evaluate(xpath, context, XPathConstants.NODE);
