@@ -288,4 +288,6 @@ public abstract class CoreConstants {
    */
   public static final String OBJ_METADATA_ON_FAILURE_CALLBACK = "_onFailureCallback";
 
+
+  public static final String SERIALIZED_MESSAGE_ENCODING = "_interlokMessageSerialization";
 }

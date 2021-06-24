@@ -17,11 +17,15 @@
 package com.adaptris.core;
 
 import static org.junit.Assert.assertEquals;
+
+import com.adaptris.interlok.types.DefaultSerializableMessage;
 import org.junit.Test;
 import com.adaptris.interlok.types.SerializableMessage;
 
 public class DefaultSerializableMessageTranslatorTest {
 
+  private static final String BASE64_ORIGINAL = "Mistakes are often the stepping stones to utter failure.";
+  public static final String BASE64_ENCODED = "TWlzdGFrZXMgYXJlIG9mdGVuIHRoZSBzdGVwcGluZyBzdG9uZXMgdG8gdXR0ZXIgZmFpbHVyZS4=";
 
   @Test
   public void testMetadataTranslated() throws Exception {
@@ -79,5 +83,27 @@ public class DefaultSerializableMessageTranslatorTest {
     
     assertEquals("An Error Happened", translated.getMessageHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION));
   }
-  
+
+  @Test
+  public void testBase64Decode() throws Exception {
+    DefaultSerializableMessage serializableMessage = new DefaultSerializableMessage();
+    serializableMessage.setContent(BASE64_ENCODED);
+    serializableMessage.addMessageHeader("_interlokMessageSerialization", "BASE64");
+
+    DefaultSerializableMessageTranslator translator = new DefaultSerializableMessageTranslator();
+    AdaptrisMessage adaptrisMessage = translator.translate(serializableMessage);
+    assertEquals(BASE64_ORIGINAL, adaptrisMessage.getContent());
+  }
+
+  @Test
+  public void testBase64WrongValue() throws Exception {
+    DefaultSerializableMessage serializableMessage = new DefaultSerializableMessage();
+    serializableMessage.setUniqueId(null);
+    serializableMessage.setContent(BASE64_ENCODED);
+    serializableMessage.addMessageHeader("_interlokMessageSerialization", "something-else");
+
+    DefaultSerializableMessageTranslator translator = new DefaultSerializableMessageTranslator();
+    AdaptrisMessage adaptrisMessage = translator.translate(serializableMessage);
+    assertEquals(BASE64_ENCODED, adaptrisMessage.getContent());
+  }
 }

@@ -17,15 +17,15 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 }
 
 dependencies {
-  compile project(':interlok-common')
-  compile ("org.slf4j:slf4j-api:1.7.31")
-  testCompile ('junit:junit:4.13.2')
+  api project(':interlok-common')
+  api ("org.slf4j:slf4j-api:1.7.31")
+  testImplementation ('junit:junit:4.13.2')
   // testCompile ("com.adaptris:interlok-stubs:$interlokCoreVersion") { changing= true}
-  testCompile ("org.apache.logging.log4j:log4j-core:$log4j2Version")
-  testCompile ("org.apache.logging.log4j:log4j-1.2-api:$log4j2Version")
-  testCompile ("org.apache.logging.log4j:log4j-api:$log4j2Version")
-  testCompile ("org.mockito:mockito-core:$mockitoVersion")
-  testCompile ("org.mockito:mockito-inline:$mockitoVersion")
+  testImplementation ("org.apache.logging.log4j:log4j-core:$log4j2Version")
+  testImplementation ("org.apache.logging.log4j:log4j-1.2-api:$log4j2Version")
+  testImplementation ("org.apache.logging.log4j:log4j-api:$log4j2Version")
+  testImplementation ("org.mockito:mockito-core:$mockitoVersion")
+  testImplementation ("org.mockito:mockito-inline:$mockitoVersion")
 
   annotationProcessor project(':interlok-core-apt')
   testAnnotationProcessor project(':interlok-core-apt')
@@ -37,6 +37,7 @@ javadoc {
   configure(options) {
     taglets = ["com.adaptris.taglet.ConfigTaglet", "com.adaptris.taglet.LicenseTaglet"]
     options.addBooleanOption "-no-module-directories", true
+    options.addStringOption('Xdoclint:none', '-quiet')
     options.addStringOption "tagletpath", configurations.javadoc.asPath
     options.tags('apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:','implNote:a:Implementation Note:')
     title= componentName
@@ -57,13 +58,14 @@ artifacts {
     archives sourcesJar
 }
 
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      repository(url: mavenPublishUrl) {
-        authentication(userName: repoUsername, password: repoPassword)
-      }
-      configuration = configurations.mavenDeploy
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      from components.java
+
+      artifact javadocJar { classifier "javadoc" }
+      artifact sourcesJar { classifier "sources" }
+
       pom.withXml {
         asNode().appendNode("name", componentName)
         asNode().appendNode("description", componentDesc)
@@ -74,10 +76,17 @@ uploadArchives {
         properties.appendNode("readme", "https://github.com/adaptris/interlok/raw/develop/README.md")
         properties.appendNode("repository", "https://github.com/adaptris/interlok")
       }
-
+    }
+  }
+  repositories {
+    maven {
+      credentials {
+        username repoUsername
+        password repoPassword
+      }
+      url mavenPublishUrl
     }
   }
 }
 
-publish.dependsOn uploadArchives
 clean.dependsOn deleteGeneratedFiles
