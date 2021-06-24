@@ -16,6 +16,8 @@
 
 package com.adaptris.core.lifecycle;
 
+import org.junit.Before;
+import org.junit.Test;
 import com.adaptris.core.Channel;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.Workflow;
@@ -26,15 +28,11 @@ import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.PlainIdGenerator;
-import org.apache.log4j.Logger;
-import org.junit.Before;
-import org.junit.Test;
 
 public abstract class WorkflowLifecycleStrategyCase
     extends com.adaptris.interlok.junit.scaffolding.BaseCase {
 
   protected IdGenerator idGenerator;
-  protected Logger log = Logger.getLogger(this.getClass());
 
 
   @Before

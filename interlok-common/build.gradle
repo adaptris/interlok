@@ -11,34 +11,34 @@ ext {
 // In this section you declare the dependencies for your production and test code
 dependencies {
 
-  compile project(':interlok-core-apt')
-  compile ("com.thoughtworks.xstream:xstream:1.4.17")
-  compile ("commons-io:commons-io:2.10.0")
-  compile ("commons-net:commons-net:3.8.0")
-  compile ("commons-pool:commons-pool:1.6")
-  compile ("org.apache.commons:commons-lang3:3.12.0")
-  compile ("org.apache.commons:commons-pool2:2.10.0")
+  api project(':interlok-core-apt')
+  api ("com.thoughtworks.xstream:xstream:1.4.17")
+  api ("commons-io:commons-io:2.10.0")
+  api ("commons-net:commons-net:3.8.0")
+  api ("commons-pool:commons-pool:1.6")
+  api ("org.apache.commons:commons-lang3:3.12.0")
+  api ("org.apache.commons:commons-pool2:2.10.0")
 
-  compile ("org.slf4j:slf4j-api:$slf4jVersion")
-  compile ("javax:javaee-api:8.0.1")
+  api ("org.slf4j:slf4j-api:$slf4jVersion")
+  api ("javax:javaee-api:8.0.1")
+  api ("javax.servlet:javax.servlet-api:4.0.1")
+  api ("org.eclipse.jetty.aggregate:jetty-all:9.4.42.v20210604")
 
-  compile ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
-  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.42.v20210604")
-  compile "org.slf4j:jul-to-slf4j:$slf4jVersion", optional
-  compile "org.apache.logging.log4j:log4j-core:$log4j2Version", optional
-  compile "org.apache.logging.log4j:log4j-api:$log4j2Version", optional
-  compile "org.apache.logging.log4j:log4j-slf4j-impl:$log4j2Version", optional
-  compile "org.apache.logging.log4j:log4j-1.2-api:$log4j2Version", optional
-  compile ("javax.servlet:javax.servlet-api:4.0.1")
+  implementation "org.apache.logging.log4j:log4j-api:$log4j2Version", optional
+  implementation "org.apache.logging.log4j:log4j-core:$log4j2Version", optional
+  implementation "org.apache.logging.log4j:log4j-slf4j-impl:$log4j2Version", optional
+  implementation "org.apache.logging.log4j:log4j-1.2-api:$log4j2Version", optional
+  implementation "org.slf4j:jul-to-slf4j:$slf4jVersion", optional
+  implementation "org.slf4j:jcl-over-slf4j:$slf4jVersion", optional
 
   annotationProcessor project(':interlok-core-apt')
   testAnnotationProcessor project(':interlok-core-apt')
 
   javadoc project(':interlok-core-apt')
 
-  testCompile ("junit:junit:4.13.2")
-  testCompile ("org.mockito:mockito-core:$mockitoVersion")
-  testCompile ("org.mockito:mockito-inline:$mockitoVersion")
+  testImplementation ("junit:junit:4.13.2")
+  testImplementation ("org.mockito:mockito-core:$mockitoVersion")
+  testImplementation ("org.mockito:mockito-inline:$mockitoVersion")
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -46,14 +46,22 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 
-artifacts {
-  archives javadocJar
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
 }
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
 
 javadoc {
   configure(options) {
     taglets = ["com.adaptris.taglet.ConfigTaglet", "com.adaptris.taglet.LicenseTaglet"]
     options.addBooleanOption "-no-module-directories", true
+    options.addStringOption('Xdoclint:none', '-quiet')
     options.addStringOption "tagletpath", configurations.javadoc.asPath
     options.tags('apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:','implNote:a:Implementation Note:')
     title= componentName
@@ -68,13 +76,14 @@ task deleteGeneratedFiles(type: Delete) {
   delete delombokTargetDir
 }
 
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      repository(url: mavenPublishUrl) {
-        authentication(userName: repoUsername, password: repoPassword)
-      }
-      configuration = configurations.mavenDeploy
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      from components.java
+
+      artifact javadocJar { classifier "javadoc" }
+      artifact sourcesJar { classifier "sources" }
+
       pom.withXml {
         asNode().appendNode("name", componentName)
         asNode().appendNode("description", componentDesc)
@@ -85,10 +94,18 @@ uploadArchives {
         properties.appendNode("readme", "https://github.com/adaptris/interlok/raw/develop/README.md")
         properties.appendNode("repository", "https://github.com/adaptris/interlok")
       }
-
+    }
+  }
+  repositories {
+    maven {
+      credentials {
+        username repoUsername
+        password repoPassword
+      }
+      url mavenPublishUrl
     }
   }
 }
 
-publish.dependsOn uploadArchives
+
 clean.dependsOn deleteGeneratedFiles
