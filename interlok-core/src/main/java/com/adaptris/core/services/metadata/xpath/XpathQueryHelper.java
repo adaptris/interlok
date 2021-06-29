@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,11 +20,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.text.xml.XPath;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class XpathQueryHelper {
 
   static String resolveSingleTextItem(Document doc, XPath xp, String expr, boolean allowEmptyResults)
@@ -81,7 +83,7 @@ final class XpathQueryHelper {
     NodeList queryResult = null;
     try {
       queryResult = xp.selectNodeList(doc, expr);
-      if (queryResult == null && !allowNull) {
+      if (isEmpty(queryResult) && !allowNull) {
         throw new CoreException("Query [" + expr + "] returned null");
       }
     } catch (Exception e) {
@@ -92,6 +94,10 @@ final class XpathQueryHelper {
 
   private static final boolean isEmpty(String[] list) {
     return list.length == 0;
+  }
+
+  static final boolean isEmpty(NodeList list) {
+    return list == null || list.getLength() == 0;
   }
 
 }
