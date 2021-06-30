@@ -86,7 +86,7 @@ public class ShutdownHandler extends Thread {
     log.info("Adapter(s) closed");
   }
 
-  private void shutdown(Set<ObjectName> adapterManagers) {
+  void shutdown(Set<ObjectName> adapterManagers) {
     int count = adapterManagers.size();
     final CountDownLatch barrier = new CountDownLatch(count + 1);
     // Set this to be slightly higher than the operation timeout because we don't want to fail
@@ -119,7 +119,7 @@ public class ShutdownHandler extends Thread {
     }
   }
 
-  private void forceShutdown(Set<ObjectName> adapterManagers) {
+  void forceShutdown(Set<ObjectName> adapterManagers) {
     int count = adapterManagers.size();
     final CountDownLatch barrier = new CountDownLatch(count + 1);
 
