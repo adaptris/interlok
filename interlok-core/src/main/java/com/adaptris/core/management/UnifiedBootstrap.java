@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,10 +18,10 @@ package com.adaptris.core.management;
 
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import javax.management.JMX;
 import javax.management.ObjectName;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.core.CoreException;
@@ -33,7 +33,6 @@ import com.adaptris.core.runtime.AdapterManagerMBean;
 import com.adaptris.core.runtime.AdapterRegistry;
 import com.adaptris.core.runtime.AdapterRegistryMBean;
 import com.adaptris.core.util.JmxHelper;
-import com.adaptris.util.TimeInterval;
 
 /**
  * This is the class that handles almost everything required for startup.
@@ -41,18 +40,15 @@ import com.adaptris.util.TimeInterval;
  * Classloading should be done before using this class, and a BootstrapProperties instance must be passed to this class which
  * contains all the reqired information for starting an adapter.
  * </p>
- * 
+ *
  * @author gcsiki
- * 
+ *
  */
 public class UnifiedBootstrap {
 
   private transient BootstrapProperties bootstrapProperties;
   private transient AdapterRegistryMBean adapterRegistry;
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
-
-  private static final String OPERATION_TIMEOUT_PROPERTY = "operationTimeout";
-  private static final TimeInterval DEFAULT_OPERATION_TIMEOUT = new TimeInterval(2L, TimeUnit.MINUTES);
 
   private enum MgmtComponentTransition {
     START() {
@@ -124,6 +120,8 @@ public class UnifiedBootstrap {
   }
 
   private void tryStart(Set<ObjectName> adapters) throws Exception {
+
+    long timeout = bootstrapProperties.getOperationTimeout();
     for (ObjectName obj : adapters) {
       AdapterManagerMBean mgr = JMX.newMBeanProxy(JmxHelper.findMBeanServer(bootstrapProperties), obj, AdapterManagerMBean.class);
       try {
@@ -131,16 +129,13 @@ public class UnifiedBootstrap {
           mgr.requestStart();
         }
         else {
-          long timeout = bootstrapProperties.getProperty(OPERATION_TIMEOUT_PROPERTY, DEFAULT_OPERATION_TIMEOUT.toMilliseconds());
-          if (timeout < 0) {
-            mgr.requestStart();
-          } else {
-            mgr.requestStart(timeout);
-          }
+          log.trace("Start operationTimeout : {}",
+              DurationFormatUtils.formatDurationWords(timeout, true, true));
+          mgr.requestStart(timeout);
         }
       }
       catch (CoreException | TimeoutException e) {
-        mgr.requestClose(DEFAULT_OPERATION_TIMEOUT.toMilliseconds());
+        mgr.requestClose(timeout);
         log.error("Failed to fully start [{}]; adapter closed to avoid inconsistent state", obj);
         throw e;
       }

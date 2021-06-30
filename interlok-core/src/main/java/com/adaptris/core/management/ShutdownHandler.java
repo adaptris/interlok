@@ -18,11 +18,13 @@ package com.adaptris.core.management;
 
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import javax.management.JMX;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.core.CoreException;
@@ -31,7 +33,6 @@ import com.adaptris.core.runtime.AdapterRegistry;
 import com.adaptris.core.runtime.AdapterRegistryMBean;
 import com.adaptris.core.util.JmxHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
-import com.adaptris.util.TimeInterval;
 
 /**
  * <p>
@@ -40,12 +41,11 @@ import com.adaptris.util.TimeInterval;
  */
 public class ShutdownHandler extends Thread {
 
-  private transient static final TimeInterval DEFAULT_WAIT_TIME = new TimeInterval(30L, TimeUnit.SECONDS);
-
   private transient Logger log = LoggerFactory.getLogger(Thread.class.getName());
 
   private transient ManagedThreadFactory threadFactory = new ManagedThreadFactory(ShutdownHandler.class.getSimpleName());
   private transient BootstrapProperties bootProperties;
+  private transient long operationTimeout;
 
   /**
    * <p>
@@ -56,6 +56,7 @@ public class ShutdownHandler extends Thread {
    */
   public ShutdownHandler(BootstrapProperties bp) throws Exception {
     bootProperties = bp;
+    operationTimeout = bootProperties.getOperationTimeout();
   }
 
   /**
@@ -88,8 +89,10 @@ public class ShutdownHandler extends Thread {
   private void shutdown(Set<ObjectName> adapterManagers) {
     int count = adapterManagers.size();
     final CountDownLatch barrier = new CountDownLatch(count + 1);
-    final long barrierWait = DEFAULT_WAIT_TIME.toMilliseconds() + TimeUnit.SECONDS.toMillis(2);
-
+    // Set this to be slightly higher than the operation timeout because we don't want to fail
+    // early and force a shutdown based on weird timing issues.
+    final long barrierWait =
+        operationTimeout + ThreadLocalRandom.current().nextLong(1000L);
     for (ObjectName obj : adapterManagers) {
       Thread t = threadFactory.newThread(new ShutdownAdapter(obj, barrier, false));
       t.setUncaughtExceptionHandler(new IgnoreExceptions());
@@ -97,6 +100,8 @@ public class ShutdownHandler extends Thread {
     }
     boolean shutdownOk = false;
     try {
+      log.trace("Shutdown Operation Timeout approx: {}",
+          DurationFormatUtils.formatDurationWords(barrierWait, true, true));
       barrier.countDown();
       shutdownOk = barrier.await(barrierWait, TimeUnit.MILLISECONDS);
     } catch (InterruptedException e) {
@@ -125,7 +130,7 @@ public class ShutdownHandler extends Thread {
     }
     try {
       barrier.countDown();
-      barrier.await(DEFAULT_WAIT_TIME.toMilliseconds(), TimeUnit.MILLISECONDS);
+      barrier.await(operationTimeout, TimeUnit.MILLISECONDS);
     } catch (InterruptedException e) {
     }
   }
@@ -166,7 +171,7 @@ public class ShutdownHandler extends Thread {
       if (forceShutdown) {
         mgr.forceClose();
       } else {
-        mgr.requestClose(DEFAULT_WAIT_TIME.toMilliseconds());
+        mgr.requestClose(operationTimeout);
       }
       mgr.unregisterMBean();
     }
@@ -174,7 +179,7 @@ public class ShutdownHandler extends Thread {
     private void waitQuietly() {
       try {
         barrier.countDown();
-        barrier.await(DEFAULT_WAIT_TIME.toMilliseconds(), TimeUnit.MILLISECONDS);
+        barrier.await(operationTimeout, TimeUnit.MILLISECONDS);
       } catch (InterruptedException e) {
       }
     }
