@@ -76,7 +76,7 @@ public class DeprecatedConfigurationCheckerTest {
     // Should be 4 warnings,
     // deprecated class, deprecated member, deprecated service inside a
     // service list.
-    assertEquals(4, report.getWarnings().size());
+    assertEquals(3, report.getWarnings().size());
     assertTrue(violationsAsExpected(report.getWarnings(), "sharedComponents.services[1]",
         "sharedComponents.services[2]",
         "channelList.channels[0].workflowList.workflows[0].serviceCollection.services[0]",
