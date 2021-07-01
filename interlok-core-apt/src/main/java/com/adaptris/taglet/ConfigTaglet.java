@@ -16,16 +16,16 @@
 
 package com.adaptris.taglet;
 
-import jdk.javadoc.doclet.Taglet;
-
 import java.util.Map;
+import jdk.javadoc.doclet.Taglet;
 
 /**
  * Simple taglet that allows us to quickly specify the config requirements.
  *
- * @author lchan
- *
+ * @deprecated since 4.2.0, we have switched to using annotations instead.
  */
+@Deprecated(forRemoval = true, since = "4.2.0")
+@SuppressWarnings("deprecation")
 public class ConfigTaglet extends AbstractTaglet {
   private static final String NAME = "config";
   private static final String START = " <p>In the adapter configuration file this class is aliased as <b>";
