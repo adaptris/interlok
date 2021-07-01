@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -85,7 +85,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
   public AdapterRegistryTest() {
   }
 
-  
+
   @Before
   public void beforeMyTests() throws Exception {
     contextEnv.put(Context.INITIAL_CONTEXT_FACTORY, JndiContextFactory.class.getName());
@@ -199,9 +199,11 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     adapterManager.registerMBean();
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
+    int expectedCount = myAdapterRegistry.getAdapters().size() + 1;
+
     myAdapterRegistry.addAdapter(adapterManager);
     assertEquals(ClosedState.getInstance(), adapterManager.getComponentState());
-    assertEquals(1, myAdapterRegistry.getAdapters().size());
+    assertEquals(expectedCount, myAdapterRegistry.getAdapters().size());
   }
 
   @Test
@@ -213,9 +215,12 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     adapterManager.registerMBean();
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
+
+    int expectedCount = myAdapterRegistry.getAdapters().size() + 1;
     myAdapterRegistry.addAdapter(adapterManager);
     assertEquals(ClosedState.getInstance(), adapterManager.getComponentState());
-    assertEquals(1, myAdapterRegistry.getAdapters().size());
+    assertEquals(expectedCount, myAdapterRegistry.getAdapters().size());
+
     try {
       myAdapterRegistry.addAdapter(adapterManager);
       fail();
@@ -233,13 +238,14 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     DefaultMarshaller.getDefaultMarshaller().marshal(adapter, filename);
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
+    int expectedCount = myAdapterRegistry.getAdapters().size() + 1;
     ObjectName objName = myAdapterRegistry.createAdapter(new URLString(filename));
     assertNotNull(objName);
     assertTrue(mBeanServer.isRegistered(objName));
     AdapterManagerMBean manager = JMX.newMBeanProxy(mBeanServer, objName, AdapterManagerMBean.class);
     assertNotNull(manager);
     assertEquals(ClosedState.getInstance(), manager.getComponentState());
-    assertEquals(1, myAdapterRegistry.getAdapters().size());
+    assertEquals(expectedCount, myAdapterRegistry.getAdapters().size());
   }
 
   @Test
@@ -261,13 +267,15 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     DefaultMarshaller.getDefaultMarshaller().marshal(adapter, filename);
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
+    int expectedCount = myAdapterRegistry.getAdapters().size() + 1;
+
     ObjectName objName = myAdapterRegistry.createAdapterFromUrl(filename.toURI().toString());
     assertNotNull(objName);
     assertTrue(mBeanServer.isRegistered(objName));
     AdapterManagerMBean manager = JMX.newMBeanProxy(mBeanServer, objName, AdapterManagerMBean.class);
     assertNotNull(manager);
     assertEquals(ClosedState.getInstance(), manager.getComponentState());
-    assertEquals(1, myAdapterRegistry.getAdapters().size());
+    assertEquals(expectedCount, myAdapterRegistry.getAdapters().size());
   }
 
   @Test
@@ -291,14 +299,16 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     Adapter adapter = createAdapter(adapterName, 2, 2);
     File filename = deleteLater(adapter);
     DefaultMarshaller.getDefaultMarshaller().marshal(adapter, filename);
+    int expectedCount = myAdapterRegistry.getAdapters().size() + 1;
+
     ObjectName objName = registry.createAdapter(new URLString(filename));
     assertNotNull(objName);
     assertTrue(mBeanServer.isRegistered(objName));
     AdapterManagerMBean manager = JMX.newMBeanProxy(mBeanServer, objName, AdapterManagerMBean.class);
     assertNotNull(manager);
     assertEquals(ClosedState.getInstance(), manager.getComponentState());
-    assertEquals(1, myAdapterRegistry.getAdapters().size());
-    assertEquals(1, registry.getAdapters().size());
+    assertEquals(expectedCount, myAdapterRegistry.getAdapters().size());
+    assertEquals(expectedCount, registry.getAdapters().size());
   }
 
   @Test
@@ -308,6 +318,8 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     String xml = DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
+    int expectedCount = myAdapterRegistry.getAdapters().size() + 1;
+
     ObjectName objName = myAdapterRegistry.createAdapter(xml);
     assertNotNull(objName);
     assertNotNull(myAdapterRegistry.getBuilder(objName));
@@ -316,7 +328,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     AdapterManagerMBean manager = JMX.newMBeanProxy(mBeanServer, objName, AdapterManagerMBean.class);
     assertNotNull(manager);
     assertEquals(ClosedState.getInstance(), manager.getComponentState());
-    assertEquals(1, myAdapterRegistry.getAdapters().size());
+    assertEquals(expectedCount, myAdapterRegistry.getAdapters().size());
   }
 
   @Test
@@ -341,6 +353,8 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
     String xml = DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
+    int expectedCount = myAdapterRegistry.getAdapters().size() + 1;
+
     ObjectName objName = registry.createAdapter(xml);
     assertNotNull(objName);
     assertNotNull(registry.getBuilder(objName));
@@ -348,7 +362,8 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     AdapterManagerMBean manager = JMX.newMBeanProxy(mBeanServer, objName, AdapterManagerMBean.class);
     assertNotNull(manager);
     assertEquals(ClosedState.getInstance(), manager.getComponentState());
-    assertEquals(1, registry.getAdapters().size());
+    assertEquals(expectedCount, registry.getAdapters().size());
+
   }
 
   @Test
@@ -480,16 +495,18 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
     AdapterManager adapterManager = new AdapterManager(adapter);
+    int expectedCount = myAdapterRegistry.getAdapters().size();
+
     try {
       adapterManager.registerMBean();
       adapterManager.requestStart();
       ObjectName objName = adapterManager.createObjectName();
       assertTrue(mBeanServer.isRegistered(objName));
-      assertEquals(0, myAdapterRegistry.getAdapters().size());
+      assertEquals(expectedCount, myAdapterRegistry.getAdapters().size());
       myAdapterRegistry.destroyAdapter(adapterManager);
       assertFalse(mBeanServer.isRegistered(objName));
       assertEquals(ClosedState.getInstance(), adapterManager.getComponentState());
-      assertEquals(0, myAdapterRegistry.getAdapters().size());
+      assertEquals(expectedCount, myAdapterRegistry.getAdapters().size());
     }
     finally {
       adapterManager.unregisterMBean();
@@ -502,6 +519,9 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
     String xml = DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
+
+    int expectedCount = myAdapterRegistry.getAdapters().size();
+
     ObjectName objName = myAdapterRegistry.createAdapter(xml);
     assertNotNull(myAdapterRegistry.getBuilder(objName));
     AdapterManagerMBean manager = JMX.newMBeanProxy(mBeanServer, objName, AdapterManagerMBean.class);
@@ -514,7 +534,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
 
     }
     assertFalse(mBeanServer.isRegistered(objName));
-    assertEquals(0, myAdapterRegistry.getAdapters().size());
+    assertEquals(expectedCount, myAdapterRegistry.getAdapters().size());
   }
 
   @Test
@@ -526,6 +546,8 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
     String xml = DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
+    int expectedCount = myAdapterRegistry.getAdapters().size();
+
     ObjectName objName = registry.createAdapter(xml);
     assertNotNull(registry.getBuilder(objName));
     AdapterManagerMBean manager = JMX.newMBeanProxy(mBeanServer, objName, AdapterManagerMBean.class);
@@ -538,7 +560,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
 
     }
     assertFalse(mBeanServer.isRegistered(objName));
-    assertEquals(0, registry.getAdapters().size());
+    assertEquals(expectedCount, registry.getAdapters().size());
   }
 
   @Test
@@ -551,6 +573,8 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     Adapter adapter = createAdapter(adapterName, 2, 2);
     adapter.getSharedComponents().addConnection(new NullConnection(getName()));
     String xml = DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
+    int expectedCount = myAdapterRegistry.getAdapters().size();
+
     ObjectName objName = registry.createAdapter(xml);
     AdapterManagerMBean manager = JMX.newMBeanProxy(mBeanServer, objName, AdapterManagerMBean.class);
     manager.requestStart();
@@ -564,7 +588,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
 
     }
     assertFalse(mBeanServer.isRegistered(objName));
-    assertEquals(0, registry.getAdapters().size());
+    assertEquals(expectedCount, registry.getAdapters().size());
   }
 
   @Test
@@ -574,6 +598,8 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
     String xml = DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
+    int expectedCount = myAdapterRegistry.getAdapters().size();
+
     ObjectName objName = myAdapterRegistry.createAdapter(xml);
     assertTrue(mBeanServer.isRegistered(objName));
     assertEquals(1, myAdapterRegistry.getAdapters().size());
@@ -581,7 +607,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     manager.requestStart();
     myAdapterRegistry.destroyAdapter(objName);
     assertFalse(mBeanServer.isRegistered(objName));
-    assertEquals(0, myAdapterRegistry.getAdapters().size());
+    assertEquals(expectedCount, myAdapterRegistry.getAdapters().size());
   }
 
   @Test
@@ -591,14 +617,18 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
     String xml = DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
+
+    int expectedCount = myAdapterRegistry.getAdapters().size();
+
     ObjectName objName = myAdapterRegistry.createAdapter(xml);
     assertTrue(mBeanServer.isRegistered(objName));
-    assertEquals(1, myAdapterRegistry.getAdapters().size());
+
+    assertEquals(expectedCount + 1, myAdapterRegistry.getAdapters().size());
     AdapterManagerMBean manager = JMX.newMBeanProxy(mBeanServer, objName, AdapterManagerMBean.class);
     manager.requestStart();
     myAdapterRegistry.destroyAdapter(objName);
     assertFalse(mBeanServer.isRegistered(objName));
-    assertEquals(0, myAdapterRegistry.getAdapters().size());
+    assertEquals(expectedCount, myAdapterRegistry.getAdapters().size());
   }
 
   @Test
@@ -608,8 +638,10 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
     String xml = DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
+    int expectedCount = adapterRegistry.getAdapters().size() + 1;
+
     ObjectName objName = adapterRegistry.createAdapter(xml);
-    assertEquals(1, adapterRegistry.getAdapters().size());
+    assertEquals(expectedCount, adapterRegistry.getAdapters().size());
     AdapterManagerMBean manager = JMX.newMBeanProxy(mBeanServer, objName, AdapterManagerMBean.class);
     AdapterRegistry.start(adapterRegistry.getAdapters());
     assertEquals(StartedState.getInstance(), manager.getComponentState());
@@ -622,8 +654,10 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
     String xml = DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
+    int expectedCount = adapterRegistry.getAdapters().size() + 1;
+
     ObjectName objName = adapterRegistry.createAdapter(xml);
-    assertEquals(1, adapterRegistry.getAdapters().size());
+    assertEquals(expectedCount, adapterRegistry.getAdapters().size());
     AdapterManagerMBean manager = JMX.newMBeanProxy(mBeanServer, objName, AdapterManagerMBean.class);
     manager.requestStart();
     AdapterRegistry.stop(adapterRegistry.getAdapters());
@@ -637,8 +671,11 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
     String xml = DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
+
+    int expectedCount = adapterRegistry.getAdapters().size() + 1;
     ObjectName objName = adapterRegistry.createAdapter(xml);
-    assertEquals(1, adapterRegistry.getAdapters().size());
+    assertEquals(expectedCount, adapterRegistry.getAdapters().size());
+
     AdapterManagerMBean manager = JMX.newMBeanProxy(mBeanServer, objName, AdapterManagerMBean.class);
     manager.requestStart();
     AdapterRegistry.close(adapterRegistry.getAdapters());
@@ -660,8 +697,10 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     evh.setProducer(producer);
     adapter.setEventHandler(evh);
     String xml = DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
+    int expectedCount = adapterRegistry.getAdapters().size() + 1;
+
     ObjectName objName = adapterRegistry.createAdapter(xml);
-    assertEquals(1, adapterRegistry.getAdapters().size());
+    assertEquals(expectedCount, adapterRegistry.getAdapters().size());
     AdapterManagerMBean manager = JMX.newMBeanProxy(mBeanServer, objName, AdapterManagerMBean.class);
     manager.requestStart();
     assertEquals(0, producer.messageCount());
@@ -688,8 +727,12 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     evh.setProducer(producer);
     adapter.setEventHandler(evh);
     String xml = DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
+
+    int expectedCount = adapterRegistry.getAdapters().size() + 1;
+
     ObjectName objName = adapterRegistry.createAdapter(xml);
-    assertEquals(1, adapterRegistry.getAdapters().size());
+
+    assertEquals(expectedCount, adapterRegistry.getAdapters().size());
     AdapterManagerMBean manager = JMX.newMBeanProxy(mBeanServer, objName, AdapterManagerMBean.class);
     manager.requestStart();
     manager.requestClose();
@@ -858,13 +901,16 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     Properties p = new Properties();
     p.put("adapterConfigUrl.1", filename.toURI().toURL().toString());
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry.findInstance(new JunitBootstrapProperties(p));
+
+    int expectedCount = myAdapterRegistry.getAdapters().size() + 1;
+
     ObjectName myObjectName = myAdapterRegistry.createAdapter(new URLString(filename));
-    assertEquals(1, myAdapterRegistry.getAdapters().size());
+    assertEquals(expectedCount, myAdapterRegistry.getAdapters().size());
     AdapterBuilder builder = new ArrayList<AdapterBuilder>(myAdapterRegistry.builders()).get(0);
     builder.overrideRuntimeVCS(new MockRuntimeVersionControl());
     // This should destroy the adapter just created; and create a new one...
     myAdapterRegistry.reloadFromVersionControl();
-    assertEquals(1, myAdapterRegistry.getAdapters().size());
+    assertEquals(expectedCount, myAdapterRegistry.getAdapters().size());
   }
 
   @Test
@@ -884,13 +930,19 @@ public class AdapterRegistryTest extends ComponentManagerCase {
 
     AdapterRegistry adapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(first);
+    int preTestSize = adapterRegistry.getAdapters().size();
+
     adapterRegistry.addConfiguration(second);
     // No adapters created yet.
-    assertEquals(0, adapterRegistry.getAdapters().size());
+    assertEquals(preTestSize, adapterRegistry.getAdapters().size());
+
     AdapterBuilder builder = new ArrayList<AdapterBuilder>(adapterRegistry.builders()).get(1);
     builder.overrideRuntimeVCS(new MockRuntimeVersionControl());
+
+    // Should create 2 instances
     adapterRegistry.reloadFromVersionControl();
-    assertEquals(2, adapterRegistry.getAdapters().size());
+    assertEquals(preTestSize + 2, adapterRegistry.getAdapters().size());
+
   }
 
   @Test
@@ -902,12 +954,16 @@ public class AdapterRegistryTest extends ComponentManagerCase {
     Properties p = new Properties();
     p.put("adapterConfigUrl.1", filename.toURI().toURL().toString());
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry.findInstance(new JunitBootstrapProperties(p));
+
+    int expectedCount = myAdapterRegistry.getAdapters().size() + 1;
+
     ObjectName myObjectName = myAdapterRegistry.createAdapter(new URLString(filename));
-    assertEquals(1, myAdapterRegistry.getAdapters().size());
+
+    assertEquals(expectedCount, myAdapterRegistry.getAdapters().size());
 
     // This should destroy the adapter just created; and create a new one...
     myAdapterRegistry.reloadFromConfig();
-    assertEquals(1, myAdapterRegistry.getAdapters().size());
+    assertEquals(expectedCount, myAdapterRegistry.getAdapters().size());
   }
 
   @Test
@@ -943,7 +999,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
 
     String adapterRegistryTestJsonDef = myAdapterRegistry.getClassDefinition(ReformatMetadata.class.getCanonicalName());
     ClassDescriptor adapterRegistryTestDef = (ClassDescriptor) new XStreamJsonMarshaller().unmarshal(adapterRegistryTestJsonDef);
-    
+
     assertTrue(adapterRegistryTestDef.getSubTypes().size() > 0);
     assertTrue(adapterRegistryTestDef.getSubTypes().contains(ReformatDateService.class.getName()));
   }
