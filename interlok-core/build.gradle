@@ -59,7 +59,7 @@ dependencies {
     exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_1.1_spec"
   }
   api ("org.apache.geronimo.specs:geronimo-jms_2.0_spec:1.0-alpha-2")
-  api ("org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final")
+  api ("org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final-redhat-1")
   api ("jakarta.validation:jakarta.validation-api:2.0.2")
   api ("org.hibernate.validator:hibernate-validator:6.1.6.Final")
   api ("org.glassfish:javax.el:3.0.1-b12")
