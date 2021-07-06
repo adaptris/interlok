@@ -5,17 +5,11 @@ registries:
     url: https://nexus.adaptris.net/nexus/content/groups/interlok
     username: developer
     password: ${{secrets.NEXUS_REPO_PASSWORD}}
-  public:
-    type: maven-repository
-    url: https://nexus.adaptris.net/nexus/content/groups/public
-    username: developer
-    password: ${{secrets.NEXUS_REPO_PASSWORD}}
 
 updates:
   - package-ecosystem: "gradle"
     directory: "/"
     registries:
-      - "public"
       - "interlok"
     schedule:
       interval: "daily"
