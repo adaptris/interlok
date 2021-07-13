@@ -17,13 +17,15 @@
 package com.adaptris.util;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 import java.security.SecureRandom;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+
 import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.util.text.Conversion;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -90,7 +92,7 @@ public class PseudoRandomIdGenerator implements IdGenerator {
   public String create(Object msg) {
     byte[] bytes = new byte[8];
     random().nextBytes(bytes);
-    return getPrefix() + Conversion.byteArrayToBase64String(bytes);
+    return getPrefix() + java.util.Base64.getEncoder().encodeToString(bytes);
   }
 
   /**
@@ -106,8 +108,7 @@ public class PseudoRandomIdGenerator implements IdGenerator {
   public void setPrefix(String s) {
     if (isEmpty(s)) {
       prefix = "";
-    }
-    else {
+    } else {
       prefix = s;
     }
   }
@@ -125,7 +126,7 @@ public class PseudoRandomIdGenerator implements IdGenerator {
    * @param u the useSecureRandom to set, if not set, defaults to true.
    */
   public void setUseSecureRandom(Boolean u) {
-    this.useSecureRandom = u;
+    useSecureRandom = u;
   }
 
   boolean useSecureRandom() {

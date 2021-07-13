@@ -1,33 +1,34 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.security.password;
 
-import com.adaptris.security.exc.PasswordException;
-import com.adaptris.util.text.Base64ByteTranslator;
+import static com.adaptris.security.password.Password.PORTABLE_PASSWORD_2;
+
+import java.security.SecureRandom;
+import java.util.Arrays;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.SecureRandom;
-import java.util.Arrays;
 
-import static com.adaptris.security.password.Password.PORTABLE_PASSWORD_2;
+import com.adaptris.security.exc.PasswordException;
+import com.adaptris.util.text.Base64ByteTranslator;
 
 public class AesGcmCrypto extends PasswordImpl {
 
@@ -38,16 +39,20 @@ public class AesGcmCrypto extends PasswordImpl {
   private static final int TAG_LENGTH = 128;
   private static final int IV_LENGTH = 12;
 
+  private final static SecureRandom SECURE_RAND = new SecureRandom();
+
   private Base64ByteTranslator base64;
 
   public AesGcmCrypto() {
     base64 = new Base64ByteTranslator();
   }
 
+  @Override
   public boolean canHandle(String type) {
     return type != null && type.startsWith(PORTABLE_PASSWORD_2);
   }
 
+  @Override
   public String decode(String b64CipherText, String charset) throws PasswordException {
     if (b64CipherText.startsWith(PORTABLE_PASSWORD_2)) {
       b64CipherText = b64CipherText.substring(PORTABLE_PASSWORD_2.length());
@@ -68,6 +73,7 @@ public class AesGcmCrypto extends PasswordImpl {
     }
   }
 
+  @Override
   public String encode(String plainText, String charset) throws PasswordException {
     try {
       KeyGenerator keyGenerator = KeyGenerator.getInstance(ALGORITHM);
@@ -75,7 +81,7 @@ public class AesGcmCrypto extends PasswordImpl {
       SecretKey secretKey = keyGenerator.generateKey();
       Cipher cipher = Cipher.getInstance(CIPHER);
       byte[] iv = new byte[IV_LENGTH];
-      (new SecureRandom()).nextBytes(iv);
+      SECURE_RAND.nextBytes(iv);
       GCMParameterSpec spec = new GCMParameterSpec(TAG_LENGTH, iv);
       cipher.init(Cipher.ENCRYPT_MODE, secretKey, spec);
       byte[] bytes = plainText.getBytes(getEncodingToUse(charset));

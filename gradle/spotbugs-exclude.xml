@@ -19,4 +19,18 @@
     <Class name="com.adaptris.core.util.Args"/>
     <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS" />
   </Match>
+
+  <Match>
+    <Class name="com.adaptris.security.password.AesGcmCrypto"/>
+	<Method name="encode"/>
+    <!-- Ignore Random used only once bugs, false positive -->
+    <Bug pattern="DMI_RANDOM_USED_ONLY_ONCE" />
+  </Match>
+
+  <Match>
+    <Class name="com.adaptris.util.PseudoRandomIdGenerator"/>
+	<Method name="create"/>
+    <!-- Ignore Random used only once bugs, false positive -->
+    <Bug pattern="DMI_RANDOM_USED_ONLY_ONCE" />
+  </Match>
 </FindBugsFilter>
