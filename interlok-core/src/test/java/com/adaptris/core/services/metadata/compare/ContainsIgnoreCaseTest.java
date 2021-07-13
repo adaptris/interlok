@@ -39,15 +39,15 @@ public class ContainsIgnoreCaseTest
 
   @Test
   public void testTrue() {
-    operator.setValue("metadata-equals-test");
+    operator.setValue("EQUALS");
 
-    assertTrue(operator.apply(message, "EQUALS"));
+    assertTrue(operator.apply(message, "metadata-equals-test"));
   }
 
   @Test
   public void testFalse() {
-    operator.setValue("metadata-equals-test");
+    operator.setValue("xxxx");
 
-    assertFalse(operator.apply(message, "xxxx"));
+    assertFalse(operator.apply(message, "metadata-equals-test"));
   }
 }

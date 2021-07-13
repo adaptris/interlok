@@ -38,15 +38,15 @@ public class EndsWithIgnoreCaseTest {
 
   @Test
   public void testTrue() {
-    operator.setValue("metadata-starts-with-test");
+    operator.setValue("TEST");
 
-    assertTrue(operator.apply(message, "TEST"));
+    assertTrue(operator.apply(message, "metadata-ends-with-test"));
   }
 
   @Test
   public void testFalse() {
-    operator.setValue("metadata-starts-with-test");
+    operator.setValue("xxxx");
 
-    assertFalse(operator.apply(message, "xxxx"));
+    assertFalse(operator.apply(message, "metadata-ends-with-test"));
   }
 }

@@ -42,6 +42,6 @@ public abstract class ComparatorImpl implements MetadataComparator {
 
   @Override
   public boolean apply(AdaptrisMessage message, String object) {
-    return compare(message.resolve(value), message.resolve(object));
+    return compare(message.resolve(object), message.resolve(value));
   }
 }
