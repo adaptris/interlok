@@ -33,8 +33,6 @@ import com.adaptris.util.GuidGenerator;
  * </p>
  */
 public abstract class ServiceImp implements Service {
-  // protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
-
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
   private transient ComponentState serviceState;
