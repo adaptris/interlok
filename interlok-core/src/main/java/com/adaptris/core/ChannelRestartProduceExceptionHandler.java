@@ -16,15 +16,21 @@
 
 package com.adaptris.core;
 
+import com.adaptris.annotation.Removal;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Implementation of {@link ProduceExceptionHandler} which attempts to restart the parent {@link com.adaptris.core.Channel} of the {@code Workflow}
  * that had the failure.
  * 
- * 
  * @config channel-restart-produce-exception-handler
+ *
+ * @deprecated since 4.2.0
  */
+@Deprecated(since = "4.2.0")
+@ConfigDeprecated(message = "If you need restarting capability wrap your producer into a standalone-producer and set restart services on failure.", removalVersion = "5.0.0", groups = Deprecated.class)
+@Removal(message = "If you need restarting capability wrap your producer into a standalone-producer and set restart services on failure.", version = "5.0.0")
 @XStreamAlias("channel-restart-produce-exception-handler")
 public class ChannelRestartProduceExceptionHandler extends ProduceExceptionHandlerImp {
 
@@ -44,7 +50,7 @@ public class ChannelRestartProduceExceptionHandler extends ProduceExceptionHandl
         super.restart(workflow.obtainChannel());
       }
     }
-    else { // sthg else is rebooting the Channel...
+    else { // something else is rebooting the Channel...
       // do nothing?
       log.debug("Channel is not available, returning...");
 

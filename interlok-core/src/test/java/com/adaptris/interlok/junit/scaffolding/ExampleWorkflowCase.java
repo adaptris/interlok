@@ -24,6 +24,8 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
+
+import com.adaptris.core.NullProduceExceptionHandler;
 import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessage;
@@ -190,14 +192,9 @@ public abstract class ExampleWorkflowCase extends ExampleConfigGenerator {
   @Test
   public void testSetProduceExceptionHandler() throws Exception {
     WorkflowImp wf = createWorkflowForGenericTests();
-    ProduceExceptionHandler obj = wf.getProduceExceptionHandler();
-    try {
-      wf.setProduceExceptionHandler(null);
-      fail();
-    }
-    catch (IllegalArgumentException e) {
-
-    }
+    assertNull(wf.getProduceExceptionHandler());
+    ProduceExceptionHandler obj = new NullProduceExceptionHandler();
+    wf.setProduceExceptionHandler(obj);
     assertEquals(obj, wf.getProduceExceptionHandler());
   }
 

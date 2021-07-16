@@ -18,6 +18,7 @@ package com.adaptris.core.jms;
 
 import java.util.concurrent.TimeUnit;
 
+import com.adaptris.core.ProduceExceptionHandler;
 import org.apache.commons.lang3.BooleanUtils;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -32,7 +33,6 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.NullMessageConsumer;
 import com.adaptris.core.NullProduceExceptionHandler;
 import com.adaptris.core.ProduceException;
-import com.adaptris.core.ProduceExceptionHandler;
 import com.adaptris.core.RetryMessageErrorHandler;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.StandardWorkflow;
@@ -46,9 +46,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * informed of any failures so the messages can be rolled back.
  * </p>
  * <p>
- * Additionally, this workflow may not be configured with any {@link ProduceExceptionHandler} as this will not allow the transaction
- * to rolled back correctly. In order to get behaviour similiar to {@link ProduceExceptionHandler}, you should use
- * {@link com.adaptris.core.StandaloneProducer} as part of the service collection in order to produce the payload to the required destination.
+ * This workflow may not be configured with a {@link com.adaptris.core.StandaloneProducer}
+ * as part of the service collection in order to produce the payload to the required destination.
  * </p>
  * 
  * @config jms-transacted-workflow
@@ -92,7 +91,8 @@ public final class JmsTransactedWorkflow extends StandardWorkflow {
     else if (!(amc instanceof NullMessageConsumer)) {
       throw new CoreException(this.getClass().getSimpleName() + " must be used with a JMSConsumer");
     }
-    if (!(getProduceExceptionHandler() instanceof NullProduceExceptionHandler)) {
+    ProduceExceptionHandler produceExceptionHandler = getProduceExceptionHandler();
+    if (produceExceptionHandler != null && !(produceExceptionHandler instanceof NullProduceExceptionHandler)) {
       throw new CoreException(this.getClass().getSimpleName() + " may not have a ProduceExceptionHandler set");
     }
     super.initialiseWorkflow();
