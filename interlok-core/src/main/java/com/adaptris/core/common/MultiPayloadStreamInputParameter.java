@@ -7,6 +7,7 @@ import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -50,9 +51,16 @@ public class MultiPayloadStreamInputParameter extends PayloadStreamInputParamete
   @Override
   public InputStream extract(InterlokMessage m) throws InterlokException
   {
-    if (m instanceof MultiPayloadAdaptrisMessage)
+    try
     {
-      return extract(m.resolve(getPayloadId()), (MultiPayloadAdaptrisMessage)m);
+      if (m instanceof MultiPayloadAdaptrisMessage)
+      {
+        return extract(m.resolve(getPayloadId()), (MultiPayloadAdaptrisMessage)m);
+      }
+    }
+    catch (IOException e)
+    {
+      throw new InterlokException(e);
     }
     throw new InterlokException("Cannot extract payload from message type " + m.getClass().getName() + " as it does not support multiple payloads.");
   }
@@ -67,7 +75,7 @@ public class MultiPayloadStreamInputParameter extends PayloadStreamInputParamete
    *
    * @return  The extracted payload.
    */
-  public InputStream extract(String id, MultiPayloadAdaptrisMessage m)
+  public InputStream extract(String id, MultiPayloadAdaptrisMessage m) throws IOException
   {
     return m.getInputStream(id != null ? id : m.getCurrentPayloadId());
   }

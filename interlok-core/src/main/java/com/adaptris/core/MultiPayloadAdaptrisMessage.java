@@ -189,7 +189,7 @@ public interface MultiPayloadAdaptrisMessage extends AdaptrisMessage {
    *          The payload ID.
    * @return The payload input stream.
    */
-  InputStream getInputStream(@NotNull String id);
+  InputStream getInputStream(@NotNull String id) throws IOException;
 
   /**
    * Get the output stream for the given payload ID.
@@ -198,7 +198,7 @@ public interface MultiPayloadAdaptrisMessage extends AdaptrisMessage {
    *          The payload ID.
    * @return The payload output stream.
    */
-  OutputStream getOutputStream(@NotNull String id);
+  OutputStream getOutputStream(@NotNull String id) throws IOException;
 
   /**
    * Return a writer ready for writing the payload for the given payload ID.

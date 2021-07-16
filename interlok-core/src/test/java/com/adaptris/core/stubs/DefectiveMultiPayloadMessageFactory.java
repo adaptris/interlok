@@ -16,10 +16,11 @@
 
 package com.adaptris.core.stubs;
 
-import java.util.EnumSet;
-import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
+import org.apache.commons.lang3.BooleanUtils;
+
+import java.util.EnumSet;
 
 /**
  * <p>
@@ -31,7 +32,7 @@ import com.adaptris.core.DefaultMessageFactory;
  * message implementations that are created can be different.
  * </p>
  */
-public final class DefectiveMessageFactory extends DefaultMessageFactory {
+public final class DefectiveMultiPayloadMessageFactory extends DefaultMessageFactory {
 
   public static enum WhenToBreak {
     /** Break when getInputStream() is called */
@@ -40,47 +41,42 @@ public final class DefectiveMessageFactory extends DefaultMessageFactory {
     OUTPUT,
     /**
      * Break when either getInputStream() or getOutputStream() is called
-     * 
+     *
      */
     BOTH,
     /**
      * Never break when getInputStream() or getOutputStream() is called
-     * 
+     *
      */
-    NEVER, 
+    NEVER,
     /**
      * Break when getting metadata
-     * 
+     *
      */
-    METADATA_GET, 
+    METADATA_GET,
     /**
      * Break when setting metadata
-     * 
+     *
      */
     METADATA_SET
   };
 
   private transient EnumSet<WhenToBreak> whenToBreak;
 
-  public DefectiveMessageFactory() {
+  public DefectiveMultiPayloadMessageFactory() {
     this(EnumSet.of(WhenToBreak.INPUT, WhenToBreak.OUTPUT));
   }
 
-  public DefectiveMessageFactory(EnumSet<WhenToBreak> set) {
+  public DefectiveMultiPayloadMessageFactory(EnumSet<WhenToBreak> set) {
     whenToBreak = set;
   }
 
-  public DefectiveMessageFactory(WhenToBreak wtb) {
+  public DefectiveMultiPayloadMessageFactory(WhenToBreak wtb) {
     this(asEnumSet(wtb));
   }
 
   @Override
   public AdaptrisMessage newMessage() {
-    AdaptrisMessage result = new DefectiveAdaptrisMessage(uniqueIdGenerator(), this);
-    return result;
-  }
-
-  public AdaptrisMessage newMultiPayloadMessage() {
     AdaptrisMessage result = new DefectiveMultiPayloadMessage(uniqueIdGenerator(), this);
     return result;
   }
