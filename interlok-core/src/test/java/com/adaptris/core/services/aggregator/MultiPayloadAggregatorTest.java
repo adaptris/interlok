@@ -15,6 +15,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class MultiPayloadAggregatorTest extends AggregatingServiceExample
 {
@@ -53,6 +54,8 @@ public class MultiPayloadAggregatorTest extends AggregatingServiceExample
     DefectiveMessageFactory messageFactory = new DefectiveMessageFactory(DefectiveMessageFactory.WhenToBreak.BOTH);
     message = (MultiPayloadAdaptrisMessage)messageFactory.newMultiPayloadMessage();
     execute(service, message);
+
+    fail(); // expected exception
   }
 
   @Test(expected = CoreException.class)
