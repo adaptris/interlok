@@ -20,10 +20,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Combine the many payloads of a multi-payload message into a single
+ * payload using one of the available aggregators. See implementations
+ * of {@link MessageAggregator}.
+ *
+ * @config multi-payload-aggregator-service
+ * @since 4.2.0
+ */
 @XStreamAlias("multi-payload-aggregator-service")
 @ComponentProfile(summary = "Combine the many payloads of a multi-payload message into a single payload using one of the available aggregators", tag = "multi-payload,aggregator,service", since = "4.2.0")
 public class MultiPayloadAggregator extends ServiceImp
 {
+  /**
+   * How the payloads should be combined.
+   */
   @Getter
   @Setter
   @NotNull
@@ -31,9 +42,7 @@ public class MultiPayloadAggregator extends ServiceImp
   private MessageAggregator aggregator;
 
   /**
-   * <p>
-   * Apply the service to the message.
-   * </p>
+   * Append the many payloads together into a single payload.
    *
    * @param m the <code>AdaptrisMessage</code> to process
    * @throws ServiceException wrapping any underlying <code>Exception</code>s

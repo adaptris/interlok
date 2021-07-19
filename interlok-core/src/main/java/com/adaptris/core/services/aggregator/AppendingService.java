@@ -20,16 +20,30 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Using the existing aggregators, append many data sources together
+ * into a single message payload. See implementations of
+ * {@link MessageAggregator}.
+ *
+ * @config appending-service
+ * @since 4.2.0
+ */
 @XStreamAlias("appending-service")
 @ComponentProfile(summary = "Combine many sources into a single payload using one of the available aggregators", tag = "append,aggregator,service", since = "4.2.0")
 public class AppendingService extends ServiceImp
 {
+  /**
+   * The data sources from which to append.
+   */
   @Getter
   @Setter
   @NotNull
   @Valid
   private List<DataInputParameter> sources;
 
+  /**
+   * How the data sources should be appended.
+   */
   @Getter
   @Setter
   @NotNull
@@ -37,9 +51,7 @@ public class AppendingService extends ServiceImp
   private MessageAggregator aggregator;
 
   /**
-   * <p>
-   * Apply the service to the message.
-   * </p>
+   * Append the data sources together to create the new payload.
    *
    * @param message the <code>AdaptrisMessage</code> to process
    * @throws ServiceException wrapping any underlying <code>Exception</code>s
