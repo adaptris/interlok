@@ -73,7 +73,7 @@ public class MultiPayloadAggregator extends ServiceImp
     catch (Exception e)
     {
       log.error("Exception during merging of message payloads!", e);
-      ExceptionHelper.rethrowServiceException(e);
+      throw ExceptionHelper.wrapServiceException(e);
     }
   }
 
