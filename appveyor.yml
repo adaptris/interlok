@@ -25,7 +25,7 @@ services: mysql
 
 install:
 - sh: >-
-    echo "default.jdbc.storedproc.tests.enabled=true" >> interlok-core/build.properties
+    echo "default.jdbc.storedproc.tests.enabled=false" >> interlok-core/build.properties
 
     echo "default.jdbc.storedproc.url=jdbc:mysql://localhost:3306/" >> interlok-core/build.properties
 
@@ -50,7 +50,7 @@ cache:
 - $HOME/.gradle/wrapper/
 
 build_script:
-- sh: ./gradlew -Dorg.gradle.console=plain -PverboseTests=true test jacocoTestReport
+- sh: ./gradlew -Dorg.gradle.console=plain -PverboseTests=true test
 
 test: off
 
