@@ -1,6 +1,7 @@
 package com.adaptris.core.services.aggregator;
 
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -12,6 +13,7 @@ import com.adaptris.util.stream.StreamUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.ObjectUtils;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -37,8 +39,8 @@ public class MultiPayloadAggregator extends ServiceImp
    */
   @Getter
   @Setter
-  @NotNull
   @Valid
+  @InputFieldDefault("appending-message-aggregator")
   private MessageAggregator aggregator;
 
   /**
@@ -72,7 +74,7 @@ public class MultiPayloadAggregator extends ServiceImp
         messages.add(temp);
         message.deletePayload(id);
       }
-      aggregator.aggregate(target, messages);
+      aggregator().aggregate(target, messages);
       /*
        * With all the payloads now combined, put the resultant
        * payload back into the original message.
@@ -84,6 +86,11 @@ public class MultiPayloadAggregator extends ServiceImp
       log.error("Exception during merging of message payloads!", e);
       throw ExceptionHelper.wrapServiceException(e);
     }
+  }
+
+  private MessageAggregator aggregator()
+  {
+    return ObjectUtils.defaultIfNull(aggregator, new AppendingMessageAggregator());
   }
 
   /**

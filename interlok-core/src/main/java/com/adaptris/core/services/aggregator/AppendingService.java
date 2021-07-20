@@ -1,6 +1,7 @@
 package com.adaptris.core.services.aggregator;
 
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -12,6 +13,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -46,8 +48,8 @@ public class AppendingService extends ServiceImp
    */
   @Getter
   @Setter
-  @NotNull
   @Valid
+  @InputFieldDefault("appending-message-aggregator")
   private MessageAggregator aggregator;
 
   /**
@@ -88,13 +90,18 @@ public class AppendingService extends ServiceImp
           log.warn("Could not read from source", e);
         }
       }
-      aggregator.aggregate(message, messages);
+      aggregator().aggregate(message, messages);
     }
     catch (Exception e)
     {
       log.error("Could not initialise output stream in message", e);
       throw ExceptionHelper.wrapServiceException(e);
     }
+  }
+
+  private MessageAggregator aggregator()
+  {
+    return ObjectUtils.defaultIfNull(aggregator, new AppendingMessageAggregator());
   }
 
   /**
