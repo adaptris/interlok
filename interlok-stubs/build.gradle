@@ -10,7 +10,7 @@ ext {
                          '**/core/services/cache/*Example*', '**/core/services/mime/MimeJunitHelper*', '**/core/jdbc/JdbcServiceCase*',
                          '**/core/jdbc/DatabaseConnectionCase*', '**/stubs/**', '**/scaffolding/**', '**/util/system/*', '**/META-INF/**']
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
-  slf4jVersion = '1.7.31'
+  slf4jVersion = '1.7.32'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
