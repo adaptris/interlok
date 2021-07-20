@@ -63,7 +63,7 @@ dependencies {
   api ("jakarta.validation:jakarta.validation-api:2.0.2")
   api ("org.hibernate.validator:hibernate-validator:6.1.6.Final")
   api ("org.glassfish:javax.el:3.0.1-b12")
-  api ("commons-io:commons-io:2.10.0")
+  api ("commons-io:commons-io:2.11.0")
   api ("org.apache.commons:commons-lang3:3.12.0")
   api ("commons-net:commons-net:3.8.0")
   api ("org.apache.commons:commons-pool2:2.10.0")
