@@ -27,12 +27,12 @@ import java.util.List;
  * into a single message payload. See implementations of
  * {@link MessageAggregator}.
  *
- * @config appending-service
+ * @config combine-service
  * @since 4.2.0
  */
-@XStreamAlias("appending-service")
-@ComponentProfile(summary = "Combine many sources into a single payload using one of the available aggregators", tag = "append,aggregator,service", since = "4.2.0")
-public class AppendingService extends ServiceImp
+@XStreamAlias("combine-service")
+@ComponentProfile(summary = "Combine many sources into a single payload using one of the available aggregators", tag = "combine,append,aggregator,service", since = "4.2.0")
+public class CombineService extends ServiceImp
 {
   /**
    * The data sources from which to append.
@@ -73,9 +73,8 @@ public class AppendingService extends ServiceImp
           if (o instanceof InputStream)
           {
             temp = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-            try (OutputStream o2 = temp.getOutputStream())
+            try (InputStream source = (InputStream)o; OutputStream o2 = temp.getOutputStream())
             {
-              InputStream source = (InputStream)o;
               IOUtils.copy(source, o2);
             }
           }
