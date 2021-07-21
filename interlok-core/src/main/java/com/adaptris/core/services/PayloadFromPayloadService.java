@@ -131,12 +131,16 @@ public class PayloadFromPayloadService extends ServiceImp {
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     String payload = msg.resolve(StringUtils.defaultIfEmpty(msg.getContent(), ""), multiLineExpression());
+    replacePayloadUsingTemplate(msg, payload);
+  }
+
+  protected void replacePayloadUsingTemplate(AdaptrisMessage message, String payloadTemplate) {
     for (KeyValuePair kvp : getMetadataTokens().getKeyValuePairs()) {
-      if (msg.getMetadataValue(kvp.getKey()) != null) {
+      if (message.getMetadataValue(kvp.getKey()) != null) {
         if (!quiet()) {
-          log.trace("Replacing {} with {}", kvp.getValue(), msg.getMetadataValue(kvp.getKey()));
+          log.trace("Replacing {} with {}", kvp.getValue(), message.getMetadataValue(kvp.getKey()));
         }
-        payload = payload.replaceAll(kvp.getValue(), munge(msg.getMetadataValue(kvp.getKey())));
+        payloadTemplate = payloadTemplate.replaceAll(kvp.getValue(), munge(message.getMetadataValue(kvp.getKey())));
       }
       else {
         if (!quiet()) {
@@ -144,11 +148,11 @@ public class PayloadFromPayloadService extends ServiceImp {
         }
       }
     }
-    msg.setContent(payload, msg.getContentEncoding());
+    message.setContent(payloadTemplate, message.getContentEncoding());
+    return;
   }
 
-
-  private String munge(String s) {
+  protected String munge(String s) {
     return quoteReplacement() ? Matcher.quoteReplacement(s) : s;
   }
 
@@ -184,7 +188,7 @@ public class PayloadFromPayloadService extends ServiceImp {
     return (T) this;
   }
 
-  private boolean quiet() {
+  protected boolean quiet() {
     return BooleanUtils.toBooleanDefaultIfNull(getQuiet(), false);
   }
 
