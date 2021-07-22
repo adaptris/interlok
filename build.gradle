@@ -59,6 +59,20 @@ task clean(type: Delete) {
   delete project.buildDir
 }
 
+allprojects {
+  tasks.withType(Jar) {
+    metaInf {
+      from ("$rootDir") {
+        include 'LICENSE*'
+        include 'NOTICE*'
+      }
+    }
+  }
+  tasks.withType(GenerateModuleMetadata) {
+    enabled = false
+  }
+}
+
 subprojects { subproject ->
   apply plugin: 'java-library'
   apply plugin: 'maven-publish'
@@ -72,11 +86,6 @@ subprojects { subproject ->
 
   if (buildDetails.jacocoEnabled(subproject)) {
     apply plugin: "jacoco"
-  }
-
-
-  tasks.withType(GenerateModuleMetadata) {
-    enabled = false
   }
 
   java {
