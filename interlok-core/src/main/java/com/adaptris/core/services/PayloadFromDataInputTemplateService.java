@@ -14,7 +14,7 @@
  * limitations under the License.
 */
 
-package com.adaptris.core.services.metadata;
+package com.adaptris.core.services;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
@@ -24,7 +24,9 @@ import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.annotation.MarshallingCDATA;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.services.PayloadFromPayloadService;
+import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.interlok.InterlokException;
+import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.util.KeyValuePairSet;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
@@ -34,7 +36,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * Replaces the payload with something built from a template and optional metadata keys.
  * <p>
- * Takes the template stored in {@link #setTemplate(String)} and replaces parts of the template
+ * Takes the template stored in {@link #setTemplate(DataInputParameter<String>)} and replaces parts of the template
  * either by resolving the {@code %message} expression language or with values from various metadata
  * keys specified in {@link #setMetadataTokens(KeyValuePairSet)} to create a new payload.
  * </p>
@@ -46,30 +48,36 @@ import org.apache.commons.lang3.StringUtils;
  * @config payload-from-template
  *
  */
-@XStreamAlias("payload-from-template")
+@XStreamAlias("payload-from-data-input")
 @AdapterComponent
-@ComponentProfile(summary = "Construct a new payload based on metadata and a template", tag = "service,metadata,template", since = "3.10.0")
+@ComponentProfile(summary = "Construct a new payload based on metadata and a template", tag = "service,metadata,data input,template", since = "4.2.0")
 @DisplayOrder(order = {"template", "metadataTokens", "multiLineExpression", "quoteReplacement", "quiet"})
-public class PayloadFromTemplateService extends PayloadFromPayloadService {
+public class PayloadFromDataInputTemplateService extends PayloadFromPayloadService {
 
   @MarshallingCDATA
   @InputFieldDefault(value = "")
   @InputFieldHint(expression = true, style="BLANKABLE")
   @Getter
   @Setter
-  private String template = null;
+  private DataInputParameter<String> template;
 
-  public PayloadFromTemplateService() {
+  public PayloadFromDataInputTemplateService() {
     super();
   }
 
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    String payload = msg.resolve(StringUtils.defaultIfEmpty(template, ""), multiLineExpression());
-    replacePayloadUsingTemplate(msg, payload);
+    try {
+      String t = template.extract(msg);
+      String s = StringUtils.defaultIfEmpty(t, "");
+      String payload = msg.resolve(s, multiLineExpression());
+      replacePayloadUsingTemplate(msg, payload);
+    } catch (InterlokException e) {
+      throw ExceptionHelper.wrapServiceException(e);
+    }
   }
 
-  public <T extends PayloadFromTemplateService> T withTemplate(String b) {
+  public <T extends PayloadFromDataInputTemplateService> T withTemplate(DataInputParameter<String> b) {
     setTemplate(b);
     return (T) this;
   }

@@ -16,12 +16,17 @@
 
 package com.adaptris.core.common;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.interlok.InterlokException;
 import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.lang3.BooleanUtils;
 
 /**
  * <p>
@@ -39,8 +44,19 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("constant-data-input-parameter")
 public class ConstantDataInputParameter implements DataInputParameter<String> {
 
+  /**
+   * @param v the value, supports metadata resolution via {@link AdaptrisMessage#resolve(String)}.
+   */
+  @Getter
+  @Setter
   @InputFieldHint(expression = true)
   private String value;
+
+  @AdvancedConfig(rare = true)
+  @InputFieldDefault("true")
+  @Getter
+  @Setter
+  private Boolean multiline;
   
   public ConstantDataInputParameter() {
   }
@@ -52,22 +68,10 @@ public class ConstantDataInputParameter implements DataInputParameter<String> {
 
   @Override
   public String extract(InterlokMessage m) throws InterlokException {
-    return m.resolve(getValue(), true);
+    return m.resolve(getValue(), multiline());
   }
 
-
-
-  public String getValue() {
-    return value;
+  private boolean multiline() {
+    return BooleanUtils.toBooleanDefaultIfNull(multiline, true);
   }
-
-  /**
-   * 
-   * @param v the value, supports metadata resolution via {@link AdaptrisMessage#resolve(String)}.
-   */
-  public void setValue(String v) {
-    this.value = v;
-  }
-
-
 }
