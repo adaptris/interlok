@@ -25,11 +25,12 @@ import static com.adaptris.core.management.Constants.CFG_KEY_LOGGING_URL;
 import static com.adaptris.core.management.Constants.CFG_KEY_MANAGEMENT_COMPONENT;
 import static com.adaptris.core.management.Constants.DBG;
 import static com.adaptris.core.management.Constants.DEFAULT_CONFIG_MANAGER;
+import static com.adaptris.core.management.Constants.DEFAULT_OPERATION_TIMEOUT;
 import static com.adaptris.core.management.Constants.DEFAULT_PROPS_RESOURCE;
+import static com.adaptris.core.management.Constants.OPERATION_TIMEOUT_PROPERTY;
 import static com.adaptris.core.management.Constants.PROTOCOL_FILE;
 import static com.adaptris.core.util.PropertyHelper.getPropertyIgnoringCase;
 import static com.adaptris.core.util.PropertyHelper.getPropertySubset;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -44,13 +45,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.Adapter;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.management.logging.LoggingConfigurator;
@@ -170,6 +169,22 @@ public class BootstrapProperties extends Properties {
    */
   public Long getProperty(String key, Long defaultValue) {
     return NumberUtils.toLong( getProperty(key), defaultValue);
+  }
+
+
+  /**
+   * Get the operation timeout specified.
+   *
+   * @return the operation timeout specified by {@link Constants#OPERATION_TIMEOUT_PROPERTY} or the
+   *         default value if {@code < 1} or not specified.
+   */
+  public long getOperationTimeout() {
+    long defaultTimeout = DEFAULT_OPERATION_TIMEOUT.toMilliseconds();
+    long timeout = getProperty(OPERATION_TIMEOUT_PROPERTY, defaultTimeout);
+    if (timeout < 1) {
+      return defaultTimeout;
+    }
+    return timeout;
   }
 
   /**

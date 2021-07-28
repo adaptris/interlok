@@ -22,7 +22,6 @@ import java.util.Properties;
 import org.junit.Before;
 import org.junit.Test;
 import com.adaptris.core.management.config.XStreamConfigManager;
-import com.adaptris.core.runtime.AdapterRegistry;
 import com.adaptris.core.stubs.JunitBootstrapProperties;
 
 public class AdapterConfigManagerTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
@@ -47,6 +46,5 @@ public class AdapterConfigManagerTest extends com.adaptris.interlok.junit.scaffo
   public void testGetAdapterRegistryMBean() throws Exception {
     AdapterConfigManager configManager = bootstrap.getConfigManager();
     assertNotNull(configManager.getAdapterRegistry());
-    assertEquals(AdapterRegistry.class, configManager.getAdapterRegistry().getClass());
   }
 }
