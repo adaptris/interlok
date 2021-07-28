@@ -20,7 +20,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @config multi-payload-string-input-parameter
  */
 @XStreamAlias("multi-payload-string-input-parameter")
-public class MultiPayloadStringInputParameter extends StringPayloadDataInputParameter implements DataInputParameter<String>
+public class MultiPayloadStringInputParameter extends StringPayloadDataInputParameter
 {
   @InputFieldHint(expression=true)
   private String payloadId;
