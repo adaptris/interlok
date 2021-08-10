@@ -3,7 +3,7 @@ ext {
   componentDesc="Common components for Interlok"
 
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
-  slf4jVersion = '1.7.31'
+  slf4jVersion = '1.7.32'
   log4j2Version = "2.14.1"
   mockitoVersion = '3.11.2'
 }
@@ -13,7 +13,7 @@ dependencies {
 
   api project(':interlok-core-apt')
   api ("com.thoughtworks.xstream:xstream:1.4.17")
-  api ("commons-io:commons-io:2.10.0")
+  api ("commons-io:commons-io:2.11.0")
   api ("commons-net:commons-net:3.8.0")
   api ("commons-pool:commons-pool:1.6")
   api ("org.apache.commons:commons-lang3:3.12.0")

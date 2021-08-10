@@ -42,4 +42,4 @@ jobs:
         echo "junit.jms.tests.enabled=false" >> ./interlok-core/build.properties
         ./gradlew -Djava.security.egd=file:/dev/./urandom -Dorg.gradle.console=plain --no-daemon -PverboseTests=true check
     - name: codecov.io
-      uses: codecov/codecov-action@v1
+      uses: codecov/codecov-action@v2.0.2

@@ -5,10 +5,12 @@ ext {
   componentDesc="The Core Interlok framework component; this is your must have"
   activeMqVersion='5.16.2'
   bouncyCastleVersion='1.69'
-  mysqlDriverVersion='8.0.25'
-  slf4jVersion = '1.7.31'
+  mysqlDriverVersion='8.0.26'
+  slf4jVersion = '1.7.32'
   mockitoVersion = '3.11.2'
   jschVersion = '0.1.63'
+  mssqlDriverVersion = '9.2.1.jre8'
+  derbyDriverVersion = '10.15.2.0'
 
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
   classesToTest = project.hasProperty("junit.test.classes") ? project.getProperty("junit.test.classes") : "**/*Test*"
@@ -53,7 +55,7 @@ dependencies {
   api ("com.thoughtworks.xstream:xstream:1.4.17")
   api ("org.codehaus.jettison:jettison:1.2")
   api ("io.github.classgraph:classgraph:4.8.60")
-  api ("net.jodah:expiringmap:0.5.9")
+  api ("net.jodah:expiringmap:0.5.10")
   api ("com.sun.activation:jakarta.activation:1.2.2")
   api ("org.apache.activemq:activemq-client:$activeMqVersion") {
     exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_1.1_spec"
@@ -63,7 +65,7 @@ dependencies {
   api ("jakarta.validation:jakarta.validation-api:2.0.2")
   api ("org.hibernate.validator:hibernate-validator:6.1.6.Final")
   api ("org.glassfish:javax.el:3.0.1-b12")
-  api ("commons-io:commons-io:2.10.0")
+  api ("commons-io:commons-io:2.11.0")
   api ("org.apache.commons:commons-lang3:3.12.0")
   api ("commons-net:commons-net:3.8.0")
   api ("org.apache.commons:commons-pool2:2.10.0")
@@ -83,7 +85,7 @@ dependencies {
   api ("org.quartz-scheduler:quartz:2.3.2") {
     exclude group: "com.zaxxer", module: "HikariCP-java7"
   }
-  api ("com.zaxxer:HikariCP:4.0.3")
+  api ("com.zaxxer:HikariCP:5.0.0")
   api ("net.sf.saxon:Saxon-HE:10.5")
   api ("xerces:xercesImpl:2.12.1")
   api ("com.mchange:c3p0:0.9.5.5")
@@ -92,8 +94,8 @@ dependencies {
 
   api ("org.slf4j:slf4j-api:$slf4jVersion")
 
-  api ("org.apache.derby:derby:10.15.2.0")
-  api ("org.apache.derby:derbytools:10.15.2.0")
+  api ("org.apache.derby:derby:$derbyDriverVersion")
+  api ("org.apache.derby:derbytools:$derbyDriverVersion")
 
   testImplementation ("junit:junit:4.13.2")
   testImplementation ("org.apache.activemq:artemis-jms-server:2.17.0")
@@ -112,11 +114,11 @@ dependencies {
   testImplementation ("org.mockito:mockito-core:$mockitoVersion")
   testImplementation ("org.mockito:mockito-inline:$mockitoVersion")
   testImplementation("net.sourceforge.jtds:jtds:1.3.1")
-  testImplementation("com.microsoft.sqlserver:mssql-jdbc:6.4.0.jre8")
+  testImplementation("com.microsoft.sqlserver:mssql-jdbc:$mssqlDriverVersion")
   testImplementation ("mysql:mysql-connector-java:$mysqlDriverVersion")
 
   antSql("net.sourceforge.jtds:jtds:1.3.1")
-  antSql("com.microsoft.sqlserver:mssql-jdbc:6.4.0.jre8")
+  antSql("com.microsoft.sqlserver:mssql-jdbc:$mssqlDriverVersion")
   antSql ("mysql:mysql-connector-java:$mysqlDriverVersion")
 
   annotationProcessor project(':interlok-core-apt')

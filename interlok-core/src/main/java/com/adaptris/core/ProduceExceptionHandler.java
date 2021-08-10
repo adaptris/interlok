@@ -17,12 +17,20 @@
 package com.adaptris.core;
 
 
+import com.adaptris.annotation.Removal;
+import com.adaptris.validation.constraints.ConfigDeprecated;
+
 /**
  * <p> 
  * Implementations are pluggable responses to <code>ProduceException</code>s 
  * in a <code>Workflow</code>.
  * </p>
+ *
+ * @deprecated since 4.2.0
  */
+@Deprecated(since = "4.2.0")
+@ConfigDeprecated(message = "If you need restarting capability wrap your producer into a standalone-producer and set restart services on failure.", removalVersion = "5.0.0", groups = Deprecated.class)
+@Removal(message = "If you need restarting capability wrap your producer into a standalone-producer and set restart services on failure.", version = "5.0.0")
 public interface ProduceExceptionHandler {
 
   /**
