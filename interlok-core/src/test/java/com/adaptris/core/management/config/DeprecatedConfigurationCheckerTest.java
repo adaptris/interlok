@@ -73,14 +73,15 @@ public class DeprecatedConfigurationCheckerTest {
     checker.validate(createAdapterConfig(false, true), report);
 
     assertFalse(report.isCheckPassed());
-    // Should be 3 warnings,
+    // Should be 4 warnings,
     // deprecated class, deprecated member, deprecated service inside a
     // service list.
     assertEquals(3, report.getWarnings().size());
     assertTrue(violationsAsExpected(report.getWarnings(), "sharedComponents.services[1]",
         "sharedComponents.services[2]",
         "channelList.channels[0].workflowList.workflows[0].serviceCollection.services[0]",
-        "channelList.channels[0].workflowList.workflows[0].consumer.destination"));
+        "channelList.channels[0].workflowList.workflows[0].consumer.destination",
+        "channelList.channels[0].workflowList.workflows[0].produceExceptionHandler"));
     assertEquals(0, report.getFailureExceptions().size());
   }
 

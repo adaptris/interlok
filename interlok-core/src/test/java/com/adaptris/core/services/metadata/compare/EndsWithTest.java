@@ -38,15 +38,15 @@ public class EndsWithTest {
 
   @Test
   public void testTrue() {
-    operator.setValue("metadata-starts-with-test");
+    operator.setValue("test");
 
-    assertTrue(operator.apply(message, "test"));
+    assertTrue(operator.apply(message, "metadata-ends-with-test"));
   }
 
   @Test
   public void testFalse() {
-    operator.setValue("metadata-starts-with-test");
+    operator.setValue("TEST");
 
-    assertFalse(operator.apply(message, "TEST"));
+    assertFalse(operator.apply(message, "metadata-ends-with-test"));
   }
 }
