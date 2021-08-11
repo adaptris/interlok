@@ -45,7 +45,7 @@ import org.apache.commons.lang3.BooleanUtils;
 public class ConstantDataInputParameter implements DataInputParameter<String> {
 
   /**
-   * @param v the value, supports metadata resolution via {@link AdaptrisMessage#resolve(String)}.
+   * The constant value, supports metadata resolution via {@link AdaptrisMessage#resolve(String)}.
    */
   @Getter
   @Setter
