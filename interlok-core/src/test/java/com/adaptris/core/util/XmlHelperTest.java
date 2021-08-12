@@ -36,11 +36,10 @@ import static org.mockito.Mockito.mock;
 @SuppressWarnings("deprecation")
 public class XmlHelperTest extends XmlHelper {
   private static final String EXAMPLE_XML =
-      "<document>" + System.lineSeparator() + "   <content>text body</content>" + System.lineSeparator()
-          + "   <attachment encoding=\"base64\" filename=\"attachment1.txt\">dp/HSJfonUsSMM7QRBSRfg==</attachment>"
-          + System.lineSeparator()
-          + "   <attachment encoding=\"base64\" filename=\"attachment2.txt\">OdjozpCZB9PbCCLZlKregQ</attachment>"
-          + System.lineSeparator() + "</document>";
+      "<document>\n   <content>text body</content>\n"
+          + "   <attachment encoding=\"base64\" filename=\"attachment1.txt\">dp/HSJfonUsSMM7QRBSRfg==</attachment>\n"
+          + "   <attachment encoding=\"base64\" filename=\"attachment2.txt\">OdjozpCZB9PbCCLZlKregQ</attachment>\n"
+          + "</document>";
 
   private static final String ILLEGAL_XML_CHAR = new String(new byte[]
   {
