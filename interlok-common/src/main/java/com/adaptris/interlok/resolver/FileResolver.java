@@ -18,6 +18,25 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Resolver implementation that resolves information from files on the
+ * local file system.
+ * <p>
+ * This resolver resolves values based on the given path:
+ * %file{what:path}, where 'what' can be one of several things to
+ * resolve:
+ *  - data        - The actual file data (currently only supports text
+ *                  files as the resolve method returns a String).
+ *  - size        - The file size (not meaningful for directories or
+ *                  other non-regular files).
+ *  - type        - The type of file (regular file, directory, symlink,
+ *                  etc).
+ *  - date_create - The date of file creation.
+ *  - date_modify - The last time the files was modified.
+ *  - date_access - The date the file was last accessed.
+ *  - permissions - The file permissions (Unix-like; ugo-rwx).
+ * </p>
+ */
 public class FileResolver extends ResolverImp
 {
 	// Should match %file{data:...}$file{size:...} etc.
