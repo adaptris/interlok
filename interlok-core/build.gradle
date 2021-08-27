@@ -52,7 +52,7 @@ dependencies {
   api project(':interlok-core-apt')
   api project(':interlok-common')
 
-  api ("com.thoughtworks.xstream:xstream:1.4.17")
+  api ("com.thoughtworks.xstream:xstream:1.4.18")
   api ("org.codehaus.jettison:jettison:1.2")
   api ("io.github.classgraph:classgraph:4.8.60")
   api ("net.jodah:expiringmap:0.5.10")
