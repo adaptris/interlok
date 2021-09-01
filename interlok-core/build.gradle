@@ -7,7 +7,7 @@ ext {
   bouncyCastleVersion='1.69'
   mysqlDriverVersion='8.0.26'
   slf4jVersion = '1.7.32'
-  mockitoVersion = '3.11.2'
+  mockitoVersion = '3.12.4'
   jschVersion = '0.1.65'
   mssqlDriverVersion = '9.2.1.jre8'
   derbyDriverVersion = '10.15.2.0'
