@@ -24,7 +24,7 @@ updates:
       - higgyfella
   - package-ecosystem: "github-actions"
     directory: "/"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 20
     schedule:
       interval: "weekly"
     allow:
