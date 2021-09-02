@@ -4,6 +4,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.Valid;
 import java.io.File;
@@ -24,27 +25,28 @@ import java.util.regex.Pattern;
  * local file system.
  * <p>
  * This resolver resolves values based on the given path:
- * %file{what:path}, where 'what' can be one of several things to
+ * %file{path:%what...}, where '%what' can be one of several things to
  * resolve:
- *  - data        - The actual file data (currently only supports text
+ *  - %data        - The actual file data (currently only supports text
  *                  files as the resolve method returns a String).
- *  - size        - The file size (not meaningful for directories or
+ *  - %size        - The file size (not meaningful for directories or
  *                  other non-regular files).
- *  - type        - The type of file (regular file, directory, symlink,
+ *  - %type        - The type of file (regular file, directory, symlink,
  *                  etc).
- *  - date_create - The date of file creation.
- *  - date_modify - The last time the files was modified.
- *  - date_access - The date the file was last accessed.
- *  - permissions - The file permissions (Unix-like; ugo-rwx).
+ *  - %date_create - The date of file creation.
+ *  - %date_modify - The last time the files was modified.
+ *  - %date_access - The date the file was last accessed.
+ *  - %permissions - The file permissions (Unix-like; ugo-rwx).
  * </p>
  */
-public class FileResolver extends ResolverImp
+public class AltFileResolver extends ResolverImp
 {
-	// Should match %file{data:...}$file{size:...} etc.
-	private static final String RESOLVE_REGEXP = "^.*%file\\{([\\w]+):([\\w/\\:\\s\\\"+.]+)\\}.*$";
+	// Should match %file{file:%data%size%...}
+	private static final String RESOLVE_REGEXP = "^.*%file\\{([\\w/\\:\\s\\\"+.]+):([%\\w]+)\\}.*$";
 	private transient Pattern resolverPattern;
 
 	private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss zzz";
+	private static final String SEPARATOR = ",";
 
 	@Getter
 	@Setter
@@ -53,7 +55,14 @@ public class FileResolver extends ResolverImp
 	@AdvancedConfig(rare = true)
 	private String dateFormat;
 
-	public FileResolver()
+	@Getter
+	@Setter
+	@Valid
+	@InputFieldDefault(SEPARATOR)
+	@AdvancedConfig(rare = true)
+	private String separator;
+
+	public AltFileResolver()
 	{
 		resolverPattern = Pattern.compile(RESOLVE_REGEXP);
 	}
@@ -76,32 +85,46 @@ public class FileResolver extends ResolverImp
 		Matcher m = resolverPattern.matcher(lookupValue);
 		while (m.matches())
 		{
-			What what = What.parse(m.group(1));
-			File path = new File(m.group(2));
-			log.trace("Resolve {} on path {} ", what, path);
-			if (what == null)
+			File path = new File(m.group(1));
+			String w = m.group(2);
+			StringBuffer sb = new StringBuffer();
+			for (String s : w.split("%"))
 			{
-				log.error("{} is not something that's resolvable", m.group(1));
-				throw new UnresolvableException(m.group(1) + " is not something that's resolvable");
-			}
-
-			String value = "";
-			try
-			{
-				value = what.resolve(path.toPath());
-				if (value == null)
+				if (StringUtils.isEmpty(s))
 				{
-					log.warn("{} resolved to null for {}", what, path);
-					value = "";
+					continue;
 				}
-			}
-			catch (IOException e)
-			{
-				log.error("Could not resolve {} on path {} ", what, path, e);
+				What what = What.parse(s);
+				if (what == null)
+				{
+					log.error("{} is not something that's resolvable", s);
+					throw new UnresolvableException(s + " is not something that's resolvable");
+				}
+				log.trace("Resolve {} on path {} ", what, path);
+
+				String value = "";
+				try
+				{
+					value = what.resolve(path.toPath());
+					if (value == null)
+					{
+						log.warn("{} resolved to null for {}", what, path);
+						value = "";
+					}
+				}
+				catch (IOException e)
+				{
+					log.error("Could not resolve {} on path {} ", what, path, e);
+				}
+				if (sb.length() > 0 && value.length() > 0)
+				{
+					sb.append(separator());
+				}
+				sb.append(value);
 			}
 
-			String toReplace = "%file{" + what + ":" + path + "}";
-			result = result.replace(toReplace, value);
+			String toReplace = "%file{" + path + ":" + w + "}";
+			result = result.replace(toReplace, sb.toString());
 			m = resolverPattern.matcher(result);
 		}
 		return result;
@@ -117,6 +140,11 @@ public class FileResolver extends ResolverImp
 	public boolean canHandle(String value)
 	{
 		return resolverPattern.matcher(value).matches();
+	}
+
+	private String separator()
+	{
+		return StringUtils.defaultIfEmpty(separator, SEPARATOR);
 	}
 
 	public enum What
