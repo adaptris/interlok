@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
 public class FileResolver extends ResolverImp
 {
 	// Should match %file{data:...}$file{size:...} etc.
-	private static final String RESOLVE_REGEXP = "^.*%file\\{([\\w]+):([\\w/\\:\\s\\\"+.]+)\\}.*$";
+	private static final String RESOLVE_REGEXP = "^.*%file\\{([\\w]+):([^:]+)\\}.*$";
 	private transient Pattern resolverPattern;
 
 	private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss zzz";

@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
 public class AltFileResolver extends ResolverImp
 {
 	// Should match %file{file:%data%size%...}
-	private static final String RESOLVE_REGEXP = "^.*%file\\{([\\w/\\:\\s\\\"+.]+):([%\\w]+)\\}.*$";
+	private static final String RESOLVE_REGEXP = "^.*%file\\{([^:]+):([%\\w]+)\\}.*$";
 	private transient Pattern resolverPattern;
 
 	private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss zzz";
