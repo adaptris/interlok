@@ -16,6 +16,15 @@
 
 package com.adaptris.core.fs;
 
+import static com.adaptris.core.CoreConstants.FS_PRODUCE_DIRECTORY;
+import static com.adaptris.core.CoreConstants.PRODUCED_NAME_KEY;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -36,17 +45,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import org.apache.commons.lang3.BooleanUtils;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-
-import static com.adaptris.core.CoreConstants.FS_PRODUCE_DIRECTORY;
-import static com.adaptris.core.CoreConstants.PRODUCED_NAME_KEY;
 
 /**
  * {@link com.adaptris.core.AdaptrisMessageProducer} implementation that writes to the file system.
@@ -140,6 +138,7 @@ public class FsProducer extends ProduceOnlyProducerImp {
   }
 
   @Override
+  @SuppressWarnings({"lgtm[java/path-injection]"})
   protected void doProduce(AdaptrisMessage msg, String baseUrl) throws ProduceException {
     FileNameCreator creator = filenameCreatorToUse();
     try {

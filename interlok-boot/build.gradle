@@ -1,7 +1,7 @@
 ext {
   componentName='Interlok Core/Bootstrap'
   componentDesc="Wrapper around spring-boot-loader using PropertyLauncher to bootrap Interlok"
-  springBootLoaderVersion='2.5.0'
+  springBootLoaderVersion='2.5.4'
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 }
 
@@ -14,7 +14,7 @@ dependencies {
   compileOnly "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
   annotationProcessor project(':interlok-core-apt')
   javadoc project(':interlok-core-apt')
-  testCompile "junit:junit:4.13.2"
+  testImplementation "junit:junit:4.13.2"
   testRuntimeOnly "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
   testCompileOnly "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
 }
@@ -24,8 +24,14 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
 artifacts {
     archives javadocJar
+    archives sourcesJar
 }
 
 task unzipSpringBoot(type: Copy) {
@@ -54,6 +60,7 @@ javadoc {
     options.tags('apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:','implNote:a:Implementation Note:')
     options.addStringOption "tagletpath", configurations.javadoc.asPath
     options.addBooleanOption "-no-module-directories", true
+    options.addStringOption('Xdoclint:none', '-quiet')
     title= componentName
   }
   classpath += configurations.bundled
@@ -67,13 +74,13 @@ delombok {
   target = delombokTargetDir
 }
 
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      repository(url: mavenPublishUrl) {
-        authentication(userName: repoUsername, password: repoPassword)
-      }
-      configuration = configurations.mavenDeploy
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      from components.java
+
+      artifact javadocJar { classifier "javadoc" }
+      artifact sourcesJar { classifier "sources" }
       pom.withXml {
         asNode().appendNode("name", componentName)
         asNode().appendNode("description", componentDesc)
@@ -84,11 +91,18 @@ uploadArchives {
         properties.appendNode("readme", "https://github.com/adaptris/interlok/raw/develop/README.md")
         properties.appendNode("repository", "https://github.com/adaptris/interlok")
       }
-
+    }
+  }
+  repositories {
+    maven {
+      credentials {
+        username repoUsername
+        password repoPassword
+      }
+      url mavenPublishUrl
     }
   }
 }
 
 jar.dependsOn unzipSpringBoot
-publish.dependsOn uploadArchives
 clean.dependsOn deleteGeneratedFiles

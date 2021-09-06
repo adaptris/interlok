@@ -38,15 +38,15 @@ public class ContainsTest {
 
   @Test
   public void testTrue() {
-    operator.setValue("metadata-equals-test");
+    operator.setValue("equals");
 
-    assertTrue(operator.apply(message, "equals"));
+    assertTrue(operator.apply(message, "metadata-equals-test"));
   }
 
   @Test
   public void testFalse() {
-    operator.setValue("metadata-equals-test");
+    operator.setValue("EQUALS");
 
-    assertFalse(operator.apply(message, "EQUALS"));
+    assertFalse(operator.apply(message, "metadata-equals-test"));
   }
 }

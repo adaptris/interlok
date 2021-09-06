@@ -19,11 +19,13 @@ package com.adaptris.core;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.adaptris.util.text.mime.MimeConstants;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -89,6 +91,11 @@ public class DefaultSerializableMessageTranslator implements SerializableMessage
         adaptrisMessage = messageFactory.newMessage(message.getContent(), message.getContentEncoding(),
             convertMap(message.getMessageHeaders()));
       }
+
+      if (MimeConstants.ENCODING_BASE64.equalsIgnoreCase(message.getMessageHeaders().get(CoreConstants.SERIALIZED_MESSAGE_ENCODING))) {
+        adaptrisMessage.setPayload(Base64.getDecoder().decode(message.getContent()));
+      }
+
       if(StringUtils.isEmpty(message.getUniqueId()))
         message.setUniqueId(new GuidGenerator().create(this));
         

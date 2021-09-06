@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.ListIterator;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
-import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import com.adaptris.util.IdGenerator;
@@ -34,7 +33,6 @@ import com.adaptris.util.PlainIdGenerator;
 
 public class ChannelListTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
   private IdGenerator idGenerator;
-  private Logger log = Logger.getLogger(this.getClass());
 
   public ChannelListTest() {
   }

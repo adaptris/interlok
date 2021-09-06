@@ -16,6 +16,9 @@
 
 package com.adaptris.core.management;
 
+import java.util.concurrent.TimeUnit;
+import com.adaptris.util.TimeInterval;
+
 /**
  * Constants and lots of them.
  *
@@ -152,5 +155,19 @@ public final class Constants {
    */
   public static final String CFG_KEY_LOGGING_RECONFIGURE = "loggingReconfigure";
 
+  /**
+   * Bootstrap Property specifying the timeout for operations in milliseconds.
+   * <p>
+   * This has effect when initially launching Interlok and also when the {@link ShutdownHandler} is
+   * invoked as part of shutdown.
+   * </p>
+   */
+  public static final String OPERATION_TIMEOUT_PROPERTY = "operationTimeout";
+  /**
+   * The default timeout for operations if not specified.
+   *
+   */
+  public static final TimeInterval DEFAULT_OPERATION_TIMEOUT =
+      new TimeInterval(2L, TimeUnit.MINUTES);
 
 }
