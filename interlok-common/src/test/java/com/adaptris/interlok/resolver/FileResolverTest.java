@@ -12,39 +12,41 @@ import static org.junit.Assert.assertTrue;
 
 public class FileResolverTest
 {
-
 	@Test
 	public void testResolveString()
 	{
 		FileResolver resolver = new FileResolver();
 
-		String s = resolver.resolve("%file{size:./build.gradle}");
+		String s = resolver.resolve("%file{./build.gradle:%size}");
 		long size = Long.parseLong(s);
 		assertTrue(size > 0);
 
-		String d = resolver.resolve("%file{data:./build.gradle}");
+		String d = resolver.resolve("%file{./build.gradle:%data}");
 		assertEquals(d.length(), size);
 
-		String type = resolver.resolve("%file{type:./build.gradle}");
+		String type = resolver.resolve("%file{./build.gradle:%type}");
 		assertEquals(FileResolver.Type.FILE.name(), type);
 
-		String permissions = resolver.resolve("%file{permissions:./build.gradle}");
+		String permissions = resolver.resolve("%file{./build.gradle:%permissions}");
 		assertTrue(permissions.contains(PosixFilePermission.OWNER_READ.name()));
 
+		String combined = resolver.resolve("%file{./build.gradle:%size%type%permissions}");
+		String expected = s + "," + type + "," + permissions;
+		assertEquals(expected, combined);
 
-		d = resolver.resolve("%file{date_create:./build.gradle}");
+		d = resolver.resolve("%file{./build.gradle:%date_create}");
 		assertTrue(d.length() > 0);
-		d = resolver.resolve("%file{date_modify:./build.gradle}");
+		d = resolver.resolve("%file{./build.gradle:%date_modify}");
 		assertTrue(d.length() > 0);
-		d = resolver.resolve("%file{date_access:./build.gradle}");
+		d = resolver.resolve("%file{./build.gradle:%date_access}");
 		assertTrue(d.length() > 0);
 
 		// not meaningful to get size or data from a directory (so just the type is resolved)
-		type = resolver.resolve("%file{size:./src}%file{type:./src}%file{data:./src}");
+		type = resolver.resolve("%file{./src:%size%type%data}");
 		assertEquals(FileResolver.Type.DIRECTORY.name(), type);
 
 		// non-existent path
-		assertTrue(StringUtils.isEmpty(resolver.resolve("%file{type:./unknown}%file{permissions:./unknown}")));
+		assertTrue(StringUtils.isEmpty(resolver.resolve("%file{./unknown:%type%permissions}")));
 
 		assertNull(resolver.resolve(null));
 	}
@@ -66,8 +68,8 @@ public class FileResolverTest
 		assertFalse(resolver.canHandle("hello"));
 		assertFalse(resolver.canHandle("%sysprop{java.version}"));
 
-		assertTrue(resolver.canHandle("%file{size:/some/path}"));
-		assertTrue(resolver.canHandle("%file{data:/some/path}"));
-		assertTrue(resolver.canHandle("%file{type:/some/path}"));
+		assertTrue(resolver.canHandle("%file{/some/path:%size}"));
+		assertTrue(resolver.canHandle("%file{/some/path:%data}"));
+		assertTrue(resolver.canHandle("%file{/some/path:%size%data}"));
 	}
 }
