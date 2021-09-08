@@ -14,28 +14,28 @@ import static org.junit.Assert.assertEquals;
 public class FileResolverTest
 {
 
-	@Test
-	public void testResolvablePath() throws IOException
-	{
-		AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage();
-		message.addMetadata("file-path", "./build.gradle");
+  @Test
+  public void testResolvablePath() throws IOException
+  {
+    AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage();
+    message.addMetadata("file-path", "./build.gradle");
 
-		FileResolver resolver = new FileResolver();
-		String s = resolver.resolve("%file{%message{file-path}:%size}", message);
-		long size = Long.parseLong(s);
+    FileResolver resolver = new FileResolver();
+    String s = resolver.resolve("%file{%message{file-path}:%size}", message);
+    long size = Long.parseLong(s);
 
-		assertEquals(Files.size(new File("./build.gradle").toPath()), size);
-	}
+    assertEquals(Files.size(new File("./build.gradle").toPath()), size);
+  }
 
-	@Test
-	public void testChainingResolvers() throws IOException
-	{
-		AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage();
-		message.addMetadata("file-path", "./build.gradle");
+  @Test
+  public void testChainingResolvers() throws IOException
+  {
+    AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage();
+    message.addMetadata("file-path", "./build.gradle");
 
-		String s = message.resolve("%message{%uniqueId}::%file{%message{file-path}:%size}");
-		String x = message.getUniqueId() + "::" + Files.size(new File("./build.gradle").toPath());
+    String s = message.resolve("%message{%uniqueId}::%file{%message{file-path}:%size}");
+    String x = message.getUniqueId() + "::" + Files.size(new File("./build.gradle").toPath());
 
-		assertEquals(x, s);
-	}
+    assertEquals(x, s);
+  }
 }
