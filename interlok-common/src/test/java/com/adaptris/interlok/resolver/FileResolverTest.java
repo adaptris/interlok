@@ -57,7 +57,7 @@ public class FileResolverTest
 		FileResolver resolver = new FileResolver();
 
 		// unknown resolvable
-		resolver.resolve("%file{wrong:unknown}");
+		resolver.resolve("%file{wrong:%unknown}");
 	}
 
 	@Test
