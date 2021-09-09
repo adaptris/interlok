@@ -65,7 +65,7 @@ public class FileResolver extends ResolverImp
 
   public FileResolver()
   {
-    resolverPattern = Pattern.compile(RESOLVE_REGEXP);
+    resolverPattern = Pattern.compile(RESOLVE_REGEXP, Pattern.DOTALL);
   }
 
   /**
