@@ -117,7 +117,6 @@ public class MessageDigestErrorEntryTest {
 
   private File deleteLater(Object marker) throws IOException {
     File file = File.createTempFile(this.getClass().getSimpleName(), "");
-    file.deleteOnExit();
     cleaner.track(file, marker, FileDeleteStrategy.FORCE);
     return file;
   }
