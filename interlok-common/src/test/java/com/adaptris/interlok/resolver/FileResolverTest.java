@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class FileResolverTest
 {
@@ -45,19 +46,36 @@ public class FileResolverTest
     type = resolver.resolve("%file{./src:%size%type%data}");
     assertEquals(FileResolver.Type.DIRECTORY.name(), type);
 
-    // non-existent path
-    assertTrue(StringUtils.isEmpty(resolver.resolve("%file{./unknown:%type%permissions}")));
 
     assertNull(resolver.resolve(null));
   }
 
-  @Test(expected = UnresolvableException.class)
-  public void testException() throws UnresolvableException
+  @Test
+  public void testException()
   {
     FileResolver resolver = new FileResolver();
 
-    // unknown resolvable
-    resolver.resolve("%file{wrong:%unknown}");
+    try
+    {
+      // unknown resolvable
+      resolver.resolve("%file{./build.gradle:%unknown}");
+      fail();
+    }
+    catch (UnresolvableException e)
+    {
+      // expected
+    }
+
+    try
+    {
+      // non-existent path
+      resolver.resolve("%file{./unknown:%type%permissions}");
+      fail();
+    }
+    catch (UnresolvableException e)
+    {
+      // expected
+    }
   }
 
   @Test
