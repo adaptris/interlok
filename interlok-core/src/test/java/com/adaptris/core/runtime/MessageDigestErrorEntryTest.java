@@ -1,18 +1,18 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.runtime;
 
@@ -26,8 +26,6 @@ import java.util.Date;
 
 import org.apache.commons.io.FileCleaningTracker;
 import org.apache.commons.io.FileDeleteStrategy;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.adaptris.core.MessageLifecycleEvent;
@@ -35,14 +33,6 @@ import com.adaptris.core.MessageLifecycleEvent;
 public class MessageDigestErrorEntryTest {
 
   private static FileCleaningTracker cleaner = new FileCleaningTracker();
-
-  @Before
-  public void setUp() throws Exception {
-  }
-
-  @After
-  public void tearDown() throws Exception {
-  }
 
   @Test
   public void testConstructors() throws Exception {
@@ -58,6 +48,7 @@ public class MessageDigestErrorEntryTest {
     assertEquals("234", entry.getWorkflowId());
     assertNull(entry.getFileSystemPath());
     assertNull(entry.getStackTrace());
+    assertNull(entry.getExceptionStackTrace());
     Date d = new Date();
     entry = new MessageDigestErrorEntry("123", "234", d);
     assertNotNull(entry.getDate());
@@ -66,6 +57,7 @@ public class MessageDigestErrorEntryTest {
     assertEquals("234", entry.getWorkflowId());
     assertNull(entry.getFileSystemPath());
     assertNull(entry.getStackTrace());
+    assertNull(entry.getExceptionStackTrace());
   }
 
   @Test
@@ -74,13 +66,17 @@ public class MessageDigestErrorEntryTest {
     entry = new MessageDigestErrorEntry("123", "234");
     assertNull(entry.getFileSystemPath());
     assertNull(entry.getStackTrace());
+    assertNull(entry.getExceptionStackTrace());
     Exception e = new Exception(this.getClass().getSimpleName());
     entry.setStackTrace(e);
     assertNotNull(entry.getStackTrace());
+    assertNotNull(entry.getExceptionStackTrace());
     entry.setStackTrace(e.getMessage());
     assertEquals(e.getMessage(), entry.getStackTrace());
+    assertEquals(e.getMessage(), entry.getExceptionStackTrace());
     entry.setStackTrace((Exception) null);
     assertEquals("", entry.getStackTrace());
+    assertEquals("", entry.getExceptionStackTrace());
   }
 
   @Test
@@ -89,6 +85,7 @@ public class MessageDigestErrorEntryTest {
     entry = new MessageDigestErrorEntry("123", "234");
     assertNull(entry.getFileSystemPath());
     assertNull(entry.getStackTrace());
+    assertNull(entry.getExceptionStackTrace());
     File fsLocation = deleteLater(entry);
     File fsLocation2 = deleteLater(entry);
     entry.setFileSystemFile(fsLocation);
@@ -111,7 +108,6 @@ public class MessageDigestErrorEntryTest {
 
   @Test
   public void testToString() throws Exception {
-    Exception e = new Exception();
     MessageDigestErrorEntry entry = new MessageDigestErrorEntry("123", "234");
     assertNotNull(entry.toString());
 
@@ -120,9 +116,9 @@ public class MessageDigestErrorEntryTest {
   }
 
   private File deleteLater(Object marker) throws IOException {
-    File f = File.createTempFile(this.getClass().getSimpleName(), "");
-    f.deleteOnExit();
-    cleaner.track(f, marker, FileDeleteStrategy.FORCE);
-    return f;
+    File file = File.createTempFile(this.getClass().getSimpleName(), "");
+    cleaner.track(file, marker, FileDeleteStrategy.FORCE);
+    return file;
   }
+
 }
