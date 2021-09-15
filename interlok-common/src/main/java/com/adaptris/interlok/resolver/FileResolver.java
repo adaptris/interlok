@@ -133,6 +133,7 @@ public class FileResolver extends ResolverImp
         catch (IOException e)
         {
           log.error("Could not resolve {} on path {} ", what, path, e);
+          throw new UnresolvableException(e);
         }
         if (sb.length() > 0 && value.length() > 0)
         {
