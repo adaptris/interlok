@@ -69,17 +69,6 @@ public class FileResolverTest
     {
       // expected
     }
-
-    try
-    {
-      // non-existent path
-      resolver.resolve("%file{./unknown:%type%permissions}");
-      fail();
-    }
-    catch (UnresolvableException e)
-    {
-      // expected
-    }
   }
 
   @Test
