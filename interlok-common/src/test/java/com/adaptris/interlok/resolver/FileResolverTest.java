@@ -28,11 +28,15 @@ public class FileResolverTest
     String type = resolver.resolve("%file{./build.gradle:%type}");
     assertEquals(FileResolver.Type.FILE.name(), type);
 
-    String permissions = resolver.resolve("%file{./build.gradle:%permissions}");
-    assertTrue(permissions.contains(PosixFilePermission.OWNER_READ.name()));
+    String permissions = "";
+    if (!System.getProperty("os.name").contains("Windows"))
+    {
+      permissions = resolver.resolve("%file{./build.gradle:%permissions}");
+      assertTrue(permissions.contains(PosixFilePermission.OWNER_READ.name()));
+    }
 
     String combined = resolver.resolve("%file{./build.gradle:%size%type%permissions}");
-    String expected = s + "," + type + "," + permissions;
+    String expected = s + "," + type + (permissions.length() > 0 ? "," + permissions : "");
     assertEquals(expected, combined);
 
     d = resolver.resolve("%file{./build.gradle:%date_create}");

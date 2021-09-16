@@ -6,6 +6,8 @@ import com.adaptris.interlok.types.InterlokMessage;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.validation.Valid;
 import java.io.File;
@@ -42,6 +44,8 @@ import java.util.regex.Pattern;
  */
 public class FileResolver extends ResolverImp
 {
+  private static final Logger log = LoggerFactory.getLogger(FileResolver.class);
+
   // Should match %file{file:%data%size%...}
   private static final String RESOLVE_REGEXP = "^.*%file\\{(.+):(%[%a-z_]+)\\}.*$";
   private transient Pattern resolverPattern;
@@ -240,15 +244,24 @@ public class FileResolver extends ResolverImp
     {
       public String resolve(Path path) throws IOException
       {
-        Set<PosixFilePermission> permissions = Files.getPosixFilePermissions(path);
         StringBuilder sb = new StringBuilder();
-        for (PosixFilePermission p : permissions)
+        try
         {
-          if (sb.length() > 0)
+          Set<PosixFilePermission> permissions = Files.getPosixFilePermissions(path);
+
+          for (PosixFilePermission p : permissions)
           {
-            sb.append(',');
+            if (sb.length() > 0)
+            {
+              sb.append(',');
+            }
+            sb.append(p.name());
           }
-          sb.append(p.name());
+        }
+        catch (UnsupportedOperationException e)
+        {
+          // This is a Windows thing
+          FileResolver.log.warn("Could not get POSIX permissions", e);
         }
         return sb.toString();
       }
@@ -290,6 +303,6 @@ public class FileResolver extends ResolverImp
   {
     FILE,
     DIRECTORY,
-    SYMLINK;
+    SYMLINK
   }
 }
