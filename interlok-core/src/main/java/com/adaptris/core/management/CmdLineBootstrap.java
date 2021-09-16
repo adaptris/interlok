@@ -171,23 +171,27 @@ abstract class CmdLineBootstrap {
         @Override
         public void run() {
           Thread.currentThread().setName(threadName);
-          try {
-            bootstrap.start();
-          }
-          catch (Throwable e) {
-            System.err.println("(Error) Adapter Startup failure :" + e.getMessage());
-            logException(e);
-          }
+          bootStart(bootstrap);
         }
       });
       launcher.setDaemon(false);
       launcher.start();
     }
     else {
-      bootstrap.start();
+      bootStart(bootstrap);
     }
   }
 
+  private void bootStart(final UnifiedBootstrap bootstrap) {
+    try {
+      bootstrap.start();
+    }
+    catch (Throwable e) {
+      System.err.println("(Error) Adapter Startup failure :" + e.getMessage());
+      logException(e);
+    }
+  }
+  
   private static void logException(Throwable e) {
     try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw, true)) {
       pw.println("(Error) Adapter Startup Failure Exception Details");
