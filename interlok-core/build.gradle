@@ -86,7 +86,7 @@ dependencies {
     exclude group: "com.zaxxer", module: "HikariCP-java7"
   }
   api ("com.zaxxer:HikariCP:5.0.0")
-  api ("net.sf.saxon:Saxon-HE:10.5")
+  api ("net.sf.saxon:Saxon-HE:10.6")
   api ("xerces:xercesImpl:2.12.1")
   api ("com.mchange:c3p0:0.9.5.5")
   api ("org.apache-extras.beanshell:bsh:2.0b6")
