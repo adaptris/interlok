@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -65,7 +67,9 @@ public class ExpiringMapCache implements Cache {
   @AutoPopulated
   @NotNull
   private ExpiringMapCacheListener eventListener;
-
+  @InputFieldDefault(value = "true")
+  private Boolean allowExpirationOverrides;
+  
   private transient ExpiringMap<String, Object> cache;
 
   public ExpiringMapCache() {
@@ -97,8 +101,11 @@ public class ExpiringMapCache implements Cache {
    */
   @Override
   public void put(String key, Object value, long ttl) throws CoreException {
-    // Make sure the expiration policy is CREATED.
-    cache.put(key, value, ExpirationPolicy.CREATED, ttl, TimeUnit.MILLISECONDS);
+    if(allowExpirationOverrides())
+      // Make sure the expiration policy is CREATED.
+      cache.put(key, value, ExpirationPolicy.CREATED, ttl, TimeUnit.MILLISECONDS);
+    else
+      cache.put(key, value);
   }
 
   /**
@@ -110,8 +117,11 @@ public class ExpiringMapCache implements Cache {
    */
   @Override
   public void put(String key, Serializable value, long ttl) throws CoreException {
+    if(allowExpirationOverrides())
     // Make sure the expiration policy is CREATED.
-    cache.put(key, value, ExpirationPolicy.CREATED, ttl, TimeUnit.MILLISECONDS);
+      cache.put(key, value, ExpirationPolicy.CREATED, ttl, TimeUnit.MILLISECONDS);
+    else
+      put(key, value);
   }
 
   @Override
@@ -201,5 +211,35 @@ public class ExpiringMapCache implements Cache {
   public ExpiringMapCache withEventListener(ExpiringMapCacheListener p) {
     setEventListener(p);
     return this;
+  }
+  
+  public ExpiringMapCache withAllowsExpirationOverrides(boolean overrides) {
+    setAllowExpirationOverrides(overrides);
+    return this;
+  }
+
+  protected Boolean allowExpirationOverrides() {
+    return BooleanUtils.toBooleanDefaultIfNull(getAllowExpirationOverrides(), true);
+  }
+  
+  public Boolean getAllowExpirationOverrides() {
+    return allowExpirationOverrides;
+  }
+
+  /**
+   * If 'true' will allow each cache item to specify a variable expiry time period.  If 'false'
+   * the default timeout period is used.
+   * @param allowExpirationOverrides
+   */
+  public void setAllowExpirationOverrides(Boolean allowExpirationOverrides) {
+    this.allowExpirationOverrides = allowExpirationOverrides;
+  }
+
+  public ExpiringMap<String, Object> getCache() {
+    return cache;
+  }
+
+  public void setCache(ExpiringMap<String, Object> cache) {
+    this.cache = cache;
   }
 }

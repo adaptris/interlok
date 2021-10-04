@@ -21,6 +21,11 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
@@ -28,20 +33,82 @@ import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import com.adaptris.core.CoreException;
 import com.adaptris.util.TimeInterval;
 import net.jodah.expiringmap.ExpirationPolicy;
+import net.jodah.expiringmap.ExpiringMap;
 
 public class ExpiringMapCacheTest {
 
+  @Mock
+  private ExpiringMap<String, Object> mockCache;
+  
+  private AutoCloseable openMocks;
+  
   @Before
   public void setUp() throws Exception {
+    openMocks = MockitoAnnotations.openMocks(this);
   }
 
   @After
   public void tearDown() {
-
+    try {
+      openMocks.close();
+    } catch (Exception e) {
+    }
   }
 
+  @Test
+  public void testWithLongOverride() throws CoreException {
+    ExpiringMapCache cache = new ExpiringMapCache()
+        .withExpiration(new TimeInterval(1l, TimeUnit.SECONDS))
+        .withAllowsExpirationOverrides(true);
+    
+    cache.setCache(mockCache);
+    cache.put("key", "value", new TimeInterval(1l, TimeUnit.MINUTES).toMilliseconds());
+    
+    verify(mockCache).put(anyString(), anyString(), any(ExpirationPolicy.class), anyLong(), any(TimeUnit.class));
+  }
+  
+  @Test
+  public void testWithNoLongOverride() throws CoreException {
+    ExpiringMapCache cache = new ExpiringMapCache()
+        .withExpiration(new TimeInterval(1l, TimeUnit.SECONDS))
+        .withAllowsExpirationOverrides(false);
+    
+    cache.setCache(mockCache);
+    cache.put("key", "value", new TimeInterval(1l, TimeUnit.MINUTES).toMilliseconds());
+    
+    verify(mockCache).put(anyString(), anyString());
+  }
+  
+  @Test
+  public void testWithLongOverrideObject() throws CoreException {
+    ExpiringMapCache cache = new ExpiringMapCache()
+        .withExpiration(new TimeInterval(1l, TimeUnit.SECONDS))
+        .withAllowsExpirationOverrides(true);
+    
+    cache.setCache(mockCache);
+    cache.put("key", new Object(), new TimeInterval(1l, TimeUnit.MINUTES).toMilliseconds());
+    
+    verify(mockCache).put(anyString(), any(Object.class), any(ExpirationPolicy.class), anyLong(), any(TimeUnit.class));
+  }
+  
+  @Test
+  public void testWithNoLongOverrideObject() throws CoreException {
+    ExpiringMapCache cache = new ExpiringMapCache()
+        .withExpiration(new TimeInterval(1l, TimeUnit.SECONDS))
+        .withAllowsExpirationOverrides(false);
+    
+    cache.setCache(mockCache);
+    cache.put("key", new Object(), new TimeInterval(1l, TimeUnit.MINUTES).toMilliseconds());
+    
+    verify(mockCache).put(anyString(), any(Object.class));
+  }
+  
   @Test
   public void testMaxEntries() throws Exception {
     ExpiringMapCache cache = new ExpiringMapCache();
