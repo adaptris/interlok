@@ -2,7 +2,6 @@ package com.adaptris.core.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Optional;
 import java.util.ServiceLoader;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageImp;
@@ -27,6 +26,7 @@ import lombok.Getter;
  * </p>
  * 
  * @see ExternalResolver
+ * @see Resolver#canHandle(String)
  * @see AdaptrisMessage#resolve(String)
  */
 public class InputFieldExpression {
@@ -71,7 +71,7 @@ public class InputFieldExpression {
    * </p>
    * 
    * @param configuredValue the configured value.
-   * @return if the value is considered something that is an expression (within reason).
+   * @return true if the value is considered something that is an expression (within reason).
    */
   public static boolean isExpression(String configuredValue) {
     return IMPL.getExpressionList().stream().filter((resolver) -> resolver.matches(configuredValue)).findFirst()
