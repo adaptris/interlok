@@ -47,7 +47,7 @@ public class InputFieldExpression {
 
   private static final InputFieldExpression IMPL = new InputFieldExpression();
 
-  public InputFieldExpression() {
+  private InputFieldExpression() {
     Iterable<Resolver> resolvers = ServiceLoader.load(Resolver.class);
     for (Resolver r : resolvers) {
       expressionList.add((v) -> r.canHandle(v));
