@@ -50,10 +50,11 @@ public class WriteMetadataToFilesystemTest extends MetadataServiceExample {
   @Test
   public void testDestination() throws Exception {
     WriteMetadataToFilesystem service = new WriteMetadataToFilesystem();
+    assertNull(service.getBaseUrl());
     assertNull(service.getDestination());
     try {
       LifecycleHelper.init(service);
-      fail("Service initialised with a null destination");
+      fail("Service initialised with a null destination and base URL");
     }
     catch (CoreException expected) {
 

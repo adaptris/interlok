@@ -31,6 +31,7 @@ import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -164,9 +165,13 @@ public class ReadMetadataFromFilesystem extends MetadataServiceImpl {
 
   @Override
   protected void initService() throws CoreException {
-    logWarningIfNotNull(destWarning, () -> destWarning = true, destination,
-          "{} uses destination, use 'base-url' instead", LoggingHelper.friendlyName(this));
-    mustHaveEither(baseUrl, destination);
+    try {
+      logWarningIfNotNull(destWarning, () -> destWarning = true, destination,
+              "{} uses destination, use 'base-url' instead", LoggingHelper.friendlyName(this));
+      mustHaveEither(baseUrl, destination);
+    } catch (IllegalArgumentException e) {
+      throw ExceptionHelper.wrapCoreException(e);
+    }
   }
 
   public InputStyle getInputStyle() {
