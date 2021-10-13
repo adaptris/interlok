@@ -17,6 +17,7 @@
 package com.adaptris.core;
 
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -29,6 +30,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 // just looks shit.
 @XStreamAlias("configured-produce-destination")
 @DisplayOrder(order = {"destination"})
+@Deprecated(forRemoval = true)
+@ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
 public final class ConfiguredProduceDestination extends ConfiguredDestination {
 
   public ConfiguredProduceDestination() {

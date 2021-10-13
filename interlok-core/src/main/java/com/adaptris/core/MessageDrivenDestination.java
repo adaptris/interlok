@@ -17,12 +17,16 @@
 package com.adaptris.core;
 
 
+import com.adaptris.validation.constraints.ConfigDeprecated;
+
 /**
  * <p>
  * Implementations of this interface return a <code>String</code> destination
  * (e.g. queue name, URL) to be used by <code>AdaptrisMessageProducer</code>.
  * </p>
  */
+@Deprecated(forRemoval = true)
+@ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
 public interface MessageDrivenDestination extends ProduceDestination {
 
 }

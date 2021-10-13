@@ -18,6 +18,8 @@ package com.adaptris.core.jms;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import javax.jms.Destination;
+
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdvancedConfig;
@@ -36,6 +38,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jms-reply-to-destination")
 @DisplayOrder(order = {"objectMetadataKey"})
+@Deprecated(forRemoval = true)
+@ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
 public class JmsReplyToDestination implements MessageDrivenDestination {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass());
