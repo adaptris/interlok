@@ -18,12 +18,15 @@ package com.adaptris.core.services.aggregator;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConsumeDestination;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 
 /**
  * Generate a {@link ConsumeDestination} based on the message currently being processed.
  * 
  * 
  */
+@Deprecated(forRemoval = true)
+@ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
 public interface ConsumeDestinationGenerator {
 
   ConsumeDestination generate(AdaptrisMessage msg);

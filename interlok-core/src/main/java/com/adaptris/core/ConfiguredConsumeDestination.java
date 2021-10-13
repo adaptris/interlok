@@ -18,6 +18,7 @@ package com.adaptris.core;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -31,6 +32,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("configured-consume-destination")
 @DisplayOrder(order = {"destination", "filterExpression"})
+@Deprecated(forRemoval = true)
+@ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
 public final class ConfiguredConsumeDestination extends ConsumeDestinationImp {
 
   private String destination;
