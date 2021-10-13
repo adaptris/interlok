@@ -16,20 +16,6 @@
 
 package com.adaptris.core.services.metadata;
 
-import static com.adaptris.core.services.metadata.ReadMetadataFromFilesystemTest.BASE_DIR;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
@@ -43,6 +29,22 @@ import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.services.metadata.WriteMetadataToFilesystem.OutputStyle;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.GuidGenerator;
+import org.junit.Test;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
+import static com.adaptris.core.services.metadata.ReadMetadataFromFilesystemTest.BASE_DIR;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class WriteMetadataToFilesystemTest extends MetadataServiceExample {
 
@@ -72,6 +74,15 @@ public class WriteMetadataToFilesystemTest extends MetadataServiceExample {
     assertNotNull(service.getDestination());
     assertEquals("dest", service.getDestination().getDestination(new DefaultMessageFactory().newMessage()));
   }
+
+  @Test
+  public void testDestinationReplacement() {
+    WriteMetadataToFilesystem service = new WriteMetadataToFilesystem();
+    assertNull(service.getDestination());
+    service.setBaseUrl("C://some/path/to/somewhere");
+    assertEquals("C://some/path/to/somewhere", service.getBaseUrl());
+  }
+
 
   @Test
   public void testSetMetadataFilter() throws Exception {
