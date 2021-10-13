@@ -13,46 +13,78 @@
  */
 package com.adaptris.core.common;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MessageDrivenDestination;
 import com.adaptris.core.util.Args;
 import com.adaptris.interlok.types.InterlokMessage;
+import com.adaptris.validation.constraints.ConfigDeprecated;
+import lombok.Getter;
+import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.validation.Valid;
+
+import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
+import static com.adaptris.core.util.DestinationHelper.mustHaveEither;
 
 public abstract class FileParameter {
   protected transient Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Valid
-  @NotNull(message = "destination may not be null")
+  @Getter
+  @Deprecated(forRemoval = true)
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'destination-path' instead", groups = Deprecated.class)
   private MessageDrivenDestination destination;
 
+  /**
+   * The directory specified as a path.
+   */
+  @Valid
+  @InputFieldHint(expression = true)
+  @Getter
+  @Setter
+  // Needs to be @NotBlank when destination is removed.
+  private String url;
+
+  private transient boolean destWarning;
 
   protected String url(InterlokMessage msg) throws CoreException {
-    Args.notNull(getDestination(), "destination");
+
+    warnDeprecated();
+
     if (msg instanceof AdaptrisMessage) {
+
+      if (url != null) {
+        return msg.resolve(url);
+      }
+
       return getDestination().getDestination((AdaptrisMessage) msg);
     } else {
       throw new RuntimeException("Message is not instance of Adaptris Message");
     }
   }
 
-  public MessageDrivenDestination getDestination() {
-    return destination;
+  private void warnDeprecated() {
+    logWarningIfNotNull(destWarning, () -> destWarning = true, destination,
+            "{} uses destination, use 'url' instead", this.getClass().getSimpleName());
+    mustHaveEither(url, destination);
   }
+
 
   /**
    * Set the destination for the file data input.
    *
    * @param d the destination.
    */
+  @Deprecated
   public void setDestination(MessageDrivenDestination d) {
     destination = Args.notNull(d, "destination");
   }
 
+  @Deprecated
   public <T extends FileParameter> T withDestination(MessageDrivenDestination d) {
     setDestination(d);
     return (T) this;
