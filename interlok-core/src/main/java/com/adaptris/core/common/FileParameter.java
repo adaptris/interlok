@@ -35,7 +35,7 @@ public abstract class FileParameter {
 
   @Valid
   @Getter
-  @Deprecated(forRemoval = true)
+  @Deprecated()
   @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'destination-path' instead", groups = Deprecated.class)
   private MessageDrivenDestination destination;
 

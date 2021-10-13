@@ -33,7 +33,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("consume-destination-from-metadata")
 @DisplayOrder(order = {"destinationMetadataKey", "defaultDestination", "filterMetadataKey", "defaultFilterExpression"})
-@Deprecated(forRemoval = true)
+@Deprecated()
 @ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
 public class ConsumeDestinationFromMetadata implements ConsumeDestinationGenerator {
   private String defaultDestination;

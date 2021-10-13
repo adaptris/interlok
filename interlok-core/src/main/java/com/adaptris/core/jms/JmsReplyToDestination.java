@@ -38,7 +38,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("jms-reply-to-destination")
 @DisplayOrder(order = {"objectMetadataKey"})
-@Deprecated(forRemoval = true)
+@Deprecated()
 @ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
 public class JmsReplyToDestination implements MessageDrivenDestination {
 

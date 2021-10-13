@@ -32,7 +32,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("configured-consume-destination")
 @DisplayOrder(order = {"destination", "filterExpression"})
-@Deprecated(forRemoval = true)
+@Deprecated()
 @ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
 public final class ConfiguredConsumeDestination extends ConsumeDestinationImp {
 

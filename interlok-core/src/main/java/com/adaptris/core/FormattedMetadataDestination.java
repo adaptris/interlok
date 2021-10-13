@@ -68,7 +68,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  */
 @XStreamAlias("formatted-metadata-destination")
 @DisplayOrder(order = {"destinationTemplate", "metadataKeys", "objectMetadataKeys"})
-@Deprecated(forRemoval = true)
+@Deprecated()
 @ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
 public class FormattedMetadataDestination implements MessageDrivenDestination {
 

@@ -27,7 +27,7 @@ import com.adaptris.core.util.Args;
  * behaviour common to all implementations.
  * </p>
  */
-@Deprecated(forRemoval = true)
+@Deprecated()
 @ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
 public abstract class ConsumeDestinationImp implements ConsumeDestination {
 

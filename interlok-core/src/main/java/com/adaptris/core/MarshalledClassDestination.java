@@ -45,7 +45,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("marshalled-class-destination")
 @DisplayOrder(order = {"defaultDestination", "mappings", "marshaller"})
-@Deprecated(forRemoval = true)
+@Deprecated()
 @ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
 public final class MarshalledClassDestination implements MessageDrivenDestination {
 

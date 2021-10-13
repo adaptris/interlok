@@ -26,7 +26,7 @@ import com.adaptris.validation.constraints.ConfigDeprecated;
  * messages to consume.
  * </p>
  */
-@Deprecated(forRemoval = true)
+@Deprecated()
 @ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
 public interface ConsumeDestination {
 

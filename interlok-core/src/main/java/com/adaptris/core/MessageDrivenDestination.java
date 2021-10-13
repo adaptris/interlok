@@ -25,7 +25,7 @@ import com.adaptris.validation.constraints.ConfigDeprecated;
  * (e.g. queue name, URL) to be used by <code>AdaptrisMessageProducer</code>.
  * </p>
  */
-@Deprecated(forRemoval = true)
+@Deprecated()
 @ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
 public interface MessageDrivenDestination extends ProduceDestination {
 

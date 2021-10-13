@@ -41,7 +41,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("exception-destination")
 @DisplayOrder(order = {"exceptionMapping", "defaultDestination"})
-@Deprecated(forRemoval = true)
+@Deprecated()
 @ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
 public class ExceptionDestination implements MessageDrivenDestination {
 

@@ -82,7 +82,7 @@ public class WriteMetadataToFilesystem extends ServiceImp {
   private OutputStyle outputStyle;
 
   @Valid
-  @Deprecated(forRemoval = true)
+  @Deprecated()
   @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'destination-path' instead", groups = Deprecated.class)
   private MessageDrivenDestination destination;
 

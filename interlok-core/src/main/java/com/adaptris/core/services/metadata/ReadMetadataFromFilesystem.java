@@ -76,7 +76,7 @@ public class ReadMetadataFromFilesystem extends MetadataServiceImpl {
   private InputStyle inputStyle;
 
   @Valid
-  @Deprecated(forRemoval = true)
+  @Deprecated()
   @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'destination-path' instead", groups = Deprecated.class)
   private MessageDrivenDestination destination;
 

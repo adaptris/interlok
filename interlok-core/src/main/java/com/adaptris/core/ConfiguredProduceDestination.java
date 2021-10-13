@@ -30,7 +30,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 // just looks shit.
 @XStreamAlias("configured-produce-destination")
 @DisplayOrder(order = {"destination"})
-@Deprecated(forRemoval = true)
+@Deprecated()
 @ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
 public final class ConfiguredProduceDestination extends ConfiguredDestination {
 
