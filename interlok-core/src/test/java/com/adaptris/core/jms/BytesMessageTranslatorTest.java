@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyByte;
+import static org.mockito.ArgumentMatchers.anyByte;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import java.io.ByteArrayOutputStream;
@@ -30,7 +30,6 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageEOFException;
 import javax.jms.Session;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

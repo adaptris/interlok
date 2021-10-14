@@ -16,6 +16,29 @@
 
 package com.adaptris.core.ftp;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.ArgumentMatchers.matches;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+import java.io.FileFilter;
+import java.io.OutputStream;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.concurrent.TimeUnit;
+import org.apache.oro.io.GlobFilenameFilter;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.StandaloneConsumer;
@@ -26,31 +49,6 @@ import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.util.TimeInterval;
-import org.apache.oro.io.GlobFilenameFilter;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
-import java.io.FileFilter;
-import java.io.OutputStream;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.anyObject;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.ArgumentMatchers.matches;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
 
 public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
 
@@ -329,7 +327,7 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
   private void setFilesToConsume(final String[] fileNames, final String[] filePayloads, final long[] lastModified)
       throws Exception {
     when(mockFileTransferClient.dir(DIR_ROOT)).thenReturn(fileNames);
-    when(mockFileTransferClient.dir(matches(DIR_ROOT), (FileFilter) anyObject())).thenReturn(fileNames);
+    when(mockFileTransferClient.dir(matches(DIR_ROOT), any(FileFilter.class))).thenReturn(fileNames);
     for (int i = 0; i < fileNames.length; i++) {
       final int count = i;
       when(mockFileTransferClient.get("/" + fileNames[count])).thenReturn(filePayloads[count].getBytes());
