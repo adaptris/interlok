@@ -31,7 +31,6 @@ public class RequestReplyProducerTest {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testProduce_AdaptrisMessage_ProduceDestination() throws Exception {
     MockRequestReplyProducer mock = createAndStart();
     try {
@@ -84,7 +83,6 @@ public class RequestReplyProducerTest {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testRequest_AdaptrisMessage_ProduceDestination() throws Exception {
     MockRequestReplyProducer mock = createAndStart();
     try {
@@ -98,7 +96,6 @@ public class RequestReplyProducerTest {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testRequest_AdaptrisMessage_ProduceDestination_Long() throws Exception {
     MockRequestReplyProducer mock = createAndStart();
     try {

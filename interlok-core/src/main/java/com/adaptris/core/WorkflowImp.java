@@ -794,7 +794,6 @@ public abstract class WorkflowImp implements Workflow {
     return comments;
   }
 
-  @SuppressWarnings("deprecation")
   public MessageLogger messageLogger() {
     return ObjectUtils.defaultIfNull(getMessageLogger(), DEFAULT_MSG_LOGGER);
   }

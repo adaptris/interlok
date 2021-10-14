@@ -16,18 +16,17 @@
 
 package com.adaptris.core;
 
-import com.adaptris.core.stubs.MockChannel;
-import com.adaptris.core.stubs.MockMessageProducer;
-import org.junit.Test;
-import org.quartz.Scheduler;
-
-import java.util.Iterator;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import java.util.Iterator;
+import org.junit.Test;
+import org.quartz.Scheduler;
+import com.adaptris.core.stubs.MockChannel;
+import com.adaptris.core.stubs.MockMessageProducer;
 
+@SuppressWarnings("rawtypes")
 public class QuartzCronPollerTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
 
   private static final String PAYLOAD = "The Quick Brown Fox Jumps Over The Lazy Dog";
@@ -212,7 +211,6 @@ public class QuartzCronPollerTest extends com.adaptris.interlok.junit.scaffoldin
     assertEquals("No. Produced messages = 0", 0, mock2.getMessages().size());
   }
 
-  @SuppressWarnings("deprecation")
   private StandardWorkflow createWorkflow(QuartzCronPoller poller, AdaptrisMessageProducer prod) {
     PollingTrigger trigger = new PollingTrigger(poller, new StaticPollingTemplate(PAYLOAD));
     StandardWorkflow result = new StandardWorkflow();

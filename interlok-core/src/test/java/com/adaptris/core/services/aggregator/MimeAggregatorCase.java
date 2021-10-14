@@ -38,7 +38,6 @@ import com.adaptris.core.services.metadata.AddMetadataService;
 import com.adaptris.core.stubs.DefectiveMessageFactory;
 import com.adaptris.util.text.mime.BodyPartIterator;
 
-@SuppressWarnings("deprecation")
 public abstract class MimeAggregatorCase extends AggregatorCase {
 
   protected static final String PAYLOAD = "Pack my box with five dozen liquor jugs.";

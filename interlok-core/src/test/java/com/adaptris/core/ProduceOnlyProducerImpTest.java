@@ -39,7 +39,6 @@ public class ProduceOnlyProducerImpTest {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testProduce_Message_ProduceDestination() throws Exception {
     MockMessageProducer mock = createAndStart();
     try {
@@ -52,7 +51,6 @@ public class ProduceOnlyProducerImpTest {
   }
 
   @Test(expected = UnsupportedOperationException.class)
-  @SuppressWarnings("deprecation")
   public void testRequest_Message() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
     MockMessageProducer mock = createAndStart();
@@ -64,7 +62,6 @@ public class ProduceOnlyProducerImpTest {
   }
 
   @Test(expected = UnsupportedOperationException.class)
-  @SuppressWarnings("deprecation")
   public void testRequest_Message_Long() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
     MockMessageProducer mock = createAndStart();
@@ -76,7 +73,6 @@ public class ProduceOnlyProducerImpTest {
   }
 
   @Test(expected = UnsupportedOperationException.class)
-  @SuppressWarnings("deprecation")
   public void testRequest_Message_Destination() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
     MockMessageProducer mock = createAndStart();
@@ -88,7 +84,6 @@ public class ProduceOnlyProducerImpTest {
   }
 
   @Test(expected = UnsupportedOperationException.class)
-  @SuppressWarnings("deprecation")
   public void testRequest_Message_Destination_Long() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
     MockMessageProducer mock = createAndStart();

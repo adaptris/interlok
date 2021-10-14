@@ -25,7 +25,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -34,10 +33,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageEncoderImp;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -517,7 +514,6 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testProduce_WithUsernamePassword() throws Exception {
     String threadName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
@@ -560,7 +556,6 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testProduce_WithMetadataUsernamePassword() throws Exception {
     String threadName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
@@ -606,7 +601,6 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testProduce_WithUsernamePassword_BadCredentials() throws Exception {
     String threadName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
@@ -650,7 +644,6 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testProduce_WithDynamicUsernamePassword() throws Exception {
     String threadName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
@@ -900,8 +893,9 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     }
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  protected Object retrieveObjectForSampleConfig() {
+  protected StandaloneProducer retrieveObjectForSampleConfig() {
     StandardHttpProducer producer =
         new StandardHttpProducer().withURL("http://myhost.com/url/to/post/to");
     CompositeRequestHeaders headers = new CompositeRequestHeaders(

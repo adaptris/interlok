@@ -264,7 +264,6 @@ public class FtpProducerTest extends FtpProducerCase {
     return createForTests(SERVER_ADDRESS);
   }
 
-  @SuppressWarnings("deprecation")
   private FtpProducer createForTests(String endPoint) {
     FtpProducer ftpProducer = new FtpProducer();
     if (endPoint.equals(SERVER_ADDRESS)) {
