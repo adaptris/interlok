@@ -24,6 +24,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.servlet.Servlet;
+import javax.servlet.ServletContext;
+import org.eclipse.jetty.security.Authenticator;
+import org.eclipse.jetty.security.Authenticator.AuthConfiguration;
+import org.eclipse.jetty.security.ConstraintSecurityHandler;
+import org.eclipse.jetty.security.IdentityService;
+import org.eclipse.jetty.security.LoginService;
 import org.eclipse.jetty.security.SecurityHandler;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -164,7 +170,9 @@ public class JettyServerManager implements ServerManager {
       log.trace("No ROOT WebAppContext, creating one");
       root = new WebAppContext();
       root.setContextPath("/");
+      root.setSecurityHandler(defaultSecurityStub());
       URL defaultsURL = findDefaultDescriptorXML();
+      log.trace("Using default descriptor [{}]", defaultsURL);
       root.setDefaultsDescriptor(defaultsURL.toString());
       root.setConfigurations(new Configuration[]
       {
@@ -184,6 +192,27 @@ public class JettyServerManager implements ServerManager {
     return root;
   }
 
+  // Will be reconfigured as required, in the absence of explicit config
+  // 9.4.44.v20210927 causes JASPI to come into play which ultimately causes
+  // a NPE because not everything required by jaspi is in play...
+  // This is related to javaee / java.auth.security.message
+  // c.f. SecurityHandler#doStart() -> and the section about
+  // getKnownAuthenticatorFactories()...
+  private static SecurityHandler defaultSecurityStub() {
+    ConstraintSecurityHandler defaultSecurity = new ConstraintSecurityHandler();
+    defaultSecurity.setAuthenticatorFactory(new Authenticator.Factory() {
+
+      @Override
+      public Authenticator getAuthenticator(Server server, ServletContext context,
+          AuthConfiguration configuration, IdentityService identityService,
+          LoginService loginService) {
+        return null;
+      }
+      
+    });
+    return defaultSecurity;
+  }
+  
   private URL findDefaultDescriptorXML() {
     URL defaultsURL = getClass().getClassLoader().getResource(OVERRIDE_DESCRIPTOR_XML);
     // if null, then jetty-webdefault-failsafe.xml is used, which always exists in the jar file.
