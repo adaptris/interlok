@@ -24,7 +24,6 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.util.text.mime.BodyPartIterator;
 import com.adaptris.util.text.mime.ByteArrayIterator;
 
-@SuppressWarnings("deprecation")
 public class MimeHelperTest extends MimeHelper {
 
   public static final String TEXT = "The quick brown fox";

@@ -25,7 +25,6 @@ import com.adaptris.core.services.LoggingServiceImpl.LoggingLevel;
 import com.adaptris.core.util.MinimalMessageLogger;
 import com.adaptris.core.util.PayloadMessageLogger;
 
-@SuppressWarnings("deprecation")
 public class LogMessageServiceTest extends GeneralServiceExample {
 
   @Override

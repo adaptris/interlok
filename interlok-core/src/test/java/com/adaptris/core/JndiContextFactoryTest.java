@@ -37,7 +37,6 @@ import com.adaptris.core.management.SystemPropertiesUtil;
 import com.adaptris.core.util.JndiHelper;
 import com.adaptris.naming.adapter.NamingContext;
 
-@SuppressWarnings("deprecation")
 public class JndiContextFactoryTest {
 
   private Properties env = new Properties();

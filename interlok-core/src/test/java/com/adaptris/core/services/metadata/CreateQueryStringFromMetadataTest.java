@@ -28,7 +28,6 @@ import com.adaptris.core.MetadataCollection;
 import com.adaptris.core.metadata.MetadataFilterImpl;
 import com.adaptris.core.metadata.RegexMetadataFilter;
 
-@SuppressWarnings("deprecation")
 public class CreateQueryStringFromMetadataTest extends MetadataServiceExample {
 
 

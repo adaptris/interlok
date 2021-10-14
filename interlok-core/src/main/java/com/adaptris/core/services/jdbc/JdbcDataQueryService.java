@@ -184,7 +184,6 @@ public class JdbcDataQueryService extends JdbcServiceWithParameters implements D
     }
   }
 
-  @SuppressWarnings("unchecked")
   private void initXmlHelper(AdaptrisMessage msg) throws CoreException {
     NamespaceContext namespaceCtx = SimpleNamespaceContext.create(getNamespaceContext(), msg);
     DocumentBuilderFactoryBuilder builder = documentFactoryBuilder();

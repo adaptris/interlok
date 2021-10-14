@@ -25,15 +25,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.activation.DataSource;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.SharedInputStream;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-
 import com.adaptris.core.util.Args;
 
 class ReadonlyFileDataSource implements DataSource, Closeable, MimeConstants, MimeHeaders {
@@ -99,7 +96,6 @@ class ReadonlyFileDataSource implements DataSource, Closeable, MimeConstants, Mi
   }
 
   @Override
-  @SuppressWarnings("deprecation")
   public void close() throws IOException {
     for (SharedFileInputStream child : children) {
       IOUtils.closeQuietly(child);
@@ -129,10 +125,12 @@ class ReadonlyFileDataSource implements DataSource, Closeable, MimeConstants, Mi
       in.skip(start);
     }
 
+    @Override
     public long getPosition() {
       return currentPos;
     }
 
+    @Override
     public InputStream newStream(long start, long finish) {
       SharedFileInputStream stream = null;
 
@@ -156,10 +154,12 @@ class ReadonlyFileDataSource implements DataSource, Closeable, MimeConstants, Mi
 
     }
 
+    @Override
     public int read(byte[] buf) throws IOException {
       return this.read(buf, 0, buf.length);
     }
 
+    @Override
     public int read(byte[] buf, int off, int len) throws IOException {
       if ((currentPos + len) > myLength) {
         // we would read past the end of what we're allowed to.
@@ -174,6 +174,7 @@ class ReadonlyFileDataSource implements DataSource, Closeable, MimeConstants, Mi
       return bytesRead;
     }
 
+    @Override
     public int read() throws IOException {
       if (currentPos == myLength) {
         return -1;
@@ -182,10 +183,12 @@ class ReadonlyFileDataSource implements DataSource, Closeable, MimeConstants, Mi
       return in.read();
     }
 
+    @Override
     public boolean markSupported() {
       return true;
     }
 
+    @Override
     public long skip(long n) throws IOException {
       long count;
       for (count = 0; count != n; count++) {
@@ -196,11 +199,13 @@ class ReadonlyFileDataSource implements DataSource, Closeable, MimeConstants, Mi
       return count;
     }
 
+    @Override
     public synchronized void mark(int readLimit) {
       markedPos = currentPos;
       in.mark(readLimit);
     }
 
+    @Override
     public synchronized void reset() throws IOException {
       currentPos = markedPos;
       in.reset();

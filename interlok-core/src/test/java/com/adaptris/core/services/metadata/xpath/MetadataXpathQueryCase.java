@@ -24,6 +24,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 
+@SuppressWarnings("deprecation")
 public abstract class MetadataXpathQueryCase extends XpathQueryCase {
 
   @Test

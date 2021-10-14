@@ -550,7 +550,6 @@ public class AdapterTest extends com.adaptris.interlok.junit.scaffolding.BaseCas
     }
   }
 
-  @SuppressWarnings("deprecation")
   @Test
   public void testSetters() throws Exception {
     Adapter a = createAdapter("testHeartbeatTimerTask");
@@ -736,7 +735,6 @@ public class AdapterTest extends com.adaptris.interlok.junit.scaffolding.BaseCas
 
   }
 
-  @SuppressWarnings("deprecation")
   private static WorkflowList createQuartzWorkflowList(String prefix, int count) throws Exception {
     WorkflowList wf = new WorkflowList();
     for (int i = 0; i < count; i++) {

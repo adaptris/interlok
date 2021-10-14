@@ -25,7 +25,6 @@ import com.adaptris.core.MetadataElement;
 import com.adaptris.core.http.jetty.JettyRouteCondition.JettyRoute;
 import com.adaptris.core.util.LifecycleHelper;
 
-@SuppressWarnings("deprecation")
 public class JettyRouteSpecTest {
   private static final String NEXT_SERVICE_ID = "nextServiceId";
 

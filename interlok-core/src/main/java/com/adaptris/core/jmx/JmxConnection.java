@@ -16,19 +16,15 @@
 package com.adaptris.core.jmx;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
-
 import java.io.IOException;
 import java.util.Map;
-
 import javax.management.MBeanServerConnection;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import javax.validation.Valid;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -118,7 +114,6 @@ public class JmxConnection extends AllowsRetriesConnection {
     return result;
   }
 
-  @SuppressWarnings("deprecation")
   private void closeQuietly() {
     IOUtils.closeQuietly(connector);
     connector = null;

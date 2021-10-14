@@ -141,7 +141,6 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
    * @throws CoreException wrapping any underlying Exceptions
    */
   @Override
-  @SuppressWarnings("deprecation")
   public void prepare() throws CoreException {
     if (isBlank(uniqueId)) {
       throw new CoreException("invalid unique id [" + uniqueId + "]");

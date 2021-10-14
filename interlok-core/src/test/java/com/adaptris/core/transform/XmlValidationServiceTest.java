@@ -34,7 +34,6 @@ import com.adaptris.transform.validate.ValidationStage;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
-@SuppressWarnings("deprecation")
 public class XmlValidationServiceTest
     extends com.adaptris.interlok.junit.scaffolding.services.TransformServiceExample {
 

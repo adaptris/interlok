@@ -34,7 +34,6 @@ public class DestinationHelperTest extends DestinationHelper {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testConsumeDestinationWarning() {
     logConsumeDestinationWarning(false, () -> { }, "{} warning", "this is a");
     logConsumeDestinationWarning(false, () -> { }, null, "{} warning", "this is a");
