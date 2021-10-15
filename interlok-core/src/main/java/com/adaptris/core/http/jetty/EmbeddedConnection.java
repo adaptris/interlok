@@ -16,6 +16,7 @@
 
 package com.adaptris.core.http.jetty;
 
+import static com.adaptris.core.management.jetty.JettyServerComponent.SERVER_ID;
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -114,8 +115,8 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
       HashMap<String, Object> additionalProperties = new HashMap<String, Object>();
       additionalProperties.put(JettyServerManager.CONTEXT_PATH, wrapper.getUrl());
       additionalProperties.put(JettyServerManager.SECURITY_CONSTRAINTS, getSecurityHandler());
-      serverManager.addServlet(wrapper.getServletHolder(), additionalProperties);
-      serverManager.startDeployment(wrapper.getUrl());
+      serverManager.addServlet(SERVER_ID, wrapper.getServletHolder(), additionalProperties);
+      serverManager.startDeployment(SERVER_ID, wrapper.getUrl());
       log.trace("Added " + wrapper.getServletHolder() + " against " + wrapper.getUrl());
     }
     catch (Exception ex) {
@@ -128,10 +129,10 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
   public void removeServlet(ServletWrapper wrapper) throws CoreException {
     try {
       JettyServerManager serverManager = (JettyServerManager) WebServerManagementUtil.getServerManager();
-      serverManager.stopDeployment(wrapper.getUrl());
-      serverManager.removeDeployment(wrapper.getUrl());
-      serverManager.removeDeployment(wrapper.getServletHolder(), wrapper.getUrl());
-      log.trace("Removed " + wrapper.getServletHolder() + " from " + wrapper.getUrl());
+      serverManager.stopDeployment(SERVER_ID, wrapper.getUrl());
+      serverManager.removeDeployment(SERVER_ID, wrapper.getUrl());
+      serverManager.removeDeployment(SERVER_ID, wrapper.getServletHolder(), wrapper.getUrl());
+      log.trace("Removed {} from {}", wrapper.getServletHolder(), wrapper.getUrl());
     }
     catch (Exception ex) {
       throw ExceptionHelper.wrapCoreException(ex);
