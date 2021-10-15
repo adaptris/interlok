@@ -173,7 +173,7 @@ public class JettyServerComponent implements ManagementComponent {
       try {
         server.stop();
         server.join();
-        log.debug("() Stopped", FRIENDLY_NAME);
+        log.debug("{} Stopped", FRIENDLY_NAME);
       } catch (final Exception ex) {
         log.error("Exception while stopping Jetty", ex);
       }
