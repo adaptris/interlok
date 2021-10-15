@@ -41,7 +41,7 @@ public interface ServerManager {
    * @param servlet - The servlet to be added to the server.
    * @param additionalProperties - Additional properties needed for the deployment.
    * @throws Exception on exception.
-   * @deprecated since 4.3.0, Use addServlet(String, Servlet, Map<>) instead
+   * @deprecated since 4.3.0, Use {@link #addServlet(String, Servlet, Map)} instead
    */
   @Deprecated(since = "4.3.0")
   public void addServlet(Servlet servlet, HashMap<String, Object> additionalProperties)
@@ -124,7 +124,6 @@ public interface ServerManager {
    * @param serverId since the ServerManager may be managing more than one webserver instance
    *        specify a key.
    * @param contextPath - The context path of the deployment.
-   * @param contextPath the path.
    */
   public void stopDeployment(String serverId, String contextPath) throws Exception;
 

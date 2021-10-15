@@ -176,7 +176,7 @@ public class JettyServerManager implements ServerManager {
   /**
    * This will add the servlet to all underlying server instances and is discouraged.
    * 
-   * @deprecated since 4.3.0 use {@link #addServlet(String, ServletHolder, Map<String, Object>)}
+   * @deprecated since 4.3.0 use {@link #addServlet(String, ServletHolder, Map)}
    *             instead. This will be removed without warning.
    */
   @Deprecated(since="4.3.0")
