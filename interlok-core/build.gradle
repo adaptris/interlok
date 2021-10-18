@@ -109,7 +109,7 @@ dependencies {
   testImplementation ("org.apache.activemq:activemq-kahadb-store:$activeMqVersion")
   testImplementation ("org.apache.activemq.protobuf:activemq-protobuf:1.1")
 
-  testImplementation ("org.jruby:jruby-complete:9.3.0.0")
+  testImplementation ("org.jruby:jruby-complete:9.3.1.0")
   testImplementation ("org.mockftpserver:MockFtpServer:2.8.0")
   testImplementation ("org.mockito:mockito-core:$mockitoVersion")
   testImplementation ("org.mockito:mockito-inline:$mockitoVersion")
