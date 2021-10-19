@@ -2,6 +2,7 @@ package com.adaptris.core.management.webserver;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 import javax.servlet.http.HttpServlet;
@@ -18,7 +19,10 @@ public class JettyServerManagerTest {
   
   @Test
   public void testWebServerManagementUtil() {
-    assertNotNull(WebServerManagementUtil.getServerManager());
+    ServerManager mgr = WebServerManagementUtil.getServerManager();
+    assertNotNull(mgr);
+    JettyServerManager jmgr = JettyServerManager.getInstance();
+    assertSame(mgr, jmgr);
   }
   
   @Test

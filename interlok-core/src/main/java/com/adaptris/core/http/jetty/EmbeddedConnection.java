@@ -85,7 +85,7 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
 
   @Override
   protected void initConnection() throws CoreException {
-    waitForJettyStart(WebServerManagementUtil.getServerManager(), maxStartupWaitTimeMs());
+    waitForJettyStart(JettyServerManager.getInstance(), maxStartupWaitTimeMs());
   }
 
   /**
@@ -111,7 +111,7 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
   @Override
   public void addServlet(ServletWrapper wrapper) throws CoreException {
     try {
-      JettyServerManager serverManager = (JettyServerManager) WebServerManagementUtil.getServerManager();
+      JettyServerManager serverManager = JettyServerManager.getInstance();
       HashMap<String, Object> additionalProperties = new HashMap<String, Object>();
       additionalProperties.put(JettyServerManager.CONTEXT_PATH, wrapper.getUrl());
       additionalProperties.put(JettyServerManager.SECURITY_CONSTRAINTS, getSecurityHandler());
@@ -128,7 +128,7 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
   @Override
   public void removeServlet(ServletWrapper wrapper) throws CoreException {
     try {
-      JettyServerManager serverManager = (JettyServerManager) WebServerManagementUtil.getServerManager();
+      JettyServerManager serverManager = JettyServerManager.getInstance();
       serverManager.stopDeployment(SERVER_ID, wrapper.getUrl());
       serverManager.removeDeployment(SERVER_ID, wrapper.getUrl());
       serverManager.removeDeployment(SERVER_ID, wrapper.getServletHolder(), wrapper.getUrl());

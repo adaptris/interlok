@@ -152,7 +152,7 @@ public class JettyServerComponent implements ManagementComponent {
 
     @Override
     void register() {
-      final JettyServerManager jettyManager = (JettyServerManager)WebServerManagementUtil.getServerManager();
+      final JettyServerManager jettyManager = JettyServerManager.getInstance();
       jettyManager.addServer(SERVER_ID, server);
     }
 
@@ -183,7 +183,7 @@ public class JettyServerComponent implements ManagementComponent {
     @Override
     void destroy() {
       try {
-        final JettyServerManager jettyManager = (JettyServerManager)WebServerManagementUtil.getServerManager();
+        final JettyServerManager jettyManager = JettyServerManager.getInstance();
         jettyManager.removeServer(SERVER_ID);
         server.destroy();
         log.debug("{} Destroyed", FRIENDLY_NAME);
