@@ -21,11 +21,8 @@ import org.eclipse.jetty.security.SecurityHandler;
 /**
  * This is a proxy interface for the Jetty Security Handler implementation.
  *
- * @author lchan
- *
- * <!-- NB Cannot fix the warning about the link "reference not found"
- * above because of the way the dependencies go -->
  */
+@FunctionalInterface
 public interface SecurityHandlerWrapper {
 
   /**

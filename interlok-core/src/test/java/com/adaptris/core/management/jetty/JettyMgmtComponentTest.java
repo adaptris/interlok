@@ -28,7 +28,7 @@ public class JettyMgmtComponentTest {
       jetty.init(jettyConfig);
       jetty.start();
       Thread.sleep(250);
-      final ServerManager mgr = WebServerManagementUtil.getServerManager();
+      final JettyServerManager mgr = JettyServerManager.getInstance();
       Awaitility.await().atMost(MAX_STARTUP_WAIT).with().pollInterval(STARTUP_POLL).until(() -> mgr.isStarted());
     } finally {
       stopAndDestroy(jetty);
@@ -47,7 +47,7 @@ public class JettyMgmtComponentTest {
       jetty.init(jettyConfig);
       jetty.start();
       Thread.sleep(250);
-      final ServerManager mgr = WebServerManagementUtil.getServerManager();
+      final JettyServerManager mgr = JettyServerManager.getInstance();
       Awaitility.await().atMost(MAX_STARTUP_WAIT).with().pollInterval(STARTUP_POLL).until(() -> mgr.isStarted());
     } finally {
       stopAndDestroy(jetty);
@@ -67,7 +67,7 @@ public class JettyMgmtComponentTest {
       jetty.init(jettyConfig);
       jetty.start();
       Thread.sleep(250);
-      final ServerManager mgr = WebServerManagementUtil.getServerManager();
+      final JettyServerManager mgr = JettyServerManager.getInstance();
       Awaitility.await().atMost(MAX_STARTUP_WAIT).with().pollInterval(STARTUP_POLL).until(() -> mgr.isStarted());
     } finally {
       stopAndDestroy(jetty);
@@ -87,7 +87,7 @@ public class JettyMgmtComponentTest {
       jetty.init(jettyConfig);
       jetty.start();
       Thread.sleep(250);
-      final ServerManager mgr = WebServerManagementUtil.getServerManager();
+      final JettyServerManager mgr = JettyServerManager.getInstance();
       Awaitility.await().atMost(MAX_STARTUP_WAIT).with().pollInterval(STARTUP_POLL).until(() -> mgr.isStarted());
     } finally {
       stopAndDestroy(jetty);
@@ -108,7 +108,7 @@ public class JettyMgmtComponentTest {
       jetty.init(jettyConfig);
       jetty.start();
       Thread.sleep(250);
-      final ServerManager mgr = WebServerManagementUtil.getServerManager();
+      final JettyServerManager mgr = JettyServerManager.getInstance();
       Awaitility.await().atMost(MAX_STARTUP_WAIT).with().pollInterval(STARTUP_POLL).until(() -> mgr.isStarted());
     } finally {
       stopAndDestroy(jetty);
@@ -129,7 +129,7 @@ public class JettyMgmtComponentTest {
       jetty.init(jettyConfig);
       jetty.start();
       Thread.sleep(250);
-      final ServerManager mgr = WebServerManagementUtil.getServerManager();
+      final JettyServerManager mgr = JettyServerManager.getInstance();
       Awaitility.await().atMost(MAX_STARTUP_WAIT).with().pollInterval(STARTUP_POLL).until(() -> mgr.isStarted());
     } finally {
       stopAndDestroy(jetty);

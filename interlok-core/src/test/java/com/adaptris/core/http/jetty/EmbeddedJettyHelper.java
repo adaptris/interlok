@@ -16,6 +16,7 @@
 
 package com.adaptris.core.http.jetty;
 
+import com.adaptris.core.management.webserver.JettyServerManager;
 import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +48,7 @@ public class EmbeddedJettyHelper {
     jetty.init(jettyConfig);
     jetty.start();
     Thread.sleep(250);
-    final ServerManager mgr = WebServerManagementUtil.getServerManager();
+    final JettyServerManager mgr = JettyServerManager.getInstance();
     while (!mgr.isStarted()) {
       Thread.sleep(250);
     }
