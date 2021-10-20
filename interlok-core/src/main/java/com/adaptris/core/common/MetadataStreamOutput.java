@@ -35,9 +35,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * {@link MessageWrapper} implementation wraps a metadata value as an {@link OutputStream} along with a {@link ByteTranslator}
  * 
- * <p>
- * This can be used in a functionally equivalent way to {@link MetadataOutputStreamWrapper} and can be regarded as its replacement.
- * </p>
  * 
  * @config metadata-stream-output
  * @since 3.10.1
@@ -56,7 +53,7 @@ public class MetadataStreamOutput implements MessageWrapper<OutputStream> {
 
   public MetadataStreamOutput() {
     super();
-    this.setMetadataKey(DEFAULT_METADATA_KEY);
+    setMetadataKey(DEFAULT_METADATA_KEY);
   }
 
   @Override
@@ -70,7 +67,7 @@ public class MetadataStreamOutput implements MessageWrapper<OutputStream> {
   }
 
   public void setMetadataKey(String key) {
-    this.metadataKey = Args.notBlank(key, "metadata key");
+    metadataKey = Args.notBlank(key, "metadata key");
   }
 
   public <T extends MetadataStreamOutput> T withMetadataKey(String e) {
@@ -89,7 +86,7 @@ public class MetadataStreamOutput implements MessageWrapper<OutputStream> {
    * @param t
    */
   public void setTranslator(ByteTranslator t) {
-    this.translator = t;
+    translator = t;
   }
 
   private ByteTranslator translator() {
@@ -111,7 +108,7 @@ public class MetadataStreamOutput implements MessageWrapper<OutputStream> {
     public MetadataOutputStream(InterlokMessage msg, ByteArrayOutputStream out) {
       super(out);
       this.msg = msg;
-      this.byteOut = out;
+      byteOut = out;
     }
 
     @Override

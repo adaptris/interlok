@@ -16,7 +16,8 @@
 
 package com.adaptris.core;
 
-import com.adaptris.validation.constraints.ConfigDeprecated;
+import java.util.function.Function;
+import org.apache.commons.lang3.BooleanUtils;
 
 /**
  * <p>
@@ -39,6 +40,22 @@ public abstract class CoreConstants {
    * </p>
    */
   public static final String STOP_PROCESSING_KEY = "adpstopprocessing";
+  
+  /**
+   * <p>
+   * Metadata value which determines whether or not to stop processing additional services and/or producers
+   * </p>
+   *
+   * @see #STOP_PROCESSING_KEY
+   * @see #KEY_WORKFLOW_SKIP_PRODUCER
+   */
+  public static final String STOP_PROCESSING_VALUE = "true";
+  
+  /**
+   * A simply function check to test if the processing of the given message should stop.
+   */
+  public static final Function<AdaptrisMessage, Boolean> shouldStopProcessing = adaptrisMessage -> 
+      BooleanUtils.toBoolean(adaptrisMessage.getMetadataValue(STOP_PROCESSING_KEY));
 
   /**
    * <p>
@@ -58,22 +75,11 @@ public abstract class CoreConstants {
    * available will still be invoked.</li>
    * <li>{@link com.adaptris.core.PoolingWorkflow} - will cause the producer to be skipped</li>
    * <li>{@link com.adaptris.core.lms.LargeMessageWorkflow} - will cause the producer to be skipped</li>
-   * <li>{@link com.adaptris.core.jms.JmsReplyToWorkflow} - unaffected by this metadata key to ensure that the reply is still sent</li>
    * <li>{@link RequestReplyWorkflow} - unaffected by this metadata key to ensure that a reply to the triggering application can
    * still be sent</li>
    * </ul>
    */
   public static final String KEY_WORKFLOW_SKIP_PRODUCER = "adpworkflowskipproducer";
-
-  /**
-   * <p>
-   * Metadata value which determines whether or not to stop processing additional services and/or producers
-   * </p>
-   *
-   * @see #STOP_PROCESSING_KEY
-   * @see #KEY_WORKFLOW_SKIP_PRODUCER
-   */
-  public static final String STOP_PROCESSING_VALUE = "true";
 
   /**
    * <p>
@@ -178,14 +184,6 @@ public abstract class CoreConstants {
    */
   public static final String SECURITY_V1_COMPATIBILITY = "v1encryption" + "compatibility";
 
-  /**
-   * Metadata key for the FTP reply to name override.
-   *
-   * @deprecated since 3.11.0 if you're using FTP to do request reply, then please don't.
-   */
-  @Deprecated
-  @ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
-  public static final String FTP_REPLYTO_NAME = "ftpreplytoname";
 
   /**
    * Metadata key that allows override of the transform services.
@@ -290,4 +288,6 @@ public abstract class CoreConstants {
    */
   public static final String OBJ_METADATA_ON_FAILURE_CALLBACK = "_onFailureCallback";
 
+
+  public static final String SERIALIZED_MESSAGE_ENCODING = "_interlokMessageSerialization";
 }

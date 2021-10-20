@@ -69,4 +69,7 @@ public class NotEquals implements Operator {
     this.value = value;
   }
 
+  public String toString() {
+    return "not equals to " + getValue();
+  }
 }

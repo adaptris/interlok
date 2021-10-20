@@ -21,16 +21,20 @@ package com.adaptris.core.management.webserver;
  * <p>
  * It contains a {@link ServerManager} which can handle the deployment management.
  * </p>
- * 
- * @author gcsiki
- *
+ * @deprecated since 4.3.0, {@link ServerManager} is a redundant interface; there are no other instances other than
+ * {@link JettyServerManager} and assumption of the {@code javax.servlet} API isn't always appropriate (e.g.
+ * Undertow / Quarkus).
  */
+@Deprecated(since="4.3.0")
 public class WebServerManagementUtil {
 
-	private static ServerManager serverManager = new JettyServerManager();
-
+	/**
+	 * @deprecated since 4.3.0 use {@link JettyServerManager#getInstance()} instead.
+	 * @return a {@link JettyServerManager} instance.
+	 */
+	@Deprecated(since="4.3.0")
 	public static ServerManager getServerManager() {
-		return serverManager;
+		return JettyServerManager.getInstance();
 	}
 
 }

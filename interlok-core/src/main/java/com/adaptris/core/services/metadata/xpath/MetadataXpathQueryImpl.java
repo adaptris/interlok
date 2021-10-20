@@ -27,7 +27,10 @@ import com.adaptris.core.util.Args;
  *
  * @author lchan
  *
+ * @deprecated Use ConfiguredXpathQueryImpl with %message{metadata} syntax to extract XPath from metadata.
+ *
  */
+@Deprecated(since = "4.1.0")
 public abstract class MetadataXpathQueryImpl extends XpathQueryImpl {
 
   @NotBlank

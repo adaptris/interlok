@@ -16,21 +16,25 @@
 
 package com.adaptris.core.jms.activemq;
 
-import static com.adaptris.core.BaseCase.start;
-import static com.adaptris.core.BaseCase.stop;
+import static com.adaptris.interlok.junit.scaffolding.BaseCase.start;
+import static com.adaptris.interlok.junit.scaffolding.BaseCase.stop;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
 import javax.jms.JMSException;
+
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
+
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.StandaloneProducer;
-import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.JmsDestination;
 import com.adaptris.core.jms.PtpProducer;
 import com.adaptris.core.jms.VendorImplementation;
@@ -41,10 +45,23 @@ public class BasicActiveMqImplementationTest {
   @Rule
   public TestName testName = new TestName();
 
+  private static EmbeddedActiveMq activeMqBroker;
+
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
+  
   @Test
   public void testConnectionFactory() throws Exception {
     VendorImplementation mq = create();
-    JmsConnection c = new JmsConnection();
     ActiveMQConnectionFactory f = (ActiveMQConnectionFactory) mq.createConnectionFactory();
     doAssertions(f);
 
@@ -61,15 +78,12 @@ public class BasicActiveMqImplementationTest {
 
   @Test
   public void testRfc6167_Basic() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     StandaloneProducer producer = null;
 
     try {
-      broker.start();
       BasicActiveMqImplementation vendorImp = create();
       PtpProducer ptp = new PtpProducer().withQueue((testName.getMethodName()));
-      producer = new StandaloneProducer(broker.getJmsConnection(vendorImp), ptp);
+      producer = new StandaloneProducer(activeMqBroker.getJmsConnection(vendorImp), ptp);
       start(producer);
       // Send a message so that the session is correct.
       producer.doService(AdaptrisMessageFactory.getDefaultInstance().newMessage("abcde"));
@@ -84,21 +98,17 @@ public class BasicActiveMqImplementationTest {
       assertFalse(jmsDest.noLocal());
     } finally {
       stop(producer);
-      broker.destroy();
     }
   }
 
   @Test
   public void testRfc6167_WithParams() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     StandaloneProducer producer = null;
 
     try {
-      broker.start();
       BasicActiveMqImplementation vendorImp = create();
       PtpProducer ptp = new PtpProducer().withQueue((testName.getMethodName()));
-      producer = new StandaloneProducer(broker.getJmsConnection(vendorImp), ptp);
+      producer = new StandaloneProducer(activeMqBroker.getJmsConnection(vendorImp), ptp);
       start(producer);
       // Send a message so that the session is correct.
       producer.doService(AdaptrisMessageFactory.getDefaultInstance().newMessage("abcde"));
@@ -122,38 +132,33 @@ public class BasicActiveMqImplementationTest {
       assertFalse(jmsDest.noLocal());
     } finally {
       stop(producer);
-      broker.destroy();
     }
   }
 
 
   @Test
   public void testRfc6167_Invalid() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     StandaloneProducer producer = null;
 
     try {
-      broker.start();
       BasicActiveMqImplementation vendorImp = create();
       PtpProducer ptp = new PtpProducer().withQueue((testName.getMethodName()));
-      producer = new StandaloneProducer(broker.getJmsConnection(vendorImp), ptp);
+      producer = new StandaloneProducer(activeMqBroker.getJmsConnection(vendorImp), ptp);
       start(producer);
       // Send a message so that the session is correct.
       producer.doService(AdaptrisMessageFactory.getDefaultInstance().newMessage("abcde"));
       try {
-        JmsDestination jmsDest = vendorImp.createDestination("hello:queue:myQueueName", ptp);
+        vendorImp.createDestination("hello:queue:myQueueName", ptp);
       } catch (JMSException e) {
         assertTrue(e.getMessage().startsWith("failed to parse"));
       }
       try {
-        JmsDestination jmsDest = vendorImp.createDestination(null, ptp);
+        vendorImp.createDestination(null, ptp);
       } catch (JMSException e) {
         assertTrue(e.getMessage().startsWith("failed to parse"));
       }
     } finally {
       stop(producer);
-      broker.destroy();
     }
   }
 

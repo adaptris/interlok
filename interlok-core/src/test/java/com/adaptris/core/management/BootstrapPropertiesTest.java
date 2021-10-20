@@ -47,6 +47,16 @@ public class BootstrapPropertiesTest {
   }
 
   @Test
+  public void testGetOperationTimeout() {
+    BootstrapProperties boot = new BootstrapProperties();
+    assertEquals(Constants.DEFAULT_OPERATION_TIMEOUT.toMilliseconds(), boot.getOperationTimeout());
+    boot.setProperty(Constants.OPERATION_TIMEOUT_PROPERTY, "0");
+    assertEquals(Constants.DEFAULT_OPERATION_TIMEOUT.toMilliseconds(), boot.getOperationTimeout());
+    boot.setProperty(Constants.OPERATION_TIMEOUT_PROPERTY, "5000");
+    assertEquals(5000, boot.getOperationTimeout());
+  }
+
+  @Test
   public void testConstructor() throws Exception {
     new BootstrapProperties();
     Object marker = new Object();

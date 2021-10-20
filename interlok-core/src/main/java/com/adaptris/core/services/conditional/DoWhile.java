@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services.conditional;
 
+import static com.adaptris.core.CoreConstants.shouldStopProcessing;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -59,7 +61,7 @@ public class DoWhile extends While {
         }
         log.trace("Testing condition for 'DO-WHILE', with condition class {}",
             this.getCondition().getClass().getSimpleName());
-      } while (getCondition().evaluate(msg));
+      } while ((!shouldStopProcessing.apply(msg)) && (getCondition().evaluate(msg)));
       log.trace("Logical 'DO-WHILE' completed, exiting.");
     } catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);

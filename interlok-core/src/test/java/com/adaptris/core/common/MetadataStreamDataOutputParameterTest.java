@@ -23,8 +23,6 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -74,6 +72,16 @@ public class MetadataStreamDataOutputParameterTest {
     assertNotSame(TEXT, msg.getContent());
     assertEquals(TEXT, msg.getMetadataValue(DEFAULT_METADATA_KEY));
   }
+  
+  
+  @Test
+  public void testInsert_NullStream() throws Exception {
+    // INTERLOK-3527
+    MetadataStreamOutputParameter p = new MetadataStreamOutputParameter(DEFAULT_METADATA_KEY);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    p.insert(new InputStreamWithEncoding(null, null), msg);
+    assertEquals("", msg.getMetadataValue(DEFAULT_METADATA_KEY));
+  }
 
   @Test
   public void testInsert_Encoding() throws Exception {
@@ -108,30 +116,6 @@ public class MetadataStreamDataOutputParameterTest {
       }
     };
     p.insert(new InputStreamWithEncoding(in, null), msg);
-  }
-
-  @Test
-  @SuppressWarnings("deprecation")
-  public void testWrap() throws Exception {
-    MetadataOutputStreamWrapper p =
-        new MetadataOutputStreamWrapper().withMetadataKey("myMetadataKey");
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    try (OutputStream out = msg.wrap(p)) {
-      IOUtils.write(TEXT, out);
-    }
-    assertEquals(TEXT, msg.getMetadataValue("myMetadataKey"));
-  }
-
-  @Test
-  @SuppressWarnings("deprecation")
-  public void testWrap_WithCharset() throws Exception {
-    MetadataOutputStreamWrapper p = new MetadataOutputStreamWrapper().withMetadataKey("myMetadataKey")
-            .withContentEncoding(UTF_8);
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    try (OutputStream out = msg.wrap(p)) {
-      IOUtils.write(TEXT, out, UTF_8);
-    }
-    assertEquals(TEXT, msg.getMetadataValue("myMetadataKey"));
   }
 
 }

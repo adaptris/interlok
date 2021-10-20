@@ -113,18 +113,6 @@ public class RequestReplyProducerBaseTest extends RequestReplyProducerBase {
   }
 
   @Override
-  public AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination destination)
-      throws ProduceException {
-    return request(msg);
-  }
-
-  @Override
-  public AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination destination,
-      long timeoutMs) throws ProduceException {
-    return request(msg);
-  }
-
-  @Override
   public AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException {
     return request(msg);
   }
@@ -135,10 +123,6 @@ public class RequestReplyProducerBaseTest extends RequestReplyProducerBase {
 
   @Override
   public void produce(AdaptrisMessage msg) throws ProduceException {
-  }
-
-  @Override
-  public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
   }
 
   @Override

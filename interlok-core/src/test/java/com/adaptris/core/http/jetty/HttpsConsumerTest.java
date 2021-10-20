@@ -16,22 +16,12 @@
 
 package com.adaptris.core.http.jetty;
 
-import static com.adaptris.core.security.JunitSecurityHelper.KEYSTORE_PATH;
-import static com.adaptris.core.security.JunitSecurityHelper.KEYSTORE_TYPE;
-import static com.adaptris.core.security.JunitSecurityHelper.SECURITY_PASSWORD;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import java.net.InetAddress;
-import org.junit.Before;
-import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.PortManager;
 import com.adaptris.core.StandaloneConsumer;
-import com.adaptris.core.http.HttpProducer;
 import com.adaptris.core.http.jetty.HttpConnection.HttpConfigurationProperty;
 import com.adaptris.core.http.jetty.HttpConnection.ServerConnectorProperty;
 import com.adaptris.core.http.jetty.HttpsConnection.SslProperty;
@@ -43,6 +33,16 @@ import com.adaptris.http.legacy.HttpsProduceConnection;
 import com.adaptris.http.legacy.SimpleHttpProducer;
 import com.adaptris.http.legacy.VersionedHttpsProduceConnection;
 import com.adaptris.util.KeyValuePair;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.net.InetAddress;
+
+import static com.adaptris.core.security.JunitSecurityHelper.KEYSTORE_PATH;
+import static com.adaptris.core.security.JunitSecurityHelper.KEYSTORE_TYPE;
+import static com.adaptris.core.security.JunitSecurityHelper.SECURITY_PASSWORD;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings("deprecation")
 public class HttpsConsumerTest extends HttpConsumerTest {
@@ -63,14 +63,15 @@ public class HttpsConsumerTest extends HttpConsumerTest {
     HttpConnection connection = createConnection(null);
     ((HttpsConnection) connection).getSslProperties().add(new KeyValuePair(SslProperty.ExcludeProtocols.name(), "SSLv3,TLSv1.1,"));
     MockMessageProducer mockProducer = new MockMessageProducer();
-    HttpProducer myHttpProducer = createProducer(new VersionedHttpsProduceConnection("TLSv1.2"));
+    SimpleHttpProducer myHttpProducer = createProducer(new VersionedHttpsProduceConnection("TLSv1.2"));
     Channel channel = JettyHelper.createChannel(connection, JettyHelper.createConsumer(URL_TO_POST_TO), mockProducer);
     try {
       channel.requestStart();
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
+      myHttpProducer.setUrl(createProduceDestinationUrl(connection.getPort()));
       start(myHttpProducer);
-      AdaptrisMessage reply = myHttpProducer.request(msg, createProduceDestination(connection.getPort()));
+      AdaptrisMessage reply = myHttpProducer.request(msg);
       assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     }
@@ -89,14 +90,15 @@ public class HttpsConsumerTest extends HttpConsumerTest {
     HttpConnection connection = createConnection(null);
     ((HttpsConnection) connection).getSslProperties().add(new KeyValuePair(SslProperty.ExcludeProtocols.name(), "SSLv3"));
     MockMessageProducer mockProducer = new MockMessageProducer();
-    HttpProducer myHttpProducer = createProducer(new VersionedHttpsProduceConnection("SSLv3"));
+    SimpleHttpProducer myHttpProducer = createProducer(new VersionedHttpsProduceConnection("SSLv3"));
     Channel channel = JettyHelper.createChannel(connection, JettyHelper.createConsumer(URL_TO_POST_TO), mockProducer);
     try {
       channel.requestStart();
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
+      myHttpProducer.setUrl(createProduceDestinationUrl(connection.getPort()));
       start(myHttpProducer);
-      AdaptrisMessage reply = myHttpProducer.request(msg, createProduceDestination(connection.getPort()));
+      AdaptrisMessage reply = myHttpProducer.request(msg);
       // SSLv3 context shouldn't be allowed to connect to TLSv1.2 only
       fail();
     }
@@ -128,11 +130,11 @@ public class HttpsConsumerTest extends HttpConsumerTest {
   }
 
   @Override
-  protected HttpProducer createProducer() {
+  protected SimpleHttpProducer createProducer() {
     return createProducer(new HttpsProduceConnection());
   }
 
-  private HttpProducer createProducer(HttpsProduceConnection https) {
+  private SimpleHttpProducer createProducer(HttpsProduceConnection https) {
     SimpleHttpProducer p = new SimpleHttpProducer();
     https.setKeystore(PROPERTIES.getProperty(JunitSecurityHelper.KEYSTORE_URL));
     https.setAlwaysTrust(true);
@@ -183,9 +185,8 @@ public class HttpsConsumerTest extends HttpConsumerTest {
   }
 
   @Override
-  protected ConfiguredProduceDestination createProduceDestination(int port) {
-    ConfiguredProduceDestination d = new ConfiguredProduceDestination("https://localhost:" + port + URL_TO_POST_TO);
-    return d;
+  protected String createProduceDestinationUrl(int port) {
+    return "https://localhost:" + port + URL_TO_POST_TO;
   }
 
   @Override

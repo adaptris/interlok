@@ -20,8 +20,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
+
 import java.util.concurrent.TimeUnit;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceException;
@@ -29,7 +34,6 @@ import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 import com.adaptris.core.services.aggregator.AggregatingServiceExample;
-import com.adaptris.core.services.aggregator.ConsumeDestinationFromMetadata;
 import com.adaptris.core.services.aggregator.IgnoreOriginalMimeAggregator;
 import com.adaptris.core.services.aggregator.ReplaceWithFirstMessage;
 import com.adaptris.core.util.MimeHelper;
@@ -44,7 +48,21 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
   private static final String CORRELATION_ID_KEY = "correlationId";
 
   private static final String DEFAULT_FILTER_KEY = "metadataFilterKey";
+  
+  private static EmbeddedActiveMq activeMqBroker;
 
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
+  
   @Override
   protected boolean doStateTests() {
     return false;
@@ -52,10 +70,9 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
 
   @Test
   public void testNoOpMethods() throws Exception {
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    AggregatingJmsConsumeService service = createService(broker);
+    
+    AggregatingJmsConsumeService service = createService(activeMqBroker);
     try {
-      broker.start();
       start(service);
       assertNull(service.configuredCorrelationIdSource());
       assertNull(service.configuredMessageListener());
@@ -66,18 +83,14 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
     }
     finally {
       stop(service);
-      broker.destroy();
     }
-
   }
 
   @Test
   public void testService() throws Exception {
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    AggregatingJmsConsumeService service = createService(broker);
+    AggregatingJmsConsumeService service = createService(activeMqBroker);
     try {
-      broker.start();
-      sendDataMessage(broker);
+      sendDataMessage(activeMqBroker);
       start(service);
       AdaptrisMessage msg = new DefaultMessageFactory().newMessage(PAYLOAD);
       msg.addMetadata(DEFAULT_FILTER_KEY, "JMSCorrelationID = '0001'");
@@ -87,17 +100,14 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
     }
     finally {
       stop(service);
-      broker.destroy();
     }
   }
 
   @Test
   public void testServiceWithTimeout() throws Exception {
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
-    AggregatingJmsConsumeService service = createService(broker);
+    AggregatingJmsConsumeService service = createService(activeMqBroker);
     try {
-      broker.start();
-      sendDataMessage(broker);
+      sendDataMessage(activeMqBroker);
       start(service);
       AdaptrisMessage msg = new DefaultMessageFactory().newMessage(PAYLOAD);
       msg.addMetadata(DEFAULT_FILTER_KEY, "JMSCorrelationID = '0002'");
@@ -110,20 +120,17 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
     }
     finally {
       stop(service);
-      broker.destroy();
     }
   }
 
   @Test
   public void testService_MultipleMessages() throws Exception {
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     AggregatingQueueConsumer consumer = new AggregatingQueueConsumer();
     consumer.setMessageAggregator(new IgnoreOriginalMimeAggregator());
-    AggregatingJmsConsumeService service = createService(broker, consumer);
+    AggregatingJmsConsumeService service = createService(activeMqBroker, consumer, getName());
     try {
-      broker.start();
-      sendDataMessage(broker);
-      sendDataMessage(broker);
+      sendDataMessage(activeMqBroker, getName());
+      sendDataMessage(activeMqBroker, getName());
       start(service);
       AdaptrisMessage msg = new DefaultMessageFactory().newMessage(PAYLOAD);
       msg.addMetadata(DEFAULT_FILTER_KEY, "JMSCorrelationID = '0001'");
@@ -133,7 +140,6 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
     }
     finally {
       stop(service);
-      broker.destroy();
     }
   }
 
@@ -144,19 +150,26 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
   }
 
   private AggregatingJmsConsumeService createService(EmbeddedActiveMq broker, AggregatingQueueConsumer consumer) {
+    return createService(broker, consumer, DATA_QUEUE);
+  }
+  
+  private AggregatingJmsConsumeService createService(EmbeddedActiveMq broker, AggregatingQueueConsumer consumer, String queue) {
     AggregatingJmsConsumeService result = new AggregatingJmsConsumeService();
     result.setConnection(broker.getJmsConnection(new BasicActiveMqImplementation(), true));
-    ConsumeDestinationFromMetadata destination = new ConsumeDestinationFromMetadata();
-    destination.setFilterMetadataKey(DEFAULT_FILTER_KEY);
-    destination.setDefaultDestination(DATA_QUEUE);
-    consumer.setDestination(destination);
+    
+    consumer.setFilterExpression("%message{" + DEFAULT_FILTER_KEY + "}");
+    consumer.setEndpoint(queue);
     consumer.setTimeout(new TimeInterval(5L, TimeUnit.SECONDS));
     result.setJmsConsumer(consumer);
     return result;
   }
 
   private void sendDataMessage(EmbeddedActiveMq broker) throws Exception {
-    PtpProducer producer = new PtpProducer().withQueue(DATA_QUEUE);
+    sendDataMessage(broker, DATA_QUEUE);
+  }
+  
+  private void sendDataMessage(EmbeddedActiveMq broker, String queue) throws Exception {
+    PtpProducer producer = new PtpProducer().withQueue(queue);
     MetadataCorrelationIdSource corr = new MetadataCorrelationIdSource();
     corr.setMetadataKey(CORRELATION_ID_KEY);
     producer.setCorrelationIdSource(corr);
@@ -177,14 +190,13 @@ public class AggregatingJmsConsumeServiceTest extends AggregatingServiceExample 
     AggregatingJmsConsumeService service = null;
 
     service = new AggregatingJmsConsumeService();
-    ConsumeDestinationFromMetadata mfd = new ConsumeDestinationFromMetadata();
-    mfd.setDefaultDestination("SampleQ1");
-    mfd.setFilterMetadataKey("filterSelectorKey");
     JmsConnection jmsConnection = new JmsConnection(new BasicActiveMqImplementation("tcp://localhost:61616"));
     jmsConnection.setConnectionAttempts(2);
     jmsConnection.setConnectionRetryInterval(new TimeInterval(3L, "SECONDS"));
     service.setConnection(jmsConnection);
-    AggregatingQueueConsumer consumer = new AggregatingQueueConsumer(mfd);
+    AggregatingQueueConsumer consumer = new AggregatingQueueConsumer();
+    consumer.setEndpoint("Sample.Q1");
+    consumer.setFilterExpression("%message{filterSelectorKey}");
     consumer.setMessageAggregator(new ReplaceWithFirstMessage());
     consumer.setMessageTranslator(new TextMessageTranslator());
     service.setJmsConsumer(consumer);

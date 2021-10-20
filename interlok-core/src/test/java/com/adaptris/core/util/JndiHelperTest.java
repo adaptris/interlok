@@ -34,7 +34,6 @@ import com.adaptris.core.transaction.DummyTransactionManager;
 import com.adaptris.core.transaction.TransactionManager;
 import com.adaptris.util.GuidGenerator;
 
-@SuppressWarnings("deprecation")
 public class JndiHelperTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
   private Properties env = new Properties();
 

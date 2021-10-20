@@ -16,16 +16,15 @@
 
 package com.adaptris.core.http.client.net;
 
-import java.net.HttpURLConnection;
-import java.net.URL;
-
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.Channel;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.Channel;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class NoOpRequestHeadersTest extends RequestHeadersCase {
   @Before
@@ -41,7 +40,7 @@ public class NoOpRequestHeadersTest extends RequestHeadersCase {
     HttpURLConnection urlC = null;
     try {
       c = HttpHelper.createAndStartChannel();
-      URL url = new URL(HttpHelper.createProduceDestination(c).getDestination());
+      URL url = new URL(HttpHelper.createProduceDestination(c));
       urlC = (HttpURLConnection) url.openConnection();
       String name = testName.getMethodName();
       NoRequestHeaders headers = new NoRequestHeaders();

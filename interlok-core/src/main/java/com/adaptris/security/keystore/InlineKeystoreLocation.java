@@ -172,6 +172,7 @@ final class InlineKeystoreLocation implements KeystoreLocation {
     keystoreType = s;
   }
 
+  @SuppressWarnings({"lgtm [java/weak-cryptographic-algorithm]"})
   private static byte[] calculateHash(byte[] b) {
     byte[] result = null;
     try {

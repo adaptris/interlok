@@ -764,7 +764,8 @@ public class MultiPayloadXmlTransformServiceTest
     assertNotNull(e.getCause());
     List<Class> validClasses = Arrays.asList(classes);
     Throwable t = e.getCause();
-    boolean matches  = validClasses.stream().anyMatch((clazz) -> t.getClass().isAssignableFrom(clazz));
+    boolean matches =
+        validClasses.stream().anyMatch((clazz) -> clazz.isAssignableFrom(t.getClass()));
     assertTrue(matches);
   }
 }

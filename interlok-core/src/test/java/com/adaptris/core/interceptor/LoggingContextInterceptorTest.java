@@ -53,49 +53,6 @@ public class LoggingContextInterceptorTest {
 
   }
 
-  @Test
-  public void testInterceptor() throws Exception {
-    LoggingContextWorkflowInterceptor interceptor = new LoggingContextWorkflowInterceptor();
-    interceptor.setKey(testName.getMethodName());
-    interceptor.setValue(testName.getMethodName());
-    StandardWorkflow wf = StatisticsMBeanCase.createWorkflow("workflow", interceptor);
-    MockMessageProducer prod = new MockMessageProducer();
-    wf.setProducer(prod);
-    wf.getServiceCollection().add(new LoggingContextToMetadata());
-    MockChannel c = new MockChannel();
-    c.getWorkflowList().add(wf);
-    try {
-      BaseCase.start(c);
-      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-      wf.onAdaptrisMessage(msg);
-      Map<String, String> metadata = prod.getMessages().get(0).getMessageHeaders();
-      assertTrue(metadata.containsKey(testName.getMethodName()));
-      assertEquals(testName.getMethodName(), metadata.get(testName.getMethodName()));
-    } finally {
-      BaseCase.stop(c);
-    }
-  }
-
-  @Test
-  public void testInterceptor_UniqueId() throws Exception {
-    LoggingContextWorkflowInterceptor interceptor = new LoggingContextWorkflowInterceptor("MyInterceptor");
-    StandardWorkflow wf = StatisticsMBeanCase.createWorkflow("workflow", interceptor);
-    MockMessageProducer prod = new MockMessageProducer();
-    wf.setProducer(prod);
-    wf.getServiceCollection().add(new LoggingContextToMetadata());
-    MockChannel c = new MockChannel();
-    c.getWorkflowList().add(wf);
-    try {
-      BaseCase.start(c);
-      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-      wf.onAdaptrisMessage(msg);
-      Map<String, String> metadata = prod.getMessages().get(0).getMessageHeaders();
-      assertTrue(metadata.containsKey("MyInterceptor"));
-      assertEquals("MyInterceptor", metadata.get("MyInterceptor"));
-    } finally {
-      BaseCase.stop(c);
-    }
-  }
 
   @Test
   public void testInterceptor_KVP() throws Exception {
@@ -245,13 +202,19 @@ public class LoggingContextInterceptorTest {
     }
   }
 
+  // For coverage in the addDefaults section.
   @Test
-  public void testInterceptor_WorkflowName() throws Exception {
+  public void testInterceptor_Defaults_NoWorkflowId() throws Exception {
     LoggingContextWorkflowInterceptor interceptor = new LoggingContextWorkflowInterceptor(null);
-    StandardWorkflow wf = StatisticsMBeanCase.createWorkflow("workflow", interceptor);
+    interceptor.setAddDefaultKeysAsObjectMetadata(true);
+
+    StandardWorkflow wf = new StandardWorkflow();
+    wf.addInterceptor(interceptor);
+
     MockMessageProducer prod = new MockMessageProducer();
     wf.setProducer(prod);
     wf.getServiceCollection().add(new LoggingContextToMetadata());
+    // MockChannel gives itself an ID.
     MockChannel c = new MockChannel();
     c.getWorkflowList().add(wf);
     try {
@@ -259,59 +222,18 @@ public class LoggingContextInterceptorTest {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
       wf.onAdaptrisMessage(msg);
       Map<String, String> metadata = prod.getMessages().get(0).getMessageHeaders();
-      assertTrue(metadata.containsKey("workflow"));
-      assertEquals("workflow", metadata.get("workflow"));
+      Map<Object, Object> object = prod.getMessages().get(0).getObjectHeaders();
+      assertTrue(metadata.containsKey(CoreConstants.CHANNEL_ID_KEY));
+      assertFalse(metadata.containsKey(CoreConstants.WORKFLOW_ID_KEY));
+      assertTrue(metadata.containsKey(CoreConstants.MESSAGE_UNIQUE_ID_KEY));
+
+      assertTrue(object.containsKey(CoreConstants.CHANNEL_ID_KEY));
+      assertFalse(object.containsKey(CoreConstants.WORKFLOW_ID_KEY));
+      assertTrue(metadata.containsKey(CoreConstants.MESSAGE_UNIQUE_ID_KEY));
     } finally {
       BaseCase.stop(c);
     }
   }
-
-
-  @Test
-  public void testInterceptor_ChannelName() throws Exception {
-    LoggingContextWorkflowInterceptor interceptor = new LoggingContextWorkflowInterceptor(null);
-    StandardWorkflow wf = StatisticsMBeanCase.createWorkflow(null, interceptor);
-    MockMessageProducer prod = new MockMessageProducer();
-    wf.setProducer(prod);
-    wf.getServiceCollection().add(new LoggingContextToMetadata());
-    MockChannel c = new MockChannel();
-    c.getWorkflowList().add(wf);
-    try {
-      BaseCase.start(c);
-      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-      wf.onAdaptrisMessage(msg);
-      Map<String, String> metadata = prod.getMessages().get(0).getMessageHeaders();
-      assertTrue(metadata.containsKey(c.getUniqueId()));
-      assertEquals(c.getUniqueId(), metadata.get(c.getUniqueId()));
-    } finally {
-      BaseCase.stop(c);
-    }
-  }
-
-  @Test
-  public void testInterceptor_GuidOnly() throws Exception {
-    LoggingContextWorkflowInterceptor interceptor = new LoggingContextWorkflowInterceptor();
-    interceptor.setUniqueId(null);
-    StandardWorkflow wf = StatisticsMBeanCase.createWorkflow(null, interceptor);
-    MockMessageProducer prod = new MockMessageProducer();
-    wf.setProducer(prod);
-    wf.getServiceCollection().add(new LoggingContextToMetadata());
-    MockChannel c = new MockChannel();
-    c.setUniqueId(null);
-    c.getWorkflowList().add(wf);
-    try {
-      BaseCase.start(c);
-      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-      wf.onAdaptrisMessage(msg);
-      Map<String, String> metadata = prod.getMessages().get(0).getMessageHeaders();
-      metadata.remove(CoreConstants.MLE_SEQUENCE_KEY);
-      // At this point we have no idea what the metadata key will be so just check the size.
-      assertTrue(metadata.size() >= 1);
-    } finally {
-      BaseCase.stop(c);
-    }
-  }
-
 
   private class LoggingContextToMetadata extends ServiceImp {
 

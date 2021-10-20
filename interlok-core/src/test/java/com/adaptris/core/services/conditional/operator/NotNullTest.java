@@ -48,4 +48,8 @@ public class NotNullTest {
     assertFalse(operator.apply(message, null));
   }
 
+  @Test
+  public void testToString() {
+    assertTrue(operator.toString().contains("not null"));
+  }
 }

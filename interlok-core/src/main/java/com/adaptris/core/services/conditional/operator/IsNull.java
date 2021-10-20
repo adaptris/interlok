@@ -48,4 +48,7 @@ public class IsNull implements Operator {
     return StringUtils.isEmpty(object);
   }
 
+  public String toString() {
+    return "is null";
+  }
 }

@@ -229,6 +229,39 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     assertEquals("GET", m2.getMetadataValue(CoreConstants.HTTP_METHOD));
     assertEquals(TEXT, msg.getContent());
   }
+  
+  @Test
+  public void testRequest_ErrorCode_NullResponseBody() throws Exception {
+    // INTERLOK-3527 - make sure we don't get an NPE.
+    MockMessageProducer mock = new MockMessageProducer();
+    HttpConnection jc = HttpHelper.createConnection();
+    JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
+    ServiceList sl = new ServiceList();
+    // To trigger the bug we need the getErrorStream() method to return null.  A response code > 400 will not.
+    sl.add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.SWITCH_PROTOCOL_101)));
+    Channel c = createChannel(jc, createWorkflow(mc, mock, sl));
+    StandardHttpProducer stdHttp = new StandardHttpProducer().withURL(HttpHelper.createURL(c));
+
+    stdHttp.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethodProvider.RequestMethod.GET));
+    stdHttp.setIgnoreServerResponseCode(true);
+    // Metadata stream is the source of the bug, so lets use it here rather than the payload default.
+    stdHttp.setResponseBody(new MetadataStreamOutputParameter());
+    StandaloneRequestor producer = new StandaloneRequestor(stdHttp);
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage();
+    try {
+      start(c);
+      start(producer);
+      producer.doService(msg);
+      waitForMessages(mock, 1);
+    }
+    finally {
+      HttpHelper.stopChannelAndRelease(c);
+      stop(producer);
+    }
+    assertEquals(1, mock.messageCount());
+    AdaptrisMessage m2 = mock.getMessages().get(0);
+    assertEquals("GET", m2.getMetadataValue(CoreConstants.HTTP_METHOD));
+  }
 
   @Test
   public void testRequest_PostMethod_ZeroBytes() throws Exception {
@@ -481,7 +514,6 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testProduce_WithUsernamePassword() throws Exception {
     String threadName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
@@ -524,7 +556,6 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testProduce_WithMetadataUsernamePassword() throws Exception {
     String threadName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
@@ -570,7 +601,6 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testProduce_WithUsernamePassword_BadCredentials() throws Exception {
     String threadName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
@@ -614,7 +644,6 @@ public class StandardHttpProducerTest extends HttpProducerExample {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testProduce_WithDynamicUsernamePassword() throws Exception {
     String threadName = Thread.currentThread().getName();
     Thread.currentThread().setName(getName());
@@ -864,8 +893,9 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     }
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  protected Object retrieveObjectForSampleConfig() {
+  protected StandaloneProducer retrieveObjectForSampleConfig() {
     StandardHttpProducer producer =
         new StandardHttpProducer().withURL("http://myhost.com/url/to/post/to");
     CompositeRequestHeaders headers = new CompositeRequestHeaders(

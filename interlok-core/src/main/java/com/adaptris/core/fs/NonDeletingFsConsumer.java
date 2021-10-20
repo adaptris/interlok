@@ -130,10 +130,6 @@ public class NonDeletingFsConsumer extends FsConsumerImpl {
     return result;
   }
 
-  @Override
-  protected void prepareConsumer() throws CoreException {
-  }
-
   /**
    * @see com.adaptris.core.AdaptrisComponent#init()
    */

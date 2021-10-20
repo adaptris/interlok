@@ -52,7 +52,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  * @see PoolingWorkflow
  */
 public abstract class WorkflowImp implements Workflow {
-  private static final TimeInterval DEFAULT_CHANNEL_UNAVAILBLE_WAIT = new TimeInterval(30L, TimeUnit.SECONDS);
+  private static final TimeInterval DEFAULT_CHANNEL_UNAVAILABLE_WAIT = new TimeInterval(30L, TimeUnit.SECONDS);
   private static final String ID_SEPARATOR = "@";
   private static final MessageLogger DEFAULT_MSG_LOGGER = new DefaultMessageLogger();
 
@@ -84,7 +84,7 @@ public abstract class WorkflowImp implements Workflow {
   @AdvancedConfig
   @InputFieldDefault(value = "true")
   private Boolean sendEvents;
-  @NotNull
+
   @AutoPopulated
   @Valid
   @AdvancedConfig
@@ -130,7 +130,6 @@ public abstract class WorkflowImp implements Workflow {
     // default configured MEH is in Adapter, this is MEHToUse...
     registerActiveMsgErrorHandler(new NullProcessingExceptionHandler());
 
-    setProduceExceptionHandler(new NullProduceExceptionHandler());
     setInterceptors(new ArrayList<WorkflowInterceptor>());
     state = ClosedState.getInstance();
   }
@@ -360,7 +359,9 @@ public abstract class WorkflowImp implements Workflow {
   /** @see com.adaptris.core.Workflow#handleProduceException() */
   @Override
   public void handleProduceException() {
-    produceExceptionHandler.handle(this);
+    if (produceExceptionHandler != null) {
+      produceExceptionHandler.handle(this);
+    }
   }
 
   /**
@@ -617,7 +618,7 @@ public abstract class WorkflowImp implements Workflow {
   }
 
   public long channelUnavailableWait() {
-    return TimeInterval.toMillisecondsDefaultIfNull(getChannelUnavailableWaitInterval(), DEFAULT_CHANNEL_UNAVAILBLE_WAIT);
+    return TimeInterval.toMillisecondsDefaultIfNull(getChannelUnavailableWaitInterval(), DEFAULT_CHANNEL_UNAVAILABLE_WAIT);
   }
 
   /**
@@ -639,8 +640,7 @@ public abstract class WorkflowImp implements Workflow {
    * @param p the produceExceptionHandler to set
    */
   public void setProduceExceptionHandler(ProduceExceptionHandler p) {
-    produceExceptionHandler = Args.notNull(p, "produceExceptionHandler");
-
+    produceExceptionHandler = p;
   }
 
   @Override
@@ -794,7 +794,6 @@ public abstract class WorkflowImp implements Workflow {
     return comments;
   }
 
-  @SuppressWarnings("deprecation")
   public MessageLogger messageLogger() {
     return ObjectUtils.defaultIfNull(getMessageLogger(), DEFAULT_MSG_LOGGER);
   }

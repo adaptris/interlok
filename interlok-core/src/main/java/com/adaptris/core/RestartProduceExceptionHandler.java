@@ -16,6 +16,7 @@
 
 package com.adaptris.core;
 
+import com.adaptris.annotation.Removal;
 import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -26,8 +27,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  *
  * @deprecated since 3.10.2
  */
-@Deprecated
-@ConfigDeprecated(message = "If you need restarting capability use channel-restart-produce-exception-handler or wrap your producer into a standalone-producer and set restart services on failure.", removalVersion = "3.12.0", groups = Deprecated.class)
+@Deprecated(since = "3.10.2")
+@ConfigDeprecated(message = "If you need restarting capability wrap your producer into a standalone-producer and set restart services on failure.", removalVersion = "5.0.0", groups = Deprecated.class)
+@Removal(message = "If you need restarting capability wrap your producer into a standalone-producer and set restart services on failure.", version = "5.0.0")
 @XStreamAlias("restart-produce-exception-handler")
 public class RestartProduceExceptionHandler extends ProduceExceptionHandlerImp {
 

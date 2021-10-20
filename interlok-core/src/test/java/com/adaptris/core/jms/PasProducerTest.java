@@ -16,8 +16,6 @@
 
 package com.adaptris.core.jms;
 
-import com.adaptris.core.ConfiguredConsumeDestination;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
@@ -35,7 +33,7 @@ public class PasProducerTest extends BasicJmsProducerCase {
 
   @Override
   protected String createBaseFileName(Object object) {
-    PasProducer p = (PasProducer) ((StandaloneProducer) object).getProducer();
+    ((StandaloneProducer) object).getProducer();
     return super.createBaseFileName(object);
   }
 
@@ -57,16 +55,14 @@ public class PasProducerTest extends BasicJmsProducerCase {
 
 
   @Override
-  @SuppressWarnings("deprecation")
-  protected DefinedJmsProducer createProducer(ConfiguredProduceDestination dest) {
-    return new PasProducer().withDestination(dest);
+  protected DefinedJmsProducer createProducer(String dest) {
+    return new PasProducer().withTopic(dest);
   }
 
   @Override
-  @SuppressWarnings("deprecation")
-  protected JmsConsumerImpl createConsumer(ConfiguredConsumeDestination dest) {
+  protected JmsConsumerImpl createConsumer(String dest) {
     PasConsumer pas = new PasConsumer();
-    pas.setDestination(dest);
+    pas.setTopic(dest);
     return pas;
   }
 

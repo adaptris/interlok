@@ -19,14 +19,15 @@ package com.adaptris.core.services.conditional.conditions;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.adaptris.core.services.metadata.compare.EndsWith;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
-import com.adaptris.core.services.conditional.conditions.ConditionMetadata;
-import com.adaptris.core.services.conditional.operator.NotNull;
 import com.adaptris.core.services.conditional.operator.IsNull;
+import com.adaptris.core.services.conditional.operator.NotNull;
 import com.adaptris.core.util.LifecycleHelper;
 
 public class ConditionMetadataTest {
@@ -38,6 +39,7 @@ public class ConditionMetadataTest {
   public void setUp() throws Exception {
     message = DefaultMessageFactory.getDefaultInstance().newMessage();
     condition = new ConditionMetadata();
+    condition.setAdditionalLogging(true);
     LifecycleHelper.initAndStart(condition);
   }
 
@@ -72,5 +74,15 @@ public class ConditionMetadataTest {
   public void testMetadataNotSet() throws Exception {
     assertFalse(condition.evaluate(message));
   }
-  
+
+  @Test
+  public void testMetadataEndsWith() throws Exception {
+    condition.setMetadataKey("key1");
+    EndsWith endsWith = new EndsWith();
+    endsWith.setValue("value");
+    condition.setOperator(endsWith);
+    message.addMessageHeader("key1", "some-value");
+
+    assertTrue(condition.evaluate(message));
+  }
 }

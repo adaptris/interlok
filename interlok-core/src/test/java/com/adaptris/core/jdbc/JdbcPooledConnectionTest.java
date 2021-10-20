@@ -133,7 +133,6 @@ public class JdbcPooledConnectionTest
     Thread.currentThread().setName("testConnectionDataSource_Poolsize");
 
     JdbcPooledConnection con = configure(createConnection());
-    con.setTestStatement("");
     con.setConnectUrl("jdbc:derby:memory:" + GUID.safeUUID() + ";create=true");
     con.setDriverImp("org.apache.derby.jdbc.EmbeddedDriver");
     con.setMinimumPoolSize(1);

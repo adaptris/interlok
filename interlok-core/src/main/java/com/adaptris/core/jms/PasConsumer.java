@@ -18,20 +18,19 @@ package com.adaptris.core.jms;
 
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
+import javax.validation.constraints.NotBlank;
 
-import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.interlok.util.Args;
-import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -46,20 +45,9 @@ import lombok.Setter;
 @AdapterComponent
 @ComponentProfile(summary = "Listen for JMS messages on the specified topic", tag = "consumer,jms",
 recommended = {JmsConnection.class})
-@DisplayOrder(order = {"topic", "messageSelector", "destination", "durable",
-    "subscriptionId", "acknowledgeMode", "messageTranslator"})
+@DisplayOrder(order = {"topic", "messageSelector", "durable", "subscriptionId", "acknowledgeMode", "messageTranslator"})
+@NoArgsConstructor
 public class PasConsumer extends JmsConsumerImpl {
-
-  /**
-   * Should we be a durable subscriber.
-   *
-   */
-  @InputFieldDefault(value = "false")
-  @Deprecated
-  @ConfigDeprecated(removalVersion = "4.0.0", message = "Durable subscriptions will be implied if subscription-id is not empty", groups = Deprecated.class)
-  @Getter
-  @Setter
-  private Boolean durable;
 
   /**
    * Our subscription ID.
@@ -78,18 +66,8 @@ public class PasConsumer extends JmsConsumerImpl {
    */
   @Getter
   @Setter
-  // Needs to be @NotBlank when destination is removed.
+  @NotBlank
   private String topic;
-
-  private transient boolean durableWarningLogged = false;
-
-  public PasConsumer() {
-    super();
-  }
-
-  PasConsumer(boolean b) {
-    super(b);
-  }
 
   protected String subscriptionId() {
     if (durable()) {
@@ -102,12 +80,6 @@ public class PasConsumer extends JmsConsumerImpl {
   @Override
   public void prepare() throws CoreException {
     super.prepare();
-    if (getDurable() != null) {
-      LoggingHelper.logWarning(durableWarningLogged, () -> durableWarningLogged = true,
-          "{} uses 'durable', this will be implied if subscrption-id is not blank",
-          LoggingHelper.friendlyName(this));
-
-    }
   }
 
   @Override
@@ -120,7 +92,7 @@ public class PasConsumer extends JmsConsumerImpl {
     VendorImplementation jmsImpl =
         retrieveConnection(JmsConnection.class).configuredVendorImplementation();
     return jmsImpl.createTopicSubscriber(
-        endpoint(), messageSelector(), subscriptionId(), this);
+        getTopic(), getMessageSelector(), subscriptionId(), this);
   }
 
   public PasConsumer withTopic(String t) {
@@ -129,6 +101,6 @@ public class PasConsumer extends JmsConsumerImpl {
   }
 
   boolean durable() {
-    return BooleanUtils.toBooleanDefaultIfNull(getDurable(), false);
+    return Boolean.valueOf(!StringUtils.isBlank(getSubscriptionId()));
   }
 }

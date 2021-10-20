@@ -11,6 +11,7 @@ import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.lang3.BooleanUtils;
 import lombok.extern.slf4j.Slf4j;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 @Slf4j
 public abstract class FileFilterBuilder {
 
@@ -42,7 +43,7 @@ public abstract class FileFilterBuilder {
    * <p>
    * <ul>
    * <li>If filterExpression is empty and filterImpl is the default
-   * '{@value #DEFAULT_FILE_FILTER_IMP}' then a functional filter that accepts all inputs is
+   * '{@link #DEFAULT_FILE_FILTER_IMP}' then a functional filter that accepts all inputs is
    * returned</li>
    * <li>If filterExpression is empty and filterImpl is not the default, then we attempt to use the
    * default no-args constructor using {@code Class.forName(filterImpl).newInstance()}. If there

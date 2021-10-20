@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,10 +23,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.exc.KeystoreException;
 import com.adaptris.security.util.Constants;
@@ -103,7 +101,8 @@ public abstract class KeystoreFactory {
       if (System.getProperties().containsKey(KEYSTORE_FACTORY_CLASS)) {
         String cls = System.getProperty(KEYSTORE_FACTORY_CLASS);
         try {
-          defaultFactory = (KeystoreFactory) Class.forName(cls).newInstance();
+          defaultFactory =
+              (KeystoreFactory) Class.forName(cls).getDeclaredConstructor().newInstance();
         }
         catch (Exception e) {
           logR.warn("Failed to create custom keystore factory " + cls
@@ -134,7 +133,7 @@ public abstract class KeystoreFactory {
    * Create a KeyStoreLocation instance.
    * <p>
    * Valid URLS are in the form <br />
-   * <code>[protocol]://[server]:[port]/[path]?keystoreType=[type]&
+   * <code>[protocol]://[server]:[port]/[path]?keystoreType=[type]&amp;
    * keystorePassword=[password]</code>
    * <ul>
    * <li>protocol - the protocol to use, e.g. http</li>
@@ -146,9 +145,9 @@ public abstract class KeystoreFactory {
    * </ul>
    * </p>
    * <p>
-   * An example would be <code>http://www.adaptris.com/my.ks?keystoreType=JKS&
+   * An example would be <code>http://www.adaptris.com/my.ks?keystoreType=JKS&amp;
    * keystorePassword=ABCDE</code>
-   * or <code>file://localhost/c:/my.ks?keystoreType=JKS&
+   * or <code>file://localhost/c:/my.ks?keystoreType=JKS&amp;
    * keystorePassword=ABCDE</code>
    * </p>
    * @param url the url that contains the keystore. They keystore is required to
@@ -260,7 +259,7 @@ public abstract class KeystoreFactory {
       }
       else {
         try {
-          kp = (KeystoreProxy) clazz.newInstance();
+          kp = (KeystoreProxy) clazz.getDeclaredConstructor().newInstance();
           kp.setKeystoreLocation(ksl);
         }
         catch (Exception e) {

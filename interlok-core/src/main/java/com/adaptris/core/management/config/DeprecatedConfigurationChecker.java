@@ -3,21 +3,19 @@ package com.adaptris.core.management.config;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-
 import com.adaptris.core.Adapter;
-
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public class DeprecatedConfigurationChecker extends AdapterConfigurationChecker {
+public class DeprecatedConfigurationChecker extends ValidationCheckerImpl {
 
   private static final String FRIENDLY_NAME = "Deprecated checks";
   private static final ValidatorFactory JAVAX_VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
+
 
   @Override
   protected void validate(Adapter adapter, ConfigurationCheckReport report) {
@@ -36,8 +34,9 @@ public class DeprecatedConfigurationChecker extends AdapterConfigurationChecker 
 
   private List<String> violationsToWarning(Set<ConstraintViolation<Adapter>> violations) {
     return violations.stream()
-        .map(v -> String.format("Interlok Deprecation Warning: [%1$s] is deprecated. %2$s", v.getPropertyPath(), v.getMessage()))
+        .filter((v) -> !isListImpl(v.getPropertyPath().toString()))
+        .map(v -> String.format("Interlok Deprecation Warning: [%1$s][%2$s]: %3$s",
+            v.getPropertyPath(), friendlyName(v.getLeafBean()), v.getMessage()))
         .collect(Collectors.toList());
   }
-
 }

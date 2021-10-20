@@ -115,8 +115,6 @@ junit.SimpleSequenceNumberTest.basedir=@BUILD_DIR@/junit/SimpleSequenceNumberTes
 junit.jdbc.backreference.url=jdbc:derby:memory:jdbc-backref;create=true
 junit.jdbc.backreference.driver=org.apache.derby.jdbc.EmbeddedDriver
 
-# junit.retry.url=jdbc:derby:memory:jdbc-retry;create=true
-# junit.retry.driver=org.apache.derby.jdbc.EmbeddedDriver
 junit.jdbc.url=jdbc:derby:@BUILD_DIR@/tmp/jdbc/jdbc-tmp;create=true
 junit.jdbc.url.2=jdbc:derby:@BUILD_DIR@/tmp/jdbc/jdbc-failover-tmp
 junit.jdbc.driver=org.apache.derby.jdbc.EmbeddedDriver
@@ -130,8 +128,6 @@ junit.jdbc.storedproc.url.noacl=${default.jdbc.storedproc.url}${default.jdbc.sto
 junit.jdbc.storedproc.username=${default.jdbc.storedproc.username}
 junit.jdbc.storedproc.password=${default.jdbc.storedproc.password}
 junit.jdbc.storedproc.vendor=${default.jdbc.storedproc.vendor}
-junit.jdbc.storedproc.teststatement=${default.jdbc.storedproc.teststatement}
-
 
 junit.test.cfg.root=@BUILD_DIR@
 junit.security.password=ctec123
@@ -230,3 +226,5 @@ junit.urlhelper.local=file://localhost/@BASE_DIR@/src/test/resources/xstream-sta
 # junit.urlhelper.remote=https://development.adaptris.net/index.html
 junit.urlhelper.remote=https://raw.githubusercontent.com/adaptris-labs/interlok-build-parent/master/build.gradle
 junit.urlhelper.classpath=xstream-standard.xml
+
+junit.retry.baseUrl=file://localhost/@BUILD_DIR@/tmp/retry-store

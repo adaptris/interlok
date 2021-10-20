@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core;
 
@@ -66,11 +66,19 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   // If we have %message{key1}%message{key2} group(1) is key2
   // Which is then replaced so it all works out int the end.
-  private static final String RESOLVE_REGEXP = "^.*%message\\{([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
+  public static final String METADATA_RESOLVE_REGEXP = "^.*%message\\{([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
+  public static final String OBJECT_RESOLVE_REGEXP = "^.*%messageObject\\{([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
 
+
+  public static final String UID_RESOLVE_KEY = "%uniqueId";
+  public static final String SIZE_RESOLVE_KEY = "%size";
+  public static final String PAYLOAD_RESOLVE_KEY = "%payload";
+  
   private transient Logger log = LoggerFactory.getLogger(AdaptrisMessage.class);
-  private transient Pattern normalResolver = Pattern.compile(RESOLVE_REGEXP);
-  private transient Pattern dotAllResolver = Pattern.compile(RESOLVE_REGEXP, Pattern.DOTALL);
+  private transient Pattern normalResolver = Pattern.compile(METADATA_RESOLVE_REGEXP);
+  private transient Pattern dotAllResolver = Pattern.compile(METADATA_RESOLVE_REGEXP, Pattern.DOTALL);
+
+  private transient Pattern objectResolver = Pattern.compile(OBJECT_RESOLVE_REGEXP);
 
   private IdGenerator guidGenerator;
   // persistent fields
@@ -88,7 +96,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     UniqueId {
       @Override
       String resolve(String key, AdaptrisMessage msg) {
-        if ("%uniqueId".equalsIgnoreCase(key)) {
+        if (UID_RESOLVE_KEY.equalsIgnoreCase(key)) {
           return msg.getUniqueId();
         }
         return null;
@@ -97,7 +105,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     Size {
       @Override
       String resolve(String key, AdaptrisMessage msg) {
-        if ("%size".equalsIgnoreCase(key)) {
+        if (SIZE_RESOLVE_KEY.equalsIgnoreCase(key)) {
           return String.valueOf(msg.getSize());
         }
         return null;
@@ -106,7 +114,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     Payload {
       @Override
       String resolve(String key, AdaptrisMessage msg) {
-        if ("%payload".equalsIgnoreCase(key)) {
+        if (PAYLOAD_RESOLVE_KEY.equalsIgnoreCase(key)) {
           return msg.getContent();
         }
         return null;
@@ -135,7 +143,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   protected AdaptrisMessageImp(IdGenerator guid, AdaptrisMessageFactory fac) {
     this();
     factory = fac;
-    metadata = new HashSet<MetadataElement>();
+    metadata = new HashSet<>();
     objectMetadata = new HashMap<>();
     guidGenerator = guid;
     messageLifeCycle = new MessageLifecycleEvent();
@@ -221,7 +229,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   /** @see AdaptrisMessage#clearMetadata() */
   @Override
   public synchronized void clearMetadata() {
-    metadata = new HashSet<MetadataElement>();
+    metadata = new HashSet<>();
   }
 
   /** @see AdaptrisMessage#getMetadataValue(String) */
@@ -235,7 +243,8 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   /** @see AdaptrisMessage#getMetadata(String) */
   @Override
-  public MetadataElement getMetadata(String key) { // lgtm [java/unsynchronized-getter]
+  @SuppressWarnings({"lgtm[java/unsynchronized-getter]"})  
+  public MetadataElement getMetadata(String key) {
     String resolved = resolveKey(this, key);
 
     if (key != null && headersContainsKey(resolved)) {
@@ -246,7 +255,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   @Override
   public Map<String, String> getMessageHeaders() {
-    Map<String, String> newSet = new HashMap<String, String>();
+    Map<String, String> newSet = new HashMap<>();
     for (MetadataElement kp : metadata) {
       newSet.put(kp.getKey(), kp.getValue());
     }
@@ -254,8 +263,9 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   }
 
   @Override
-  public Set<MetadataElement> getMetadata() { // lgtm [java/unsynchronized-getter]
-    return new HashSet<MetadataElement>(metadata);
+  @SuppressWarnings({"lgtm[java/unsynchronized-getter]"})  
+  public Set<MetadataElement> getMetadata() {
+    return new HashSet<>(metadata);
   }
 
   @Override
@@ -273,14 +283,14 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   public Reader getReader() throws IOException {
     return getContentEncoding() != null
         ? new InputStreamReader(getInputStream(), getContentEncoding())
-        : new InputStreamReader(getInputStream());
+            : new InputStreamReader(getInputStream());
   }
 
   @Override
   public Writer getWriter() throws IOException {
     return getContentEncoding() != null
         ? new OutputStreamWriter(getOutputStream(), getContentEncoding())
-        : new OutputStreamWriter(getOutputStream());
+            : new OutputStreamWriter(getOutputStream());
   }
 
   @Override
@@ -378,6 +388,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     return resolve(s, dotAll ? dotAllResolver : normalResolver);
   }
 
+
   private String resolve(String s, Pattern pattern) {
     String result = s;
     Matcher m = pattern.matcher(s);
@@ -395,6 +406,32 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
       m = pattern.matcher(result);
     }
     return result;
+  }
+
+  /**
+   * Retrieve an object from headers/metadata using an expression: %messageObject{some_key}
+   *
+   * @param s The expression to use to resolve the object.
+   *
+   * @return The header/metadata object, or null.
+   */
+  @Override
+  public Object resolveObject(String s) {
+    if (s == null) {
+      return null;
+    }
+    Matcher m = objectResolver.matcher(s);
+    if (m.matches()) {
+      String key = m.group(1);
+      if (objectMetadata.containsKey(key)) {
+        return objectMetadata.get(key);
+      }
+      return null;
+    }
+    if (objectMetadata.containsKey(s)) {
+      return objectMetadata.get(s);
+    }
+    return s;
   }
 
   private String internalResolve(String key) {
@@ -470,7 +507,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     MessageLifecycleEvent copy = getMessageLifecycleEvent().clone();
     ((AdaptrisMessageImp) result).messageLifeCycle = copy;
 
-    Map objMdCopy = new HashMap();
+    Map<Object, Object> objMdCopy = new HashMap<>();
     objMdCopy.putAll(getObjectHeaders());
     ((AdaptrisMessageImp) result).objectMetadata = objMdCopy;
 
@@ -479,7 +516,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   private Set<MetadataElement> cloneMetadata() throws CloneNotSupportedException {
     Set<MetadataElement> metadata = getMetadata();
-    Set<MetadataElement> result = new HashSet<MetadataElement>();
+    Set<MetadataElement> result = new HashSet<>();
     for (MetadataElement m : metadata) {
       result.add((MetadataElement) m.clone());
     }

@@ -43,7 +43,8 @@ public class ConditionPayload extends ConditionWithOperator {
   
   @Override
   public boolean evaluate(AdaptrisMessage message) throws CoreException {
-    log.trace("Testing payload condition");
-    return operator().apply(message, message.getContent());
+    boolean result = operator().apply(message, message.getContent());
+    logCondition("{}: evaluating payload {} : result {}", getClass().getSimpleName(), getOperator(), result);
+    return result;
   }
 }

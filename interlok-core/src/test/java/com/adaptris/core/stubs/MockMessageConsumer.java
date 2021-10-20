@@ -20,14 +20,10 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumerImp;
 import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.ClosedState;
-import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.InitialisedState;
 import com.adaptris.core.StartedState;
 import com.adaptris.core.StoppedState;
-import com.adaptris.core.util.DestinationHelper;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * <p>
@@ -38,24 +34,8 @@ import lombok.Setter;
  */
 public class MockMessageConsumer extends AdaptrisMessageConsumerImp {
 
-  @Deprecated
-  @Getter
-  @Setter
-  private ConsumeDestination destination;
-
   public MockMessageConsumer() {
     super();
-  }
-
-  public MockMessageConsumer(ConsumeDestination d, AdaptrisMessageListener m) {
-    super();
-    setDestination(d);
-    registerAdaptrisMessageListener(m);
-  }
-
-  public MockMessageConsumer(ConsumeDestination d) {
-    super();
-    setDestination(d);
   }
 
   public MockMessageConsumer(AdaptrisMessageListener aml) {
@@ -99,10 +79,5 @@ public class MockMessageConsumer extends AdaptrisMessageConsumerImp {
   @Override
   public String getUniqueId() {
     return null;
-  }
-
-  @Override
-  protected String newThreadName() {
-    return DestinationHelper.threadName(retrieveAdaptrisMessageListener(), getDestination());
   }
 }

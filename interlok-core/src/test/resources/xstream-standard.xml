@@ -9,9 +9,6 @@
         <standard-workflow>
           <unique-id>workflow1</unique-id>
           <consumer class="null-message-consumer">
-            <destination class="configured-consume-destination">
-              <destination>dummy</destination>
-            </destination>
           </consumer>
           <service-collection class="service-list">
             <unique-id>serviceListID1</unique-id>

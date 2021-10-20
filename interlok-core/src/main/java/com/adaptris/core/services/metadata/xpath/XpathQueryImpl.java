@@ -16,14 +16,17 @@
 
 package com.adaptris.core.services.metadata.xpath;
 
-import javax.validation.constraints.NotBlank;
-import org.apache.commons.lang3.BooleanUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.Args;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.lang3.BooleanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.validation.constraints.NotBlank;
 
 /**
  * Abstract base class for Metadata Xpath Queries.
@@ -35,21 +38,27 @@ public abstract class XpathQueryImpl implements XpathMetadataQuery {
 
   protected transient Logger logR = LoggerFactory.getLogger(this.getClass());
 
+  /** Specify whether or not an xpath that does not resolve should throw an exception. */
+  @Getter
+  @Setter
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean allowEmptyResults;
+
+  /**
+   * Get the raw XML as the result, instead of text() values.
+   */
+  @Getter
+  @Setter
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
+  private Boolean asXmlString;
+
+  /** The metadata key that will be associated with the resolved xpath expression. */
+  @Getter
   @NotBlank
   @AffectsMetadata
   private String metadataKey;
-
-  public XpathQueryImpl() {
-  }
-
-
-  @Override
-  public String getMetadataKey() {
-    return metadataKey;
-  }
 
   /**
    * Set the metadata key that will be associated with the resolved xpath expression.
@@ -60,21 +69,11 @@ public abstract class XpathQueryImpl implements XpathMetadataQuery {
     metadataKey = Args.notBlank(key, "metadataKey");
   }
 
-  public Boolean getAllowEmptyResults() {
-    return allowEmptyResults;
-  }
-
-  /**
-   * Specify whether or not an xpath that does not resolve should throw an exception.
-   *
-   *
-   * @param b true to allow no results (which may result in an empty string being added as metadata), default false.
-   */
-  public void setAllowEmptyResults(Boolean b) {
-    allowEmptyResults = b;
-  }
-
   protected boolean allowEmptyResults() {
     return BooleanUtils.toBooleanDefaultIfNull(getAllowEmptyResults(), false);
+  }
+
+  protected boolean asXmlString() {
+    return BooleanUtils.toBooleanDefaultIfNull(getAsXmlString(), false);
   }
 }

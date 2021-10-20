@@ -84,20 +84,6 @@ public abstract class DatabaseConnectionCase<T extends DatabaseConnection> exten
     assertRoundtripEquality(conn1, conn2);
   }
 
-  @Test
-  public void testInvalidSelectStatement() throws Exception {
-    DatabaseConnection conn = configure(createConnection());
-    conn.setTestStatement("What Ho");
-    conn.setAlwaysValidateConnection(true);
-    try {
-      LifecycleHelper.init(conn);
-      conn.connect();
-      fail("Expected exception");
-    }
-    catch (Exception expected) {
-      ;
-    }
-  }
 
   @Test
   public void testConnectionWhenNotInitialised() throws Exception {
@@ -114,7 +100,6 @@ public abstract class DatabaseConnectionCase<T extends DatabaseConnection> exten
   @Test
   public void testConnectWithoutDebugMode() throws Exception {
     DatabaseConnection conn = configure(createConnection());
-    conn.setTestStatement(DEFAULT_TEST_STATEMENT);
     conn.setDebugMode(false);
     LifecycleHelper.init(conn);
     conn.connect();
@@ -124,7 +109,6 @@ public abstract class DatabaseConnectionCase<T extends DatabaseConnection> exten
   public void testConnectWithDebugMode() throws Exception {
     DatabaseConnection conn = configure(createConnection());
     conn.setDebugMode(true);
-    conn.setTestStatement(DEFAULT_TEST_STATEMENT);
     LifecycleHelper.init(conn);
     conn.connect();
   }
@@ -133,7 +117,6 @@ public abstract class DatabaseConnectionCase<T extends DatabaseConnection> exten
   public void testConnectWithAlwaysValidate() throws Exception {
     DatabaseConnection conn = configure(createConnection());
     conn.setAlwaysValidateConnection(true);
-    conn.setTestStatement(DEFAULT_TEST_STATEMENT);
     LifecycleHelper.init(conn);
     conn.connect();
   }
@@ -142,7 +125,6 @@ public abstract class DatabaseConnectionCase<T extends DatabaseConnection> exten
   public void testConnectWithoutAlwaysValidate() throws Exception {
     DatabaseConnection conn = configure(createConnection());
     conn.setAlwaysValidateConnection(false);
-    conn.setTestStatement(DEFAULT_TEST_STATEMENT);
     LifecycleHelper.init(conn);
     conn.connect();
   }
@@ -152,7 +134,6 @@ public abstract class DatabaseConnectionCase<T extends DatabaseConnection> exten
     DatabaseConnection conn = configure(createConnection());
     conn.setDebugMode(true);
     conn.setAlwaysValidateConnection(true);
-    conn.setTestStatement(DEFAULT_TEST_STATEMENT);
     LifecycleHelper.init(conn);
     conn.connect();
   }
@@ -235,6 +216,7 @@ public abstract class DatabaseConnectionCase<T extends DatabaseConnection> exten
       LifecycleHelper.close(con);
     }
   }
+
 
   // @Test
 //  public void testConnectionDataSource_NotYetInitialised() throws Exception {

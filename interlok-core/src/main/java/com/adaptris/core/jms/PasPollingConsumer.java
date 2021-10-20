@@ -56,7 +56,7 @@ public class PasPollingConsumer extends JmsPollingConsumerImpl {
    */
   @Getter
   @Setter
-  // Needs to be @NotBlank when destination is removed.
+  @NotBlank
   private String topic;
 
   @NotNull
@@ -88,8 +88,7 @@ public class PasPollingConsumer extends JmsPollingConsumerImpl {
 
   @Override
   protected MessageConsumer createConsumer() throws JMSException {
-    return getVendorImplementation().createTopicSubscriber(endpoint(), messageSelector(),
-        getSubscriptionId(), this);
+    return getVendorImplementation().createTopicSubscriber(getTopic(), getMessageSelector(), getSubscriptionId(), this);
   }
 
   public PasPollingConsumer withTopic(String s) {

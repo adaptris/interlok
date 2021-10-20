@@ -16,11 +16,9 @@
 
 package com.adaptris.core.lifecycle;
 
-import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import com.adaptris.core.Channel;
-import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.Workflow;
 import com.adaptris.core.WorkflowImp;
@@ -35,7 +33,6 @@ public abstract class WorkflowLifecycleStrategyCase
     extends com.adaptris.interlok.junit.scaffolding.BaseCase {
 
   protected IdGenerator idGenerator;
-  protected Logger log = Logger.getLogger(this.getClass());
 
 
   @Before
@@ -120,7 +117,7 @@ public abstract class WorkflowLifecycleStrategyCase
 
   protected Workflow configure(WorkflowImp wf, String uid) {
     wf.setUniqueId(uid);
-    wf.setConsumer(new MockMessageConsumer(new ConfiguredConsumeDestination(uid)));
+    wf.setConsumer(new MockMessageConsumer());
     return wf;
   }
 

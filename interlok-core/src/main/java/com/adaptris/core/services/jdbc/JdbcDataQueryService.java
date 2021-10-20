@@ -140,6 +140,7 @@ public class JdbcDataQueryService extends JdbcServiceWithParameters implements D
    * @see com.adaptris.core.Service#doService(com.adaptris.core.AdaptrisMessage)
    */
   @Override
+  @SuppressWarnings({"lgtm [java/database-resource-leak]"})
   public void doService(AdaptrisMessage msg) throws ServiceException {
     log.trace("Beginning doService");
     JdbcResult result = null;
@@ -159,7 +160,7 @@ public class JdbcDataQueryService extends JdbcServiceWithParameters implements D
       this.getParameterApplicator().applyStatementParameters(msg, preparedStatement, getStatementParameters(), statement);
       try {
         // closed by the finally block which closes the JdbcResult
-        ResultSet rs = preparedStatement.executeQuery(); // lgtm [java/database-resource-leak]
+        ResultSet rs = preparedStatement.executeQuery();
         result = new JdbcResultBuilder().setHasResultSet(true).setResultSet(rs).build();
       } catch (SQLException e) {
         if (ignoreExecuteQueryErrors()) {
@@ -183,7 +184,6 @@ public class JdbcDataQueryService extends JdbcServiceWithParameters implements D
     }
   }
 
-  @SuppressWarnings("unchecked")
   private void initXmlHelper(AdaptrisMessage msg) throws CoreException {
     NamespaceContext namespaceCtx = SimpleNamespaceContext.create(getNamespaceContext(), msg);
     DocumentBuilderFactoryBuilder builder = documentFactoryBuilder();

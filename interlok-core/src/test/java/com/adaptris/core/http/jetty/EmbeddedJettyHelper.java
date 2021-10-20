@@ -16,10 +16,10 @@
 
 package com.adaptris.core.http.jetty;
 
+import com.adaptris.core.management.webserver.JettyServerManager;
 import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.management.jetty.JettyServerComponent;
 import com.adaptris.core.management.jetty.ServerBuilder;
 import com.adaptris.core.management.webserver.ServerManager;
@@ -46,10 +46,9 @@ public class EmbeddedJettyHelper {
   public void startServer() throws Exception {
     jetty = new JettyServerComponent();
     jetty.init(jettyConfig);
-    jetty.setClassLoader(Thread.currentThread().getContextClassLoader());
     jetty.start();
     Thread.sleep(250);
-    final ServerManager mgr = WebServerManagementUtil.getServerManager();
+    final JettyServerManager mgr = JettyServerManager.getInstance();
     while (!mgr.isStarted()) {
       Thread.sleep(250);
     }
@@ -62,9 +61,14 @@ public class EmbeddedJettyHelper {
     jetty = null;
   }
 
-  public ConfiguredProduceDestination createProduceDestination() {
-    log.trace("Destination is " + "http://localhost:" + portForServer + URL_TO_POST_TO);
-    return new ConfiguredProduceDestination("http://localhost:" + portForServer + URL_TO_POST_TO);
+  public String buildUrl(String uri) {
+    String actualUri = uri.startsWith("/") ? uri : "/" + uri;
+    log.trace("Destination is {}{}{}", "http://localhost:", portForServer, actualUri);
+    return "http://localhost:" + portForServer + actualUri;
+  }
+
+  public String createProduceDestination() {
+    return buildUrl(URL_TO_POST_TO);
   }
 
 }

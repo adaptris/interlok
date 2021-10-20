@@ -16,28 +16,19 @@
 
 package com.adaptris.core.jms;
 
-import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
-import static com.adaptris.core.util.DestinationHelper.mustHaveEither;
-
-import java.util.Optional;
-
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Topic;
-import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
-import com.adaptris.core.util.DestinationHelper;
-import com.adaptris.core.util.LoggingHelper;
-import com.adaptris.validation.constraints.ConfigDeprecated;
+import com.adaptris.interlok.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 import lombok.Getter;
@@ -104,24 +95,10 @@ import lombok.Setter;
 @XStreamAlias("jms-topic-producer")
 @AdapterComponent
 @ComponentProfile(summary = "Place message on a JMS Topic", tag = "producer,jms", recommended = {JmsConnection.class})
-@DisplayOrder(order = {"topic", "destination", "messageTranslator", "deliveryMode", "priority",
+@DisplayOrder(order = {"topic", "messageTranslator", "deliveryMode", "priority",
     "ttl", "acknowledgeMode"})
 @NoArgsConstructor
 public class PasProducer extends DefinedJmsProducer {
-
-  /**
-   * The ProduceDestination is the topic to write to.
-   * <p>
-   * Note that this is deprecated, but you may need to use something like
-   * {@link JmsReplyToDestination} until support is available directly using string expressions.
-   * </p>
-   */
-  @Getter
-  @Setter
-  @Deprecated
-  @Valid
-  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'topic' instead if possible", groups = Deprecated.class)
-  private ProduceDestination destination;
 
   /**
    * The JMS Topic
@@ -129,16 +106,12 @@ public class PasProducer extends DefinedJmsProducer {
   @InputFieldHint(expression = true)
   @Getter
   @Setter
-  // Needs to be @NotBlank when destination is removed.
+  @NotBlank
   private String topic;
-
-  private transient boolean destWarning;
 
   @Override
   public void prepare() throws CoreException {
-    logWarningIfNotNull(destWarning, () -> destWarning = true, getDestination(),
-        "{} uses destination, use 'topic' instead if possible", LoggingHelper.friendlyName(this));
-    mustHaveEither(getTopic(), getDestination());
+    Args.notNull(getTopic(), "topic");
     super.prepare();
   }
 
@@ -153,24 +126,18 @@ public class PasProducer extends DefinedJmsProducer {
   }
 
   @Override
-  @SuppressWarnings("deprecation")
   public AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException {
-    ProduceDestination dest = Optional.ofNullable(getDestination())
-        .orElse(new ConfiguredProduceDestination(endpoint(msg)));
-    return request(msg, dest, timeout);
+    return request(msg, endpoint(msg), timeout);
   }
 
   @Override
-  @SuppressWarnings("deprecation")
   public void produce(AdaptrisMessage msg) throws ProduceException {
-    ProduceDestination dest = Optional.ofNullable(getDestination())
-        .orElse(new ConfiguredProduceDestination(endpoint(msg)));
-    produce(msg, dest);
+    produce(msg, endpoint(msg));
   }
 
   @Override
   public String endpoint(AdaptrisMessage msg) throws ProduceException {
-    return DestinationHelper.resolveProduceDestination(getTopic(), getDestination(), msg);
+    return msg.resolve(getTopic());
   }
 
   public PasProducer withTopic(String t) {
@@ -178,9 +145,4 @@ public class PasProducer extends DefinedJmsProducer {
     return this;
   }
 
-  @Deprecated
-  public PasProducer withDestination(ProduceDestination t) {
-    setDestination(t);
-    return this;
-  }
 }

@@ -2,7 +2,6 @@ package com.adaptris.core.management.config;
 
 import com.adaptris.core.Adapter;
 import com.adaptris.core.DefaultMarshaller;
-import com.adaptris.core.config.ConfigPreProcessorLoader;
 import com.adaptris.core.management.BootstrapProperties;
 import lombok.NoArgsConstructor;
 
@@ -12,7 +11,7 @@ public abstract class AdapterConfigurationChecker implements ConfigurationChecke
   @Override
   public ConfigurationCheckReport performConfigCheck(ConfigurationCheckReport report, BootstrapProperties config) {
     try {
-      String xml = ConfigPreProcessorLoader.loadInterlokConfig(config);
+      String xml = CachingConfigLoader.loadInterlokConfig(config);
       Adapter adapter = (Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(xml);
       validate(adapter, report);
     } catch (Exception ex) {

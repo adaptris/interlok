@@ -16,19 +16,9 @@
 
 package com.adaptris.core;
 
-import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
-
-import javax.validation.Valid;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
-import com.adaptris.core.util.DestinationHelper;
-import com.adaptris.core.util.LoggingHelper;
-import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * <p>
@@ -42,34 +32,11 @@ import lombok.Setter;
 @ComponentProfile(summary = "Default NO-OP consumer implementation", tag = "consumer,base", recommended = {NullConnection.class})
 public class NullMessageConsumer extends AdaptrisMessageConsumerImp {
 
-
-  /**
-   * The consume destination is redundant.
-   *
-   */
-  @Getter
-  @Setter
-  @Deprecated
-  @Valid
-  @ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
-  private ConsumeDestination destination;
-
-  private transient boolean destWarning;
-
-
   public NullMessageConsumer() {
     setMessageFactory(null);
   }
 
   @Override
   public void prepare() throws CoreException {
-    logWarningIfNotNull(destWarning, () -> destWarning = true, getDestination(),
-        "{} uses destination, it has no meaning", LoggingHelper.friendlyName(this));
   }
-
-  @Override
-  protected String newThreadName() {
-    return DestinationHelper.threadName(retrieveAdaptrisMessageListener(), getDestination());
-  }
-
 }

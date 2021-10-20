@@ -19,13 +19,13 @@ init:
     echo "org.gradle.warning.mode=none" >>$HOME/.gradle/gradle.properties
 
 environment:
-  JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
+  JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
 
 services: mysql
 
 install:
 - sh: >-
-    echo "default.jdbc.storedproc.tests.enabled=true" >> interlok-core/build.properties
+    echo "default.jdbc.storedproc.tests.enabled=false" >> interlok-core/build.properties
 
     echo "default.jdbc.storedproc.url=jdbc:mysql://localhost:3306/" >> interlok-core/build.properties
 
@@ -50,10 +50,9 @@ cache:
 - $HOME/.gradle/wrapper/
 
 build_script:
-- sh: ./gradlew -Dorg.gradle.console=plain -PverboseTests=true test jacocoTestReport
+- sh: ./gradlew -Dorg.gradle.console=plain -PverboseTests=true test
 
 test: off
 
 # on_success:
 # - sh: bash <(curl -s https://codecov.io/bash)
-

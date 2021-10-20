@@ -4,22 +4,21 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageListener;
-import com.adaptris.core.ConsumeDestination;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.util.LoggingHelper.WarningLoggedCallback;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Optional;
 
 public class DestinationHelper {
 
-  public static void mustHaveEither(String configured, ConsumeDestination legacy) {
-    if (legacy == null && configured == null) {
-      throw new IllegalArgumentException("Must have string configuration or ConsumeDestination");
-    }
-  }
-
-  public static void mustHaveEither(String configured, ProduceDestination legacy) {
-    if (legacy == null && configured == null) {
-      throw new IllegalArgumentException("Must either string configuration or ProduceDestination");
+  /** 
+   * @deprecated will be removed w/o warning since it has no meaning since {@code destination} was removed.
+   */
+  @Deprecated
+  public static void mustHaveEither(String configured) {
+    if (configured == null) {
+      throw new IllegalArgumentException("Must have string configuration");
     }
   }
 
@@ -30,12 +29,16 @@ public class DestinationHelper {
    * Helper method so that consume destinations can still be supported in-situ with string based
    * configurations.
    * </p>
-   *
-   * @return {@code legacy#getDestination()} if legacy is non-null; {@code configured} otherwise.
+   * <p>
+   * No longer accepts a legacy destination (as they no longer exists), but does perform any
+   * validity checks on {@code configured}.
+   * </p>
+   * @deprecated will be removed w/o warning since it has no meaning since {@code destination} was removed.
+   * @return {@code configured}.
    */
-  public static String consumeDestination(final String configured,
-      final ConsumeDestination legacy) {
-    return Optional.ofNullable(legacy).map((d) -> d.getDestination()).orElse(configured);
+  @Deprecated
+  public static String consumeDestination(final String configured) {
+    return configured;
   }
 
   /**
@@ -45,13 +48,16 @@ public class DestinationHelper {
    * Helper method so that consume destinations can still be supported in-situ with string based
    * configurations.
    * </p>
-   *
-   * @return {@code legacy#getFilterExpression()} if legacy is non-null; {@code configured}
-   *         otherwise.
+   * <p>
+   * No longer accepts a legacy destination (as they no longer exists), but does perform any
+   * validity checks on {@code configured}.
+   * </p>
+   * @deprecated will be removed w/o warning since it has no meaning since {@code destination} was removed.
+   * @return {@code configured}.
    */
-  public static String filterExpression(final String configured,
-      final ConsumeDestination legacy) {
-    return Optional.ofNullable(legacy).map((d) -> d.getFilterExpression()).orElse(configured);
+  @Deprecated
+  public static String filterExpression(final String configured) {
+    return configured;
   }
 
 
@@ -61,13 +67,17 @@ public class DestinationHelper {
    * Helper method so that consume destinations can still be supported in-situ with string based
    * configurations.
    * </p>
+   * </p>
+   * <p>
+   * No longer accepts a legacy destination (as they no longer exists), but does perform any
+   * validity checks on {@code listener}.
+   * </p>
    *
-   * @return {@code legacy#getDestination()} if legacy is non-null; {@code listener#friendlyName()}
-   *         otherwise.
+   * @return {@code listener#friendlyName()}.
    */
-  public static String threadName(final AdaptrisMessageListener listener, final ConsumeDestination legacy) {
+  public static String threadName(final AdaptrisMessageListener listener) {
     // If nothings defined, then just use the current name.
-    return threadName(listener, legacy, Thread.currentThread().getName());
+    return threadName(listener, Thread.currentThread().getName());
   }
 
   /**
@@ -76,16 +86,15 @@ public class DestinationHelper {
    * Helper method so that consume destinations can still be supported in-situ with string based
    * configurations.
    * </p>
+   * <p>
+   * No longer accepts a legacy destination (as they no longer exists), but does perform any
+   * validity checks on {@code listener}.
+   * </p>
    *
-   * @return {@code legacy#getDestination()} if legacy is non-null; {@code listener#friendlyName()}
-   *         otherwise.
+   * @return {@code listener#friendlyName()}.
    */
-  public static String threadName(final AdaptrisMessageListener listener,
-      final ConsumeDestination legacy, String defaultName) {
-    String threadName =
-        Optional.ofNullable(listener).map((l) -> l.friendlyName()).orElse(defaultName);
-    return Optional.ofNullable(legacy).map((d) -> d.getDeliveryThreadName())
-        .filter((s) -> StringUtils.isNotEmpty(s)).orElse(threadName);
+  public static String threadName(final AdaptrisMessageListener listener, String defaultName) {
+    return Optional.ofNullable(listener).map((l) -> l.friendlyName()).orElse(defaultName);
   }
 
   /**
@@ -95,20 +104,12 @@ public class DestinationHelper {
    * configurations.
    * </p>
    *
-   * @return {@code legacy.getDestination(msg)} if legacy is non-null;
+   * @deprecated just ms msg.resolve() instead.
+    * @return {@code legacy.getDestination(msg)} if legacy is non-null;
    *         {@code msg.resolve(configured)} otherwise.
    */
-  public static String resolveProduceDestination(String configured, ProduceDestination legacy,
-      AdaptrisMessage msg) throws ProduceException {
-    // I feel a little sad I can't use Optional, and SneakyThrows doesn't made the code more
-    // readable.
-    try {
-      if (legacy != null) {
-        return legacy.getDestination(msg);
-      }
-    } catch (Exception e) {
-      throw ExceptionHelper.wrapProduceException(e);
-    }
+  @Deprecated
+  public static String resolveProduceDestination(String configured, AdaptrisMessage msg) {
     return msg.resolve(configured);
   }
 
@@ -116,16 +117,14 @@ public class DestinationHelper {
    * Log a warning if consume destination is not null.
    *
    * @see LoggingHelper#logWarning(boolean, WarningLoggedCallback, String, Object...)
-   * @deprecated use
-   *             {@code logWarningIfNotNull(boolean, WarningLoggedCallback, Object, String, Object...)}
-   *             instead.
+   * @deprecated will be removed w/o warning since it has no meaning since {@code destination} was removed.
    */
   @Deprecated
   public static void logConsumeDestinationWarning(boolean alreadyLogged,
       WarningLoggedCallback callback,
-      ConsumeDestination d, String text,
+      String text,
       Object... args) {
-    logWarningIfNotNull(alreadyLogged, callback, d, text, args);
+    logWarningIfNotNull(alreadyLogged, callback, null, text, args);
   }
 
   /**
@@ -138,6 +137,7 @@ public class DestinationHelper {
    *
    * @see LoggingHelper#logWarning(boolean, WarningLoggedCallback, String, Object...)
    */
+  @Deprecated
   public static void logWarningIfNotNull(boolean alreadyLogged,
       WarningLoggedCallback callback, Object d, String text, Object... args) {
     if (d != null) {

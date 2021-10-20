@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,7 +18,6 @@ package com.adaptris.util.text.xml;
 
 import java.io.InputStream;
 import java.io.Reader;
-
 import org.apache.xerces.parsers.DOMParser;
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
@@ -29,15 +28,17 @@ import org.xml.sax.SAXParseException;
 
 /**
  * @author Stuart Ellidge
- * 
+ *
  * Convenience class which validates an XML document against a specified schema
  */
 public class Validator {
+
+
   private DOMParser parser = null;
 
   /**
    * Constructor that creates a new Validator object
-   * 
+   *
    * @param schema a valid url to the schema to process
    * @throws Exception if a parse error is encountered
    */
@@ -47,7 +48,7 @@ public class Validator {
 
   /**
    * Constructor that creates a new Validator object
-   * 
+   *
    * @param schema a valid url to the schema to process
    * @param resolver an EntityResolver to use to retrieve included / imported
    *          documents
@@ -61,10 +62,12 @@ public class Validator {
   private DOMParser createParser(String schema) throws Exception {
     DOMParser result = new DOMParser();
 
-    Class poolClass = Class.forName("org.apache.xerces.util.XMLGrammarPoolImpl");
-    Object grammarPool = poolClass.newInstance();
-    result.setProperty("http://apache.org/xml/properties/internal/grammar-pool", grammarPool);
-
+    // pointless class.forName() here, since we can't do any validation
+    // if xerces isn't available
+    // Class poolClass = Class.forName("org.apache.xerces.util.XMLGrammarPoolImpl");
+    // Object grammarPool = poolClass.newInstance();
+    result.setProperty("http://apache.org/xml/properties/internal/grammar-pool",
+        new org.apache.xerces.util.XMLGrammarPoolImpl());
     result.setFeature("http://xml.org/sax/features/validation", true);
     result.setFeature("http://apache.org/xml/features/validation/schema", true);
     result.setProperty("http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation", schema);
@@ -75,7 +78,7 @@ public class Validator {
   /**
    * method which parses an xml document from an input stream, validates it and
    * returns the subsequent Document object.
-   * 
+   *
    * @param xml the xml document as input stream
    * @return the resultant Document (if parsing successful)
    * @throws Exception if the document fails to be validated
@@ -87,7 +90,7 @@ public class Validator {
   /**
    * method which parses an xml document from a Reader, validates it and returns
    * the subsequent Document object.
-   * 
+   *
    * @param xml the xml document as reader
    * @return the resultant Document (if parsing successful)
    * @throws Exception if the document fails to be validated
@@ -99,7 +102,7 @@ public class Validator {
   /**
    * method which parses an xml document from an input source, validates it and
    * returns the subsequent Document object.
-   * 
+   *
    * @param xml the xml document as input source
    * @return the resultant Document (if parsing successful)
    * @throws Exception if the document fails to be validated

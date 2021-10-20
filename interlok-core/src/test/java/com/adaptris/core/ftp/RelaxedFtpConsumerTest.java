@@ -18,7 +18,7 @@ package com.adaptris.core.ftp;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
@@ -39,7 +39,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.StandaloneConsumer;
@@ -51,13 +50,12 @@ import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.util.TimeInterval;
 
-@SuppressWarnings("deprecation")
 public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
 
   private static final String DIR_ROOT = "/";
 
   private RelaxedFtpConsumer consumer;
-  private ConfiguredConsumeDestination consumeDestination;
+  private String consumeDestination;
 
   @Mock private FtpConnection mockFtpConnection;
 
@@ -76,8 +74,8 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
 
     MockitoAnnotations.initMocks(this);
 
-    consumeDestination = new ConfiguredConsumeDestination("myDestination");
-    consumer.setDestination(consumeDestination);
+    consumeDestination = "myDestination";
+    consumer.setFtpEndpoint(consumeDestination);
     consumer.registerConnection(mockFtpConnection);
 
     consumer.setPoller(new FixedIntervalPoller(new TimeInterval(1L, TimeUnit.SECONDS)));
@@ -89,8 +87,8 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
     standaloneConsumer.setConnection(mockFtpConnection);
 
     when(mockFtpConnection.retrieveConnection(FileTransferConnection.class)).thenReturn(mockFtpConnection);
-    when(mockFtpConnection.connect(consumeDestination.getDestination())).thenReturn(mockFileTransferClient);
-    when(mockFtpConnection.getDirectoryRoot(consumeDestination.getDestination())).thenReturn(DIR_ROOT);
+    when(mockFtpConnection.connect(consumeDestination)).thenReturn(mockFileTransferClient);
+    when(mockFtpConnection.getDirectoryRoot(consumeDestination)).thenReturn(DIR_ROOT);
 
     calendarNow = new GregorianCalendar();
     calendarOneYearAgo = new GregorianCalendar();
@@ -249,7 +247,7 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
 
   @Test
   public void testIncorrectPathConsume() throws Exception {
-    when(mockFtpConnection.connect(consumeDestination.getDestination()))
+    when(mockFtpConnection.connect(consumeDestination))
         .thenThrow(new FileTransferException("testIncorrectPathConsume"));
 
     setFilesToConsume(
@@ -292,7 +290,8 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
         new long[] { calendarOneYearAgo.getTimeInMillis() }
     );
 
-    consumer.setDestination(new ConfiguredConsumeDestination("myDestination", "myFilter"));
+    consumer.setFtpEndpoint("myDestination");
+    consumer.setFileFilterImp("myFilter");
     consumer.setFileFilterImp(GlobFilenameFilter.class.getCanonicalName());
 
     LifecycleHelper.init(consumer);
@@ -305,7 +304,7 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
 
   @Test
   public void testWithIncorrectFilterConsume() throws Exception {
-    consumer.setDestination(new ConfiguredConsumeDestination("myDestination", "myFilter"));
+    consumer.setFtpEndpoint("myDestination");
     consumer.setFileFilterImp("xxx");
 
     try {
@@ -328,7 +327,7 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
   private void setFilesToConsume(final String[] fileNames, final String[] filePayloads, final long[] lastModified)
       throws Exception {
     when(mockFileTransferClient.dir(DIR_ROOT)).thenReturn(fileNames);
-    when(mockFileTransferClient.dir(matches(DIR_ROOT), (FileFilter) anyObject())).thenReturn(fileNames);
+    when(mockFileTransferClient.dir(matches(DIR_ROOT), any(FileFilter.class))).thenReturn(fileNames);
     for (int i = 0; i < fileNames.length; i++) {
       final int count = i;
       when(mockFileTransferClient.get("/" + fileNames[count])).thenReturn(filePayloads[count].getBytes());

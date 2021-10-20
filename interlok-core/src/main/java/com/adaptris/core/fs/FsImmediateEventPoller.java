@@ -39,7 +39,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * triggered immediately.
  * </p>
  * <p>
- * Note; This poller implementation should only be used with file system Consumers. And you must configure a (> 0) quiet-period for
+ * Note; This poller implementation should only be used with file system Consumers. And you must configure a (&gt; 0) quiet-period for
  * your fs consumer. The quiet period is used to check that the file has completed it's creation.
  * </p>
  * <p>

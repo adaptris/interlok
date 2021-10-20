@@ -84,7 +84,7 @@ class EncoderWrapper extends OutputStream {
     }
   }
 
-  @SuppressWarnings("deprecation")
+  @SuppressWarnings("unchecked")
   public AdaptrisMessage build() throws Exception {
     IOUtils.closeQuietly(wrapped);
     AdaptrisMessage result = null;

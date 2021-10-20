@@ -22,8 +22,6 @@ import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.util.TimeInterval;
 
 public class PtpPollingConsumerTest extends PollingJmsConsumerCase {
-  private static final long DEFAULT_WAIT = 100;
-
 
   @Override
   protected Object retrieveObjectForSampleConfig() {

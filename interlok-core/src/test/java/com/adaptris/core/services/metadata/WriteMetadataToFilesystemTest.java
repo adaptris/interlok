@@ -16,22 +16,7 @@
 
 package com.adaptris.core.services.metadata;
 
-import static com.adaptris.core.services.metadata.ReadMetadataFromFilesystemTest.BASE_DIR;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.EmptyFileNameCreator;
@@ -43,6 +28,22 @@ import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.services.metadata.WriteMetadataToFilesystem.OutputStyle;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.GuidGenerator;
+import org.junit.Test;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
+import static com.adaptris.core.services.metadata.ReadMetadataFromFilesystemTest.BASE_DIR;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class WriteMetadataToFilesystemTest extends MetadataServiceExample {
 
@@ -50,7 +51,7 @@ public class WriteMetadataToFilesystemTest extends MetadataServiceExample {
   @Test
   public void testDestination() throws Exception {
     WriteMetadataToFilesystem service = new WriteMetadataToFilesystem();
-    assertNull(service.getDestination());
+    assertNull(service.getBaseUrl());
     try {
       LifecycleHelper.init(service);
       fail("Service initialised with a null destination");
@@ -58,18 +59,18 @@ public class WriteMetadataToFilesystemTest extends MetadataServiceExample {
     catch (CoreException expected) {
 
     }
-    service.setDestination(new ConfiguredProduceDestination("dest"));
-    assertNotNull(service.getDestination());
-    assertEquals("dest", service.getDestination().getDestination(new DefaultMessageFactory().newMessage()));
+    service.setBaseUrl("dest");
+    assertNotNull(service.getBaseUrl());
+    assertEquals("dest", service.getBaseUrl());
     try {
-      service.setDestination(null);
+      service.setBaseUrl(null);
       fail();
     }
     catch (IllegalArgumentException e) {
 
     }
-    assertNotNull(service.getDestination());
-    assertEquals("dest", service.getDestination().getDestination(new DefaultMessageFactory().newMessage()));
+    assertNotNull(service.getBaseUrl());
+    assertEquals("dest", service.getBaseUrl());
   }
 
   @Test
@@ -253,7 +254,8 @@ public class WriteMetadataToFilesystemTest extends MetadataServiceExample {
 
   private WriteMetadataToFilesystem createService(String subDir) {
     String baseString = PROPERTIES.getProperty(BASE_DIR);
-    WriteMetadataToFilesystem service = new WriteMetadataToFilesystem(new ConfiguredProduceDestination(baseString + "/" + subDir));
+    WriteMetadataToFilesystem service = new WriteMetadataToFilesystem();
+    service.setBaseUrl(baseString + "/" + subDir);
     return service;
   }
 
@@ -273,7 +275,7 @@ public class WriteMetadataToFilesystemTest extends MetadataServiceExample {
   @Override
   protected WriteMetadataToFilesystem retrieveObjectForSampleConfig() {
     WriteMetadataToFilesystem service = new WriteMetadataToFilesystem();
-    service.setDestination(new ConfiguredProduceDestination("file:////path/to/directory"));
+    service.setBaseUrl("file:////path/to/directory");
     service.setOutputStyle(OutputStyle.Text);
     return service;
   }

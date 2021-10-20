@@ -38,6 +38,8 @@ public class FtpConnectionTest extends FtpPasswordConnectionCase {
     c.setTransferType(TransferType.BINARY);
     c.setFtpDataMode(FtpDataMode.PASSIVE);
     c.setAdditionalDebug(true);
+    c.setSocketTimeout(30000);
+    c.setServerTimezone("Europe/London");
     return c;
   }
 

@@ -16,16 +16,6 @@
 
 package com.adaptris.core.services.metadata;
 
-import static com.adaptris.core.util.MetadataHelper.convertFromProperties;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-import java.util.Set;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -35,13 +25,26 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FileNameCreator;
 import com.adaptris.core.FormattedFilenameCreator;
-import com.adaptris.core.MessageDrivenDestination;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.lang3.BooleanUtils;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+import java.util.Set;
+
+import static com.adaptris.core.util.MetadataHelper.convertFromProperties;
 
 /**
  * <p>
@@ -67,9 +70,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class ReadMetadataFromFilesystem extends MetadataServiceImpl {
 
   private InputStyle inputStyle;
-  @NotNull
-  @Valid
-  private MessageDrivenDestination destination;
+
+  @Getter
+  @NotBlank
+  private String baseUrl;
+
   @InputFieldDefault(value = "false")
   private Boolean overwriteExistingMetadata;
   @AdvancedConfig
@@ -103,16 +108,10 @@ public class ReadMetadataFromFilesystem extends MetadataServiceImpl {
     super();
   }
 
-  public ReadMetadataFromFilesystem(MessageDrivenDestination d) {
-    this();
-    setDestination(d);
-  }
-
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     String filenameToRead = "[could not create filename]";
     try {
-      String baseUrl = getDestination().getDestination(msg);
       File parentFile = FsHelper.toFile(baseUrl);
       File fileToRead = new File(parentFile, filenameCreator().createName(msg));
       if (parentFile.isFile()) {
@@ -140,10 +139,15 @@ public class ReadMetadataFromFilesystem extends MetadataServiceImpl {
   @Override
   protected void initService() throws CoreException {
     try {
-      Args.notNull(getDestination(), "destination");
+      Args.notBlank(baseUrl, "Base URL");
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
+  }
+
+  public void setBaseUrl(String baseUrl) {
+    Args.notBlank(baseUrl, "Base URL");
+    this.baseUrl = baseUrl;
   }
 
   public InputStyle getInputStyle() {
@@ -158,19 +162,6 @@ public class ReadMetadataFromFilesystem extends MetadataServiceImpl {
    */
   public void setInputStyle(InputStyle style) {
     inputStyle = style;
-  }
-
-  public MessageDrivenDestination getDestination() {
-    return destination;
-  }
-
-  /**
-   * Set the destination where things have been written.
-   *
-   * @param d the destination.
-   */
-  public void setDestination(MessageDrivenDestination d) {
-    destination = Args.notNull(d, "destination");
   }
 
   /**

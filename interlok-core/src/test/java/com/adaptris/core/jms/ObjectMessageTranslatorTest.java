@@ -26,6 +26,9 @@ import java.io.OutputStream;
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -33,14 +36,23 @@ import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 
 public class ObjectMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
 
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
+  
   @Test
   public void testObjectMessageToAdaptrisMessage() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = new ObjectMessageTranslator();
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
 
       ObjectMessage jmsMsg = session.createObjectMessage();
       Exception e = new Exception("This is an Exception that was serialized");
@@ -55,18 +67,14 @@ public class ObjectMessageTranslatorTest extends GenericMessageTypeTranslatorCas
     }
     finally {
       stop(trans);
-      broker.destroy();
     }
   }
 
   @Test
   public void testAdaptrisMessageToObjectMessage() throws Exception {
-
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     MessageTypeTranslatorImp trans = new ObjectMessageTranslator();
     try {
-      broker.start();
-      Session session = broker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
+      Session session = activeMqBroker.createConnection().createSession(false, Session.CLIENT_ACKNOWLEDGE);
       start(trans, session);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
       Exception e = new Exception("This is an Exception that was serialized");
@@ -79,8 +87,6 @@ public class ObjectMessageTranslatorTest extends GenericMessageTypeTranslatorCas
     }
     finally {
       stop(trans);
-      broker.destroy();
-
     }
   }
 

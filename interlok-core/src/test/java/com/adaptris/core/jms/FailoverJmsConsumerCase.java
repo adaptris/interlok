@@ -20,6 +20,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.Channel;
@@ -32,15 +35,27 @@ import com.adaptris.core.util.LifecycleHelper;
 public abstract class FailoverJmsConsumerCase
     extends com.adaptris.interlok.junit.scaffolding.jms.JmsConsumerCase {
 
+  private static EmbeddedActiveMq activeMqBroker;
+
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
 
   @Test
   public void testBug1012() throws Exception {
-    EmbeddedActiveMq broker = new EmbeddedActiveMq();
     FailoverJmsConnection connection = new FailoverJmsConnection();
     try {
       List<JmsConnection> ptp = new ArrayList<JmsConnection>();
-      ptp.add(broker.getJmsConnection(new BasicActiveMqImplementation(), true));
-      ptp.add(broker.getJmsConnection(new BasicActiveMqImplementation(), false));
+      ptp.add(activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true));
+      ptp.add(activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), false));
       connection.setConnections(ptp);
       LifecycleHelper.init(connection);
 
@@ -54,8 +69,8 @@ public abstract class FailoverJmsConsumerCase
       connection.setRegisterOwner(true);
       channel.setConsumeConnection(connection);
       ptp = new ArrayList<JmsConnection>();
-      ptp.add(broker.getJmsConnection(new BasicActiveMqImplementation(), true));
-      ptp.add(broker.getJmsConnection(new BasicActiveMqImplementation(), false));
+      ptp.add(activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), true));
+      ptp.add(activeMqBroker.getJmsConnection(new BasicActiveMqImplementation(), false));
       connection.setConnections(ptp);
       connection.setConnectionAttempts(1);
       LifecycleHelper.init(connection);
@@ -64,7 +79,6 @@ public abstract class FailoverJmsConsumerCase
     }
     finally {
       LifecycleHelper.close(connection);
-      broker.destroy();
     }
   }
 

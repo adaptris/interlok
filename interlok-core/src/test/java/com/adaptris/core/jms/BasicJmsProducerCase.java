@@ -24,8 +24,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
 import javax.jms.Destination;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -35,16 +37,18 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.jms.Topic;
 import javax.jms.TopicSubscriber;
+
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQQueueSender;
 import org.apache.activemq.ActiveMQSession;
 import org.apache.activemq.ActiveMQTopicPublisher;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ConfiguredConsumeDestination;
-import com.adaptris.core.ConfiguredProduceDestination;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.StandaloneConsumer;
@@ -58,22 +62,34 @@ import com.adaptris.util.TimeInterval;
 public abstract class BasicJmsProducerCase
     extends com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase {
 
-  protected abstract DefinedJmsProducer createProducer(ConfiguredProduceDestination dest);
+  protected abstract DefinedJmsProducer createProducer(String dest);
 
-  protected abstract JmsConsumerImpl createConsumer(ConfiguredConsumeDestination dest);
+  protected abstract JmsConsumerImpl createConsumer(String dest);
 
   protected abstract Loopback createLoopback(EmbeddedActiveMq mq, String dest);
 
   private static final Logger logger = LoggerFactory.getLogger(BasicJmsProducerCase.class);
 
+  private static EmbeddedActiveMq activeMqBroker;
+
+  @BeforeClass
+  public static void setUpAll() throws Exception {
+    activeMqBroker = new EmbeddedActiveMq();
+    activeMqBroker.start();
+  }
+  
+  @AfterClass
+  public static void tearDownAll() throws Exception {
+    if(activeMqBroker != null)
+      activeMqBroker.destroy();
+  }
+  
   // INTERLOK-2121
   @Test
   public void testProducerSession_Invalided() throws Exception {
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    DefinedJmsProducer producer = createProducer(new ConfiguredProduceDestination(getName()));
+    DefinedJmsProducer producer = createProducer(getName());
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
     try {
-      activeMqBroker.start();
       start(standaloneProducer);
       AdaptrisMessage msg = createMessage();
       standaloneProducer.doService(msg);
@@ -82,18 +98,15 @@ public abstract class BasicJmsProducerCase
       assertNull(producer.producerSession());
     } finally {
       stop(standaloneProducer);
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testProduce_CaptureOutgoingMessageDetails() throws Exception {
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    DefinedJmsProducer producer = createProducer(new ConfiguredProduceDestination(getName()));
+    DefinedJmsProducer producer = createProducer(getName());
     producer.setCaptureOutgoingMessageDetails(true);
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
     try {
-      activeMqBroker.start();
       AdaptrisMessage msg = createMessage();
       ExampleServiceCase.execute(standaloneProducer, msg);
       Map<Object, Object> objectMetadata = msg.getObjectHeaders();
@@ -104,35 +117,28 @@ public abstract class BasicJmsProducerCase
     }
     finally {
       stop(standaloneProducer);
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testProduceAndConsume_IntegerAcknowledgementMode_IntegerDeliveryMode() throws Exception {
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
+    JmsConsumerImpl consumer = createConsumer(getName());
     consumer.setAcknowledgeMode(String.valueOf(AcknowledgeMode.Mode.AUTO_ACKNOWLEDGE.acknowledgeMode()));
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
     standaloneConsumer.registerAdaptrisMessageListener(jms);
-    DefinedJmsProducer producer = createProducer(new ConfiguredProduceDestination(getName()));
+    DefinedJmsProducer producer = createProducer(getName());
     producer.setDeliveryMode(String.valueOf(com.adaptris.core.jms.DeliveryMode.Mode.PERSISTENT.deliveryMode()));
 
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
-    try {
-      activeMqBroker.start();
-      execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
-      assertMessages(jms, 1);
-    }
-    finally {
-      activeMqBroker.destroy();
-    }
+    
+    execute(standaloneConsumer, standaloneProducer, createMessage(), jms);
+    assertMessages(jms, 1);
   }
 
   @Test
   public void testSetProducerSessionFactory() throws Exception {
-    DefinedJmsProducer producer = createProducer(new ConfiguredProduceDestination(getName()));
+    DefinedJmsProducer producer = createProducer(getName());
     assertEquals(DefaultProducerSessionFactory.class, producer.getSessionFactory().getClass());
     try {
       producer.setSessionFactory(null);
@@ -148,18 +154,16 @@ public abstract class BasicJmsProducerCase
 
   @Test
   public void testDefaultSessionFactory() throws Exception {
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
+    JmsConsumerImpl consumer = createConsumer(getName());
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
-    DefinedJmsProducer producer = createProducer(new ConfiguredProduceDestination(getName()));
+    DefinedJmsProducer producer = createProducer(getName());
     producer.setSessionFactory(new DefaultProducerSessionFactory());
     StandaloneProducer sp = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
     standaloneConsumer.registerAdaptrisMessageListener(jms);
 
     try {
-      activeMqBroker.start();
       start(standaloneConsumer, sp);
       sp.doService(createMessage());
       sp.doService(createMessage());
@@ -168,24 +172,51 @@ public abstract class BasicJmsProducerCase
     }
     finally {
       stop(sp, standaloneConsumer);
+    }
+  }
+  
+  @Test
+  public void testResolvableEndpoint() throws Exception {
+    String resolveString = "%message{endpoint}";
+    
+    AdaptrisMessage adaptrisMessage1 = createMessage();
+    adaptrisMessage1.addMessageHeader("endpoint", getName());
+    
+    AdaptrisMessage adaptrisMessage2 = createMessage();
+    adaptrisMessage2.addMessageHeader("endpoint", getName());
+    
+    JmsConsumerImpl consumer = createConsumer(getName());
+    consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+    StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
+    MockMessageListener jms = new MockMessageListener();
+    DefinedJmsProducer producer = createProducer(resolveString);
+    producer.setSessionFactory(new DefaultProducerSessionFactory());
+    StandaloneProducer sp = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
 
-      activeMqBroker.destroy();
+    try {
+      start(standaloneConsumer, sp);
+      sp.doService(adaptrisMessage1);
+      sp.doService(adaptrisMessage2);
+      waitForMessages(jms, 2);
+      assertMessages(jms, 2);
+    }
+    finally {
+      stop(sp, standaloneConsumer);
     }
   }
 
   @Test
   public void testPerMessageSession() throws Exception {
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
+    JmsConsumerImpl consumer = createConsumer(getName());
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
     standaloneConsumer.registerAdaptrisMessageListener(jms);
-    DefinedJmsProducer producer = createProducer(new ConfiguredProduceDestination(getName()));
+    DefinedJmsProducer producer = createProducer(getName());
     producer.setSessionFactory(new PerMessageProducerSessionFactory());
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
     try {
-      activeMqBroker.start();
       start(standaloneConsumer, standaloneProducer);
       standaloneProducer.doService(createMessage());
       // Should create a new Session now.
@@ -195,19 +226,16 @@ public abstract class BasicJmsProducerCase
     }
     finally {
       stop(standaloneProducer, standaloneConsumer);
-
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testTimedInactivitySession() throws Exception {
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
+    JmsConsumerImpl consumer = createConsumer(getName());
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
-    DefinedJmsProducer producer = createProducer(new ConfiguredProduceDestination(getName()));
+    DefinedJmsProducer producer = createProducer(getName());
     TimedInactivityProducerSessionFactory psf = new TimedInactivityProducerSessionFactory(new TimeInterval(10L,
         TimeUnit.MILLISECONDS));
     producer.setSessionFactory(psf);
@@ -216,7 +244,6 @@ public abstract class BasicJmsProducerCase
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
 
     try {
-      activeMqBroker.start();
       start(standaloneConsumer, standaloneProducer);
 
       standaloneProducer.doService(createMessage());
@@ -229,26 +256,22 @@ public abstract class BasicJmsProducerCase
     }
     finally {
       stop(standaloneProducer, standaloneConsumer);
-
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testTimedInactivitySession_SessionStillValid() throws Exception {
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
+    JmsConsumerImpl consumer = createConsumer(getName());
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
-    DefinedJmsProducer producer = createProducer(new ConfiguredProduceDestination(getName()));
+    DefinedJmsProducer producer = createProducer(getName());
     TimedInactivityProducerSessionFactory psf = new TimedInactivityProducerSessionFactory();
     producer.setSessionFactory(psf);
     standaloneConsumer.registerAdaptrisMessageListener(jms);
 
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
     try {
-      activeMqBroker.start();
       start(standaloneConsumer, standaloneProducer);
 
       standaloneProducer.doService(createMessage());
@@ -261,18 +284,16 @@ public abstract class BasicJmsProducerCase
     }
     finally {
       stop(standaloneProducer, standaloneConsumer);
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testMessageCountSession() throws Exception {
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
+    JmsConsumerImpl consumer = createConsumer(getName());
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
-    DefinedJmsProducer producer = createProducer(new ConfiguredProduceDestination(getName()));
+    DefinedJmsProducer producer = createProducer(getName());
     MessageCountProducerSessionFactory psf = new MessageCountProducerSessionFactory(1);
     producer.setSessionFactory(psf);
 
@@ -280,7 +301,6 @@ public abstract class BasicJmsProducerCase
 
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
     try {
-      activeMqBroker.start();
       start(standaloneConsumer, standaloneProducer);
 
       standaloneProducer.doService(createMessage());
@@ -293,20 +313,16 @@ public abstract class BasicJmsProducerCase
     }
     finally {
       stop(standaloneProducer, standaloneConsumer);
-
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testMessageCountSession_SessionStillValid() throws Exception {
-
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
+    JmsConsumerImpl consumer = createConsumer(getName());
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
-    DefinedJmsProducer producer = createProducer(new ConfiguredProduceDestination(getName()));
+    DefinedJmsProducer producer = createProducer(getName());
     MessageCountProducerSessionFactory psf = new MessageCountProducerSessionFactory();
     producer.setSessionFactory(psf);
 
@@ -314,7 +330,6 @@ public abstract class BasicJmsProducerCase
 
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
     try {
-      activeMqBroker.start();
       start(standaloneConsumer, standaloneProducer);
 
       standaloneProducer.doService(createMessage());
@@ -325,20 +340,16 @@ public abstract class BasicJmsProducerCase
     }
     finally {
       stop(standaloneProducer, standaloneConsumer);
-
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testMessageSizeSession() throws Exception {
-
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
+    JmsConsumerImpl consumer = createConsumer(getName());
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
-    DefinedJmsProducer producer = createProducer(new ConfiguredProduceDestination(getName()));
+    DefinedJmsProducer producer = createProducer(getName());
     MessageSizeProducerSessionFactory psf = new MessageSizeProducerSessionFactory(Integer.valueOf(DEFAULT_PAYLOAD.length() - 1)
         .longValue());
     producer.setSessionFactory(psf);
@@ -347,7 +358,6 @@ public abstract class BasicJmsProducerCase
 
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
     try {
-      activeMqBroker.start();
       start(standaloneConsumer, standaloneProducer);
 
       standaloneProducer.doService(createMessage());
@@ -360,20 +370,16 @@ public abstract class BasicJmsProducerCase
     }
     finally {
       stop(standaloneProducer, standaloneConsumer);
-
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testMessageSizeSession_SessionStillValid() throws Exception {
-
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
+    JmsConsumerImpl consumer = createConsumer(getName());
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
-    DefinedJmsProducer producer = createProducer(new ConfiguredProduceDestination(getName()));
+    DefinedJmsProducer producer = createProducer(getName());
     MessageSizeProducerSessionFactory psf = new MessageSizeProducerSessionFactory();
     producer.setSessionFactory(psf);
 
@@ -381,7 +387,6 @@ public abstract class BasicJmsProducerCase
 
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
     try {
-      activeMqBroker.start();
       start(standaloneConsumer, standaloneProducer);
 
       standaloneProducer.doService(createMessage());
@@ -392,19 +397,17 @@ public abstract class BasicJmsProducerCase
     }
     finally {
       stop(standaloneProducer, standaloneConsumer);
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testMetadataSession() throws Exception {
 
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
+    JmsConsumerImpl consumer = createConsumer(getName());
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
-    DefinedJmsProducer producer = createProducer(new ConfiguredProduceDestination(getName()));
+    DefinedJmsProducer producer = createProducer(getName());
     MetadataProducerSessionFactory psf = new MetadataProducerSessionFactory(getName());
     producer.setSessionFactory(psf);
 
@@ -412,7 +415,6 @@ public abstract class BasicJmsProducerCase
 
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
     try {
-      activeMqBroker.start();
       start(standaloneConsumer, standaloneProducer);
 
       AdaptrisMessage msg1 = createMessage();
@@ -434,27 +436,22 @@ public abstract class BasicJmsProducerCase
     }
     finally {
       stop(standaloneProducer, standaloneConsumer);
-
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testMultipleProducersWithSession() throws Exception {
-
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
-    JmsConsumerImpl consumer = createConsumer(new ConfiguredConsumeDestination(getName()));
+    JmsConsumerImpl consumer = createConsumer(getName());
     consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
     standaloneConsumer.registerAdaptrisMessageListener(jms);
     ServiceList serviceList = new ServiceList(new Service[]
     {
-        new StandaloneProducer(activeMqBroker.getJmsConnection(), createProducer(new ConfiguredProduceDestination(getName()))),
-        new StandaloneProducer(activeMqBroker.getJmsConnection(), createProducer(new ConfiguredProduceDestination(getName())))
+        new StandaloneProducer(activeMqBroker.getJmsConnection(), createProducer(getName())),
+        new StandaloneProducer(activeMqBroker.getJmsConnection(), createProducer(getName()))
     });
     try {
-      activeMqBroker.start();
       start(standaloneConsumer, serviceList);
       AdaptrisMessage msg1 = createMessage();
       AdaptrisMessage msg2 = createMessage();
@@ -465,23 +462,20 @@ public abstract class BasicJmsProducerCase
     }
     finally {
       stop(serviceList, standaloneConsumer);
-      activeMqBroker.destroy();
     }
   }
 
   @Test
   public void testMultipleRequestorWithSession() throws Exception {
-    EmbeddedActiveMq activeMqBroker = new EmbeddedActiveMq();
     ServiceList serviceList = new ServiceList(new Service[]
     {
-        new StandaloneRequestor(activeMqBroker.getJmsConnection(), createProducer(new ConfiguredProduceDestination(getName())),
+        new StandaloneRequestor(activeMqBroker.getJmsConnection(), createProducer(getName()),
             new TimeInterval(1L, TimeUnit.SECONDS)),
-        new StandaloneRequestor(activeMqBroker.getJmsConnection(), createProducer(new ConfiguredProduceDestination(getName())),
+        new StandaloneRequestor(activeMqBroker.getJmsConnection(), createProducer(getName()),
             new TimeInterval(1L, TimeUnit.SECONDS))
     });
     Loopback echo = createLoopback(activeMqBroker, getName());
     try {
-      activeMqBroker.start();
       echo.start();
       start(serviceList);
       AdaptrisMessage msg1 = createMessage();
@@ -494,7 +488,6 @@ public abstract class BasicJmsProducerCase
     finally {
       stop(serviceList);
       echo.stop();
-      activeMqBroker.destroy();
     }
   }
 

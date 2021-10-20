@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import org.springframework.boot.loader.Launcher;
 import org.springframework.boot.loader.PropertiesLauncher;
@@ -290,6 +291,7 @@ public class InterlokLauncher extends Launcher {
     }
     debug("Adding jars from " + dir.getCanonicalPath());
     File[] files = dir.listFiles(JAR_FILTER);
+    Arrays.sort(files, new FileComparator());
     for (File jar : files) {
       debug("Adding ", jar.getName());
       addArchive(jar, jars);
@@ -309,5 +311,15 @@ public class InterlokLauncher extends Launcher {
     if (f.exists()) {
       list.add(new JarFileArchive(f));
     }
+  }
+  
+  private static class FileComparator implements Comparator<File> {
+
+    @Override
+    public int compare(File o1, File o2) {
+      // Just sort on the name rather than the canonical name.
+      return o1.getName().compareTo(o2.getName());
+    }
+    
   }
 }

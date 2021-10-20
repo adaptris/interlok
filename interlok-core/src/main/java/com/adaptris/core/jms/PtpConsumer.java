@@ -18,12 +18,15 @@ package com.adaptris.core.jms;
 
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
+import javax.validation.constraints.NotBlank;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -39,8 +42,8 @@ import lombok.Setter;
 @ComponentProfile(summary = "Listen for JMS messages on the specified queue", tag = "consumer,jms",
     recommended = {JmsConnection.class})
 @DisplayOrder(
-    order = {"queue", "messageSelector", "destination", "acknowledgeMode",
-    "messageTranslator"})
+    order = {"queue", "messageSelector", "acknowledgeMode", "messageTranslator"})
+@NoArgsConstructor
 public class PtpConsumer extends JmsConsumerImpl {
 
   /**
@@ -49,17 +52,8 @@ public class PtpConsumer extends JmsConsumerImpl {
    */
   @Getter
   @Setter
-  // Needs to be @NotBlank when destination is removed.
+  @NotBlank
   private String queue;
-
-  public PtpConsumer() {
-    super();
-  }
-
-  PtpConsumer(boolean b) {
-    super(b);
-  }
-
 
   @Override
   protected String configuredEndpoint() {
@@ -70,7 +64,7 @@ public class PtpConsumer extends JmsConsumerImpl {
   protected MessageConsumer createConsumer() throws JMSException, CoreException {
     VendorImplementation jmsImpl =
         retrieveConnection(JmsConnection.class).configuredVendorImplementation();
-    return jmsImpl.createQueueReceiver(endpoint(), messageSelector(), this);
+    return jmsImpl.createQueueReceiver(getQueue(), getMessageSelector(), this);
   }
 
 

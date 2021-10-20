@@ -55,7 +55,7 @@ import bsh.Interpreter;
  * </tr>
  * <tr>
  * <td>Is the metadata value identified by key "myKey" greater than "myOtherKey" plus 100</td>
- * <td>%message{myKey} > (%message{myOtherKey} + 100)</td>
+ * <td>%message{myKey} &gt; (%message{myOtherKey} + 100)</td>
  * </tr>
  * </table>
  * 
@@ -85,7 +85,7 @@ public class ConditionExpression extends ConditionImpl {
       String expr = msg.resolve(this.getAlgorithm());
       interpreter.eval("result = (" + expr + ")");
       String stringResult = interpreter.get("result").toString();
-      log.trace("{} evaluated to : {}", expr, stringResult);
+      logCondition("{}: {} evaluated to : {}", getClass().getSimpleName(), expr, stringResult);
       rc = BooleanUtils.toBoolean(stringResult);
     } catch (Exception ex) {
       throw new ServiceException(ex);

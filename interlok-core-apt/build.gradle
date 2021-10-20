@@ -1,16 +1,18 @@
 ext {
-  componentName='Interlok Annotation Support'
+  componentName='Interlok Core/Annotations'
+  componentDesc="Custom annotations for Interlok"
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 }
 
 dependencies {
-  compile ("com.thoughtworks.xstream:xstream:$xstreamVersion") {  transitive= false }
-  compile ("jakarta.validation:jakarta.validation-api:2.0.2")
-  compile files("${System.getProperty('java.home')}/../lib/tools.jar")
+  api ("com.thoughtworks.xstream:xstream:1.4.18") {  transitive= false }
+  implementation ("javax:javaee-api:8.0.1")
+  api ("jakarta.validation:jakarta.validation-api:2.0.2")
+  // compile files("${System.getProperty('java.home')}/../lib/tools.jar")
 
-  testCompile("junit:junit:4.13.1")
-  testCompile("org.hibernate.validator:hibernate-validator:6.1.6.Final")
-  testCompile("org.glassfish:javax.el:3.0.1-b12")
+  testImplementation("junit:junit:4.13.2")
+  testImplementation("org.hibernate.validator:hibernate-validator:6.1.6.Final")
+  testImplementation("org.glassfish:javax.el:3.0.1-b12")
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -18,14 +20,21 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 
-artifacts {
-    archives javadocJar
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
 }
 
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
 
 javadoc {
   configure(options) {
     options.tags('apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:','implNote:a:Implementation Note:')
+    options.addStringOption('Xdoclint:none', '-quiet')
+    options.addBooleanOption "-no-module-directories", true
     title= componentName
   }
 }
@@ -38,25 +47,36 @@ delombok {
   target = delombokTargetDir
 }
 
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      from components.java
 
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      repository(url: mavenPublishUrl) {
-        authentication(userName: repoUsername, password: repoPassword)
-      }
-      configuration = configurations.mavenDeploy
+      artifact javadocJar { classifier "javadoc" }
+      artifact sourcesJar { classifier "sources" }
+
       pom.withXml {
-        asNode().appendNode("description", "Custom annotations for Interlok")
+        asNode().appendNode("name", componentName)
+        asNode().appendNode("description", componentDesc)
         def properties = asNode().appendNode("properties")
         properties.appendNode("target", "3.8.0+")
         properties.appendNode("tags", "annotations")
         properties.appendNode("license", "false")
+        properties.appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
+        properties.appendNode("readme", "https://github.com/adaptris/interlok/raw/develop/README.md")
+        properties.appendNode("repository", "https://github.com/adaptris/interlok")
       }
-
+    }
+  }
+  repositories {
+    maven {
+      credentials {
+        username repoUsername
+        password repoPassword
+      }
+      url mavenPublishUrl
     }
   }
 }
 
-publish.dependsOn uploadArchives
 clean.dependsOn deleteGeneratedFiles

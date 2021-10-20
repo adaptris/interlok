@@ -1,18 +1,18 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.services;
 
@@ -20,8 +20,8 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.junit.Test;
@@ -30,11 +30,9 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BranchingServiceCollection;
 import com.adaptris.core.GeneralServiceExample;
 import com.adaptris.core.MetadataElement;
-import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.metadata.AddMetadataService;
 import com.adaptris.core.util.LifecycleHelper;
 
-@SuppressWarnings("deprecation")
 public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
 
   private static final String MY_METADATA_KEY2 = "MyMetadataKey2";
@@ -52,7 +50,7 @@ public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
     EmbeddedScriptingService service = createService(getName());
     assertFalse(service.isBranching());
     execute(service, msg);
-    assertTrue(msg.containsKey(MY_METADATA_KEY));
+    assertTrue(msg.headersContainsKey(MY_METADATA_KEY));
     assertNotSame(MY_METADATA_VALUE, msg.getMetadataValue(MY_METADATA_KEY));
     assertEquals(new StringBuffer(MY_METADATA_VALUE).reverse().toString(), msg.getMetadataValue(MY_METADATA_KEY));
   }
@@ -72,7 +70,7 @@ public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
     BranchingServiceCollection bsc = new BranchingServiceCollection();
     bsc.setFirstServiceId(getName());
     bsc.add(createServiceForBranch(getName(), NEXT_SERVICE_ID));
-    AddMetadataService next = new AddMetadataService(new ArrayList<MetadataElement>(Arrays.asList(new MetadataElement(
+    AddMetadataService next = new AddMetadataService(new ArrayList<>(Arrays.asList(new MetadataElement(
         MY_METADATA_KEY2, MY_METADATA_VALUE))));
     next.setUniqueId(NEXT_SERVICE_ID);
     bsc.add(next);
@@ -93,7 +91,7 @@ public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata(MY_METADATA_KEY, MY_METADATA_VALUE);
     execute(bsc, msg);
-    assertTrue(msg.containsKey(MY_METADATA_KEY));
+    assertTrue(msg.headersContainsKey(MY_METADATA_KEY));
     assertEquals(MY_METADATA_VALUE, msg.getMetadataValue(MY_METADATA_KEY));
     assertEquals(MY_METADATA_VALUE, msg.getMetadataValue(MY_METADATA_KEY3));
   }
@@ -101,24 +99,37 @@ public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
   @Test
   public void testInit() throws Exception {
     EmbeddedScriptingService service = new EmbeddedScriptingService();
-    try {
-      LifecycleHelper.init(service);
-      fail("Service initialised w/o a language");
-    }
-    catch (Exception expected) {
-      ;
-    }
+    assertThrows("Service initialised w/o a language", Exception.class, () -> {
+      service.init();
+    });
     service.setLanguage("BLAHBLAHBLAH");
-    try {
+    assertThrows("Service initialised BLAHBLAHBLAH", Exception.class, () -> {
       LifecycleHelper.init(service);
-      fail("Service initialised BLAHBLAHBLAH");
-    }
-    catch (Exception expected) {
-      ;
-    }
+    });
     service.setLanguage("jruby");
     LifecycleHelper.init(service);
   }
+
+  @Test
+  public void testInitWithJsLanguage() throws Exception {
+    EmbeddedScriptingService service = new EmbeddedScriptingService();
+    service.setScript("// Some script");
+    service.setLanguage("javascript");
+
+    LifecycleHelper.init(service);
+    LifecycleHelper.close(service);
+
+    service.setLanguage("js");
+
+    LifecycleHelper.init(service);
+    LifecycleHelper.close(service);
+
+    service.setLanguage("ecmascript");
+
+    LifecycleHelper.init(service);
+    LifecycleHelper.close(service);
+  }
+
 
   @Test
   public void testDoServiceWithEmptyScript() throws Exception {
@@ -135,13 +146,9 @@ public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
     EmbeddedScriptingService service = createService(getName());
     service.setScript("This Really Should Fail");
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    try {
+    assertThrows("Service failure expected", Exception.class, () -> {
       execute(service, msg);
-      fail("Service failure expected");
-    }
-    catch (ServiceException expected) {
-
-    }
+    });
   }
 
   @Override
@@ -168,7 +175,6 @@ public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
     return result;
   }
 
-
   @Override
   protected String getExampleCommentHeader(Object obj) {
     return super.getExampleCommentHeader(obj) + "<!--"
@@ -180,4 +186,5 @@ public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
         + "\nlanguage. This isn't something that is easily supported with existing services "
         +"\n(but why would you want to do it?)" + "\n-->\n";
   }
+
 }

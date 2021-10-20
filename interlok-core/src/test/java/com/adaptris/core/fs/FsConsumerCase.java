@@ -38,8 +38,6 @@ import org.junit.Test;
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.Channel;
-import com.adaptris.core.ConfiguredConsumeDestination;
-import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.Poller;
@@ -342,8 +340,8 @@ public abstract class FsConsumerCase extends ExampleConsumerCase {
       }
     };
 
-    public ConsumeDestination createDestination() {
-      return new ConfiguredConsumeDestination("file:////path/to/consume-directory", getExpression());
+    public String getEndpoint() {
+      return "file:////path/to/consume-directory";
     }
 
     public abstract String getExpression();
@@ -425,13 +423,12 @@ public abstract class FsConsumerCase extends ExampleConsumerCase {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testSetFileFilterImp() throws Exception {
 
     String subdir = new GuidGenerator().safeUUID();
 
     FsConsumerImpl consumer = createConsumer(subdir);
-    ((ConfiguredConsumeDestination) consumer.getDestination()).setFilterExpression(".*");
+    consumer.setFilterExpression(".*");
     assertNull(consumer.getFileFilterImp());
     assertEquals(org.apache.commons.io.filefilter.RegexFileFilter.class.getCanonicalName(), consumer.fileFilterImp());
     try {
@@ -472,16 +469,6 @@ public abstract class FsConsumerCase extends ExampleConsumerCase {
     finally {
       FileUtils.deleteQuietly(new File(PROPERTIES.getProperty(BASE_KEY), subdir));
     }
-  }
-
-  @Test
-  @SuppressWarnings("deprecation")
-  public void testSetDestination() {
-    FsConsumerImpl consumer = createConsumer();
-    assertNull(consumer.getDestination());
-    ConfiguredConsumeDestination dest = new ConfiguredConsumeDestination("dest");
-    consumer.setDestination(dest);
-    assertTrue(consumer.getDestination().equals(dest));
   }
 
   @Test
@@ -610,10 +597,9 @@ public abstract class FsConsumerCase extends ExampleConsumerCase {
       for (Poller poller : POLLER_LIST) {
         for (FileSortImplementation sort : FileSortImplementation.values()) {
           StandaloneConsumer sc = new StandaloneConsumer(createConsumer(null));
-          ConsumeDestination cd = filter.createDestination();
           ((FsConsumerImpl) sc.getConsumer()).setPoller(poller);
-          ((FsConsumerImpl) sc.getConsumer()).setBaseDirectoryUrl(cd.getDestination());
-          ((FsConsumerImpl) sc.getConsumer()).setFilterExpression(cd.getFilterExpression());
+          ((FsConsumerImpl) sc.getConsumer()).setBaseDirectoryUrl(filter.getEndpoint());
+          ((FsConsumerImpl) sc.getConsumer()).setFilterExpression(filter.getExpression());
           ((FsConsumerImpl) sc.getConsumer()).setFileFilterImp(filter.getImpl());
           ((FsConsumerImpl) sc.getConsumer()).setFileSorter(sort.getImplementation());
 

@@ -1,15 +1,17 @@
 plugins {
   // Manage optional dependencies in maven pom.
-  id 'nebula.optional-base' version '5.0.3' apply false
-  id 'com.github.spotbugs' version '4.5.1' apply false
-  id "org.sonarqube" version '3.0' apply false
-  id 'org.owasp.dependencycheck' version '6.0.2' apply false
-  id "io.freefair.lombok" version "5.2.1" apply false
+  id 'nebula.optional-base' version '7.0.0' apply false
+  id 'com.github.spotbugs' version '4.7.8' apply false
+  id "org.sonarqube" version '3.3' apply false
+  id 'org.owasp.dependencycheck' version '6.4.1.1' apply false
+  id "io.freefair.lombok" version "6.2.0" apply false
+  // id 'org.kordamp.gradle.jdeps' version '0.12.0' apply false
+  id "org.gradle.test-retry" version "1.3.1" apply false
 }
 
 ext {
-  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '3.11-SNAPSHOT'
-  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '3.11-SNAPSHOT'
+  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '4.3-SNAPSHOT'
+  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '4.3-SNAPSHOT'
   nexusBaseUrl = project.hasProperty('nexusBaseUrl') ? project.getProperty('nexusBaseUrl') : 'https://nexus.adaptris.net/nexus'
   mavenPublishUrl = project.hasProperty('mavenPublishUrl') ? project.getProperty('mavenPublishUrl') : nexusBaseUrl + '/content/repositories/snapshots'
   javadocsBaseUrl = nexusBaseUrl + "/content/sites/javadocs/com/adaptris"
@@ -22,33 +24,21 @@ ext {
   componentName='Interlok'
   organizationName = "Adaptris Ltd"
   organizationUrl = "http://interlok.adaptris.net"
-  slf4jVersion = '1.7.30'
-  log4j2Version = "2.13.3"
-  xstreamVersion = '1.4.13'
-  mockitoVersion = '3.5.15'
 }
 
-if (JavaVersion.current().isJava8Compatible()) {
-  allprojects {
-    tasks.withType(Javadoc) {
-      options.addStringOption('Xdoclint:none', '-quiet')
+ext.buildDetails = [
+  jacocoEnabled: { subproject ->
+    return !subproject.name.equals("interlok-core-apt") && !subproject.name.equals("interlok-stubs")
+  },
+
+  gitBranchNameOrTimestamp: { branchName ->
+    if (branchName.equals("HEAD") || branchName.equals("develop") || branchName.startsWith("release")) {
+      return new Date().format('HH:mm:ss z');
     }
-  }
-}
+    return branchName;
+  },
 
-ext.jacocoEnabled = { subproject ->
-  return !subproject.name.equals("interlok-core-apt")
-}
-
-
-ext.gitBranchNameOrTimestamp = { branchName ->
-  if (branchName.equals("HEAD") || branchName.equals("develop") || branchName.startsWith("release")) {
-    return new Date().format('HH:mm:ss z');
-  }
-  return branchName;
-}
-
-ext.buildInfo = { ->
+  buildInfo: { ->
    new ByteArrayOutputStream().withStream { os ->
       exec {
         executable = "git"
@@ -56,42 +46,64 @@ ext.buildInfo = { ->
         standardOutput = os
       }
       def branchName = os.toString().replaceAll("\r", "").replaceAll("\n", "").trim();
-      return gitBranchNameOrTimestamp(branchName);
+      return buildDetails.gitBranchNameOrTimestamp(branchName);
     }
-}
+  },
+
+  is_ci_pipeline: { ->
+    return System.getenv().containsKey("CI");
+  }
+]
 
 task clean(type: Delete) {
   delete project.buildDir
 }
 
+allprojects {
+  tasks.withType(Jar) {
+    metaInf {
+      from ("$rootDir") {
+        include 'LICENSE*'
+        include 'NOTICE*'
+      }
+    }
+  }
+  tasks.withType(GenerateModuleMetadata) {
+    enabled = false
+  }
+}
+
 subprojects { subproject ->
-  apply plugin: 'java'
-  apply plugin: 'maven'
+  apply plugin: 'java-library'
   apply plugin: 'maven-publish'
   apply plugin: 'nebula.optional-base'
   apply plugin: 'com.github.spotbugs'
   apply plugin: 'org.sonarqube'
   apply plugin: 'org.owasp.dependencycheck'
   apply plugin: 'io.freefair.lombok'
+  // apply plugin: 'org.kordamp.gradle.jdeps'
+  apply plugin: 'org.gradle.test-retry'
 
-  if (jacocoEnabled(subproject)) {
+  if (buildDetails.jacocoEnabled(subproject)) {
     apply plugin: "jacoco"
   }
 
   java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
   }
 
   group   = 'com.adaptris'
   version = releaseVersion
   def versionDir = "$buildDir/version"
-  generateLombokConfig.enabled = false
+  lombok.disableConfig = true
 
-  // In this section you declare where to find the dependencies of your project
   repositories {
     mavenCentral()
-    maven { url "$defaultNexusRepo" }
+    maven {
+      url "$defaultNexusRepo"
+      allowInsecureProtocol true
+    }
     maven { url "$nexusBaseUrl/content/groups/public" }
     maven { url "$nexusBaseUrl/content/groups/interlok" }
   }
@@ -115,10 +127,21 @@ subprojects { subproject ->
     all*.exclude group: 'javax.validation', module: 'validation-api'
     all*.exclude group: 'javax.activation', module: 'activation'
     all*.exclude group: 'javax.activation', module: 'javax.activation-api'
+
+    // INTERLOK-3740 switch from jcraft to com.github.mwiede jsch fork.
+    all*.exclude group: 'com.jcraft', module: 'jsch'
+
+    // module exclusions for java 11.
+    if (JavaVersion.current().ordinal() >= JavaVersion.VERSION_1_9.ordinal()) {
+      all*.exclude group: "xml-apis", module: "xml-apis"
+      all*.exclude group: "stax", module: "stax-api"
+      all*.exclude group: "org.apache.geronimo.specs", module: "geronimo-jta_1.1_spec"
+    }
+
   }
 
   dependencies {
-    mavenDeploy ("org.apache.maven.wagon:wagon-http:3.4.0")
+    mavenDeploy ("org.apache.maven.wagon:wagon-http:3.4.3")
   }
 
   configurations.all {
@@ -126,11 +149,11 @@ subprojects { subproject ->
   }
 
 
-  if (jacocoEnabled(subproject)) {
+  if (buildDetails.jacocoEnabled(subproject)) {
     jacocoTestReport {
       reports {
-        xml.enabled true
-        html.enabled true
+        xml.required= true
+        html.required= true
       }
     }
     check.dependsOn jacocoTestReport
@@ -149,11 +172,12 @@ subprojects { subproject ->
       versionFile.getParentFile().mkdirs()
       ant.propertyfile(file: versionFile) {
         entry(key: 'component.name', value: componentName)
+        entry(key: 'component.description', value: componentDesc)
         entry(key: 'build.version', value: project.version)
         entry(key: 'groupId', value: project.group)
         entry(key: 'artifactId', value: project.name)
         entry(key: 'build.date', value: new Date().format('yyyy-MM-dd'))
-        entry(key: 'build.info', value: buildInfo())
+        entry(key: 'build.info', value: buildDetails.buildInfo())
       }
     }
   }
@@ -175,7 +199,7 @@ subprojects { subproject ->
     description 'Compile for lgtm'
 
     source = sourceSets.main.extensions.delombokTask
-    destinationDir = sourceSets.main.java.outputDir
+    destinationDirectory= sourceSets.main.java.classesDirectory
     classpath = project.sourceSets.main.compileClasspath
   }
 
@@ -204,7 +228,8 @@ subprojects { subproject ->
 
   dependencyCheck  {
     suppressionFiles= [ "$rootDir/gradle/owasp-exclude.xml" ]
-    skipConfigurations = [ "mavenDeploy", "antSql", "spotbugs", "umlDoclet", "offlineJavadocPackages", "javadoc", "jacocoAnt", "jacocoAgent", "spotbugsPlugins", "spotbugsSlf4j" ]
+    scanConfigurations = ["api", "compileClasspath", "runtimeClasspath"]
+    // skipConfigurations = [ "mavenDeploy", "antSql", "spotbugs", "umlDoclet", "offlineJavadocPackages", "javadoc", "jacocoAnt", "jacocoAgent", "spotbugsPlugins", "spotbugsSlf4j" ]
     formats = [ "HTML", "JUNIT" ]
     junitFailOnCVSS = 7.0
     failBuildOnCVSS = 7.0

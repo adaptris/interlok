@@ -160,8 +160,4 @@ public class TraversingFsConsumer extends FsConsumer {
     }
     return rc;
   }
-
-  @Override
-  protected void prepareConsumer() throws CoreException {}
-
 }

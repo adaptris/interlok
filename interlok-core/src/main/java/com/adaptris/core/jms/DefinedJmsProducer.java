@@ -18,15 +18,16 @@ package com.adaptris.core.jms;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import static com.adaptris.core.jms.JmsConstants.JMS_ASYNC_STATIC_REPLY_TO;
+
 import java.util.Optional;
+
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
-import com.adaptris.annotation.Removal;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.util.Args;
@@ -46,10 +47,7 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
     super();
   }
 
-  @Override
-  @Deprecated
-  @Removal(version = "4.0.0")
-  public void produce(AdaptrisMessage msg, ProduceDestination destination) throws ProduceException {
+  public void produce(AdaptrisMessage msg, String destination) throws ProduceException {
     try {
       setupSession(msg);
       Destination replyTo = null;
@@ -64,20 +62,15 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
     }
   }
 
-  protected void doProduce(AdaptrisMessage msg, ProduceDestination dest, Destination replyTo)
-      throws ProduceException {
-
+  protected void doProduce(AdaptrisMessage msg, String dest, Destination replyTo) throws ProduceException {
     Destination jmsDest = null;
     try {
       Args.notNull(dest, "destination");
       // First of all directly try to get a Destination object if available.
-      jmsDest = createDestination(dest, msg);
+      jmsDest = retrieveObjectDestination(dest, msg);
 
       if (jmsDest == null) {
-        String d = dest.getDestination(msg);
-        if (d != null) {
-          jmsDest = createDestination(d);
-        }
+        jmsDest = createDestination(dest);
       }
       Args.notNull(jmsDest, "destination");
       doProduce(msg, jmsDest, replyTo);
@@ -91,8 +84,7 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
     }
   }
 
-  protected void doProduce(AdaptrisMessage msg, Destination destination, Destination replyTo)
-      throws JMSException, CoreException {
+  protected void doProduce(AdaptrisMessage msg, Destination destination, Destination replyTo) throws JMSException, CoreException {
     setupSession(msg);
     Message jmsMsg = translate(msg, replyTo);
     if (!perMessageProperties()) {
@@ -107,11 +99,7 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
     log.info("msg produced to destination [{}]", destination);
   }
 
-  @Override
-  @Deprecated
-  @Removal(version = "4.0.0")
-  public AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination dest, long timeout)
-      throws ProduceException {
+  public AdaptrisMessage request(AdaptrisMessage msg, String dest, long timeout) throws ProduceException {
 
     AdaptrisMessage translatedReply = defaultIfNull(getMessageFactory()).newMessage();
     Destination replyTo = null;

@@ -31,12 +31,11 @@ public class RequestReplyProducerTest {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testProduce_AdaptrisMessage_ProduceDestination() throws Exception {
     MockRequestReplyProducer mock = createAndStart();
     try {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
-      mock.produce(msg, (m) -> null);
+      mock.produce(msg);
       assertEquals(1, mock.getProducedMessages().size());
     } finally {
       LifecycleHelper.stopAndClose(mock);
@@ -84,12 +83,11 @@ public class RequestReplyProducerTest {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testRequest_AdaptrisMessage_ProduceDestination() throws Exception {
     MockRequestReplyProducer mock = createAndStart();
     try {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
-      AdaptrisMessage reply = mock.request(msg, (m) -> null);
+      AdaptrisMessage reply = mock.request(msg);
       assertSame(msg, reply);
       assertTrue(msg.headersContainsKey(MockRequestReplyProducer.REPLY_METADATA_KEY));
     } finally {
@@ -98,12 +96,11 @@ public class RequestReplyProducerTest {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testRequest_AdaptrisMessage_ProduceDestination_Long() throws Exception {
     MockRequestReplyProducer mock = createAndStart();
     try {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
-      AdaptrisMessage reply = mock.request(msg, (m) -> null, 10L);
+      AdaptrisMessage reply = mock.request(msg, 10L);
       assertSame(msg, reply);
       assertTrue(msg.headersContainsKey(MockRequestReplyProducer.REPLY_METADATA_KEY));
     } finally {

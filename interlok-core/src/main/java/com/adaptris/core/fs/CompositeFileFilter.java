@@ -28,13 +28,13 @@ import org.slf4j.LoggerFactory;
  * A {@link FileFilter} that contains other filters.
  *
  * <p>
- * It is designed for use with either the FsConsumer or FtpConsumer, as a result of the limitations of
- * {@link com.adaptris.core.ConsumeDestination}, this filter creates its underlying filters from a single <code>__@@__</code>
- * separated string (this notation was chosen so that it is unlikely to be used as a pattern matching sequence).
+ * It is designed for use with either the FsConsumer or FtpConsumer, this filter creates its
+ * underlying filters from a single <code>__@@__</code> separated string (this notation was chosen
+ * so that it is unlikely to be used as a pattern matching sequence).
  * </p>
  * <p>
- * The format of the string required is {@code 'FILTER_TYPE'='filter-expression'} where the following types of filter are understood
- * (case matters).
+ * The format of the string required is {@code 'FILTER_TYPE'='filter-expression'} where the
+ * following types of filter are understood (case matters).
  * </p>
  * <ul>
  * <li>NewerThan is equivalent to using {@link NewerThan}</li>
@@ -43,19 +43,23 @@ import org.slf4j.LoggerFactory;
  * <li>SizeGTE is equivalent to using {@link SizeGreaterThanOrEqual}</li>
  * <li>SizeLT is equivalent to using {@link SizeLessThan}</li>
  * <li>SizeLTE is equivalent to using {@link SizeLessThanOrEqual}</li>
- * <li>Regex is equivalent to using {@code org.apache.commons.io.filefilter.RegexFileFilter} - since 3.7.0</li>
+ * <li>Regex is equivalent to using {@code org.apache.commons.io.filefilter.RegexFileFilter} - since
+ * 3.7.0</li>
  * </ul>
  * <p>
- * In the event of a unknown filter type being used, it will be assumed to be a fully qualified classname which will be constructed
- * using reflection; the filter-expression will be passed in as the sole constructor argument.
+ * In the event of a unknown filter type being used, it will be assumed to be a fully qualified
+ * classname which will be constructed using reflection; the filter-expression will be passed in as
+ * the sole constructor argument.
  * </p>
  * <p>
- * The filter-expression value is something that is understood by the filter in question. e.g. the size in bytes for Size based
- * filters, any errors encountered attempting to create filter results in the filter being ignored.
+ * The filter-expression value is something that is understood by the filter in question. e.g. the
+ * size in bytes for Size based filters, any errors encountered attempting to create filter results
+ * in the filter being ignored.
  * </p>
  * <p>
- * The filter only accepts the file if all the underlying filters accept the file, thus this represents an implicit AND condition.
- * So for example we would use <code>SizeGT=4096__@@__Perl=.*\.xml</code> to match all files ending with <code>.xml</code> whose
+ * The filter only accepts the file if all the underlying filters accept the file, thus this
+ * represents an implicit AND condition. So for example we would use
+ * <code>SizeGT=4096__@@__Perl=.*\.xml</code> to match all files ending with <code>.xml</code> whose
  * size is greater than 4096 bytes
  * </p>
  *

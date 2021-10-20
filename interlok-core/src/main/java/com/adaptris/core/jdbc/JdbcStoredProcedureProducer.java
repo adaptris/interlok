@@ -16,18 +16,6 @@
 
 package com.adaptris.core.jdbc;
 
-import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
-import static com.adaptris.core.util.DestinationHelper.mustHaveEither;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -35,14 +23,10 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.ProduceDestination;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.RequestReplyProducerImp;
 import com.adaptris.core.services.jdbc.ResultSetTranslator;
-import com.adaptris.core.util.DestinationHelper;
 import com.adaptris.core.util.JdbcUtil;
-import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.jdbc.CallableStatementCreator;
 import com.adaptris.jdbc.CallableStatementExecutor;
 import com.adaptris.jdbc.DefaultStatementCreator;
@@ -52,11 +36,19 @@ import com.adaptris.jdbc.ParameterType;
 import com.adaptris.jdbc.StoredProcedure;
 import com.adaptris.jdbc.StoredProcedureParameter;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 import lombok.Getter;
 import lombok.Setter;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
  * StoredProcedure Producer implementation; executes a stored procedure within your chosen database vendor.
@@ -66,9 +58,7 @@ import lombok.Setter;
  * following
  * implementations; {@link com.adaptris.jdbc.MysqlStatementCreator} or {@link com.adaptris.jdbc.OracleStatementCreator}, other types
  * of database can be directly
- * supported by using {@link com.adaptris.jdbc.ConfiguredStatementCreator}. Generally, {@link #setDestination(ProduceDestination)
- * ProduceDestination}
- * will be used to derive the stored procedure to execute.
+ * supported by using {@link com.adaptris.jdbc.ConfiguredStatementCreator}.
  * </p>
  * <p>
  * You may also set parameters (In, Out and InOut) for your Stored Procedure. Both the "In" and the "InOut" parameters will retrieve
@@ -148,25 +138,13 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
   private TimeInterval timeout;
 
   /**
-   * The ProduceDestination is the name of the stored procedure that will be executed.
-   */
-  @Getter
-  @Setter
-  @Deprecated
-  @Valid
-  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'procedure-name' instead", groups = Deprecated.class)
-  private ProduceDestination destination;
-
-  /**
    * The name of the stored procedure.
    */
   @InputFieldHint(expression = true)
   @Getter
   @Setter
-  // Needs to be @NotBlank when destination is removed.
+  @NotBlank
   private String procedureName;
-
-  private transient boolean destWarning;
 
   public JdbcStoredProcedureProducer() {
     setInParameters(new InParameters());
@@ -306,11 +284,8 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
   }
 
   @Override
-  public void prepare() throws CoreException {
-    logWarningIfNotNull(destWarning, () -> destWarning = true, getDestination(),
-        "{} uses destination, use 'procedure-name' instead if possible",
-        LoggingHelper.friendlyName(this));
-    mustHaveEither(getProcedureName(), getDestination());
+  public void prepare() {
+
   }
 
   public InParameters getInParameters() {
@@ -376,7 +351,7 @@ public class JdbcStoredProcedureProducer extends RequestReplyProducerImp {
 
   @Override
   public String endpoint(AdaptrisMessage msg) throws ProduceException {
-    return DestinationHelper.resolveProduceDestination(getProcedureName(), getDestination(), msg);
+    return msg.resolve(getProcedureName());
   }
 
 }

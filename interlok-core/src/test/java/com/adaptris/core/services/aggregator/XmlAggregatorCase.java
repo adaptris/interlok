@@ -24,11 +24,13 @@ import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.services.splitter.SplitJoinServiceTest;
 import com.adaptris.core.stubs.DefectiveMessageFactory;
 import com.adaptris.util.text.xml.InsertNode;
 
 public abstract class XmlAggregatorCase extends AggregatorCase {
+
+  public static final String XPATH_ENVELOPE = "/envelope";
+
 
   @Test
   public void testSetDocumentEncoding() throws Exception {
@@ -42,7 +44,7 @@ public abstract class XmlAggregatorCase extends AggregatorCase {
   public void testSetDocumentMerge() throws Exception {
     XmlDocumentAggregator aggr = createAggregatorForTests();
     assertNull(aggr.getMergeImplementation());
-    InsertNode inserter = new InsertNode(SplitJoinServiceTest.XPATH_ENVELOPE);
+    InsertNode inserter = new InsertNode(XPATH_ENVELOPE);
     aggr.setMergeImplementation(inserter);
     assertEquals(inserter, aggr.getMergeImplementation());
     try {
@@ -58,7 +60,7 @@ public abstract class XmlAggregatorCase extends AggregatorCase {
   @Test
   public void testJoinMessage_NoOverwriteMetadata() throws Exception {
     XmlDocumentAggregator aggr = createAggregatorForTests();
-    aggr.setMergeImplementation(new InsertNode(SplitJoinServiceTest.XPATH_ENVELOPE));
+    aggr.setMergeImplementation(new InsertNode(XPATH_ENVELOPE));
     aggr.setOverwriteMetadata(false);
     AdaptrisMessage original = AdaptrisMessageFactory.getDefaultInstance().newMessage("<envelope/>");
     original.addMetadata("originalKey", "originalValue");
@@ -75,7 +77,7 @@ public abstract class XmlAggregatorCase extends AggregatorCase {
   @Test
   public void testJoinMessage_OverwriteMetadata() throws Exception {
     XmlDocumentAggregator aggr = createAggregatorForTests();
-    aggr.setMergeImplementation(new InsertNode(SplitJoinServiceTest.XPATH_ENVELOPE));
+    aggr.setMergeImplementation(new InsertNode(XPATH_ENVELOPE));
     aggr.setOverwriteMetadata(true);
     AdaptrisMessage original = AdaptrisMessageFactory.getDefaultInstance().newMessage("<envelope/>");
     original.addMetadata("originalKey", "originalValue");
@@ -92,7 +94,7 @@ public abstract class XmlAggregatorCase extends AggregatorCase {
   @Test
   public void testJoinMessage_Fails() throws Exception {
     XmlDocumentAggregator aggr = createAggregatorForTests();
-    aggr.setMergeImplementation(new InsertNode(SplitJoinServiceTest.XPATH_ENVELOPE));
+    aggr.setMergeImplementation(new InsertNode(XPATH_ENVELOPE));
     AdaptrisMessage original = AdaptrisMessageFactory.getDefaultInstance().newMessage("<envelope/>");
     AdaptrisMessage splitMsg1 = AdaptrisMessageFactory.getDefaultInstance().newMessage("<document>hello</document>");
     AdaptrisMessage splitMsg2 = new DefectiveMessageFactory().newMessage("<document>world</document>");

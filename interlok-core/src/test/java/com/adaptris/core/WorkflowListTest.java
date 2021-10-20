@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.ListIterator;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
-import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import com.adaptris.core.stubs.MockMessageConsumer;
@@ -35,7 +34,6 @@ import com.adaptris.util.PlainIdGenerator;
 public class WorkflowListTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
 
   private IdGenerator idGenerator;
-  private Logger log = Logger.getLogger(this.getClass());
 
   @Before
   public void setUp() throws Exception {
@@ -413,7 +411,7 @@ public class WorkflowListTest extends com.adaptris.interlok.junit.scaffolding.Ba
   private StandardWorkflow createWorkflow(String uid) {
     StandardWorkflow result = new StandardWorkflow();
     result.setUniqueId(uid);
-    new MockMessageConsumer(new ConfiguredConsumeDestination(uid));
+    result.setConsumer(new MockMessageConsumer());
     return result;
   }
 }

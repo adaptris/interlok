@@ -18,19 +18,19 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * A javascript condition.
- * 
+ *
  * <p>
  * This makes use of the {@link Invocable} extension to {@link ScriptEngine}, to allow you to define
  * the function that will be executed to evaluate the condition. The function name should always be
  * {@code evaluateScript}; take a single parameter (in this case it will be the current
  * {@link AdaptrisMessage}; and return {@code true or false}. For instance to check a specific
  * metadata value then you might have this function definition
- * 
+ *
  * <pre>
  * {@code
-     function evaluateScript(message) { 
-       return message.getMetadataValue('myMetadataKey').equals('myValue'); 
-     } 
+     function evaluateScript(message) {
+       return message.getMetadataValue('myMetadataKey').equals('myValue');
+     }
  * }
  * </pre>
  * </p>
@@ -38,7 +38,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * Similar to {@link com.adaptris.core.services.EmbeddedScriptingService}; the logger is bound as
  * {@code log}.
  * </p>
- * 
+ *
  * @config function
  */
 @XStreamAlias("function")
@@ -64,6 +64,7 @@ public class ConditionFunction extends ConditionImpl {
   public boolean evaluate(AdaptrisMessage msg) throws ServiceException {
     try {
       Object o = ((Invocable) engine).invokeFunction("evaluateScript", msg);
+      logCondition("{}: evaluated to : {}", getClass().getSimpleName(), o.toString());
       return BooleanUtils.toBoolean(o.toString());
     } catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);

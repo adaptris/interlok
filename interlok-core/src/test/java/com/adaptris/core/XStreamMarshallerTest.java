@@ -15,6 +15,7 @@
 */
 
 package com.adaptris.core;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -101,7 +102,6 @@ public class XStreamMarshallerTest
   public static void adapterInstanceFieldChecks(Adapter fromXML) {
     assertNotNull(fromXML);
     assertEquals("SimpleAdapterTest", fromXML.getUniqueId());
-    assertTrue(fromXML.logHandler() instanceof NullLogHandler);
 
     assertTrue(fromXML.getEventHandler() instanceof DefaultEventHandler);
     assertTrue(((DefaultEventHandler)fromXML.getEventHandler()).getConnection() instanceof NullConnection);
@@ -126,10 +126,6 @@ public class XStreamMarshallerTest
     // test workflow consumer
     NullMessageConsumer consumer = (NullMessageConsumer) standardWorkflow.getConsumer();
     assertNotNull(consumer);
-    ConsumeDestination destination = consumer.getDestination();
-    assertNotNull(destination);
-    assertTrue(destination instanceof ConfiguredConsumeDestination);
-    assertEquals("dummy", destination.getDestination());
 
     // test services
     ServiceCollection serviceCollection = standardWorkflow.getServiceCollection();

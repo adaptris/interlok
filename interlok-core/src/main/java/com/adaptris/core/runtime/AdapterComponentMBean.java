@@ -17,7 +17,7 @@
 package com.adaptris.core.runtime;
 
 import java.util.concurrent.TimeoutException;
-
+import com.adaptris.annotation.Removal;
 import com.adaptris.core.ComponentState;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
@@ -103,10 +103,8 @@ public interface AdapterComponentMBean extends BaseComponentMBean {
    */
   String JMX_MSG_ERR_DIGESTER_TYPE = JMX_DOMAIN_NAME + ":type=MessageErrorDigest";
 
-  /**
-   * The standard JMX Prefix for a {@link com.adaptris.core.LogHandler} that is exposed via JMX which resolves to {@value}
-   *
-   */
+  @Deprecated
+  @Removal(version = "5.0")
   String JMX_LOG_HANDLER_TYPE = JMX_DOMAIN_NAME + ":type=LogHandler";
 
   /**

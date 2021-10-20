@@ -61,10 +61,11 @@ public abstract class XStreamMarshallerImpl extends AbstractMarshaller{
   }
 
   @Override
+  @SuppressWarnings({"lgtm [java/unsafe-deserialization]"})  
   public Object unmarshal(Reader reader) throws CoreException {
     return invokeDeserialize(() -> {
       try (Reader in = reader) {
-        return getInstance().fromXML(reader); // lgtm [java/unsafe-deserialization]
+        return getInstance().fromXML(reader);
       }      
     });
   }

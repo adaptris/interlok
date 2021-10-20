@@ -22,8 +22,7 @@ import com.adaptris.core.CoreException;
 /**
  * Base interface for generating metadata from an xpath.
  * 
- * @author lchan
- * 
+ *
  */
 public interface XpathMetadataQuery {
   /**

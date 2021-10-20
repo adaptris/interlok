@@ -2,11 +2,8 @@ package com.adaptris.core.util;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import javax.mail.internet.MimeUtility;
-
 import com.adaptris.util.text.mime.MimeConstants;
-import com.adaptris.validation.constraints.ConfigDeprecated;
 
 public class EncodingHelper {
 
@@ -14,16 +11,19 @@ public class EncodingHelper {
    * Standard supported encodings
    */
   public enum Encoding {
-    @ConfigDeprecated(removalVersion = "4.0.0", message = "Use Base64_MIME / Base64_URL / Base64_Basic instead", groups = Deprecated.class)
+    /**
+     * The same as Basic_Base64
+     *
+     */
     Base64 {
       @Override
       public OutputStream wrap(OutputStream orig) throws Exception {
-        return MimeUtility.encode(orig, MimeConstants.ENCODING_BASE64);
+        return java.util.Base64.getEncoder().wrap(orig);
       }
 
       @Override
       public InputStream wrap(InputStream orig) throws Exception {
-        return MimeUtility.decode(orig, MimeConstants.ENCODING_BASE64);
+        return java.util.Base64.getDecoder().wrap(orig);
       }
     },
     /**
@@ -35,12 +35,12 @@ public class EncodingHelper {
     MIME_Base64 {
       @Override
       public OutputStream wrap(OutputStream orig) throws Exception {
-        return java.util.Base64.getEncoder().wrap(orig);
+        return java.util.Base64.getMimeEncoder().wrap(orig);
       }
 
       @Override
       public InputStream wrap(InputStream orig) throws Exception {
-        return java.util.Base64.getDecoder().wrap(orig);
+        return java.util.Base64.getMimeDecoder().wrap(orig);
       }
     },
     /**

@@ -36,7 +36,6 @@ public class FailoverPasswordProtectedDatabaseConnectionTest extends PasswordPro
     conn1.setPassword(PROPERTIES.getProperty(KEY_JDBC_PASSWORD));
     conn1.setConnectionAttempts(1);
     conn1.setConnectionRetryInterval(new TimeInterval(10L, TimeUnit.MILLISECONDS.name()));
-    conn1.setTestStatement(PROPERTIES.getProperty(KEY_JDBC_TEST_STATEMENT));
     conn1.setDebugMode(true);
     
     return conn1;

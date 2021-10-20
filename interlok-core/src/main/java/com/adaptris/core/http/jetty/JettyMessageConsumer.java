@@ -50,15 +50,16 @@ import lombok.Setter;
 /**
  * This is the standard class that receives documents via HTTP.
  * <p>
- * You should configure the {@link #setDestination(com.adaptris.core.ConsumeDestination)} to contain the URI that should trigger
- * this consumer (e.g. {@code /path/to/my/workflow}). The value from
- * {@link com.adaptris.core.ConsumeDestination#getFilterExpression()} is used to determine which HTTP methods are appropriate for
- * this consumer and should be a comma separated list. In the event that the filter expression is empty / null then all HTTP methods
- * are acceptable ({@code "GET", "POST", "HEAD", "PUT", "DELETE",
- * "TRACE", "CONNECT", "PATCH"}) and will need to be handled directly by your workflow. {@code OPTIONS} will be automatically.
+ * You should configure the {@link #setPath(String)} to contain the URI that should trigger this
+ * consumer (e.g. {@code /path/to/my/workflow}). The value from {@link #setMethods(String)} is used
+ * to determine which HTTP methods are appropriate for this consumer and should be a comma separated
+ * list. In the event that the filter expression is empty / null then all HTTP methods are
+ * acceptable ({@code "GET", "POST", "HEAD", "PUT", "DELETE",
+ * "TRACE", "CONNECT", "PATCH"}) and will need to be handled directly by your workflow.
+ * {@code OPTIONS} will be automatically.
  * <p>
- * If you want to preserve the http request headers or parameters simply configure a handler for either or both the headers and
- * parameters.
+ * If you want to preserve the http request headers or parameters simply configure a handler for
+ * either or both the headers and parameters.
  * </p>
  * <p>
  * See the following javadoc for the following configuration items for headers/parameters;
@@ -68,8 +69,9 @@ import lombok.Setter;
  * </ul>
  * </p>
  * <p>
- * Note that if you intend for this class to be consumer withing a {@link com.adaptris.core.PoolingWorkflow} then you should
- * consider configuring a {@link JettyPoolingWorkflowInterceptor} as part of that workflow.
+ * Note that if you intend for this class to be consumer withing a
+ * {@link com.adaptris.core.PoolingWorkflow} then you should consider configuring a
+ * {@link JettyPoolingWorkflowInterceptor} as part of that workflow.
  * </p>
  *
  * @config jetty-message-consumer
@@ -87,8 +89,7 @@ import lombok.Setter;
 {
     EmbeddedConnection.class, JettyConnection.class
 })
-@DisplayOrder(
-    order = {"path", "destination", "methods", "checkCharset", "parameterHandler", "headerHandler"})
+@DisplayOrder(order = {"path", "methods", "checkCharset", "parameterHandler", "headerHandler"})
 @NoArgsConstructor
 public class JettyMessageConsumer extends BasicJettyConsumer {
 

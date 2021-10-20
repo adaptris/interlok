@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,15 +21,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.adaptris.annotation.AutoPopulated;
-import com.adaptris.core.util.Args;
-import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.core.util.LoggingHelper;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * <p>
@@ -41,11 +36,9 @@ public abstract class FailedMessageRetrierImp implements FailedMessageRetrier {
 
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
-  @NotNull
-  @Valid
-  @AutoPopulated
-  private StandaloneConsumer standaloneConsumer;
   private transient Map<String, Workflow> workflows;
+  @Getter
+  @Setter
   private String uniqueId;
 
   /**
@@ -55,34 +48,20 @@ public abstract class FailedMessageRetrierImp implements FailedMessageRetrier {
    */
   public FailedMessageRetrierImp() {
     workflows = Collections.synchronizedMap(new HashMap<String, Workflow>());
-    setStandaloneConsumer(new StandaloneConsumer());
-  }
-
-  @Override
-  public synchronized void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success) {
-    onAdaptrisMessage(msg, success, null);
-  }
-  
-  @Override
-  public synchronized void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success, Consumer<AdaptrisMessage> failure) {
-    try {
-      Workflow workflow = getWorkflow(msg);
-      updateRetryCountMetadata(msg);
-      workflow.onAdaptrisMessage(msg, success, failure); // workflow.onAM is sync'd...
-    }
-    catch (Exception e) { // inc. runtime, exc. Workflow
-      log.error("exception retrying message", e);
-      log.error("message {}", MessageLoggerImpl.LAST_RESORT_LOGGER.toString(msg));
-    }
   }
 
   protected Workflow getWorkflow(AdaptrisMessage msg) throws CoreException {
-    Workflow workflow = getWorkflows().get(msg.getMetadataValue(Workflow.WORKFLOW_ID_KEY));
+    return getWorkflow(msg.getMetadataValue(Workflow.WORKFLOW_ID_KEY));
+  }
+
+  protected Workflow getWorkflow(String workflowId) throws CoreException {
+    Workflow workflow = getWorkflows().get(workflowId);
     if (workflow == null) {
-      throw new CoreException("No Workflow [" + msg.getMetadataValue(Workflow.WORKFLOW_ID_KEY) + "] found");
+      throw new CoreException(String.format("No Workflow [%s] found", workflowId));
     }
     if (!StartedState.getInstance().equals(workflow.retrieveComponentState())) {
-      throw new CoreException("Workflow [" + workflow.obtainWorkflowId() + "] is not started.");
+      throw new CoreException(
+          String.format("Workflow [%s] is not started", workflow.obtainWorkflowId()));
     }
     return workflow;
   }
@@ -106,46 +85,16 @@ public abstract class FailedMessageRetrierImp implements FailedMessageRetrier {
     msg.addMetadata(CoreConstants.RETRY_COUNT_KEY, String.valueOf(count));
   }
 
-  /** @see com.adaptris.core.AdaptrisComponent#init() */
   @Override
-  public void init() throws CoreException {
-    if (standaloneConsumer != null) {
-      standaloneConsumer.registerAdaptrisMessageListener(this);
+  public void addWorkflow(Workflow workflow) throws CoreException {
+    String key = workflow.obtainWorkflowId();
+    if (getWorkflows().keySet().contains(key)) {
+      log.warn("duplicate workflow ID [" + key + "]");
+      throw new CoreException("Workflows cannot be uniquely identified");
     }
-    LifecycleHelper.init(standaloneConsumer);
+    log.debug("adding workflow with key [{}]", key);
+    getWorkflows().put(key, workflow);
   }
-
-  /** @see com.adaptris.core.AdaptrisComponent#start() */
-  @Override
-  public void start() throws CoreException {
-    LifecycleHelper.start(standaloneConsumer);
-  }
-
-  /** @see com.adaptris.core.AdaptrisComponent#stop() */
-  @Override
-  public void stop() {
-    LifecycleHelper.stop(standaloneConsumer);
-  }
-
-  /** @see com.adaptris.core.AdaptrisComponent#close() */
-  @Override
-  public void close() {
-    LifecycleHelper.close(standaloneConsumer);
-  }
-
-
-  /**
-   * Add a <code>Workflow</code>.
-   * <p>
-   * Add a <code>Workflow</code> to the internal store. If the generated key is not unique a <code>CoreException</code> can be
-   * thrown.
-   * </p>
-   * 
-   * @param workflow the workflow to add
-   * @throws CoreException if it is considered a duplicate
-   */
-  @Override
-  public abstract void addWorkflow(Workflow workflow) throws CoreException;
 
   @Override
   public void clearWorkflows() {
@@ -157,58 +106,8 @@ public abstract class FailedMessageRetrierImp implements FailedMessageRetrier {
     return new ArrayList<String>(workflows.keySet());
   }
 
-  /**
-   * <p>
-   * Returns the <code>StandaloneConsumer</code> to use.
-   * </p>
-   * 
-   * @return the <code>StandaloneConsumer</code> to use
-   */
-  public StandaloneConsumer getStandaloneConsumer() {
-    return standaloneConsumer;
-  }
-
-  /**
-   * <p>
-   * Sets the <code>StandaloneConsumer</code> to use. May not be null. Sets <code>this</code> as the consumer's
-   * <code>AdaptrisMessageListener</code>.
-   * </p>
-   * 
-   * @param consumer the <code>StandaloneConsumer</code> to use
-   */
-  public void setStandaloneConsumer(StandaloneConsumer consumer) {
-    standaloneConsumer = Args.notNull(consumer, "consumer");
-    standaloneConsumer.registerAdaptrisMessageListener(this);
-  }
-
   protected Map<String, Workflow> getWorkflows() {
     return workflows;
-  }
-
-  /**
-   * @return the uniqueId
-   */
-  @Override
-  public String getUniqueId() {
-    return uniqueId;
-  }
-
-  /**
-   * @param uniqueId the uniqueId to set
-   */
-  public void setUniqueId(String uniqueId) {
-    this.uniqueId = uniqueId;
-  }
-
-  @Override
-  public void prepare() throws CoreException {
-    LifecycleHelper.prepare(getStandaloneConsumer());
-  }
-
-
-  @Override
-  public String friendlyName() {
-    return LoggingHelper.friendlyName(this);
   }
 
 }

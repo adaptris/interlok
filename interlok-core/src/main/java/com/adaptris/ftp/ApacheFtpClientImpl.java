@@ -378,6 +378,31 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
   }
 
   /**
+   * Indicate whether the given path is a directory or not.
+   *
+   * @param path The path/filename to query.
+   *
+   * @return True if path points to a directory, false otherwise.
+   */
+  @Override
+  public boolean isDirectory(String path) throws IOException {
+    try {
+      acquireLock();
+      String cwd = ftpClient().printWorkingDirectory();
+      if (ftpClient().changeWorkingDirectory(path)) {
+        log("Successfully changed to {} - must be a directory", path);
+        ftpClient().changeWorkingDirectory(cwd);
+        return true;
+      }
+      log("Could not change to {} - must not be a directory", path);
+      return false;
+    } finally {
+      logReply(ftpClient().getReplyStrings());
+      releaseLock();
+    }
+  }
+
+  /**
    * disconnect from the server
    */
   @Override

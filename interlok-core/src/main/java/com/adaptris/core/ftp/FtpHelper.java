@@ -59,5 +59,4 @@ public abstract class FtpHelper {
   public static String getDirectory(String fullPath) {
     return getDirectory(fullPath, false);
   }
-
 }

@@ -36,11 +36,7 @@
             {
               "standard-workflow": {
                 "consumer": {
-                  "@class": "null-message-consumer",
-                  "destination": {
-                    "@class": "configured-consume-destination",
-                    "destination": "dummy"
-                  }
+                  "@class": "null-message-consumer"
                 },
                 "service-collection": [
                   {

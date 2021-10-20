@@ -19,7 +19,6 @@ public class NullMessageProducerTest {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testRequest() throws Exception {
     NullMessageProducer producer = new NullMessageProducer();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -28,15 +27,12 @@ public class NullMessageProducerTest {
       LifecycleHelper.initAndStart(producer);
       assertNull(producer.request(msg));
       assertNull(producer.request(msg, 10L));
-      assertNull(producer.request(msg, (m) -> null));
-      assertNull(producer.request(msg, (m) -> null, 10L));
     } finally {
       LifecycleHelper.stopAndClose(producer);
     }
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testProduce() throws Exception {
     NullMessageProducer producer = new NullMessageProducer();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -44,7 +40,6 @@ public class NullMessageProducerTest {
       LifecycleHelper.prepare(producer);
       LifecycleHelper.initAndStart(producer);
       producer.produce(msg);
-      producer.produce(msg, (m) -> null);
     } finally {
       LifecycleHelper.stopAndClose(producer);
     }

@@ -1,32 +1,35 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.runtime;
 
 import static com.adaptris.core.CoreConstants.FS_PRODUCE_DIRECTORY;
 import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION;
 import static com.adaptris.core.CoreConstants.PRODUCED_NAME_KEY;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.Map;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MessageLifecycleEvent;
 
@@ -49,7 +52,6 @@ public class MessageDigestErrorEntry extends MessageDigestEntry {
   public MessageDigestErrorEntry(String uniqueId, String workflowId, Date date) {
     super(uniqueId, workflowId, date);
   }
-
 
   @Override
   public String toString() {
@@ -81,10 +83,14 @@ public class MessageDigestErrorEntry extends MessageDigestEntry {
     return stackTrace;
   }
 
+  // return the stack trace but can also be used by jolokia as stackTrace is a special word
+  public String getExceptionStackTrace() {
+    return getStackTrace();
+  }
+
   public String getFileSystemPath() {
     return fileSystemPath;
   }
-
 
   public void setFileSystemPath(String s) {
     fileSystemPath = s;
@@ -121,24 +127,22 @@ public class MessageDigestErrorEntry extends MessageDigestEntry {
   private void addLifecycleEvent(AdaptrisMessage msg) {
     try {
       setLifecycleEvent(msg.getMessageLifecycleEvent().clone());
-    }
-    catch (CloneNotSupportedException unlikely) {
+    } catch (CloneNotSupportedException unlikely) {
       setLifecycleEvent(null);
     }
   }
 
+  @SuppressWarnings({"lgtm[java/path-injection]"})
   private void addFileSystemLocation(AdaptrisMessage msg) {
     try {
       if (msg.headersContainsKey(PRODUCED_NAME_KEY)) {
         if (msg.headersContainsKey(FS_PRODUCE_DIRECTORY)) {
           setFileSystemFile(new File(msg.getMetadataValue(FS_PRODUCE_DIRECTORY), msg.getMetadataValue(PRODUCED_NAME_KEY)));
-        }
-        else {
+        } else {
           setFileSystemPath(msg.getMetadataValue(PRODUCED_NAME_KEY));
         }
       }
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       setFileSystemPath(null);
     }
   }

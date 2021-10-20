@@ -39,12 +39,11 @@ public class ProduceOnlyProducerImpTest {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testProduce_Message_ProduceDestination() throws Exception {
     MockMessageProducer mock = createAndStart();
     try {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
-      mock.produce(msg, (m) -> null);
+      mock.produce(msg);
       assertEquals(1, mock.getMessages().size());
     } finally {
       LifecycleHelper.stopAndClose(mock);
@@ -52,7 +51,6 @@ public class ProduceOnlyProducerImpTest {
   }
 
   @Test(expected = UnsupportedOperationException.class)
-  @SuppressWarnings("deprecation")
   public void testRequest_Message() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
     MockMessageProducer mock = createAndStart();
@@ -64,7 +62,6 @@ public class ProduceOnlyProducerImpTest {
   }
 
   @Test(expected = UnsupportedOperationException.class)
-  @SuppressWarnings("deprecation")
   public void testRequest_Message_Long() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
     MockMessageProducer mock = createAndStart();
@@ -76,24 +73,22 @@ public class ProduceOnlyProducerImpTest {
   }
 
   @Test(expected = UnsupportedOperationException.class)
-  @SuppressWarnings("deprecation")
   public void testRequest_Message_Destination() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
     MockMessageProducer mock = createAndStart();
     try {
-      mock.request(msg, (m) -> null);
+      mock.request(msg);
     } finally {
       LifecycleHelper.stopAndClose(mock);
     }
   }
 
   @Test(expected = UnsupportedOperationException.class)
-  @SuppressWarnings("deprecation")
   public void testRequest_Message_Destination_Long() throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
     MockMessageProducer mock = createAndStart();
     try {
-      mock.request(msg, (m) -> null, 100L);
+      mock.request(msg, 100L);
     } finally {
       LifecycleHelper.stopAndClose(mock);
     }

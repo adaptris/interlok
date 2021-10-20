@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,12 +17,10 @@
 package com.adaptris.util;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
-
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -35,21 +33,20 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
-
+import com.adaptris.annotation.Removal;
 import com.adaptris.util.text.xml.Resolver;
 import com.adaptris.util.text.xml.Validator;
 import com.adaptris.util.text.xml.XPath;
 
 /**
  * Class which provides convenience methods for various aspects of XML usage.
- * 
+ *
  * @author Stuart Ellidge
  */
 public class XmlUtils {
@@ -91,6 +88,7 @@ public class XmlUtils {
    * @deprecated URIResolver does nothing so use {@link #XmlUtils(EntityResolver)} instead.
    */
   @Deprecated
+  @Removal(version = "4.0.0")
   public XmlUtils(EntityResolver er, URIResolver ur) {
     this(er);
   }
@@ -100,6 +98,7 @@ public class XmlUtils {
    *             instead.
    */
   @Deprecated
+  @Removal(version = "4.0.0")
   public XmlUtils(EntityResolver er, URIResolver ur, NamespaceContext ctx) {
     this(er, ctx, DocumentBuilderFactory.newInstance());
   }
@@ -109,6 +108,7 @@ public class XmlUtils {
    *             instead.
    */
   @Deprecated
+  @Removal(version = "4.0.0")
   public XmlUtils(EntityResolver er, URIResolver ur, NamespaceContext ctx, DocumentBuilderFactory dbf) {
     this(er, ctx, dbf);
   }
@@ -503,9 +503,9 @@ public class XmlUtils {
   /**
    * Convenience method which enables a new Node to be added to a parent at a specified position, by specifying the Node to insert
    * before. Here is a sample of how to use:
-   * 
+   *
    * <pre>
-  *  {@code 
+  *  {@code
    *
    *   // Example of how to insert a Node as the 3rd child of a parent
    *   Node p  = xmlUtils.getSingleNode("/mydoc/parent");
@@ -515,7 +515,7 @@ public class XmlUtils {
    *
    * }
    * </pre>
-   * 
+   *
    * @param newNode the Node to be added
    * @param existingNode the Node to insert before
    * @param parent the parent Node

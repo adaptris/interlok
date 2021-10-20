@@ -16,6 +16,8 @@
 
 package com.adaptris.core.services.conditional;
 
+import static com.adaptris.core.CoreConstants.shouldStopProcessing;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -50,7 +52,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * whether your conditions continue to evaluate to true. <br/>
  * 
  * <pre>
- *  <max-loops>5</max-loops>
+ *  &lt;max-loops&gt;57&lt;/max-loops&gt;
  * </pre>
  * 
  * The default value for the max-loops is 10. Setting this value to 0, will loop forever until your
@@ -104,7 +106,7 @@ public class While extends ServiceImp {
     try {
       log.trace("Running logical test on 'WHILE', with condition class {}",
           this.getCondition().getClass().getSimpleName());
-      while(this.getCondition().evaluate(msg)) {
+      while((!shouldStopProcessing.apply(msg)) && (this.getCondition().evaluate(msg))) {
         log.trace("Logical 'IF' evaluated to true on WHILE test, running service.");
         getThen().getService().doService(msg);
         loopCount ++;

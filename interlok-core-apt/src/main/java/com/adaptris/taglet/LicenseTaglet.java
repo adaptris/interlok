@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,16 +16,16 @@
 
 package com.adaptris.taglet;
 
-import com.sun.tools.doclets.Taglet;
-
 import java.util.Map;
+import jdk.javadoc.doclet.Taglet;
 
 /**
  * Simple taglet that allows us to quickly specify the license requirements.
- * 
- * @author lchan
- * 
+ *
+ * @deprecated since 4.2.0, we have switched to using annotations instead.
  */
+@Deprecated(forRemoval = true, since = "4.2.0")
+@SuppressWarnings("deprecation")
 public class LicenseTaglet extends AbstractTaglet {
   private static final String START = "<p>License Required: <strong>";
   private static final String END = "</strong></p>";
@@ -34,6 +34,7 @@ public class LicenseTaglet extends AbstractTaglet {
   /**
    * Return the name of this custom tag.
    */
+  @Override
   public String getName() {
       return NAME;
   }

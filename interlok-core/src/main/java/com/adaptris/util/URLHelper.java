@@ -100,7 +100,7 @@ public abstract class URLHelper {
   /**
    * Convert a query string into a map.
    * 
-   * @param queryString the query string (e.g. a=b&c=d&e=f)
+   * @param queryString the query string (e.g. a=b&amp;c=d&amp;e=f)
    * @param charset the character set for {@link URLDecoder#decode(String, String)} purposes
    * @return a map representation of the query.
    */

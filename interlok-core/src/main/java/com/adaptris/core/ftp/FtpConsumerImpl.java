@@ -16,38 +16,31 @@
 
 package com.adaptris.core.ftp;
 
-import static com.adaptris.core.CoreConstants.FS_CONSUME_DIRECTORY;
-import static com.adaptris.core.ftp.FtpHelper.FORWARD_SLASH;
-
-import java.io.FileFilter;
-import java.io.IOException;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
-
-import javax.validation.Valid;
-
-import org.apache.commons.lang3.ObjectUtils;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumer;
 import com.adaptris.core.AdaptrisPollingConsumer;
-import com.adaptris.core.ConsumeDestination;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.fs.FsHelper;
-import com.adaptris.core.util.DestinationHelper;
 import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.core.util.LoggingHelper;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.interlok.util.FileFilterBuilder;
 import com.adaptris.util.TimeInterval;
-import com.adaptris.validation.constraints.ConfigDeprecated;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.ObjectUtils;
+
+import javax.validation.constraints.NotBlank;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
+import static com.adaptris.core.CoreConstants.FS_CONSUME_DIRECTORY;
+import static com.adaptris.core.ftp.FtpHelper.FORWARD_SLASH;
 
 /**
  * Abstract FTP Implementation of the {@link AdaptrisMessageConsumer} implementation.
@@ -71,8 +64,7 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
    * expressions to perform filtering
    * </p>
    * <p>
-   * The expression that is used to filter messages is derived from {@link #getFilterExpression()}
-   * or from the deprecated {@link #getDestination()}.
+   * The expression that is used to filter messages is derived from {@link #getFilterExpression()}.
    * </p>
    * <p>
    * Note that because we working against a remote server, support for additional file attributes
@@ -91,18 +83,6 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
   private TimeInterval quietInterval;
 
   /**
-   * The consume destination represents the base-directory on the FTP server where you are consuming
-   * files from.
-   *
-   */
-  @Deprecated
-  @Getter
-  @Setter
-  @Valid
-  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'ftp-endpoint' instead", groups = Deprecated.class)
-  private ConsumeDestination destination;
-
-  /**
    * The FTP endpoint where we will retrieve files files.
    * <p>
    * Although nominally a URL, you can configure the following styles
@@ -119,7 +99,7 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
    */
   @Getter
   @Setter
-  // Needs to be @NotBlank when destination is removed.
+  @NotBlank
   private String ftpEndpoint;
 
   /**
@@ -135,7 +115,6 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
 
   protected transient FileFilter fileFilter;
   protected transient FileTransferClient ftpClient = null;
-  private transient boolean destinationWarningLogged = false;
 
   public FtpConsumerImpl() {
     setReacquireLockBetweenMessages(true);
@@ -227,7 +206,7 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
     return count;
   }
 
-  private boolean handle(String fileToGet) {
+  protected boolean handle(String fileToGet) {
     try {
       if (accept(fileToGet)) {
         return fetchAndProcess(fileToGet);
@@ -251,26 +230,16 @@ public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
 
   @Override
   protected void prepareConsumer() throws CoreException {
-    DestinationHelper.logWarningIfNotNull(destinationWarningLogged,
-        () -> destinationWarningLogged = true, getDestination(),
-        "{} uses destination, use ftp-url and filter-expression instead",
-        LoggingHelper.friendlyName(this));
-    DestinationHelper.mustHaveEither(getFtpEndpoint(), getDestination());
+
   }
 
   protected String ftpURL() {
-    return DestinationHelper.consumeDestination(getFtpEndpoint(), getDestination());
+    return getFtpEndpoint();
   }
 
   protected String filterExpression() {
-    return DestinationHelper.filterExpression(getFilterExpression(), getDestination());
+    return getFilterExpression();
   }
-
-  @Override
-  protected String newThreadName() {
-    return DestinationHelper.threadName(retrieveAdaptrisMessageListener(), getDestination());
-  }
-
 
   protected String fileFilterImp() {
     return ObjectUtils.defaultIfNull(getFileFilterImp(), FileFilterBuilder.DEFAULT_FILE_FILTER_IMP);

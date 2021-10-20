@@ -17,12 +17,10 @@
 package com.adaptris.core;
 
 import java.io.Serializable;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
 import com.adaptris.core.util.Args;
 import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -45,11 +43,13 @@ public class MleMarker implements Cloneable, Serializable {
   private String uniqueId;
   private String name;
   private String qualifier;
+  // Can't remove this for backwards compatibility vis-a-vis v2.
   @Deprecated
   @ConfigDeprecated(groups = Deprecated.class)
   private String confirmationId;
   private boolean wasSuccessful;
   private boolean isTrackingEndpoint;
+  // Can't remove this for backwards compatibility vis-a-vis v2.
   @Deprecated
   @ConfigDeprecated(groups = Deprecated.class)
   private boolean isConfirmation;

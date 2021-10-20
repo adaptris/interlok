@@ -16,27 +16,30 @@
 
 package com.adaptris.core.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import java.io.IOException;
-import javax.xml.namespace.NamespaceContext;
-import org.junit.Test;
-import org.w3c.dom.Document;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.util.XmlUtils;
+import org.junit.Test;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+
+import javax.xml.namespace.NamespaceContext;
+import java.io.IOException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 
 @SuppressWarnings("deprecation")
 public class XmlHelperTest extends XmlHelper {
   private static final String EXAMPLE_XML =
-      "<document>" + System.lineSeparator() + "  <content>text body</content>" + System.lineSeparator()
-          + "  <attachment encoding=\"base64\" filename=\"attachment1.txt\">dp/HSJfonUsSMM7QRBSRfg==</attachment>"
-          + System.lineSeparator()
-          + "  <attachment encoding=\"base64\" filename=\"attachment2.txt\">OdjozpCZB9PbCCLZlKregQ</attachment>"
-          + System.lineSeparator() + "</document>";
+      "<document>\n   <content>text body</content>\n"
+          + "   <attachment encoding=\"base64\" filename=\"attachment1.txt\">dp/HSJfonUsSMM7QRBSRfg==</attachment>\n"
+          + "   <attachment encoding=\"base64\" filename=\"attachment2.txt\">OdjozpCZB9PbCCLZlKregQ</attachment>\n"
+          + "</document>";
 
   private static final String ILLEGAL_XML_CHAR = new String(new byte[]
   {
@@ -125,5 +128,19 @@ public class XmlHelperTest extends XmlHelper {
   public void testStripIllegalChars() throws Exception {
     assertEquals("hello", stripIllegalXmlCharacters("hel" + ILLEGAL_XML_CHAR + "lo"));
     assertEquals("hello", stripIllegalXmlCharacters("hello"));
+  }
+
+  @Test
+  public void testNodeToString() throws Exception {
+    Document d = XmlHelper.createDocument(EXAMPLE_XML);
+    String s = XmlHelper.nodeToString(d);
+    assertEquals(EXAMPLE_XML, s);
+  }
+
+  @Test
+  public void testNodeToStringException() throws Exception {
+    Document d = XmlHelper.createDocument(EXAMPLE_XML);
+    Attr a = d.createAttribute("x");
+    assertNull(XmlHelperTest.nodeToString(a));
   }
 }

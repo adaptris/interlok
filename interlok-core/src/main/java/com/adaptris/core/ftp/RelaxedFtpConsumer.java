@@ -31,28 +31,28 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * FTP implementation which does not have any guarantees as to the atomicity of operations.
  * <p>
- * This differs from the standard {@link FtpConsumer} in that it does not attempt to rename the file before attempting to process
- * the file. If you have multiple consumers reading the same directory with the same filter then it will be possible to process a
- * message twice (or twice partially) or any combination thereof. <strong>It is not recommended that you use this FtpConsumer unless
- * there are very specific reasons to; e.g. the remote FTP server does not support the RNFR and RNTO command.</strong> After
- * consuming the file, it is deleted.
+ * This differs from the standard {@link FtpConsumer} in that it does not attempt to rename the file
+ * before attempting to process the file. If you have multiple consumers reading the same directory
+ * with the same filter then it will be possible to process a message twice (or twice partially) or
+ * any combination thereof. <strong>It is not recommended that you use this FtpConsumer unless there
+ * are very specific reasons to; e.g. the remote FTP server does not support the RNFR and RNTO
+ * command.</strong> After consuming the file, it is deleted.
  * </p>
  * <p>
- * The destination returned by the ConsumeDestination implementation should be in the form in the URL form dictated by the
- * {@link FileTransferConnection} flavour including the directory from which you wish to consume from. Simply specifying the IP
- * Address or DNS name of the remote ftp server may cause files to be consumed without specifying a subdirectory (which if you are
- * not in an ftp chroot jail might be a very bad thing).
+ * The endpoint should be in the form in the URL form dictated by the {@link FileTransferConnection}
+ * flavour including the directory from which you wish to consume from. Simply specifying the IP
+ * Address or DNS name of the remote ftp server may cause files to be consumed without specifying a
+ * subdirectory (which if you are not in an ftp chroot jail might be a very bad thing).
  * </p>
  * <p>
- * Although multiple file-filters can be configured only filters that work with the filepath will work. Other filter implementations
- * (such as those based on size /last modified) may not work.
+ * Although multiple file-filters can be configured only filters that work with the filepath will
+ * work. Other filter implementations (such as those based on size /last modified) may not work.
  * </p>
  *
  * @config relaxed-ftp-consumer
  *
  * @see FtpConnection
  * @see FileTransferConnection
- * @see com.adaptris.core.ConsumeDestination
  */
 @XStreamAlias("relaxed-ftp-consumer")
 @AdapterComponent

@@ -14,8 +14,6 @@
 
 package com.adaptris.core;
 
-import com.adaptris.annotation.Removal;
-import com.adaptris.core.util.DestinationHelper;
 import lombok.NoArgsConstructor;
 
 /**
@@ -30,13 +28,6 @@ public abstract class RequestReplyProducerImp extends RequestReplyProducerBase {
     doProduce(msg, endpoint(msg));
   }
 
-  @Deprecated
-  @Removal(version = "4.0.0")
-  @Override
-  public final void produce(AdaptrisMessage msg, ProduceDestination dest) throws ProduceException {
-    doProduce(msg, DestinationHelper.resolveProduceDestination(endpoint(msg), dest, msg));
-  }
-
   @Override
   public final AdaptrisMessage request(AdaptrisMessage msg) throws ProduceException {
     return request(msg, endpoint(msg), defaultTimeout());
@@ -45,23 +36,6 @@ public abstract class RequestReplyProducerImp extends RequestReplyProducerBase {
   @Override
   public final AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException {
     return request(msg, endpoint(msg), timeout);
-  }
-
-  @Override
-  @Deprecated
-  @Removal(version = "4.0.0")
-  public final AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination destination)
-      throws ProduceException {
-    return request(msg, destination, defaultTimeout());
-  }
-
-  @Override
-  @Deprecated
-  @Removal(version = "4.0.0")
-  public final AdaptrisMessage request(AdaptrisMessage msg, ProduceDestination destination,
-      long timeout) throws ProduceException {
-    return request(msg, DestinationHelper.resolveProduceDestination(endpoint(msg), destination, msg),
-        timeout);
   }
 
   private AdaptrisMessage request(AdaptrisMessage msg, String endpoint, long timeout)
