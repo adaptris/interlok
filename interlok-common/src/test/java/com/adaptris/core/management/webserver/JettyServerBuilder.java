@@ -1,6 +1,8 @@
 package com.adaptris.core.management.webserver;
 import static org.awaitility.Awaitility.await;
+
 import java.time.Duration;
+
 import org.eclipse.jetty.http.HttpCompliance;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConfiguration;
@@ -10,13 +12,12 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
+
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Slf4j
 public class JettyServerBuilder {
   public static Server build() throws Exception {
     final Server server = createSimpleServer();
@@ -43,20 +44,20 @@ public class JettyServerBuilder {
       PortManager.release(((ServerConnector) c).getPort());
     }
   }
-  
+
   public static void start(Server server) throws Exception {
     server.start();
     waitUntilStarted(server);
   }
-  
+
   private static void waitUntilStarted(Server server) {
     await().atMost(Duration.ofSeconds(5))
-      .with()
-      .pollInterval(Duration.ofMillis(100))
-      .until(() -> server.isStarted());
+    .with()
+    .pollInterval(Duration.ofMillis(100))
+    .until(() -> server.isStarted());
   }
-  
-  private static Server createSimpleServer() {
+
+  public static Server createSimpleServer() {
     final Server server = new Server();
     // Setting up extra options
     server.setStopAtShutdown(true);
@@ -91,15 +92,15 @@ public class JettyServerBuilder {
     httpConfig.setPersistentConnectionsEnabled(true);
     return httpConfig;
   }
-  
+
   private static void executeQuietly(Runner r) {
     try {
       r.execute();
     } catch (Exception e) {
-      
+
     }
   }
-  
+
   @FunctionalInterface
   public interface Runner {
     void execute() throws Exception;

@@ -16,7 +16,6 @@
 
 package com.adaptris.core.management.webserver;
 
-import com.adaptris.interlok.util.Args;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,12 +26,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Synchronized;
-import lombok.extern.slf4j.Slf4j;
+
 import org.eclipse.jetty.security.Authenticator;
 import org.eclipse.jetty.security.Authenticator.AuthConfiguration;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
@@ -53,6 +50,13 @@ import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.webapp.WebXmlConfiguration;
 
+import com.adaptris.interlok.util.Args;
+
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Synchronized;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Implementation of the {@link ServerManager} interface for managing Jetty servers.
  * <p>
@@ -63,7 +67,6 @@ import org.eclipse.jetty.webapp.WebXmlConfiguration;
  * @author gcsiki
  *
  */
-@SuppressWarnings("deprecation")
 @Slf4j
 public final class JettyServerManager implements ServerManager {
 
@@ -109,7 +112,7 @@ public final class JettyServerManager implements ServerManager {
   private final Map<String, Server> servers;
 
   private final transient Object locker = new Object();
-  
+
   JettyServerManager() {
     servers = Collections.synchronizedMap(new HashMap<>());
   }
@@ -127,7 +130,7 @@ public final class JettyServerManager implements ServerManager {
     log.warn("No Key provided; generated key is {}", key);
     addServer(key, server);
   }
-  
+
   /** Remove a server
    *  @deprecated since 4.3.0; use removeServer(String) instead.
    */
@@ -138,28 +141,28 @@ public final class JettyServerManager implements ServerManager {
       if (e.getValue() == server) {
         key = e.getKey();
         break;
-      }     
+      }
     }
     removeServer(key);
   }
 
   /** Add a server.
-   * 
+   *
    * @param key the key
    * @param server the underlying jetty server
    */
   public void addServer(String key, Server server) {
     servers.put(Args.notNull(key, "server-id"), server);
   }
-  
+
   /** Remove a server
-   * 
+   *
    * @param key the key.
    */
   public void removeServer(String key) {
     servers.remove(key);
   }
-  
+
   @Override
   public boolean isStarted() {
     if (servers.size() == 0) {
@@ -178,15 +181,15 @@ public final class JettyServerManager implements ServerManager {
   public void addServlet(Servlet servlet, HashMap<String, Object> additionalProperties) throws Exception {
     addServlet(new ServletHolder(servlet), additionalProperties);
   }
- 
+
   /**
    * This will add the servlet to all underlying server instances and is discouraged.
-   * 
+   *
    * @deprecated since 4.3.0 use {@link #addServlet(String, ServletHolder, Map)}
    *             instead. This will be removed without warning.
    */
   @Deprecated(since="4.3.0")
-  @Synchronized("locker")  
+  @Synchronized("locker")
   // Note, only used by EmbeddedConnection so this can be removed at any time.
   public void addServlet(ServletHolder servlet, HashMap<String, Object> props)
       throws Exception {
@@ -219,12 +222,12 @@ public final class JettyServerManager implements ServerManager {
    * @throws Exception on exception
    * @return true if the servlet was added
    */
-  @Synchronized("locker")  
+  @Synchronized("locker")
   public boolean addServlet(String serverId, ServletHolder servlet, Map<String, Object> props) throws Exception {
     Server server = Args.notNull(getServers().get(serverId), "server");
     return addServlet(server, servlet, props);
   }
-  
+
   @Override
   @Synchronized("locker")
   @Deprecated
@@ -245,11 +248,11 @@ public final class JettyServerManager implements ServerManager {
     Server server = Args.notNull(getServers().get(serverId), "server");
     destroyContext(contextPath, server.getHandler());
   }
-  
+
   /**
    * This will remove the servlet from all underlying server instances and is discouraged (but not
    * as much as adding the servlet to all instances).
-   * 
+   *
    * @deprecated since 4.3.0 use {@link #removeDeployment(String, ServletHolder, String)} instead.
    *             This will be removed without warning.
    */
@@ -268,7 +271,7 @@ public final class JettyServerManager implements ServerManager {
    * @param path the path
    * @throws Exception on exception
    */
-  @Synchronized("locker")  
+  @Synchronized("locker")
   public void removeDeployment(String serverId, ServletHolder holder, String path) throws Exception {
     Server server = Args.notNull(getServers().get(serverId), "server");
     WebAppContext rootWar = findRootContext(server, false);
@@ -276,8 +279,8 @@ public final class JettyServerManager implements ServerManager {
       removeServlet(rootWar, holder, path);
     }
   }
-  
- 
+
+
   @Override
   @Deprecated
   public void startDeployment(String contextPath) throws Exception {
@@ -297,11 +300,11 @@ public final class JettyServerManager implements ServerManager {
     Server server = Args.notNull(getServers().get(serverId), "server");
     if (server.isStarted()) {
       manageHandler(contextPath, true, server.getHandler());
-    }  
+    }
   }
 
-  
-  
+
+
   @Override
   @Deprecated
   public void stopDeployment(String contextPath) throws Exception {
@@ -329,7 +332,7 @@ public final class JettyServerManager implements ServerManager {
     }
   }
 
-  
+
   private boolean addServlet(Server server, ServletHolder servlet, Map<String, Object> additionalProperties) throws Exception {
     // this will always create a rootWar
     WebAppContext rootWar = findRootContext(server, true);
@@ -367,10 +370,10 @@ public final class JettyServerManager implements ServerManager {
       log.trace("Using default descriptor [{}]", defaultsURL);
       root.setDefaultsDescriptor(defaultsURL.toString());
       root.setConfigurations(new Configuration[]
-      {
-          new WebXmlConfiguration() {
-          }
-      });
+          {
+              new WebXmlConfiguration() {
+              }
+          });
       ContextHandlerCollection c = firstContextHandler(server.getHandler());
       if (c != null) {
         c.addHandler(root);
@@ -404,7 +407,7 @@ public final class JettyServerManager implements ServerManager {
     });
     return defaultSecurity;
   }
-  
+
   private URL findDefaultDescriptorXML() {
     URL defaultsURL = getClass().getClassLoader().getResource(OVERRIDE_DESCRIPTOR_XML);
     // if null, then jetty-webdefault-failsafe.xml is used, which always exists in the jar file.
@@ -463,7 +466,7 @@ public final class JettyServerManager implements ServerManager {
     List<ServletHolder> servletsToKeep = new ArrayList<>();
     List<ServletMapping> mappingsToKeep = new ArrayList<>();
     ServletHandler handler = webAppContext.getServletHandler();
-    Set<String> names = new HashSet<String>();
+    Set<String> names = new HashSet<>();
     debugLogging("{}: Current Mappings: {}", webAppContext.getWar(), Arrays.asList(handler.getServletMappings()));
     debugLogging("{}: Current Servlets: {}", webAppContext.getWar(), Arrays.asList(handler.getServlets()));
     for (ServletHolder holder : handler.getServlets()) {
@@ -487,7 +490,7 @@ public final class JettyServerManager implements ServerManager {
   private void unmapServlet(WebAppContext webAppContext, String contextPath) throws Exception {
     log.trace("{}: Unmapping servlet against {}", webAppContext.getWar(), contextPath);
     ServletHandler handler = webAppContext.getServletHandler();
-    List<ServletMapping> mappings = new ArrayList<ServletMapping>();
+    List<ServletMapping> mappings = new ArrayList<>();
     debugLogging("{}: Current Mappings: {}", webAppContext.getWar(), Arrays.asList(handler.getServletMappings()));
     for (ServletMapping mapping : handler.getServletMappings()) {
       List<String> pathSpecs = Arrays.asList(mapping.getPathSpecs());
