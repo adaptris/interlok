@@ -62,9 +62,10 @@ dependencies {
   }
 
   // api ("org.apache.geronimo.specs:geronimo-jms_2.0_spec:1.0-alpha-2")
+  // Note that jakarta.jms-api is now @3.x but that changes the package from javax.jms -> jakarta.jms
   api ("jakarta.jms:jakarta.jms-api:2.0.3")
-  // api ("org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final")
-  api ("jakarta.persistence:jakarta.persistence-api:2.2.3")
+  api ("org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final")
+  // api ("jakarta.persistence:jakarta.persistence-api:2.2.3")
   api ("jakarta.validation:jakarta.validation-api:2.0.2")
   // Transitive from jetty.
   // api ("jakarta.transaction:jakarta.transaction-api:1.3.3")
