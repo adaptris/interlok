@@ -107,7 +107,7 @@ dependencies {
   testImplementation ("oro:oro:2.0.8")
   testImplementation ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
 
-  testImplementation ("org.awaitility:awaitility:4.1.0")
+  testImplementation ("org.awaitility:awaitility:4.1.1")
 
   testImplementation ("org.apache.activemq:activemq-broker:$activeMqVersion")
   testImplementation ("org.apache.activemq:activemq-jaas:$activeMqVersion")
