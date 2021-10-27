@@ -9,7 +9,7 @@ ext {
   slf4jVersion = '1.7.32'
   mockitoVersion = '4.0.0'
   jschVersion = '0.1.69'
-  mssqlDriverVersion = '9.2.1.jre8'
+  mssqlDriverVersion = '9.4.0.jre8'
   derbyDriverVersion = '10.15.2.0'
 
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
