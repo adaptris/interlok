@@ -1,4 +1,4 @@
-@startuml "Triggered Error Handler"
+@startuml "LifecycleAnnotation"
 
 participant Parent
 participant LifecycleHelper

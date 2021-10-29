@@ -124,7 +124,7 @@ We keep the `HasLifeycle` annotation, but we modify LifecycleHelper so that when
 
 So effectively the sequence is
 
-![Sequence](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/adaptris/interlok/develop/docs/adr/assets/0011-runtime-annotation.puml)
+![Sequence](https://www.plantuml.com/plantuml/png/TL5DZwem5DtVNt7YHbt8ssimchTuBjuaPlv1WOjqKbgclPZuxwTyZ0Q26xZqz7pSmoc8yjBM1gl_kkJyaHi-M-j4YNPsHTH4MEUwKLPmLPwjJ8wUf0kRXlq4-rjfKqnEFhZEuYLAKtosLdJDk7gNSmZQtf2cD3ZiZZFP_TmdQJn7OTxadSUMPl3ks7llyOy5QbY72zIzVQ3upJ1S2bmvfknoP2ep3zorWkVISDur40x8MY7SEY5Z81N_oiHP2IfrPyBwei8pm_fbUI2SJN3m_Drgpm4AJPiPdKSzOVydz2zYMo0oc5GqlKVYcAf_BhHndYQXWcV4TttCQZFEDIYTZ_Hg52FW3RdhOFY1coq1GxQ5S9wbzHOk-rhI6XHUIUArJksPVy09ux1aa2H9n5yxz_Lrgz0fJcrjw0S0)
 
 
 * Good, no change to existing code, since that won't have annotations.
