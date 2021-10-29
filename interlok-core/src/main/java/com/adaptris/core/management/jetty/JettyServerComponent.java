@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.core.management.ManagementComponent;
 import com.adaptris.core.management.webserver.JettyServerManager;
-import com.adaptris.core.management.webserver.WebServerManagementUtil;
 import com.adaptris.core.util.ManagedThreadFactory;
 
 /**

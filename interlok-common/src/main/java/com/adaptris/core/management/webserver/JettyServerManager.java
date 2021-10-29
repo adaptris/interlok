@@ -26,10 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
-
 import org.eclipse.jetty.security.Authenticator;
 import org.eclipse.jetty.security.Authenticator.AuthConfiguration;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
@@ -49,9 +47,7 @@ import org.eclipse.jetty.servlet.ServletMapping;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.webapp.WebXmlConfiguration;
-
 import com.adaptris.interlok.util.Args;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Synchronized;
@@ -68,6 +64,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 @Slf4j
+@SuppressWarnings({"removal"})
 public final class JettyServerManager implements ServerManager {
 
   public static final String DEFAULT_DESCRIPTOR_XML = "com/adaptris/core/management/webserver/jetty-webdefault-failsafe.xml";

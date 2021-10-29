@@ -26,6 +26,7 @@ package com.adaptris.core.management.webserver;
  * Undertow / Quarkus).
  */
 @Deprecated(since="4.3.0")
+@SuppressWarnings({"removal"})
 public class WebServerManagementUtil {
 
 	/**
