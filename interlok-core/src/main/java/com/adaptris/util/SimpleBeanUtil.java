@@ -36,6 +36,8 @@ public abstract class SimpleBeanUtil {
       long.class, Long.class);
   private static final Map<Class, Objectifier> OBJECTIFIERS;
 
+  private static final List<String> IGNORED_GETTERS = List.of("getClass", "getInstance");
+  
   static {
     Map<Class, Objectifier> map = new HashMap<>();
     map.put(int.class, Integer::parseInt);
@@ -110,11 +112,9 @@ public abstract class SimpleBeanUtil {
     Method[] methods = c.getMethods();
     for (Method m : methods) {
       String name = m.getName();
-      if (!name.startsWith("get") || name.equals("getClass") || name.equals("getInstance")
-          || m.getParameterTypes().length != 0) {
-        continue;
+      if (name.startsWith("get") && !IGNORED_GETTERS.contains(name) && m.getParameterTypes().length == 0) {
+        result.put(name.toUpperCase(), m);
       }
-      result.put(name.toUpperCase(), m);
     }
     return result;
   }
