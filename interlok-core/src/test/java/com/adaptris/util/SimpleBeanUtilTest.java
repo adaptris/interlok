@@ -19,6 +19,11 @@ package com.adaptris.util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import java.lang.reflect.Method;
+import java.util.Map;
+import lombok.Getter;
+import lombok.Setter;
 import org.junit.Test;
 
 public class SimpleBeanUtilTest extends SimpleBeanUtil {
@@ -65,70 +70,37 @@ public class SimpleBeanUtilTest extends SimpleBeanUtil {
     assertEquals(Float.parseFloat("1"), bean.getFloatParam(), 0.1);
   }
 
+  @Test
+  public void testGettersAsMap() throws Exception {
+    MyObjectPrimitiveBean bean = new MyObjectPrimitiveBean();
+    Map<String, Method> getters = gettersAsMap(bean.getClass());
+    // Discards getInstance + getClass at least, so 7 traditional getter+setters.
+    assertEquals(7, getters.size());
+    assertTrue(getters.containsKey("GETSTRINGPARAM"));
+  }
+
   public class MyPrimitiveBean {
+    @Getter
+    @Setter
     private long longParam;
+    @Getter
+    @Setter
     private double doubleParam;
+    @Getter
+    @Setter
     private String stringParam;
+    @Getter
+    @Setter
     private boolean booleanParam;
+    @Getter
+    @Setter
     private int intParam;
+    @Getter
+    @Setter
     private float floatParam;
+    @Getter
+    @Setter
     private Object myObject;
-
-    public long getLongParam() {
-      return longParam;
-    }
-
-    public void setLongParam(long longParam) {
-      this.longParam = longParam;
-    }
-
-    public double getDoubleParam() {
-      return doubleParam;
-    }
-
-    public void setDoubleParam(double doubleParam) {
-      this.doubleParam = doubleParam;
-    }
-
-    public String getStringParam() {
-      return stringParam;
-    }
-
-    public void setStringParam(String stringParam) {
-      this.stringParam = stringParam;
-    }
-
-    public boolean getBooleanParam() {
-      return booleanParam;
-    }
-
-    public void setBooleanParam(boolean booleanParam) {
-      this.booleanParam = booleanParam;
-    }
-
-    public int getIntParam() {
-      return intParam;
-    }
-
-    public void setIntParam(int intParam) {
-      this.intParam = intParam;
-    }
-
-    public float getFloatParam() {
-      return floatParam;
-    }
-
-    public void setFloatParam(float floatParam) {
-      this.floatParam = floatParam;
-    }
-
-    public Object getMyObject() {
-      return myObject;
-    }
-
-    public void setMyObject(Object myObject) {
-      this.myObject = myObject;
-    }
 
     public void setMultiParam(String a, String b) {
 
@@ -136,74 +108,35 @@ public class SimpleBeanUtilTest extends SimpleBeanUtil {
 
   }
 
-  public class MyObjectPrimitiveBean {
+  public static class MyObjectPrimitiveBean {
+    @Getter
+    @Setter
     private Long longParam;
+    @Getter
+    @Setter
     private Double doubleParam;
+    @Getter
+    @Setter
     private String stringParam;
+    @Getter
+    @Setter
     private Boolean booleanParam;
+    @Getter
+    @Setter
     private Integer intParam;
+    @Getter
+    @Setter
     private Float floatParam;
+    @Getter
+    @Setter
     private Object myObject;
-
-    public Long getLongParam() {
-      return longParam;
-    }
-
-    public void setLongParam(Long longParam) {
-      this.longParam = longParam;
-    }
-
-    public Double getDoubleParam() {
-      return doubleParam;
-    }
-
-    public void setDoubleParam(Double doubleParam) {
-      this.doubleParam = doubleParam;
-    }
-
-    public String getStringParam() {
-      return stringParam;
-    }
-
-    public void setStringParam(String stringParam) {
-      this.stringParam = stringParam;
-    }
-
-    public Boolean getBooleanParam() {
-      return booleanParam;
-    }
-
-    public void setBooleanParam(Boolean booleanParam) {
-      this.booleanParam = booleanParam;
-    }
-
-    public Integer getIntParam() {
-      return intParam;
-    }
-
-    public void setIntParam(Integer intParam) {
-      this.intParam = intParam;
-    }
-
-    public Float getFloatParam() {
-      return floatParam;
-    }
-
-    public void setFloatParam(Float floatParam) {
-      this.floatParam = floatParam;
-    }
-
-    public Object getMyObject() {
-      return myObject;
-    }
-
-    public void setMyObject(Object myObject) {
-      this.myObject = myObject;
-    }
 
     public void setMultiParam(String a, String b) {
 
     }
 
+    static MyObjectPrimitiveBean getInstance() {
+      return new MyObjectPrimitiveBean();
+    }
   }
 }
