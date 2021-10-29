@@ -18,6 +18,7 @@ public class JettyServerManagerTest {
   public TestName testName = new TestName();
   
   @Test
+  @SuppressWarnings("removal")
   public void testWebServerManagementUtil() {
     ServerManager mgr = WebServerManagementUtil.getServerManager();
     assertNotNull(mgr);
