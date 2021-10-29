@@ -31,8 +31,6 @@ import com.adaptris.core.AdaptrisConnectionImp;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.management.webserver.JettyServerManager;
 import com.adaptris.core.management.webserver.SecurityHandlerWrapper;
-import com.adaptris.core.management.webserver.ServerManager;
-import com.adaptris.core.management.webserver.WebServerManagementUtil;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -139,7 +137,7 @@ public class EmbeddedConnection extends AdaptrisConnectionImp implements JettySe
     }
   }
 
-  private static void waitForJettyStart(ServerManager sm, long maxWaitTime) throws CoreException {
+  private static void waitForJettyStart(JettyServerManager sm, long maxWaitTime) throws CoreException {
     long totalWaitTime = 0;
     try {
       while (!sm.isStarted() && totalWaitTime < maxWaitTime) {
