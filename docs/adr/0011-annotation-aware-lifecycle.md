@@ -4,8 +4,8 @@ title: 0011-annotation-aware-lifecycle
 ---
 # Automatically enforcing lifecycle via annotations
 
-* Status: PROPOSAL
-* Deciders: Lewin Chan, Matt Warman, Aaron McGrath, Sebastien Belin, Paul Higginson
+* Status: Accepted
+* Deciders: Lewin Chan, Aaron McGrath, Sebastien Belin
 * Date: 2020-10-29
 
 ## Context and Problem Statement
@@ -81,11 +81,10 @@ This is prone to mistakes and we should be removing the boilerplate where possib
 * Do Nothing
 * Annotation + Compile time code generator
 * Annotation + LifecycleHelper runtime behavioural change
-* ... <!-- numbers of options can vary -->
 
 ## Decision Outcome
 
-Proposed but undecided.
+Annotation + LifecycleHelper runtime behavioural change. Introduction of a `InterlokLifecycle` annotation.
 
 ## Pros and Cons of the Options
 
@@ -125,7 +124,7 @@ We keep the `HasLifeycle` annotation, but we modify LifecycleHelper so that when
 
 So effectively the sequence is
 
-![Sequence](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/adaptris/interlok/ADR-0011-lifecycle-annotations/docs/adr/assets/0011-runtime-annotation.puml)
+![Sequence](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/adaptris/interlok/develop/docs/adr/assets/0011-runtime-annotation.puml)
 
 
 * Good, no change to existing code, since that won't have annotations.
