@@ -16,6 +16,7 @@
 
 package com.adaptris.core;
 
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import org.apache.commons.lang3.StringUtils;
 
 import com.adaptris.core.util.Args;
@@ -26,6 +27,8 @@ import com.adaptris.core.util.Args;
  * behaviour common to all implementations.
  * </p>
  */
+@Deprecated()
+@ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
 public abstract class ConsumeDestinationImp implements ConsumeDestination {
 
   private String configuredThreadName;

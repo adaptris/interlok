@@ -18,6 +18,8 @@ package com.adaptris.core;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +45,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("marshalled-class-destination")
 @DisplayOrder(order = {"defaultDestination", "mappings", "marshaller"})
+@Deprecated()
+@ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
 public final class MarshalledClassDestination implements MessageDrivenDestination {
 
   @NotNull

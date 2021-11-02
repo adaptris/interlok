@@ -21,6 +21,8 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;
+
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.slf4j.Logger;
@@ -47,6 +49,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("xpath-produce-destination")
 @DisplayOrder(order = {"xpath", "defaultDestination", "namespaceContext", "xmlDocumentFactoryConfig"})
+@Deprecated()
+@ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
 public class XpathProduceDestination implements MessageDrivenDestination {
 
   @NotNull

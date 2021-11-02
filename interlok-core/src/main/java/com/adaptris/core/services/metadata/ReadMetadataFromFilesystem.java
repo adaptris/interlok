@@ -16,21 +16,12 @@
 
 package com.adaptris.core.services.metadata;
 
-import static com.adaptris.core.util.MetadataHelper.convertFromProperties;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-import java.util.Set;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FileNameCreator;
@@ -41,7 +32,24 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.core.util.LoggingHelper;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.lang3.BooleanUtils;
+
+import javax.validation.Valid;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+import java.util.Set;
+
+import static com.adaptris.core.util.DestinationHelper.logWarningIfNotNull;
+import static com.adaptris.core.util.DestinationHelper.mustHaveEither;
+import static com.adaptris.core.util.MetadataHelper.convertFromProperties;
 
 /**
  * <p>
@@ -67,11 +75,24 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class ReadMetadataFromFilesystem extends MetadataServiceImpl {
 
   private InputStyle inputStyle;
-  @NotNull
+
   @Valid
+  @Deprecated()
+  @ConfigDeprecated(removalVersion = "4.0.0", message = "Use 'destination-path' instead", groups = Deprecated.class)
   private MessageDrivenDestination destination;
+
+  @Valid
+  @InputFieldHint(expression = true)
+  @Getter
+  @Setter
+  // Needs to be @NotBlank when destination is removed.
+  private String baseUrl;
+
+  private transient boolean destWarning;
+
   @InputFieldDefault(value = "false")
   private Boolean overwriteExistingMetadata;
+
   @AdvancedConfig
   @Valid
   private FileNameCreator filenameCreator;
@@ -112,8 +133,13 @@ public class ReadMetadataFromFilesystem extends MetadataServiceImpl {
   public void doService(AdaptrisMessage msg) throws ServiceException {
     String filenameToRead = "[could not create filename]";
     try {
-      String baseUrl = getDestination().getDestination(msg);
-      File parentFile = FsHelper.toFile(baseUrl);
+      String resolved;
+      if (baseUrl != null) {
+        resolved = msg.resolve(baseUrl);
+      } else {
+        resolved = getDestination().getDestination(msg);
+      }
+      File parentFile = FsHelper.toFile(resolved);
       File fileToRead = new File(parentFile, filenameCreator().createName(msg));
       if (parentFile.isFile()) {
         fileToRead = parentFile;
@@ -140,8 +166,10 @@ public class ReadMetadataFromFilesystem extends MetadataServiceImpl {
   @Override
   protected void initService() throws CoreException {
     try {
-      Args.notNull(getDestination(), "destination");
-    } catch (Exception e) {
+      logWarningIfNotNull(destWarning, () -> destWarning = true, destination,
+              "{} uses destination, use 'base-url' instead", LoggingHelper.friendlyName(this));
+      mustHaveEither(baseUrl, destination);
+    } catch (IllegalArgumentException e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
   }

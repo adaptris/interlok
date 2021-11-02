@@ -16,17 +16,6 @@
 
 package com.adaptris.core.services.metadata;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.util.Properties;
-import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredDestination;
 import com.adaptris.core.ConfiguredProduceDestination;
@@ -38,6 +27,19 @@ import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.services.metadata.ReadMetadataFromFilesystem.InputStyle;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.GuidGenerator;
+import org.junit.Test;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.util.Properties;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class ReadMetadataFromFilesystemTest extends MetadataServiceExample {
 
@@ -67,6 +69,14 @@ public class ReadMetadataFromFilesystemTest extends MetadataServiceExample {
     }
     assertNotNull(service.getDestination());
     assertEquals("dest", service.getDestination().getDestination(new DefaultMessageFactory().newMessage()));
+  }
+
+  @Test
+  public void testDestinationReplacement() {
+    ReadMetadataFromFilesystem service = new ReadMetadataFromFilesystem();
+    assertNull(service.getDestination());
+    service.setBaseUrl("C://some/path/to/somewhere");
+    assertEquals("C://some/path/to/somewhere", service.getBaseUrl());
   }
 
   @Test

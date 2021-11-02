@@ -22,6 +22,7 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ConfiguredConsumeDestination;
 import com.adaptris.core.ConsumeDestination;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -32,6 +33,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("consume-destination-from-metadata")
 @DisplayOrder(order = {"destinationMetadataKey", "defaultDestination", "filterMetadataKey", "defaultFilterExpression"})
+@Deprecated()
+@ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
 public class ConsumeDestinationFromMetadata implements ConsumeDestinationGenerator {
   private String defaultDestination;
   private String destinationMetadataKey;

@@ -17,6 +17,8 @@
 package com.adaptris.core;
 
 
+import com.adaptris.validation.constraints.ConfigDeprecated;
+
 /**
  * <p>
  * Represents a destination such as a directory or JMS Queue in the Framework.
@@ -24,6 +26,8 @@ package com.adaptris.core;
  * messages to consume.
  * </p>
  */
+@Deprecated()
+@ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
 public interface ConsumeDestination {
 
   /**

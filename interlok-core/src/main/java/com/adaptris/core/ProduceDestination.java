@@ -17,6 +17,8 @@
 package com.adaptris.core;
 
 
+import com.adaptris.validation.constraints.ConfigDeprecated;
+
 /**
  * <p>
  * Implementations of this interface return a <code>String</code> destination
@@ -24,6 +26,8 @@ package com.adaptris.core;
  * </p>
  *
  */
+@Deprecated()
+@ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
 @FunctionalInterface
 public interface ProduceDestination {
   /**

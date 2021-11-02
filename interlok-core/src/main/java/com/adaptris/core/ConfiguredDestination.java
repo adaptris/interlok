@@ -22,6 +22,7 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.util.Args;
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -32,6 +33,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("configured-destination")
 @DisplayOrder(order = {"destination"})
+@Deprecated()
+@ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
 public class ConfiguredDestination implements MessageDrivenDestination {
 
   @InputFieldHint(expression = true)

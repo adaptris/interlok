@@ -20,6 +20,7 @@ import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION;
 
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +41,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("exception-destination")
 @DisplayOrder(order = {"exceptionMapping", "defaultDestination"})
+@Deprecated()
+@ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
 public class ExceptionDestination implements MessageDrivenDestination {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());

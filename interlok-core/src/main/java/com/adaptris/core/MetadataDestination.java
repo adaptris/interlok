@@ -21,6 +21,7 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.validation.constraints.ConfigDeprecated;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +38,8 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
  */
 @XStreamAlias("metadata-destination")
 @DisplayOrder(order = {"keys"})
+@Deprecated()
+@ConfigDeprecated(removalVersion = "4.0.0", groups = Deprecated.class)
 public class MetadataDestination implements MessageDrivenDestination {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
