@@ -66,6 +66,7 @@ import com.adaptris.util.TimeInterval;
 import com.adaptris.validation.constraints.ConfigDeprecated;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.Synchronized;
 
 /**
  * This is the abstract class for all implementations that make use of Jetty to receive messages.
@@ -401,6 +402,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
     @Override
     public void init() throws ServletException {
       super.init();
+      initialiseHandlers();
       processingTimer = new Timer(true);
     }
 
@@ -421,25 +423,27 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
       }
     }
 
-    protected Map<String, HttpOperation> handlers() {
-      if (httpHandlers == null) {
-        httpHandlers = new HashMap<>();
-        HttpOperation defaultHandler = new HttpOperation() {
-          @Override
-          public void handle(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-            processRequest(request, response);
-          }
-        };
-        for (String m : acceptedMethods) {
-          httpHandlers.put(m.toUpperCase().trim(), defaultHandler);
+    @Synchronized
+    private void initialiseHandlers() {
+      httpHandlers = new HashMap<>();
+      HttpOperation defaultHandler = new HttpOperation() {
+        @Override
+        public void handle(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+          processRequest(request, response);
         }
-        httpHandlers.put(RequestMethod.OPTIONS.name(), new HttpOperation() {
-          @Override
-          public void handle(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-            addAllow(response).setStatus(HttpURLConnection.HTTP_OK);
-          }
-        });
+      };
+      for (String m : acceptedMethods) {
+        httpHandlers.put(m.toUpperCase().trim(), defaultHandler);
       }
+      httpHandlers.put(RequestMethod.OPTIONS.name(), new HttpOperation() {
+        @Override
+        public void handle(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+          addAllow(response).setStatus(HttpURLConnection.HTTP_OK);
+        }
+      });
+    }
+    
+    protected Map<String, HttpOperation> handlers() {
       return httpHandlers;
     }
 
