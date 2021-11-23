@@ -46,6 +46,10 @@ import com.jcraft.jsch.Proxy;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.UserInfo;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Provides SSH File Transfer Protocol implementation of FileTransferClient
@@ -530,35 +534,15 @@ public class SftpClient extends FileTransferClientImp {
     boolean connected();
   }
 
+  @NoArgsConstructor
   private abstract class SessionWrapperImpl implements SessionWrapper {
+    @Getter(AccessLevel.PROTECTED)
+    @Setter(AccessLevel.PROTECTED)
     private transient String username;
+    @Getter(AccessLevel.PROTECTED)
     private transient Session sftpSession;
+    @Getter
     private transient ChannelSftp sftpChannel;
-
-    public SessionWrapperImpl() {
-
-    }
-
-
-    protected String getUsername() {
-      return username;
-    }
-
-    protected void setUsername(String username) {
-      this.username = username;
-    }
-
-
-    private Session getSftpSession() {
-      return sftpSession;
-    }
-
-
-    @Override
-    public ChannelSftp getSftpChannel() {
-      return sftpChannel;
-    }
-
 
     private Session createSession() throws Exception {
       Session s = jsch.getSession(getUsername(), sshHost, sshPort);

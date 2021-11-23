@@ -3,14 +3,14 @@ package com.adaptris.sftp;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-
+@Slf4j
+@NoArgsConstructor(access=AccessLevel.PACKAGE)
 public class SftpClientLogger implements com.jcraft.jsch.Logger {
-
-  private static Logger log = LoggerFactory.getLogger(SftpClientLogger.class);
 
   private static enum Slf4jLoggingProxy {
     FATAL {
