@@ -175,6 +175,7 @@ junit.FtpConsumerTest.remotedir=/junit
 junit.FtpConsumerTest.password=${default.ftp.password}
 
 junit.SftpConsumerTest.host=${default.ftp.host}
+junit.SftpConsumerTest.port=${default.sftp.port}
 junit.SftpConsumerTest.password=${default.ftp.password}
 junit.SftpConsumerTest.username=${default.ftp.user}
 junit.SftpConsumerTest.homedir=/home/${default.ftp.user}
@@ -204,6 +205,7 @@ junit.ftp.get.filter=*.txt
 junit.ftp.password=${default.ftp.password}
 
 junit.sftp.host=${default.ftp.host}
+junit.sftp.port=${default.sftp.port}
 junit.sftp.username=${default.ftp.user}
 junit.sftp.password=${default.ftp.password}
 junit.sftp.get.remotedir=/home/${junit.sftp.username}/junit/get

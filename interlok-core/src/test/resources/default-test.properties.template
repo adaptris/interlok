@@ -8,6 +8,8 @@ default.ftp.host=
 default.ftp.user=
 default.ftp.password=
 
+default.sftp.port=22
+
 # For running JDBC Stored procedure tests.
 # Enable the tests if you have it all setup, otherwise let's not bother.
 default.jdbc.storedproc.tests.enabled=false

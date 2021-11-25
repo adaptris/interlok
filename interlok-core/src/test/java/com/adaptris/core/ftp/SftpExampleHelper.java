@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,9 +21,7 @@ import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.lang3.BooleanUtils;
-
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.GaussianIntervalPoller;
 import com.adaptris.core.Poller;
@@ -38,6 +36,7 @@ import com.adaptris.util.KeyValuePair;
 
 public class SftpExampleHelper {
   public static final String CFG_HOST = "SftpConsumerTest.host";
+  public static final String CFG_PORT = "SftpConsumerTest.port";
   public static final String CFG_USER = "SftpConsumerTest.username";
   public static final String CFG_PASSWORD = "SftpConsumerTest.password";
   public static final String CFG_REMOTE_DIR = "SftpConsumerTest.remotedir";

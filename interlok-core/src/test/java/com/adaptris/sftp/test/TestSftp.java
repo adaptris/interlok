@@ -1,11 +1,11 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS"
  * BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
@@ -36,6 +36,7 @@ public class TestSftp extends FtpCase {
   private static final String SFTP_GET_FILENAME = "sftp.get.filename";
   private static final String SFTP_GET_REMOTEDIR = "sftp.get.remotedir";
   private static final String SFTP_HOST = "sftp.host";
+  private static final String SFTP_PORT = "sftp.port";
   private static final String SFTP_PASSWORD = "sftp.password";
   private static final String SFTP_USERNAME = "sftp.username";
 
@@ -99,7 +100,7 @@ public class TestSftp extends FtpCase {
 
   @Override
   protected FileTransferClient connectClientImpl() throws Exception {
-    SftpClient client = new SftpClient(config.getProperty(SFTP_HOST));
+    SftpClient client = new SftpClient(config.getProperty(SFTP_HOST), Integer.valueOf(config.getProperty(SFTP_PORT, "22")));
     client.setAdditionalDebug(true);
     client.connect(config.getProperty(SFTP_USERNAME), Password.decode(config.getProperty(SFTP_PASSWORD)));
     return client;

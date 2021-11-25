@@ -47,6 +47,7 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.UserInfo;
 import lombok.AccessLevel;
+import lombok.Generated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -99,7 +100,7 @@ public class SftpClient extends FileTransferClientImp {
       jsch = new JSch();
       lock = new FifoMutexLock();
       if (knownHostsFile != null) {
-        jsch.setKnownHosts(knownHostsFile.getAbsolutePath());
+        setKnownHosts(knownHostsFile.getAbsolutePath());
       }
       if (configBuilder != null) {
         configRepository = configBuilder.buildConfigRepository();
@@ -116,15 +117,30 @@ public class SftpClient extends FileTransferClientImp {
    *
    * @param host the remote ssh host.
    */
+  @Generated
   public SftpClient(String host) throws SftpException {
-    this(host, DEFAULT_SSH_PORT, DEFAULT_TIMEOUT, null, null);
+    this(host, DEFAULT_SSH_PORT);
+  }
+
+  /**
+   * Constructor assuming the default SSH port.
+   *
+   * @param host the remote ssh host.
+   * @param port the ssh port.
+   */
+  @Generated
+  public SftpClient(String host, int port) throws SftpException {
+    this(host, port, DEFAULT_TIMEOUT);
   }
 
   /**
    * Constructor assuming the default SSH port.
    *
    * @param addr the remote ssh host.
+   * @deprecated since 4.5.0
    */
+  @Deprecated
+  @Generated
   public SftpClient(InetAddress addr) throws SftpException {
     this(addr.getHostAddress(), DEFAULT_SSH_PORT, DEFAULT_TIMEOUT, null, null);
   }
@@ -134,10 +150,13 @@ public class SftpClient extends FileTransferClientImp {
    *
    * @param addr the remote ssh host.
    * @param port the ssh port.
-   * @param timeout the timeout;
+   * @param timeoutMillis the timeout in milliseconds
+   * @deprecated since 4.5.0
    */
-  public SftpClient(InetAddress addr, int port, int timeout) throws SftpException {
-    this(addr.getHostAddress(), port, timeout, null, null);
+  @Deprecated
+  @Generated
+  public SftpClient(InetAddress addr, int port, int timeoutMillis) throws SftpException {
+    this(addr.getHostAddress(), port, timeoutMillis, null, null);
   }
 
   /**
@@ -145,10 +164,11 @@ public class SftpClient extends FileTransferClientImp {
    *
    * @param host the host
    * @param port the port
-   * @param timeout the timeout;
+   * @param timeoutMillis the timeout in milliseconds
    */
-  public SftpClient(String host, int port, int timeout) throws SftpException {
-    this(host, port, timeout, null, null);
+  @Generated
+  public SftpClient(String host, int port, int timeoutMillis) throws SftpException {
+    this(host, port, timeoutMillis, null, null);
   }
 
   /**
@@ -156,14 +176,15 @@ public class SftpClient extends FileTransferClientImp {
    *
    * @param host the host
    * @param port the port
-   * @param timeout the timeout;
+   * @param timeoutMillis the timeout in milliseconds
+   * @param knownHostsFile the {@code 'known_hosts'} which can be null
    * @param configBuilder any required behaviour for this client;
    */
-  public SftpClient(String host, int port, int timeout, File knownHostsFile, ConfigBuilder configBuilder) throws SftpException {
+  public SftpClient(String host, int port, int timeoutMillis, File knownHostsFile, ConfigBuilder configBuilder) throws SftpException {
     this(knownHostsFile, configBuilder);
     sshHost = host;
     sshPort = port;
-    this.timeout = timeout;
+    this.timeout = timeoutMillis;
   }
 
   private void acquireLock() {
