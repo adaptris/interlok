@@ -22,7 +22,9 @@ import java.util.Random;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.oro.io.GlobFilenameFilter;
 import org.junit.Assume;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import com.adaptris.core.stubs.ExternalResourcesHelper;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FtpCase;
 import com.adaptris.security.password.Password;
@@ -39,6 +41,15 @@ public class TestSftp extends FtpCase {
   private static final String SFTP_PORT = "sftp.port";
   private static final String SFTP_PASSWORD = "sftp.password";
   private static final String SFTP_USERNAME = "sftp.username";
+
+  private static boolean serverAvailable = false;
+
+  @BeforeClass
+  public static void beforeAnyTests() {
+    String host = PROPERTIES.getProperty(SFTP_HOST);
+    int port = Integer.valueOf(PROPERTIES.getProperty(SFTP_PORT, "22"));
+    serverAvailable = ExternalResourcesHelper.isExternalServerAvailable(host, port);
+  }
 
 
   @Test
@@ -110,7 +121,7 @@ public class TestSftp extends FtpCase {
   protected boolean areTestsEnabled() {
     String sftpTests = config.getProperty("sftp.tests.enabled");
     if (!StringUtils.isEmpty(sftpTests)) {
-      return Boolean.parseBoolean(sftpTests);
+      return Boolean.parseBoolean(sftpTests) && serverAvailable;
     }
     return super.areTestsEnabled();
   }

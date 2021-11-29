@@ -34,7 +34,9 @@ import org.apache.commons.io.FileCleaningTracker;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assume;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import com.adaptris.core.stubs.ExternalResourcesHelper;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.security.exc.PasswordException;
@@ -46,11 +48,18 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
 
   private static FileCleaningTracker cleaner = new FileCleaningTracker();
   private Object fileTracker = new Object();
-
+  private static boolean serverAvailable = false;
 
   @Override
   protected boolean areTestsEnabled() {
-    return Boolean.parseBoolean(PROPERTIES.getProperty("sftp.tests.enabled", "false"));
+    return Boolean.parseBoolean(PROPERTIES.getProperty("sftp.tests.enabled", "false")) && serverAvailable;
+  }
+
+  @BeforeClass
+  public static void beforeAnyTests() {
+    String host = PROPERTIES.getProperty(CFG_HOST);
+    int port = Integer.parseInt(PROPERTIES.getProperty(CFG_PORT, "22"));
+    serverAvailable = ExternalResourcesHelper.isExternalServerAvailable(host, port);
   }
 
   @Test
