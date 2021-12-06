@@ -61,7 +61,6 @@ import com.adaptris.util.KeyValuePairSet;
 /**
  * Base test for testing XSTream configuration vis-a-vis shared components.
  */
-@SuppressWarnings("deprecation")
 public class SharedComponentListTest
     extends com.adaptris.interlok.junit.scaffolding.ExampleConfigGenerator {
   private static final String GUID_PATTERN = "(?m)^\\s*<unique-id>[0-9a-f]{8}\\-[0-9a-f]{4}\\-[0-9a-f]{4}\\-[0-9a-f]{4}\\-[0-9a-f]{12}<\\/unique-id>$";
@@ -82,7 +81,6 @@ public class SharedComponentListTest
   private enum ConnectionBuilder {
     FtpConnectionBuilder {
       @Override
-      @SuppressWarnings("deprecation")
       AdaptrisConnection build() {
         FtpConnection c = new FtpConnection("goofy_edison");
         c.setCacheConnection(true);

@@ -19,9 +19,7 @@ package com.adaptris.http.legacy;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-
 import org.apache.commons.io.IOUtils;
-
 import com.adaptris.core.security.PrivateKeyPasswordProvider;
 import com.adaptris.http.Https;
 import com.adaptris.security.exc.PasswordException;
@@ -45,7 +43,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  *
  */
 @XStreamAlias("http-legacy-private-key-password-provider")
-@SuppressWarnings("deprecation")
 public class HttpLegacyPrivateKeyPasswordProvider implements PrivateKeyPasswordProvider {
 
   private char[] pkPassword;

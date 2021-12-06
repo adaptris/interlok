@@ -64,6 +64,7 @@ import com.adaptris.core.util.LifecycleHelper;
  * checking files exist and deleting them.
  * </p>
  */
+@SuppressWarnings("deprecation")
 public abstract class BaseCase {
   public static final long MAX_WAIT = 65000;
   public static final int DEFAULT_WAIT_INTERVAL = 100;

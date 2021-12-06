@@ -54,12 +54,12 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  */
 @ComponentProfile(summary = "A multi-payload message implementation", tag = "multi-payload,message", since="3.9.3")
 public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implements MultiPayloadAdaptrisMessage {
-  private static final String RESOLVE_REGEXP = "^.*%payload_id\\{([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
-  private static final String RESOLVE_2_REGEX = "^.*%payload\\{id:([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
-  private static final transient Pattern normalPayloadResolver = Pattern.compile(RESOLVE_REGEXP);
-  private static final transient Pattern dotAllPayloadResolver = Pattern.compile(RESOLVE_REGEXP, Pattern.DOTALL);
-  private static final transient Pattern normalPayloadResolver2 = Pattern.compile(RESOLVE_2_REGEX);
-  private static final transient Pattern dotAllPayloadResolver2 = Pattern.compile(RESOLVE_2_REGEX, Pattern.DOTALL);
+  public static final String EXPLICIT_PAYLOAD_REGEXP = "^.*%payload_id\\{([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
+  public static final String IMPLICIT_PAYLOAD_REGEXP = "^.*%payload\\{id:([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
+  private static final transient Pattern normalPayloadResolver = Pattern.compile(EXPLICIT_PAYLOAD_REGEXP);
+  private static final transient Pattern dotAllPayloadResolver = Pattern.compile(EXPLICIT_PAYLOAD_REGEXP, Pattern.DOTALL);
+  private static final transient Pattern normalPayloadResolver2 = Pattern.compile(IMPLICIT_PAYLOAD_REGEXP);
+  private static final transient Pattern dotAllPayloadResolver2 = Pattern.compile(IMPLICIT_PAYLOAD_REGEXP, Pattern.DOTALL);
 
   private Map<String, Payload> payloads = new HashMap<>();
 

@@ -17,7 +17,6 @@
 package com.adaptris.core.jdbc;
 
 import java.util.Map;
-
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.jdbc.ParameterValueType;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -48,8 +47,7 @@ public class JdbcObjectMetadataParameter extends JdbcMetadataParameter {
   public Object applyInputParam(AdaptrisMessage msg) throws JdbcParameterException {
     super.checkMetadataKey();
     
-    @SuppressWarnings("unchecked")
-    Map<Object, Object> objectMetadata = (Map<Object, Object>) msg.getObjectHeaders();
+    Map<Object, Object> objectMetadata = msg.getObjectHeaders();
     
     if(!objectMetadata.containsKey(getMetadataKey()))
       throw new JdbcParameterException("Object metadata does not exist for key: " + this.getMetadataKey());

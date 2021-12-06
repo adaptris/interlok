@@ -53,7 +53,6 @@ import com.adaptris.util.TimeInterval;
 import com.adaptris.util.XmlUtils;
 import com.adaptris.util.text.xml.XPath;
 
-@SuppressWarnings("unchecked")
 public class StoredProcedureProducerTest extends ExampleProducerCase {
 
   /**

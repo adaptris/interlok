@@ -15,17 +15,28 @@
 */
 package com.adaptris.core.util;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
+
+import com.adaptris.annotation.InterlokLifecycle;
 import com.adaptris.core.Channel;
 import com.adaptris.core.ChannelList;
+import com.adaptris.core.ClosedState;
 import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultEventHandler;
 import com.adaptris.core.NullService;
+import com.adaptris.core.ServiceImp;
+import com.adaptris.core.StartedState;
 import com.adaptris.core.StateManagedComponent;
 import com.adaptris.core.security.access.EmptyIdentityBuilder;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class LifecycleHelperTest extends LifecycleHelper {
 
@@ -88,4 +99,49 @@ public class LifecycleHelperTest extends LifecycleHelper {
     waitQuietly(5);
   }
 
+  @Test
+  public void testInterlokLifecycleAnnotation() throws Exception {
+    NullService nested = new NullService();
+    // Turtles all the way down for a bit of recursive fun.
+    WrappingService service = new WrappingService(new WrappingService(new WrappingService(nested)));
+    try {
+      initAndStart(service, false);
+      assertSame(StartedState.getInstance(), nested.retrieveComponentState());
+    } finally {
+      stopAndClose(service, false);
+    }
+    assertSame(ClosedState.getInstance(), nested.retrieveComponentState());
+  }
+
+  @Test
+  public void testInterlokLifecycleAnnotation_Exceptions() throws Exception {
+    NullService nested = new NullService() {
+      @Override
+      public void start() throws CoreException {
+        throw new CoreException();
+      }
+
+      // Override close since we never get to started, so we can't override stop.
+      @Override
+      protected void closeService() {
+        throw new RuntimeException();
+      }
+    };
+    WrappingService service = new WrappingService(nested);
+    try {
+      assertThrows(RuntimeException.class, () -> initAndStart(service, false));
+    } finally {
+      stopAndClose(service, false);
+    }
+  }
+
+  @AllArgsConstructor
+  @NoArgsConstructor
+  private static class WrappingService extends NullService {
+
+    @InterlokLifecycle
+    @Getter
+    @Setter
+    private ServiceImp service;
+  }
 }

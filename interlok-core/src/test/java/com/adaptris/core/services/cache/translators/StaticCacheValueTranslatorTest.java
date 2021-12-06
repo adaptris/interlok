@@ -5,7 +5,6 @@ import static org.junit.Assert.fail;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 
-@SuppressWarnings("deprecation")
 public class StaticCacheValueTranslatorTest extends CacheValueTranslatorBaseCase {
 
   @Test

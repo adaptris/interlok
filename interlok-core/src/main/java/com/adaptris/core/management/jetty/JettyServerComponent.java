@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.core.management.ManagementComponent;
 import com.adaptris.core.management.webserver.JettyServerManager;
-import com.adaptris.core.management.webserver.WebServerManagementUtil;
 import com.adaptris.core.util.ManagedThreadFactory;
 
 /**
@@ -47,6 +46,9 @@ public class JettyServerComponent implements ManagementComponent {
   private static final String ATTR_BOOTSTRAP_PROPERTIES = "com.adaptris.core.webapp.local.bootstrap";
   private static final String ATTR_BOOTSTRAP_PROPERTIES_ALT = "interlok.webapp.local.bootstrap";
 
+  public static final String SERVER_ID = JettyServerComponent.class.getSimpleName();
+  private static final String FRIENDLY_NAME = JettyServerComponent.class.getSimpleName();
+  
   public static final String[] ATTR_BOOTSTRAP_KEYS = {
       ATTR_BOOTSTRAP_PROPERTIES, ATTR_BOOTSTRAP_PROPERTIES_ALT
   };
@@ -149,8 +151,8 @@ public class JettyServerComponent implements ManagementComponent {
 
     @Override
     void register() {
-      final JettyServerManager jettyManager = (JettyServerManager)WebServerManagementUtil.getServerManager();
-      jettyManager.addServer(server);
+      final JettyServerManager jettyManager = JettyServerManager.getInstance();
+      jettyManager.addServer(SERVER_ID, server);
     }
 
     @Override
@@ -158,7 +160,7 @@ public class JettyServerComponent implements ManagementComponent {
       try {
         if (server.isStopped()) {
           server.start();
-          log.debug(JettyServerComponent.class.getSimpleName() + " Started");
+          log.debug("{} Started", FRIENDLY_NAME);
         }
       } catch (final Exception ex) {
         log.error("Exception while starting Jetty", ex);
@@ -170,7 +172,7 @@ public class JettyServerComponent implements ManagementComponent {
       try {
         server.stop();
         server.join();
-        log.debug(JettyServerComponent.class.getSimpleName() + " Stopped");
+        log.debug("{} Stopped", FRIENDLY_NAME);
       } catch (final Exception ex) {
         log.error("Exception while stopping Jetty", ex);
       }
@@ -180,10 +182,10 @@ public class JettyServerComponent implements ManagementComponent {
     @Override
     void destroy() {
       try {
-        final JettyServerManager jettyManager = (JettyServerManager)WebServerManagementUtil.getServerManager();
-        jettyManager.removeServer(server);
+        final JettyServerManager jettyManager = JettyServerManager.getInstance();
+        jettyManager.removeServer(SERVER_ID);
         server.destroy();
-        log.debug(JettyServerComponent.class.getSimpleName() + " Destroyed");
+        log.debug("{} Destroyed", FRIENDLY_NAME);
       } catch (final Exception ex) {
         log.error("Exception while destroying Jetty", ex);
       }

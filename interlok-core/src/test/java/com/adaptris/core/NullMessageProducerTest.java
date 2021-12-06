@@ -19,7 +19,6 @@ public class NullMessageProducerTest {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testRequest() throws Exception {
     NullMessageProducer producer = new NullMessageProducer();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
@@ -34,7 +33,6 @@ public class NullMessageProducerTest {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
   public void testProduce() throws Exception {
     NullMessageProducer producer = new NullMessageProducer();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();

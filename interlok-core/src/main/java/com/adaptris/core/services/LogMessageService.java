@@ -107,7 +107,6 @@ public class LogMessageService extends LoggingServiceImpl {
     loggingFormat = ml;
   }
 
-  @SuppressWarnings("deprecation")
   public MessageLogger loggingFormat() {
     return ObjectUtils.defaultIfNull(getLoggingFormat(), DEFAULT_MSG_LOGGER);
   }

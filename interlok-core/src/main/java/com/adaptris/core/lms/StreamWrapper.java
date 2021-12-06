@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,7 +86,6 @@ abstract class StreamWrapper {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void close() throws IOException {
       super.close();
       IOUtils.closeQuietly(wrapped);
@@ -122,7 +120,6 @@ abstract class StreamWrapper {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void close() throws IOException {
       super.close();
       IOUtils.closeQuietly(wrapped);

@@ -66,12 +66,17 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   // If we have %message{key1}%message{key2} group(1) is key2
   // Which is then replaced so it all works out int the end.
-  private static final String RESOLVE_REGEXP = "^.*%message\\{([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
-  private static final String OBJECT_RESOLVE_REGEXP = "^.*%messageObject\\{([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
+  public static final String METADATA_RESOLVE_REGEXP = "^.*%message\\{([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
+  public static final String OBJECT_RESOLVE_REGEXP = "^.*%messageObject\\{([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
 
+
+  public static final String UID_RESOLVE_KEY = "%uniqueId";
+  public static final String SIZE_RESOLVE_KEY = "%size";
+  public static final String PAYLOAD_RESOLVE_KEY = "%payload";
+  
   private transient Logger log = LoggerFactory.getLogger(AdaptrisMessage.class);
-  private transient Pattern normalResolver = Pattern.compile(RESOLVE_REGEXP);
-  private transient Pattern dotAllResolver = Pattern.compile(RESOLVE_REGEXP, Pattern.DOTALL);
+  private transient Pattern normalResolver = Pattern.compile(METADATA_RESOLVE_REGEXP);
+  private transient Pattern dotAllResolver = Pattern.compile(METADATA_RESOLVE_REGEXP, Pattern.DOTALL);
 
   private transient Pattern objectResolver = Pattern.compile(OBJECT_RESOLVE_REGEXP);
 
@@ -91,7 +96,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     UniqueId {
       @Override
       String resolve(String key, AdaptrisMessage msg) {
-        if ("%uniqueId".equalsIgnoreCase(key)) {
+        if (UID_RESOLVE_KEY.equalsIgnoreCase(key)) {
           return msg.getUniqueId();
         }
         return null;
@@ -100,7 +105,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     Size {
       @Override
       String resolve(String key, AdaptrisMessage msg) {
-        if ("%size".equalsIgnoreCase(key)) {
+        if (SIZE_RESOLVE_KEY.equalsIgnoreCase(key)) {
           return String.valueOf(msg.getSize());
         }
         return null;
@@ -109,7 +114,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     Payload {
       @Override
       String resolve(String key, AdaptrisMessage msg) {
-        if ("%payload".equalsIgnoreCase(key)) {
+        if (PAYLOAD_RESOLVE_KEY.equalsIgnoreCase(key)) {
           return msg.getContent();
         }
         return null;

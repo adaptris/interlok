@@ -29,27 +29,28 @@ import org.apache.commons.lang3.BooleanUtils;
  * 
  *
  */
+@SuppressWarnings({"rawtypes"})
 public abstract class SimpleBeanUtil {
-  private static final List PRIMITIVES = Arrays.asList(new Class[]
-  {
-      int.class, Integer.class, Boolean.class, boolean.class, String.class, float.class, Float.class, double.class, Double.class,
-      long.class, Long.class
-  });
+  private static final List PRIMITIVES = Arrays.asList(int.class, Integer.class, Boolean.class, boolean.class, String.class,
+      float.class, Float.class, double.class, Double.class,
+      long.class, Long.class);
   private static final Map<Class, Objectifier> OBJECTIFIERS;
 
+  private static final List<String> IGNORED_GETTERS = List.of("getClass", "getInstance");
+  
   static {
     Map<Class, Objectifier> map = new HashMap<>();
-    map.put(int.class, (s) -> Integer.parseInt(s));
-    map.put(Integer.class, (s) -> Integer.parseInt(s));
-    map.put(Boolean.class, (s) -> BooleanUtils.toBoolean(s));
-    map.put(boolean.class, (s) -> BooleanUtils.toBoolean(s));
+    map.put(int.class, Integer::parseInt);
+    map.put(Integer.class, Integer::parseInt);
+    map.put(Boolean.class, BooleanUtils::toBoolean);
+    map.put(boolean.class, BooleanUtils::toBoolean);
     map.put(String.class, (s) -> s);
-    map.put(float.class, (s) -> Float.parseFloat(s));
-    map.put(Float.class, (s) -> Float.parseFloat(s));
-    map.put(double.class, (s) -> Double.parseDouble(s));
-    map.put(Double.class, (s)-> Double.parseDouble(s));    
-    map.put(long.class, (s) -> Long.parseLong(s));
-    map.put(Long.class, (s) -> Long.parseLong(s));
+    map.put(float.class, Float::parseFloat);
+    map.put(Float.class, Float::parseFloat);
+    map.put(double.class, Double::parseDouble);
+    map.put(Double.class, Double::parseDouble);
+    map.put(long.class, Long::parseLong);
+    map.put(Long.class, Long::parseLong);
     OBJECTIFIERS = Collections.unmodifiableMap(map);
   }
 
@@ -79,7 +80,7 @@ public abstract class SimpleBeanUtil {
       m.invoke(obj, param);
       result = true;
     }
-    catch (NullPointerException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+    catch (NullPointerException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ignored) {
     }
     return result;
   }
@@ -95,6 +96,24 @@ public abstract class SimpleBeanUtil {
           result = m;
           break;
         }
+      }
+    }
+    return result;
+  }
+
+
+  /** Return all the vanilla getters as a map keyed by the method name (uppercase).
+   *
+   * @param c the class
+   * @return a Map keyed by string.
+   */
+  public static Map<String, Method> gettersAsMap(Class c) {
+    Map<String, Method> result = new HashMap<>();
+    Method[] methods = c.getMethods();
+    for (Method m : methods) {
+      String name = m.getName();
+      if (name.startsWith("get") && !IGNORED_GETTERS.contains(name) && m.getParameterTypes().length == 0) {
+        result.put(name.toUpperCase(), m);
       }
     }
     return result;

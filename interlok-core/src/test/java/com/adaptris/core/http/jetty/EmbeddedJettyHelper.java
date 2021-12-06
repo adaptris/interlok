@@ -21,8 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.core.management.jetty.JettyServerComponent;
 import com.adaptris.core.management.jetty.ServerBuilder;
-import com.adaptris.core.management.webserver.ServerManager;
-import com.adaptris.core.management.webserver.WebServerManagementUtil;
+import com.adaptris.core.management.webserver.JettyServerManager;
 import com.adaptris.interlok.junit.scaffolding.util.PortManager;
 
 /**
@@ -47,7 +46,7 @@ public class EmbeddedJettyHelper {
     jetty.init(jettyConfig);
     jetty.start();
     Thread.sleep(250);
-    final ServerManager mgr = WebServerManagementUtil.getServerManager();
+    final JettyServerManager mgr = JettyServerManager.getInstance();
     while (!mgr.isStarted()) {
       Thread.sleep(250);
     }
