@@ -203,23 +203,19 @@ subprojects { subproject ->
     classpath = project.sourceSets.main.compileClasspath
   }
 
-
   spotbugsMain {
     effort = "max"
     reportLevel = "high"
-    // showProgress = "true"
-    effort = "max"
-    // Ignore failures?
-    // ignoreFailures = false
     reports {
       xml {
-        enabled = false
+        required.set(false)
       }
       html {
-        enabled = true
+        required.set(true)
+        stylesheet = 'default.xsl'
       }
     }
-    includeFilter = new File("$rootDir/gradle/spotbugs-filter.xml")
+	includeFilter = new File("$rootDir/gradle/spotbugs-filter.xml")
     excludeFilter = new File("$rootDir/gradle/spotbugs-exclude.xml")
   }
 
