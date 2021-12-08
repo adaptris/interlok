@@ -215,7 +215,7 @@ subprojects { subproject ->
         stylesheet = 'default.xsl'
       }
     }
-	includeFilter = new File("$rootDir/gradle/spotbugs-filter.xml")
+    includeFilter = new File("$rootDir/gradle/spotbugs-filter.xml")
     excludeFilter = new File("$rootDir/gradle/spotbugs-exclude.xml")
   }
 
