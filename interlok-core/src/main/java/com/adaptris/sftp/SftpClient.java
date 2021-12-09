@@ -137,7 +137,7 @@ public class SftpClient extends FileTransferClientImp {
    * Constructor assuming the default SSH port.
    *
    * @param addr the remote ssh host.
-   * @deprecated since 4.5.0
+   * @deprecated since 4.4.0
    */
   @Deprecated
   @Generated
@@ -151,7 +151,7 @@ public class SftpClient extends FileTransferClientImp {
    * @param addr the remote ssh host.
    * @param port the ssh port.
    * @param timeoutMillis the timeout in milliseconds
-   * @deprecated since 4.5.0
+   * @deprecated since 4.4.0
    */
   @Deprecated
   @Generated
