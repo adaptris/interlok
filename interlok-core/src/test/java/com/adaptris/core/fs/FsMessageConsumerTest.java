@@ -16,6 +16,22 @@
 
 package com.adaptris.core.fs;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import org.apache.commons.io.FileUtils;
+import org.apache.oro.io.Perl5FilenameFilter;
+import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -24,30 +40,12 @@ import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.fs.enhanced.AlphabeticAscending;
 import com.adaptris.core.fs.enhanced.LastModifiedAscending;
 import com.adaptris.core.lms.LargeFsConsumer;
-import com.adaptris.core.management.Constants;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.fs.FsException;
+import com.adaptris.fs.StandardWorker;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.TimeInterval;
-import org.apache.commons.io.FileUtils;
-import org.apache.oro.io.Perl5FilenameFilter;
-import org.junit.Test;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 @SuppressWarnings("deprecation")
 public class FsMessageConsumerTest extends FsConsumerCase {
@@ -487,7 +485,11 @@ public class FsMessageConsumerTest extends FsConsumerCase {
       return; // The large FS consumer should (by definition) handle large files
     }
     fs.setReacquireLockBetweenMessages(true);
-    fs.setPoller(new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)));
+    AtomicBoolean pollFired = new AtomicBoolean(false);
+    fs.setPoller(new FixedIntervalPoller(new TimeInterval(300L, TimeUnit.MILLISECONDS)).withPollerCallback(e -> {
+      pollFired.set(true);
+    }));
+    fs.fsWorker = new SizeLimitedWorker();
     StandaloneConsumer sc = new StandaloneConsumer(fs);
     sc.registerAdaptrisMessageListener(stub);
     int count = 1;
@@ -497,16 +499,13 @@ public class FsMessageConsumerTest extends FsConsumerCase {
       LifecycleHelper.init(sc);
 
       File largeFile = File.createTempFile("3304", null, baseDir);
-      try (FileOutputStream fos = new FileOutputStream(largeFile)) {
-        byte[] oneMegabyte = new byte[0x00100000];
-        for (int i = 0; i < 0x00000400; i++) {
-          fos.write(oneMegabyte);
-        }
-      }
+      RandomAccessFile raf = new RandomAccessFile(largeFile, "rw");
+      // Set the size to be 10Mb.
+      raf.setLength(0x00100000 * 10);
 
       LifecycleHelper.prepare(sc);
       LifecycleHelper.start(sc);
-      waitForMessages(stub, count);
+      waitForPollCallback(pollFired);
       assertTrue(stub.getMessages().size() == 0);
     } finally {
       stop(sc);
@@ -557,4 +556,15 @@ public class FsMessageConsumerTest extends FsConsumerCase {
     return result;
   }
 
+  private class SizeLimitedWorker extends StandardWorker {
+    @Override
+    public byte[] get(File file) throws FsException {
+      // throw if it's bigger than 1Mb
+      if (file.length() > 0x00100000) {
+        throw new FsException("Too big : " + file.length());
+      }
+      return super.get(file);
+    }
+
+  }
 }

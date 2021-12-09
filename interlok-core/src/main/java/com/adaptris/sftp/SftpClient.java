@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Vector;
 import org.apache.commons.lang3.StringUtils;
 import com.adaptris.filetransfer.FileTransferClient;
@@ -38,12 +39,18 @@ import com.adaptris.interlok.cloud.RemoteFile;
 import com.adaptris.util.FifoMutexLock;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.ChannelSftp.LsEntry;
 import com.jcraft.jsch.ConfigRepository;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Proxy;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.UserInfo;
+import lombok.AccessLevel;
+import lombok.Generated;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Provides SSH File Transfer Protocol implementation of FileTransferClient
@@ -64,6 +71,12 @@ public class SftpClient extends FileTransferClientImp {
   private static final int DEFAULT_SSH_PORT = 22;
 
   private static final int DEFAULT_TIMEOUT = 1000 * 60 * 5;
+  /**
+   * Whether not extended debugging is emitted; defaults to false unless explicitly set via either the system property
+   * {@code interlok.jsch.debug}.
+   *
+   */
+  public static final transient boolean JSCH_DEBUG = Boolean.getBoolean("interlok.jsch.debug");
 
   private String sshHost;
   private int sshPort;
@@ -71,18 +84,23 @@ public class SftpClient extends FileTransferClientImp {
   private long keepAliveTimeout = 0;
 
   private transient JSch jsch;
-  private transient Session sftpSession;
-  private transient ChannelSftp sftpChannel;
   private transient FifoMutexLock lock;
   private transient ConfigRepository configRepository = ConfigRepository.nullConfig;
   private transient Proxy proxy = null;
+  private transient SessionWrapper sessionWrapper;
+
+  static {
+    if (JSCH_DEBUG) {
+      JSch.setLogger(new SftpClientLogger());
+    }
+  }
 
   private SftpClient(File knownHostsFile, ConfigBuilder configBuilder) throws SftpException {
     try {
       jsch = new JSch();
       lock = new FifoMutexLock();
       if (knownHostsFile != null) {
-        jsch.setKnownHosts(knownHostsFile.getAbsolutePath());
+        setKnownHosts(knownHostsFile.getAbsolutePath());
       }
       if (configBuilder != null) {
         configRepository = configBuilder.buildConfigRepository();
@@ -99,15 +117,30 @@ public class SftpClient extends FileTransferClientImp {
    *
    * @param host the remote ssh host.
    */
+  @Generated
   public SftpClient(String host) throws SftpException {
-    this(host, DEFAULT_SSH_PORT, DEFAULT_TIMEOUT, null, null);
+    this(host, DEFAULT_SSH_PORT);
+  }
+
+  /**
+   * Constructor assuming the default SSH port.
+   *
+   * @param host the remote ssh host.
+   * @param port the ssh port.
+   */
+  @Generated
+  public SftpClient(String host, int port) throws SftpException {
+    this(host, port, DEFAULT_TIMEOUT);
   }
 
   /**
    * Constructor assuming the default SSH port.
    *
    * @param addr the remote ssh host.
+   * @deprecated since 4.4.0
    */
+  @Deprecated
+  @Generated
   public SftpClient(InetAddress addr) throws SftpException {
     this(addr.getHostAddress(), DEFAULT_SSH_PORT, DEFAULT_TIMEOUT, null, null);
   }
@@ -117,10 +150,13 @@ public class SftpClient extends FileTransferClientImp {
    *
    * @param addr the remote ssh host.
    * @param port the ssh port.
-   * @param timeout the timeout;
+   * @param timeoutMillis the timeout in milliseconds
+   * @deprecated since 4.4.0
    */
-  public SftpClient(InetAddress addr, int port, int timeout) throws SftpException {
-    this(addr.getHostAddress(), port, timeout, null, null);
+  @Deprecated
+  @Generated
+  public SftpClient(InetAddress addr, int port, int timeoutMillis) throws SftpException {
+    this(addr.getHostAddress(), port, timeoutMillis, null, null);
   }
 
   /**
@@ -128,10 +164,11 @@ public class SftpClient extends FileTransferClientImp {
    *
    * @param host the host
    * @param port the port
-   * @param timeout the timeout;
+   * @param timeoutMillis the timeout in milliseconds
    */
-  public SftpClient(String host, int port, int timeout) throws SftpException {
-    this(host, port, timeout, null, null);
+  @Generated
+  public SftpClient(String host, int port, int timeoutMillis) throws SftpException {
+    this(host, port, timeoutMillis, null, null);
   }
 
   /**
@@ -139,14 +176,15 @@ public class SftpClient extends FileTransferClientImp {
    *
    * @param host the host
    * @param port the port
-   * @param timeout the timeout;
+   * @param timeoutMillis the timeout in milliseconds
+   * @param knownHostsFile the {@code 'known_hosts'} which can be null
    * @param configBuilder any required behaviour for this client;
    */
-  public SftpClient(String host, int port, int timeout, File knownHostsFile, ConfigBuilder configBuilder) throws SftpException {
+  public SftpClient(String host, int port, int timeoutMillis, File knownHostsFile, ConfigBuilder configBuilder) throws SftpException {
     this(knownHostsFile, configBuilder);
     sshHost = host;
     sshPort = port;
-    this.timeout = timeout;
+    this.timeout = timeoutMillis;
   }
 
   private void acquireLock() {
@@ -170,7 +208,7 @@ public class SftpClient extends FileTransferClientImp {
    */
   @Override
   public void connect(String user, String password) throws IOException, FileTransferException {
-    connect(user, new StandardUserInfo(password));
+    sessionWrapper = tryConnect(new PasswordWrapper(user,  password), new KeyboardInteractiveWrapper(user, password));
   }
 
   /**
@@ -182,41 +220,24 @@ public class SftpClient extends FileTransferClientImp {
    * @throws FileTransferException if an FTP specific exception occurs
    */
   public void connect(String user, final byte[] prvKey, byte[] prvKeyPwd) throws FileTransferException {
-    try {
-      acquireLock();
-      jsch.addIdentity(user, prvKey, null, prvKeyPwd);
-      connect(user, new StandardUserInfo(null));
-    }
-    catch (Exception e) {
-      throw SftpException.wrapException(e);
-    }
-    finally {
-      releaseLock();
-    }
-
+    sessionWrapper = tryConnect(new PublickeyWrapper(user,  prvKey,  prvKeyPwd));
   }
 
-  private void connect(String user, UserInfo ui) throws FileTransferException {
+  private SessionWrapper tryConnect(SessionWrapper... wrappers) throws SftpException {
+    Exception lastAuthFailure = new Exception("Failed to authenticate via any permitted method");
     try {
-      sftpSession = jsch.getSession(user, sshHost, sshPort);
-      if (configRepository.getConfig(sshHost) == null
-          || StringUtils.isBlank(configRepository.getConfig(sshHost).getValue(SSH_PREFERRED_AUTHENTICATIONS))) {
-        // No config, let's killoff #995
-        sftpSession.setConfig(SSH_PREFERRED_AUTHENTICATIONS, NO_KERBEROS_AUTH);
+      for (SessionWrapper wrapper : wrappers) {
+        try {
+          wrapper.connect();
+          return wrapper;
+        } catch (Exception e) {
+          lastAuthFailure = e;
+        }
       }
-      sftpSession.setProxy(proxy);
-      sftpSession.setDaemonThread(true);
-      sftpSession.setUserInfo(ui);
-      sftpSession.connect(timeout);
-      sftpSession.setServerAliveInterval(Long.valueOf(getKeepAliveTimeout()).intValue());
-      log("OPEN {}:{}", sshHost, sshPort);
-      Channel c = sftpSession.openChannel("sftp");
-      c.connect(timeout);
-      sftpChannel = (ChannelSftp) c;
+    } finally {
+      releaseLock();
     }
-    catch (Exception e) {
-      throw SftpException.wrapException(e);
-    }
+    throw SftpException.wrapException(lastAuthFailure);
   }
 
   @Override
@@ -271,9 +292,8 @@ public class SftpClient extends FileTransferClientImp {
       acquireLock();
       String path = defaultIfBlank(dirname, CURRENT_DIR);
       log("DIR {}", path);
-      Vector v = sftpChannel.ls(path);
-      for (Object o : v) {
-        ChannelSftp.LsEntry entry = (ChannelSftp.LsEntry) o;
+      Vector<LsEntry> v = sessionWrapper.getSftpChannel().ls(path);
+      for (LsEntry entry : v) {
         if (!(entry.getFilename().equals(CURRENT_DIR) || entry.getFilename().equals(PARENT_DIR))) {
           result.add(entry);
         }
@@ -295,13 +315,13 @@ public class SftpClient extends FileTransferClientImp {
     try {
       acquireLock();
       log("BYE");
-      sftpChannel.disconnect();
-      sftpSession.disconnect();
+      sessionWrapper.close();
     }
     catch (NullPointerException e) {
 
     }
     finally {
+      sessionWrapper = null;
       releaseLock();
     }
   }
@@ -315,7 +335,7 @@ public class SftpClient extends FileTransferClientImp {
     try {
       checkConnected();
       log("PUT {}", remoteFile);
-      sftpChannel.put(srcStream, remoteFile, append ? ChannelSftp.APPEND : ChannelSftp.OVERWRITE);
+      sessionWrapper.getSftpChannel().put(srcStream, remoteFile, append ? ChannelSftp.APPEND : ChannelSftp.OVERWRITE);
     }
     catch (Exception e) {
       throw SftpException.wrapException("Could not write remote file [" + remoteFile + "]", e);
@@ -333,7 +353,7 @@ public class SftpClient extends FileTransferClientImp {
     try {
       acquireLock();
       log("GET {}", remoteFile);
-      sftpChannel.get(remoteFile, destStream);
+      sessionWrapper.getSftpChannel().get(remoteFile, destStream);
     }
     catch (Exception e) {
       throw SftpException.wrapException("Could not retrieve remote file [" + remoteFile + "]", e);
@@ -365,7 +385,7 @@ public class SftpClient extends FileTransferClientImp {
     try {
       acquireLock();
       log("RM {}", remoteFile);
-      sftpChannel.rm(remoteFile);
+      sessionWrapper.getSftpChannel().rm(remoteFile);
     }
     catch (Exception e) {
       throw SftpException.wrapException("Could not delete remote file [" + remoteFile + "]", e);
@@ -381,7 +401,7 @@ public class SftpClient extends FileTransferClientImp {
     try {
       acquireLock();
       log("REN {} to {}", from, to);
-      sftpChannel.rename(from, to);
+      sessionWrapper.getSftpChannel().rename(from, to);
     }
     catch (Exception e) {
       throw SftpException.wrapException("Could not rename file [" + from + "] to [" + to + "]", e);
@@ -397,7 +417,7 @@ public class SftpClient extends FileTransferClientImp {
     try {
       acquireLock();
       log("RMDIR {}", dir);
-      sftpChannel.rmdir(dir);
+      sessionWrapper.getSftpChannel().rmdir(dir);
     }
     catch (Exception e) {
       throw SftpException.wrapException("Could not remove directory [" + dir + "]", e);
@@ -413,7 +433,7 @@ public class SftpClient extends FileTransferClientImp {
     try {
       acquireLock();
       log("MKDIR {}", dir);
-      sftpChannel.mkdir(dir);
+      sessionWrapper.getSftpChannel().mkdir(dir);
     }
     catch (Exception e) {
       throw SftpException.wrapException("Could not create directory [" + dir + "]", e);
@@ -429,7 +449,7 @@ public class SftpClient extends FileTransferClientImp {
     try {
       acquireLock();
       log("CD {}", dir);
-      sftpChannel.cd(dir);
+      sessionWrapper.getSftpChannel().cd(dir);
     }
     catch (Exception e) {
       throw SftpException.wrapException("Could not chdir to [" + dir + "]", e);
@@ -445,7 +465,7 @@ public class SftpClient extends FileTransferClientImp {
     try {
       acquireLock();
       log("STAT {}", path);
-      SftpATTRS attrs = sftpChannel.stat(path);
+      SftpATTRS attrs = sessionWrapper.getSftpChannel().stat(path);
       return attrs.isDir();
     } catch (Exception e) {
       throw SftpException.wrapException("Could not stat [" + path + "]", e);
@@ -470,10 +490,11 @@ public class SftpClient extends FileTransferClientImp {
   @Override
   public long lastModified(String remoteFile) throws IOException, FileTransferException {
     long mtime;
+    checkConnected();
     try {
       acquireLock();
       log("STAT {}", remoteFile);
-      SftpATTRS attr = sftpChannel.stat(remoteFile);
+      SftpATTRS attr = sessionWrapper.getSftpChannel().stat(remoteFile);
       mtime = (long) attr.getMTime() * 1000;
     }
     catch (Exception e) {
@@ -488,6 +509,163 @@ public class SftpClient extends FileTransferClientImp {
   private void checkConnected() throws SftpException {
     if (!isConnected()) {
       throw new SftpException("Not currently connected, use connect()");
+    }
+  }
+
+  @Override
+  public long getKeepAliveTimeout() throws FtpException {
+    return keepAliveTimeout;
+  }
+
+  @Override
+  public void setKeepAliveTimeout(long seconds) throws FtpException {
+    if (seconds > 0) {
+      keepAliveTimeout = seconds * 1000;
+    }
+  }
+
+  public SftpClient withKeepAliveTimeout(long seconds) throws FtpException {
+    setKeepAliveTimeout(seconds);
+    return this;
+  }
+
+  public SftpClient withAdditionalDebug(boolean onoff) {
+    setAdditionalDebug(onoff);
+    return this;
+  }
+
+  @Override
+  public boolean isConnected() {
+    return Optional.ofNullable(sessionWrapper).map((s) -> s.connected()).orElse(false);
+  }
+
+  public void setKnownHosts(String knownHostsFilename) throws SftpException {
+    try {
+      jsch.setKnownHosts(knownHostsFilename);
+    }
+    catch (Exception e) {
+      throw SftpException.wrapException(e);
+    }
+  }
+
+  private interface SessionWrapper {
+    void connect() throws Exception;
+    void close();
+    ChannelSftp getSftpChannel();
+    boolean connected();
+  }
+
+  @NoArgsConstructor
+  private abstract class SessionWrapperImpl implements SessionWrapper {
+    @Getter(AccessLevel.PROTECTED)
+    @Setter(AccessLevel.PROTECTED)
+    private transient String username;
+    @Getter(AccessLevel.PROTECTED)
+    private transient Session sftpSession;
+    @Getter
+    private transient ChannelSftp sftpChannel;
+
+    private Session createSession() throws Exception {
+      Session s = jsch.getSession(getUsername(), sshHost, sshPort);
+      if (configRepository.getConfig(sshHost) == null
+          || StringUtils.isBlank(configRepository.getConfig(sshHost).getValue(SSH_PREFERRED_AUTHENTICATIONS))) {
+        // No config, let's killoff #995
+        s.setConfig(SSH_PREFERRED_AUTHENTICATIONS, NO_KERBEROS_AUTH);
+      }
+      s.setProxy(proxy);
+      s.setDaemonThread(true);
+      return s;
+    }
+
+    @Override
+    public void connect() throws Exception {
+      sftpSession = configureAuth(createSession());
+      sftpSession.connect(timeout);
+      sftpSession.setServerAliveInterval(Long.valueOf(getKeepAliveTimeout()).intValue());
+      log("OPEN {}:{}", sshHost, sshPort);
+      Channel c = sftpSession.openChannel("sftp");
+      c.connect(timeout);
+      sftpChannel = (ChannelSftp) c;
+    }
+
+    protected abstract Session configureAuth(Session s) throws Exception;
+
+    @Override
+    public void close() {
+      Optional.ofNullable(getSftpChannel()).ifPresent((c) -> c.disconnect());
+      Optional.ofNullable(getSftpSession()).ifPresent((c) -> c.disconnect());
+    }
+
+    @Override
+    public boolean connected() {
+      return Optional.ofNullable(sftpChannel).map((s) -> s.isConnected()).orElse(false);
+    }
+  }
+
+  // the password part of 'PreferredAuthentications=publickey,keyboard-interactive,password'
+  // "PasswordAuthentication" is a built-in method of using a password.
+  // RFC-4252
+  private class PasswordWrapper extends SessionWrapperImpl {
+
+    private transient UserInfo userInfo;
+
+    PasswordWrapper(String user, String pw) {
+      userInfo = new StandardUserInfo(pw);
+      setUsername(user);
+    }
+
+    @Override
+    protected Session configureAuth(Session s) throws Exception {
+      s.setUserInfo(userInfo);
+      return s;
+    }
+  }
+
+  // the keyboard-interactive part of 'PreferredAuthentications=publickey,keyboard-interactive,password'
+  // "ChallengeResponseAuthentication" is a method to tunnel the authentication process.
+  // It just so happens that if you don't do extra configuration ChallengeResponseAuth just acts
+  // like PasswordAuthentation (because of PAM configuration on Linux)
+  // This is a bit of a shim in the sense that we wouldn't normally expect it to work if
+  // the server is *configured properly*...
+  // RFC-4252
+  private class KeyboardInteractiveWrapper extends SessionWrapperImpl {
+
+    private transient String password;
+
+    KeyboardInteractiveWrapper(String user, String pw) {
+      password = pw;
+      setUsername(user);
+    }
+
+    @Override
+    protected Session configureAuth(Session s) throws Exception {
+      // Check com.jcraft.jsch.UserAuthKeyboardInteractive for more details.
+      // We need to bypass this check
+      // if(userinfo!=null && !(userinfo instanceof UIKeyboardInteractive)){
+      // return false;
+      // } which allows us to proceed to the next step.
+      // we won't use UIKeyboardInteractive since we aren't truly supporting CRA
+      s.setPassword(password);
+      return s;
+    }
+  }
+
+  // the publickey part of 'PreferredAuthentications=publickey,keyboard-interactive,password'
+  private class PublickeyWrapper extends SessionWrapperImpl {
+
+    private transient byte[] privateKey;
+    private transient byte[] privateKeyPassword;
+
+    PublickeyWrapper(String user, byte[] prvKey, byte[] prvKeyPwd) {
+      setUsername(user);
+      privateKey = prvKey;
+      privateKeyPassword = prvKeyPwd;
+    }
+
+    @Override
+    protected Session configureAuth(Session s) throws Exception {
+      jsch.addIdentity(getUsername(), privateKey, null, privateKeyPassword);
+      return s;
     }
   }
 
@@ -530,43 +708,4 @@ public class SftpClient extends FileTransferClientImp {
     }
   }
 
-  @Override
-  public long getKeepAliveTimeout() throws FtpException {
-    return keepAliveTimeout;
-  }
-
-  @Override
-  public void setKeepAliveTimeout(long seconds) throws FtpException {
-    if (seconds > 0) {
-      keepAliveTimeout = seconds * 1000;
-    }
-  }
-
-  public SftpClient withKeepAliveTimeout(long seconds) throws FtpException {
-    setKeepAliveTimeout(seconds);
-    return this;
-  }
-
-  public SftpClient withAdditionalDebug(boolean onoff) {
-    setAdditionalDebug(onoff);
-    return this;
-  }
-
-  @Override
-  public boolean isConnected() {
-    boolean result = false;
-    if (sftpChannel != null) {
-      result = sftpChannel.isConnected();
-    }
-    return result;
-  }
-
-  public void setKnownHosts(String knownHostsFilename) throws SftpException {
-    try {
-      jsch.setKnownHosts(knownHostsFilename);
-    }
-    catch (Exception e) {
-      throw SftpException.wrapException(e);
-    }
-  }
 }

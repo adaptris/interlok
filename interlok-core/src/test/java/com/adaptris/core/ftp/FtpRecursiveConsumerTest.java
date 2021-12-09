@@ -318,7 +318,7 @@ public class FtpRecursiveConsumerTest extends FtpConsumerCase {
     int count = 1;
     EmbeddedFtpServer helper = new EmbeddedFtpServer();
     MockMessageListener listener = new MockMessageListener(100);
-    FakeFtpServer server = helper.createAndStart(helper.createFilesystem(count));
+    FakeFtpServer server = helper.createAndStart(createFilesystem(helper, count));
     StandaloneConsumer sc = null;
     try {
       FtpRecursiveConsumer ftpConsumer = createForTests(listener);

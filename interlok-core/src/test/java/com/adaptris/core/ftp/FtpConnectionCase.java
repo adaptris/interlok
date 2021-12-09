@@ -43,6 +43,7 @@ public abstract class FtpConnectionCase extends com.adaptris.interlok.junit.scaf
   @Test
   public void testDefaultControlPort() throws Exception {
     FileTransferConnection connection = createConnection();
+    connection.setDefaultControlPort(null);
     assertNull(connection.getDefaultControlPort());
     assertDefaultControlPort(connection.defaultControlPort());
 

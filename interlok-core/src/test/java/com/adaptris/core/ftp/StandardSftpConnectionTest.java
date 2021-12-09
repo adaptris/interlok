@@ -1,11 +1,11 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS"
  * BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
@@ -16,6 +16,7 @@ package com.adaptris.core.ftp;
 import static com.adaptris.core.ftp.SftpExampleHelper.CFG_HOST;
 import static com.adaptris.core.ftp.SftpExampleHelper.CFG_KNOWN_HOSTS_FILE;
 import static com.adaptris.core.ftp.SftpExampleHelper.CFG_PASSWORD;
+import static com.adaptris.core.ftp.SftpExampleHelper.CFG_PORT;
 import static com.adaptris.core.ftp.SftpExampleHelper.CFG_PRIVATE_KEY_FILE;
 import static com.adaptris.core.ftp.SftpExampleHelper.CFG_PRIVATE_KEY_PW;
 import static com.adaptris.core.ftp.SftpExampleHelper.CFG_REMOTE_DIR;
@@ -33,7 +34,9 @@ import org.apache.commons.io.FileCleaningTracker;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assume;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import com.adaptris.core.stubs.ExternalResourcesHelper;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
 import com.adaptris.security.exc.PasswordException;
@@ -45,11 +48,18 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
 
   private static FileCleaningTracker cleaner = new FileCleaningTracker();
   private Object fileTracker = new Object();
-
+  private static boolean serverAvailable = false;
 
   @Override
   protected boolean areTestsEnabled() {
-    return Boolean.parseBoolean(PROPERTIES.getProperty("sftp.tests.enabled", "false"));
+    return Boolean.parseBoolean(PROPERTIES.getProperty("sftp.tests.enabled", "false")) && serverAvailable;
+  }
+
+  @BeforeClass
+  public static void beforeAnyTests() {
+    String host = PROPERTIES.getProperty(CFG_HOST);
+    int port = Integer.parseInt(PROPERTIES.getProperty(CFG_PORT, "22"));
+    serverAvailable = ExternalResourcesHelper.isExternalServerAvailable(host, port);
   }
 
   @Test
@@ -271,19 +281,23 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
       c.setAuthentication(
           new SftpKeyAuthentication(PROPERTIES.getProperty(CFG_PRIVATE_KEY_FILE), PROPERTIES.getProperty(CFG_PRIVATE_KEY_PW)));
     }
+    c.setDefaultControlPort(Integer.parseInt(PROPERTIES.getProperty(CFG_PORT, "22")));
     c.setAdditionalDebug(true);
     return c;
   }
 
   @Override
   protected String getDestinationStringWithOverride() throws Exception {
-    return "sftp://" + PROPERTIES.getProperty(CFG_USER) + "@" + PROPERTIES.getProperty(CFG_HOST) + "/"
+    return "sftp://" + PROPERTIES.getProperty(CFG_USER) + "@" + PROPERTIES.getProperty(CFG_HOST)
+        + ":" + PROPERTIES.getProperty(CFG_PORT, "22") + "/"
         + PROPERTIES.getProperty(CFG_REMOTE_DIR);
   }
 
   protected String getDestinationStringWithOverridePassword() throws Exception {
-    return "sftp://" + PROPERTIES.getProperty(CFG_USER) + ":" + Password.decode(PROPERTIES.getProperty(CFG_PASSWORD)) + "@"
-        + PROPERTIES.getProperty(CFG_HOST) + "/" + PROPERTIES.getProperty(CFG_REMOTE_DIR);
+    return "sftp://" + PROPERTIES.getProperty(CFG_USER) + ":"
+        + Password.decode(PROPERTIES.getProperty(CFG_PASSWORD)) + "@"
+        + PROPERTIES.getProperty(CFG_HOST) + ":" + PROPERTIES.getProperty(CFG_PORT, "22") + "/"
+        + PROPERTIES.getProperty(CFG_REMOTE_DIR);
   }
 
 
