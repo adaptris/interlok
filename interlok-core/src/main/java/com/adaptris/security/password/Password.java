@@ -68,6 +68,14 @@ public abstract class Password {
    */
   public static final String PORTABLE_PASSWORD_2 = "AES_GCM:";
   /**
+   * Alternative password style which is portable across environments
+   * and machines if the seed file is present. Uses a similar password
+   * based encryption scheme to the deprecated/removed non-portable
+   * PBEWithSHA1AndDESede. This uses the more up-to-date and secure
+   * PBEWithHmacSHA256AndAES_128.
+   */
+  public static final String SEEDED_BATCH = "SEED:";
+  /**
    * Alternative password style which is not portable across environments and machines
    * <p>
    * It is not considered especially secure, but is enough to stop casual interrogation
@@ -84,7 +92,7 @@ public abstract class Password {
 
   private static final String[] STYLES =
   {
-          MSCAPI_STYLE, PORTABLE_PASSWORD, PORTABLE_PASSWORD_2
+          MSCAPI_STYLE, PORTABLE_PASSWORD, PORTABLE_PASSWORD_2, SEEDED_BATCH
   };
 
   /**
@@ -99,7 +107,6 @@ public abstract class Password {
    */
   public static PasswordCodec create(String type) throws PasswordException {
     return INSTANCE.createCodec(type);
-
   }
 
   protected abstract PasswordCodec createCodec(String type) throws PasswordException;

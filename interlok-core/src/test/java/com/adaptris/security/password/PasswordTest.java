@@ -76,4 +76,11 @@ public class PasswordTest {
     String encoded = Password.encode(TEXT, Password.MSCAPI_STYLE);
     assertEquals(TEXT, Password.decode(encoded));
   }
+
+  @Test
+  public void testNewNonPortable()throws Exception {
+    System.setProperty("password.seed", System.getProperty("user.dir") + "/build.gradle");
+    String encoded = Password.encode(TEXT, Password.SEEDED_BATCH);
+    assertEquals(TEXT, Password.decode(encoded));
+  }
 }
