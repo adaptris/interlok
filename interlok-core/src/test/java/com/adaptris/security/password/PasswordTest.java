@@ -17,6 +17,8 @@
 package com.adaptris.security.password;
 
 import static org.junit.Assert.assertEquals;
+
+import com.adaptris.security.exc.PasswordException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.After;
@@ -76,4 +78,15 @@ public class PasswordTest {
     String encoded = Password.encode(TEXT, Password.SEEDED_BATCH);
     assertEquals(TEXT, Password.decode(encoded));
   }
+
+  @Test(expected = PasswordException.class)
+  public void testSeededEncodeException()throws Exception {
+    Password.encode(TEXT, Password.SEEDED_BATCH);
+  }
+
+  @Test(expected = PasswordException.class)
+  public void testSeededDecodeException()throws Exception {
+    Password.decode(Password.SEEDED_BATCH + TEXT); // doesn't matter what we try to decode, lack of seed file
+  }
+
 }
