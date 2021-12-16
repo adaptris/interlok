@@ -64,13 +64,6 @@ public class PasswordTest {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
-  public void testNonPortable() throws Exception {
-    String encoded = Password.encode(TEXT, Password.NON_PORTABLE_PASSWORD);
-    assertEquals(TEXT, Password.decode(encoded));
-  }
-
-  @Test
   public void testMicrosoftCrypto() throws Exception {
     Assume.assumeTrue(Os.isFamily(Os.WINDOWS_NT_FAMILY));
     String encoded = Password.encode(TEXT, Password.MSCAPI_STYLE);
@@ -78,7 +71,7 @@ public class PasswordTest {
   }
 
   @Test
-  public void testNewNonPortable()throws Exception {
+  public void testSeeded()throws Exception {
     System.setProperty("password.seed", System.getProperty("user.dir") + "/build.gradle");
     String encoded = Password.encode(TEXT, Password.SEEDED_BATCH);
     assertEquals(TEXT, Password.decode(encoded));

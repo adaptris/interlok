@@ -75,20 +75,6 @@ public abstract class Password {
    * PBEWithHmacSHA256AndAES_128.
    */
   public static final String SEEDED_BATCH = "SEED:";
-  /**
-   * Alternative password style which is not portable across environments and machines
-   * <p>
-   * It is not considered especially secure, but is enough to stop casual interrogation
-   * </p>
-   *
-   * @deprecated since 3.11.1 since the implementation {@link PbeCrypto} this uses
-   *             PBEWithSHA1AndDESede which is a weak algorithm. This will be removed w/o warning.
-   *
-   */
-  @Deprecated
-  @Removal(version = "4.0.0",
-      message = "This uses PBEWithSHA1AndDESede which is now cryptographically weak")
-  public static final String NON_PORTABLE_PASSWORD = "ALTPW:";
 
   private static final String[] STYLES =
   {
@@ -102,7 +88,7 @@ public abstract class Password {
    * @return the password implementation
    * @throws PasswordException wrapping other exceptions.
    * @see #MSCAPI_STYLE
-   * @see #NON_PORTABLE_PASSWORD
+   * @see #SEEDED_BATCH
    * @see #PORTABLE_PASSWORD
    */
   public static PasswordCodec create(String type) throws PasswordException {
@@ -128,7 +114,7 @@ public abstract class Password {
    * @param type the type of encryption to use.
    * @return the encoded password
    * @see #MSCAPI_STYLE
-   * @see #NON_PORTABLE_PASSWORD
+   * @see #SEEDED_BATCH
    * @see #PORTABLE_PASSWORD
    */
   public static String encode(String plain, String type) throws PasswordException {

@@ -124,7 +124,7 @@ public class JdbcUtilTest extends JdbcUtil {
     p = new Properties();
     mergeConnectionProperties(p, "", "");
     assertEquals(0, p.size());
-    mergeConnectionProperties(p, "", "ALTPW:ABCDEFGGHJ");
+    mergeConnectionProperties(p, "", "SEED:ABCDEFGGHJ");
   }
 
   @Test
