@@ -22,7 +22,7 @@ import com.adaptris.util.text.HexStringByteTranslator;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.ArrayUtils;
-import org.bouncycastle.crypto.digests.SHA256Digest;
+import org.bouncycastle.crypto.digests.SHA384Digest;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -31,7 +31,6 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 import java.io.FileInputStream;
-import java.util.Arrays;
 import java.util.Random;
 
 import static com.adaptris.security.password.Password.SEEDED_BATCH;
@@ -80,15 +79,18 @@ public class SeededAesPbeCrypto extends PasswordImpl
     }
     try
     {
-      byte[] original = base64.translate(encryptedString);
-      byte[] iv = ArrayUtils.subarray(original, 0, IV_LENGTH);
+      byte[] secret = seedAndIv();
+      byte[] iv = ArrayUtils.subarray(secret, 0, IV_LENGTH);
+      char[] seed = new HexStringByteTranslator().translate(ArrayUtils.subarray(secret, IV_LENGTH, secret.length)).toCharArray();
+
       PBEParameterSpec pbeParamSpec = new PBEParameterSpec(SALT, ITERATIONS, new IvParameterSpec(iv));
-      PBEKeySpec pbeKeySpec = new PBEKeySpec(seed());
+      PBEKeySpec pbeKeySpec = new PBEKeySpec(seed);
       SecretKeyFactory keyFac = SecretKeyFactory.getInstance(ALGORITHM);
       SecretKey pbeKey = keyFac.generateSecret(pbeKeySpec);
       Cipher pbeCipher = Cipher.getInstance(ALGORITHM);
       pbeCipher.init(Cipher.DECRYPT_MODE, pbeKey, pbeParamSpec);
-      byte[] decrypted = pbeCipher.doFinal(ArrayUtils.subarray(original, IV_LENGTH, original.length));
+
+      byte[] decrypted = pbeCipher.doFinal(base64.translate(encryptedString));
       return unseed(decrypted, charset);
     }
     catch (Exception e)
@@ -102,16 +104,19 @@ public class SeededAesPbeCrypto extends PasswordImpl
   {
     try
     {
-      byte[] iv = new byte[IV_LENGTH];
-      random.nextBytes(iv);
+      byte[] secret = seedAndIv();
+      byte[] iv = ArrayUtils.subarray(secret, 0, IV_LENGTH);
+      char[] seed = new HexStringByteTranslator().translate(ArrayUtils.subarray(secret, IV_LENGTH, secret.length)).toCharArray();
+
       PBEParameterSpec pbeParamSpec = new PBEParameterSpec(SALT, ITERATIONS, new IvParameterSpec(iv));
-      PBEKeySpec pbeKeySpec = new PBEKeySpec(seed());
+      PBEKeySpec pbeKeySpec = new PBEKeySpec(seed);
       SecretKeyFactory keyFac = SecretKeyFactory.getInstance(ALGORITHM);
       SecretKey pbeKey = keyFac.generateSecret(pbeKeySpec);
       Cipher pbeCipher = Cipher.getInstance(ALGORITHM);
       pbeCipher.init(Cipher.ENCRYPT_MODE, pbeKey, pbeParamSpec);
+
       byte[] encrypted = pbeCipher.doFinal(seed(plainText, charset));
-      return SEEDED_BATCH  + base64.translate(ArrayUtils.addAll(iv, encrypted));
+      return SEEDED_BATCH  + base64.translate(encrypted);
     }
     catch (Exception e)
     {
@@ -119,16 +124,15 @@ public class SeededAesPbeCrypto extends PasswordImpl
     }
   }
 
-  private char[] seed() throws PasswordException
+  private byte[] seedAndIv() throws PasswordException
   {
+    SHA384Digest sha = new SHA384Digest();
     try
     {
-      SHA256Digest sha = new SHA256Digest();
       if (seedFile == null)
       {
         if ((seedFile = System.getProperty("password.seed")) == null)
         {
-
           StringBuffer sb = new StringBuffer();
           for (String k : System.getProperties().stringPropertyNames())
           {
@@ -150,7 +154,7 @@ public class SeededAesPbeCrypto extends PasswordImpl
       }
       byte[] s = new byte[sha.getDigestSize()];
       sha.doFinal(s, 0);
-      return new HexStringByteTranslator().translate(s).toCharArray();
+      return s;
     }
     catch (Exception e)
     {
