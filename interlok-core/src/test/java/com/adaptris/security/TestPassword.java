@@ -19,6 +19,8 @@ package com.adaptris.security;
 import static org.junit.Assert.assertEquals;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
+
+import com.adaptris.security.password.SeededAesPbeCrypto;
 import org.junit.Test;
 import com.adaptris.interlok.junit.scaffolding.util.Os;
 import com.adaptris.security.certificate.CertificateBuilder;
@@ -69,7 +71,7 @@ public class TestPassword {
 
   @Test
   public void testSeeded()throws Exception {
-    System.setProperty("password.seed", System.getProperty("user.dir") + "/build.gradle");
+    System.setProperty(SeededAesPbeCrypto.SYSTEM_PROPERTY, System.getProperty("user.dir") + "/build.gradle");
     PasswordCodec pw = Password.create(Password.SEEDED_BATCH);
     assertEquals(PW, Password.decode(pw.encode(PW)));
   }

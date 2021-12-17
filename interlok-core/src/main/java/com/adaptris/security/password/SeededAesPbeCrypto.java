@@ -37,15 +37,17 @@ import static com.adaptris.security.password.Password.SEEDED_BATCH;
 
 public class SeededAesPbeCrypto extends PasswordImpl
 {
-  public static final byte[] SALT = { (byte)0xE1, (byte)0x1D, (byte)0x2B, (byte)0xE2, (byte)0x89, (byte)0x45, (byte)0x53, (byte)0xF7,
-                                      (byte)0x7F, (byte)0x94, (byte)0x7D, (byte)0xF3, (byte)0x9E, (byte)0x68, (byte)0x0B, (byte)0x64,
-                                      (byte)0x7E, (byte)0x20, (byte)0x5B, (byte)0x22, (byte)0xB9, (byte)0x18, (byte)0xC5, (byte)0xCD,
-                                      (byte)0x4C, (byte)0x0F, (byte)0x96, (byte)0x3F, (byte)0x8F, (byte)0x18, (byte)0xC8, (byte)0x7C };
+  private static final byte[] SALT = { (byte)0xE1, (byte)0x1D, (byte)0x2B, (byte)0xE2, (byte)0x89, (byte)0x45, (byte)0x53, (byte)0xF7,
+                                       (byte)0x7F, (byte)0x94, (byte)0x7D, (byte)0xF3, (byte)0x9E, (byte)0x68, (byte)0x0B, (byte)0x64,
+                                       (byte)0x7E, (byte)0x20, (byte)0x5B, (byte)0x22, (byte)0xB9, (byte)0x18, (byte)0xC5, (byte)0xCD,
+                                       (byte)0x4C, (byte)0x0F, (byte)0x96, (byte)0x3F, (byte)0x8F, (byte)0x18, (byte)0xC8, (byte)0x7C };
   private static final int IV_LENGTH = 16;
   private static final int ITERATIONS = 20000;
   private static final String ALGORITHM = "PBEWithHmacSHA256AndAES_128";
   private Base64ByteTranslator base64;
   private Random random;
+
+  public static final String SYSTEM_PROPERTY = "interlok.password.seed";
 
   @Getter
   @Setter
@@ -53,7 +55,7 @@ public class SeededAesPbeCrypto extends PasswordImpl
 
   public SeededAesPbeCrypto()
   {
-    this(System.getProperty("password.seed"));
+    this(System.getProperty(SYSTEM_PROPERTY));
   }
 
   public SeededAesPbeCrypto(String seedFile)
@@ -131,15 +133,8 @@ public class SeededAesPbeCrypto extends PasswordImpl
     {
       if (seedFile == null)
       {
-        if ((seedFile = System.getProperty("password.seed")) == null)
+        if ((seedFile = System.getProperty(SYSTEM_PROPERTY)) == null)
         {
-          StringBuffer sb = new StringBuffer();
-          for (String k : System.getProperties().stringPropertyNames())
-          {
-            sb.append(k).append(" = ").append(System.getProperty(k)).append('\n');
-          }
-          System.err.println("Properties = " + sb);
-
           throw new PasswordException("No seed file specified in system properties \"password.seed\"");
         }
       }

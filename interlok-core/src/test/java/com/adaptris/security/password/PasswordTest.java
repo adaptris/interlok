@@ -27,6 +27,8 @@ import org.junit.Before;
 import org.junit.Test;
 import com.adaptris.interlok.junit.scaffolding.util.Os;
 
+import java.util.Properties;
+
 public class PasswordTest {
 
   private static final String TEXT = "MYPASSWORD";
@@ -74,18 +76,30 @@ public class PasswordTest {
 
   @Test
   public void testSeeded()throws Exception {
-    System.setProperty("password.seed", System.getProperty("user.dir") + "/build.gradle");
+    System.setProperty(SeededAesPbeCrypto.SYSTEM_PROPERTY, System.getProperty("user.dir") + "/build.gradle");
     String encoded = Password.encode(TEXT, Password.SEEDED_BATCH);
     assertEquals(TEXT, Password.decode(encoded));
   }
 
   @Test(expected = PasswordException.class)
   public void testSeededEncodeException()throws Exception {
+    Properties p = System.getProperties();
+    if (p.contains(SeededAesPbeCrypto.SYSTEM_PROPERTY)) {
+      p.remove(SeededAesPbeCrypto.SYSTEM_PROPERTY);
+    }
+    System.setProperties(p);
+
     Password.encode(TEXT, Password.SEEDED_BATCH);
   }
 
   @Test(expected = PasswordException.class)
   public void testSeededDecodeException()throws Exception {
+    Properties p = System.getProperties();
+    if (p.contains(SeededAesPbeCrypto.SYSTEM_PROPERTY)) {
+      p.remove(SeededAesPbeCrypto.SYSTEM_PROPERTY);
+    }
+    System.setProperties(p);
+
     Password.decode(Password.SEEDED_BATCH + TEXT); // doesn't matter what we try to decode, lack of seed file
   }
 
