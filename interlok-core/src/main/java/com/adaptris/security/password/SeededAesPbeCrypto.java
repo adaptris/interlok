@@ -21,6 +21,7 @@ import com.adaptris.util.text.Base64ByteTranslator;
 import com.adaptris.util.text.HexStringByteTranslator;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.bouncycastle.crypto.digests.SHA384Digest;
 
@@ -140,12 +141,8 @@ public class SeededAesPbeCrypto extends PasswordImpl
       }
       try (FileInputStream in = new FileInputStream(seedFile))
       {
-        byte[] b = new byte[1048576];
-        int z = 0;
-        while ((z = in.read(b)) > 0)
-        {
-          sha.update(b, 0, z);
-        }
+        byte[] b = IOUtils.readFully(in, in.available());
+        sha.update(b, 0, b.length);
       }
       byte[] s = new byte[sha.getDigestSize()];
       sha.doFinal(s, 0);
