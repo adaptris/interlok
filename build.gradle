@@ -140,10 +140,6 @@ subprojects { subproject ->
 
   }
 
-  dependencies {
-    mavenDeploy ("org.apache.maven.wagon:wagon-http:3.5.0")
-  }
-
   configurations.all {
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
   }
