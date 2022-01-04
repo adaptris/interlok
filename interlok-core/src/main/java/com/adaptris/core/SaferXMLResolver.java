@@ -19,6 +19,7 @@ public class SaferXMLResolver extends ResolverImp
 
 	private static final String CDATA_PRE = "<![CDATA[";
 	private static final String CDATA_POST = "]]>";
+	private static final String SPECIAL_CASE = "<![CDATA[]]]]><![CDATA[>]]>";
 
 	public SaferXMLResolver()
 	{
@@ -57,6 +58,11 @@ public class SaferXMLResolver extends ResolverImp
 
 			String value = target.resolve(replace);
 			log.trace("Found value {} within target message", value);
+			if (value.contains(CDATA_POST))
+			{
+				// special case for when the resolved text contains its own CDATA section
+				value = value.replace(CDATA_POST, SPECIAL_CASE);
+			}
 			sb.append(value);
 
 			sb.append(CDATA_POST);
