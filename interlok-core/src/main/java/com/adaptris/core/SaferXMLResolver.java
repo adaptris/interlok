@@ -10,6 +10,13 @@ import org.slf4j.LoggerFactory;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Resolver implementation that resolves and escapes XML content.
+ * <p>
+ * This resolver resolves values based on the following:
+ * %resolveXml{...}, and will place the result inside of CDATA tags.
+ * </p>
+ */
 public class SaferXMLResolver extends ResolverImp
 {
 	private static final Logger log = LoggerFactory.getLogger(FileResolver.class);
@@ -35,16 +42,19 @@ public class SaferXMLResolver extends ResolverImp
 		throw new UnresolvableException("Safer XML resolver requires a target message!");
 	}
 
+	/**
+	 * {@inheritDoc}.
+	 */
 	@Override
 	public String resolve(String lookupValue, InterlokMessage target)
 	{
-		if (lookupValue == null)
-		{
-			return null;
-		}
 		if (target == null)
 		{
 			throw new UnresolvableException("Target message cannot be null!");
+		}
+		if (lookupValue == null)
+		{
+			lookupValue = target.getContent();
 		}
 		String result = lookupValue;
 		log.trace("Resolving {} from XML", lookupValue);

@@ -8,7 +8,6 @@ import com.adaptris.interlok.resolver.UnresolvableException;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class SaferXMLResolverTest
@@ -36,6 +35,16 @@ public class SaferXMLResolverTest
 		assertEquals(XML_RESOLVED, result);
 	}
 
+	@Test
+	public void testResolveMessageContent()
+	{
+		AdaptrisMessage message = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_SOURCE);
+		message.addMetadata(KEY, EQUATION);
+		SaferXMLResolver resolver = new SaferXMLResolver();
+		String result = resolver.resolve(null, message);
+		assertEquals(XML_RESOLVED, result);
+	}
+
 	@Test(expected = UnresolvedMetadataException.class)
 	public void testResolveNoValue()
 	{
@@ -56,10 +65,10 @@ public class SaferXMLResolverTest
 		new SaferXMLResolver().resolve(XML_SOURCE, null);
 	}
 
-	@Test
+	@Test(expected = UnresolvableException.class)
 	public void testNullExpression()
 	{
-		assertNull(new SaferXMLResolver().resolve(null, null));
+		new SaferXMLResolver().resolve(null, null);
 	}
 
 	@Test
