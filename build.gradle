@@ -155,27 +155,17 @@ subprojects { subproject ->
     check.dependsOn jacocoTestReport
   }
 
-  sourceSets {
-    main {
-      output.dir(versionDir, builtBy: 'generateVersion')
-    }
-  }
-
-  // Generate the META-INF/adaptris-version file
-  task generateVersion {
-    doLast {
-      def versionFile = new File(new File(versionDir, 'META-INF'), 'adaptris-version')
-      versionFile.getParentFile().mkdirs()
-      ant.propertyfile(file: versionFile) {
-        entry(key: 'component.name', value: componentName)
-        entry(key: 'component.description', value: componentDesc)
-        entry(key: 'build.version', value: project.version)
-        entry(key: 'groupId', value: project.group)
-        entry(key: 'artifactId', value: project.name)
-        entry(key: 'build.date', value: new Date().format('yyyy-MM-dd'))
-        entry(key: 'build.info', value: buildDetails.buildInfo())
-      }
-    }
+  def generateVersionFile = tasks.register('generateVersionFile', WriteProperties) {
+    group = 'Build'
+    description = 'Generate Interlok version information'
+    outputFile file('src/main/resources/META-INF/adaptris-version')
+    property 'component.name', componentName
+    property 'component.description', componentDesc
+    property 'build.version', project.version
+    property 'groupId', project.group
+    property 'artifactId', project.name
+    property 'build.date', new Date().format('yyyy-MM-dd')
+    property 'build.info', buildDetails.buildInfo()
   }
 
   jar {
@@ -230,4 +220,5 @@ subprojects { subproject ->
     }
   }
 
+  processResources.dependsOn generateVersionFile
 }

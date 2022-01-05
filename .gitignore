@@ -41,3 +41,4 @@ Gemfile.lock
 _site
 */src/main/generated
 .jekyll-cache
+**/adaptris-version
