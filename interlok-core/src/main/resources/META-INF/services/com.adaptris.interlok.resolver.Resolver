@@ -1,1 +1,2 @@
 com.adaptris.core.ResolveFromPayloadUsingXPath
+com.adaptris.core.SaferXMLResolver
