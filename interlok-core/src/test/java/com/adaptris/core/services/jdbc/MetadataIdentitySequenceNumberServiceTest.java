@@ -32,6 +32,7 @@ import com.adaptris.core.jdbc.AdvancedJdbcPooledConnection;
 import com.adaptris.core.jdbc.JdbcConnection;
 import com.adaptris.core.jdbc.JdbcPooledConnection;
 import com.adaptris.core.jdbc.PooledConnectionHelper;
+import com.adaptris.core.services.SequenceNumber.OverflowBehaviour;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.TimeInterval;
 
@@ -101,8 +102,8 @@ public class MetadataIdentitySequenceNumberServiceTest extends SequenceNumberCas
       service.setConnection(new JdbcConnection(PROPERTIES.getProperty(JDBC_SEQUENCENUMBER_URL), PROPERTIES
           .getProperty(JDBC_SEQUENCENUMBER_DRIVER)));
     }
-    service.setMetadataKey(DEFAULT_METADATA_KEY);
-    service.setNumberFormat(DEFAULT_NUMBER_FORMAT);
+    service.getSequenceNumber().setMetadataKey(DEFAULT_METADATA_KEY);
+    service.getSequenceNumber().setNumberFormat(DEFAULT_NUMBER_FORMAT);
     service.setIdentityMetadataKey(DEFAULT_IDENTITY_METADATA_KEY);
     return service;
   }
@@ -197,11 +198,11 @@ public class MetadataIdentitySequenceNumberServiceTest extends SequenceNumberCas
     connection.setConnectionAttempts(2);
     connection.setConnectionRetryInterval(new TimeInterval(3L, "SECONDS"));
     MetadataIdentitySequenceNumberService service = new MetadataIdentitySequenceNumberService();
-    service.setMetadataKey("sequence_no");
-    service.setNumberFormat(DEFAULT_NUMBER_FORMAT);
+    service.getSequenceNumber().setMetadataKey("sequence_no");
+    service.getSequenceNumber().setNumberFormat(DEFAULT_NUMBER_FORMAT);
     service.setConnection(connection);
     service.setIdentityMetadataKey(DEFAULT_IDENTITY_METADATA_KEY);
-    service.setOverflowBehaviour(AbstractJdbcSequenceNumberService.OverflowBehaviour.Continue);
+    service.getSequenceNumber().setOverflowBehaviour(OverflowBehaviour.Continue);
     return service;
   }
 

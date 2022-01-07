@@ -333,8 +333,8 @@ public class JdbcServiceListTest
     }
     service.setIdentity(identity);
     service.setUniqueId(uuid);
-    service.setMetadataKey(SequenceNumberCase.DEFAULT_METADATA_KEY);
-    service.setNumberFormat(SequenceNumberCase.DEFAULT_NUMBER_FORMAT);
+    service.getSequenceNumber().setMetadataKey(SequenceNumberCase.DEFAULT_METADATA_KEY);
+    service.getSequenceNumber().setNumberFormat(SequenceNumberCase.DEFAULT_NUMBER_FORMAT);
     return service;
   }
 
@@ -409,12 +409,12 @@ public class JdbcServiceListTest
     list.setConnection(connection);
     StaticIdentitySequenceNumberService s1 = new StaticIdentitySequenceNumberService();
     s1.setIdentity("first_id");
-    s1.setMetadataKey("sequence_number_1");
-    s1.setNumberFormat(SequenceNumberCase.DEFAULT_NUMBER_FORMAT);
+    s1.getSequenceNumber().setMetadataKey("sequence_number_1");
+    s1.getSequenceNumber().setNumberFormat(SequenceNumberCase.DEFAULT_NUMBER_FORMAT);
     StaticIdentitySequenceNumberService s2 = new StaticIdentitySequenceNumberService();
     s2.setIdentity("another_id");
-    s2.setMetadataKey("sequence_number_2");
-    s2.setNumberFormat(SequenceNumberCase.DEFAULT_NUMBER_FORMAT);
+    s2.getSequenceNumber().setMetadataKey("sequence_number_2");
+    s2.getSequenceNumber().setNumberFormat(SequenceNumberCase.DEFAULT_NUMBER_FORMAT);
 
     list.add(s1);
     list.add(s2);

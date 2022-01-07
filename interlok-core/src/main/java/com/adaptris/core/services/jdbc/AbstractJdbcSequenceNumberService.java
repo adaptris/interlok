@@ -16,6 +16,23 @@
 
 package com.adaptris.core.services.jdbc;
 
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.ServiceException;
+import com.adaptris.core.jdbc.JdbcService;
+import com.adaptris.core.services.SequenceNumber;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.core.util.JdbcUtil;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.validation.constraints.NotNull;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,20 +40,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import javax.validation.constraints.NotBlank;
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
-import com.adaptris.annotation.AdvancedConfig;
-import com.adaptris.annotation.AutoPopulated;
-import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.ServiceException;
-import com.adaptris.core.jdbc.JdbcService;
-import com.adaptris.core.util.Args;
-import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.core.util.JdbcUtil;
 
 /**
  * Abstract base class for adding sequence numbers into metadata.
@@ -69,15 +72,13 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
   private static final String DEFAULT_CREATE_STATEMENT = "CREATE TABLE SEQUENCES (ID VARCHAR(255) NOT NULL, SEQ_NUMBER INT)";
   private static final String DEFAULT_TABLE_NAME = "SEQUENCES";
 
-  @NotBlank
-  private String metadataKey;
-  @NotBlank
-  @AutoPopulated
-  @InputFieldDefault("0")
-  private String numberFormat;
-  @AdvancedConfig
-  @InputFieldDefault(value = "true")
-  private Boolean alwaysReplaceMetadata;
+
+  @Getter
+  @Setter
+  @NotNull
+  private SequenceNumber sequenceNumber;
+
+
   @InputFieldHint(style = "SQL")
   @AdvancedConfig(rare = true)
   private String selectStatement = null;
@@ -93,43 +94,18 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
   @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean createDatabase;
-  @AdvancedConfig
-  private Long maximumSequenceNumber;
 
-  private OverflowBehaviour overflowBehaviour;
-
-  /**
-   * The behaviour of the sequence number generator when the number exceeds that specified by the number format.
-   *
-   *
-   */
-  public enum OverflowBehaviour {
-    ResetToOne() {
-      @Override
-      int wrap(int i) {
-        return 1;
-      }
-
-    },
-    Continue() {
-      @Override
-      int wrap(int i) {
-        return i;
-      }
-    };
-    abstract int wrap(int i);
-  }
 
   public AbstractJdbcSequenceNumberService() {
     super();
-    setNumberFormat("0");
+    sequenceNumber = new SequenceNumber();
   }
 
   @Override
   protected void initJdbcService() throws CoreException {
     try {
-      Args.notNull(getMetadataKey(), "metadataKey");
-      Args.notNull(getNumberFormat(), "numberFormat");
+      Args.notNull(sequenceNumber.getMetadataKey(), "metadataKey");
+      Args.notNull(sequenceNumber.getNumberFormat(), "numberFormat");
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
@@ -155,7 +131,6 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
     insertStatement = null;
     updateStatement = null;
     resetStatement = null;
-
   }
 
   /**
@@ -163,13 +138,13 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
    */
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    NumberFormat formatter = new DecimalFormat(getNumberFormat());
+    NumberFormat formatter = new DecimalFormat(sequenceNumber.getNumberFormat());
     Connection conn = null;
     ResultSet rs = null;
     DatabaseActor actor = null;
 
-    if (!alwaysReplaceMetadata() && msg.headersContainsKey(getMetadataKey())) {
-      log.debug("{} already exists, not updating", getMetadataKey());
+    if (!sequenceNumber.alwaysReplaceMetadata() && msg.headersContainsKey(sequenceNumber.getMetadataKey())) {
+      log.debug("{} already exists, not updating", sequenceNumber.getMetadataKey());
       return;
     }
     String identity = getIdentity(msg);
@@ -186,17 +161,17 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
           actor.executeReset(count + 1);
         } else {
           if (hasOverflowed(countString)) {
-            count = getBehaviour(getOverflowBehaviour()).wrap(count);
+            count = (int)sequenceNumber.getBehaviour(sequenceNumber.getOverflowBehaviour()).wrap(count);
             countString = formatter.format(count);
             actor.executeReset(count + 1);
           } else {
             actor.executeUpdate();
           }
         }
-        msg.addMetadata(getMetadataKey(), countString);
+        msg.addMetadata(sequenceNumber.getMetadataKey(), countString);
       }
       else {
-        msg.addMetadata(getMetadataKey(), formatter.format(1));
+        msg.addMetadata(sequenceNumber.getMetadataKey(), formatter.format(1));
         actor.executeInsert();
       }
       JdbcUtil.commit(conn, msg);
@@ -225,11 +200,11 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
   protected abstract String getIdentity(AdaptrisMessage msg) throws ServiceException;
 
   protected boolean hasOverflowed(String formattedCount) {
-    return formattedCount.length() > getNumberFormat().length();
+    return formattedCount.length() > sequenceNumber.getNumberFormat().length();
   }
 
   protected boolean exceedsMaxSequence(int count) {
-    return getMaximumSequenceNumber() != null ? count > getMaximumSequenceNumber() : false;
+    return sequenceNumber.getMaximumSequenceNumber() != null ? count > sequenceNumber.getMaximumSequenceNumber() : false;
   }
 
   /**
@@ -284,65 +259,6 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
   }
 
   /**
-   * @return the metadataKey
-   */
-  public String getMetadataKey() {
-    return metadataKey;
-  }
-
-  /**
-   * Set the metadata key where the resulting sequence number will be stored.
-   *
-   * @param key the metadataKey to set
-   */
-  public void setMetadataKey(String key) {
-    metadataKey = Args.notBlank(key, "metadataKey");
-  }
-
-  /**
-   * @return the numberFormat
-   */
-  public String getNumberFormat() {
-    return numberFormat;
-  }
-
-  /**
-   * Metadata will be formatted using the pattern specified.
-   *
-   * <p>
-   * This allows you to format the number precisely to the value that is required; e.g if you use "000000000" then the metadata
-   * value is always 9 characters long, the number being prefixed by leading zeros
-   * </p>
-   *
-   * @see java.text.DecimalFormat
-   * @param format the numberFormat to set, you must set this otherwise the service will not initialise. If you use '0' with an
-   *          overflow behaviour of 'Continue' then this will just use the raw number.
-   */
-  public void setNumberFormat(String format) {
-    numberFormat = Args.notBlank(format, "numberFormat");
-  }
-
-  /**
-   * @return the alwaysReplaceMetadata
-   */
-  public Boolean getAlwaysReplaceMetadata() {
-    return alwaysReplaceMetadata;
-  }
-
-  /**
-   * Whether or not to always replace the metadata key.
-   *
-   * @param t the alwaysReplaceMetadata to set, default is true.
-   */
-  public void setAlwaysReplaceMetadata(Boolean t) {
-    alwaysReplaceMetadata = t;
-  }
-
-  boolean alwaysReplaceMetadata() {
-    return BooleanUtils.toBooleanDefaultIfNull(getAlwaysReplaceMetadata(), true);
-  }
-
-  /**
    *
    * @return the resetStatement
    */
@@ -358,40 +274,6 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
    */
   public void setResetStatement(String s) {
     this.resetStatement = s;
-  }
-
-  /**
-   * @return the wrapBehaviour
-   */
-  public OverflowBehaviour getOverflowBehaviour() {
-    return overflowBehaviour;
-  }
-
-  /**
-   * Set the behaviour when the sequence number exceeds that specified by the number format.
-   * 
-   * @param s the behaviour to set (default is {@link OverflowBehaviour#Continue})
-   * @see OverflowBehaviour
-   */
-  public void setOverflowBehaviour(OverflowBehaviour s) {
-    overflowBehaviour = s;
-  }
-
-  private static OverflowBehaviour getBehaviour(OverflowBehaviour s) {
-    return s == null ? OverflowBehaviour.Continue : s;
-  }
-
-  public Long getMaximumSequenceNumber() {
-    return maximumSequenceNumber;
-  }
-
-  /**
-   * Set the maximum sequence number which will reset the count when reached.
-   *
-   * @param l the maximum sequence number, a value of null means there is no maximum (default).
-   */
-  public void setMaximumSequenceNumber(Long l) {
-    this.maximumSequenceNumber = l;
   }
 
   public Boolean getCreateDatabase() {

@@ -16,6 +16,23 @@
 
 package com.adaptris.core.services.metadata;
 
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.ServiceException;
+import com.adaptris.core.ServiceImp;
+import com.adaptris.core.services.SequenceNumber;
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.core.util.PropertyHelper;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -23,22 +40,6 @@ import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Properties;
-import javax.validation.constraints.NotBlank;
-import org.apache.commons.lang3.BooleanUtils;
-import com.adaptris.annotation.AdapterComponent;
-import com.adaptris.annotation.AdvancedConfig;
-import com.adaptris.annotation.AffectsMetadata;
-import com.adaptris.annotation.ComponentProfile;
-import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.ServiceException;
-import com.adaptris.core.ServiceImp;
-import com.adaptris.core.util.Args;
-import com.adaptris.core.util.ExceptionHelper;
-import com.adaptris.core.util.PropertyHelper;
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Simple sequence number generator that uses a file to store the next sequence number.
@@ -68,183 +69,73 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @AdapterComponent
 @ComponentProfile(summary = "Generate a sequence number from a simple text file", tag = "service,sequence")
 @DisplayOrder(order = {"metadataKey", "numberFormat", "overflowBehaviour", "maximumSequenceNumber", "sequenceNumberFile", "alwaysReplaceMetadata"})
-public class SimpleSequenceNumberService extends ServiceImp {
+public class SimpleSequenceNumberService extends ServiceImp
+{
+  @Getter
+  @Setter
+  @NotNull
+  private SequenceNumber sequenceNumber;
 
-  @NotBlank
-  private String numberFormat;
-  @InputFieldDefault(value = "true")
-  private Boolean alwaysReplaceMetadata;
-  @NotBlank
-  @AffectsMetadata
-  private String metadataKey;
-  private OverflowBehaviour overflowBehaviour;
+  @Getter
   @NotBlank
   private String sequenceNumberFile;
-  @AdvancedConfig
-  private Long maximumSequenceNumber;
 
   private static final String PROPERTY_KEY = "SimpleSequenceNumberService.next";
   private static final String ONE = "1";
 
-  /**
-   * The behaviour of the sequence number generator when the number exceeds that specified by the number format.
-   *
-   *
-   */
-  public enum OverflowBehaviour {
-    ResetToOne() {
-      @Override
-      long wrap(long i) {
-        return Long.parseLong(ONE);
-      }
-
-    },
-    Continue() {
-      @Override
-      long wrap(long i) {
-        return i;
-      }
-    };
-    abstract long wrap(long i);
-  }
-
   public SimpleSequenceNumberService() {
     super();
-    setNumberFormat("0");
+    sequenceNumber = new SequenceNumber();
   }
 
+  /**
+   * {@inheritDoc}.
+   */
   @Override
   protected void initService() throws CoreException {
     try {
-      Args.notBlank(getMetadataKey(), "metadataKey");
-      Args.notBlank(getNumberFormat(), "numberFormat");
+      Args.notBlank(sequenceNumber.getMetadataKey(), "metadataKey");
+      Args.notBlank(sequenceNumber.getNumberFormat(), "numberFormat");
       Args.notBlank(getSequenceNumberFile(), "sequenceNumberFile");
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
+  /**
+   * {@inheritDoc}.
+   */
   @Override
-  protected void closeService() {
+  protected void closeService()
+  {
+    /* do nothing */
   }
 
-
+  /**
+   * {@inheritDoc}.
+   */
   @Override
-  public void start() throws CoreException {
+  public void start() throws CoreException
+  {
     super.start();
   }
 
+  /**
+   * {@inheritDoc}.
+   */
   @Override
-  public void stop() {
+  public void stop()
+  {
     super.stop();
   }
 
-
   /**
-   * @see com.adaptris.core.Service#doService(com.adaptris.core.AdaptrisMessage)
+   * {@inheritDoc}.
    */
   @Override
-  public void doService(AdaptrisMessage msg) throws ServiceException {
-    NumberFormat formatter = new DecimalFormat(getNumberFormat());
-    if (!alwaysReplaceMetadata() && msg.headersContainsKey(getMetadataKey())) {
-      log.debug("{} already exists, not updating", getMetadataKey());
-      return;
-    }
-    try {
-      File myFile = new File(getSequenceNumberFile());
-      Properties p = load(myFile);
-      long count = Long.parseLong(nextSequenceNumber(p, getMaximumSequenceNumber()));
-      String countString = formatter.format(count);
-      if (countString.length() > getNumberFormat().length()) {
-        count = getBehaviour(getOverflowBehaviour()).wrap(count);
-        countString = formatter.format(count);
-      }
-      incrementSequenceNumberProperty(p, count, getMaximumSequenceNumber());
-      store(p, myFile);
-      msg.addMetadata(getMetadataKey(), countString);
-    }
-    catch (IOException e) {
-      throw new ServiceException("Failed whilst generating sequence number", e);
-    }
-  }
-
-  /**
-   * @return the metadataKey
-   */
-  public String getMetadataKey() {
-    return metadataKey;
-  }
-
-  /**
-   * Set the metadata key where the resulting sequence number will be stored.
-   *
-   * @param key the metadataKey to set
-   */
-  public void setMetadataKey(String key) {
-    metadataKey = Args.notBlank(key, "metadataKey");
-  }
-
-  /**
-   * @return the numberFormat
-   */
-  public String getNumberFormat() {
-    return numberFormat;
-  }
-
-  /**
-   * Metadata will be formatted using the pattern specified.
-   *
-   * <p>
-   * This allows you to format the number precisely to the value that is required; e.g if you use "000000000" then the metadata
-   * value is always 9 characters long, the number being prefixed by leading zeros
-   * </p>
-   *
-   * @see java.text.DecimalFormat
-   * @param format the numberFormat to set. The default is '0'; which coupled with the default overflow behaviour of 'Continue'
-   *          means it will just use the raw number.
-   */
-  public void setNumberFormat(String format) {
-    numberFormat = Args.notBlank(format, "numberFormat");
-  }
-
-
-  public Boolean getAlwaysReplaceMetadata() {
-    return alwaysReplaceMetadata;
-  }
-
-  /**
-   * Whether or not to always replace the metadata key.
-   *
-   * @param t the alwaysReplaceMetadata to set, default is true.
-   */
-  public void setAlwaysReplaceMetadata(Boolean t) {
-    alwaysReplaceMetadata = t;
-  }
-
-  private boolean alwaysReplaceMetadata() {
-    return BooleanUtils.toBooleanDefaultIfNull(getAlwaysReplaceMetadata(), true);
-  }
-
-  public OverflowBehaviour getOverflowBehaviour() {
-    return overflowBehaviour;
-  }
-
-  /**
-   * Set the behaviour when the sequence number exceeds that specified by the number format.
-   * 
-   * @param s the behaviour to set (default is {@link OverflowBehaviour#Continue})
-   * @see OverflowBehaviour
-   */
-  public void setOverflowBehaviour(OverflowBehaviour s) {
-    overflowBehaviour = s;
-  }
-
-  private static OverflowBehaviour getBehaviour(OverflowBehaviour s) {
-    return s != null ? s : OverflowBehaviour.Continue;
-  }
-
-  public String getSequenceNumberFile() {
-    return sequenceNumberFile;
+  public void prepare() throws CoreException
+  {
+    /* do nothing */
   }
 
   /**
@@ -256,19 +147,34 @@ public class SimpleSequenceNumberService extends ServiceImp {
     sequenceNumberFile = Args.notBlank(s, "SequenceNumberFile");
   }
 
-
-  public Long getMaximumSequenceNumber() {
-    return maximumSequenceNumber;
-  }
-
   /**
-   * Set the maximum sequence number which will reset the count when reached.
-   *
-   * @param l the maximum sequence number, a value of null means there is no maximum (default).
+   * @see com.adaptris.core.Service#doService(com.adaptris.core.AdaptrisMessage)
    */
-  public void setMaximumSequenceNumber(Long l) {
-    this.maximumSequenceNumber = l;
+  @Override
+  public void doService(AdaptrisMessage msg) throws ServiceException {
+    NumberFormat formatter = new DecimalFormat(sequenceNumber.getNumberFormat());
+    if (!sequenceNumber.alwaysReplaceMetadata() && msg.headersContainsKey(sequenceNumber.getMetadataKey())) {
+      log.debug("{} already exists, not updating", sequenceNumber.getMetadataKey());
+      return;
+    }
+    try {
+      File myFile = new File(getSequenceNumberFile());
+      Properties p = load(myFile);
+      long count = Long.parseLong(nextSequenceNumber(p, sequenceNumber.getMaximumSequenceNumber()));
+      String countString = formatter.format(count);
+      if (countString.length() > sequenceNumber.getNumberFormat().length()) {
+        count = sequenceNumber.getBehaviour(sequenceNumber.getOverflowBehaviour()).wrap(count);
+        countString = formatter.format(count);
+      }
+      incrementSequenceNumberProperty(p, count, sequenceNumber.getMaximumSequenceNumber());
+      store(p, myFile);
+      msg.addMetadata(sequenceNumber.getMetadataKey(), countString);
+    }
+    catch (IOException e) {
+      throw new ServiceException("Failed whilst generating sequence number", e);
+    }
   }
+
 
   private static Properties load(File myFile) throws IOException {
     if (!myFile.exists()) {
@@ -309,10 +215,4 @@ public class SimpleSequenceNumberService extends ServiceImp {
     return count > maximum;
 
   }
-
-  @Override
-  public void prepare() throws CoreException {
-  }
-
-
 }
