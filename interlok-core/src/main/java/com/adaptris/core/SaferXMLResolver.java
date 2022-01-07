@@ -4,6 +4,7 @@ import com.adaptris.interlok.resolver.FileResolver;
 import com.adaptris.interlok.resolver.ResolverImp;
 import com.adaptris.interlok.resolver.UnresolvableException;
 import com.adaptris.interlok.types.InterlokMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,10 +18,10 @@ import java.util.regex.Pattern;
  * %resolveXml{...}, and will place the result inside of CDATA tags.
  * </p>
  */
+
+@Slf4j
 public class SaferXMLResolver extends ResolverImp
 {
-	private static final Logger log = LoggerFactory.getLogger(FileResolver.class);
-
 	private static final String RESOLVE_REGEXP = "^.*%resolveXml\\{(.+)\\}.*$";
 	private final transient Pattern resolverPattern;
 
