@@ -14,7 +14,7 @@ public class SaferXMLResolverTest
 {
 	private static final String KEY = "eq";
 	private static final String EQUATION = "x - 5 < 10";
-	private static final String XML_SOURCE = "<equation>%resolveXml{%message{" + KEY + "}}</equation>";
+	private static final String XML_SOURCE = "<equation>%asCDATA{%message{" + KEY + "}}</equation>";
 	private static final String XML_RESOLVED = "<equation><![CDATA[" + EQUATION + "]]></equation>";
 	private static final String SPECIAL_CASE = "<![CDATA[WTF is this?]]>";
 	private static final String SPECIAL_RESULT = "<equation><![CDATA[<![CDATA[WTF is this?<![CDATA[]]]]><![CDATA[>]]>]]></equation>";
