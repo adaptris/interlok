@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 @Slf4j
 public class SaferXMLResolver extends ResolverImp
 {
-	private static final String RESOLVE_REGEXP = "^.*%resolveXml\\{(.+)\\}.*$";
+	private static final String RESOLVE_REGEXP = "^.*%asCDATA\\{(.+)\\}.*$";
 	private final transient Pattern resolverPattern;
 
 	private static final String CDATA_PRE = "<![CDATA[";
@@ -77,7 +77,7 @@ public class SaferXMLResolver extends ResolverImp
 			sb.append(value);
 
 			sb.append(CDATA_POST);
-			String toReplace = "%resolveXml{" + replace + "}";
+			String toReplace = "%asCDATA{" + replace + "}";
 			result = result.replace(toReplace, sb.toString());
 			m = resolverPattern.matcher(result);
 		}
