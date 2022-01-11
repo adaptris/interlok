@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,7 +31,7 @@ import com.adaptris.core.jdbc.AdvancedJdbcPooledConnection;
 import com.adaptris.core.jdbc.JdbcConnection;
 import com.adaptris.core.jdbc.JdbcPooledConnection;
 import com.adaptris.core.jdbc.PooledConnectionHelper;
-import com.adaptris.core.services.SequenceNumber.OverflowBehaviour;
+import com.adaptris.core.services.SequenceNumberOverflowBehaviour;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.TimeInterval;
 
@@ -71,8 +71,8 @@ public class StaticIdentitySequenceNumberServiceTest extends SequenceNumberCase 
         .getProperty(JDBC_SEQUENCENUMBER_DRIVER)));
     }
     service.setIdentity(DEFAULT_ID);
-    service.getSequenceNumber().setMetadataKey(DEFAULT_METADATA_KEY);
-    service.getSequenceNumber().setNumberFormat(DEFAULT_NUMBER_FORMAT);
+    service.setMetadataKey(DEFAULT_METADATA_KEY);
+    service.setNumberFormat(DEFAULT_NUMBER_FORMAT);
     return service;
   }
 
@@ -91,8 +91,8 @@ public class StaticIdentitySequenceNumberServiceTest extends SequenceNumberCase 
       createDatabase();
       populateDatabase("abc", 10000);
       AdaptrisMessage msg = createMessageForTests();
-      service.getSequenceNumber().setNumberFormat("0000");
-      service.getSequenceNumber().setOverflowBehaviour(OverflowBehaviour.Continue);
+      service.setNumberFormat("0000");
+      service.setOverflowBehaviour(SequenceNumberOverflowBehaviour.Continue);
       execute(service, msg);
       assertTrue(msg.containsKey(DEFAULT_METADATA_KEY));
       assertEquals("10000", msg.getMetadataValue(DEFAULT_METADATA_KEY));
@@ -115,7 +115,7 @@ public class StaticIdentitySequenceNumberServiceTest extends SequenceNumberCase 
       service.setUpdateStatement(NULL_UPDATE_STATEMENT);
       service.setSelectStatement(NULL_SELECT_STATEMENT);
       service.setIdentity(null);
-      service.getSequenceNumber().setAlwaysReplaceMetadata(true);
+      service.setAlwaysReplaceMetadata(true);
       execute(service, msg);
       assertTrue(msg.containsKey(DEFAULT_METADATA_KEY));
       assertEquals("000000001", msg.getMetadataValue(DEFAULT_METADATA_KEY));
@@ -252,10 +252,10 @@ public class StaticIdentitySequenceNumberServiceTest extends SequenceNumberCase 
     connection.setConnectionRetryInterval(new TimeInterval(3L, "SECONDS"));
     StaticIdentitySequenceNumberService service = new StaticIdentitySequenceNumberService();
     service.setIdentity("adaptrismsg");
-    service.getSequenceNumber().setMetadataKey("sequence_no");
-    service.getSequenceNumber().setNumberFormat(DEFAULT_NUMBER_FORMAT);
+    service.setMetadataKey("sequence_no");
+    service.setNumberFormat(DEFAULT_NUMBER_FORMAT);
     service.setConnection(connection);
-    service.getSequenceNumber().setOverflowBehaviour(OverflowBehaviour.Continue);
+    service.setOverflowBehaviour(SequenceNumberOverflowBehaviour.Continue);
     return service;
   }
 

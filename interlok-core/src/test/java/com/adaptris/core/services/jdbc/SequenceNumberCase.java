@@ -32,7 +32,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.concurrent.TimeUnit;
 
-import com.adaptris.core.services.SequenceNumber.OverflowBehaviour;
+import com.adaptris.core.services.SequenceNumberOverflowBehaviour;
 import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -57,11 +57,11 @@ public abstract class SequenceNumberCase
   @Test
   public void testReplaceMetadata() {
     AbstractJdbcSequenceNumberService service = createService();
-    assertNull(service.getSequenceNumber().getAlwaysReplaceMetadata());
-    assertTrue(service.getSequenceNumber().alwaysReplaceMetadata());
-    service.getSequenceNumber().setAlwaysReplaceMetadata(Boolean.FALSE);
-    assertEquals(Boolean.FALSE, service.getSequenceNumber().getAlwaysReplaceMetadata());
-    assertFalse(service.getSequenceNumber().alwaysReplaceMetadata());
+    assertNull(service.getAlwaysReplaceMetadata());
+    assertTrue(service.alwaysReplaceMetadata());
+    service.setAlwaysReplaceMetadata(Boolean.FALSE);
+    assertEquals(Boolean.FALSE, service.getAlwaysReplaceMetadata());
+    assertFalse(service.alwaysReplaceMetadata());
   }
 
   @Test
@@ -109,17 +109,17 @@ public abstract class SequenceNumberCase
   @Test
   public void testMetadataKey() {
     AbstractJdbcSequenceNumberService service = createService();
-    assertNull(service.getSequenceNumber().getMetadataKey());
-    service.getSequenceNumber().setMetadataKey("fred");
-    assertEquals("fred", service.getSequenceNumber().getMetadataKey());
+    assertNull(service.getMetadataKey());
+    service.setMetadataKey("fred");
+    assertEquals("fred", service.getMetadataKey());
   }
 
   @Test
   public void testNumberFormat() {
     AbstractJdbcSequenceNumberService service = createService();
-    assertEquals("0", service.getSequenceNumber().getNumberFormat());
-    service.getSequenceNumber().setNumberFormat("000");
-    assertEquals("000", service.getSequenceNumber().getNumberFormat());
+    assertEquals("0", service.getNumberFormat());
+    service.setNumberFormat("000");
+    assertEquals("000", service.getNumberFormat());
   }
 
   @Test
@@ -132,8 +132,8 @@ public abstract class SequenceNumberCase
     catch (CoreException e) {
 
     }
-    service.getSequenceNumber().setMetadataKey("fred");
-    service.getSequenceNumber().setNumberFormat("000");
+    service.setMetadataKey("fred");
+    service.setNumberFormat("000");
     try {
       LifecycleHelper.init(service);
     }
@@ -147,7 +147,7 @@ public abstract class SequenceNumberCase
     createDatabase();
     AdaptrisMessage msg = createMessageForTests();
     AbstractJdbcSequenceNumberService service = createServiceForTests();
-    service.getSequenceNumber().setAlwaysReplaceMetadata(false);
+    service.setAlwaysReplaceMetadata(false);
     execute(service, msg);
     assertTrue(msg.containsKey(DEFAULT_METADATA_KEY));
     assertEquals("000000001", msg.getMetadataValue(DEFAULT_METADATA_KEY));
@@ -161,7 +161,7 @@ public abstract class SequenceNumberCase
     AdaptrisMessage msg = createMessageForTests();
     msg.addMetadata(DEFAULT_METADATA_KEY, "0");
     AbstractJdbcSequenceNumberService service = createServiceForTests();
-    service.getSequenceNumber().setAlwaysReplaceMetadata(true);
+    service.setAlwaysReplaceMetadata(true);
     execute(service, msg);
     assertTrue(msg.containsKey(DEFAULT_METADATA_KEY));
     assertEquals("000000015", msg.getMetadataValue(DEFAULT_METADATA_KEY));
@@ -175,7 +175,7 @@ public abstract class SequenceNumberCase
     AdaptrisMessage msg = createMessageForTests();
     msg.addMetadata(DEFAULT_METADATA_KEY, "0");
     AbstractJdbcSequenceNumberService service = createServiceForTests();
-    service.getSequenceNumber().setAlwaysReplaceMetadata(false);
+    service.setAlwaysReplaceMetadata(false);
     execute(service, msg);
     assertTrue(msg.containsKey(DEFAULT_METADATA_KEY));
     assertEquals("0", msg.getMetadataValue(DEFAULT_METADATA_KEY));
@@ -226,8 +226,8 @@ public abstract class SequenceNumberCase
     populateDatabase(DEFAULT_ID, 10000);
     AdaptrisMessage msg = createMessageForTests();
     AbstractJdbcSequenceNumberService service = createServiceForTests();
-    service.getSequenceNumber().setNumberFormat("0000");
-    service.getSequenceNumber().setOverflowBehaviour(OverflowBehaviour.ResetToOne);
+    service.setNumberFormat("0000");
+    service.setOverflowBehaviour(SequenceNumberOverflowBehaviour.ResetToOne);
     execute(service, msg);
     assertTrue(msg.containsKey(DEFAULT_METADATA_KEY));
     assertEquals("0001", msg.getMetadataValue(DEFAULT_METADATA_KEY));
@@ -240,8 +240,8 @@ public abstract class SequenceNumberCase
     populateDatabase(DEFAULT_ID, 10000);
     AdaptrisMessage msg = createMessageForTests();
     AbstractJdbcSequenceNumberService service = createServiceForTests();
-    service.getSequenceNumber().setNumberFormat("0000");
-    service.getSequenceNumber().setOverflowBehaviour(OverflowBehaviour.Continue);
+    service.setNumberFormat("0000");
+    service.setOverflowBehaviour(SequenceNumberOverflowBehaviour.Continue);
     execute(service, msg);
     assertTrue(msg.containsKey(DEFAULT_METADATA_KEY));
     assertEquals("10000", msg.getMetadataValue(DEFAULT_METADATA_KEY));
@@ -254,8 +254,8 @@ public abstract class SequenceNumberCase
     populateDatabase(DEFAULT_ID, 10000);
     AdaptrisMessage msg = createMessageForTests();
     AbstractJdbcSequenceNumberService service = createServiceForTests();
-    service.getSequenceNumber().setNumberFormat("0000");
-    service.getSequenceNumber().setOverflowBehaviour(null); // should default to continue.
+    service.setNumberFormat("0000");
+    service.setOverflowBehaviour(null); // should default to continue.
     execute(service, msg);
     assertTrue(msg.containsKey(DEFAULT_METADATA_KEY));
     assertEquals("10000", msg.getMetadataValue(DEFAULT_METADATA_KEY));
@@ -309,9 +309,9 @@ public abstract class SequenceNumberCase
     populateDatabase(DEFAULT_ID, 10000);
     AdaptrisMessage msg = createMessageForTests();
     AbstractJdbcSequenceNumberService service = createServiceForTests();
-    service.getSequenceNumber().setMaximumSequenceNumber(9999L);
-    service.getSequenceNumber().setNumberFormat("00000");
-    service.getSequenceNumber().setOverflowBehaviour(OverflowBehaviour.ResetToOne);
+    service.setMaximumSequenceNumber(9999L);
+    service.setNumberFormat("00000");
+    service.setOverflowBehaviour(SequenceNumberOverflowBehaviour.ResetToOne);
     execute(service, msg);
     assertTrue(msg.containsKey(DEFAULT_METADATA_KEY));
     assertEquals("00001", msg.getMetadataValue(DEFAULT_METADATA_KEY));
@@ -324,9 +324,9 @@ public abstract class SequenceNumberCase
     populateDatabase(DEFAULT_ID, 10000);
     AdaptrisMessage msg = createMessageForTests();
     AbstractJdbcSequenceNumberService service = createServiceForTests();
-    service.getSequenceNumber().setMaximumSequenceNumber(50000L);
-    service.getSequenceNumber().setNumberFormat("00000");
-    service.getSequenceNumber().setOverflowBehaviour(OverflowBehaviour.ResetToOne);
+    service.setMaximumSequenceNumber(50000L);
+    service.setNumberFormat("00000");
+    service.setOverflowBehaviour(SequenceNumberOverflowBehaviour.ResetToOne);
     execute(service, msg);
     assertTrue(msg.containsKey(DEFAULT_METADATA_KEY));
     assertEquals("10000", msg.getMetadataValue(DEFAULT_METADATA_KEY));
