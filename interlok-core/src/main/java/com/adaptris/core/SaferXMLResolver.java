@@ -1,12 +1,9 @@
 package com.adaptris.core;
 
-import com.adaptris.interlok.resolver.FileResolver;
 import com.adaptris.interlok.resolver.ResolverImp;
 import com.adaptris.interlok.resolver.UnresolvableException;
 import com.adaptris.interlok.types.InterlokMessage;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,10 +12,9 @@ import java.util.regex.Pattern;
  * Resolver implementation that resolves and escapes XML content.
  * <p>
  * This resolver resolves values based on the following:
- * %resolveXml{...}, and will place the result inside of CDATA tags.
+ * %asCDATA{...}, and will place the result inside of CDATA tags.
  * </p>
  */
-
 @Slf4j
 public class SaferXMLResolver extends ResolverImp
 {
