@@ -103,7 +103,7 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
   /**
    * Set the select statement to use when getting a sequence number.
    *
-   * @param stmt the update statement to set, default if not specified is {@value #DEFAULT_SELECT_STATEMENT}
+   * @param selectStatement the update statement to set, default if not specified is {@value #DEFAULT_SELECT_STATEMENT}
    */
   @Getter
   @Setter
@@ -117,7 +117,7 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
    * This statement is only executed if the configured select statement returns no rows.
    * </p>
    *
-   * @param stmt the update statement to set, default if not specified is {@value #DEFAULT_INSERT_STATEMENT}
+   * @param insertStatement the update statement to set, default if not specified is {@value #DEFAULT_INSERT_STATEMENT}
    */
   @Getter
   @Setter
@@ -128,7 +128,7 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
   /**
    * Set the update statement to be used after extracting the sequence number.
    *
-   * @param stmt the update statement to set, default if not specified is {@value #DEFAULT_UPDATE_STATEMENT}
+   * @param updateStatement the update statement to set, default if not specified is {@value #DEFAULT_UPDATE_STATEMENT}
    */
   @Getter
   @Setter
@@ -140,7 +140,7 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
    * Set the statement that will be executed to reset the sequence number when the overflow behaviour of <code>ResetToOne</code> is
    * triggered.
    *
-   * @param s the resetStatement to set, default if not specified is {@value #DEFAULT_RESET_STATEMENT}
+   * @param resetStatement the resetStatement to set, default if not specified is {@value #DEFAULT_RESET_STATEMENT}
    */
   @Getter
   @Setter
@@ -160,7 +160,7 @@ public abstract class AbstractJdbcSequenceNumberService extends JdbcService {
    * (or similar) database.
    * </p>
    *
-   * @param b true to create the database; default is false.
+   * @param createDatabase true to create the database; default is false.
    */
   @Getter
   @Setter
