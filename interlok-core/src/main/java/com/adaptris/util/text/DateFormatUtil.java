@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,8 +22,14 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 
 /**
@@ -51,13 +57,13 @@ import org.apache.commons.lang3.ObjectUtils;
  * always be used.
  * </p>
  *
- * @author lchan / $Author: lchan $
  * @see DateFormat
  */
+@NoArgsConstructor(access=AccessLevel.PRIVATE)
 public final class DateFormatUtil {
 
   // These are all the date formats we know about.
-  private static final String[] DATE_FORMATS =
+  private static final String[] KNOWN_DATE_FORMATS =
   {
       "yyyy-MM-dd'T'HH:mm:ssZ", "yyyyMMdd HH:mm:ss zzz", "yyyyMMdd HH:mm:ss",
       "yyyyMMdd", "yyyy-MM-dd HH:mm:ss zzz", "yyyy-MM-dd HH:mm:ss",
@@ -66,35 +72,41 @@ public final class DateFormatUtil {
       "dd/MM/yyyy HH:mm:ss", "dd/MM/yyyy",
   };
 
+  private static final ThreadLocal<List<SimpleDateFormat>> FORMATTERS = ThreadLocal.withInitial(
+      () -> Arrays.stream(KNOWN_DATE_FORMATS).map(DateFormatUtil::strictFormatter).collect(Collectors.toUnmodifiableList()));
+
+  private static final ThreadLocal<SimpleDateFormat> TO_STRING_FORMATTER = ThreadLocal.withInitial(
+      () -> strictFormatter(KNOWN_DATE_FORMATS[0]));
+
   /**
    * Custom date formats over and above {@link  java.text.SimpleDateFormat}.
-   * 
+   *
    */
-  public static enum CustomDateFormat {
+  public enum CustomDateFormat {
     SECONDS_SINCE_EPOCH, MILLISECONDS_SINCE_EPOCH
-  };
+  }
 
-  static enum CustomDateFormatter {
+  enum CustomDateFormatter {
 
     /**
      * A formatter using {@link  java.text.SimpleDateFormat}.
-     * 
+     *
      */
     SIMPLE() {
 
       @Override
       Date toDate(String stringRep, String format) throws ParseException {
-        return new SimpleDateFormat(format).parse(stringRep);
+        return strictFormatter(format).parse(stringRep);
       }
 
       @Override
       String toString(Date date, String format) {
-        return new SimpleDateFormat(format).format(date);
+        return strictFormatter(format).format(date);
       }
     },
     /**
      * A formatter using the number of seconds since 00:00 Jan 1 1970 GMT.
-     * 
+     *
      */
     SECONDS_SINCE_EPOCH() {
 
@@ -111,7 +123,7 @@ public final class DateFormatUtil {
     },
     /**
      * A formatter using the number of milliseconds since 00:00 Jan 1 1970 GMT.
-     * 
+     *
      */
     MILLISECONDS_SINCE_EPOCH() {
 
@@ -133,9 +145,6 @@ public final class DateFormatUtil {
 
   }
 
-  private DateFormatUtil() {
-  }
-
   /**
    * Return a date object from a given string. If the date could not be parsed,
    * the current time is used.
@@ -150,16 +159,21 @@ public final class DateFormatUtil {
   /**
    * Return a date object from a given string returning a default if it could not.
    *
-   * @param s the date in string format
+   * @param dateStr the date in string format
    * @param defaultDate the default Date (which could be null)
    * @return the date
    */
-  public static Date parse(String s, Date defaultDate) {
-    Date date = useDefaultFormatter(s);
-    int i = 0;
-    while (date == null && i < DATE_FORMATS.length) {
-      date = getDate(s, DATE_FORMATS[i++]);
+  public static Date parse(final String dateStr, Date defaultDate) {
+    // We could have more optional chaining, there comes a point where easier to read trumps
+    // lambda awesomeness.
+    if (null == dateStr) {
+      return defaultDate;
     }
+    // Lambda styles, is this more or less readable than doing a while loop?
+    Date date = Optional.ofNullable(useDefaultFormatter(dateStr)).orElse(
+        FORMATTERS.get().stream().map((format) -> format.parse(dateStr, new ParsePosition(0)))
+            .filter(Objects::nonNull).findFirst().orElse(null)
+    );
     return ObjectUtils.defaultIfNull(date, defaultDate);
   }
 
@@ -171,14 +185,12 @@ public final class DateFormatUtil {
    * @return the formatted string yyyy-MM-dd'T'HH:mm:ssZ
    */
   public static String format(Date d) {
-    String format = DATE_FORMATS[0];
-    SimpleDateFormat sdf = new SimpleDateFormat(format);
-    return sdf.format(d);
+    return TO_STRING_FORMATTER.get().format(d);
   }
 
   /**
    * Convert a date to a String.
-   * 
+   *
    * @param d the date to format.
    * @param format the format which might be one of {@link CustomDateFormat}
    * @return a string matching the format.
@@ -189,7 +201,7 @@ public final class DateFormatUtil {
 
   /**
    * Convert a string into a date.
-   * 
+   *
    * @param stringRep the string to convert.
    * @param format the format of the date, which might be one of {@link CustomDateFormat}
    * @return the {@link java.util.Date}
@@ -199,32 +211,27 @@ public final class DateFormatUtil {
     return getFormatter(format).toDate(stringRep, format);
   }
 
-
   private static Date useDefaultFormatter(String str) {
-    return Optional.ofNullable(str).map((s) -> DateFormat.getDateTimeInstance().parse(s, new ParsePosition(0))).orElse(null);
-  }
-
-  private static Date getDate(String s, String format) {
-    Date d = null;
-    SimpleDateFormat sdf = new SimpleDateFormat(format);
-    try {
-      d = sdf.parse(s);
-    }
-    catch (ParseException | NullPointerException e) {
-      d = null;
-    }
-    return d;
+    return DateFormat.getDateTimeInstance().parse(str, new ParsePosition(0));
   }
 
   private static CustomDateFormatter getFormatter(String pattern) {
-    CustomDateFormatter format = CustomDateFormatter.SIMPLE;
     try {
-      format = CustomDateFormatter.valueOf(CustomDateFormat.valueOf(pattern).name());
+      return CustomDateFormatter.valueOf(CustomDateFormat.valueOf(pattern).name());
     }
     catch (IllegalArgumentException e) {
-
+      return CustomDateFormatter.SIMPLE;
     }
-    return format;
   }
 
+  /** Return a {@code SimpleDateFormat} instance that is not lenient.
+   *
+   * @param pattern the pattern
+   * @return a SimpleDateFormat.
+   */
+  public static SimpleDateFormat strictFormatter(String pattern) {
+    SimpleDateFormat f = new SimpleDateFormat(pattern);
+    f.setLenient(false);
+    return f;
+  }
 }

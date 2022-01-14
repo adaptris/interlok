@@ -1,12 +1,12 @@
 /*
  * Copyright 2020 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,7 @@
 
 package com.adaptris.core;
 
+import com.adaptris.util.text.DateFormatUtil;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.concurrent.ThreadLocalRandom;
@@ -29,13 +30,13 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Implementation of {@linkplain Poller} which polls at a random interval with a delay between each execution of up-to the
  * configured poll interval (in ms).
- * 
+ *
  * <p>
  * This implementation is of marginal use, and is best used to generate messages at pseudo-random intervals.
  * </p>
- * 
+ *
  * @config random-interval-poller
- * 
+ *
  */
 @XStreamAlias("random-interval-poller")
 public class RandomIntervalPoller extends FixedIntervalPoller {
@@ -55,7 +56,7 @@ public class RandomIntervalPoller extends FixedIntervalPoller {
       pollerTask = executor.schedule(new MyPollerTask(), delay, TimeUnit.MILLISECONDS);
       Calendar currentTime = Calendar.getInstance();
       currentTime.add(Calendar.MILLISECOND, (int)delay);
-      SimpleDateFormat approxFormat = new SimpleDateFormat("HH:mm");
+      SimpleDateFormat approxFormat = DateFormatUtil.strictFormatter("HH:mm");
       log.trace("Next Execution scheduled in {} approx {}", DurationFormatUtils.formatDurationWords(delay, true, true), approxFormat.format(currentTime.getTime()));
     }
   }

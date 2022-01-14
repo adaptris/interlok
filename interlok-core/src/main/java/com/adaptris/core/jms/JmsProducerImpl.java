@@ -22,6 +22,7 @@ import static com.adaptris.core.jms.JmsConstants.JMS_EXPIRATION;
 import static com.adaptris.core.jms.JmsConstants.JMS_PRIORITY;
 import static com.adaptris.core.jms.NullCorrelationIdSource.defaultIfNull;
 
+import com.adaptris.util.text.DateFormatUtil;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -136,7 +137,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
     ISO8601 {
       @Override
       Date convert(String s) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat(EXPIRATION_DATE_FORMAT);
+        SimpleDateFormat sdf = DateFormatUtil.strictFormatter(EXPIRATION_DATE_FORMAT);
         return sdf.parse(s);
       }
 
