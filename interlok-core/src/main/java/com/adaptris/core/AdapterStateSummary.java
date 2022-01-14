@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,6 +17,8 @@
 package com.adaptris.core;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+
+import com.adaptris.util.text.DateFormatUtil;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import com.adaptris.core.util.Args;
@@ -28,13 +30,13 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * <p>
  * Summary of the state of an {@link Adapter} and associated {@link com.adaptris.core.Channel}s
  * </p>
- * 
+ *
  * @config adapter-state-summary
  */
 @XStreamAlias("adapter-state-summary")
 public class AdapterStateSummary {
 
-  private transient final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+  private transient final SimpleDateFormat DATE_FORMAT = DateFormatUtil.strictFormatter("yyyy-MM-dd'T'HH:mm:ssZ");
 
   private String lastStartTime;
   private String lastStopTime;
@@ -53,7 +55,7 @@ public class AdapterStateSummary {
    * <p>
    * Utility constructor that summarises the current state of the passed <code>Adapter</code>.
    * </p>
-   * 
+   *
    * @param adapter the <code>Adapter</code> to report the state of
    */
   public AdapterStateSummary(Adapter adapter) {
@@ -70,7 +72,7 @@ public class AdapterStateSummary {
    * <p>
    * Sets the state of the <code>Adapter</code>.
    * </p>
-   * 
+   *
    * @param uniqueId the unique ID, may not be null or empty
    * @param state the state, may not be null or empty
    */
@@ -86,7 +88,7 @@ public class AdapterStateSummary {
    * <p>
    * Sets the state of the <code>Adapter</code>.
    * </p>
-   * 
+   *
    * @param state a <code>KeyValuePair</code> of state against unique ID
    */
   public void setAdapterState(KeyValuePair state) {
@@ -100,7 +102,7 @@ public class AdapterStateSummary {
    * <p>
    * Returns the state of the <code>Adapter</code>.
    * </p>
-   * 
+   *
    * @return the state of the <code>Adapter</code>
    */
   public KeyValuePair getAdapterState() {
@@ -112,7 +114,7 @@ public class AdapterStateSummary {
    * Adds the state of a <code>Channel</code> to the internal store. If state for the passed unique ID has already been stored it
    * will be over-written. Non-uniquely identified <code>Channel</code>s are ignored.
    * </p>
-   * 
+   *
    * @param uniqueId the unique ID of the <code>Channel</code>
    * @param state the state may not be null
    */
@@ -128,7 +130,7 @@ public class AdapterStateSummary {
    * <p>
    * Adds the state of a <code>Channel</code> to the internal store.
    * </p>
-   * 
+   *
    * @param state the state of the <code>Channel</code> to add
    */
   public void addChannelState(KeyValuePair state) {

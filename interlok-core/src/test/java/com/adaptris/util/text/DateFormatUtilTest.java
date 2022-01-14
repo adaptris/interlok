@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,6 +17,7 @@
 package com.adaptris.util.text;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -50,6 +51,22 @@ public class DateFormatUtilTest {
       assertNotNull(parsedDate);
       assertTrue(now + " should be after " + parsedDate, now.after(parsedDate));
     }
+  }
+
+  @Test
+  public void testLenientParsing() throws Exception {
+    SimpleDateFormat lenientFormatter = new SimpleDateFormat("yyyyMMdd");
+    // Because lenient, this will parse, but won't be the date we expect.
+    Date lenientDate = lenientFormatter.parse("2021-08-18");
+    String lenient = lenientFormatter.format(lenientDate);
+    assertNotEquals("20210818", lenient);
+
+    // This should skip past the yyyyMMdd parser, and only hit the yyyy-MM-dd parser.
+    Date strictDate = DateFormatUtil.parse("2021-08-18");
+    String strict = lenientFormatter.format(strictDate);
+    assertEquals("20210818", strict);
+    assertNotEquals(lenient, strict);
+
   }
 
   @Test

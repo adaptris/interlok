@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,7 @@
 
 package com.adaptris.ftp;
 
+import com.adaptris.util.text.DateFormatUtil;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
@@ -45,7 +46,7 @@ import com.adaptris.util.FifoMutexLock;
 /**
  * Base implementation of {@link FileTransferClient} that uses the apache
  * commons net FTP implementation.
- * 
+ *
  */
 public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTransferClientImp implements FtpFileTransferClient {
 
@@ -71,7 +72,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
 
   /**
    * Constructor
-   * 
+   *
    * @param remoteHost the remote hostname
    * @param port connection port
    * @param timeout connection timeout
@@ -113,7 +114,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
 
   /**
    * Create the base commons net client.
-   * 
+   *
    * @return the actual FtpClient implementation that will be used.
    */
   protected abstract T createFTPClient();
@@ -193,7 +194,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
 
   /**
    * Get data from a remote file
-   * 
+   *
    * @param destStream output target data stream
    * @param remoteFile file to be read on the server
    */
@@ -212,7 +213,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
 
   /**
    * Get data as a byte array from a server file
-   * 
+   *
    * @param remoteFile file to be read on the server
    */
   @Override
@@ -286,7 +287,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
 
   /**
    * delete a file on the server
-   * 
+   *
    * @param remoteFile to be deleted
    */
   @Override
@@ -304,7 +305,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
 
   /**
    * rename a file on the server
-   * 
+   *
    * @param from file to be renamed
    * @param to new name for file
    */
@@ -324,7 +325,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
 
   /**
    * remove a directory from the server
-   * 
+   *
    * @param dir directory name
    */
   @Override
@@ -343,7 +344,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
 
   /**
    * create a directory on the server
-   * 
+   *
    * @param dir directory name
    */
   @Override
@@ -361,7 +362,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
 
   /**
    * change directory on the server
-   * 
+   *
    * @param dir directory name
    */
   @Override
@@ -421,7 +422,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
 
   /**
    * Set transfer type eg. ASCII, BINARY
-   * 
+   *
    * @param ftpFileType FILE_TYPE constant from the Apache commons net FtpClient
    *          class
    */
@@ -471,11 +472,11 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
 
   /**
    * Set the FTP Server timezone handler for modification times.
-   * 
+   *
    * If not explicitly set, then the server is assumed to be in the same
    * timezone as the client; this could lead to incorrect modification times
    * being reported.
-   * 
+   *
    * @param tz the handler.
    */
   public void setServerTimezone(TimeZone tz) {
@@ -493,7 +494,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
 
   /**
    * Get the type of the OS at the server
-   * 
+   *
    * @return the type of server OS
    * @throws IOException if a comms error occurs
    */
@@ -512,7 +513,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
 
   /**
    * Get the current working directory on the server
-   * 
+   *
    * @return the directory
    * @throws IOException if a comms error occurs
    */
@@ -537,7 +538,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
     private transient SimpleDateFormat tsFormat;
 
     TimezoneDateHandler(TimeZone tz) {
-      tsFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+      tsFormat = DateFormatUtil.strictFormatter("yyyyMMddHHmmss");
       if (tz != null) {
         tsFormat.setTimeZone(tz);
       }
@@ -566,10 +567,10 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
    * Validate the response the host has supplied against the expected reply. If
    * we get an unexpected reply we throw an exception, setting the message to
    * that returned by the FTP server
-   * 
+   *
    * @param reply the entire reply string we received
    * @param expectedReplyCode the reply we expected to receive
-   * 
+   *
    */
   private Reply validateReply(String reply, String expectedReplyCode) throws IOException, FileTransferException {
 

@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,7 +36,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Builds a DateFormat instance for use with {@link ReformatDateService} and {@link AddTimestampMetadataService}.
- * 
+ *
  * @config date-format-builder
  */
 @XStreamAlias("date-format-builder")
@@ -97,7 +97,11 @@ public class DateFormatBuilder {
   private SimpleDateFormat createWithLocale(AdaptrisMessage msg) {
     String language = msg.resolve(getLanguageTag());
     String format = msg.resolve(getFormat());
-    return !isBlank(language) ? new SimpleDateFormat(format, Locale.forLanguageTag(language)) : new SimpleDateFormat(format);
+    SimpleDateFormat formatter =
+        !isBlank(language) ? new SimpleDateFormat(format, Locale.forLanguageTag(language))
+            : new SimpleDateFormat(format);
+    formatter.setLenient(false);
+    return formatter;
   }
 
   private DateFormatter withTimeZone(SimpleDateFormat format, String id) {
@@ -111,7 +115,7 @@ public class DateFormatBuilder {
 
   /**
    * Set the format.
-   * 
+   *
    * @param format the dateformat, default is {@value #DEFAULT_DATE_FORMAT} if not specified.
    */
   public void setFormat(String format) {
@@ -129,7 +133,7 @@ public class DateFormatBuilder {
 
   /**
    * Set the language tag for the {@link java.util.Locale} which is resolved via {@link Locale#forLanguageTag(String)}.
-   * 
+   *
    * @param locale the locale using the IETF BCP 47 language tag string e.g. {@code fr-FR} or {@code en-GB}.
    * @see Locale#forLanguageTag(String)
    */
@@ -148,7 +152,7 @@ public class DateFormatBuilder {
 
   /**
    * Set the timezone
-   * 
+   *
    * @param tz the timezone e.g. {@code UTC} or {@code GMT}.
    * @see java.util.TimeZone#getTimeZone(String)
    */
