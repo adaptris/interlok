@@ -212,8 +212,7 @@ public final class DateFormatUtil {
   }
 
   private static Date useDefaultFormatter(String str) {
-    return Optional.ofNullable(DateFormat.getDateTimeInstance().parse(str, new ParsePosition(0)))
-        .orElse(null);
+    return DateFormat.getDateTimeInstance().parse(str, new ParsePosition(0));
   }
 
   private static CustomDateFormatter getFormatter(String pattern) {
