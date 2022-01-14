@@ -231,6 +231,11 @@ public final class DateFormatUtil {
     return format;
   }
 
+  /** Return a {@code SimpleDateFormat} instance that is not lenient.
+   *
+   * @param pattern the pattern
+   * @return a SimpleDateFormat.
+   */
   public static SimpleDateFormat strictFormatter(String pattern) {
     SimpleDateFormat f = new SimpleDateFormat(pattern);
     f.setLenient(false);
