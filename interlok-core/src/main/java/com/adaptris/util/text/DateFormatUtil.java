@@ -24,10 +24,12 @@ import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 
 /**
@@ -57,6 +59,7 @@ import org.apache.commons.lang3.ObjectUtils;
  *
  * @see DateFormat
  */
+@NoArgsConstructor(access=AccessLevel.PRIVATE)
 public final class DateFormatUtil {
 
   // These are all the date formats we know about.
@@ -70,7 +73,7 @@ public final class DateFormatUtil {
   };
 
   private static final ThreadLocal<List<SimpleDateFormat>> FORMATTERS = ThreadLocal.withInitial(
-      () -> Arrays.stream(KNOWN_DATE_FORMATS).map((p) -> strictFormatter(p)).collect(Collectors.toUnmodifiableList()));
+      () -> Arrays.stream(KNOWN_DATE_FORMATS).map(DateFormatUtil::strictFormatter).collect(Collectors.toUnmodifiableList()));
 
   private static final ThreadLocal<SimpleDateFormat> TO_STRING_FORMATTER = ThreadLocal.withInitial(
       () -> strictFormatter(KNOWN_DATE_FORMATS[0]));
@@ -79,11 +82,11 @@ public final class DateFormatUtil {
    * Custom date formats over and above {@link  java.text.SimpleDateFormat}.
    *
    */
-  public static enum CustomDateFormat {
+  public enum CustomDateFormat {
     SECONDS_SINCE_EPOCH, MILLISECONDS_SINCE_EPOCH
-  };
+  }
 
-  static enum CustomDateFormatter {
+  enum CustomDateFormatter {
 
     /**
      * A formatter using {@link  java.text.SimpleDateFormat}.
@@ -142,9 +145,6 @@ public final class DateFormatUtil {
 
   }
 
-  private DateFormatUtil() {
-  }
-
   /**
    * Return a date object from a given string. If the date could not be parsed,
    * the current time is used.
@@ -159,16 +159,21 @@ public final class DateFormatUtil {
   /**
    * Return a date object from a given string returning a default if it could not.
    *
-   * @param s the date in string format
+   * @param dateStr the date in string format
    * @param defaultDate the default Date (which could be null)
    * @return the date
    */
-  public static Date parse(String s, Date defaultDate) {
-    Date date = useDefaultFormatter(s);
-    Iterator<SimpleDateFormat> itr = FORMATTERS.get().iterator();
-    while (date == null && itr.hasNext()) {
-      date = parse(s, itr.next());
+  public static Date parse(final String dateStr, Date defaultDate) {
+    // We could have more optional chaining, there comes a point where easier to read trumps
+    // lambda awesomeness.
+    if (null == dateStr) {
+      return defaultDate;
     }
+    // Lambda styles, is this more or less readable than doing a while loop?
+    Date date = Optional.ofNullable(useDefaultFormatter(dateStr)).orElse(
+        FORMATTERS.get().stream().map((format) -> format.parse(dateStr, new ParsePosition(0)))
+            .filter(Objects::nonNull).findFirst().orElse(null)
+    );
     return ObjectUtils.defaultIfNull(date, defaultDate);
   }
 
@@ -207,28 +212,17 @@ public final class DateFormatUtil {
   }
 
   private static Date useDefaultFormatter(String str) {
-    return Optional.ofNullable(str).map((s) -> DateFormat.getDateTimeInstance().parse(s, new ParsePosition(0)))
+    return Optional.ofNullable(DateFormat.getDateTimeInstance().parse(str, new ParsePosition(0)))
         .orElse(null);
   }
 
-  private static Date parse(String s, SimpleDateFormat format) {
-    try {
-      return format.parse(s);
-    }
-    catch (Exception e) {
-    }
-    return null;
-  }
-
   private static CustomDateFormatter getFormatter(String pattern) {
-    CustomDateFormatter format = CustomDateFormatter.SIMPLE;
     try {
-      format = CustomDateFormatter.valueOf(CustomDateFormat.valueOf(pattern).name());
+      return CustomDateFormatter.valueOf(CustomDateFormat.valueOf(pattern).name());
     }
     catch (IllegalArgumentException e) {
-
+      return CustomDateFormatter.SIMPLE;
     }
-    return format;
   }
 
   /** Return a {@code SimpleDateFormat} instance that is not lenient.

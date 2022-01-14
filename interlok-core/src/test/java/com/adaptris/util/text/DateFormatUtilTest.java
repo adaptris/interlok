@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -44,6 +45,7 @@ public class DateFormatUtilTest {
   public void testDateParser() {
     Date dateToParse = new Date(System.currentTimeMillis() - 3600 * 48);
     Date now = new Date(System.currentTimeMillis());
+    assertNotNull(DateFormatUtil.parse(DateFormat.getDateTimeInstance().format(now), null));
     for (int i=0; i < DATE_FORMATS.length; i++) {
       SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMATS[i]);
       String datetime = sdf.format(dateToParse);
