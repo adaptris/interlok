@@ -298,7 +298,7 @@ public class BootstrapProperties extends Properties {
       rc = false;
     }
     if (DBG) {
-      log.trace("[{}] {}", u.toString(), rc ? "found" : "not found");
+      log.trace("[{}] {}", u, rc ? "found" : "not found");
     }
     return rc;
   }

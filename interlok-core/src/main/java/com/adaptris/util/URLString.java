@@ -16,6 +16,9 @@
 
 package com.adaptris.util;
 
+import com.adaptris.core.management.Constants;
+
+import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import java.io.File;
 import java.io.Serializable;
@@ -47,8 +50,6 @@ import javax.mail.URLName;
 public class URLString implements Serializable {
 
   private static final long serialVersionUID = -4356146361589831204L;
-
-  private static final String PROTOCOL_FILE = "file";
 
   private transient URLName urlProxy;
 
@@ -261,13 +262,17 @@ public class URLString implements Serializable {
    * Constructs a URL from the URLString.
    */
   public URL getURL() throws MalformedURLException {
-    if (PROTOCOL_FILE.equalsIgnoreCase(getProtocol()) || isEmpty(getProtocol())) {
+    String protocol = getProtocol();
+    if (isEmpty(protocol)) {
+      protocol = Constants.PROTOCOL_FILE;
+    }
+    if (Constants.PROTOCOL_FILE.equalsIgnoreCase(protocol)) {
       // Cope with file:///./path/to/my/thing and perhaps ./path/to/my/thing
-      return new URL(getProtocol(), getHost(), getPort(), getFile());
+      return new URL(protocol, getHost(), getPort(), getFile());
     }
     // Otherwise add a / prefix if it doesn't already exist so that http://my.server/path/to/my/thing
     // is a valid URL
-    return new URL(getProtocol(), getHost(), getPort(), slashPrefix(getFile()));
+    return new URL(protocol, getHost(), getPort(), slashPrefix(getFile()));
   }
 
 
