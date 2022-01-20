@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The filter only accepts the file if all the underlying filters accept the file, thus this
  * represents an implicit AND condition. So for example we would use
- * <code>SizeGT=4096__@@__Perl=.*\.xml</code> to match all files ending with <code>.xml</code> whose
+ * <code>SizeGT=4096__@@__Regex=.*\.xml</code> to match all files ending with <code>.xml</code> whose
  * size is greater than 4096 bytes
  * </p>
  *
