@@ -6,7 +6,7 @@ ext {
   activeMqVersion='5.16.3'
   bouncyCastleVersion='1.70'
   mysqlDriverVersion='8.0.28'
-  slf4jVersion = '1.7.33'
+  slf4jVersion = '1.7.35'
   mockitoVersion = '4.2.0'
   jschVersion = '0.1.72'
   mssqlDriverVersion = '9.2.1.jre8'
