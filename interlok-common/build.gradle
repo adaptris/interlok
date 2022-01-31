@@ -12,7 +12,7 @@ ext {
 dependencies {
 
   api project(':interlok-core-apt')
-  api ("com.thoughtworks.xstream:xstream:1.4.18")
+  api ("com.thoughtworks.xstream:xstream:1.4.19")
   api ("commons-io:commons-io:2.11.0")
   api ("commons-net:commons-net:3.8.0")
   api ("commons-pool:commons-pool:1.6")
