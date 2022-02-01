@@ -18,7 +18,6 @@ package com.adaptris.util;
 
 import com.adaptris.core.management.Constants;
 
-import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import java.io.File;
 import java.io.Serializable;
@@ -259,7 +258,7 @@ public class URLString implements Serializable {
   }
 
   /**
-   * Constructs a URL from the URLString.
+   * Constructs a URL from the URLString. If the protocol is an empty string or null the file protocol will be used.
    */
   public URL getURL() throws MalformedURLException {
     String protocol = getProtocol();
