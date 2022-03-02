@@ -30,11 +30,9 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
-import com.adaptris.core.BaseCase;
 import com.adaptris.core.stubs.TempFileUtils;
 import com.adaptris.util.GuidGenerator;
 
-@SuppressWarnings("deprecation")
 public abstract class FtpCase extends com.adaptris.interlok.junit.scaffolding.BaseCase {
   protected static final String FILE_TEXT = "The quick brown fox jumps over the lazy dog";
 
@@ -400,7 +398,7 @@ public abstract class FtpCase extends com.adaptris.interlok.junit.scaffolding.Ba
 
   protected void initialiseConfig() throws IOException {
     if (config == null) {
-      config = BaseCase.PROPERTIES;
+      config = PROPERTIES;
     }
     if (config == null)
       throw new IOException("No Configuration available");

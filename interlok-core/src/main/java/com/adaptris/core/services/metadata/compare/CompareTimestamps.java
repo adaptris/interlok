@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,6 +22,7 @@ import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.util.text.DateFormatUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 import java.text.ParseException;
@@ -31,17 +32,15 @@ import java.util.Date;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
- * 
+ *
  * Used with {@link MetadataComparisonService}.
- * 
+ *
  * <p>
  * Compares two dates using {@link Date#compareTo(Date)}. The result will be the result of that operation as a string so effectively
  * {@code -1, 0, or 1}.
  * </p>
- * 
+ *
  * @config metadata-compare-timestamps
- * @author lchan
- * 
  */
 @XStreamAlias("metadata-compare-timestamps")
 @AdapterComponent
@@ -91,7 +90,7 @@ public class CompareTimestamps extends ComparatorImpl {
 
   /**
    * Set the date format to parse the metadata values.
-   * 
+   *
    * @param f the dateFormat to set, the default is {@code yyyy-MM-dd'T'HH:mm:ssZ} if not specified.
    */
   public void setDateFormat(String f) {
@@ -108,7 +107,7 @@ public class CompareTimestamps extends ComparatorImpl {
   }
 
   private int compareFormattedDates(String a, String b) throws ParseException {
-    SimpleDateFormat sdf = new SimpleDateFormat(dateFormat());
+    SimpleDateFormat sdf = DateFormatUtil.strictFormatter(dateFormat());
     Date firstDate = sdf.parse(a);
     Date secondDate = sdf.parse(b);
     return firstDate.compareTo(secondDate);

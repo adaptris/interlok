@@ -1,17 +1,17 @@
 plugins {
   // Manage optional dependencies in maven pom.
   id 'nebula.optional-base' version '7.0.0' apply false
-  id 'com.github.spotbugs' version '4.7.9' apply false
+  id 'com.github.spotbugs' version '5.0.5' apply false
   id "org.sonarqube" version '3.3' apply false
-  id 'org.owasp.dependencycheck' version '6.5.0.1' apply false
-  id "io.freefair.lombok" version "6.2.0" apply false
+  id 'org.owasp.dependencycheck' version '6.5.3' apply false
+  id "io.freefair.lombok" version "6.3.0" apply false
   // id 'org.kordamp.gradle.jdeps' version '0.12.0' apply false
   id "org.gradle.test-retry" version "1.3.1" apply false
 }
 
 ext {
-  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '4.3-SNAPSHOT'
-  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '4.3-SNAPSHOT'
+  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '4.4-SNAPSHOT'
+  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '4.4-SNAPSHOT'
   nexusBaseUrl = project.hasProperty('nexusBaseUrl') ? project.getProperty('nexusBaseUrl') : 'https://nexus.adaptris.net/nexus'
   mavenPublishUrl = project.hasProperty('mavenPublishUrl') ? project.getProperty('mavenPublishUrl') : nexusBaseUrl + '/content/repositories/snapshots'
   javadocsBaseUrl = nexusBaseUrl + "/content/sites/javadocs/com/adaptris"
@@ -140,10 +140,6 @@ subprojects { subproject ->
 
   }
 
-  dependencies {
-    mavenDeploy ("org.apache.maven.wagon:wagon-http:3.4.3")
-  }
-
   configurations.all {
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
   }
@@ -159,27 +155,17 @@ subprojects { subproject ->
     check.dependsOn jacocoTestReport
   }
 
-  sourceSets {
-    main {
-      output.dir(versionDir, builtBy: 'generateVersion')
-    }
-  }
-
-  // Generate the META-INF/adaptris-version file
-  task generateVersion {
-    doLast {
-      def versionFile = new File(new File(versionDir, 'META-INF'), 'adaptris-version')
-      versionFile.getParentFile().mkdirs()
-      ant.propertyfile(file: versionFile) {
-        entry(key: 'component.name', value: componentName)
-        entry(key: 'component.description', value: componentDesc)
-        entry(key: 'build.version', value: project.version)
-        entry(key: 'groupId', value: project.group)
-        entry(key: 'artifactId', value: project.name)
-        entry(key: 'build.date', value: new Date().format('yyyy-MM-dd'))
-        entry(key: 'build.info', value: buildDetails.buildInfo())
-      }
-    }
+  def generateVersionFile = tasks.register('generateVersionFile', WriteProperties) {
+    group = 'Build'
+    description = 'Generate Interlok version information'
+    outputFile file('src/main/resources/META-INF/adaptris-version')
+    property 'component.name', componentName
+    property 'component.description', componentDesc
+    property 'build.version', project.version
+    property 'groupId', project.group
+    property 'artifactId', project.name
+    property 'build.date', new Date().format('yyyy-MM-dd')
+    property 'build.info', buildDetails.buildInfo()
   }
 
   jar {
@@ -203,20 +189,16 @@ subprojects { subproject ->
     classpath = project.sourceSets.main.compileClasspath
   }
 
-
   spotbugsMain {
     effort = "max"
     reportLevel = "high"
-    // showProgress = "true"
-    effort = "max"
-    // Ignore failures?
-    // ignoreFailures = false
     reports {
       xml {
-        enabled = false
+        required.set(false)
       }
       html {
-        enabled = true
+        required.set(true)
+        stylesheet = 'default.xsl'
       }
     }
     includeFilter = new File("$rootDir/gradle/spotbugs-filter.xml")
@@ -238,4 +220,5 @@ subprojects { subproject ->
     }
   }
 
+  processResources.dependsOn generateVersionFile
 }

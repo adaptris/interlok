@@ -1,7 +1,7 @@
 ext {
   componentName='Interlok Core/Bootstrap'
   componentDesc="Wrapper around spring-boot-loader using PropertyLauncher to bootrap Interlok"
-  springBootLoaderVersion='2.5.6'
+  springBootLoaderVersion='2.6.3'
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 }
 
@@ -84,10 +84,10 @@ publishing {
       pom.withXml {
         asNode().appendNode("name", componentName)
         asNode().appendNode("description", componentDesc)
+		asNode().appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
         def properties = asNode().appendNode("properties")
         properties.appendNode("target", "3.8.0+")
         properties.appendNode("license", "false")
-        properties.appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
         properties.appendNode("readme", "https://github.com/adaptris/interlok/raw/develop/README.md")
         properties.appendNode("repository", "https://github.com/adaptris/interlok")
       }

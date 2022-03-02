@@ -26,11 +26,13 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.ExceptionHelper;
 
+@Slf4j
 public class ConfigPreProcessors extends AbstractCollection<ConfigPreProcessor> {
 
   private List<ConfigPreProcessor> preProcessors;
@@ -53,6 +55,7 @@ public class ConfigPreProcessors extends AbstractCollection<ConfigPreProcessor> 
       String xml = IOUtils.toString(inputStream, Charset.defaultCharset());
       return this.process(xml);
     } catch (Exception ex) {
+      log.error("Could not read from/find XML configuration file : {} ", urlToXml.getPath());
       throw ExceptionHelper.wrapCoreException(ex);
     }
   }

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,7 @@
 
 package com.adaptris.transform;
 
+import com.adaptris.util.text.DateFormatUtil;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -24,7 +25,7 @@ import com.adaptris.util.text.Justify;
 public class MappingUtils {
   /**
    * This method can be called to pad a value out to a given length.
-   * 
+   *
    * @deprecated use {@link #leftJust(String, int)}or
    *             {@link #rightJust(String, int)}
    * @param input - value to be padded out
@@ -80,7 +81,7 @@ public class MappingUtils {
 
   /**
    * Get the current system date.
-   * 
+   *
    * @return the date in yyyyMMdd format
    */
   public static String getSystemDate() {
@@ -89,7 +90,7 @@ public class MappingUtils {
 
   /**
    * Get the current system time.
-   * 
+   *
    * @return the time in HH:mm:ss format.
    */
   public static String getSystemTime() {
@@ -98,7 +99,7 @@ public class MappingUtils {
 
   /**
    * Get the system date and time.
-   * 
+   *
    * @return the date and time in "yyyyMMdd HH:mm"
    */
   public static String getSystemDateTime() {
@@ -106,7 +107,7 @@ public class MappingUtils {
   }
 
   private static String getFormattedDate(String format) {
-    SimpleDateFormat sdf = new SimpleDateFormat(format);
+    SimpleDateFormat sdf = DateFormatUtil.strictFormatter(format);
     return sdf.format(new Date());
   }
 
@@ -116,10 +117,10 @@ public class MappingUtils {
    * This method returns the smaller of two string representations of numbers.
    * All non-numeric characters are removed during comparison but the original
    * string is returned.
-   * 
+   *
    * Example: 123xxx01 and 23+42 would be compared as 12301 and 2342
    * </p>
-   * 
+   *
    * @param one - the first value
    * @param two - the second value
    */
@@ -139,10 +140,10 @@ public class MappingUtils {
    * This method returns the larger of two string representations of numbers.
    * All non-numeric characters are removed during comparison but the original
    * string is returned.
-   * 
+   *
    * Example: 123xxx01 and 23+42 would be compared as 12301 and 2342
    * </p>
-   * 
+   *
    * @param one - the first value
    * @param two - the second value
    */
@@ -163,7 +164,7 @@ public class MappingUtils {
    * dates must be in either of the following formats: yyyyMMdd (e.g. 20011225)
    * yyyyMMdd HH:mm (e.g. 20011225 12:01)
    * </p>
-   * 
+   *
    * @param one - the first date
    * @param two - the second date
    */
@@ -185,7 +186,7 @@ public class MappingUtils {
    * dates must be in either of the following formats: yyyyMMdd (e.g. 20011225)
    * yyyyMMdd HH:mm (e.g. 20011225 12:01)
    * </p>
-   * 
+   *
    * @param one - the first date
    * @param two - the second date
    */

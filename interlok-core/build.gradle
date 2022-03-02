@@ -4,11 +4,11 @@ ext {
   componentName='Interlok Core/Base'
   componentDesc="The Core Interlok framework component; this is your must have"
   activeMqVersion='5.16.3'
-  bouncyCastleVersion='1.69'
-  mysqlDriverVersion='8.0.27'
-  slf4jVersion = '1.7.32'
-  mockitoVersion = '4.0.0'
-  jschVersion = '0.1.69'
+  bouncyCastleVersion='1.70'
+  mysqlDriverVersion='8.0.28'
+  slf4jVersion = '1.7.35'
+  mockitoVersion = '4.3.1'
+  jschVersion = '0.1.72'
   mssqlDriverVersion = '9.2.1.jre8'
   derbyDriverVersion = '10.15.2.0'
 
@@ -52,7 +52,7 @@ dependencies {
   api project(':interlok-core-apt')
   api project(':interlok-common')
 
-  api ("com.thoughtworks.xstream:xstream:1.4.18")
+  api ("com.thoughtworks.xstream:xstream:1.4.19")
   api ("org.codehaus.jettison:jettison:1.2")
   api ("io.github.classgraph:classgraph:4.8.116")
   api ("net.jodah:expiringmap:0.5.10")
@@ -91,9 +91,9 @@ dependencies {
   api ("org.quartz-scheduler:quartz:2.3.2") {
     exclude group: "com.zaxxer", module: "HikariCP-java7"
   }
-  api ("com.zaxxer:HikariCP:5.0.0")
+  api ("com.zaxxer:HikariCP:5.0.1")
   api ("net.sf.saxon:Saxon-HE:10.6")
-  api ("xerces:xercesImpl:2.12.1")
+  api ("xerces:xercesImpl:2.12.2")
   api ("com.mchange:c3p0:0.9.5.5")
   api ("org.apache-extras.beanshell:bsh:2.0b6")
 
@@ -103,7 +103,7 @@ dependencies {
   api ("org.apache.derby:derbytools:$derbyDriverVersion")
 
   testImplementation ("junit:junit:4.13.2")
-  testImplementation ("org.apache.activemq:artemis-jms-server:2.19.0")
+  testImplementation ("org.apache.activemq:artemis-jms-server:2.20.0")
   testImplementation ("oro:oro:2.0.8")
   testImplementation ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
 
@@ -114,7 +114,7 @@ dependencies {
   testImplementation ("org.apache.activemq:activemq-kahadb-store:$activeMqVersion")
   testImplementation ("org.apache.activemq.protobuf:activemq-protobuf:1.1")
 
-  testImplementation ("org.jruby:jruby-complete:9.3.1.0")
+  testImplementation ("org.jruby:jruby-complete:9.3.3.0")
   testImplementation ("org.mockftpserver:MockFtpServer:3.0.0")
   testImplementation ("org.mockito:mockito-core:$mockitoVersion")
   testImplementation ("org.mockito:mockito-inline:$mockitoVersion")
@@ -316,10 +316,10 @@ publishing {
       pom.withXml {
         asNode().appendNode("name", componentName)
         asNode().appendNode("description", componentDesc)
+		asNode().appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
         def properties = asNode().appendNode("properties")
         properties.appendNode("target", "3.8.0+")
         properties.appendNode("license", "false")
-        properties.appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
         properties.appendNode("readme", "https://github.com/adaptris/interlok/raw/develop/README.md")
         properties.appendNode("repository", "https://github.com/adaptris/interlok")
       }
