@@ -3,9 +3,17 @@ extraction:
     index:
       java_version: 11
       gradle:
-        version: 6.8.1
+        version: 7.1
+      # Run individual commands since otherwise you get implicit dependency issues.
       build_command:
-        - ./gradlew --no-daemon -S lgtmCompile
+        - ./gradlew -S :interlok-core-apt:lgtmCompile
+        - ./gradlew -S :interlok-common:lgtmCompile
+        - ./gradlew -S :interlok-logging:lgtmCompile
+        - ./gradlew -S :interlok-boot:lgtmCompile
+        - ./gradlew -S :interlok-core:lgtmCompile
+        - ./gradlew -S :interlok-client:lgtmCompile
+        - ./gradlew -S :interlok-client-jmx:lgtmCompile
+        - ./gradlew --stop
 
 path_classifiers:
   docs:
