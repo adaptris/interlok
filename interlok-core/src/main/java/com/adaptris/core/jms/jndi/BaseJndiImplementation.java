@@ -61,6 +61,7 @@ public abstract class BaseJndiImplementation extends VendorImplementationImp {
     setExtraFactoryConfiguration(new NoOpFactoryConfiguration());
   }
 
+  @SuppressWarnings({"lgtm [java/jndi-injection]"})
   protected Object lookup(String name) throws JMSException {
     Object result = null;
     try {

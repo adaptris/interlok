@@ -1,11 +1,11 @@
 /*
  * Copyright 2020 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
@@ -99,6 +99,7 @@ public abstract class XmlSchemaValidatorImpl extends MessageValidatorImpl {
     return resolveFromCache(schemaUrl);
   }
 
+  @SuppressWarnings({"lgtm [java/xxe]"})
   protected Schema resolveFromCache(String urlString) throws Exception {
     Cache cache = schemaCacheConnection.retrieveConnection(CacheConnection.class).retrieveCache();
     Schema schema = (Schema) cache.get(urlString);
@@ -111,7 +112,7 @@ public abstract class XmlSchemaValidatorImpl extends MessageValidatorImpl {
 
   /**
    * Sets the schema to validate against. May not be null or empty.
-   * 
+   *
    * @param s the schema to validate against, normally a URL.
    */
   public void setSchema(String s) {
@@ -120,7 +121,7 @@ public abstract class XmlSchemaValidatorImpl extends MessageValidatorImpl {
 
   /**
    * Returns the schema to validate against.
-   * 
+   *
    * @return the schema to validate against
    */
   public String getSchema() {
@@ -140,7 +141,7 @@ public abstract class XmlSchemaValidatorImpl extends MessageValidatorImpl {
    * behaviour is to cache 16 schemas for a max of 2 hours (last-access) if you don't explicitly
    * configure it differently.
    * </p>
-   * 
+   *
    * @param cache the cache, generally a {@link CacheConnection} or {@link SharedConnection}.
    */
   public void setSchemaCache(AdaptrisConnection cache) {

@@ -196,6 +196,7 @@ public class FilesystemRetryStore implements RetryStore {
   }
 
   @Override
+  @SuppressWarnings({"lgtm [java/path-injection]"})
   public boolean delete(String msgId) throws InterlokException {
     try {
       File target = new File(FsHelper.toFile(getBaseUrl()), msgId);

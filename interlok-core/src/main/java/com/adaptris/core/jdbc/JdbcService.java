@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -128,7 +128,7 @@ public abstract class JdbcService extends ServiceImp implements ConnectedService
 
   /**
    * Get the {@link Connection} either from the {@link com.adaptris.core.AdaptrisMessage} object or from configuration.
-   * 
+   *
    * @param msg the adaptrisMessage object
    * @return the connection either from the adaptris message or from configuration.
    */
@@ -142,7 +142,7 @@ public abstract class JdbcService extends ServiceImp implements ConnectedService
 
   /**
    * Set the statement timeout.
-   * 
+   *
    * @param statementTimeout the statement timeout.
    * @since 3.0.1
    */
@@ -156,12 +156,14 @@ public abstract class JdbcService extends ServiceImp implements ConnectedService
     return s;
   }
 
+  @SuppressWarnings({"lgtm [java/sql-injection]"})
   protected PreparedStatement prepareStatement(Connection c, String sql) throws SQLException {
     PreparedStatement p = c.prepareStatement(sql);
     applyTimeout(p);
     return p;
   }
 
+  @SuppressWarnings({"lgtm [java/sql-injection]"})
   protected PreparedStatement prepareStatement(Connection c, String sql, int autoGenKeys) throws SQLException {
     PreparedStatement p = c.prepareStatement(sql, autoGenKeys);
     applyTimeout(p);
