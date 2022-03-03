@@ -1,12 +1,12 @@
 /*
  * Copyright 2016 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -147,6 +147,7 @@ public class JmxConnection extends AllowsRetriesConnection {
   }
 
 
+  @SuppressWarnings({"lgtm [java/jndi-injection]"})
   private MBeanServerConnection createConnection() throws IOException, AdaptrisSecurityException {
     MBeanServerConnection result = null;
     if (!isBlank(getJmxServiceUrl())) {
@@ -177,7 +178,7 @@ public class JmxConnection extends AllowsRetriesConnection {
 
   /**
    * Set the JMX ServiceURL.
-   * 
+   *
    * @param s the jmxServiceUrl to set; if not specified, then a local JMX connector is assumed.
    */
   public void setJmxServiceUrl(String s) {
@@ -212,7 +213,7 @@ public class JmxConnection extends AllowsRetriesConnection {
    * If both the username / password are set, then a {@code jmx.remote.profiles="SASL/PLAIN"} is added to the environment
    * if it doesn't already exist.
    * </p>
-   * 
+   *
    * @param s the username to set
    */
   public void setUsername(String s) {
@@ -232,7 +233,7 @@ public class JmxConnection extends AllowsRetriesConnection {
    * If both the username / password are set, then a {@code jmx.remote.profiles="SASL/PLAIN"} is added to the environment
    * if it doesn't already exist.
    * </p>
-   * 
+   *
    * @param s the password to set
    */
   public void setPassword(String s) {
@@ -245,7 +246,7 @@ public class JmxConnection extends AllowsRetriesConnection {
 
   /**
    * Whether or not to generate additional TRACE level debug when attempting connections.
-   * 
+   *
    * @param b true to enable additional logging; default false.
    */
   public void setAdditionalDebug(Boolean b) {

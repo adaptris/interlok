@@ -42,6 +42,7 @@ public class SharedComponent {
     return new InitialContext(env);
   }
 
+  @SuppressWarnings({"lgtm [java/jndi-injection]"})
   private AdaptrisComponent lookupQuietly(InitialContext ctx, String name) {
     AdaptrisComponent result = null;
     try {

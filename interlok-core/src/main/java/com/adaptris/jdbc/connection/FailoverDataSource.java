@@ -340,6 +340,7 @@ public class FailoverDataSource implements DataSource {
    * resources that are held by this object.
    * </p>
    */
+  @SuppressWarnings({"lgtm [java/sql-injection]"})
   protected class ConnectionProxy implements Connection {
     private FailoverConnection conn;
 
