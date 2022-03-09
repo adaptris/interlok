@@ -3,7 +3,7 @@ ext {
   componentDesc="JMX implementation of the Interlok Client API"
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
   log4j2Version = "2.17.2"
-  mockitoVersion = '4.3.1'
+  mockitoVersion = '4.4.0'
 }
 
 dependencies {
