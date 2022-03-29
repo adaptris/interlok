@@ -18,12 +18,15 @@ package com.adaptris.security.keystore;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.MarshallingCDATA;
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.util.Constants;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import java.util.Properties;
+import javax.annotation.RegEx;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -61,6 +64,9 @@ public class InlineKeystore extends ConfiguredKeystore {
   @Getter
   @Setter
   @AdvancedConfig
+  @InputFieldDefault(value= Constants.KEYSTORE_XMLKEYINFO)
+  @NotBlank(message="Must be either X509 or XMLKEYINFO")
+  @Pattern(regexp = "XMLKEYINFO|X509", message = "Must be either X509 or XMLKEYINFO")
   private String type;
   /** The Alias to be associated with this certificate.
    *

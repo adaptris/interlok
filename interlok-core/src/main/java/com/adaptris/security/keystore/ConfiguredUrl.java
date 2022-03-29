@@ -22,8 +22,10 @@ import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.password.Password;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import javax.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.Setter;
 
 /**
@@ -42,6 +44,7 @@ public class ConfiguredUrl extends ConfiguredKeystore {
   /** The URL to the keystore.
    *
    */
+  @NotBlank(message="The URL for the keystore may not be null")
   @Getter
   @Setter
   private String url;
