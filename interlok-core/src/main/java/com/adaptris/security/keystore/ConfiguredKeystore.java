@@ -17,6 +17,7 @@
 package com.adaptris.security.keystore;
 
 import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.Removal;
 import com.adaptris.validation.constraints.ConfigDeprecated;
 import java.io.IOException;
 
@@ -44,6 +45,7 @@ public abstract class ConfiguredKeystore {
   /** The keystore factory to use when accessing this keystore.
    *  <p>There is no reason for you to configure this and this will be removed w/o warning.</p>
    */
+  @Removal(message = "Keystore Factory is effectively unconfigurable", version="5.0")
   @ConfigDeprecated(removalVersion = "5.0", message = "There is no reason to configure the keystore factory", groups = Deprecated.class)
   @AdvancedConfig(rare=true)
   @Valid
