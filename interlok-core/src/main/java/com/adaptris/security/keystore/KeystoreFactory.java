@@ -251,7 +251,7 @@ public abstract class KeystoreFactory {
     @Override
     public KeystoreProxy create(KeystoreLocation ksl)
         throws AdaptrisSecurityException {
-      Class<?> clazz = CUSTOM_TYPES_MAP.get(ksl.getKeyStoreType()
+      Class<?> clazz = CUSTOM_TYPES_MAP.get(ksl.getKeystoreType()
           .toUpperCase());
       KeystoreProxy kp = null;
       if (clazz == null) {
@@ -264,7 +264,7 @@ public abstract class KeystoreFactory {
         }
         catch (Exception e) {
           throw new KeystoreException("Failed to keystore proxy that handles "
-              + ksl.getKeyStoreType(), e);
+              + ksl.getKeystoreType(), e);
         }
       }
       return kp;

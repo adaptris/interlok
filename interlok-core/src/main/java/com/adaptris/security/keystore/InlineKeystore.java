@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,19 +16,25 @@
 
 package com.adaptris.security.keystore;
 
-import java.util.Properties;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.MarshallingCDATA;
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.util.Constants;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import java.util.Properties;
+import javax.annotation.RegEx;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Specifically presents an embedded encoded Certificate string as a KeystoreLocation object.
- * 
+ *
  * @config inline-keystore
- * 
+ *
  * @author lchan
  * @author $Author: lchan $
  */
@@ -36,11 +42,40 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"alias", "certificate", "type"})
 public class InlineKeystore extends ConfiguredKeystore {
 
+  /** The Encoded certificate
+   *
+   */
+  @Getter
+  @Setter
+  @NotBlank(message="The certificate associated with an inline keystore may not be blank")
+  @MarshallingCDATA
   private String certificate;
-  private transient InlineKeystoreLocation keystoreLocation;
+
+  /**
+   * The type of keystore this is.
+   * <p>
+   * Supported types are
+   * <ul>
+   * <li>XMLKEYINFO</li>
+   * <li>X509</li>
+   * </ul>
+   * </p>
+   */
+  @Getter
+  @Setter
   @AdvancedConfig
+  @InputFieldDefault(value= Constants.KEYSTORE_XMLKEYINFO)
+  @NotBlank(message="Must be either X509 or XMLKEYINFO")
+  @Pattern(regexp = "XMLKEYINFO|X509", message = "Must be either X509 or XMLKEYINFO")
   private String type;
+  /** The Alias to be associated with this certificate.
+   *
+   */
+  @Getter
+  @Setter
+  @NotBlank(message="The alias associated with the certificate may not be blank.")
   private String alias;
+  private transient InlineKeystoreLocation keystoreLocation;
 
   public InlineKeystore() {
     super();
@@ -63,20 +98,6 @@ public class InlineKeystore extends ConfiguredKeystore {
       keystoreLocation.setAdditionalParams(p);
     }
     return keystoreLocation;
-  }
-
-  /**
-   * @return the certificate
-   */
-  public String getCertificate() {
-    return certificate;
-  }
-
-  /**
-   * @param c the certificate to set
-   */
-  public void setCertificate(String c) {
-    certificate = c;
   }
 
   /**
@@ -111,42 +132,6 @@ public class InlineKeystore extends ConfiguredKeystore {
   @Override
   public String toString() {
     return "InlineKeystore=[" + alias + "][" + type + "]";
-  }
-
-  /**
-   * @return the type
-   */
-  public String getType() {
-    return type;
-  }
-
-  /**
-   * Set the type of keystore this is.
-   * <p>
-   * Supported types are
-   * <ul>
-   * <li>XMLKEYINFO</li>
-   * <li>X509</li>
-   * </ul>
-   *
-   * @param type the type to set
-   */
-  public void setType(String type) {
-    this.type = type;
-  }
-
-  /**
-   * @return the alias
-   */
-  public String getAlias() {
-    return alias;
-  }
-
-  /**
-   * @param alias the alias to set
-   */
-  public void setAlias(String alias) {
-    this.alias = alias;
   }
 
 }

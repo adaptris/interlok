@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,16 +16,13 @@
 
 package com.adaptris.http.legacy;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.adaptris.core.security.PrivateKeyPasswordProvider;
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.keystore.KeystoreLocation;
 import com.adaptris.security.util.Constants;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author lchan
@@ -40,8 +37,9 @@ class PasswordOverride {
       Constants.KEYSTORE_XMLKEYINFO, Constants.KEYSTORE_PKCS12
   };
 
-  private static final List CUSTOM_KEYSTORES = Arrays.asList(CUSTOM_TYPES);
+  private static final List<String> CUSTOM_KEYSTORES = List.of(CUSTOM_TYPES);
 
+  @SuppressWarnings("deprecation")
   static char[] discoverPrivateKeyPassword(KeystoreLocation ksl, PrivateKeyPasswordProvider pkpp) throws AdaptrisSecurityException {
     if (CUSTOM_KEYSTORES.contains(ksl.getKeyStoreType())) {
       log.info("Keystore is a custom XMLKEYINFO or PKCS12 Certificate; treating keystore password as private key password");

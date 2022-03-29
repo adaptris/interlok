@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -95,8 +95,14 @@ public interface KeystoreLocation {
    * Get the type of keystore.
    *
    * @return the keystore type.
+   * @deprecated since 4.5.0 as naming is hard and it should always have been {@link #getKeystoreType()}
    */
-  String getKeyStoreType();
+  @Deprecated
+  default String getKeyStoreType() {
+    return getKeystoreType();
+  }
+
+  String getKeystoreType();
 
   /**
    * Does the location wrapped by this KeystoreLocation object exist.
@@ -108,11 +114,11 @@ public interface KeystoreLocation {
   /**
    * @return the additionalParams
    */
-  public Properties getAdditionalParams();
+  Properties getAdditionalParams();
 
   /**
    * @param p the additionalParams to set
    */
-  public void setAdditionalParams(Properties p);
+  void setAdditionalParams(Properties p);
 
 }

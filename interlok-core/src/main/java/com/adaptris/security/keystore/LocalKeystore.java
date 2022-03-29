@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,6 +25,8 @@ import java.io.OutputStream;
 import java.util.Properties;
 
 import com.adaptris.security.exc.AdaptrisSecurityException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * A Keystore that resides on the local filesystem.
@@ -32,18 +34,10 @@ import com.adaptris.security.exc.AdaptrisSecurityException;
  * @author lchan
  * @author $Author: lchan $
  */
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class LocalKeystore extends KeystoreLocationImp {
 
   private File keyStorePath;
-
-  /**
-   * @see Object#Object()
-   *
-   *
-   */
-  LocalKeystore() {
-    super();
-  }
 
   /**
    * Constructor.
@@ -91,7 +85,7 @@ final class LocalKeystore extends KeystoreLocationImp {
   /** @see Object#toString() */
   @Override
   public String toString() {
-    return "[" + getKeyStoreType() + "][" + keyStorePath.getAbsolutePath()
+    return "[" + getKeystoreType() + "][" + keyStorePath.getAbsolutePath()
         + "]";
   }
 
@@ -141,7 +135,7 @@ final class LocalKeystore extends KeystoreLocationImp {
     if (o instanceof LocalKeystore) {
       LocalKeystore rhs = (LocalKeystore) o;
       rc = getKeyStorePath().equals(rhs.getKeyStorePath())
-          && getKeyStoreType().equalsIgnoreCase(rhs.getKeyStoreType());
+          && getKeystoreType().equalsIgnoreCase(rhs.getKeystoreType());
     }
     return rc;
   }
@@ -151,6 +145,6 @@ final class LocalKeystore extends KeystoreLocationImp {
    */
   @Override
   public int hashCode() {
-    return getKeyStorePath().hashCode() + getKeyStoreType().hashCode();
+    return getKeyStorePath().hashCode() + getKeystoreType().hashCode();
   }
 }

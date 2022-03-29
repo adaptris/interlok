@@ -54,7 +54,7 @@ final class InlineKeystoreLocation implements KeystoreLocation {
   /** @see Object#toString() */
   @Override
   public String toString() {
-    return "[" + getKeyStoreType() + "][" + this.getClass() + "]";
+    return "[" + getKeystoreType() + "][" + this.getClass() + "]";
   }
 
   /**
@@ -100,7 +100,7 @@ final class InlineKeystoreLocation implements KeystoreLocation {
     if (o instanceof InlineKeystoreLocation) {
       InlineKeystoreLocation rhs = (InlineKeystoreLocation) o;
       rc = MessageDigest.isEqual(keystoreHash, rhs.keystoreHash)
-          && getKeyStoreType().equalsIgnoreCase(rhs.getKeyStoreType());
+          && getKeystoreType().equalsIgnoreCase(rhs.getKeystoreType());
     }
     return rc;
   }
@@ -110,7 +110,7 @@ final class InlineKeystoreLocation implements KeystoreLocation {
    */
   @Override
   public int hashCode() {
-    return Conversion.byteArrayToBase64String(keystoreHash).hashCode() + getKeyStoreType().hashCode();
+    return Conversion.byteArrayToBase64String(keystoreHash).hashCode() + getKeystoreType().hashCode();
   }
 
 
@@ -126,10 +126,10 @@ final class InlineKeystoreLocation implements KeystoreLocation {
 
   /**
    *
-   * @see KeystoreLocation#getKeyStoreType()
+   * @see KeystoreLocation#getKeystoreType()
    */
   @Override
-  public String getKeyStoreType() {
+  public String getKeystoreType() {
     return keystoreType;
   }
 
