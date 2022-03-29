@@ -31,6 +31,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
 
+import lombok.Getter;
 import org.bouncycastle.util.io.pem.PemReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +50,11 @@ import com.adaptris.security.util.SecurityUtil;
  */
 class KeystoreProxyImp implements KeystoreProxy {
 
-  private KeyStore keyStore = null;
+  /**
+   * The underyling keystore object for manual querying.
+   */
+  @Getter
+  private KeyStore keystore = null;
   private KeystoreLocation keystoreLocation = null;
   private transient Logger logR = LoggerFactory.getLogger(KeystoreProxy.class);
 
@@ -86,13 +91,13 @@ class KeystoreProxyImp implements KeystoreProxy {
       throws AdaptrisSecurityException {
     try {
       keystoreLocation = k;
-      if (keyStore == null) {
-        keyStore = KeyStore.getInstance(keystoreLocation.getKeystoreType());
+      if (keystore == null) {
+        keystore = KeyStore.getInstance(keystoreLocation.getKeystoreType());
 
         // We must load the keystore before use, so load with null parameters
         // if we explicitly call keystore.load(), then we will re-init with
         // the input stream
-        keyStore.load(null, null);
+        keystore.load(null, null);
       }
     }
     catch (Exception e) {
@@ -113,7 +118,7 @@ class KeystoreProxyImp implements KeystoreProxy {
   public void load() throws AdaptrisSecurityException, IOException {
 
     try (InputStream in = keystoreLocation.openInput()) {
-      keyStore.load(in, keystoreLocation.getKeystorePassword());
+      keystore.load(in, keystoreLocation.getKeystorePassword());
     }
     catch (GeneralSecurityException e) {
       throw KeystoreProxy.wrapException(e);
@@ -134,7 +139,7 @@ class KeystoreProxyImp implements KeystoreProxy {
       throw new KeystoreException(keystoreLocation + " is not writeable");
     }
     try (OutputStream out = keystoreLocation.openOutput()) {
-      keyStore.store(out, keystoreLocation.getKeystorePassword());
+      keystore.store(out, keystoreLocation.getKeystorePassword());
     }
     catch (Exception e) {
       throw KeystoreProxy.wrapException(e);
@@ -160,7 +165,7 @@ class KeystoreProxyImp implements KeystoreProxy {
         logR.trace("No private key password passed as parameter, using keystore password as key password");
       }
       char[] pw = keyPassword == null ? keystoreLocation.getKeystorePassword() : keyPassword;
-      p = (PrivateKey) keyStore.getKey(alias, pw);
+      p = (PrivateKey) keystore.getKey(alias, pw);
     }
     catch (Exception e) {
       throw KeystoreProxy.wrapException(e);
@@ -180,7 +185,7 @@ class KeystoreProxyImp implements KeystoreProxy {
       throws AdaptrisSecurityException {
 
     try {
-      return keyStore.getCertificate(alias);
+      return keystore.getCertificate(alias);
     }
     catch (Exception e) {
       throw KeystoreProxy.wrapException(e);
@@ -199,7 +204,7 @@ class KeystoreProxyImp implements KeystoreProxy {
       throws AdaptrisSecurityException {
 
     try {
-      return keyStore.getCertificateChain(alias);
+      return keystore.getCertificateChain(alias);
     }
     catch (Exception e) {
       throw KeystoreProxy.wrapException(e);
@@ -216,7 +221,7 @@ class KeystoreProxyImp implements KeystoreProxy {
   public void setCertificate(String alias, Certificate cert)
       throws AdaptrisSecurityException {
     try {
-      keyStore.setCertificateEntry(alias, cert);
+      keystore.setCertificateEntry(alias, cert);
     }
     catch (Exception e) {
       throw KeystoreProxy.wrapException(e);
@@ -301,7 +306,7 @@ class KeystoreProxyImp implements KeystoreProxy {
                             char[] keyPassword, Certificate[] certChain)
       throws AdaptrisSecurityException {
     try {
-      keyStore.setKeyEntry(alias, privKey, keyPassword, certChain);
+      keystore.setKeyEntry(alias, privKey, keyPassword, certChain);
     }
     catch (Exception e) {
       throw KeystoreProxy.wrapException(e);
@@ -501,21 +506,11 @@ class KeystoreProxyImp implements KeystoreProxy {
    */
   public boolean containsAlias(String alias) throws AdaptrisSecurityException {
     try {
-      return keyStore.containsAlias(alias);
+      return keystore.containsAlias(alias);
     }
     catch (Exception e) {
       throw KeystoreProxy.wrapException(e);
     }
-  }
-
-  /**
-   * Return the underyling keystore object for manual querying.
-   *
-   * @return the underlying keystore
-   * @see KeyStore
-   */
-  public KeyStore getKeystore() {
-    return keyStore;
   }
 
   @Override

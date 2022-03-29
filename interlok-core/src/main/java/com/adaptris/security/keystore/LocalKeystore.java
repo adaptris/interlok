@@ -25,6 +25,8 @@ import java.io.OutputStream;
 import java.util.Properties;
 
 import com.adaptris.security.exc.AdaptrisSecurityException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * A Keystore that resides on the local filesystem.
@@ -32,18 +34,10 @@ import com.adaptris.security.exc.AdaptrisSecurityException;
  * @author lchan
  * @author $Author: lchan $
  */
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class LocalKeystore extends KeystoreLocationImp {
 
   private File keyStorePath;
-
-  /**
-   * @see Object#Object()
-   *
-   *
-   */
-  LocalKeystore() {
-    super();
-  }
 
   /**
    * Constructor.

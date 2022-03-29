@@ -24,6 +24,8 @@ import java.util.Properties;
 
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.util.stream.StreamUtil;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * A Keystore that resides on a remote machine.
@@ -35,19 +37,11 @@ import com.adaptris.util.stream.StreamUtil;
  * @author lchan
  * @author $Author: lchan $
  */
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class RemoteUrlKeystore extends ReadonlyKeystore {
 
   private URL keyStoreUrl = null;
   private InputStream urlInput;
-
-  /**
-   * @see Object#Object()
-   *
-   *
-   */
-  RemoteUrlKeystore() {
-    super();
-  }
 
   /**
    * Constructor.

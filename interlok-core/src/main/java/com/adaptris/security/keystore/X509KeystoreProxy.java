@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,53 +16,34 @@
 
 package com.adaptris.security.keystore;
 
+import com.adaptris.security.certificate.CertificateHandler;
+import com.adaptris.security.certificate.CertificateHandlerFactory;
+import com.adaptris.security.exc.AdaptrisSecurityException;
+import com.adaptris.security.exc.KeystoreException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
-
-import com.adaptris.security.certificate.CertificateHandler;
-import com.adaptris.security.certificate.CertificateHandlerFactory;
-import com.adaptris.security.exc.AdaptrisSecurityException;
-import com.adaptris.security.exc.KeystoreException;
+import lombok.NoArgsConstructor;
 
 /**
  * Keystore Proxy implementation that only handles a single certificate.
- * 
+ *
  * @author $Author: lchan $
  */
+@NoArgsConstructor
 class X509KeystoreProxy extends SingleEntryKeystoreProxy {
 
   private CertificateHandler certHandler;
-
-  /**
-   * Default Constructor.
-   */
-  public X509KeystoreProxy() {
-  }
-
-  /**
-   * Construct the object using the KeyStoreInfo object.
-   * 
-   * @param k the KeyStoreInfo object
-   * @see KeystoreLocation
-   * @throws AdaptrisSecurityException if an error is encountered
-   */
-  public X509KeystoreProxy(KeystoreLocation k) throws AdaptrisSecurityException {
-    this();
-    setKeystoreLocation(k);
-  }
-
-
 
   /**
    * Load the keystore.
    * <p>
    * Load the keystore ready for operations upon it
    * </p>
-   * 
+   *
    * @throws AdaptrisSecurityException if there was an error reading the
    *           contents of the keystore
    * @throws IOException if the keystore is not found
@@ -80,7 +61,7 @@ class X509KeystoreProxy extends SingleEntryKeystoreProxy {
   /**
    * Method to extract a Partner's Private Key from their Keystore entry and
    * return a PrivateKey object to the caller.
-   * 
+   *
    * @param alias the alias in the keystore
    * @param keyPassword the associated password
    * @return the requested private key, or null if the alias does not exist/not
@@ -96,7 +77,7 @@ class X509KeystoreProxy extends SingleEntryKeystoreProxy {
 
   /**
    * Return the certificate specified by the given alias.
-   * 
+   *
    * @param alias the alias of the Certificate
    * @return Certificate the requested certificate, or null if the alias does
    *         not exist/not a certificate
@@ -117,7 +98,7 @@ class X509KeystoreProxy extends SingleEntryKeystoreProxy {
 
   /**
    * Return the certificate specified by the given alias.
-   * 
+   *
    * @param alias the alias of the Certificate
    * @return requested certificate chain, or null if the alias does not
    *         exist/not a certificate
@@ -136,7 +117,7 @@ class X509KeystoreProxy extends SingleEntryKeystoreProxy {
     certChain[0] = cert;
     return certChain;
   }
-  
+
   protected KeyStore buildTemporaryKeystore() {
     KeyStore ks = null;
     try {
@@ -151,5 +132,5 @@ class X509KeystoreProxy extends SingleEntryKeystoreProxy {
     }
     return ks;
   }
-  
+
 }

@@ -16,8 +16,11 @@
 
 package com.adaptris.security.keystore;
 
+import java.util.Optional;
 import java.util.Properties;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,9 +33,13 @@ import com.adaptris.security.util.SecurityUtil;
 abstract class KeystoreLocationImp implements KeystoreLocation {
 
   protected static Logger logR = LoggerFactory.getLogger(KeystoreLocation.class);
+  @Getter
   private char[] keystorePassword;
-
+  @Getter
+  @Setter
   private String keystoreType;
+  @Getter
+  @Setter
   private Properties additionalParams;
 
   /**
@@ -46,44 +53,13 @@ abstract class KeystoreLocationImp implements KeystoreLocation {
   }
 
   /**
-   * Get the type of keystore.
-   * <p>
-   * Natively jdk1.4 supports the <b>JKS </b> and <b>JCEKS </b> types, <b>JCEKS
-   * </b> being more secure.
-   * </p>
-   * <p>
-   * In addition to these two types, we also support the <b>BKS </b> keystore
-   * type which is part of the BC JCE implementation
-   * </p>
-   *
-   * @return the keystore type.
-   */
-  public String getKeystoreType() {
-    return keystoreType;
-  }
-
-  /**
-   * Set the keystore type.
-   *
-   * @see #getKeystoreType()
-   * @param s
-   *          the keystore type
-   */
-  public void setKeystoreType(String s) {
-    keystoreType = s;
-  }
-
-
-  /**
    * Set the keystore password.
    *
    * @param s
    *          the keystore password.
    */
   public void setKeystorePassword(String s) {
-    if (s != null) {
-      keystorePassword = s.toCharArray();
-    }
+    Optional.ofNullable(s).ifPresent((pw) -> setKeystorePassword(pw.toCharArray()));
   }
 
   /**
@@ -93,15 +69,6 @@ abstract class KeystoreLocationImp implements KeystoreLocation {
    */
   public void setKeystorePassword(char[] c) {
     keystorePassword = c;
-  }
-
-  /**
-   * Return the keystore password.
-   *
-   * @return the keystore password
-   */
-  public char[] getKeystorePassword() {
-    return keystorePassword;
   }
 
   /**
@@ -117,18 +84,4 @@ abstract class KeystoreLocationImp implements KeystoreLocation {
    */
   @Override
   public abstract int hashCode();
-
-  /**
-   * @return the additionalParams
-   */
-  public Properties getAdditionalParams() {
-    return additionalParams;
-  }
-
-  /**
-   * @param p the additionalParams to set
-   */
-  public void setAdditionalParams(Properties p) {
-    this.additionalParams = p;
-  }
 }
