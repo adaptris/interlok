@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,9 +30,9 @@ import com.adaptris.security.util.SecurityUtil;
 abstract class KeystoreLocationImp implements KeystoreLocation {
 
   protected static Logger logR = LoggerFactory.getLogger(KeystoreLocation.class);
-  private char[] keyStorePassword;
+  private char[] keystorePassword;
 
-  private String keyStoreType;
+  private String keystoreType;
   private Properties additionalParams;
 
   /**
@@ -58,19 +58,19 @@ abstract class KeystoreLocationImp implements KeystoreLocation {
    *
    * @return the keystore type.
    */
-  public String getKeyStoreType() {
-    return keyStoreType;
+  public String getKeystoreType() {
+    return keystoreType;
   }
 
   /**
    * Set the keystore type.
    *
-   * @see #getKeyStoreType()
+   * @see #getKeystoreType()
    * @param s
    *          the keystore type
    */
   public void setKeystoreType(String s) {
-    keyStoreType = s;
+    keystoreType = s;
   }
 
 
@@ -82,7 +82,7 @@ abstract class KeystoreLocationImp implements KeystoreLocation {
    */
   public void setKeystorePassword(String s) {
     if (s != null) {
-      keyStorePassword = s.toCharArray();
+      keystorePassword = s.toCharArray();
     }
   }
 
@@ -92,7 +92,7 @@ abstract class KeystoreLocationImp implements KeystoreLocation {
    * @param c the keystore password.
    */
   public void setKeystorePassword(char[] c) {
-    keyStorePassword = c;
+    keystorePassword = c;
   }
 
   /**
@@ -101,7 +101,7 @@ abstract class KeystoreLocationImp implements KeystoreLocation {
    * @return the keystore password
    */
   public char[] getKeystorePassword() {
-    return keyStorePassword;
+    return keystorePassword;
   }
 
   /**
