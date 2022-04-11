@@ -17,8 +17,10 @@
 package com.adaptris.core.services;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -30,13 +32,16 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.PayloadMessageLogger;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * <p>
  * Service which logs the <code>AdaptrisMessage</code> to the configured logger for debugging purposes.
  * </p>
- * 
+ *
  * @config log-message-service
- * 
+ *
  */
 @XStreamAlias("log-message-service")
 @AdapterComponent
@@ -47,8 +52,26 @@ public class LogMessageService extends LoggingServiceImpl {
 
   private static final MessageLogger DEFAULT_MSG_LOGGER = new PayloadMessageLogger();
 
+  /**
+   * Set the logging prefix to the output
+   *
+   * @param logPrefix
+   *          the logging prefix, default ''
+   * @return the logging prefix
+   */
+  @Getter
+  @Setter
   @InputFieldHint(style="BLANKABLE")
   private String logPrefix;
+  /**
+   * Set the MessageLogger used to format the output logging
+   *
+   * @param loggingFormat
+   *          MessageLogger, default '{@link PayloadMessageLogger}: <i>message-logging-with-payload</i>'
+   * @return the MessageLogger used to format the logging
+   */
+  @Getter
+  @Setter
   @InputFieldDefault(value = "message-logging-with-payload")
   private MessageLogger loggingFormat;
 
@@ -83,28 +106,6 @@ public class LogMessageService extends LoggingServiceImpl {
     if (myLogger.isEnabled(realLogger)) {
       myLogger.log(realLogger, defaultIfEmpty(getLogPrefix(), "") + loggingFormat().toString(msg));
     }
-  }
-
-
-  public String getLogPrefix() {
-    return logPrefix;
-  }
-
-  /**
-   * Set the logging prefix to the output
-   *
-   * @param s the logging prefix, default ''
-   */
-  public void setLogPrefix(String s) {
-    logPrefix = s;
-  }
-
-  public MessageLogger getLoggingFormat() {
-    return loggingFormat;
-  }
-
-  public void setLoggingFormat(MessageLogger ml) {
-    loggingFormat = ml;
   }
 
   public MessageLogger loggingFormat() {
