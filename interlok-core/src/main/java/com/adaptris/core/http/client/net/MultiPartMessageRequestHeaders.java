@@ -24,15 +24,21 @@ import javax.mail.Header;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.common.MultiPartMessageStreamInputParameter;
 import com.adaptris.core.http.client.RequestHeaderProvider;
+import com.adaptris.util.text.mime.MimeConstants;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Implementation of {@link RequestHeaderProvider} that applies multipart MIME message headers as headers to a {@link HttpURLConnection}. It
@@ -47,6 +53,17 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class MultiPartMessageRequestHeaders extends RequestHeaders implements RequestHeaderProvider<HttpURLConnection> {
   protected transient Logger log = LoggerFactory.getLogger(this.getClass());
 
+  /**
+   * If set to true that will stop the multipart mime message Message-ID to be sent as an HTTP header. By default it is set to true.
+   *
+   * @param excludeMessageId
+   * @return excludeMessageId
+   */
+  @Getter
+  @Setter
+  @InputFieldDefault("true")
+  private Boolean excludeMessageId;
+
   public MultiPartMessageRequestHeaders() {
   }
 
@@ -59,14 +76,23 @@ public class MultiPartMessageRequestHeaders extends RequestHeaders implements Re
       while (headers.hasMoreElements()) {
         Header header = headers.nextElement();
         String value = unfold(header.getValue());
-        log.trace("Adding Request Property [{}: {}]", header.getName(), value);
-        target.addRequestProperty(header.getName(), value);
+
+        if (excludeMessageId() && MimeConstants.HEADER_MESSAGE_ID.equals(header.getName())) {
+          log.trace("Ignoring Request Property [{}: {}]", header.getName(), value);
+        } else {
+          log.trace("Adding Request Property [{}: {}]", header.getName(), value);
+          target.addRequestProperty(header.getName(), value);
+        }
       }
 
     } catch (MessagingException | IOException expts) {
       log.error("Invalid multipart MIME message. No request header will be added.", expts);
     }
     return target;
+  }
+
+  private boolean excludeMessageId() {
+    return BooleanUtils.toBooleanDefaultIfNull(getExcludeMessageId(), true);
   }
 
 }
