@@ -5,7 +5,7 @@ ext {
   componentDesc="The Core Interlok framework component; this is your must have"
   activeMqVersion='5.17.0'
   bouncyCastleVersion='1.70'
-  mysqlDriverVersion='8.0.28'
+  mysqlDriverVersion='8.0.29'
   slf4jVersion = '1.7.36'
   mockitoVersion = '4.5.1'
   jschVersion = '0.2.0'
