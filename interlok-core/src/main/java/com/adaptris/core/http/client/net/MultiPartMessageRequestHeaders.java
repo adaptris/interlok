@@ -86,7 +86,7 @@ public class MultiPartMessageRequestHeaders extends RequestHeaders implements Re
       }
 
     } catch (MessagingException | IOException expts) {
-      log.error("Invalid multipart MIME message. No request header will be added.", expts);
+      throw new RuntimeException("Invalid multipart MIME message", expts);
     }
     return target;
   }

@@ -25,8 +25,7 @@ public class MultiPartMessageRequestHeadersTest extends RequestHeadersCase {
       + "------=_Part_1_1038479175.1649809692675--\n"
       + "";
 
-  private static final String MULTI_PART = "Message-ID: check-service-test-message\n"
-      + "Mime-Version: 1.0\n"
+  private static final String MULTI_PART = "Mime-Version: 1.0\n"
       + "Message-ID: message-id\n"
       + "Content-Type: multipart/form-data; \n"
       + "    boundary=\"----=_Part_1_1038479175.1649809692675\"\n"
@@ -36,11 +35,10 @@ public class MultiPartMessageRequestHeadersTest extends RequestHeadersCase {
   @Test
   public void testAddHeaders() throws Exception {
     Channel c = null;
-    HttpURLConnection urlC = null;
     try {
       c = HttpHelper.createAndStartChannel();
       URL url = new URL(HttpHelper.createProduceDestination(c));
-      urlC = (HttpURLConnection) url.openConnection();
+      HttpURLConnection urlC = (HttpURLConnection) url.openConnection();
       MultiPartMessageRequestHeaders headers = new MultiPartMessageRequestHeaders();
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(MULTI_PART);
       urlC = headers.addHeaders(msg, urlC);
@@ -55,11 +53,10 @@ public class MultiPartMessageRequestHeadersTest extends RequestHeadersCase {
   @Test
   public void testAddHeaders_Flatten() throws Exception {
     Channel c = null;
-    HttpURLConnection urlC = null;
     try {
       c = HttpHelper.createAndStartChannel();
       URL url = new URL(HttpHelper.createProduceDestination(c));
-      urlC = (HttpURLConnection) url.openConnection();
+      HttpURLConnection urlC = (HttpURLConnection) url.openConnection();
       MultiPartMessageRequestHeaders headers = new MultiPartMessageRequestHeaders();
       headers.setUnfold(true);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(MULTI_PART);
@@ -74,11 +71,10 @@ public class MultiPartMessageRequestHeadersTest extends RequestHeadersCase {
   @Test
   public void testAddHeadersWithMessageId() throws Exception {
     Channel c = null;
-    HttpURLConnection urlC = null;
     try {
       c = HttpHelper.createAndStartChannel();
       URL url = new URL(HttpHelper.createProduceDestination(c));
-      urlC = (HttpURLConnection) url.openConnection();
+      HttpURLConnection urlC = (HttpURLConnection) url.openConnection();
       MultiPartMessageRequestHeaders headers = new MultiPartMessageRequestHeaders();
       headers.setExcludeMessageId(false);
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(MULTI_PART);
