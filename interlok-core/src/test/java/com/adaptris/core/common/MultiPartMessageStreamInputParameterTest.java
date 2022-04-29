@@ -1,6 +1,7 @@
 package com.adaptris.core.common;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,12 +53,12 @@ public class MultiPartMessageStreamInputParameterTest {
     }
   }
 
-  @Test(expected = CoreException.class)
+  @Test
   public void testExtractWithException() throws Exception {
     MultiPartMessageStreamInputParameter p = new MultiPartMessageStreamInputParameter();
     AdaptrisMessage msg = new MyDefectiveMessage();
-    try (InputStream in = p.extract(msg)) {
-    }
+
+    assertThrows(CoreException.class, () -> { try (InputStream in = p.extract(msg)) {}});
   }
 
   private class MyDefectiveMessage extends DefectiveAdaptrisMessage {
