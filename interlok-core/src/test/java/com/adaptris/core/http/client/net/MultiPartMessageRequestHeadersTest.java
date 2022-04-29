@@ -2,6 +2,7 @@ package com.adaptris.core.http.client.net;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.net.HttpURLConnection;
@@ -12,6 +13,7 @@ import org.junit.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
+import com.adaptris.core.stubs.DefectiveMessageFactory;
 
 public class MultiPartMessageRequestHeadersTest extends RequestHeadersCase {
 
@@ -82,6 +84,22 @@ public class MultiPartMessageRequestHeadersTest extends RequestHeadersCase {
       assertTrue(urlC.getRequestProperty("Content-Type").replaceAll("\\r", "")
           .equals("multipart/form-data; \n    boundary=\"----=_Part_1_1038479175.1649809692675\""));
       assertEquals("message-id", urlC.getRequestProperty("Message-ID"));
+    } finally {
+      HttpHelper.stopChannelAndRelease(c);
+    }
+  }
+
+  @Test
+  public void testAddHeadersInvalidMessage() throws Exception {
+    Channel c = null;
+    try {
+      c = HttpHelper.createAndStartChannel();
+      URL url = new URL(HttpHelper.createProduceDestination(c));
+      final HttpURLConnection urlC = (HttpURLConnection) url.openConnection();
+      MultiPartMessageRequestHeaders headers = new MultiPartMessageRequestHeaders();
+      AdaptrisMessage msg = new DefectiveMessageFactory().newMessage();
+
+      assertThrows(RuntimeException.class, () -> headers.addHeaders(msg, urlC));
     } finally {
       HttpHelper.stopChannelAndRelease(c);
     }
