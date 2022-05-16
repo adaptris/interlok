@@ -30,6 +30,7 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -73,7 +74,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   public static final String UID_RESOLVE_KEY = "%uniqueId";
   public static final String SIZE_RESOLVE_KEY = "%size";
   public static final String PAYLOAD_RESOLVE_KEY = "%payload";
-  
+
   private transient Logger log = LoggerFactory.getLogger(AdaptrisMessage.class);
   private transient Pattern normalResolver = Pattern.compile(METADATA_RESOLVE_REGEXP);
   private transient Pattern dotAllResolver = Pattern.compile(METADATA_RESOLVE_REGEXP, Pattern.DOTALL);
@@ -212,11 +213,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   @Override
   public synchronized void setMetadata(Set<MetadataElement> set) {
-    if (set != null) {
-      for (MetadataElement e : set) {
-        addMetadata(e);
-      }
-    }
+    addMetadata(set);
   }
 
   @Override
@@ -243,7 +240,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   /** @see AdaptrisMessage#getMetadata(String) */
   @Override
-  @SuppressWarnings({"lgtm[java/unsynchronized-getter]"})  
+  @SuppressWarnings({"lgtm[java/unsynchronized-getter]"})
   public MetadataElement getMetadata(String key) {
     String resolved = resolveKey(this, key);
 
@@ -263,7 +260,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   }
 
   @Override
-  @SuppressWarnings({"lgtm[java/unsynchronized-getter]"})  
+  @SuppressWarnings({"lgtm[java/unsynchronized-getter]"})
   public Set<MetadataElement> getMetadata() {
     return new HashSet<>(metadata);
   }
