@@ -77,7 +77,7 @@ public interface InterlokMessage {
    * <p>
    * There is a problem with existing implementations that they do not obey this contract because of confusion with
    * {@code AdaptrisMessage#setMetadata(Set)}. In almost all cases they have opted to treat this method as additive
-   * rather than replacing all metadata. <strong></strong>There is no guarantee that implementations will clear and
+   * rather than replacing all metadata. <strong>There is no guarantee that implementations will clear and
    * overwrite all the headers</strong>. As a result we have opted to deprecate this method with a view to removing the
    * ambiguity with different methods.
    * </p>
