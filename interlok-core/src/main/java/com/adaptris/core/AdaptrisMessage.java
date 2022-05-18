@@ -230,7 +230,7 @@ public interface AdaptrisMessage extends InterlokMessage {
   /**
    * Adds all the passed metadata to this message's metadata.
    * <p>
-   * This will overwrite any pre-existing keys, but will not remove existing metadata
+   * This will overwrite any pre-existing keys, but will not remove existing metadata.
    * </p>
    *
    * @param metadata the metadata to add
@@ -239,7 +239,9 @@ public interface AdaptrisMessage extends InterlokMessage {
    */
   @Deprecated
   @Removal(version="5.0")
-  void setMetadata(Set<MetadataElement> metadata);
+  default void setMetadata(Set<MetadataElement> metadata) {
+    addMetadata(metadata);
+  }
 
   /**
    * Adds all the passed metadata to this message's metadata.
@@ -252,17 +254,39 @@ public interface AdaptrisMessage extends InterlokMessage {
    * @param metadata the metadata to add
    */
   default void addMetadata(Collection<MetadataElement> metadata) {
+    // This could be addMessageHeaders(MetadataCollection.asMap(metadata));
+    // but we can bypass some of the method indirection chain by directly using the metadata.
     Optional.ofNullable(metadata).ifPresent((s) -> {
       s.forEach((e) -> addMetadata(e));
     });
   }
 
   /**
+   * Replace all the metadata associated with the message
+   * <p>
+   * This is largely a semantic replacement for {@code setMessageHeaders(Map)} which defaults the correct behaviour.
+   * </p>
+   *
+   * @param metadata the metadata that replaces the existing metadata.
+   * @implNote The default implementation simply uses {@link #addMetadata(MetadataElement)}  after calling
+   * {@link #clearMetadata()}.
+   */
+  default void replaceAllMetadata(Collection<MetadataElement> metadata) {
+    // This could be replaceAllMessageHeaders(MetadataCollection.asMap(metadata));
+    // but we can bypass some of the method indirection chain by directly using the metadata.
+    clearMetadata();
+    addMetadata(metadata);
+  }
+
+  /**
    * <p>
    * Clears the current metadata.
    * </p>
+   * @implNote The default implementation simply uses {@code #clearMessageHeaders()}}
    */
-  void clearMetadata();
+  default void clearMetadata() {
+    clearMessageHeaders();
+  }
 
   /** Return the factory that created this message.
    *

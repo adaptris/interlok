@@ -18,6 +18,11 @@ package com.adaptris.core;
 
 import static com.adaptris.core.metadata.MetadataResolver.resolveKey;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+
+import com.adaptris.core.util.Args;
+import com.adaptris.core.util.MessageHelper;
+import com.adaptris.interlok.resolver.ExternalResolver;
+import com.adaptris.util.IdGenerator;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -30,6 +35,7 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -38,10 +44,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.adaptris.core.util.Args;
-import com.adaptris.core.util.MessageHelper;
-import com.adaptris.interlok.resolver.ExternalResolver;
-import com.adaptris.util.IdGenerator;
 
 /**
  * <p>
@@ -160,19 +162,16 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     return factory;
   }
 
-  /** @see AdaptrisMessage#setContentEncoding(String) */
   @Override
   public void setContentEncoding(String charEnc) {
     contentEncoding = charEnc != null ? Charset.forName(charEnc).name() : null;
   }
 
-  /** @see AdaptrisMessage#getContentEncoding() */
   @Override
   public String getContentEncoding() {
     return contentEncoding;
   }
 
-  /** @see AdaptrisMessage#headersContainsKey(String) */
   @Override
   public boolean headersContainsKey(String key) {
     return metadata.contains(new MetadataElement(resolveKey(this, key), ""));
@@ -188,7 +187,6 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     this.addMetadata(new MetadataElement(resolveKey(this, key), value));
   }
 
-  /** @see AdaptrisMessage#addMetadata(MetadataElement) */
   @Override
   public synchronized void addMetadata(MetadataElement e) {
     e.setKey(resolveKey(this, e.getKey()));
@@ -198,38 +196,29 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     metadata.add(e);
   }
 
-  /** @see AdaptrisMessage#removeMetadata(MetadataElement) */
   @Override
   public void removeMetadata(MetadataElement element) {
     element.setKey(resolveKey(this, element.getKey()));
     metadata.remove(element);
   }
 
-  /** @see AdaptrisMessage#removeMessageHeader(String) */
   @Override
   public void removeMessageHeader(String key) {
     metadata.remove(new MetadataElement(resolveKey(this, key), ""));
   }
 
   @Override
-  public synchronized void setMetadata(Set<MetadataElement> set) {
-    addMetadata(set);
-  }
-
-  @Override
+  // The behavoiur of setMessageHeaders() was always additive, so we
+  // just call addMessageHeaders instead.
   public void setMessageHeaders(Map<String, String> metadata) {
-    for (Map.Entry<String, String> entry : metadata.entrySet()) {
-      addMessageHeader(entry.getKey(), entry.getValue());
-    }
+    addMessageHeaders(metadata);
   }
 
-  /** @see AdaptrisMessage#clearMetadata() */
   @Override
-  public synchronized void clearMetadata() {
-    metadata = new HashSet<>();
+  public void clearMessageHeaders() {
+    metadata.clear();
   }
 
-  /** @see AdaptrisMessage#getMetadataValue(String) */
   @Override
   public String getMetadataValue(String key) { // is case-sensitive
     if (key != null) {
@@ -238,7 +227,6 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     return null;
   }
 
-  /** @see AdaptrisMessage#getMetadata(String) */
   @Override
   @SuppressWarnings({"lgtm[java/unsynchronized-getter]"})
   public MetadataElement getMetadata(String key) {
@@ -252,11 +240,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   @Override
   public Map<String, String> getMessageHeaders() {
-    Map<String, String> newSet = new HashMap<>();
-    for (MetadataElement kp : metadata) {
-      newSet.put(kp.getKey(), kp.getValue());
-    }
-    return newSet;
+    return MetadataCollection.asMap(metadata);
   }
 
   @Override
@@ -278,16 +262,16 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   @Override
   public Reader getReader() throws IOException {
-    return getContentEncoding() != null
+    return !isEmpty(getContentEncoding())
         ? new InputStreamReader(getInputStream(), getContentEncoding())
             : new InputStreamReader(getInputStream());
   }
 
   @Override
   public Writer getWriter() throws IOException {
-    return getContentEncoding() != null
+    return !isEmpty(getContentEncoding())
         ? new OutputStreamWriter(getOutputStream(), getContentEncoding())
-            : new OutputStreamWriter(getOutputStream());
+        : new OutputStreamWriter(getOutputStream());
   }
 
   @Override
@@ -297,37 +281,31 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   @Override
   public void addEvent(MessageEventGenerator meg, boolean wasSuccessful) {
-    if (meg == null) {
-      messageLifeCycle.addMleMarker(getNextMleMarker(new MessageEventGenerator() {
-        @Override
-        public String createName() {
-          return "Unknown Event";
-        }
+    messageLifeCycle.addMleMarker(
+        getNextMleMarker(Objects.requireNonNullElseGet(meg, () -> new MessageEventGenerator() {
+          @Override
+          public String createName() {
+            return "Unknown Event";
+          }
 
-        @Override
-        public String createQualifier() {
-          return "";
-        }
+          @Override
+          public String createQualifier() {
+            return "";
+          }
 
-        @Override
-        public boolean isTrackingEndpoint() {
-          return false;
-        }
+          @Override
+          public boolean isTrackingEndpoint() {
+            return false;
+          }
 
-      }, wasSuccessful));
-    }
-    else {
-      messageLifeCycle.addMleMarker(getNextMleMarker(meg, wasSuccessful));
-    }
+        }), wasSuccessful));
   }
 
-  /** @see AdaptrisMessage#getMessageLifecycleEvent() */
   @Override
   public MessageLifecycleEvent getMessageLifecycleEvent() {
     return messageLifeCycle;
   }
 
-  /** @see AdaptrisMessage#encode(AdaptrisMessageEncoder) */
   @Override
   public byte[] encode(AdaptrisMessageEncoder encoder) throws CoreException {
     if (encoder != null) {
@@ -357,14 +335,12 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     return objectMetadata;
   }
 
-  /** @see Object#toString() */
   @Override
   public String toString() {
     return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
         .append("uniqueId", getUniqueId()).append("metadata", metadata).toString();
   }
 
-  /** @see AdaptrisMessage#getNextServiceId() */
   @Override
   public String getNextServiceId() {
     return nextServiceId;
@@ -475,9 +451,6 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     return result;
   }
 
-  /**
-   * @see com.adaptris.core.AdaptrisMessage #getMetadataValueIgnoreKeyCase(java.lang.String)
-   */
   @Override
   public String getMetadataValueIgnoreKeyCase(String key) {
     String result = getMetadataValue(key);
@@ -493,21 +466,18 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
     return result;
   }
 
-  /** @see Object#clone() */
   @Override
   public Object clone() throws CloneNotSupportedException {
     AdaptrisMessage result = (AdaptrisMessage) super.clone();
 
-    result.clearMetadata();
-    result.setMetadata(cloneMetadata());
+    Set<MetadataElement> metadataCopy = cloneMetadata();
+    ((AdaptrisMessageImp) result).metadata = metadataCopy;
 
     MessageLifecycleEvent copy = getMessageLifecycleEvent().clone();
     ((AdaptrisMessageImp) result).messageLifeCycle = copy;
 
-    Map<Object, Object> objMdCopy = new HashMap<>();
-    objMdCopy.putAll(getObjectHeaders());
+    Map<Object, Object> objMdCopy = new HashMap<>(getObjectHeaders());
     ((AdaptrisMessageImp) result).objectMetadata = objMdCopy;
-
     return result;
   }
 

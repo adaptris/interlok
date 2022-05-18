@@ -23,6 +23,10 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import com.adaptris.core.stubs.MockEncoder;
+import com.adaptris.util.GuidGenerator;
+import com.adaptris.util.stream.StreamUtil;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -34,6 +38,7 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,9 +46,6 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import com.adaptris.core.stubs.MockEncoder;
-import com.adaptris.util.GuidGenerator;
-import com.adaptris.util.stream.StreamUtil;
 
 @SuppressWarnings("deprecation")
 public abstract class AdaptrisMessageCase {
@@ -615,6 +617,7 @@ public abstract class AdaptrisMessageCase {
     msg.addObjectHeader(VAL1, this);
     assertEquals("%message{hello}", msg.resolveObject("%message{hello}"));
     assertEquals("value", msg.resolveObject("%messageObject{key}"));
+    assertNotNull(msg.resolveObject(VAL1));
     assertNull(msg.resolveObject("%messageObject{does_not_exist}"));
     assertNull(msg.resolveObject(null));
   }
@@ -641,4 +644,14 @@ public abstract class AdaptrisMessageCase {
     msg.setMessageHeaders(hdrs);
     assertEquals(3, msg.getMessageHeaders().size());
   }
+
+  @Test
+  public void testReplaceAllMetadata() throws Exception {
+    AdaptrisMessage msg = createMessage();
+    msg.addMetadata(createMetadata());
+    Map<String, String> hdrs = Map.ofEntries(new SimpleEntry<>("zed", "z"), new SimpleEntry<>("why", "y"));
+    msg.replaceAllMetadata(new MetadataCollection(hdrs));
+    assertEquals(2, msg.getMessageHeaders().size());
+  }
+
 }
