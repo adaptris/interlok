@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,7 +16,10 @@
 
 package com.adaptris.core;
 
+import com.adaptris.annotation.Removal;
+import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import com.adaptris.interlok.types.InterlokMessage;
 
@@ -60,12 +63,13 @@ public interface AdaptrisMessage extends InterlokMessage {
    * <code>setStringPayload(String, String)
    * </code>.
    * </p>
-   * 
+   *
    * @param payload the payload to set
    * @deprecated you should use {@link #setStringPayload(String, String)} and formally declare the encoding you wish to use for this
    *             string; since 2.9.3
    */
   @Deprecated
+  @Removal(version="5.0.0")
   default void setStringPayload(String payload) {
     setContent(payload, null);
   }
@@ -82,8 +86,9 @@ public interface AdaptrisMessage extends InterlokMessage {
    * @deprecated since 3.0.6 Use {@link #setContent(String, String)}
    */
   @Deprecated
+  @Removal(version="5.0.0")
   default void setStringPayload(String payload, String charEncoding) {
-    setContent(payload, null);
+    setContent(payload, charEncoding);
   }
 
   /**
@@ -99,6 +104,7 @@ public interface AdaptrisMessage extends InterlokMessage {
    * @deprecated since 3.0.6 use {{@link #getContent()} instead.
    */
   @Deprecated
+  @Removal(version="5.0.0")
   default String getStringPayload() {
     return getContent();
   }
@@ -115,6 +121,7 @@ public interface AdaptrisMessage extends InterlokMessage {
    * @deprecated since 3.0.6 use {{@link #setContentEncoding(String)} instead.
    */
   @Deprecated
+  @Removal(version="5.0.0")
   default void setCharEncoding(String charEncoding) {
     setContentEncoding(charEncoding);
   }
@@ -130,6 +137,7 @@ public interface AdaptrisMessage extends InterlokMessage {
    * @deprecated since 3.0.6 use {{@link #getContentEncoding()} instead.
    */
   @Deprecated
+  @Removal(version="5.0.0")
   default String getCharEncoding() {
     return getContentEncoding();
   }
@@ -172,6 +180,7 @@ public interface AdaptrisMessage extends InterlokMessage {
    * @deprecated since 3.0.6 use {@link #headersContainsKey(String)} instead.
    */
   @Deprecated
+  @Removal(version="5.0.0")
   default boolean containsKey(String key) {
     return headersContainsKey(key);
   }
@@ -221,19 +230,63 @@ public interface AdaptrisMessage extends InterlokMessage {
   /**
    * Adds all the passed metadata to this message's metadata.
    * <p>
+   * This will overwrite any pre-existing keys, but will not remove existing metadata.
+   * </p>
+   *
+   * @param metadata the metadata to add
+   * @deprecated since 4.5.0 because it is poorly named since it is only additive; use {@link #addMetadata(Collection)}
+   * instead.
+   */
+  @Deprecated
+  @Removal(version="5.0")
+  default void setMetadata(Set<MetadataElement> metadata) {
+    addMetadata(metadata);
+  }
+
+  /**
+   * Adds all the passed metadata to this message's metadata.
+   * <p>
    * This will overwrite any pre-existing keys, but will not remove existing metadata
    * </p>
-   * 
+   * @implNote The default implementation simply uses {@link #addMetadata(MetadataElement)} iterating over the
+   *           collection; if the collection contains duplicates then behaviour is delegated to the underlying
+   *           implementation.
    * @param metadata the metadata to add
    */
-  void setMetadata(Set<MetadataElement> metadata);
+  default void addMetadata(Collection<MetadataElement> metadata) {
+    // This could be addMessageHeaders(MetadataCollection.asMap(metadata));
+    // but we can bypass some of the method indirection chain by directly using the metadata.
+    Optional.ofNullable(metadata).ifPresent((s) -> {
+      s.forEach((e) -> addMetadata(e));
+    });
+  }
+
+  /**
+   * Replace all the metadata associated with the message
+   * <p>
+   * This is largely a semantic replacement for {@code setMessageHeaders(Map)} which defaults the correct behaviour.
+   * </p>
+   *
+   * @param metadata the metadata that replaces the existing metadata.
+   * @implNote The default implementation simply uses {@link #addMetadata(MetadataElement)}  after calling
+   * {@link #clearMetadata()}.
+   */
+  default void replaceAllMetadata(Collection<MetadataElement> metadata) {
+    // This could be replaceAllMessageHeaders(MetadataCollection.asMap(metadata));
+    // but we can bypass some of the method indirection chain by directly using the metadata.
+    clearMetadata();
+    addMetadata(metadata);
+  }
 
   /**
    * <p>
    * Clears the current metadata.
    * </p>
+   * @implNote The default implementation simply uses {@code #clearMessageHeaders()}}
    */
-  void clearMetadata();
+  default void clearMetadata() {
+    clearMessageHeaders();
+  }
 
   /** Return the factory that created this message.
    *
@@ -297,6 +350,7 @@ public interface AdaptrisMessage extends InterlokMessage {
    * @deprecated since 3.0.6 use {@link #addObjectHeader(Object, Object)} instead.
    */
   @Deprecated
+  @Removal(version="5.0.0")
   default void addObjectMetadata(String key, Object object) {
     addObjectHeader(key, object);
   }
@@ -310,6 +364,7 @@ public interface AdaptrisMessage extends InterlokMessage {
    * @deprecated since 3.0.6 use {@link #getObjectHeaders()} instead.
    */
   @Deprecated
+  @Removal(version="5.0.0")
   default Map getObjectMetadata() {
     return getObjectHeaders();
   }

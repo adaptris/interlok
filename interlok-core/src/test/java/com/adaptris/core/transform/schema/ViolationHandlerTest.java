@@ -8,8 +8,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+
+import com.adaptris.core.MetadataElement;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import org.junit.Test;
 import org.xml.sax.SAXParseException;
 import com.adaptris.core.AdaptrisMessage;
@@ -31,7 +34,7 @@ public class ViolationHandlerTest {
         (SchemaViolations) new XStreamMarshaller().unmarshal(msg.getMetadataValue(DEFAULT_KEY));
     assertEquals(2, v.getViolations().size());
   }
-    
+
   @Test(expected=ServiceException.class)
   public void testAsMetadata_WithException() throws Exception {
     ViolationsAsMetadata handler = new ViolationsAsMetadata().withMetadataKey(DEFAULT_KEY);
@@ -40,11 +43,12 @@ public class ViolationHandlerTest {
     AdaptrisMessage msg = mock(AdaptrisMessage.class);
     doThrow(new RuntimeException()).when(msg).addMessageHeader(anyString(), anyString());
     doThrow(new RuntimeException()).when(msg).addMetadata(anyString(), anyString());
-    doThrow(new RuntimeException()).when(msg).addMetadata(any());
+    doThrow(new RuntimeException()).when(msg).addMetadata(any(MetadataElement.class));
+    doThrow(new RuntimeException()).when(msg).addMetadata(any(Set.class));
     handler.handle(exceptions, msg);
   }
-  
-  
+
+
   @Test
   public void testAsObjectMetadata() throws Exception {
     ViolationsAsObjectMetadata handler = new ViolationsAsObjectMetadata().withObjectMetadataKey(DEFAULT_KEY);
@@ -57,7 +61,7 @@ public class ViolationHandlerTest {
         (SchemaViolations) msg.getObjectHeaders().get(DEFAULT_KEY);
     assertEquals(2, v.getViolations().size());
   }
-  
+
 
   @Test
   public void testAsPayload() throws Exception {
@@ -71,13 +75,13 @@ public class ViolationHandlerTest {
         (SchemaViolations) new XStreamMarshaller().unmarshal(msg.getContent());
     assertEquals(2, v.getViolations().size());
   }
-  
-  
+
+
   @Test(expected=ServiceException.class)
   public void testAsPayload_WithException() throws Exception {
     OverwritePayload handler = new OverwritePayload();
     List<SAXParseException> exceptions =
-        Arrays.asList(createException("first"), createException("second"));    
+        Arrays.asList(createException("first"), createException("second"));
     AdaptrisMessage msg = mock(AdaptrisMessage.class);
     doThrow(new RuntimeException()).when(msg).setContent(anyString(), anyString());
     handler.handle(exceptions, msg);

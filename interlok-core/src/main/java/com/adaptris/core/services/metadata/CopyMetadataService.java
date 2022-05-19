@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,6 +19,7 @@ package com.adaptris.core.services.metadata;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -47,10 +48,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * If the configured 'original' metadata key does not exist, then metadata is not copied, if the 'new' metadata key already exists,
  * it is overwritten.
  * </p>
- * 
+ *
  * @config copy-metadata-service
- * 
- * 
+ *
+ *
  */
 @XStreamAlias("copy-metadata-service")
 @AdapterComponent
@@ -68,20 +69,15 @@ public class CopyMetadataService extends MetadataServiceImpl {
     setMetadataKeys(new KeyValuePairCollection());
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    List<MetadataElement> copied = new ArrayList<>();
+    List<MetadataElement> toCopy = new ArrayList<>();
     for (KeyValuePair k : getMetadataKeys()) {
-      String value = msg.getMetadataValue(k.getKey());
-      if (value != null) {
-        MetadataElement e = new MetadataElement(k.getValue(), value);
-        msg.addMetadata(e);
-      }
+      Optional.ofNullable(msg.getMetadata(k.getKey()))
+          .ifPresent((e) -> toCopy.add(new MetadataElement(k.getValue(), e.getValue())));
     }
-    logMetadata("Copied Metadata : {}", copied);
+    msg.addMetadata(toCopy);
+    logMetadata("Copied Metadata : {}", toCopy);
   }
 
   /**
