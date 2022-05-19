@@ -208,7 +208,7 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
   }
 
   @Override
-  // The behavoiur of setMessageHeaders() was always additive, so we
+  // The behaviour of setMessageHeaders() was always additive, so we
   // just call addMessageHeaders instead.
   public void setMessageHeaders(Map<String, String> metadata) {
     addMessageHeaders(metadata);
