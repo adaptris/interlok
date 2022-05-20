@@ -1,7 +1,7 @@
 ext {
   componentName='Interlok Core/Bootstrap'
   componentDesc="Wrapper around spring-boot-loader using PropertyLauncher to bootrap Interlok"
-  springBootLoaderVersion='2.6.7'
+  springBootLoaderVersion='2.7.0'
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 }
 
