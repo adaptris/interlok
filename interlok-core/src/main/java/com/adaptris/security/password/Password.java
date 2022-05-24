@@ -68,23 +68,17 @@ public abstract class Password {
    */
   public static final String PORTABLE_PASSWORD_2 = "AES_GCM:";
   /**
-   * Alternative password style which is not portable across environments and machines
-   * <p>
-   * It is not considered especially secure, but is enough to stop casual interrogation
-   * </p>
-   *
-   * @deprecated since 3.11.1 since the implementation {@link PbeCrypto} this uses
-   *             PBEWithSHA1AndDESede which is a weak algorithm. This will be removed w/o warning.
-   *
+   * Alternative password style which is portable across environments
+   * and machines if the seed file is present. Uses a similar password
+   * based encryption scheme to the deprecated/removed non-portable
+   * PBEWithSHA1AndDESede. This uses the more up-to-date and secure
+   * PBEWithHmacSHA256AndAES_128.
    */
-  @Deprecated
-  @Removal(version = "4.0.0",
-      message = "This uses PBEWithSHA1AndDESede which is now cryptographically weak")
-  public static final String NON_PORTABLE_PASSWORD = "ALTPW:";
+  public static final String SEEDED_BATCH = "SEED:";
 
   private static final String[] STYLES =
   {
-          MSCAPI_STYLE, PORTABLE_PASSWORD, PORTABLE_PASSWORD_2
+          MSCAPI_STYLE, PORTABLE_PASSWORD, PORTABLE_PASSWORD_2, SEEDED_BATCH
   };
 
   /**
@@ -94,12 +88,11 @@ public abstract class Password {
    * @return the password implementation
    * @throws PasswordException wrapping other exceptions.
    * @see #MSCAPI_STYLE
-   * @see #NON_PORTABLE_PASSWORD
+   * @see #SEEDED_BATCH
    * @see #PORTABLE_PASSWORD
    */
   public static PasswordCodec create(String type) throws PasswordException {
     return INSTANCE.createCodec(type);
-
   }
 
   protected abstract PasswordCodec createCodec(String type) throws PasswordException;
@@ -121,7 +114,7 @@ public abstract class Password {
    * @param type the type of encryption to use.
    * @return the encoded password
    * @see #MSCAPI_STYLE
-   * @see #NON_PORTABLE_PASSWORD
+   * @see #SEEDED_BATCH
    * @see #PORTABLE_PASSWORD
    */
   public static String encode(String plain, String type) throws PasswordException {

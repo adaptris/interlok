@@ -19,6 +19,8 @@ package com.adaptris.security;
 import static org.junit.Assert.assertEquals;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
+
+import com.adaptris.security.password.SeededAesPbeCrypto;
 import org.junit.Test;
 import com.adaptris.interlok.junit.scaffolding.util.Os;
 import com.adaptris.security.certificate.CertificateBuilder;
@@ -44,20 +46,6 @@ public class TestPassword {
   }
 
   @Test
-  @SuppressWarnings("deprecation")
-  public void testNonPortableStyle() throws Exception {
-    PasswordCodec pw = Password.create(Password.NON_PORTABLE_PASSWORD);
-    assertEquals(PW, pw.decode(pw.encode(PW)));
-  }
-
-  @Test
-  @SuppressWarnings("deprecation")
-  public void testNonPortaableStyleWithCharset() throws Exception {
-    PasswordCodec pw = Password.create(Password.NON_PORTABLE_PASSWORD);
-    assertEquals(PW, pw.decode(pw.encode(PW, CHARSET), CHARSET));
-  }
-
-  @Test
   public void testMicrosoftCrypto() throws Exception {
     if (Os.isFamily(Os.WINDOWS_NT_FAMILY)) {
       specificMicrosoftSetup();
@@ -79,6 +67,13 @@ public class TestPassword {
     else {
       System.out.println("Not a MS platform! for testMicrosoftCryptoWithCharset()");
     }
+  }
+
+  @Test
+  public void testSeeded()throws Exception {
+    System.setProperty(SeededAesPbeCrypto.SYSTEM_PROPERTY, System.getProperty("user.dir") + "/build.gradle");
+    PasswordCodec pw = Password.create(Password.SEEDED_BATCH);
+    assertEquals(PW, Password.decode(pw.encode(PW)));
   }
 
   @Test
