@@ -139,7 +139,7 @@ public class SeededAesPbeCrypto extends PasswordImpl {
     try {
       if (seedFile == null) {
         if ((seedFile = System.getProperty(SYSTEM_PROPERTY)) == null) {
-          throw new PasswordException("No seed file specified in system properties \"password.seed\"");
+          throw new PasswordException("No seed file specified in system properties \"" + SYSTEM_PROPERTY + "\"");
         }
       }
       try (FileInputStream in = new FileInputStream(seedFile)) {

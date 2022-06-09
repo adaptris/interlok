@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.security.password;
 
@@ -20,9 +20,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.ServiceLoader;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.adaptris.annotation.Removal;
+
 import com.adaptris.security.exc.PasswordException;
 
 /**
@@ -77,9 +78,9 @@ public abstract class Password {
   public static final String SEEDED_BATCH = "SEED:";
 
   private static final String[] STYLES =
-  {
-          MSCAPI_STYLE, PORTABLE_PASSWORD, PORTABLE_PASSWORD_2, SEEDED_BATCH
-  };
+    {
+        MSCAPI_STYLE, PORTABLE_PASSWORD, PORTABLE_PASSWORD_2, SEEDED_BATCH
+    };
 
   /**
    * Create a password implementation of the specified type.
