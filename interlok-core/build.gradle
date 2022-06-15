@@ -10,7 +10,7 @@ ext {
   mockitoVersion = '4.6.0'
   jschVersion = '0.2.1'
   mssqlDriverVersion = '9.2.1.jre8'
-  derbyDriverVersion = '10.15.2.0'
+  derbyDriverVersion = '10.16.1.1'
 
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
   classesToTest = project.hasProperty("junit.test.classes") ? project.getProperty("junit.test.classes") : "**/*Test*"
