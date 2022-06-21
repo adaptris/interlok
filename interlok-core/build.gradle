@@ -85,7 +85,7 @@ dependencies {
   api ("org.glassfish.external:opendmk_jmxremote_optional_jar:1.0-b01-ea")
   api ("org.glassfish.external:opendmk_jdmkrt_jar:1.0-b01-ea")
   api ("com.github.mwiede:jsch:$jschVersion")
-  api ("org.eclipse.jetty.aggregate:jetty-all:9.4.46.v20220331")
+  api ("org.eclipse.jetty.aggregate:jetty-all:9.4.47.v20220610")
   api ("javax.servlet:javax.servlet-api:4.0.1")
   api ("net.sf.joost:joost:0.9.1")
   api ("org.quartz-scheduler:quartz:2.3.2") {
