@@ -12,9 +12,9 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v2.4.0
+      uses: actions/checkout@v3
     - name: Set up JDK 11
-      uses: actions/setup-java@v2.5.0
+      uses: actions/setup-java@v3
       with:
         java-version: 11
         distribution: 'temurin'
@@ -24,12 +24,12 @@ jobs:
         sudo systemctl enable haveged
         sudo systemctl restart haveged
     - name: Gradle Wrapper Cache
-      uses: actions/cache@v2.1.7
+      uses: actions/cache@v3
       with:
         path: ~/.gradle/wrapper
         key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle-wrapper.properties') }}
     - name: Gradle Dependencies Cache
-      uses: actions/cache@v2.1.7
+      uses: actions/cache@v3
       with:
         path: ~/.gradle/caches
         key: ${{ runner.os }}-gradle-cache-${{ hashFiles('**/*.gradle') }}
@@ -42,4 +42,4 @@ jobs:
         echo "junit.jms.tests.enabled=false" >> ./interlok-core/build.properties
         ./gradlew -Djava.security.egd=file:/dev/./urandom -Dorg.gradle.console=plain --no-daemon -PverboseTests=true check
     - name: codecov.io
-      uses: codecov/codecov-action@v2.1.0
+      uses: codecov/codecov-action@v3

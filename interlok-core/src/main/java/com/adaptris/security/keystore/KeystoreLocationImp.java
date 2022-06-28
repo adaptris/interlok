@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,8 +16,11 @@
 
 package com.adaptris.security.keystore;
 
+import java.util.Optional;
 import java.util.Properties;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,9 +33,13 @@ import com.adaptris.security.util.SecurityUtil;
 abstract class KeystoreLocationImp implements KeystoreLocation {
 
   protected static Logger logR = LoggerFactory.getLogger(KeystoreLocation.class);
-  private char[] keyStorePassword;
-
-  private String keyStoreType;
+  @Getter
+  private char[] keystorePassword;
+  @Getter
+  @Setter
+  private String keystoreType;
+  @Getter
+  @Setter
   private Properties additionalParams;
 
   /**
@@ -46,44 +53,13 @@ abstract class KeystoreLocationImp implements KeystoreLocation {
   }
 
   /**
-   * Get the type of keystore.
-   * <p>
-   * Natively jdk1.4 supports the <b>JKS </b> and <b>JCEKS </b> types, <b>JCEKS
-   * </b> being more secure.
-   * </p>
-   * <p>
-   * In addition to these two types, we also support the <b>BKS </b> keystore
-   * type which is part of the BC JCE implementation
-   * </p>
-   *
-   * @return the keystore type.
-   */
-  public String getKeyStoreType() {
-    return keyStoreType;
-  }
-
-  /**
-   * Set the keystore type.
-   *
-   * @see #getKeyStoreType()
-   * @param s
-   *          the keystore type
-   */
-  public void setKeystoreType(String s) {
-    keyStoreType = s;
-  }
-
-
-  /**
    * Set the keystore password.
    *
    * @param s
    *          the keystore password.
    */
   public void setKeystorePassword(String s) {
-    if (s != null) {
-      keyStorePassword = s.toCharArray();
-    }
+    Optional.ofNullable(s).ifPresent((pw) -> setKeystorePassword(pw.toCharArray()));
   }
 
   /**
@@ -92,16 +68,7 @@ abstract class KeystoreLocationImp implements KeystoreLocation {
    * @param c the keystore password.
    */
   public void setKeystorePassword(char[] c) {
-    keyStorePassword = c;
-  }
-
-  /**
-   * Return the keystore password.
-   *
-   * @return the keystore password
-   */
-  public char[] getKeystorePassword() {
-    return keyStorePassword;
+    keystorePassword = c;
   }
 
   /**
@@ -117,18 +84,4 @@ abstract class KeystoreLocationImp implements KeystoreLocation {
    */
   @Override
   public abstract int hashCode();
-
-  /**
-   * @return the additionalParams
-   */
-  public Properties getAdditionalParams() {
-    return additionalParams;
-  }
-
-  /**
-   * @param p the additionalParams to set
-   */
-  public void setAdditionalParams(Properties p) {
-    this.additionalParams = p;
-  }
 }

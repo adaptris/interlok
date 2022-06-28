@@ -1,17 +1,18 @@
 plugins {
   // Manage optional dependencies in maven pom.
   id 'nebula.optional-base' version '7.0.0' apply false
-  id 'com.github.spotbugs' version '5.0.5' apply false
+  id 'com.github.spotbugs' version '5.0.7' apply false
   id "org.sonarqube" version '3.3' apply false
-  id 'org.owasp.dependencycheck' version '6.5.3' apply false
-  id "io.freefair.lombok" version "6.3.0" apply false
+  id 'org.owasp.dependencycheck' version '7.1.0.1' apply false
+  id "io.freefair.lombok" version "6.4.3" apply false
   // id 'org.kordamp.gradle.jdeps' version '0.12.0' apply false
-  id "org.gradle.test-retry" version "1.3.1" apply false
+  id "org.gradle.test-retry" version "1.4.0" apply false
+  id 'org.barfuin.gradle.taskinfo' version '1.4.0'
 }
 
 ext {
-  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '4.4-SNAPSHOT'
-  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '4.4-SNAPSHOT'
+  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '4.5-SNAPSHOT'
+  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '4.5-SNAPSHOT'
   nexusBaseUrl = project.hasProperty('nexusBaseUrl') ? project.getProperty('nexusBaseUrl') : 'https://nexus.adaptris.net/nexus'
   mavenPublishUrl = project.hasProperty('mavenPublishUrl') ? project.getProperty('mavenPublishUrl') : nexusBaseUrl + '/content/repositories/snapshots'
   javadocsBaseUrl = nexusBaseUrl + "/content/sites/javadocs/com/adaptris"
@@ -150,6 +151,20 @@ subprojects { subproject ->
       reports {
         xml.required= true
         html.required= true
+      }
+      // Build the report ignoring the generating files
+      // This need to be mirrored in any code-coverage config, probably
+      // copy stuff from .codecov.yml
+      afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+          fileTree(dir: it, exclude: [
+            "**/adaptris/test/**/",
+            "**/test/**/",
+            "**/com/adaptris/logging/jmx/**",
+            "**/com/adaptris/logging/log4j2/*JmxLogAppender*",
+            "**/com/adaptris/taglet/**/"
+          ])
+        }))
       }
     }
     check.dependsOn jacocoTestReport

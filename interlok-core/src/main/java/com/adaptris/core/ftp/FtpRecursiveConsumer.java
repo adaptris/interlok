@@ -151,10 +151,7 @@ public class FtpRecursiveConsumer extends FtpConsumer
   @Override
   protected AdaptrisMessage addStandardMetadata(AdaptrisMessage msg, String filename, String dir) {
     super.addStandardMetadata(msg, filename, dir);
-    File parent = new File(dir);
-    if (parent != null) {
-      msg.addMetadata(CoreConstants.FS_CONSUME_PARENT_DIR, parent.getName());
-    }
+    msg.addMetadata(CoreConstants.FS_CONSUME_PARENT_DIR, new File(dir).getName());
     return msg;
   }
 

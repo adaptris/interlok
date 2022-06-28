@@ -36,6 +36,7 @@ import java.util.Properties;
 import java.util.concurrent.Executor;
 import com.adaptris.core.util.JdbcUtil;
 
+@SuppressWarnings({"lgtm [java/sql-injection]"})
 public class ProxySqlConnection implements Connection {
 
   private Connection connection;

@@ -47,6 +47,7 @@ public abstract class FsHelper {
    * Go straight to a {@link File} from a url style string.
    *
    */
+  @SuppressWarnings({"lgtm [java/path-injection]"})
   public static File toFile(String s) throws IOException, URISyntaxException {
     try {
       return createFileReference(createUrlFromString(s, true));

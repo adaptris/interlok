@@ -154,7 +154,7 @@ public class FailoverConnectionTest extends com.adaptris.interlok.junit.scaffold
   @Test
   public void testConnection_BadPassword() throws Exception {
     FailoverConfig cfg = createFailoverConfig();
-    cfg.setPassword("ALTPW:abcdef");
+    cfg.setPassword("SEED:abcdef");
     FailoverConnection c = new FailoverConnection(cfg);
     try {
       Connection con = c.getConnection();

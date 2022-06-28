@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,6 +24,8 @@ import java.util.Properties;
 
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.util.stream.StreamUtil;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * A Keystore that resides on a remote machine.
@@ -35,19 +37,11 @@ import com.adaptris.util.stream.StreamUtil;
  * @author lchan
  * @author $Author: lchan $
  */
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 final class RemoteUrlKeystore extends ReadonlyKeystore {
 
   private URL keyStoreUrl = null;
   private InputStream urlInput;
-
-  /**
-   * @see Object#Object()
-   *
-   *
-   */
-  RemoteUrlKeystore() {
-    super();
-  }
 
   /**
    * Constructor.
@@ -88,7 +82,7 @@ final class RemoteUrlKeystore extends ReadonlyKeystore {
   /** @see Object#toString() */
   @Override
   public String toString() {
-    return "[" + getKeyStoreType() + "][" + keyStoreUrl.toString() + "]";
+    return "[" + getKeystoreType() + "][" + keyStoreUrl.toString() + "]";
   }
 
   /**
@@ -121,7 +115,7 @@ final class RemoteUrlKeystore extends ReadonlyKeystore {
     if (o instanceof RemoteUrlKeystore) {
       RemoteUrlKeystore rhs = (RemoteUrlKeystore) o;
       rc = getKeyStoreUrl().equals(rhs.getKeyStoreUrl())
-          && getKeyStoreType().equals(rhs.getKeyStoreType());
+          && getKeystoreType().equals(rhs.getKeystoreType());
     }
     return rc;
   }
@@ -131,7 +125,7 @@ final class RemoteUrlKeystore extends ReadonlyKeystore {
    */
   @Override
   public int hashCode() {
-    return getKeyStoreUrl().hashCode() + getKeyStoreType().hashCode();
+    return getKeyStoreUrl().hashCode() + getKeystoreType().hashCode();
   }
 
   private static InputStream readUrl(URL u) throws IOException {

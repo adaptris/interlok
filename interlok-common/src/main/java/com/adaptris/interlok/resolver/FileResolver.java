@@ -85,6 +85,7 @@ public class FileResolver extends ResolverImp
   }
 
   @Override
+  @SuppressWarnings({"lgtm [java/path-injection]"})
   public String resolve(String lookupValue, InterlokMessage target)
   {
     if (lookupValue == null)

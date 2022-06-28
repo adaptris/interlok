@@ -72,7 +72,8 @@ public class ReadFileService extends ServiceImp {
       throw ExceptionHelper.wrapServiceException(e);
     }
   }
-  
+
+  @SuppressWarnings({"lgtm [java/path-injection]"})
   private static File convertToFile(String filepath) throws FsException {
     try {
       return isFile(checkReadable(FsHelper.toFile(filepath)));
@@ -106,7 +107,7 @@ public class ReadFileService extends ServiceImp {
 
   /**
    * Get the file path parameter.
-   * 
+   *
    * @return The file path parameter.
    */
   public String getFilePath() {
@@ -115,7 +116,7 @@ public class ReadFileService extends ServiceImp {
 
   /**
    * Set the file path parameter.
-   * 
+   *
    * @param filePath The file path parameter.
    */
   public void setFilePath(final String filePath) {
@@ -128,7 +129,7 @@ public class ReadFileService extends ServiceImp {
 
   /**
    * Sets the metadata key set the content type as, if not provided will not be set. (default: null)
-   * 
+   *
    * @param contentTypeMetadataKey
    */
   public void setContentTypeMetadataKey(String contentTypeMetadataKey) {
@@ -146,7 +147,7 @@ public class ReadFileService extends ServiceImp {
    * By default {@link Files#probeContentType(java.nio.file.Path)} is used which means no additional jars are required. This
    * implementation is platform dependent; so an alternative is available in the {@code com.adaptris:interlok-filesystem} module.
    * </p>
-   * 
+   *
    * @param contentTypeProbe how to probe for the content type; by default uses {@link Files#probeContentType(java.nio.file.Path)}
    *        if not explicitly configured.
    */

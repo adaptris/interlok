@@ -79,6 +79,7 @@ public class ServiceFromDatabase extends ExtractorWithConnection {
   }
 
   @Override
+  @SuppressWarnings({"lgtm [java/sql-injection]"})
   public InputStream getInputStream(AdaptrisMessage m) throws Exception {
     Args.notBlank(getQuery(), "query");
     Connection jdbcCon = getConnection().retrieveConnection(DatabaseConnection.class).connect();

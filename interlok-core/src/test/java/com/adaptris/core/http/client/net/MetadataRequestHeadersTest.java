@@ -16,30 +16,23 @@
 
 package com.adaptris.core.http.client.net;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.Channel;
-import com.adaptris.core.metadata.NoOpMetadataFilter;
-import com.adaptris.core.metadata.RegexMetadataFilter;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import org.junit.Test;
+
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.Channel;
+import com.adaptris.core.metadata.NoOpMetadataFilter;
+import com.adaptris.core.metadata.RegexMetadataFilter;
+
 public class MetadataRequestHeadersTest extends RequestHeadersCase {
-
-  @Before
-  public void setUp() throws Exception {}
-
-  @After
-  public void tearDown() throws Exception {}
 
   @Test
   public void testFilter() throws Exception {

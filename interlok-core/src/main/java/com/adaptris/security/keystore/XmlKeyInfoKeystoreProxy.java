@@ -16,6 +16,9 @@
 
 package com.adaptris.security.keystore;
 
+import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
+import com.adaptris.security.exc.AdaptrisSecurityException;
+import com.adaptris.security.exc.KeystoreException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
@@ -34,12 +37,10 @@ import javax.xml.crypto.dsig.keyinfo.KeyInfoFactory;
 import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import lombok.NoArgsConstructor;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
-import com.adaptris.security.exc.AdaptrisSecurityException;
-import com.adaptris.security.exc.KeystoreException;
 
 /**
  *
@@ -47,28 +48,10 @@ import com.adaptris.security.exc.KeystoreException;
  *
  * @author $Author: lchan $
  */
+@NoArgsConstructor
 class XmlKeyInfoKeystoreProxy extends SingleEntryKeystoreProxy {
 
-  private X509Certificate x509Certificates[] = null;
-
-  /**
-   * Default Constructor.
-   */
-  public XmlKeyInfoKeystoreProxy() {
-  }
-
-  /**
-   * Construct the object using the KeyStoreInfo object.
-   *
-   * @param k the KeyStoreInfo object
-   * @see KeystoreLocation
-   * @throws AdaptrisSecurityException if an error is encountered
-   */
-  public XmlKeyInfoKeystoreProxy(KeystoreLocation k)
-                                                    throws AdaptrisSecurityException {
-    this();
-    setKeystoreLocation(k);
-  }
+  private X509Certificate[] x509Certificates = null;
 
   /**
    * Load the keystore.
