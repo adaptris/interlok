@@ -76,4 +76,12 @@
     <cve>CVE-2021-21350</cve>
     <cve>CVE-2021-21351</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: log4j-1.2-*.jar
+    This CVE matches a AWS CVE for a hotfix they patched a JVM with. This is a false positive
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.logging\.log4j/log4j.*$</packageUrl>
+    <cve>CVE-2022-33915</cve>
+  </suppress>  
 </suppressions>
