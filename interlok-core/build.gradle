@@ -3,7 +3,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 ext {
   componentName='Interlok Core/Base'
   componentDesc="The Core Interlok framework component; this is your must have"
-  activeMqVersion='5.17.1'
+  activeMqVersion='5.17.2'
   bouncyCastleVersion='1.70'
   mysqlDriverVersion='8.0.30'
   slf4jVersion = '1.7.36'
