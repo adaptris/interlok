@@ -3,7 +3,7 @@ ext {
   componentDesc="Common components for Interlok"
 
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
-  slf4jVersion = '1.7.36'
+  slf4jVersion = '2.0.0'
   log4j2Version = "2.18.0"
   mockitoVersion = '4.8.0'
 }
