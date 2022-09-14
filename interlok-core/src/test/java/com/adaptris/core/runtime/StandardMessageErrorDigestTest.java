@@ -1,18 +1,18 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.runtime;
 
@@ -24,18 +24,20 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.management.JMX;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
+
 import org.apache.commons.io.FileCleaningTracker;
 import org.apache.commons.io.FileDeleteStrategy;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
+
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -48,15 +50,12 @@ import com.adaptris.core.Workflow;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
 
-@SuppressWarnings("deprecation")
 public class StandardMessageErrorDigestTest extends ComponentManagerCase {
 
-  protected transient Log logR = LogFactory.getLog(this.getClass());
   private static FileCleaningTracker cleaner = new FileCleaningTracker();
 
   public StandardMessageErrorDigestTest() {
   }
-
 
   @Test
   public void testSetMaxCount() throws Exception {
@@ -139,7 +138,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
       ObjectName digesterObj = createMessageErrorDigestObjectName(adapterName, getName());
       StandardMessageErrorDigesterJmxMBean errDigester = JMX.newMBeanProxy(mBeanServer, digesterObj,
           StandardMessageErrorDigesterJmxMBean.class);
-      AdapterManagerMBean adapterManager = JMX.newMBeanProxy(mBeanServer, adapterObj, AdapterManagerMBean.class);
+      JMX.newMBeanProxy(mBeanServer, adapterObj, AdapterManagerMBean.class);
       assertNotNull(errDigester.getParentObjectName());
       assertEquals(adapterObj, errDigester.getParentObjectName());
     }
@@ -159,7 +158,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
     try {
       start(adapter);
       register(mBeans);
-      ObjectName adapterObj = createAdapterObjectName(adapterName);
+      createAdapterObjectName(adapterName);
       ObjectName digesterObj = createMessageErrorDigestObjectName(adapterName, getName());
       StandardMessageErrorDigesterJmxMBean errDigester = JMX.newMBeanProxy(mBeanServer, digesterObj,
           StandardMessageErrorDigesterJmxMBean.class);
@@ -194,7 +193,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
     try {
       start(adapter);
       register(mBeans);
-      ObjectName adapterObj = createAdapterObjectName(adapterName);
+      createAdapterObjectName(adapterName);
       ObjectName digesterObj = createMessageErrorDigestObjectName(adapterName, getName());
       StandardMessageErrorDigesterJmxMBean errDigester = JMX.newMBeanProxy(mBeanServer, digesterObj,
           StandardMessageErrorDigesterJmxMBean.class);
@@ -227,7 +226,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
     try {
       start(adapter);
       register(mBeans);
-      ObjectName adapterObj = createAdapterObjectName(adapterName);
+      createAdapterObjectName(adapterName);
       ObjectName digesterObj = createMessageErrorDigestObjectName(adapterName, getName());
       StandardMessageErrorDigesterJmxMBean errDigesterBean = JMX.newMBeanProxy(mBeanServer, digesterObj,
           StandardMessageErrorDigesterJmxMBean.class);
@@ -258,7 +257,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
     try {
       start(adapter);
       register(mBeans);
-      ObjectName adapterObj = createAdapterObjectName(adapterName);
+      createAdapterObjectName(adapterName);
       ObjectName digesterObj = createMessageErrorDigestObjectName(adapterName, getName());
       StandardMessageErrorDigesterJmxMBean errDigesterBean = JMX.newMBeanProxy(mBeanServer, digesterObj,
           StandardMessageErrorDigesterJmxMBean.class);
@@ -285,7 +284,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
     Adapter adapter = createAdapter(adapterName);
     adapter.setMessageErrorDigester(new StandardMessageErrorDigester(getName()));
     AdapterManager adapterManager = new AdapterManager(adapter);
-    List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
+    List<BaseComponentMBean> mBeans = new ArrayList<>();
     mBeans.add(adapterManager);
     mBeans.addAll(adapterManager.getAllDescendants());
     try {
@@ -314,7 +313,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
     try {
       start(adapter);
       register(mBeans);
-      ObjectName adapterObj = createAdapterObjectName(adapterName);
+      createAdapterObjectName(adapterName);
       ObjectName digesterObj = createMessageErrorDigestObjectName(adapterName, getName());
 
       StandardMessageErrorDigesterJmxMBean errDigester = JMX.newMBeanProxy(mBeanServer, digesterObj,
@@ -326,7 +325,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
       assertNotNull(errDigester.getDigest());
       assertEquals(5, errDigester.getDigest().size());
       assertEquals(5, errDigester.getTotalErrorCount());
-      errDigester.remove(new MessageDigestErrorEntry(msgs.get(0).getUniqueId(), null));
+      errDigester.remove(new MessageDigestErrorEntry(msgs.get(0).getUniqueId(), null), false);
       assertEquals(4, errDigester.getDigest().size());
       assertEquals(5, errDigester.getTotalErrorCount());
     }
@@ -349,7 +348,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
     try {
       start(adapter);
       register(mBeans);
-      ObjectName adapterObj = createAdapterObjectName(adapterName);
+      createAdapterObjectName(adapterName);
       ObjectName digesterObj = createMessageErrorDigestObjectName(adapterName, getName());
 
       StandardMessageErrorDigesterJmxMBean errDigester = JMX.newMBeanProxy(mBeanServer, digesterObj,
@@ -380,7 +379,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
     try {
       start(adapter);
       register(mBeans);
-      ObjectName adapterObj = createAdapterObjectName(adapterName);
+      createAdapterObjectName(adapterName);
       ObjectName digesterObj = createMessageErrorDigestObjectName(adapterName, getName());
 
       StandardMessageErrorDigesterJmxMBean errDigester = JMX.newMBeanProxy(mBeanServer, digesterObj,
@@ -392,7 +391,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
       assertNotNull(errDigester.getDigest());
       assertEquals(5, errDigester.getDigest().size());
       assertEquals(5, errDigester.getTotalErrorCount());
-      errDigester.remove(msgs.get(0).getUniqueId());
+      errDigester.remove(msgs.get(0).getUniqueId(), false);
       assertEquals(4, errDigester.getDigest().size());
       assertEquals(5, errDigester.getTotalErrorCount());
     }
@@ -415,7 +414,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
     try {
       start(adapter);
       register(mBeans);
-      ObjectName adapterObj = createAdapterObjectName(adapterName);
+      createAdapterObjectName(adapterName);
       ObjectName digesterObj = createMessageErrorDigestObjectName(adapterName, getName());
 
       StandardMessageErrorDigesterJmxMBean errDigester = JMX.newMBeanProxy(mBeanServer, digesterObj,
@@ -476,7 +475,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
   }
 
   private List<AdaptrisMessage> createMessages(int size, int start) {
-    List<AdaptrisMessage> errors = new ArrayList<AdaptrisMessage>();
+    List<AdaptrisMessage> errors = new ArrayList<>();
     for (int i = 0; i < size; i++) {
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
       msg.addMetadata(Workflow.WORKFLOW_ID_KEY, "workflow" + (i + start));
@@ -486,7 +485,7 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
   }
 
   private List<AdaptrisMessage> createListOfErrors(int size, int start, String errorMsg, String fsLocation) {
-    List<AdaptrisMessage> errors = new ArrayList<AdaptrisMessage>();
+    List<AdaptrisMessage> errors = new ArrayList<>();
     for (int i = 0; i < size; i++) {
       errors.add(createMessageWithErrors("workflow" + (i + start), errorMsg, fsLocation));
     }

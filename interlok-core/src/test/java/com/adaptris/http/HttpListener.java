@@ -1,18 +1,18 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.http;
 
@@ -20,7 +20,8 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -42,7 +43,7 @@ import org.apache.commons.logging.LogFactory;
  * it passes the socket to RequestDispatcher to delegate to any matching
  * requestProcessors for the specified URL.
  * </p>
- * 
+ *
  * @see HttpSession
  * @see RequestProcessor
  */
@@ -61,9 +62,8 @@ public class HttpListener implements Listener, Runnable {
   protected boolean initialised = false;
 
   private boolean started = true;
-  private Hashtable requestProcessors;
+  private Map<String, LinkedBlockingQueue<RequestProcessor>> requestProcessors;
   private ExecutorService dispatcherPool;
-  private int poolSize;
   private Thread listenerThread;
 
   /** Default Constructor */
@@ -73,7 +73,7 @@ public class HttpListener implements Listener, Runnable {
 
   /**
    * HttpListener
-   * 
+   *
    * @param listenPort the port to listen on
    */
   public HttpListener(int listenPort) {
@@ -82,7 +82,7 @@ public class HttpListener implements Listener, Runnable {
 
   /**
    * HttpListener Constructor.
-   * 
+   *
    * @param listenPort the port to listen on
    * @param poolSize the initial size of the threadpool that will service
    *          requests.
@@ -90,8 +90,7 @@ public class HttpListener implements Listener, Runnable {
   public HttpListener(int listenPort, int poolSize) {
     this();
     this.listenPort = listenPort;
-    this.poolSize = poolSize;
-    requestProcessors = new Hashtable();
+    requestProcessors = new HashMap<>();
     dispatcherPool = Executors.newCachedThreadPool();
     if (dispatcherPool instanceof ThreadPoolExecutor) {
       ((ThreadPoolExecutor) dispatcherPool).setCorePoolSize(poolSize);
@@ -100,19 +99,20 @@ public class HttpListener implements Listener, Runnable {
 
   /**
    * Add a request processor to the list
-   * 
+   *
    * @param rp the request processor.
    * @throws HttpException on error.
    */
+  @Override
   public synchronized void addRequestProcessor(RequestProcessor rp)
       throws HttpException {
     try {
 
       String uri = rp.getUri();
-      LinkedBlockingQueue list = (LinkedBlockingQueue) requestProcessors
+      LinkedBlockingQueue<RequestProcessor> list = requestProcessors
           .get(uri);
       if (list == null) {
-        list = new LinkedBlockingQueue();
+        list = new LinkedBlockingQueue<>();
       }
       list.put(rp);
       requestProcessors.put(uri, list);
@@ -125,6 +125,7 @@ public class HttpListener implements Listener, Runnable {
   /**
    * @see com.adaptris.http.Listener#isAlive()
    */
+  @Override
   public final boolean isAlive() {
     return started;
   }
@@ -132,6 +133,7 @@ public class HttpListener implements Listener, Runnable {
   /**
    * @see Listener#initialise()
    */
+  @Override
   public void initialise() throws HttpException {
     if (initialised) {
       return;
@@ -160,6 +162,7 @@ public class HttpListener implements Listener, Runnable {
   /**
    * @see Listener#stop()
    */
+  @Override
   public void stop() throws HttpException {
     started = false;
     try {
@@ -175,6 +178,7 @@ public class HttpListener implements Listener, Runnable {
   /**
    * @see Listener#start()
    */
+  @Override
   public void start() throws HttpException {
     if (!initialised) {
       initialise();
@@ -186,6 +190,7 @@ public class HttpListener implements Listener, Runnable {
   }
 
   /** @see Runnable#run() */
+  @Override
   public void run() {
     try {
       logR.trace("Accepting Connections");
@@ -232,7 +237,7 @@ public class HttpListener implements Listener, Runnable {
    * <code>SocketTimeoutException</code> is thrown, forcing the listener to
    * process some other actions (like shutdown!).
    * </p>
-   * 
+   *
    * @param timeout the timeout.
    */
   public void setServerSocketTimeout(int timeout) {
@@ -241,7 +246,7 @@ public class HttpListener implements Listener, Runnable {
 
   /**
    * Set the socket timeout for each requested socket
-   * 
+   *
    * @param timeout the timeout
    */
   public void setSocketTimeout(int timeout) {
@@ -254,7 +259,7 @@ public class HttpListener implements Listener, Runnable {
    * Sub-classes should override this method to accept a connection.
    */
   private Socket getIncomingRequest() throws SocketTimeoutException,
-      HttpException {
+  HttpException {
 
     Socket socket = null;
     try {

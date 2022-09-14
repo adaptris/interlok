@@ -18,18 +18,17 @@ package com.adaptris.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+
 import java.io.ByteArrayOutputStream;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
 import org.junit.Test;
+
 import com.adaptris.util.text.mime.ByteArrayDataSource;
 
 public class ByteArrayDataSourceTest {
 
   private static final String EXAMPLE_XML = "<document>" + "<root>"
       + "<data>abcdefg</data>" + "</root>" + "</document>";
-
-  private transient Log logR = LogFactory.getLog(this.getClass());;
 
   @Test
   public void testInputStream() throws Exception {

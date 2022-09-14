@@ -17,9 +17,9 @@
 package com.adaptris.core.services.routing;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
 import org.junit.Test;
+
 import com.adaptris.core.ServiceException;
 
 public class RegexpSyntaxIdentifierTest extends SyntaxIdentifierCase {
@@ -29,9 +29,6 @@ public class RegexpSyntaxIdentifierTest extends SyntaxIdentifierCase {
   public static final String MATCHING_2 = ".+lazy.+";
   public static final String UNMATCHED_1 = ".+ZZZZ.+";
   public static final String UNMATCHED_2 = ".+YYYY.+";
-
-  private static Log logR = LogFactory.getLog(RegexpSyntaxIdentifierTest.class);
-
 
   @Override
   public RegexpSyntaxIdentifier createIdentifier() {

@@ -1,55 +1,47 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.http;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.Base64;
 import java.util.Enumeration;
 
 import javax.mail.Header;
 import javax.mail.internet.InternetHeaders;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.adaptris.util.text.Conversion;
-
 /** Fields used during an HTTP Conversation.
- *  <p>This class allows the manipulation of an HTTP conversation.  
- *  Both the client and server side of the conversation can be handled using 
+ *  <p>This class allows the manipulation of an HTTP conversation.
+ *  Both the client and server side of the conversation can be handled using
  *  this class
  */
 public class HttpHeaders implements DataTransfer {
 
   private InternetHeaders headers;
-  private static Log logR = null;
 
   /** @see Object#Object()
    */
   public HttpHeaders() {
-    if (logR == null) {
-      logR = LogFactory.getLog(this.getClass());
-    }
     headers = new InternetHeaders();
   }
 
   /**
-   * Add an entry into the collection, if values is null, then the entry is 
+   * Add an entry into the collection, if values is null, then the entry is
    * removed
    * @param key the header
    * @param value the values to associated with this key
@@ -58,7 +50,7 @@ public class HttpHeaders implements DataTransfer {
     if (value == null) {
       removeHeader(key);
     } else {
-      if (this.containsHeader(key)) {
+      if (containsHeader(key)) {
         removeHeader(key);
       }
       headers.setHeader(key, value);
@@ -67,7 +59,7 @@ public class HttpHeaders implements DataTransfer {
   }
 
   /**
-   * remove an entry from the collection, the search for the key is 
+   * remove an entry from the collection, the search for the key is
    * case-insensitive.
    * @param key the key
    */
@@ -81,16 +73,16 @@ public class HttpHeaders implements DataTransfer {
    * @return an enumeration containing javax.mail.Header objects.
    * @see javax.mail.Header
    */
-  public Enumeration getAllHeaders() {
-    return (headers.getAllHeaders());
+  public Enumeration<Header> getAllHeaders() {
+    return headers.getAllHeaders();
   }
 
   /** Return an enumeration containing all the headers as strings.
-   *  @return an enumeration containing strings in the form 
+   *  @return an enumeration containing strings in the form
    *  <code>Content-Length: 5555</code>
    */
-  public Enumeration getAllHeaderLines() {
-    return (headers.getAllHeaderLines());
+  public Enumeration<String> getAllHeaderLines() {
+    return headers.getAllHeaderLines();
   }
   /**
    * Get the values associated with this key
@@ -100,24 +92,24 @@ public class HttpHeaders implements DataTransfer {
   public String get(String key) {
 
     String rc = null;
-    if ((key != null) && this.containsHeader(key)) {
+    if (key != null && containsHeader(key)) {
       String[] s = headers.getHeader(key);
       rc = s[0];
     }
     return rc;
   }
-  
+
   /** Add all the header elements to this set of headers.
    *  <p>Any existing headers will be replaced.
-   * 
+   *
    * @param other the HttpHeaders object containing the headers to be added.
    */
   public void putAll(HttpHeaders other) {
-    Enumeration e = other.getAllHeaders();
+    Enumeration<Header> e = other.getAllHeaders();
     while (e.hasMoreElements()) {
-      Header h = (Header) e.nextElement();
-      this.put(h.getName(), h.getValue());
-    }    
+      Header h = e.nextElement();
+      put(h.getName(), h.getValue());
+    }
   }
 
   /**
@@ -127,23 +119,23 @@ public class HttpHeaders implements DataTransfer {
    */
   public boolean containsHeader(String key) {
     String[] keys = { key };
-    Enumeration e = headers.getMatchingHeaders(keys);
-    return (e.hasMoreElements());
+    Enumeration<Header> e = headers.getMatchingHeaders(keys);
+    return e.hasMoreElements();
   }
 
   /** Return the content length associated with this set of headers.
    *  @return the content length, -1 if it is not specified, or does not exist
    */
   public int getContentLength() {
-    return (
-      containsHeader(Http.CONTENT_LENGTH)
+    return containsHeader(Http.CONTENT_LENGTH)
         ? Integer.parseInt(get(Http.CONTENT_LENGTH).trim())
-        : -1);
+            : -1;
   }
 
   /** Read the header portion of a HTTP converstion.
    * @see DataTransfer#load(InputStream)
    */
+  @Override
   public void load(InputStream in) throws HttpException {
     headers = new InternetHeaders();
     synchronized (in) {
@@ -159,6 +151,7 @@ public class HttpHeaders implements DataTransfer {
   /** Write this set of headers to the supplied outputstream.
    *  @see DataTransfer#writeTo(OutputStream)
    */
+  @Override
   public void writeTo(OutputStream out) throws HttpException {
     try {
 
@@ -172,15 +165,16 @@ public class HttpHeaders implements DataTransfer {
 
   /** @see Object#toString()
    */
+  @Override
   public String toString() {
     StringBuffer sb = new StringBuffer();
-    Enumeration e = this.getAllHeaderLines();
+    Enumeration<String> e = getAllHeaderLines();
     while (e.hasMoreElements()) {
       sb.append(e.nextElement().toString());
       sb.append(Http.CRLF);
     }
     sb.append(Http.CRLF);
-    return (sb.toString());
+    return sb.toString();
   }
 
   /** Return a string representation of this set of headers adding the specified
@@ -188,12 +182,12 @@ public class HttpHeaders implements DataTransfer {
    *  @see #toString()
    */
   public String toString(int contentLength) {
-    this.put(Http.CONTENT_LENGTH, String.valueOf(contentLength));
+    put(Http.CONTENT_LENGTH, String.valueOf(contentLength));
     return toString();
   }
 
   /** Build a RFC2617 basic authorisation string.
-   * 
+   *
    * @param user the user
    * @param password the password
    * @return the RFC2617 auth
@@ -201,11 +195,11 @@ public class HttpHeaders implements DataTransfer {
   public static String buildBasicRfc2617(String user, String password) {
 
     String authString = "";
-    if ((user != null) && (user.length() > 0)) {
+    if (user != null && user.length() > 0) {
 
       String source = user + ":" + password;
       authString =
-        "Basic " + Conversion.byteArrayToBase64String(source.getBytes());
+          "Basic " + Base64.getEncoder().encodeToString(source.getBytes());
     }
     return authString;
   }

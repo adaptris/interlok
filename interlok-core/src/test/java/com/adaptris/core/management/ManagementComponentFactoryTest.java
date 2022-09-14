@@ -17,18 +17,17 @@
 package com.adaptris.core.management;
 
 import static org.junit.Assert.assertEquals;
+
 import java.util.List;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
 import org.junit.Test;
+
 import com.adaptris.core.ClosedState;
 import com.adaptris.core.management.jetty.ServerBuilder;
 import com.adaptris.interlok.junit.scaffolding.BaseCase;
 import com.adaptris.interlok.junit.scaffolding.util.PortManager;
 
 public class ManagementComponentFactoryTest extends BaseCase {
-
-  protected transient Log logR = LogFactory.getLog(this.getClass());
 
   @Test
   public void testCreateJsr160Component() throws Exception {

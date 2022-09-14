@@ -18,14 +18,12 @@ package com.adaptris.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
 import org.junit.Before;
 import org.junit.Test;
 
 public class FifoMutexLockTest {
 
-  protected transient Log log = LogFactory.getLog(this.getClass().getName());
   private FifoMutexLock lock;
   private int locksAcquired = 0;
   private int locksInterrupted = 0;

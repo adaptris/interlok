@@ -20,12 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 public class FsCase {
-
-  protected transient Log logR = LogFactory.getLog(this.getClass());
 
   protected static Properties PROPERTIES;
   private static final String PROPERTIES_RESOURCE = "unit-tests.properties";
