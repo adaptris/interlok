@@ -1,18 +1,18 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.http;
 
@@ -43,12 +43,12 @@ import com.adaptris.util.stream.UnbufferedLineInputStream;
  *  </pre></code>
  */
 public final class HttpRequest implements DataTransfer {
-  
+
   private String method, version, uri;
   private transient Log logR;
-  
+
   /** @see Object#Object()
-   * 
+   *
    *
    */
   public HttpRequest() {
@@ -62,9 +62,9 @@ public final class HttpRequest implements DataTransfer {
    * e.g. POST GET PUT
    */
   public void setMethod(String s) {
-    this.method = s;
+    method = s;
   }
-  
+
   /** Set the uri.
    * <p>e.g. /directory/index.html, or
    * /index.jsp?param1=x&param2=y&param3=z</p>
@@ -74,7 +74,7 @@ public final class HttpRequest implements DataTransfer {
   public void setURI(String uri) {
     this.uri = uri;
   }
-  
+
   /** Return the http Version
    * @return the http Version associated with this set of HTTP headers
    * generally HTTP/1.0
@@ -82,39 +82,40 @@ public final class HttpRequest implements DataTransfer {
   public String getVersion() {
     return version;
   }
-  
+
   /** Return the Method associated with this set of headers
    * @return the http method associated with this set of HTTP headers
    */
   public String getMethod() {
     return method;
   }
-  
+
   /** Return the URI.
    * @return the URI associated with this set of HTTP headers
    */
   public String getURI() {
     return uri;
   }
-  
+
   /** Set the Version.
-   * @param version set the version to be associated with this set of HTTP 
+   * @param version set the version to be associated with this set of HTTP
    * headers
    * generally HTTP/1.0 or HTTP/1.1
    */
   public void setVersion(String version) {
     this.version = version;
   }
-  
+
   /** Write the request line to the supplied outputstream.
    *  @param out the outputstream
    *  @throws HttpException on error.
    *  @see DataTransfer#writeTo(OutputStream)
    */
+  @Override
   public void writeTo(OutputStream out)
-  throws HttpException {
+      throws HttpException {
     try {
-      logR.trace("Writing Request:- " + toString());      
+      logR.trace("Writing Request:- " + toString());
       PrintStream p = new PrintStream(out);
       p.print(toString());
       p.print(Http.CRLF);
@@ -123,17 +124,18 @@ public final class HttpRequest implements DataTransfer {
       throw new HttpException(e);
     }
   }
-  
+
   /** Parse an inputstream that contains a request.
    *  @see DataTransfer#load(InputStream)
    */
+  @Override
   public void load(InputStream in) throws HttpException {
     UnbufferedLineInputStream unbuffered = new UnbufferedLineInputStream(in);
     String line;
     try {
       synchronized (in) {
         line = unbuffered.readLine();
-        
+
         StringTokenizer st = new StringTokenizer(line);
         if (line.startsWith("HTTP/")) {
           throw new HttpException("Input is not a HttpRequest");
@@ -151,11 +153,12 @@ public final class HttpRequest implements DataTransfer {
     }
     return;
   }
-  
+
   /** @see Object#toString()
    */
+  @Override
   public String toString() {
-    
+
     StringBuffer sb = new StringBuffer();
     sb.append(method);
     sb.append(Http.SPACE);
@@ -164,18 +167,18 @@ public final class HttpRequest implements DataTransfer {
     sb.append(version);
     return sb.toString();
   }
-  
+
   /**
    * <p>
-   * Returns the file element of the URI, where the file element is the URI up 
-   * to but not including any paramters or references.  If no parameters or 
+   * Returns the file element of the URI, where the file element is the URI up
+   * to but not including any paramters or references.  If no parameters or
    * references exist the URI is returned.
    * </p>
    * @return the file element of the URI
    */
   public String getFile() {
-    String result = this.getURI();
-    
+    String result = getURI();
+
     if (uri.indexOf("?") > -1) {
       result = uri.substring(0, uri.indexOf("?"));
     }
@@ -184,46 +187,46 @@ public final class HttpRequest implements DataTransfer {
         result = uri.substring(0, uri.indexOf("#"));
       }
     }
-    
+
     logR.debug("file element of URI [" + result + "]");
-    
+
     return result;
   }
-  
+
   /**
    * <p>
-   * Returns a <code>Map</code> of the query parameters.  This implementation 
+   * Returns a <code>Map</code> of the query parameters.  This implementation
    * doesn't handle URL encoding (e.g. spaces) due to lack of time.
    * </p>
    * @return a <code>Map</code> of the query parameters
    */
-  public Map getParameters() {
-    Map result = new HashMap();
-    
+  public Map<String, String> getParameters() {
+    Map<String, String> result = new HashMap<>();
+
     if (uri.indexOf("?") > -1) {  // uri contains params
       int start = uri.indexOf("?") + 1;
       int end = uri.indexOf("#");
-      
+
       if (end == -1) {  // uri doesn't contain reference
         end = uri.length();
       }
-      
-      StringTokenizer params 
-        = new StringTokenizer(uri.substring(start, end), "&");
-      
+
+      StringTokenizer params
+      = new StringTokenizer(uri.substring(start, end), "&");
+
       while (params.hasMoreTokens()) {
         String param = params.nextToken();
-        
-        // at least three chars... 
+
+        // at least three chars...
         if (param.length() > 2) {
           // and contain equals but not first or last char
-          if (param.indexOf("=") > -1  
-            && param.indexOf("=") != 0  
-            && param.indexOf("=") != param.length() - 1) {
-            
+          if (param.indexOf("=") > -1
+              && param.indexOf("=") != 0
+              && param.indexOf("=") != param.length() - 1) {
+
             String key = param.substring(0, param.indexOf("="));
             String value = param.substring(param.indexOf("=") + 1);
-            
+
             result.put(key, value);
           }
         }
@@ -233,7 +236,7 @@ public final class HttpRequest implements DataTransfer {
         }
       }
     }
-    
+
     return result;
   }
 }

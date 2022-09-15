@@ -16,18 +16,16 @@
 
 package com.adaptris.core.jms;
 import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
 import org.junit.Test;
+
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 
 public class FailoverPtpProducerTest extends FailoverJmsProducerCase {
-
-  private static final Log LOG = LogFactory.getLog(FailoverPtpProducerTest.class);
-
 
   @Test
   public void testBug845() throws Exception {
@@ -52,7 +50,7 @@ public class FailoverPtpProducerTest extends FailoverJmsProducerCase {
 
   static FailoverJmsConnection createFailoverConfigExample(boolean isPtp) {
     FailoverJmsConnection result = null;
-    result = new FailoverJmsConnection(new ArrayList<JmsConnection>(Arrays.asList(new JmsConnection[]
+    result = new FailoverJmsConnection(new ArrayList<>(Arrays.asList(new JmsConnection[]
     {
         new JmsConnection(new BasicActiveMqImplementation("tcp://SomeUnclusteredBroker:9999")),
         new JmsConnection(new BasicActiveMqImplementation("tcp://SomeUnclusteredBroker:9998"))

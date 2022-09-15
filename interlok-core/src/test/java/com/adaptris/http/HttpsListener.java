@@ -1,18 +1,18 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.http;
 
@@ -44,7 +44,7 @@ import com.adaptris.security.util.AlwaysTrustManager;
  * the listener have not been invoked. The private key password must always
  * exist in this file and cannot be set programmatically.
  * </p>
- * 
+ *
  * @see HttpListener
  */
 public class HttpsListener extends HttpListener {
@@ -70,8 +70,9 @@ public class HttpsListener extends HttpListener {
 
   /**
    * Require a client to present a certificat.
-   * 
-   * @param b true if clients must always present a certificate
+   *
+   * @param b
+   *          true if clients must always present a certificate
    */
   public void setRequireClientAuth(boolean b) {
     requireClientAuth = b;
@@ -79,7 +80,7 @@ public class HttpsListener extends HttpListener {
 
   /**
    * Get the require authorisation flag.
-   * 
+   *
    * @return true or false, depending
    */
   public boolean getRequireClientAuth() {
@@ -98,7 +99,7 @@ public class HttpsListener extends HttpListener {
    * <p>
    * Regardless of the flag setting, the actual data communication is encrypted
    * </p>
-   * 
+   *
    * @param b true of false
    */
   public void setAlwaysTrust(boolean b) {
@@ -107,7 +108,7 @@ public class HttpsListener extends HttpListener {
 
   /**
    * Get the always trust flag.
-   * 
+   *
    * @return the flag true or false
    */
   public boolean getAlwaysTrust() {
@@ -117,6 +118,7 @@ public class HttpsListener extends HttpListener {
   /**
    * @see HttpListener#initialise()
    */
+  @Override
   public void initialise() throws HttpException {
     try {
       if (initialised) {
@@ -149,7 +151,7 @@ public class HttpsListener extends HttpListener {
     if (alwaysTrust) {
       // Always trust the certificate ! - quite dangerous ;)
       TrustManager[] tm = new TrustManager[1];
-      tm[0] = (TrustManager) new AlwaysTrustManager();
+      tm[0] = new AlwaysTrustManager();
       sslContext.init(kmf.getKeyManagers(), tm, null);
     }
     else {
@@ -181,7 +183,7 @@ public class HttpsListener extends HttpListener {
 
   /**
    * Register the keystore to use when listening for connections.
-   * 
+   *
    * @param keystoreProxy the keystoreProxy to set
    */
   public void registerKeystore(KeystoreProxy keystoreProxy) {
@@ -190,7 +192,7 @@ public class HttpsListener extends HttpListener {
 
   /**
    * Register a private key password.
-   * 
+   *
    * @param pkpw
    */
   public void registerPrivateKeyPassword(char[] pkpw) {

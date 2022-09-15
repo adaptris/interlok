@@ -1,18 +1,18 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.services.splitter;
 
@@ -21,12 +21,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
 import java.util.List;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
 import org.junit.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.Service;
 import com.adaptris.core.stubs.DefectiveMessageFactory;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.interlok.util.CloseableIterable;
@@ -37,9 +39,6 @@ public class MetadataDocumentCopierTest extends SplitterCase {
   private static final String METADATA_KEY_INDEX = "MyMetadataKeyIndex";
 
   private static final String METADATA_KEY = "MyMetadataKey";
-
-  private static Log logR = LogFactory.getLog(MetadataDocumentCopierTest.class);
-
 
   @Override
   protected String createBaseFileName(Object object) {
@@ -52,7 +51,7 @@ public class MetadataDocumentCopierTest extends SplitterCase {
   }
 
   @Override
-  protected List retrieveObjectsForSampleConfig() {
+  protected List<Service> retrieveObjectsForSampleConfig() {
     return createExamples(new MetadataDocumentCopier(METADATA_KEY));
   }
 

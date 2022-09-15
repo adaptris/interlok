@@ -23,8 +23,6 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,8 +36,6 @@ public class TestSimpleDataStore {
   private static String type = "type";
   private static String id = "id";
   private static String data = "This is the data part";
-  private boolean initialised = false;
-  private static Log logR = LogFactory.getLog(TestSimpleDataStore.class);
 
   private DataStore dataStore = null;
   private Properties dataStoreProperties;

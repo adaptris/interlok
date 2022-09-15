@@ -1,18 +1,18 @@
 package com.adaptris.interlok.util;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 import java.io.FileFilter;
 import java.lang.reflect.Constructor;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
+
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.lang3.BooleanUtils;
-import lombok.extern.slf4j.Slf4j;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-@Slf4j
 public abstract class FileFilterBuilder {
 
   // Since we declare commons-io in our dependency tree; we can just use the class.getCanonicalName()

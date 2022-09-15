@@ -12,44 +12,30 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.security.password;
 
 import static org.junit.Assert.assertEquals;
 
-import com.adaptris.security.exc.PasswordException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.After;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
-import com.adaptris.interlok.junit.scaffolding.util.Os;
-
 import java.util.Properties;
+
+import org.junit.Assume;
+import org.junit.Test;
+
+import com.adaptris.interlok.junit.scaffolding.util.Os;
+import com.adaptris.security.exc.PasswordException;
 
 public class PasswordTest {
 
   private static final String TEXT = "MYPASSWORD";
 
-  private static Log logR = LogFactory.getLog(PasswordTest.class);
-
-  @Before
-  public void setUp() throws Exception {
-    logR = LogFactory.getLog(this.getClass());
-  }
-
-  @After
-  public void tearDown() throws Exception {
-  }
-
   @Test
   public void testMainClass() throws Exception {
     String[] args =
-    {
-        Password.PORTABLE_PASSWORD, TEXT
-    };
+      {
+          Password.PORTABLE_PASSWORD, TEXT
+      };
     Password.generatePassword(args);
     Password.generatePassword(null);
     Password.generatePassword(new String[0]);

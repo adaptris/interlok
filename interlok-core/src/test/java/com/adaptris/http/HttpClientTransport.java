@@ -1,18 +1,18 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.http;
 
@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,7 +55,7 @@ import com.adaptris.util.URLString;
  * No Support for proxy servers is currently available, nor anticipated for
  * future versions.
  * </p>
- * 
+ *
  * @see HttpHeaders
  * @see HttpSession
  * @see HttpMessage
@@ -66,10 +67,9 @@ public abstract class HttpClientTransport implements Client {
   private int redirectCount = 0;
   private Socket connection = null;
   private String method;
-  private ArrayList urlList = new ArrayList();
+  private List<String> urlList = new ArrayList<>();
   private HttpMessageFactory messageFactory;
 
-  private int socketTimeout = Client.DEFAULT_SOCKET_TIMEOUT;
   protected URLString currentUrl = null;
   protected transient Log logR;
 
@@ -82,7 +82,7 @@ public abstract class HttpClientTransport implements Client {
 
   /**
    * construct the class using a string representation of a url.
-   * 
+   *
    * @param urlString the URL to connect to
    * @throws HttpException on error.
    */
@@ -109,9 +109,10 @@ public abstract class HttpClientTransport implements Client {
 
   /**
    * Set the method to use for this client
-   * 
+   *
    * @param method the method.
    */
+  @Override
   public void setMethod(String method) {
     this.method = method;
   }
@@ -122,34 +123,34 @@ public abstract class HttpClientTransport implements Client {
    * There are 7 possible HTTP codes that signify success or partial success :-
    * <code>200,201,202,203,204,205,206</code>
    * </p>
-   * 
+   *
    * @return true if the transaction was successful.
    */
   private boolean wasSuccessful(HttpSession session) {
 
     boolean rc = false;
     switch (session.getResponseLine().getResponseCode()) {
-    case HttpURLConnection.HTTP_ACCEPTED:
-    case HttpURLConnection.HTTP_CREATED:
-    case HttpURLConnection.HTTP_NO_CONTENT:
-    case HttpURLConnection.HTTP_NOT_AUTHORITATIVE:
-    case HttpURLConnection.HTTP_OK:
-    case HttpURLConnection.HTTP_PARTIAL:
-    case HttpURLConnection.HTTP_RESET: {
-      rc = true;
-      break;
-    }
-    default: {
-      rc = false;
-      break;
-    }
+      case HttpURLConnection.HTTP_ACCEPTED:
+      case HttpURLConnection.HTTP_CREATED:
+      case HttpURLConnection.HTTP_NO_CONTENT:
+      case HttpURLConnection.HTTP_NOT_AUTHORITATIVE:
+      case HttpURLConnection.HTTP_OK:
+      case HttpURLConnection.HTTP_PARTIAL:
+      case HttpURLConnection.HTTP_RESET: {
+        rc = true;
+        break;
+      }
+      default: {
+        rc = false;
+        break;
+      }
     }
     return rc;
   }
 
   /**
    * Set the url
-   * 
+   *
    * @param urlString the url
    * @throws HttpException on error.
    */
@@ -165,19 +166,21 @@ public abstract class HttpClientTransport implements Client {
   }
 
   /**
-   * 
+   *
    * @see Client#sendDocument(byte[])
    */
+  @Override
   public boolean sendDocument(byte[] input) throws HttpException {
     return sendDocument(createHttpMessage(input), Client.DEFAULT_SOCKET_TIMEOUT, false);
   }
 
   /**
-   * 
+   *
    * @see Client#sendDocument(HttpMessage, int, boolean)
    */
+  @Override
   public boolean sendDocument(HttpMessage input, int timeout,
-                              boolean allowRedirect) throws HttpException {
+      boolean allowRedirect) throws HttpException {
     boolean rc = false;
     HttpSession session = send(input, timeout, allowRedirect);
     rc = wasSuccessful(session);
@@ -186,17 +189,19 @@ public abstract class HttpClientTransport implements Client {
   }
 
   /**
-   * 
+   *
    * @see com.adaptris.http.Client#send(byte[])
    */
+  @Override
   public HttpSession send(byte[] bytes) throws HttpException {
     return send(createHttpMessage(bytes), Client.DEFAULT_SOCKET_TIMEOUT, false);
   }
 
   /**
-   * 
+   *
    * @see com.adaptris.http.Client#send(HttpMessage, int, boolean)
    */
+  @Override
   public HttpSession send(HttpMessage input, int timeout, boolean allowRedirect)
       throws HttpException {
     HttpSession session = null;
@@ -217,8 +222,8 @@ public abstract class HttpClientTransport implements Client {
           session = handleRedirection(session, input, timeout);
         }
         else {
-          throw (new IOException(
-              "Re-direction, but not enabled for this client"));
+          throw new IOException(
+              "Re-direction, but not enabled for this client");
         }
       }
     }
@@ -231,13 +236,13 @@ public abstract class HttpClientTransport implements Client {
   /**
    * Handle a redirected input.
    * <p>
-   * 
+   *
    * @param input The input stream to be resent.
    * @return InputStream the resulting data from the Http server
    */
   private HttpSession handleRedirection(HttpSession session, HttpMessage input,
-                                        int timeout) throws IOException,
-      HttpException {
+      int timeout) throws IOException,
+  HttpException {
 
     URLString newUrl = null;
 
@@ -245,22 +250,22 @@ public abstract class HttpClientTransport implements Client {
     // Even if we wanted to, can we do so?
     // 301 / 302 gives us a Location: <newlocation>
     if (!receiveHeader.containsHeader(Http.LOCATION)) {
-      throw (new IOException("Re-direction, but to nowhere!"));
+      throw new IOException("Re-direction, but to nowhere!");
     }
 
-    if ((++redirectCount) > MAX_REDIRECTS) {
-      throw (new IOException("Maxiumum number of redirects has been reached :"
-          + MAX_REDIRECTS));
+    if (++redirectCount > MAX_REDIRECTS) {
+      throw new IOException("Maxiumum number of redirects has been reached :"
+          + MAX_REDIRECTS);
     }
 
     logR.debug("Redirection enabled, and attempting to handle");
 
     // Get the new URL
-    String newUrlString = (String) receiveHeader.get(Http.LOCATION);
+    String newUrlString = receiveHeader.get(Http.LOCATION);
     newUrl = mergeUrl(currentUrl, newUrlString);
     if (urlList.contains(newUrl.toString())) {
-      throw (new IOException("Possible recursive redirection, location "
-          + newUrl + " already visited"));
+      throw new IOException("Possible recursive redirection, location "
+          + newUrl + " already visited");
     }
 
     // The new Location could be a
@@ -277,8 +282,8 @@ public abstract class HttpClientTransport implements Client {
   }
 
   private boolean hasMoved(HttpResponse r) {
-    return (r.getResponseCode() == HttpURLConnection.HTTP_MOVED_TEMP)
-        || (r.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM);
+    return r.getResponseCode() == HttpURLConnection.HTTP_MOVED_TEMP
+        || r.getResponseCode() == HttpURLConnection.HTTP_MOVED_PERM;
   }
 
   /**
@@ -297,14 +302,14 @@ public abstract class HttpClientTransport implements Client {
       }
 
       StringBuffer sb = new StringBuffer();
-      sb.append((temp.getProtocol() != null) ? temp.getProtocol() : orig
+      sb.append(temp.getProtocol() != null ? temp.getProtocol() : orig
           .getProtocol());
       sb.append("://");
-      sb.append((temp.getHost() != null) ? temp.getHost() : orig.getHost());
+      sb.append(temp.getHost() != null ? temp.getHost() : orig.getHost());
       sb.append(":");
-      sb.append((temp.getPort() != -1) ? temp.getPort() : orig.getPort());
+      sb.append(temp.getPort() != -1 ? temp.getPort() : orig.getPort());
       sb.append("/");
-      sb.append((temp.getFile() != null) ? temp.getFile() : orig.getFile());
+      sb.append(temp.getFile() != null ? temp.getFile() : orig.getFile());
       temp = new URLString(sb.toString());
     }
     while (false);
@@ -313,7 +318,7 @@ public abstract class HttpClientTransport implements Client {
 
   /**
    * Make a nice URI string from the url.
-   * 
+   *
    * @param url the url
    */
   private static String getUriString(URLString url) {
@@ -332,7 +337,7 @@ public abstract class HttpClientTransport implements Client {
   }
 
   private void populateHeaders(HttpSession session) throws IOException,
-      HttpException {
+  HttpException {
     HttpMessage msg = session.getRequestMessage();
     HttpHeaders hdr = msg.getHeaders();
     if (!hdr.containsHeader(Http.HOST)) {

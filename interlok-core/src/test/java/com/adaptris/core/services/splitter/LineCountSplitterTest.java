@@ -1,18 +1,18 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.services.splitter;
 
@@ -21,29 +21,27 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
 import java.io.Reader;
 import java.util.Iterator;
 import java.util.List;
+
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
+import com.adaptris.core.Service;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.StubMessageFactory;
 import com.adaptris.interlok.util.CloseableIterable;
 
 public class LineCountSplitterTest extends SplitterCase {
 
-  private static Log logR = LogFactory.getLog(LineCountSplitterTest.class);
-
   private AdaptrisMessage msg;
   private MockMessageProducer producer;
   private BasicMessageSplitterService service;
-
-
 
   @Before
   public void setUp() throws Exception {
@@ -180,9 +178,9 @@ public class LineCountSplitterTest extends SplitterCase {
     final String HEADER_TEXT = "HEADER LINE 1";
     List<AdaptrisMessage> result = toList(s.splitMessage(
         createLineCountMessageInputWithHeader(new String[] {HEADER_TEXT})));
-    
+
     assertEquals("50 split messages", 50, result.size());
-    
+
     for(AdaptrisMessage m: result) {
       List<String> lines = IOUtils.readLines(m.getReader());
       assertEquals("2 lines per message", 2, lines.size());
@@ -202,9 +200,9 @@ public class LineCountSplitterTest extends SplitterCase {
     final String HEADER_LINE_2 = "HEADER LINE 2";
     List<AdaptrisMessage> result = toList(s.splitMessage(
         createLineCountMessageInputWithHeader(new String[] {HEADER_LINE_1, HEADER_LINE_2})));
-    
+
     assertEquals("5 split messages", 5, result.size());
-    
+
     for(AdaptrisMessage m: result) {
       try (Reader reader = m.getReader()) {
         List<String> lines = IOUtils.readLines(reader);
@@ -222,15 +220,15 @@ public class LineCountSplitterTest extends SplitterCase {
   public void testIterator_DoubleProtection() throws Exception {
     MessageSplitterImp splitter = new LineCountSplitter(1);
     try (CloseableIterable<AdaptrisMessage> iterable = CloseableIterable.ensureCloseable(splitter.splitMessage(msg))) {
-      Iterator<AdaptrisMessage> first = iterable.iterator();
+      iterable.iterator();
       try {
-        Iterator<AdaptrisMessage> second = iterable.iterator();
+        iterable.iterator();
         fail();
       } catch (IllegalStateException expected) {
-        
+
       }
     }
-    
+
   }
 
   @Test
@@ -240,7 +238,9 @@ public class LineCountSplitterTest extends SplitterCase {
         .ensureCloseable(splitter.splitMessage(msg))) {
       Iterator<AdaptrisMessage> first = iterable.iterator();
       try {
-        if (first.hasNext()) first.next();
+        if (first.hasNext()) {
+          first.next();
+        }
         first.remove();
         fail();
       }
@@ -260,7 +260,7 @@ public class LineCountSplitterTest extends SplitterCase {
       assertTrue(first.hasNext());
     }
   }
-  
+
   @Override
   protected String createBaseFileName(Object object) {
     return super.createBaseFileName(object) + "-LineCountSplitter";
@@ -272,7 +272,7 @@ public class LineCountSplitterTest extends SplitterCase {
   }
 
   @Override
-  protected List retrieveObjectsForSampleConfig() {
+  protected List<Service> retrieveObjectsForSampleConfig() {
     return createExamples(new LineCountSplitter(100));
   }
 

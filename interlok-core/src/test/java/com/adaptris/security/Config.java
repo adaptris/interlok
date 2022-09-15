@@ -21,12 +21,12 @@ import java.io.IOException;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.util.Properties;
+
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;
+
 import com.adaptris.core.util.PropertyHelper;
 import com.adaptris.security.certificate.CertificateBuilder;
 import com.adaptris.security.certificate.CertificateBuilderFactory;
@@ -101,12 +101,10 @@ public class Config {
 
   private static Config instance = null;
 
-  private transient Log logR;
   private Properties config = null;
 
   private Config() {
     try {
-      logR = LogFactory.getLog(Config.class);
       config = PropertyHelper.loadQuietly(() -> {
         return this.getClass().getClassLoader().getResourceAsStream(SECURITY_PROPERTIES);
       });

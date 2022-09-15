@@ -12,15 +12,17 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 package com.adaptris.interlok.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
 import java.io.FileFilter;
 import java.util.Map;
 import java.util.function.Function;
+
 import org.apache.commons.io.filefilter.DelegateFileFilter;
 import org.apache.commons.io.filefilter.FileFileFilter;
 import org.apache.commons.io.filefilter.SizeFileFilter;
@@ -50,7 +52,7 @@ public class FileFilterBuilderTest extends FileFilterBuilder {
 
   @Test(expected = RuntimeException.class)
   public void testNonPrimitiveConstructor() throws Exception {
-    FileFilter f = build("*test*.java~*~", DelegateFileFilter.class.getCanonicalName());
+    build("*test*.java~*~", DelegateFileFilter.class.getCanonicalName());
   }
 
   @Test
@@ -76,7 +78,7 @@ public class FileFilterBuilderTest extends FileFilterBuilder {
   @Test(expected = RuntimeException.class)
   public void testInvalidNoArgsConstructor() throws Exception {
     // Since FileFileFilter doesn't have a public noargs constructor.
-    FileFilter f = build("", FileFileFilter.class.getCanonicalName());
+    build("", FileFileFilter.class.getCanonicalName());
   }
 
 }

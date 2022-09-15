@@ -17,14 +17,10 @@
 package com.adaptris.core.jms;
 
 import static com.adaptris.core.jms.FailoverPtpProducerTest.createFailoverConfigExample;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
 import com.adaptris.core.StandaloneConsumer;
 
 public class FailoverPasConsumerTest extends FailoverJmsConsumerCase {
-
-  private static final Log LOG = LogFactory
-      .getLog(FailoverPasConsumerTest.class);
 
   @Override
   protected Object retrieveObjectForSampleConfig() {

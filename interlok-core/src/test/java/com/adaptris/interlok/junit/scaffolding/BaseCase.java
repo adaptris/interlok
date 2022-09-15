@@ -12,12 +12,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.interlok.junit.scaffolding;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -29,10 +30,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
@@ -40,6 +43,7 @@ import org.junit.Rule;
 import org.junit.rules.TestName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.ComponentState;
@@ -93,7 +97,7 @@ public abstract class BaseCase {
     if (this instanceof UpgradedToJunit4) {
       if (!((UpgradedToJunit4) this).isAnnotatedForJunit4()) {
         throw new RuntimeException(this.getClass().getCanonicalName()
-          + ": isAnnotatedForJunit4() method returned false, please add annotations, and override the method.");
+            + ": isAnnotatedForJunit4() method returned false, please add annotations, and override the method.");
       }
     }
   }
@@ -108,7 +112,7 @@ public abstract class BaseCase {
   }
 
   public static void execute(StandaloneConsumer c, StandaloneProducer p, AdaptrisMessage m, int count, long wait,
-                             MockMessageListener stub) throws Exception {
+      MockMessageListener stub) throws Exception {
     start(c);
     start(p);
     try {
@@ -271,7 +275,7 @@ public abstract class BaseCase {
 
   protected Set<ConstraintViolation<Object>> validate(Validator v, Object o) {
     if (o == null) {
-      return Collections.EMPTY_SET;
+      return Collections.emptySet();
     }
     Validator validator = ObjectUtils.defaultIfNull(v, vFactory.getValidator());
     return validator.validate(o);

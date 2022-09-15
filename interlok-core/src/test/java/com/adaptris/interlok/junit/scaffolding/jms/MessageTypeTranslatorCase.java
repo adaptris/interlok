@@ -12,40 +12,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.interlok.junit.scaffolding.jms;
-
-import com.adaptris.core.AdaptrisMarshaller;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.BaseCase;
-import com.adaptris.core.DefaultMarshaller;
-import com.adaptris.core.DefaultMessageFactory;
-import com.adaptris.core.MetadataElement;
-import com.adaptris.core.StandaloneProducer;
-import com.adaptris.core.jms.AutoConvertMessageTranslator;
-import com.adaptris.core.jms.JmsConnection;
-import com.adaptris.core.jms.JmsConstants;
-import com.adaptris.core.jms.MessageTypeTranslator;
-import com.adaptris.core.jms.MessageTypeTranslatorImp;
-import com.adaptris.core.jms.PasProducer;
-import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
-import com.adaptris.core.metadata.NoOpMetadataFilter;
-import com.adaptris.core.metadata.RegexMetadataFilter;
-import com.adaptris.core.metadata.RemoveAllMetadataFilter;
-import com.adaptris.core.util.LifecycleHelper;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
-
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
 
 import static com.adaptris.core.jms.JmsConstants.JMS_CORRELATION_ID;
 import static com.adaptris.core.jms.JmsConstants.JMS_DELIVERY_MODE;
@@ -64,9 +33,38 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
+
+import com.adaptris.core.AdaptrisMarshaller;
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.DefaultMarshaller;
+import com.adaptris.core.DefaultMessageFactory;
+import com.adaptris.core.MetadataElement;
+import com.adaptris.core.StandaloneProducer;
+import com.adaptris.core.jms.AutoConvertMessageTranslator;
+import com.adaptris.core.jms.JmsConnection;
+import com.adaptris.core.jms.JmsConstants;
+import com.adaptris.core.jms.MessageTypeTranslator;
+import com.adaptris.core.jms.MessageTypeTranslatorImp;
+import com.adaptris.core.jms.PasProducer;
+import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
+import com.adaptris.core.metadata.NoOpMetadataFilter;
+import com.adaptris.core.metadata.RegexMetadataFilter;
+import com.adaptris.core.metadata.RemoveAllMetadataFilter;
+import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.junit.scaffolding.BaseCase;
+
 /**
  */
-@SuppressWarnings("deprecation")
 public abstract class MessageTypeTranslatorCase {
 
 
@@ -79,10 +77,9 @@ public abstract class MessageTypeTranslatorCase {
   public static final String TEXT = "The quick brown fox";
   public static final String TEXT2 = "jumps over the lazy dog";
 
-  protected transient Log log = LogFactory.getLog(this.getClass());
   @Rule
   public TestName testName = new TestName();
-  
+
   protected static EmbeddedActiveMq activeMqBroker;
 
   @BeforeClass
@@ -90,11 +87,12 @@ public abstract class MessageTypeTranslatorCase {
     activeMqBroker = new EmbeddedActiveMq();
     activeMqBroker.start();
   }
-  
+
   @AfterClass
   public static void tearDownAll() throws Exception {
-    if(activeMqBroker != null)
+    if(activeMqBroker != null) {
       activeMqBroker.destroy();
+    }
   }
 
   protected abstract MessageTypeTranslatorImp createTranslator() throws Exception;
@@ -112,7 +110,7 @@ public abstract class MessageTypeTranslatorCase {
   public void testRoundTrip() throws Exception {
     MessageTypeTranslatorImp translator =
         createTranslator().withMoveJmsHeaders(true).withMetadataFilter(new NoOpMetadataFilter())
-            .withReportAllErrors(true);
+        .withReportAllErrors(true);
     StandaloneProducer p1 = createProducer(translator);
     StandaloneProducer p2 = roundTrip(p1);
     BaseCase.assertRoundtripEquality(p1, p2);
@@ -193,15 +191,15 @@ public abstract class MessageTypeTranslatorCase {
       addProperties(jmsMsg);
       start(trans, session);
       AdaptrisMessage msg = trans.translate(jmsMsg);
-      assertFalse(msg.containsKey(INTEGER_METADATA));
-      assertFalse(msg.containsKey(STRING_METADATA));
-      assertFalse(msg.containsKey(BOOLEAN_METADATA));
+      assertFalse(msg.headersContainsKey(INTEGER_METADATA));
+      assertFalse(msg.headersContainsKey(STRING_METADATA));
+      assertFalse(msg.headersContainsKey(BOOLEAN_METADATA));
     }
     finally {
       stop(trans);
     }
   }
-  
+
   @Test
   public void testTranslatorNullMessage() throws Exception {
     Message nullMessage = null;
@@ -222,7 +220,7 @@ public abstract class MessageTypeTranslatorCase {
       AdaptrisMessage msg = trans.translate(jmsMsg);
       assertMetadata(msg, new MetadataElement(STRING_METADATA, STRING_VALUE));
       assertMetadata(msg, new MetadataElement(BOOLEAN_METADATA, BOOLEAN_VALUE));
-      assertFalse(msg.containsKey(INTEGER_METADATA));
+      assertFalse(msg.headersContainsKey(INTEGER_METADATA));
     }
     finally {
       stop(trans);
@@ -379,7 +377,7 @@ public abstract class MessageTypeTranslatorCase {
   }
 
   protected static void assertMetadata(AdaptrisMessage msg, MetadataElement e) {
-    assertTrue(msg.containsKey(e.getKey()));
+    assertTrue(msg.headersContainsKey(e.getKey()));
     assertEquals(e.getValue(), msg.getMetadataValue(e.getKey()));
   }
 
@@ -399,10 +397,10 @@ public abstract class MessageTypeTranslatorCase {
 
   public static void addRedundantJmsHeaders(AdaptrisMessage msg) {
     String[] RESERVED_JMS =
-    {
-        JMS_CORRELATION_ID, JMS_TYPE, JMS_TIMESTAMP, JMS_REPLY_TO, JMS_REDELIVERED, JMS_PRIORITY, JMS_MESSAGE_ID, JMS_EXPIRATION,
-        JMS_DELIVERY_MODE, JMS_DESTINATION
-    };
+      {
+          JMS_CORRELATION_ID, JMS_TYPE, JMS_TIMESTAMP, JMS_REPLY_TO, JMS_REDELIVERED, JMS_PRIORITY, JMS_MESSAGE_ID, JMS_EXPIRATION,
+          JMS_DELIVERY_MODE, JMS_DESTINATION
+      };
     for (String key : RESERVED_JMS) {
       msg.addMetadata(key, "XXX");
     }

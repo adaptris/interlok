@@ -1,18 +1,18 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.fs;
 
@@ -74,7 +74,7 @@ public class StandardWorkerTest extends FsCase {
   // write test files to file system
   protected String[] createTestFiles() throws Exception {
     GuidGenerator guid = new GuidGenerator();
-    List<String> list = new ArrayList<String>();
+    List<String> list = new ArrayList<>();
     for (int i = 0; i < FILE_CREATION_COUNT; i++) {
       String fname = guid.safeUUID();
       File file = new File(baseDir, fname);
@@ -87,7 +87,7 @@ public class StandardWorkerTest extends FsCase {
   }
 
   protected Set<File> asFileArray(String[] files) {
-    Set<File> result = new HashSet<File>();
+    Set<File> result = new HashSet<>();
     for (String f : files) {
       result.add(new File(baseDir, f));
     }
@@ -108,7 +108,7 @@ public class StandardWorkerTest extends FsCase {
     File dir = Mockito.mock(File.class);
     Mockito.when(dir.canWrite()).thenReturn(true);
     Mockito.when(dir.exists()).thenReturn(true);
-    Mockito.when(dir.canRead()).thenReturn(true);    
+    Mockito.when(dir.canRead()).thenReturn(true);
     Mockito.when(dir.isDirectory()).thenReturn(true);
     Mockito.when(dir.listFiles((FileFilter) Mockito.any())).thenReturn(files);
     StandardWorker worker = createWorker();
@@ -118,7 +118,7 @@ public class StandardWorkerTest extends FsCase {
       worker.listFiles(null);
       fail();
     } catch (FsException | IllegalArgumentException expected) {
-      
+
     }
   }
 
@@ -167,7 +167,7 @@ public class StandardWorkerTest extends FsCase {
   @Test
   public void testPutFile() throws Exception {
     FsWorker worker = createWorker();
-    String[] testFiles = createTestFiles();
+    createTestFiles();
     String newFilename = new GuidGenerator().safeUUID();
     worker.put(DATA.getBytes(), new File(baseDir, newFilename));
     byte[] result = worker.get(new File(baseDir, newFilename));
@@ -205,7 +205,7 @@ public class StandardWorkerTest extends FsCase {
 
     worker.rename(new File(baseDir, testFiles[0]), new File(baseDir, newFilename));
     File[] files = worker.listFiles(baseDir);
-    Set set = new HashSet(Arrays.asList(files));
+    Set<File> set = new HashSet<>(Arrays.asList(files));
     assertTrue(set.contains(new File(FsHelper.createFileReference(baseUrl), newFilename)));
     try {
       worker.rename(new File(baseDir, testFiles[0]), new File(baseDir, testFiles[1]));
@@ -229,7 +229,7 @@ public class StandardWorkerTest extends FsCase {
     worker.delete(new File(baseDir, testFiles[0]));
 
     File[] files = worker.listFiles(baseDir);
-    Set set = new HashSet(Arrays.asList(files));
+    Set<File> set = new HashSet<>(Arrays.asList(files));
     assertTrue(!set.contains(new File(baseDir, testFiles[0])));
     worker.delete(new File(baseDir, "sthgelse"));
     try {
@@ -313,7 +313,7 @@ public class StandardWorkerTest extends FsCase {
     }
 
   }
-  
+
   @Test
   public void testCheckExists() throws Exception {
     File nonExistent = Mockito.mock(File.class);
@@ -367,7 +367,7 @@ public class StandardWorkerTest extends FsCase {
     Mockito.when(readable.exists()).thenReturn(true);
     FsWorker.checkReadable(readable);
   }
-  
+
   @Test
   public void testIsDirectory() throws Exception {
     File isFile = Mockito.mock(File.class);
@@ -385,7 +385,7 @@ public class StandardWorkerTest extends FsCase {
     Mockito.when(dir.exists()).thenReturn(true);
     FsWorker.isDirectory(dir);
   }
-  
+
   @Test
   public void testIsFile() throws Exception {
     File isDirectory = Mockito.mock(File.class);
@@ -403,8 +403,9 @@ public class StandardWorkerTest extends FsCase {
     Mockito.when(file.exists()).thenReturn(true);
     FsWorker.isFile(file);
   }
-  
+
   private class TmpFilter implements java.io.FileFilter {
+    @Override
     public boolean accept(File file) {
       if (file.getName().endsWith(DEFAULT_FILTER_SUFFIX)) {
         return true;

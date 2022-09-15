@@ -17,14 +17,12 @@
 package com.adaptris.util;
 
 import static org.junit.Assert.assertEquals;
+
 import javax.mail.URLName;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
 import org.junit.Test;
 
 public class TestURLName {
-
-  private static Log logR = LogFactory.getLog(TestURLName.class);
 
   private static String testUrl = "smtp://user%40btinternet.com:password@mail.btinternet.com/";
   private static String username = "user@btinternet.com";

@@ -20,15 +20,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
 import java.util.Random;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
 import org.junit.Test;
+
 import com.adaptris.interlok.junit.scaffolding.BaseCase;
 
 public abstract class ItemCacheCase extends BaseCase {
-
-  protected transient Log logR = LogFactory.getLog(this.getClass());
 
   protected static final String CACHE_PREFIX = "CacheEntry_";
 
