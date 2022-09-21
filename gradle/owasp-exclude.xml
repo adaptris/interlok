@@ -92,4 +92,27 @@
      <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty/jetty\-io@.*$</packageUrl>
      <vulnerabilityName>CVE-2022-2191</vulnerabilityName>
   </suppress>
+  <suppress>
+   <notes><![CDATA[
+   file name: jettison-1.2.jar
+   XStream has to use jettison-1.2 according to their docs, so an upgrade to 1.4 may not be possible
+   ]]></notes>
+   <packageUrl regex="true">^pkg:maven/org\.codehaus\.jettison/jettison@.*$</packageUrl>
+   <cve>CVE-2022-40149</cve>
+   <cve>CVE-2022-40150</cve>
+</suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: xstream-1.4.19.jar
+    XStream denial of service attack is a possibility, but it's the foundation of config so unavoidable
+    until they patch it.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/com\.thoughtworks\.xstream/xstream@.*$</packageUrl>
+    <cve>CVE-2022-40151</cve>
+    <cve>CVE-2022-40152</cve>
+    <cve>CVE-2022-40153</cve>
+    <cve>CVE-2022-40154</cve>
+    <cve>CVE-2022-40155</cve>
+    <cve>CVE-2022-40156</cve>
+  </suppress>
 </suppressions>
