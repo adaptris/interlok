@@ -25,10 +25,10 @@ dependencies {
 
   implementation "org.apache.logging.log4j:log4j-api:$log4j2Version", optional
   implementation "org.apache.logging.log4j:log4j-core:$log4j2Version", optional
+  implementation "org.apache.logging.log4j:log4j-slf4j2-impl:$log4j2Version", optional
   implementation "org.apache.logging.log4j:log4j-1.2-api:$log4j2Version", optional
   implementation "org.slf4j:jul-to-slf4j:$slf4jVersion", optional
   implementation "org.slf4j:jcl-over-slf4j:$slf4jVersion", optional
-  implementation "org.slf4j:slf4j-reload4j:$slf4jVersion", optional
 
   annotationProcessor project(':interlok-core-apt')
   testAnnotationProcessor project(':interlok-core-apt')
