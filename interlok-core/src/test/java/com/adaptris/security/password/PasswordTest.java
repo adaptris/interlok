@@ -18,13 +18,9 @@ package com.adaptris.security.password;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Properties;
-
+import com.adaptris.interlok.junit.scaffolding.util.Os;
 import org.junit.Assume;
 import org.junit.Test;
-
-import com.adaptris.interlok.junit.scaffolding.util.Os;
-import com.adaptris.security.exc.PasswordException;
 
 public class PasswordTest {
 
@@ -58,35 +54,6 @@ public class PasswordTest {
     Assume.assumeTrue(Os.isFamily(Os.WINDOWS_NT_FAMILY));
     String encoded = Password.encode(TEXT, Password.MSCAPI_STYLE);
     assertEquals(TEXT, Password.decode(encoded));
-  }
-
-  @Test
-  public void testSeeded()throws Exception {
-    System.setProperty(SeededAesPbeCrypto.SYSTEM_PROPERTY, System.getProperty("user.dir") + "/build.gradle");
-    String encoded = Password.encode(TEXT, Password.SEEDED_BATCH);
-    assertEquals(TEXT, Password.decode(encoded));
-  }
-
-  @Test(expected = PasswordException.class)
-  public void testSeededEncodeException()throws Exception {
-    Properties p = System.getProperties();
-    if (p.contains(SeededAesPbeCrypto.SYSTEM_PROPERTY)) {
-      p.remove(SeededAesPbeCrypto.SYSTEM_PROPERTY);
-    }
-    System.setProperties(p);
-
-    Password.encode(TEXT, Password.SEEDED_BATCH);
-  }
-
-  @Test(expected = PasswordException.class)
-  public void testSeededDecodeException()throws Exception {
-    Properties p = System.getProperties();
-    if (p.contains(SeededAesPbeCrypto.SYSTEM_PROPERTY)) {
-      p.remove(SeededAesPbeCrypto.SYSTEM_PROPERTY);
-    }
-    System.setProperties(p);
-
-    Password.decode(Password.SEEDED_BATCH + TEXT); // doesn't matter what we try to decode, lack of seed file
   }
 
 }

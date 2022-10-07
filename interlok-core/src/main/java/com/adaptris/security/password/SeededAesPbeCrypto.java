@@ -18,13 +18,18 @@ package com.adaptris.security.password;
 
 import static com.adaptris.security.password.Password.SEEDED_BATCH;
 
+import com.adaptris.security.exc.PasswordException;
+import com.adaptris.util.text.Base64ByteTranslator;
+import com.adaptris.util.text.HexStringByteTranslator;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-
+import java.util.Optional;
+import java.util.Properties;
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
@@ -32,19 +37,15 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
-
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.crypto.digests.SHA384Digest;
 
-import com.adaptris.security.exc.PasswordException;
-import com.adaptris.util.text.Base64ByteTranslator;
-import com.adaptris.util.text.HexStringByteTranslator;
-
-import lombok.Getter;
-import lombok.Setter;
-
+@NoArgsConstructor
 public class SeededAesPbeCrypto extends PasswordImpl {
   private static final byte[] SALT = { (byte) 0xE1, (byte) 0x1D, (byte) 0x2B, (byte) 0xE2, (byte) 0x89, (byte) 0x45, (byte) 0x53,
       (byte) 0xF7, (byte) 0x7F, (byte) 0x94, (byte) 0x7D, (byte) 0xF3, (byte) 0x9E, (byte) 0x68, (byte) 0x0B, (byte) 0x64, (byte) 0x7E,
@@ -53,8 +54,8 @@ public class SeededAesPbeCrypto extends PasswordImpl {
   private static final int IV_LENGTH = 16;
   private static final int ITERATIONS = 20000;
   private static final String ALGORITHM = "PBEWithHmacSHA256AndAES_128";
-  private Base64ByteTranslator base64;
 
+  private transient final Base64ByteTranslator base64 = new Base64ByteTranslator();
   public static final String SYSTEM_PROPERTY = "interlok.password.seed";
 
   /**
@@ -65,13 +66,9 @@ public class SeededAesPbeCrypto extends PasswordImpl {
   @Setter
   private String seedFile;
 
-  public SeededAesPbeCrypto() {
-    this(System.getProperty(SYSTEM_PROPERTY));
-  }
-
-  public SeededAesPbeCrypto(String seedFile) {
-    base64 = new Base64ByteTranslator();
-    this.seedFile = seedFile;
+  public SeededAesPbeCrypto(String seed) {
+    this();
+    setSeedFile(seed);
   }
 
   @Override
@@ -137,12 +134,8 @@ public class SeededAesPbeCrypto extends PasswordImpl {
   private byte[] seedAndIv() throws PasswordException {
     SHA384Digest sha = new SHA384Digest();
     try {
-      if (seedFile == null) {
-        if ((seedFile = System.getProperty(SYSTEM_PROPERTY)) == null) {
-          throw new PasswordException("No seed file specified in system properties \"" + SYSTEM_PROPERTY + "\"");
-        }
-      }
-      try (FileInputStream in = new FileInputStream(seedFile)) {
+      String seedFileToUse = seedFile();
+      try (FileInputStream in = new FileInputStream(seedFileToUse)) {
         byte[] b = IOUtils.readFully(in, in.available());
         sha.update(b, 0, b.length);
       }
@@ -154,4 +147,17 @@ public class SeededAesPbeCrypto extends PasswordImpl {
     }
   }
 
+  private String seedFile() throws Exception {
+    return Optional.ofNullable(getSeedFile()).orElse(fromProperties(SYSTEM_PROPERTY, System.getProperties()));
+  }
+
+  protected static String fromProperties(String key, Properties p) throws Exception {
+    if (!p.containsKey(key)) {
+      throw new Exception("No Seed file defined in system properties '" + key + "'");
+    }
+    if (!new File(p.getProperty(key)).exists()) {
+      throw new Exception("Seed file does not exist");
+    }
+    return p.getProperty(key);
+  }
 }
