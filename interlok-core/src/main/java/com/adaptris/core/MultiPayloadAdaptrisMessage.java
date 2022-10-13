@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -225,4 +226,85 @@ public interface MultiPayloadAdaptrisMessage extends AdaptrisMessage {
    * @throws IOException if the Writer could not be created.
    */
   Writer getWriter(@NotNull String id, String encoding) throws IOException;
+
+  /**
+   * Remove a metadata for the given payload id and the given key
+   *
+   * @param payloadId
+   * @param key
+   */
+  void removePayloadMessageHeader(String payloadId, String key);
+
+  /**
+   * Remove a metadata for the current payload and the given key
+   *
+   * @param key
+   */
+  void removePayloadMessageHeader(String key);
+
+  /**
+   * Add a metadata for the given payload id
+   *
+   * @param payloadId
+   * @param key
+   * @param value
+   */
+  void addPayloadMessageHeader(String payloadId, String key, String value);
+
+  /**
+   * Add a metadata for the current payload
+   *
+   * @param key
+   * @param value
+   */
+  void addPayloadMessageHeader(String key, String value);
+
+  /**
+   * Return all the metadata for a given payload id removing the payload prefixes e.g. 'PAYLOAD_payload-id_key' will become 'key'
+   *
+   * @param payloadId
+   * @return all the metadata for a given payload id removing the payload prefixes
+   */
+  Map<String, String> getPayloadMessageHeaders(String payloadId);
+
+  /**
+   * Return all the metadata for the current payload removing the payload prefixes e.g. 'PAYLOAD_payload-id_key' will become 'key'
+   *
+   * @return all the metadata for the given payload removing the payload prefixes
+   */
+  Map<String, String> getPayloadMessageHeaders();
+
+  /**
+   * Return metadata value for the given payload id and key
+   *
+   * @param payloadId
+   * @param key
+   * @return metadata value for the given payload id and key
+   */
+  String getPayloadMessageHeaderValue(String payloadId, String key);
+
+  /**
+   * Return metadata value for the current payload and key
+   *
+   * @param key
+   * @return metadata value for the current payload and key
+   */
+  String getPayloadMessageHeaderValue(String key);
+
+  /**
+   * Check if the payload with the given id contains a metadata with the give key
+   *
+   * @param payloadId
+   * @param key
+   * @return true if the payload with the given id contains a metadata with the give key
+   */
+  boolean payloadHeadersContainsKey(String payloadId, String key);
+
+  /**
+   * Check if the current payload contains a metadata with the give key
+   *
+   * @param key
+   * @return true if the current payload contains a metadata with the give key
+   */
+  boolean payloadHeadersContainsKey(String key);
 }
