@@ -21,6 +21,7 @@ import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 
 import com.adaptris.security.password.SeededAesPbeCrypto;
+import org.junit.Assume;
 import org.junit.Test;
 import com.adaptris.interlok.junit.scaffolding.util.Os;
 import com.adaptris.security.certificate.CertificateBuilder;
@@ -47,26 +48,18 @@ public class TestPassword {
 
   @Test
   public void testMicrosoftCrypto() throws Exception {
-    if (Os.isFamily(Os.WINDOWS_NT_FAMILY)) {
-      specificMicrosoftSetup();
-      PasswordCodec pw = Password.create(Password.MSCAPI_STYLE);
-      assertEquals(PW, pw.decode(pw.encode(PW)));
-    }
-    else {
-      System.out.println("Not a MS platform! for testMicrosoftCrypto()");
-    }
+    Assume.assumeTrue(Os.isFamily(Os.WINDOWS_NT_FAMILY));
+    specificMicrosoftSetup();
+    PasswordCodec pw = Password.create(Password.MSCAPI_STYLE);
+    assertEquals(PW, pw.decode(pw.encode(PW)));
   }
 
   @Test
   public void testMicrosoftCryptoWithCharset() throws Exception {
-    if (Os.isFamily(Os.WINDOWS_NT_FAMILY)) {
-      specificMicrosoftSetup();
-      PasswordCodec pw = Password.create(Password.MSCAPI_STYLE);
-      assertEquals(PW, pw.decode(pw.encode(PW, CHARSET), CHARSET));
-    }
-    else {
-      System.out.println("Not a MS platform! for testMicrosoftCryptoWithCharset()");
-    }
+    Assume.assumeTrue(Os.isFamily(Os.WINDOWS_NT_FAMILY));
+    specificMicrosoftSetup();
+    PasswordCodec pw = Password.create(Password.MSCAPI_STYLE);
+    assertEquals(PW, pw.decode(pw.encode(PW, CHARSET), CHARSET));
   }
 
   @Test
