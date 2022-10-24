@@ -17,6 +17,7 @@ package com.adaptris.security.password;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
+import com.adaptris.core.stubs.TempFileUtils;
 import com.adaptris.security.exc.PasswordException;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
@@ -26,15 +27,15 @@ public class SeededAesPbeCryptoTest {
 
   private static final String TEXT = "MYPASSWORD";
 
-  private static final String SEED_FILE = System.getProperty("user.dir") + "/build.gradle";
   private static final String NON_EXISTENT_FILE = "/surely/this/file/does/not/exist";
 
   @Test
   public void testResolveFromProperties() throws Exception {
     Properties p = new Properties();
-    p.setProperty("file-exists", SEED_FILE);
+    String seedFile = TempFileUtils.createTrackedFile(p, () -> "Hello World").getCanonicalPath();
+    p.setProperty("file-exists", seedFile);
     p.setProperty("non-existent-file", NON_EXISTENT_FILE);
-    assertEquals(SEED_FILE, SeededAesPbeCrypto.fromProperties("file-exists", p));
+    assertEquals(seedFile, SeededAesPbeCrypto.fromProperties("file-exists", p));
     assertThrows(Exception.class, () -> SeededAesPbeCrypto.fromProperties("non-existent-file", p));
     assertThrows(Exception.class, () -> SeededAesPbeCrypto.fromProperties("no-key", p));
   }
@@ -43,7 +44,9 @@ public class SeededAesPbeCryptoTest {
   // use the Password static functions, we have to use SeededAesPbeCrypto directly.
   @Test
   public void testSeeded() throws Exception {
-    SeededAesPbeCrypto passworder = new SeededAesPbeCrypto(SEED_FILE);
+    Object o = new Object();
+    String seedFile = TempFileUtils.createTrackedFile(o, () -> "Hello World").getCanonicalPath();
+    SeededAesPbeCrypto passworder = new SeededAesPbeCrypto(seedFile);
     String encoded = passworder.encode(TEXT, StandardCharsets.UTF_8.name());
     assertEquals(TEXT, passworder.decode(encoded));
   }
