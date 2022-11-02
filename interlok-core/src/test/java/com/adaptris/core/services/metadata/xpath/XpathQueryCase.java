@@ -21,22 +21,22 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
 import org.junit.Test;
+
 import com.adaptris.core.CoreException;
 
 public abstract class XpathQueryCase {
-
-  private static Log log = LogFactory.getLog(XpathQueryCase.class);
 
   public static final String XML = "<?xml version=\"1.0\"?><message><message-type>order"
       + "</message-type><source-id>partnera</source-id><destination-id>" + "partnerb</destination-id><body>...</body>"
@@ -112,7 +112,7 @@ public abstract class XpathQueryCase {
     private final Map<String, Set<String>> nsMap;
 
     public StaticNamespaceContext() {
-      Map<String, String> map = new HashMap<String, String>();
+      Map<String, String> map = new HashMap<>();
       map.put("svrl", "http://purl.oclc.org/dsdl/svrl");
       map.put("xsd", "http://www.w3.org/2001/XMLSchema");
       map.put("xs", "http://www.w3.org/2001/XMLSchema");
@@ -130,7 +130,7 @@ public abstract class XpathQueryCase {
 
 
     private Map<String, String> createPrefixMap(Map<String, String> source) {
-      Map<String, String> result = new HashMap<String, String>(source);
+      Map<String, String> result = new HashMap<>(source);
       addDefault(result, XMLConstants.XML_NS_PREFIX, XMLConstants.XML_NS_URI);
       addDefault(result, XMLConstants.XMLNS_ATTRIBUTE, XMLConstants.XMLNS_ATTRIBUTE_NS_URI);
       return Collections.unmodifiableMap(result);
@@ -144,12 +144,12 @@ public abstract class XpathQueryCase {
     }
 
     private Map<String, Set<String>> createNamespaceMap(Map<String, String> prefixMap) {
-      Map<String, Set<String>> result = new HashMap<String, Set<String>>();
+      Map<String, Set<String>> result = new HashMap<>();
       for (Map.Entry<String, String> entry : prefixMap.entrySet()) {
         String nsURI = entry.getValue();
         Set<String> existingPrefixes = result.get(nsURI);
         if (isNull(existingPrefixes)) {
-          existingPrefixes = new HashSet<String>();
+          existingPrefixes = new HashSet<>();
           result.put(nsURI, existingPrefixes);
         }
         existingPrefixes.add(entry.getKey());

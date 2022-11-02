@@ -3,9 +3,9 @@ ext {
   componentDesc="Common components for Interlok"
 
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
-  slf4jVersion = '1.7.36'
-  log4j2Version = "2.17.2"
-  mockitoVersion = '4.6.0'
+  slf4jVersion = '2.0.3'
+  log4j2Version = "2.19.0"
+  mockitoVersion = '4.8.0'
 }
 
 // In this section you declare the dependencies for your production and test code
@@ -21,11 +21,11 @@ dependencies {
 
   api ("org.slf4j:slf4j-api:$slf4jVersion")
   api ("javax.servlet:javax.servlet-api:4.0.1")
-  api ("org.eclipse.jetty.aggregate:jetty-all:9.4.46.v20220331")
+  api ("org.eclipse.jetty.aggregate:jetty-all:9.4.49.v20220914")
 
   implementation "org.apache.logging.log4j:log4j-api:$log4j2Version", optional
   implementation "org.apache.logging.log4j:log4j-core:$log4j2Version", optional
-  implementation "org.apache.logging.log4j:log4j-slf4j-impl:$log4j2Version", optional
+  implementation "org.apache.logging.log4j:log4j-slf4j2-impl:$log4j2Version", optional
   implementation "org.apache.logging.log4j:log4j-1.2-api:$log4j2Version", optional
   implementation "org.slf4j:jul-to-slf4j:$slf4jVersion", optional
   implementation "org.slf4j:jcl-over-slf4j:$slf4jVersion", optional

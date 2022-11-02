@@ -29,26 +29,11 @@ import java.io.OutputStreamWriter;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 public class StreamUtilTest extends StreamUtil {
 
   private static final String TEXT = "The Quick Brown fox jumps over the lazy dog.";
-
-  private transient Log logR;
-
-  @Before
-  public void setUp() throws Exception {
-    logR = LogFactory.getLog(this.getClass());
-  }
-
-  @After
-  public void tearDown() throws Exception {
-  }
 
   @Test
   public void testCreateFile() throws Exception {

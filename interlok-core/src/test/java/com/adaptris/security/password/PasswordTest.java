@@ -12,44 +12,26 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.security.password;
 
 import static org.junit.Assert.assertEquals;
 
-import com.adaptris.security.exc.PasswordException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.After;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
 import com.adaptris.interlok.junit.scaffolding.util.Os;
-
-import java.util.Properties;
+import org.junit.Assume;
+import org.junit.Test;
 
 public class PasswordTest {
 
   private static final String TEXT = "MYPASSWORD";
 
-  private static Log logR = LogFactory.getLog(PasswordTest.class);
-
-  @Before
-  public void setUp() throws Exception {
-    logR = LogFactory.getLog(this.getClass());
-  }
-
-  @After
-  public void tearDown() throws Exception {
-  }
-
   @Test
   public void testMainClass() throws Exception {
     String[] args =
-    {
-        Password.PORTABLE_PASSWORD, TEXT
-    };
+      {
+          Password.PORTABLE_PASSWORD, TEXT
+      };
     Password.generatePassword(args);
     Password.generatePassword(null);
     Password.generatePassword(new String[0]);
@@ -72,35 +54,6 @@ public class PasswordTest {
     Assume.assumeTrue(Os.isFamily(Os.WINDOWS_NT_FAMILY));
     String encoded = Password.encode(TEXT, Password.MSCAPI_STYLE);
     assertEquals(TEXT, Password.decode(encoded));
-  }
-
-  @Test
-  public void testSeeded()throws Exception {
-    System.setProperty(SeededAesPbeCrypto.SYSTEM_PROPERTY, System.getProperty("user.dir") + "/build.gradle");
-    String encoded = Password.encode(TEXT, Password.SEEDED_BATCH);
-    assertEquals(TEXT, Password.decode(encoded));
-  }
-
-  @Test(expected = PasswordException.class)
-  public void testSeededEncodeException()throws Exception {
-    Properties p = System.getProperties();
-    if (p.contains(SeededAesPbeCrypto.SYSTEM_PROPERTY)) {
-      p.remove(SeededAesPbeCrypto.SYSTEM_PROPERTY);
-    }
-    System.setProperties(p);
-
-    Password.encode(TEXT, Password.SEEDED_BATCH);
-  }
-
-  @Test(expected = PasswordException.class)
-  public void testSeededDecodeException()throws Exception {
-    Properties p = System.getProperties();
-    if (p.contains(SeededAesPbeCrypto.SYSTEM_PROPERTY)) {
-      p.remove(SeededAesPbeCrypto.SYSTEM_PROPERTY);
-    }
-    System.setProperties(p);
-
-    Password.decode(Password.SEEDED_BATCH + TEXT); // doesn't matter what we try to decode, lack of seed file
   }
 
 }

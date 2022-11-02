@@ -1,48 +1,46 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.jms;
 
-import static com.adaptris.core.BaseCase.start;
-import static com.adaptris.core.BaseCase.stop;
+import static com.adaptris.interlok.junit.scaffolding.BaseCase.start;
+import static com.adaptris.interlok.junit.scaffolding.BaseCase.stop;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
 import javax.jms.Session;
 import javax.jms.TextMessage;
+
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 
-@SuppressWarnings("deprecation")
 public class MetadataCorrelationIdSourceTest {
 
   private static final String CORRELATIONID_KEY = "correlationid_key";
   private static final String TEXT = "The quick brown fox";
   private static final String TEXT2 = "jumps over the lazy dog";
-
-  protected transient Log log = LogFactory.getLog(this.getClass());
 
   private static EmbeddedActiveMq activeMqBroker;
 
@@ -51,13 +49,14 @@ public class MetadataCorrelationIdSourceTest {
     activeMqBroker = new EmbeddedActiveMq();
     activeMqBroker.start();
   }
-  
+
   @AfterClass
   public static void tearDownAll() throws Exception {
-    if(activeMqBroker != null)
+    if(activeMqBroker != null) {
       activeMqBroker.destroy();
+    }
   }
-  
+
   @Test
   public void testAdaptrisMessageMetadataToJmsCorrelationId() throws Exception {
     JmsConnection conn = activeMqBroker.getJmsConnection();
@@ -163,7 +162,7 @@ public class MetadataCorrelationIdSourceTest {
       TextMessage jmsMsg = session.createTextMessage();
       MetadataCorrelationIdSource mcs = new MetadataCorrelationIdSource(CORRELATIONID_KEY);
       mcs.processCorrelationId(jmsMsg, adpMsg);
-      assertFalse(adpMsg.containsKey(CORRELATIONID_KEY));
+      assertFalse(adpMsg.headersContainsKey(CORRELATIONID_KEY));
       session.close();
     }
     finally {

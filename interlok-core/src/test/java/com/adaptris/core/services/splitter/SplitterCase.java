@@ -1,18 +1,18 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.services.splitter;
 
@@ -21,12 +21,15 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMessageFactory;
@@ -61,15 +64,15 @@ public abstract class SplitterCase extends SplitterServiceExample {
   }
 
   static AdvancedMessageSplitterService createAdvanced(MessageSplitter ms,
-                                                       StandaloneProducer p) {
+      StandaloneProducer p) {
     return createAdvanced(ms, new Service[]
-    {
-      p
-    });
+        {
+            p
+        });
   }
 
   static AdvancedMessageSplitterService createAdvanced(MessageSplitter ms,
-                                                       Service... services) {
+      Service... services) {
     AdvancedMessageSplitterService service = new AdvancedMessageSplitterService();
     ServiceList sl = new ServiceList(services);
     service.setSplitter(ms);
@@ -87,7 +90,7 @@ public abstract class SplitterCase extends SplitterServiceExample {
   }
 
   static List<Service> createExamples(MessageSplitter ms) {
-    List<Service> services = new ArrayList<Service>();
+    List<Service> services = new ArrayList<>();
     services.add(createBasic(ms));
     services.add(createAdvanced(ms, new WaitService(), new StandaloneProducer()));
     services.add(createPooling(ms, new WaitService(), new StandaloneProducer()));
@@ -105,7 +108,7 @@ public abstract class SplitterCase extends SplitterServiceExample {
     return AdaptrisMessageFactory.getDefaultInstance().newMessage(
         out.toByteArray());
   }
-  
+
   public static AdaptrisMessage createLineCountMessageInputWithHeader(String[] header) {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     PrintWriter print = new PrintWriter(out);
@@ -169,16 +172,16 @@ public abstract class SplitterCase extends SplitterServiceExample {
   }
 
   protected abstract MessageSplitterImp createSplitterForTests();
-  
+
   /**
-   * Convert the Iterable into a List. If it's already a list, just return it. If not, 
+   * Convert the Iterable into a List. If it's already a list, just return it. If not,
    * it will be iterated and the resulting list returned.
    */
   protected List<AdaptrisMessage> toList(Iterable<AdaptrisMessage> iter) {
     if(iter instanceof List) {
       return (List<AdaptrisMessage>)iter;
     }
-    List<AdaptrisMessage> result = new ArrayList<AdaptrisMessage>();
+    List<AdaptrisMessage> result = new ArrayList<>();
     try (CloseableIterable<AdaptrisMessage> messages = CloseableIterable.ensureCloseable(iter)) {
       for(AdaptrisMessage msg: messages) {
         result.add(msg);
@@ -189,7 +192,7 @@ public abstract class SplitterCase extends SplitterServiceExample {
     return result;
   }
 
-  protected List splitToList(MessageSplitterImp splitter, AdaptrisMessage msg) throws Exception {
+  protected List<AdaptrisMessage> splitToList(MessageSplitterImp splitter, AdaptrisMessage msg) throws Exception {
     return toList(splitter.splitMessage(msg));
   }
 

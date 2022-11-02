@@ -16,13 +16,8 @@
 
 package com.adaptris.core;
 
-import com.adaptris.annotation.ComponentProfile;
-import com.adaptris.interlok.resolver.UnresolvableException;
-import com.adaptris.interlok.types.InterlokMessage;
-import com.adaptris.util.IdGenerator;
-import org.apache.commons.lang3.StringUtils;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
-import javax.validation.constraints.NotNull;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FilterOutputStream;
@@ -38,8 +33,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
+import javax.validation.constraints.NotNull;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.interlok.resolver.UnresolvableException;
+import com.adaptris.interlok.types.InterlokMessage;
+import com.adaptris.util.IdGenerator;
 
 /**
  * The standard implementation of multi-payload messages;
@@ -54,8 +57,12 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  */
 @ComponentProfile(summary = "A multi-payload message implementation", tag = "multi-payload,message", since="3.9.3")
 public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implements MultiPayloadAdaptrisMessage {
+
+  public final static String PAYLOAD_METADATA_KEY_PREFIX = "PAYLOAD_";
+  public final static String PAYLOAD_METADATA_KEY_FORMAT = PAYLOAD_METADATA_KEY_PREFIX + "%s_%s";
   public static final String EXPLICIT_PAYLOAD_REGEXP = "^.*%payload_id\\{([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
   public static final String IMPLICIT_PAYLOAD_REGEXP = "^.*%payload\\{id:([\\w!\\$\"#&%'\\*\\+,\\-\\.:=]+)\\}.*$";
+
   private static final transient Pattern normalPayloadResolver = Pattern.compile(EXPLICIT_PAYLOAD_REGEXP);
   private static final transient Pattern dotAllPayloadResolver = Pattern.compile(EXPLICIT_PAYLOAD_REGEXP, Pattern.DOTALL);
   private static final transient Pattern normalPayloadResolver2 = Pattern.compile(IMPLICIT_PAYLOAD_REGEXP);
@@ -120,6 +127,126 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
   @Override
   public Set<String> getPayloadIDs() {
     return payloads.keySet();
+  }
+
+  /**
+   * Check if the current payload contains a metadata with the give key
+   *
+   * @param key
+   * @return true if the current payload contains a metadata with the give key
+   */
+  @Override
+  public boolean payloadHeadersContainsKey(String key) {
+    return payloadHeadersContainsKey(getCurrentPayloadId(), key);
+  }
+
+  /**
+   * Check if the payload with the given id contains a metadata with the give key
+   *
+   * @param payloadId
+   * @param key
+   * @return true if the payload with the given id contains a metadata with the give key
+   */
+  @Override
+  public boolean payloadHeadersContainsKey(String payloadId, String key) {
+    return headersContainsKey(payloadMessageHeaderKey(payloadId, key));
+  }
+
+  /**
+   * Return metadata value for the current payload and key
+   *
+   * @param key
+   * @return metadata value for the current payload and key
+   */
+  @Override
+  public String getPayloadMessageHeaderValue(String key) {
+    return getPayloadMessageHeaderValue(getCurrentPayloadId(), key);
+  }
+
+  /**
+   * Return metadata value for the given payload id and key
+   *
+   * @param payloadId
+   * @param key
+   * @return metadata value for the given payload id and key
+   */
+  @Override
+  public String getPayloadMessageHeaderValue(String payloadId, String key) {
+    return getMetadataValue(payloadMessageHeaderKey(payloadId, key));
+  }
+
+  /**
+   * Return all the metadata for the current payload removing the payload prefixes e.g. 'PAYLOAD_payload-id_key' will become 'key'
+   *
+   * @return all the metadata for the given payload removing the payload prefixes
+   */
+  @Override
+  public Map<String, String> getPayloadMessageHeaders() {
+    return getPayloadMessageHeaders(getCurrentPayloadId());
+  }
+
+  /**
+   * Return all the metadata for a given payload id removing the payload prefixes e.g. 'PAYLOAD_payload-id_key' will become 'key'
+   *
+   * @param payloadId
+   * @return all the metadata for a given payload id removing the payload prefixes
+   */
+  @Override
+  public Map<String, String> getPayloadMessageHeaders(String payloadId) {
+    String payloadKeyPrefix = String.format(PAYLOAD_METADATA_KEY_FORMAT, payloadId, "");
+    return getMessageHeaders().entrySet().stream().filter(e -> e.getKey().startsWith(payloadKeyPrefix)).collect(Collectors.toMap(e -> {
+      return e.getKey().substring(payloadKeyPrefix.length());
+    }, e -> {
+      return e.getValue();
+    }));
+  }
+
+  /**
+   * Add a metadata for the current payload
+   *
+   * @param key
+   * @param value
+   */
+  @Override
+  public void addPayloadMessageHeader(String key, String value) {
+    addPayloadMessageHeader(getCurrentPayloadId(), key, value);
+  }
+
+  /**
+   * Add a metadata for the given payload id
+   *
+   * @param payloadId
+   * @param key
+   * @param value
+   */
+  @Override
+  public void addPayloadMessageHeader(String payloadId, String key, String value) {
+    addMessageHeader(payloadMessageHeaderKey(payloadId, key), value);
+  }
+
+  /**
+   * Remove a metadata for the current payload and the given key
+   *
+   * @param key
+   */
+  @Override
+  public void removePayloadMessageHeader(String key) {
+    removePayloadMessageHeader(getCurrentPayloadId(), key);
+  }
+
+  /**
+   * Remove a metadata for the given payload id and the given key
+   *
+   * @param payloadId
+   * @param key
+   */
+  @Override
+  public void removePayloadMessageHeader(String payloadId, String key) {
+    removeMessageHeader(payloadMessageHeaderKey(payloadId, key));
+  }
+
+  private String payloadMessageHeaderKey(String payloadId, String key) {
+    return String.format(PAYLOAD_METADATA_KEY_FORMAT, payloadId, key);
   }
 
   /**
@@ -228,6 +355,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
   /**
    * {@inheritDoc}.
    */
+  @Override
   public int getPayloadCount() {
     return payloads.size();
   }

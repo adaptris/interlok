@@ -18,11 +18,12 @@ package com.adaptris.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+
 import java.io.ByteArrayOutputStream;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
 import org.junit.Before;
 import org.junit.Test;
+
 import com.adaptris.util.text.mime.ByteArrayIterator;
 import com.adaptris.util.text.mime.MimeConstants;
 import com.adaptris.util.text.mime.MultiPartOutput;
@@ -36,8 +37,6 @@ public class TestMultipartOutput implements MimeConstants {
   private static final String PAYLOAD_2 = "Sixty zippers were quickly picked "
       + "from the woven jute bag";
   private GuidGenerator guid;
-  static final Log logR = LogFactory.getLog(TestMultipartOutput.class);
-
 
   @Before
   public void setUp() throws Exception {

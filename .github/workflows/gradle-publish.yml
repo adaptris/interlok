@@ -1,0 +1,18 @@
+name: Gradle Publish
+
+on:
+  push:
+    branches:
+    - develop
+  schedule:
+    - cron: 0 3 * * * # Daily 3 a.m.
+
+permissions: read-all
+
+jobs:
+  gradle-publish:
+    name: Gradle Publish
+    uses: interlok-tooling/reusable-workflows/.github/workflows/gradle-publish.yml@main
+    secrets:
+      NEXUS_REPO_PASSWORD: ${{ secrets.NEXUS_REPO_PASSWORD }}
+      TEAMS_IDN_WH_URL: ${{ secrets.TEAMS_IDN_WH_URL }}
