@@ -9,7 +9,7 @@ ext {
 dependencies {
   api project(':interlok-common')
   api project(':interlok-client')
-  api ("org.slf4j:slf4j-api:2.0.3")
+  api ("org.slf4j:slf4j-api:2.0.4")
 
   testImplementation ('junit:junit:4.13.2')
   // testCompile ("com.adaptris:interlok-stubs:$interlokCoreVersion") { changing= true}
