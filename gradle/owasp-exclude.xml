@@ -149,4 +149,20 @@
     <packageUrl regex="true">^pkg:maven/org\.apache\.commons/commons\-text@.*$</packageUrl>
     <cpe>cpe:/a:apache:commons_net</cpe>
   </suppress>
+  <suppress>
+    <packageUrl regex="true">^pkg:maven/commons\-collections/commons\-collections@.*$</packageUrl>
+    <cpe>cpe:/a:apache:commons_net</cpe>
+  </suppress>
+  <suppress>
+    <packageUrl regex="true">^pkg:maven/commons\-digester/commons\-digester@.*$</packageUrl>
+    <cpe>cpe:/a:apache:commons_net</cpe>
+  </suppress>
+  <suppress>
+    <packageUrl regex="true">^pkg:maven/commons\-lang/commons\-lang@.*$</packageUrl>
+    <cpe>cpe:/a:apache:commons_net</cpe>
+  </suppress>
+  <suppress>
+    <packageUrl regex="true">^pkg:maven/commons\-validator/commons\-validator@.*$</packageUrl>
+    <cpe>cpe:/a:apache:commons_net</cpe>
+  </suppress>
 </suppressions>
