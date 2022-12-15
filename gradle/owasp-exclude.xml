@@ -100,7 +100,9 @@
    <packageUrl regex="true">^pkg:maven/org\.codehaus\.jettison/jettison@.*$</packageUrl>
    <cve>CVE-2022-40149</cve>
    <cve>CVE-2022-40150</cve>
-</suppress>
+   <cve>CVE-2022-45685</cve>
+   <cve>CVE-2022-45693</cve>
+  </suppress>
   <suppress>
     <notes><![CDATA[
     file name: xstream-1.4.19.jar
