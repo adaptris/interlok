@@ -6,7 +6,7 @@ ext {
 
 dependencies {
   api ("com.thoughtworks.xstream:xstream:1.4.20") {  transitive= false }
-  api ("jakarta.validation:jakarta.validation-api:2.0.2")
+  api ("jakarta.validation:jakarta.validation-api:3.0.2")
   // compile files("${System.getProperty('java.home')}/../lib/tools.jar")
 
   testImplementation("junit:junit:4.13.2")
