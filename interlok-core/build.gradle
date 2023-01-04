@@ -8,7 +8,7 @@ ext {
   mysqlDriverVersion='8.0.30'
   slf4jVersion = '2.0.6'
   mockitoVersion = '4.9.0'
-  jschVersion = '0.2.5'
+  jschVersion = '0.2.6'
   mssqlDriverVersion = '9.2.1.jre8'
   derbyDriverVersion = '10.15.2.0'
 
