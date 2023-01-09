@@ -47,6 +47,8 @@ jar {
                "Implementation-Version": project.version,
                "Implementation-Vendor-Id": project.group,
                "Implementation-Vendor": organizationName,
+               // This is an intermediate "shim" to allow XStream work with with Java17+
+               "Add-Opens": "java.base/java.lang java.base/java.util",
                "Main-Class": "com.adaptris.interlok.boot.InterlokLauncher")
   }
   from ("$project.buildDir/spring-boot-loader") {
