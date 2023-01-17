@@ -117,6 +117,15 @@
     <cve>CVE-2022-40155</cve>
     <cve>CVE-2022-40156</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+     file name: xercesImpl-2.12.2.jar
+	 We are the latest version, and should not affect Java 11
+     ]]>    </notes>
+    <packageUrl regex="true">^pkg:maven/xerces/xercesImpl@.*$</packageUrl>
+    <vulnerabilityName>CVE-2017-10355</vulnerabilityName>
+  </suppress>  
+
   <!-- These commons-* jars seem to be a false positive;
        we are already at the correct commons-net version (3.9.0)
        and it's likely to be a regexp failure.
