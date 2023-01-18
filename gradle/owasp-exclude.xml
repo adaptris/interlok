@@ -125,7 +125,15 @@
     <packageUrl regex="true">^pkg:maven/xerces/xercesImpl@.*$</packageUrl>
     <vulnerabilityName>CVE-2017-10355</vulnerabilityName>
   </suppress>  
-
+  <suppress>
+    <notes><![CDATA[
+    file name: snakeyaml-1.31.jar
+    snakeyaml not directly used, and we are on the latest version.
+    ]]>    </notes>
+    <packageUrl regex="true">^pkg:maven/org.yaml/snakeyaml@.*$</packageUrl>
+    <cve>CVE-2022-1471</cve>
+    <cve>CVE-2022-3064</cve>
+  </suppress>
   <!-- These commons-* jars seem to be a false positive;
        we are already at the correct commons-net version (3.9.0)
        and it's likely to be a regexp failure.
