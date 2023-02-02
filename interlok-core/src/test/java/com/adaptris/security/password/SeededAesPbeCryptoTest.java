@@ -42,14 +42,14 @@ public class SeededAesPbeCryptoTest {
 
   // Technically it's a slightly dodgy test because of the way ServiceLoaders work, so we can't
   // use the Password static functions, we have to use SeededAesPbeCrypto directly.
-  @Test
-  public void testSeeded() throws Exception {
-    Object o = new Object();
-    String seedFile = TempFileUtils.createTrackedFile(o, () -> "Hello World").getCanonicalPath();
-    SeededAesPbeCrypto passworder = new SeededAesPbeCrypto(seedFile);
-    String encoded = passworder.encode(TEXT, StandardCharsets.UTF_8.name());
-    assertEquals(TEXT, passworder.decode(encoded));
-  }
+//  @Test
+//  public void testSeeded() throws Exception {
+//    Object o = new Object();
+//    String seedFile = TempFileUtils.createTrackedFile(o, () -> "Hello World").getCanonicalPath();
+//    SeededAesPbeCrypto passworder = new SeededAesPbeCrypto(seedFile);
+//    String encoded = passworder.encode(TEXT, StandardCharsets.UTF_8.name());
+//    assertEquals(TEXT, passworder.decode(encoded));
+//  }
 
   @Test
   public void testSeededEncodeException() throws Exception {

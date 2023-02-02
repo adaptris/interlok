@@ -3,7 +3,7 @@ ext {
   componentDesc="Interlok client API; allows you to programatically submit messages to an Interlok workflow"
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
   log4j2Version = "2.19.0"
-  mockitoVersion = '4.8.0'
+  mockitoVersion = '4.9.0'
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -18,7 +18,7 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 
 dependencies {
   api project(':interlok-common')
-  api ("org.slf4j:slf4j-api:2.0.3")
+  api ("org.slf4j:slf4j-api:2.0.6")
   testImplementation ('junit:junit:4.13.2')
   // testCompile ("com.adaptris:interlok-stubs:$interlokCoreVersion") { changing= true}
   testImplementation ("org.apache.logging.log4j:log4j-core:$log4j2Version")

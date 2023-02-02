@@ -18,34 +18,34 @@
   <suppress>
     <notes><![CDATA[
     file name: javax.security.auth.message-1.0.0.v201108011116.jar, isn't geronimo!
-    ]]></notes>
+    ]]>    </notes>
     <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty\.orbit/javax\.security\.auth\.message@.*$</packageUrl>
     <cpe>cpe:/a:apache:geronimo</cpe>
   </suppress>
   <suppress>
     <notes><![CDATA[
     javax.websocket-api != Java-WebSocket (INTERLOK-3284)
-    ]]></notes>
+    ]]>    </notes>
     <packageUrl regex="true">^pkg:maven/javax\.websocket/javax\.websocket\-api@.*$</packageUrl>
     <cve>CVE-2020-11050</cve>
   </suppress>
   <suppress>
     <notes><![CDATA[
     javax.websocket-client-api != Java-WebSocket (INTERLOK-3284)
-    ]]></notes>
+    ]]>    </notes>
     <packageUrl regex="true">^pkg:maven/javax\.websocket/javax\.websocket\-client\-api@.*$</packageUrl>
     <cve>CVE-2020-11050</cve>
   </suppress>
   <suppress>
     <notes><![CDATA[
     This CVE is a ruby CVE : https://nvd.nist.gov/vuln/detail/CVE-2020-10663
-    ]]></notes>
+    ]]>    </notes>
     <cve>CVE-2020-10663</cve>
   </suppress>
   <suppress>
     <notes><![CDATA[
     This CVE is a NPM Node/CVE... https://nvd.nist.gov/vuln/detail/CVE-2020-7712
-    ]]></notes>
+    ]]>    </notes>
     <cve>CVE-2020-7712</cve>
   </suppress>
   <suppress>
@@ -56,7 +56,7 @@
       <packageUrl regex="true">^pkg:maven/io\.github\.x\-stream/mxparser@.*$</packageUrl>
       <cpe>cpe:/a:xstream_project:xstream</cpe>
       Because this causes it to have a low-confidence match against some oracle crap so just exclude the explicit CVEs
-    ]]></notes>
+    ]]>    </notes>
     <packageUrl regex="true">^pkg:maven/io\.github\.x\-stream/mxparser@.*$</packageUrl>
     <cve>CVE-2013-7285</cve>
     <cve>CVE-2016-3674</cve>
@@ -80,33 +80,35 @@
     <notes><![CDATA[
     file name: log4j-1.2-*.jar
     This CVE matches a AWS CVE for a hotfix they patched a JVM with. This is a false positive
-    ]]></notes>
+    ]]>    </notes>
     <packageUrl regex="true">^pkg:maven/org\.apache\.logging\.log4j/log4j.*$</packageUrl>
     <cve>CVE-2022-33915</cve>
   </suppress>
   <suppress>
-     <notes><![CDATA[
+    <notes><![CDATA[
      file name: jetty-io-9.4.48.v20220622.jar
 	 Only Jetty versions 10.0.0 thru 10.0.9, and 11.0.0 thru 11.0.9 versions are affected
-     ]]></notes>
-     <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty/jetty\-io@.*$</packageUrl>
-     <vulnerabilityName>CVE-2022-2191</vulnerabilityName>
+     ]]>    </notes>
+    <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty/jetty\-io@.*$</packageUrl>
+    <vulnerabilityName>CVE-2022-2191</vulnerabilityName>
   </suppress>
   <suppress>
-   <notes><![CDATA[
+    <notes><![CDATA[
    file name: jettison-1.2.jar
    XStream has to use jettison-1.2 according to their docs, so an upgrade to 1.4 may not be possible
-   ]]></notes>
-   <packageUrl regex="true">^pkg:maven/org\.codehaus\.jettison/jettison@.*$</packageUrl>
-   <cve>CVE-2022-40149</cve>
-   <cve>CVE-2022-40150</cve>
-</suppress>
+   ]]>    </notes>
+    <packageUrl regex="true">^pkg:maven/org\.codehaus\.jettison/jettison@.*$</packageUrl>
+    <cve>CVE-2022-40149</cve>
+    <cve>CVE-2022-40150</cve>
+    <cve>CVE-2022-45685</cve>
+    <cve>CVE-2022-45693</cve>
+  </suppress>
   <suppress>
     <notes><![CDATA[
     file name: xstream-1.4.19.jar
     XStream denial of service attack is a possibility, but it's the foundation of config so unavoidable
     until they patch it.
-    ]]></notes>
+    ]]>    </notes>
     <packageUrl regex="true">^pkg:maven/com\.thoughtworks\.xstream/xstream@.*$</packageUrl>
     <cve>CVE-2022-40151</cve>
     <cve>CVE-2022-40152</cve>
@@ -114,5 +116,70 @@
     <cve>CVE-2022-40154</cve>
     <cve>CVE-2022-40155</cve>
     <cve>CVE-2022-40156</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+     file name: xercesImpl-2.12.2.jar
+	 We are the latest version, and should not affect Java 11
+     ]]>    </notes>
+    <packageUrl regex="true">^pkg:maven/xerces/xercesImpl@.*$</packageUrl>
+    <vulnerabilityName>CVE-2017-10355</vulnerabilityName>
+  </suppress>  
+  <suppress>
+    <notes><![CDATA[
+    file name: snakeyaml-1.31.jar
+    snakeyaml not directly used, and we are on the latest version.
+    ]]>    </notes>
+    <packageUrl regex="true">^pkg:maven/org.yaml/snakeyaml@.*$</packageUrl>
+    <cve>CVE-2022-1471</cve>
+    <cve>CVE-2022-3064</cve>
+  </suppress>
+  <!-- These commons-* jars seem to be a false positive;
+       we are already at the correct commons-net version (3.9.0)
+       and it's likely to be a regexp failure.
+  -->
+  <suppress>
+    <packageUrl regex="true">^pkg:maven/commons\-beanutils/commons\-beanutils@.*$</packageUrl>
+    <cpe>cpe:/a:apache:commons_net</cpe>
+  </suppress>
+  <suppress>
+    <packageUrl regex="true">^pkg:maven/commons\-codec/commons\-codec@.*$</packageUrl>
+    <cpe>cpe:/a:apache:commons_net</cpe>
+  </suppress>
+  <suppress>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.commons/commons\-exec@.*$</packageUrl>
+    <cpe>cpe:/a:apache:commons_net</cpe>
+  </suppress>
+  <suppress>
+    <packageUrl regex="true">^pkg:maven/commons\-io/commons\-io@.*$</packageUrl>
+    <cpe>cpe:/a:apache:commons_net</cpe>
+  </suppress>
+  <suppress>
+    <packageUrl regex="true">^pkg:maven/commons\-pool/commons\-pool@.*$</packageUrl>
+    <cpe>cpe:/a:apache:commons_net</cpe>
+  </suppress>
+  <suppress>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.commons/commons\-pool2@.*$</packageUrl>
+    <cpe>cpe:/a:apache:commons_net</cpe>
+  </suppress>
+  <suppress>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.commons/commons\-text@.*$</packageUrl>
+    <cpe>cpe:/a:apache:commons_net</cpe>
+  </suppress>
+  <suppress>
+    <packageUrl regex="true">^pkg:maven/commons\-collections/commons\-collections@.*$</packageUrl>
+    <cpe>cpe:/a:apache:commons_net</cpe>
+  </suppress>
+  <suppress>
+    <packageUrl regex="true">^pkg:maven/commons\-digester/commons\-digester@.*$</packageUrl>
+    <cpe>cpe:/a:apache:commons_net</cpe>
+  </suppress>
+  <suppress>
+    <packageUrl regex="true">^pkg:maven/commons\-lang/commons\-lang@.*$</packageUrl>
+    <cpe>cpe:/a:apache:commons_net</cpe>
+  </suppress>
+  <suppress>
+    <packageUrl regex="true">^pkg:maven/commons\-validator/commons\-validator@.*$</packageUrl>
+    <cpe>cpe:/a:apache:commons_net</cpe>
   </suppress>
 </suppressions>

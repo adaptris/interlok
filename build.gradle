@@ -3,7 +3,7 @@ plugins {
   id 'nebula.optional-base' version '7.0.0' apply false
   id 'com.github.spotbugs' version '5.0.13' apply false
   id "org.sonarqube" version '3.4.0.2513' apply false
-  id 'org.owasp.dependencycheck' version '7.2.1' apply false
+  id 'org.owasp.dependencycheck' version '7.4.4' apply false
   id "io.freefair.lombok" version "6.5.1" apply false
   // id 'org.kordamp.gradle.jdeps' version '0.12.0' apply false
   id "org.gradle.test-retry" version "1.4.1" apply false
@@ -11,8 +11,8 @@ plugins {
 }
 
 ext {
-  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '4.6-SNAPSHOT'
-  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '4.6-SNAPSHOT'
+  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '4.7-SNAPSHOT'
+  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '4.7-SNAPSHOT'
   nexusBaseUrl = project.hasProperty('nexusBaseUrl') ? project.getProperty('nexusBaseUrl') : 'https://nexus.adaptris.net/nexus'
   mavenPublishUrl = project.hasProperty('mavenPublishUrl') ? project.getProperty('mavenPublishUrl') : nexusBaseUrl + '/content/repositories/snapshots'
   javadocsBaseUrl = nexusBaseUrl + "/content/sites/javadocs/com/adaptris"

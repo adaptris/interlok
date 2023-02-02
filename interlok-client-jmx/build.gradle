@@ -3,13 +3,13 @@ ext {
   componentDesc="JMX implementation of the Interlok Client API"
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
   log4j2Version = "2.19.0"
-  mockitoVersion = '4.8.0'
+  mockitoVersion = '4.9.0'
 }
 
 dependencies {
   api project(':interlok-common')
   api project(':interlok-client')
-  api ("org.slf4j:slf4j-api:2.0.3")
+  api ("org.slf4j:slf4j-api:2.0.6")
 
   testImplementation ('junit:junit:4.13.2')
   // testCompile ("com.adaptris:interlok-stubs:$interlokCoreVersion") { changing= true}
