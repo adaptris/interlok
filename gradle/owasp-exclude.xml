@@ -134,6 +134,18 @@
     <cve>CVE-2022-1471</cve>
     <cve>CVE-2022-3064</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+ file name: json-20201115.jar
+ CVE-2022-45688 in org.json/json - misleading CPE
+ The cpe on the NIST site: cpe:2.3:a:hutool:hutool:5.8.10:*:*:*:*:*:*:* does not seem related to org.json/json
+ https://github.com/jeremylong/DependencyCheck/issues/5401
+ users can already have some control by setting the -Xss JVM option
+ ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org.json/json@.*$</packageUrl>
+    <cve>CVE-2022-45688</cve>
+    <cpe>cpe:/a:hutool:hutool</cpe>
+  </suppress> 	
   <!-- These commons-* jars seem to be a false positive;
        we are already at the correct commons-net version (3.9.0)
        and it's likely to be a regexp failure.
