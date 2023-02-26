@@ -21,6 +21,12 @@ on:
   schedule:
     - cron: '26 23 * * 0'
 
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+
 jobs:
   analyze:
     name: Analyze
@@ -29,43 +35,51 @@ jobs:
       actions: read
       contents: read
       security-events: write
-
     strategy:
       fail-fast: false
-      matrix:
-        language: [ 'java' ]
-        # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python', 'ruby' ]
-        # Learn more about CodeQL language support at https://git.io/codeql-language-support
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
-
-    # Initializes the CodeQL tools for scanning.
+      with:
+        fetch-depth: 0
     - name: Initialize CodeQL
+      # Initializes the CodeQL tools for scanning.
       uses: github/codeql-action/init@v2
       with:
-        languages: ${{ matrix.language }}
-        # If you wish to specify custom queries, you can do so here or in a config file.
-        # By default, queries listed here will override any specified in a config file.
-        # Prefix the list here with "+" to use these queries and those in the config file.
-        # queries: ./path/to/local/query, your-org/your-repo/queries@main
-
-    # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
-    # If this step fails, then you should remove it and run the build manually (see below)
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v2
-
-    # ℹ️ Command-line programs to run using the OS shell.
-    # 📚 https://git.io/JvXDl
-
-    # ✏️ If the Autobuild fails above, remove it and uncomment the following three lines
-    #    and modify them (or add more) to build your code if your project
-    #    uses a compiled language
-
-    #- run: |
-    #   make bootstrap
-    #   make release
-
+        languages: "java"
+        queries: security-and-quality
+        # This should include support for suppressions like
+        # @SuppressWarnings({"codeql [java/weak-cryptographic-algorithm]"})
+        # // lgtm[java/weak-cryptographic-algorithm] (// codeql[] doesn't work in 0.5.2?)
+        packs: "codeql/java-queries:AlertSuppression.ql,codeql/java-queries:AlertSuppressionAnnotations.ql"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2
+      with:
+        gradle-version: wrapper
+    - name: CodeQL Build
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: lgtmCompile
     - name: Perform CodeQL Analysis
+      # define an 'id' for the analysis step
+      id: analyze
       uses: github/codeql-action/analyze@v2
+      with:
+        category: "/language:java"
+        output: sarif-results
+    - name: Dismiss alerts
+      # If we're on the default branch then dismiss the alerts
+      # associated with the suppression checks above...
+      #
+      if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+      uses: advanced-security/dismiss-alerts@v1
+      with:
+        sarif-id: ${{ steps.analyze.outputs.sarif-id }}
+        # sarif-file: sarif-results/{{ matrix.language }}.sarif
+        sarif-file: sarif-results/java.sarif
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
