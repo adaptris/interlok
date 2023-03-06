@@ -1,17 +1,17 @@
 /*
-* Copyright 2015 Adaptris Ltd.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+ * Copyright 2015 Adaptris Ltd.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
 */
 
 package com.adaptris.core.config;
@@ -35,122 +35,122 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
-* @config default-pre-processor-loader
-* @author lchan
-*
-*/
+ * @config default-pre-processor-loader
+ * @author lchan
+ *
+ */
 @JacksonXmlRootElement(localName = "default-pre-processor-loader")
 @XStreamAlias("default-pre-processor-loader")
 public class DefaultPreProcessorLoader implements ConfigPreProcessorLoader {
 
-private transient Logger log = LoggerFactory.getLogger(DefaultPreProcessorLoader.class);
+  private transient Logger log = LoggerFactory.getLogger(DefaultPreProcessorLoader.class);
 
-private static final String PRE_PROCESSOR_SEPARATOR = ":";
-private static final String CLASS_PROPERTY_KEY = "class";
-private static final transient String PRE_PROCESSOR_RESOURCE = "META-INF/com/adaptris/core/preprocessor/";
+  private static final String PRE_PROCESSOR_SEPARATOR = ":";
+  private static final String CLASS_PROPERTY_KEY = "class";
+  private static final transient String PRE_PROCESSOR_RESOURCE = "META-INF/com/adaptris/core/preprocessor/";
 
-private transient PropertyLoader propertyLoader;
+  private transient PropertyLoader propertyLoader;
 
-public DefaultPreProcessorLoader() {
-this.setPropertyLoader(new PropertyLoader());
-}
+  public DefaultPreProcessorLoader() {
+    this.setPropertyLoader(new PropertyLoader());
+  }
 
-@Override
-public ConfigPreProcessors load(BootstrapProperties bootstrapProperties) throws CoreException {
-ConfigPreProcessors preProcessorsList = new ConfigPreProcessors();
-String prePrecessorList = getPropertyIgnoringCase(bootstrapProperties,
-AdapterConfigManager.CONFIGURATION_PRE_PROCESSORS);
-if (!isEmpty(prePrecessorList)) {
-String[] configuredPreProcessors = prePrecessorList.split(PRE_PROCESSOR_SEPARATOR);
-for (String preProcessor : configuredPreProcessors) {
-try {
-preProcessorsList.add(resolve(preProcessor, bootstrapProperties));
-}
-catch (Exception e) {
-log.warn("Unable to find pre-processor with name: [{}].  Ignoring.", preProcessor);
-}
-}
-}
-return preProcessorsList;
-}
+  @Override
+  public ConfigPreProcessors load(BootstrapProperties bootstrapProperties) throws CoreException {
+    ConfigPreProcessors preProcessorsList = new ConfigPreProcessors();
+    String prePrecessorList = getPropertyIgnoringCase(bootstrapProperties,
+        AdapterConfigManager.CONFIGURATION_PRE_PROCESSORS);
+    if (!isEmpty(prePrecessorList)) {
+      String[] configuredPreProcessors = prePrecessorList.split(PRE_PROCESSOR_SEPARATOR);
+      for (String preProcessor : configuredPreProcessors) {
+        try {
+          preProcessorsList.add(resolve(preProcessor, bootstrapProperties));
+        }
+        catch (Exception e) {
+          log.warn("Unable to find pre-processor with name: [{}].  Ignoring.", preProcessor);
+        }
+      }
+    }
+    return preProcessorsList;
+  }
 
-@Override
-public ConfigPreProcessors load(String preProcessors, KeyValuePairSet config) throws CoreException {
-ConfigPreProcessors preProcessorsList = new ConfigPreProcessors();
-if (!isEmpty(preProcessors)) {
-String[] configuredPreProcessors = preProcessors.split(PRE_PROCESSOR_SEPARATOR);
-for (String preProcessor : configuredPreProcessors) {
-try {
-preProcessorsList.add(resolve(preProcessor, config));
-} catch (Exception e) {
-log.warn("Unable to find pre-processor with name: ]{}].  Ignoring.", preProcessor);
-}
-}
-}
-return preProcessorsList;
-}
+  @Override
+  public ConfigPreProcessors load(String preProcessors, KeyValuePairSet config) throws CoreException {
+    ConfigPreProcessors preProcessorsList = new ConfigPreProcessors();
+    if (!isEmpty(preProcessors)) {
+      String[] configuredPreProcessors = preProcessors.split(PRE_PROCESSOR_SEPARATOR);
+      for (String preProcessor : configuredPreProcessors) {
+        try {
+          preProcessorsList.add(resolve(preProcessor, config));
+        } catch (Exception e) {
+          log.warn("Unable to find pre-processor with name: ]{}].  Ignoring.", preProcessor);
+        }
+      }
+    }
+    return preProcessorsList;
+  }
 
-private ConfigPreProcessor resolve(String name, BootstrapProperties bootstrapProperties) throws CoreException {
-ConfigPreProcessor result = null;
-Properties p = getPropertyLoader().loadPropertyFile(name);
-String classname = p.getProperty(CLASS_PROPERTY_KEY, name);
-return this.createInstance(classname, bootstrapProperties);
-}
+  private ConfigPreProcessor resolve(String name, BootstrapProperties bootstrapProperties) throws CoreException {
+    ConfigPreProcessor result = null;
+    Properties p = getPropertyLoader().loadPropertyFile(name);
+    String classname = p.getProperty(CLASS_PROPERTY_KEY, name);
+    return this.createInstance(classname, bootstrapProperties);
+  }
 
-private ConfigPreProcessor resolve(String name, KeyValuePairSet config) throws CoreException {
-ConfigPreProcessor result = null;
-Properties p = getPropertyLoader().loadPropertyFile(name);
-String classname = p.getProperty(CLASS_PROPERTY_KEY, name);
-return this.createInstance(classname, config);
-}
+  private ConfigPreProcessor resolve(String name, KeyValuePairSet config) throws CoreException {
+    ConfigPreProcessor result = null;
+    Properties p = getPropertyLoader().loadPropertyFile(name);
+    String classname = p.getProperty(CLASS_PROPERTY_KEY, name);
+    return this.createInstance(classname, config);
+  }
 
-private ConfigPreProcessor createInstance(String classname, BootstrapProperties bootstrapProperties) throws CoreException {
-ConfigPreProcessor preProcessor = null;
-log.trace("Loading pre-processor: " + classname);
-Class<?>[] paramTypes = {BootstrapProperties.class};
-Object[] args = {bootstrapProperties};
-try {
-Class<?> clazz = Class.forName(classname);
-Constructor<?> cnst = clazz.getDeclaredConstructor(paramTypes);
-preProcessor = (ConfigPreProcessor) cnst.newInstance(args);
-}
-catch (Exception e) {
-throw ExceptionHelper.wrapCoreException(e);
-}
+  private ConfigPreProcessor createInstance(String classname, BootstrapProperties bootstrapProperties) throws CoreException {
+    ConfigPreProcessor preProcessor = null;
+    log.trace("Loading pre-processor: " + classname);
+    Class<?>[] paramTypes = {BootstrapProperties.class};
+    Object[] args = {bootstrapProperties};
+    try {
+      Class<?> clazz = Class.forName(classname);
+      Constructor<?> cnst = clazz.getDeclaredConstructor(paramTypes);
+      preProcessor = (ConfigPreProcessor) cnst.newInstance(args);
+    }
+    catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
+    }
 
-return preProcessor;
-}
+    return preProcessor;
+  }
 
-private ConfigPreProcessor createInstance(String classname, KeyValuePairSet config) throws CoreException {
-ConfigPreProcessor preProcessor = null;
-log.trace("Loading pre-processor: " + classname);
-Class<?>[] paramTypes = {KeyValuePairSet.class};
-Object[] args = {config};
-try {
-Class<?> clazz = Class.forName(classname);
-Constructor<?> cnst = clazz.getDeclaredConstructor(paramTypes);
-preProcessor = (ConfigPreProcessor) cnst.newInstance(args);
-} catch (Exception e) {
-throw ExceptionHelper.wrapCoreException(e);
-}
-return preProcessor;
-}
+  private ConfigPreProcessor createInstance(String classname, KeyValuePairSet config) throws CoreException {
+    ConfigPreProcessor preProcessor = null;
+    log.trace("Loading pre-processor: " + classname);
+    Class<?>[] paramTypes = {KeyValuePairSet.class};
+    Object[] args = {config};
+    try {
+      Class<?> clazz = Class.forName(classname);
+      Constructor<?> cnst = clazz.getDeclaredConstructor(paramTypes);
+      preProcessor = (ConfigPreProcessor) cnst.newInstance(args);
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
+    }
+    return preProcessor;
+  }
 
 
-private PropertyLoader getPropertyLoader() {
-return propertyLoader;
-}
+  private PropertyLoader getPropertyLoader() {
+    return propertyLoader;
+  }
 
-void setPropertyLoader(PropertyLoader loader) {
-this.propertyLoader = Args.notNull(loader, "property loader");
-}
+  void setPropertyLoader(PropertyLoader loader) {
+    this.propertyLoader = Args.notNull(loader, "property loader");
+  }
 
-class PropertyLoader {
+  class PropertyLoader {
 
-public Properties loadPropertyFile(String name) {
-return PropertyHelper.loadQuietly(this.getClass().getClassLoader(),
-PRE_PROCESSOR_RESOURCE + name);
-}
-}
+    public Properties loadPropertyFile(String name) {
+      return PropertyHelper.loadQuietly(this.getClass().getClassLoader(),
+          PRE_PROCESSOR_RESOURCE + name);
+    }
+  }
 
 }

@@ -1,17 +1,17 @@
 /*
-* Copyright 2015 Adaptris Ltd.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+ * Copyright 2015 Adaptris Ltd.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
 */
 
 package com.adaptris.core.interceptor;
@@ -34,168 +34,168 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
-* Interceptor that emits a {@link javax.management.Notification} if the number of messages has exceeded the
-* specified threshold in the current timeslice.
-* <p>
-* The {@link javax.management.Notification#setUserData(Object)} part of the notification is a {@link java.util.Properties}
-* object containing information about the various counts that exceeded the interceptors threshold.
-* Note that notifications are emitted whenever a message is deemed to have exceeded the threshold;
-* so you will get multiple notifications whenever a message causes the threshold to be exceeded
-* until the next time-slice is activated.
-* </p>
-*
-* @config message-threshold-notification
-*
-* @since 3.0.4
-*/
+ * Interceptor that emits a {@link javax.management.Notification} if the number of messages has exceeded the
+ * specified threshold in the current timeslice.
+ * <p>
+ * The {@link javax.management.Notification#setUserData(Object)} part of the notification is a {@link java.util.Properties}
+ * object containing information about the various counts that exceeded the interceptors threshold.
+ * Note that notifications are emitted whenever a message is deemed to have exceeded the threshold;
+ * so you will get multiple notifications whenever a message causes the threshold to be exceeded
+ * until the next time-slice is activated.
+ * </p>
+ * 
+ * @config message-threshold-notification
+ * 
+ * @since 3.0.4
+ */
 @JacksonXmlRootElement(localName = "message-threshold-notification")
 @XStreamAlias("message-threshold-notification")
 @AdapterComponent
 @ComponentProfile(summary = "Interceptor that issues a JMX notification if a message count threshold is exceeded",
-tag = "interceptor,jmx")
+    tag = "interceptor,jmx")
 @DisplayOrder(order = {"countThreshold", "errorThreshold", "sizeThreshold"})
 public class MessageThresholdNotification extends NotifyingInterceptorByCount{
 
-private Long countThreshold;
-private Long errorThreshold;
-private Long sizeThreshold;
+  private Long countThreshold;
+  private Long errorThreshold;
+  private Long sizeThreshold;
 
-static {
-RuntimeInfoComponentFactory.registerComponentFactory(new JmxFactory());
-}
+  static {
+    RuntimeInfoComponentFactory.registerComponentFactory(new JmxFactory());
+  }
 
-private enum Threshold {
-Size {
-@Override
-int check(MessageStatistic stat, MessageThresholdNotification threshold) {
-if (threshold.getSizeThreshold() != null && stat.getTotalMessageSize() > threshold.getSizeThreshold().longValue()) {
-return 1;
-}
-return 0;
-}
-},
-Error {
-@Override
-int check(MessageStatistic stat, MessageThresholdNotification threshold) {
-if (threshold.getErrorThreshold() != null && stat.getTotalMessageErrorCount() > threshold.getErrorThreshold().longValue()) {
-return 1;
-}
-return 0;
-}
-},
-Count {
-@Override
-int check(MessageStatistic stat, MessageThresholdNotification threshold) {
-if (threshold.getCountThreshold() != null && stat.getTotalMessageCount() > threshold.getCountThreshold().longValue()) {
-return 1;
-}
-return 0;
-}
+  private enum Threshold {
+    Size {
+      @Override
+      int check(MessageStatistic stat, MessageThresholdNotification threshold) {
+        if (threshold.getSizeThreshold() != null && stat.getTotalMessageSize() > threshold.getSizeThreshold().longValue()) {
+          return 1;
+        }
+        return 0;
+      }
+    },
+    Error {
+      @Override
+      int check(MessageStatistic stat, MessageThresholdNotification threshold) {
+        if (threshold.getErrorThreshold() != null && stat.getTotalMessageErrorCount() > threshold.getErrorThreshold().longValue()) {
+          return 1;
+        }
+        return 0;
+      }
+    },
+    Count {
+      @Override
+      int check(MessageStatistic stat, MessageThresholdNotification threshold) {
+        if (threshold.getCountThreshold() != null && stat.getTotalMessageCount() > threshold.getCountThreshold().longValue()) {
+          return 1;
+        }
+        return 0;
+      }
 
-};
-abstract int check(MessageStatistic stat, MessageThresholdNotification threshold);
-}
+    };
+    abstract int check(MessageStatistic stat, MessageThresholdNotification threshold);
+  }
 
 
-public MessageThresholdNotification() {
-super();
-}
+  public MessageThresholdNotification() {
+    super();
+  }
 
-public MessageThresholdNotification(String uid) {
-this();
-setUniqueId(uid);
-}
+  public MessageThresholdNotification(String uid) {
+    this();
+    setUniqueId(uid);
+  }
 
-@Override
-public void workflowStart(AdaptrisMessage inputMsg) {
-}
+  @Override
+  public void workflowStart(AdaptrisMessage inputMsg) {
+  }
 
-@Override
-public synchronized void workflowEnd(AdaptrisMessage inputMsg, AdaptrisMessage outputMsg) {
-MessageStatistic currentTimeSlice = getAndIncrementStatistic(inputMsg, outputMsg);
-if (shouldNotify(currentTimeSlice)) {
-sendNotification("Message Threshold Exceeded", asProperties(currentTimeSlice));
-}
-}
+  @Override
+  public synchronized void workflowEnd(AdaptrisMessage inputMsg, AdaptrisMessage outputMsg) {
+    MessageStatistic currentTimeSlice = getAndIncrementStatistic(inputMsg, outputMsg);
+    if (shouldNotify(currentTimeSlice)) {
+      sendNotification("Message Threshold Exceeded", asProperties(currentTimeSlice));
+    }
+  }
 
-@Override
-public void init() throws CoreException {
-}
+  @Override
+  public void init() throws CoreException {
+  }
 
-@Override
-public void start() throws CoreException {
-}
+  @Override
+  public void start() throws CoreException {
+  }
 
-@Override
-public void stop() {
-}
+  @Override
+  public void stop() {
+  }
 
-@Override
-public void close() {
-}
+  @Override
+  public void close() {
+  }
 
-private boolean shouldNotify(MessageStatistic stat) {
-int rc = 0;
-for (Threshold c : Threshold.values()) {
-rc += c.check(stat, this);
-}
-return rc > 0;
-}
+  private boolean shouldNotify(MessageStatistic stat) {
+    int rc = 0;
+    for (Threshold c : Threshold.values()) {
+      rc += c.check(stat, this);
+    }
+    return rc > 0;
+  }
 
-public Long getCountThreshold() {
-return countThreshold;
-}
+  public Long getCountThreshold() {
+    return countThreshold;
+  }
 
-/**
-* Set the message count threshold on which notifications will be emitted.
-*
-* @param l the threshold, defaults to null which means no notification on this metric
-*/
-public void setCountThreshold(Long l) {
-this.countThreshold = l;
-}
+  /**
+   * Set the message count threshold on which notifications will be emitted.
+   * 
+   * @param l the threshold, defaults to null which means no notification on this metric
+   */
+  public void setCountThreshold(Long l) {
+    this.countThreshold = l;
+  }
 
-public Long getErrorThreshold() {
-return errorThreshold;
-}
+  public Long getErrorThreshold() {
+    return errorThreshold;
+  }
 
-/**
-* Set the message error count threshold on which notifications will be emitted.
-*
-* @param l the threshold, defaults to null which means no notifications on metric.
-*/
-public void setErrorThreshold(Long l) {
-this.errorThreshold = l;
-}
+  /**
+   * Set the message error count threshold on which notifications will be emitted.
+   * 
+   * @param l the threshold, defaults to null which means no notifications on metric.
+   */
+  public void setErrorThreshold(Long l) {
+    this.errorThreshold = l;
+  }
 
-public Long getSizeThreshold() {
-return sizeThreshold;
-}
+  public Long getSizeThreshold() {
+    return sizeThreshold;
+  }
 
-/**
-* Set the total message size threshold (in bytes) on which notifications will be emitted.
-*
-* @param l the threshold, defaults to null which means no notifications on metric.
-*/
-public void setSizeThreshold(Long l) {
-this.sizeThreshold = l;
-}
+  /**
+   * Set the total message size threshold (in bytes) on which notifications will be emitted.
+   * 
+   * @param l the threshold, defaults to null which means no notifications on metric.
+   */
+  public void setSizeThreshold(Long l) {
+    this.sizeThreshold = l;
+  }
 
-private static class JmxFactory extends RuntimeInfoComponentFactory {
+  private static class JmxFactory extends RuntimeInfoComponentFactory {
 
-@Override
-protected boolean isSupported(AdaptrisComponent e) {
-if (e != null && e instanceof MessageThresholdNotification) {
-return !isEmpty(((MessageThresholdNotification) e).getUniqueId());
-}
-return false;
-}
+    @Override
+    protected boolean isSupported(AdaptrisComponent e) {
+      if (e != null && e instanceof MessageThresholdNotification) {
+        return !isEmpty(((MessageThresholdNotification) e).getUniqueId());
+      }
+      return false;
+    }
 
-@Override
-protected RuntimeInfoComponent createComponent(ParentRuntimeInfoComponent parent,
-AdaptrisComponent e) throws MalformedObjectNameException {
-return new InterceptorNotification((WorkflowManager) parent, (MessageThresholdNotification) e);
-}
+    @Override
+    protected RuntimeInfoComponent createComponent(ParentRuntimeInfoComponent parent,
+        AdaptrisComponent e) throws MalformedObjectNameException {
+      return new InterceptorNotification((WorkflowManager) parent, (MessageThresholdNotification) e);
+    }
 
-}
+  }
 }

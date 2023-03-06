@@ -22,129 +22,129 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
-* XStream version of {@link com.adaptris.core.AdaptrisMarshaller} that supports additional config pre-processors when
-* unmarshalling.
-*
-* @config xstream-marshaller-with-pre-processing
-*
-*/
+ * XStream version of {@link com.adaptris.core.AdaptrisMarshaller} that supports additional config pre-processors when
+ * unmarshalling.
+ * 
+ * @config xstream-marshaller-with-pre-processing
+ * 
+ */
 @JacksonXmlRootElement(localName = "xstream-marshaller-with-pre-processing")
 @XStreamAlias("xstream-marshaller-with-pre-processing")
 @DisplayOrder(order = {"preProcessors", "preProcessorConfig", "preProcessorLoader"})
 public class PreProcessingXStreamMarshaller extends com.adaptris.core.XStreamMarshaller {
 
-private transient Logger log = LoggerFactory.getLogger(this.getClass());
+  private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
-private String preProcessors;
-@NotNull
-@AutoPopulated
-private KeyValuePairSet preProcessorConfig;
+  private String preProcessors;
+  @NotNull
+  @AutoPopulated
+  private KeyValuePairSet preProcessorConfig;
 
-@AdvancedConfig
-private ConfigPreProcessorLoader preProcessorLoader;
+  @AdvancedConfig
+  private ConfigPreProcessorLoader preProcessorLoader;
 
-private transient ConfigPreProcessors processors = null;
+  private transient ConfigPreProcessors processors = null;
 
 
-public PreProcessingXStreamMarshaller() {
-super();
-setPreProcessorConfig(new KeyValuePairSet());
-}
+  public PreProcessingXStreamMarshaller() {
+    super();
+    setPreProcessorConfig(new KeyValuePairSet());
+  }
 
-@Override
-public Object unmarshal(Reader input) throws CoreException {
-Args.notNull(input, "reader");
-return invokeDeserialize(() -> {
-try (Reader in = input) {
-String xml = IOUtils.toString(in);
-return unmarshal(xml);
-}
-});
-}
+  @Override
+  public Object unmarshal(Reader input) throws CoreException {
+    Args.notNull(input, "reader");
+    return invokeDeserialize(() -> {
+      try (Reader in = input) {
+        String xml = IOUtils.toString(in);
+        return unmarshal(xml);
+      }
+    });
+  }
 
-@Override
-@SuppressWarnings({"lgtm[java/unsafe-deserialization]"})
-public Object unmarshal(String input) throws CoreException {
-Args.notNull(input, "input");
-return invokeDeserialize(() -> {
-return getInstance().fromXML(preProcess(input));
-});
-}
+  @Override
+  @SuppressWarnings({"lgtm[java/unsafe-deserialization]"})
+  public Object unmarshal(String input) throws CoreException {
+    Args.notNull(input, "input");
+    return invokeDeserialize(() -> {
+      return getInstance().fromXML(preProcess(input));
+    });
+  }
 
-@Override
-public Object unmarshal(File file) throws CoreException {
-Args.notNull(file, "file");
-return invokeDeserialize(() -> {
-try (FileInputStream in = new FileInputStream(file)) {
-return unmarshal(in);
-}
-});
-}
+  @Override
+  public Object unmarshal(File file) throws CoreException {
+    Args.notNull(file, "file");
+    return invokeDeserialize(() -> {
+      try (FileInputStream in = new FileInputStream(file)) {
+        return unmarshal(in);
+      }
+    });
+  }
 
-@Override
-public Object unmarshal(URL url) throws CoreException {
-Args.notNull(url, "url");
-return invokeDeserialize(() -> {
-try (InputStream in = url.openStream()) {
-return this.unmarshal(in);
-}
-});
-}
+  @Override
+  public Object unmarshal(URL url) throws CoreException {
+    Args.notNull(url, "url");
+    return invokeDeserialize(() -> {
+      try (InputStream in = url.openStream()) {
+        return this.unmarshal(in);
+      }
+    });
+  }
 
-@Override
-public Object unmarshal(URLString url) throws CoreException {
-Args.notNull(url, "url");
-return invokeDeserialize(() -> {
-try (InputStream in = URLHelper.connect(url)) {
-return this.unmarshal(in);
-}
-});
-}
+  @Override
+  public Object unmarshal(URLString url) throws CoreException {
+    Args.notNull(url, "url");
+    return invokeDeserialize(() -> {
+      try (InputStream in = URLHelper.connect(url)) {
+        return this.unmarshal(in);
+      }
+    });
+  }
 
-@Override
-public Object unmarshal(InputStream input) throws CoreException {
-Args.notNull(input, "inputstream");
-return invokeDeserialize(() -> {
-try (InputStream in = input) {
-String xml = IOUtils.toString(in, Charset.defaultCharset());
-return unmarshal(xml);
-}
-});
-}
+  @Override
+  public Object unmarshal(InputStream input) throws CoreException {
+    Args.notNull(input, "inputstream");
+    return invokeDeserialize(() -> {
+      try (InputStream in = input) {
+        String xml = IOUtils.toString(in, Charset.defaultCharset());
+        return unmarshal(xml);
+      }
+    });
+  }
 
-public ConfigPreProcessorLoader getPreProcessorLoader() {
-return preProcessorLoader;
-}
+  public ConfigPreProcessorLoader getPreProcessorLoader() {
+    return preProcessorLoader;
+  }
 
-public void setPreProcessorLoader(ConfigPreProcessorLoader loader) {
-this.preProcessorLoader = loader;
-}
+  public void setPreProcessorLoader(ConfigPreProcessorLoader loader) {
+    this.preProcessorLoader = loader;
+  }
 
-ConfigPreProcessorLoader preProcessorLoader() {
-return getPreProcessorLoader() != null ? getPreProcessorLoader() : new DefaultPreProcessorLoader();
-}
+  ConfigPreProcessorLoader preProcessorLoader() {
+    return getPreProcessorLoader() != null ? getPreProcessorLoader() : new DefaultPreProcessorLoader();
+  }
 
-public String getPreProcessors() {
-return preProcessors;
-}
+  public String getPreProcessors() {
+    return preProcessors;
+  }
 
-public void setPreProcessors(String preProcessorList) {
-this.preProcessors = preProcessorList;
-}
+  public void setPreProcessors(String preProcessorList) {
+    this.preProcessors = preProcessorList;
+  }
 
-public KeyValuePairSet getPreProcessorConfig() {
-return preProcessorConfig;
-}
+  public KeyValuePairSet getPreProcessorConfig() {
+    return preProcessorConfig;
+  }
 
-public void setPreProcessorConfig(KeyValuePairSet preProcessorConfig) {
-this.preProcessorConfig = Args.notNull(preProcessorConfig, "pre-processor config");
-}
+  public void setPreProcessorConfig(KeyValuePairSet preProcessorConfig) {
+    this.preProcessorConfig = Args.notNull(preProcessorConfig, "pre-processor config");
+  }
 
-private String preProcess(String rawXML) throws CoreException {
-if (processors == null) {
-processors = preProcessorLoader().load(getPreProcessors(), getPreProcessorConfig());
-}
-return processors.process(rawXML);
-}
+  private String preProcess(String rawXML) throws CoreException {
+    if (processors == null) {
+      processors = preProcessorLoader().load(getPreProcessors(), getPreProcessorConfig());
+    }
+    return processors.process(rawXML);
+  }
 
 }

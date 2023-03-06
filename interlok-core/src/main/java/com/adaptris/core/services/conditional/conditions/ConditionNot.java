@@ -12,35 +12,35 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 /**
-* <p>
-* This {@link Condition} allows you to negate a child {@link Condition}'s result.
-* </p>
-*
-* @config not
-* @author bklair
-*
-*/
+ * <p>
+ * This {@link Condition} allows you to negate a child {@link Condition}'s result.
+ * </p>
+ *
+ * @config not
+ * @author bklair
+ *
+ */
 @JacksonXmlRootElement(localName = "not")
 @XStreamAlias("not")
 @AdapterComponent
 @ComponentProfile(summary = "Allows you to negate the given condition result", tag = "condition")
 public class ConditionNot extends ConditionImpl {
-@NotNull
-@Valid
-private Condition condition;
+  @NotNull
+  @Valid
+  private Condition condition;
 
-@Override
-public boolean evaluate(AdaptrisMessage message) throws CoreException {
-boolean result = !getCondition().evaluate(message);
-logCondition("{}: evaluated to : {}", getClass().getSimpleName(), result);
-return result;
-}
+  @Override
+  public boolean evaluate(AdaptrisMessage message) throws CoreException {
+    boolean result = !getCondition().evaluate(message);
+    logCondition("{}: evaluated to : {}", getClass().getSimpleName(), result);
+    return result;
+  }
 
-public Condition getCondition() {
-return condition;
-}
+  public Condition getCondition() {
+    return condition;
+  }
 
-public void setCondition(Condition condition) {
-this.condition = condition;
-}
+  public void setCondition(Condition condition) {
+    this.condition = condition;
+  }
 }

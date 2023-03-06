@@ -1,17 +1,17 @@
 /*
-* Copyright 2015 Adaptris Ltd.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+ * Copyright 2015 Adaptris Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
 */
 
 package com.adaptris.core.jdbc;
@@ -32,13 +32,13 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
-* <p>
-* Implementation of <code>AdaptrisConnectionImp</code> for JDBC.
-* </p>
-*
-* @config jdbc-connection
-*
-*/
+ * <p>
+ * Implementation of <code>AdaptrisConnectionImp</code> for JDBC.
+ * </p>
+ *
+ * @config jdbc-connection
+ *
+ */
 @JacksonXmlRootElement(localName = "jdbc-connection")
 @XStreamAlias("jdbc-connection")
 @AdapterComponent
@@ -46,154 +46,154 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"username", "password", "driverImp", "connectUrl"})
 public class JdbcConnection extends DatabaseConnection {
 
-private String connectUrl;
-private transient Connection sqlConnection;
+  private String connectUrl;
+  private transient Connection sqlConnection;
 
-public JdbcConnection() {
-super();
-}
+  public JdbcConnection() {
+    super();
+  }
 
-/**
-* Convenience constructor.
-*
-* @param url the URL.
-* @param driver the JDBC driver.
-*/
-public JdbcConnection(String url, String driver) {
-this();
-setConnectUrl(url);
-setDriverImp(driver);
-}
+  /**
+   * Convenience constructor.
+   *
+   * @param url the URL.
+   * @param driver the JDBC driver.
+   */
+  public JdbcConnection(String url, String driver) {
+    this();
+    setConnectUrl(url);
+    setDriverImp(driver);
+  }
 
-/**
-* @see com.adaptris.core.jdbc.DatabaseConnection#initialiseDatabaseConnection()
-*/
-@Override
-protected void initialiseDatabaseConnection() throws CoreException {
-// To let us immediately test the connection, then let's try to do the connection.
-try {
-connect();
-}
-catch (SQLException e) {
-throw new CoreException(e);
-}
-}
+  /**
+   * @see com.adaptris.core.jdbc.DatabaseConnection#initialiseDatabaseConnection()
+   */
+  @Override
+  protected void initialiseDatabaseConnection() throws CoreException {
+    // To let us immediately test the connection, then let's try to do the connection.
+    try {
+      connect();
+    }
+    catch (SQLException e) {
+      throw new CoreException(e);
+    }
+  }
 
-/**
-* @see com.adaptris.core.jdbc.DatabaseConnection#startDatabaseConnection()
-*/
-@Override
-protected void startDatabaseConnection() throws CoreException {
-}
+  /**
+   * @see com.adaptris.core.jdbc.DatabaseConnection#startDatabaseConnection()
+   */
+  @Override
+  protected void startDatabaseConnection() throws CoreException {
+  }
 
-/**
-* @see com.adaptris.core.jdbc.DatabaseConnection#stopDatabaseConnection()
-*/
-@Override
-protected void stopDatabaseConnection() {
-if(sqlConnection instanceof ProxySqlConnection)
-((ProxySqlConnection) sqlConnection).stop();
-}
+  /**
+   * @see com.adaptris.core.jdbc.DatabaseConnection#stopDatabaseConnection()
+   */
+  @Override
+  protected void stopDatabaseConnection() {
+    if(sqlConnection instanceof ProxySqlConnection)
+      ((ProxySqlConnection) sqlConnection).stop();
+  }
 
-@Override
-protected void closeDatabaseConnection() {
-JdbcUtil.closeQuietly(sqlConnection);
+  @Override
+  protected void closeDatabaseConnection() {
+    JdbcUtil.closeQuietly(sqlConnection);
 
-sqlConnection = null;
-}
+    sqlConnection = null;
+  }
 
-/** @see DatabaseConnection#makeConnection() */
-@Override
-protected Connection makeConnection() throws SQLException {
-validateConnection();
+  /** @see DatabaseConnection#makeConnection() */
+  @Override
+  protected Connection makeConnection() throws SQLException {
+    validateConnection();
 
-return sqlConnection;
-}
+    return sqlConnection;
+  }
 
-/**
-* <p>
-* Returns the connection string to use for this JDBC source.
-* </p>
-*
-* @return the connection string to use for this JDBC source
-*/
-public String getConnectUrl() {
-return connectUrl;
-}
+  /**
+   * <p>
+   * Returns the connection string to use for this JDBC source.
+   * </p>
+   *
+   * @return the connection string to use for this JDBC source
+   */
+  public String getConnectUrl() {
+    return connectUrl;
+  }
 
-/**
-* <p>
-* Sets the connection string to use for this JDBC source.
-* </p>
-*
-* @param s the connection string to use for this JDBC source
-*/
-public void setConnectUrl(String s) {
-connectUrl = s;
-}
+  /**
+   * <p>
+   * Sets the connection string to use for this JDBC source.
+   * </p>
+   *
+   * @param s the connection string to use for this JDBC source
+   */
+  public void setConnectUrl(String s) {
+    connectUrl = s;
+  }
 
-@Override
-public boolean equals(Object o) {
-if (o == null) {
-return false;
-}
-if (o == this) {
-return true;
-}
-if (o instanceof JdbcConnection) {
-JdbcConnection rhs = (JdbcConnection) o;
-return new EqualsBuilder().append(getConnectUrl(), rhs.getConnectUrl())
-.append(getAlwaysValidateConnection(), rhs.getAlwaysValidateConnection()).append(getAutoCommit(), rhs.getAutoCommit())
-.append(getDebugMode(), rhs.getDebugMode()).append(getDriverImp(), rhs.getDriverImp())
-.isEquals();
-}
-return false;
-}
+  @Override
+  public boolean equals(Object o) {
+    if (o == null) {
+      return false;
+    }
+    if (o == this) {
+      return true;
+    }
+    if (o instanceof JdbcConnection) {
+      JdbcConnection rhs = (JdbcConnection) o;
+      return new EqualsBuilder().append(getConnectUrl(), rhs.getConnectUrl())
+          .append(getAlwaysValidateConnection(), rhs.getAlwaysValidateConnection()).append(getAutoCommit(), rhs.getAutoCommit())
+          .append(getDebugMode(), rhs.getDebugMode()).append(getDriverImp(), rhs.getDriverImp())
+          .isEquals();
+    }
+    return false;
+  }
 
-@Override
-public int hashCode() {
-return new HashCodeBuilder(11, 17).append(getConnectUrl()).append(getAlwaysValidateConnection()).append(getAutoCommit())
-.append(getDebugMode()).append(getDriverImp()).toHashCode();
-}
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder(11, 17).append(getConnectUrl()).append(getAlwaysValidateConnection()).append(getAutoCommit())
+        .append(getDebugMode()).append(getDriverImp()).toHashCode();
+  }
 
-/** @see com.adaptris.core.jdbc.DatabaseConnection#getConnectionName() */
-@Override
-protected String getConnectionName() {
-return getConnectUrl();
-}
+  /** @see com.adaptris.core.jdbc.DatabaseConnection#getConnectionName() */
+  @Override
+  protected String getConnectionName() {
+    return getConnectUrl();
+  }
 
-/**
-* <p>
-* Validate the underlying connection.
-* </p>
-*
-* @throws SQLException if we could not validate the connection.
-*/
-private void validateConnection() throws SQLException {
-boolean connectionNeedsRefresh = false;
+  /**
+   * <p>
+   * Validate the underlying connection.
+   * </p>
+   *
+   * @throws SQLException if we could not validate the connection.
+   */
+  private void validateConnection() throws SQLException {
+    boolean connectionNeedsRefresh = false;
 
-connectionNeedsRefresh = (sqlConnection == null);
-if (connectionNeedsRefresh) {
-try {
-Properties p = connectionProperties();
-sqlConnection = new ProxyNonClosingSqlConnection(DriverManager.getConnection(getConnectUrl(), p));
-}
-catch (PasswordException e) {
-sqlConnection = null;
-log.error("Couldn't decode password for database");
-throw new SQLException(e);
-}
-}
-try {
-// If the driver throws an AbstractMethodError because it's too old
-// We're running in J11 which means it must have been compiled against
-// J8 or higher... How the hell is it getting away with that?
-JdbcUtil.testConnection(sqlConnection, alwaysValidateConnection());
-}
-catch (SQLException e) {
-sqlConnection = null;
-throw e;
-}
-}
+    connectionNeedsRefresh = (sqlConnection == null);
+    if (connectionNeedsRefresh) {
+      try {
+        Properties p = connectionProperties();
+        sqlConnection = new ProxyNonClosingSqlConnection(DriverManager.getConnection(getConnectUrl(), p));
+      }
+      catch (PasswordException e) {
+        sqlConnection = null;
+        log.error("Couldn't decode password for database");
+        throw new SQLException(e);
+      }
+    }
+    try {
+      // If the driver throws an AbstractMethodError because it's too old
+      // We're running in J11 which means it must have been compiled against
+      // J8 or higher... How the hell is it getting away with that?
+      JdbcUtil.testConnection(sqlConnection, alwaysValidateConnection());
+    }
+    catch (SQLException e) {
+      sqlConnection = null;
+      throw e;
+    }
+  }
 
 }

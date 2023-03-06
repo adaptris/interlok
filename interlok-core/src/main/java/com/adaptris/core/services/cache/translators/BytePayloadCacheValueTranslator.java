@@ -7,24 +7,24 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
-* Implementation of {@link CacheValueTranslator} that retrieves / sets the payload of the message.
-*
-* @config byte-payload-cache-value-translator
-*
-* @author stuellidge
-*/
+ * Implementation of {@link CacheValueTranslator} that retrieves / sets the payload of the message.
+ * 
+ * @config byte-payload-cache-value-translator
+ * 
+ * @author stuellidge
+ */
 @JacksonXmlRootElement(localName = "byte-payload-cache-value-translator")
 @XStreamAlias("byte-payload-cache-value-translator")
 public class BytePayloadCacheValueTranslator implements CacheValueTranslator<byte[]> {
 
-@Override
-public byte[] getValueFromMessage(AdaptrisMessage msg) throws CoreException {
-return msg.getPayload();
-}
+  @Override
+  public byte[] getValueFromMessage(AdaptrisMessage msg) throws CoreException {
+    return msg.getPayload();
+  }
 
-@Override
-public void addValueToMessage(AdaptrisMessage msg, byte[] value) throws CoreException {
-msg.setPayload(value);
-}
+  @Override
+  public void addValueToMessage(AdaptrisMessage msg, byte[] value) throws CoreException {
+    msg.setPayload(value);
+  }
 
 }

@@ -1,18 +1,18 @@
 /*******************************************************************************
-* Copyright 2019 Adaptris Ltd.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*******************************************************************************/
+ * Copyright 2019 Adaptris Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package com.adaptris.core.services.dynamic;
 
 import java.io.InputStream;
@@ -31,52 +31,52 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
-* Extract the service to execute based on the configured {@link DataInputParameter}
-*
-* <p>
-* Wraps {@code DataInputParameter<String>} so you can use any of those implementations as the
-* source of your executable service.
-* </p>
-*
-* @config dynamic-service-from-data-input
-* @see DynamicServiceExecutor
-* @see ConstantDataInputParameter
-* @see StringPayloadDataInputParameter
-* @see MetadataDataInputParameter
-*
-*/
+ * Extract the service to execute based on the configured {@link DataInputParameter}
+ * 
+ * <p>
+ * Wraps {@code DataInputParameter<String>} so you can use any of those implementations as the
+ * source of your executable service.
+ * </p>
+ * 
+ * @config dynamic-service-from-data-input
+ * @see DynamicServiceExecutor
+ * @see ConstantDataInputParameter
+ * @see StringPayloadDataInputParameter
+ * @see MetadataDataInputParameter
+ *
+ */
 @JacksonXmlRootElement(localName = "dynamic-service-from-data-input")
 @XStreamAlias("dynamic-service-from-data-input")
 @ComponentProfile(summary = "Extract the service to execute from a DataInputParameter",
-since = "3.8.4")
+    since = "3.8.4")
 @DisplayOrder(order = {"input"})
 public class ServiceFromDataInputParameter extends ServiceExtractorImpl {
 
-@NotNull
-@Valid
-private DataInputParameter<String> input;
+  @NotNull
+  @Valid
+  private DataInputParameter<String> input;
 
-public ServiceFromDataInputParameter() {
+  public ServiceFromDataInputParameter() {
 
-}
+  }
 
-public ServiceFromDataInputParameter(DataInputParameter<String> input) {
-this();
-setInput(input);
-}
+  public ServiceFromDataInputParameter(DataInputParameter<String> input) {
+    this();
+    setInput(input);
+  }
 
-@Override
-public InputStream getInputStream(AdaptrisMessage m) throws Exception {
-Args.notNull(input, "input");
-return IOUtils.toInputStream(input.extract(m), m.getContentEncoding());
-}
+  @Override
+  public InputStream getInputStream(AdaptrisMessage m) throws Exception {
+    Args.notNull(input, "input");
+    return IOUtils.toInputStream(input.extract(m), m.getContentEncoding());
+  }
 
-public DataInputParameter<String> getInput() {
-return input;
-}
+  public DataInputParameter<String> getInput() {
+    return input;
+  }
 
-public void setInput(DataInputParameter<String> input) {
-this.input = Args.notNull(input, "input");
-}
+  public void setInput(DataInputParameter<String> input) {
+    this.input = Args.notNull(input, "input");
+  }
 
 }

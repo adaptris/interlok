@@ -23,14 +23,14 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "JMS Acknowledgement handler that handles CLIENT_ACKNOWLEDGE mode.", tag = "jms")
 public class ClientAcknowledgementHandler implements AcknowledgementHandler {
 
-@Override
-public void acknowledgeMessage(JmsActorConfig actor, Message message) throws JMSException {
-message.acknowledge();
-}
+  @Override
+  public void acknowledgeMessage(JmsActorConfig actor, Message message) throws JMSException {
+    message.acknowledge();
+  }
 
-@Override
-public void rollbackMessage(JmsActorConfig actor, Message message) {
-//do nothing
-}
+  @Override
+  public void rollbackMessage(JmsActorConfig actor, Message message) {
+    //do nothing
+  }
 
 }

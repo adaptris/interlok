@@ -1,18 +1,18 @@
 /*
-* Copyright 2015 Adaptris Ltd.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright 2015 Adaptris Ltd.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package com.adaptris.core.services.path;
 
@@ -44,17 +44,17 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
-* <p>
-* This service allows you to configure an regular expression which will be executed on source data, the result of which can be
-* saved to multiple locations.
-* </p>
-*
-*
-* @since 3.2.1
-* @author amcgrath
-* @config regexp-service
-*
-*/
+ * <p>
+ * This service allows you to configure an regular expression which will be executed on source data, the result of which can be
+ * saved to multiple locations.
+ * </p>
+ *
+ * 
+ * @since 3.2.1
+ * @author amcgrath
+ * @config regexp-service
+ * 
+ */
 @JacksonXmlRootElement(localName = "regexp-service")
 @XStreamAlias("regexp-service")
 @AdapterComponent
@@ -62,86 +62,86 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @DisplayOrder(order = {"regexpSource", "executions"})
 public class RegexpService extends ServiceImp {
 
-@NotNull
-@AutoPopulated
-@Valid
-private DataInputParameter<String> regexpSource;
+  @NotNull
+  @AutoPopulated
+  @Valid
+  private DataInputParameter<String> regexpSource;
 
-@NotNull
-@Valid
-@AutoPopulated
-@XStreamImplicit(itemFieldName = "regexp-execution")
-private List<Execution> executions;
+  @NotNull
+  @Valid
+  @AutoPopulated
+  @XStreamImplicit(itemFieldName = "regexp-execution")
+  private List<Execution> executions;
 
-private transient List<RegexpWrapper> executors;
+  private transient List<RegexpWrapper> executors;
 
-public RegexpService() {
-this.setExecutions(new ArrayList<Execution>());
-this.setRegexpSource(new StringPayloadDataInputParameter());
-}
+  public RegexpService() {
+    this.setExecutions(new ArrayList<Execution>());
+    this.setRegexpSource(new StringPayloadDataInputParameter());
+  }
 
-// @Override
-public void doService(AdaptrisMessage msg) throws ServiceException {
-try {
-for (RegexpWrapper qe : executors) {
-qe.execute(getRegexpSource().extract(msg), msg);
-}
-} catch (Exception e) {
-throw ExceptionHelper.wrapServiceException(e);
-}
-}
+  // @Override
+  public void doService(AdaptrisMessage msg) throws ServiceException {
+    try {
+      for (RegexpWrapper qe : executors) {
+        qe.execute(getRegexpSource().extract(msg), msg);
+      }
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapServiceException(e);
+    }
+  }
 
-@Override
-public void prepare() throws CoreException {}
-
-
-@Override
-protected void initService() throws CoreException {
-executors = new ArrayList<>();
-for (Execution execution : this.getExecutions()) {
-executors.add(new RegexpWrapper(execution.getSource(), execution.getTarget()));
-}
-}
-
-@Override
-protected void closeService() {}
-
-public DataInputParameter<String> getRegexpSource() {
-return regexpSource;
-}
-
-public void setRegexpSource(DataInputParameter<String> src) {
-this.regexpSource = Args.notNull(src, "source");
-}
-
-public List<Execution> getExecutions() {
-return executions;
-}
-
-public void setExecutions(List<Execution> list) {
-this.executions = Args.notNull(list, "regexp executions");
-}
+  @Override
+  public void prepare() throws CoreException {}
 
 
-private class RegexpWrapper {
-private transient DataInputParameter<String> input;
-private transient DataOutputParameter<String> output;
-private transient Pattern pattern = null;
+  @Override
+  protected void initService() throws CoreException {
+    executors = new ArrayList<>();
+    for (Execution execution : this.getExecutions()) {
+      executors.add(new RegexpWrapper(execution.getSource(), execution.getTarget()));
+    }
+  }
 
-RegexpWrapper(DataInputParameter<String> in, DataOutputParameter<String> out) {
-input = in;
-output = out;
-}
+  @Override
+  protected void closeService() {}
 
-void execute(String src, AdaptrisMessage msg) throws InterlokException {
-String sourcePattern = input.extract(msg);
-if (pattern == null || !pattern.pattern().equals(sourcePattern)) {
-pattern = Pattern.compile(sourcePattern);
-}
-Matcher matcher = pattern.matcher(src);
-if (matcher.find()) {
-output.insert(matcher.group(1), msg);
-}
-}
-}
+  public DataInputParameter<String> getRegexpSource() {
+    return regexpSource;
+  }
+
+  public void setRegexpSource(DataInputParameter<String> src) {
+    this.regexpSource = Args.notNull(src, "source");
+  }
+
+  public List<Execution> getExecutions() {
+    return executions;
+  }
+
+  public void setExecutions(List<Execution> list) {
+    this.executions = Args.notNull(list, "regexp executions");
+  }
+
+
+  private class RegexpWrapper {
+    private transient DataInputParameter<String> input;
+    private transient DataOutputParameter<String> output;
+    private transient Pattern pattern = null;
+
+    RegexpWrapper(DataInputParameter<String> in, DataOutputParameter<String> out) {
+      input = in;
+      output = out;
+    }
+
+    void execute(String src, AdaptrisMessage msg) throws InterlokException {
+      String sourcePattern = input.extract(msg);
+      if (pattern == null || !pattern.pattern().equals(sourcePattern)) {
+        pattern = Pattern.compile(sourcePattern);
+      }
+      Matcher matcher = pattern.matcher(src);
+      if (matcher.find()) {
+        output.insert(matcher.group(1), msg);
+      }
+    }
+  }
 }

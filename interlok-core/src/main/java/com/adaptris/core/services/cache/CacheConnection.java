@@ -1,17 +1,17 @@
 /*
-* Copyright 2018 Adaptris Ltd.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+ * Copyright 2018 Adaptris Ltd.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
 */
 package com.adaptris.core.services.cache;
 
@@ -29,70 +29,70 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
-* A Connection to a cache instance.
-*
-* @config cache-connection
-*/
+ * A Connection to a cache instance.
+ * 
+ * @config cache-connection
+ */
 @JacksonXmlRootElement(localName = "cache-connection")
 @XStreamAlias("cache-connection")
 public class CacheConnection extends AdaptrisConnectionImp implements CacheProvider {
 
-private static final Cache DEFAULT_CACHE_IMPL = new NullCacheImplementation();
+  private static final Cache DEFAULT_CACHE_IMPL = new NullCacheImplementation();
+  
+  @Valid
+  private Cache cacheInstance;
 
-@Valid
-private Cache cacheInstance;
+  public CacheConnection() {
+    super();
+  }
 
-public CacheConnection() {
-super();
-}
+  public CacheConnection(Cache cache) {
+    this();
+    setCacheInstance(cache);
+  }
 
-public CacheConnection(Cache cache) {
-this();
-setCacheInstance(cache);
-}
+  @Override
+  protected void prepareConnection() throws CoreException {
+    LifecycleHelper.prepare(getCacheInstance());
+  }
 
-@Override
-protected void prepareConnection() throws CoreException {
-LifecycleHelper.prepare(getCacheInstance());
-}
+  @Override
+  protected void initConnection() throws CoreException {
+    LifecycleHelper.init(getCacheInstance());
+  }
 
-@Override
-protected void initConnection() throws CoreException {
-LifecycleHelper.init(getCacheInstance());
-}
+  @Override
+  protected void startConnection() throws CoreException {
+    LifecycleHelper.start(getCacheInstance());
 
-@Override
-protected void startConnection() throws CoreException {
-LifecycleHelper.start(getCacheInstance());
+  }
 
-}
+  @Override
+  protected void stopConnection() {
+    LifecycleHelper.stop(getCacheInstance());
+  }
 
-@Override
-protected void stopConnection() {
-LifecycleHelper.stop(getCacheInstance());
-}
+  @Override
+  protected void closeConnection() {
+    LifecycleHelper.close(getCacheInstance());
+  }
 
-@Override
-protected void closeConnection() {
-LifecycleHelper.close(getCacheInstance());
-}
+  public Cache getCacheInstance() {
+    return cacheInstance;
+  }
 
-public Cache getCacheInstance() {
-return cacheInstance;
-}
+  public void setCacheInstance(Cache cache) {
+    this.cacheInstance = cache;
+  }
 
-public void setCacheInstance(Cache cache) {
-this.cacheInstance = cache;
-}
+  public CacheConnection withCacheInstance(Cache cache) {
+    setCacheInstance(cache);
+    return this;
+  }
 
-public CacheConnection withCacheInstance(Cache cache) {
-setCacheInstance(cache);
-return this;
-}
-
-@Override
-public Cache retrieveCache() {
-return ObjectUtils.defaultIfNull(getCacheInstance(), DEFAULT_CACHE_IMPL);
-}
+  @Override
+  public Cache retrieveCache() {
+    return ObjectUtils.defaultIfNull(getCacheInstance(), DEFAULT_CACHE_IMPL);
+  }
 
 }

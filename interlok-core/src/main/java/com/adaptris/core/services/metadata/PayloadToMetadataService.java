@@ -1,17 +1,17 @@
 /*
-* Copyright 2015 Adaptris Ltd.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+ * Copyright 2015 Adaptris Ltd.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
 */
 
 package com.adaptris.core.services.metadata;
@@ -41,22 +41,22 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
-* Takes the entire payload and writes it out to metadata (either object or normal metadata).
-*
-* <p>
-* If storing to {@link MetadataTarget#Object} then the raw byte[] will be stored in object metadata
-* against the specified key. If storing to {@link MetadataTarget#Standard} then the payload will be
-* treated as a String (using the default character set encoding); if storing as standard metadata,
-* then you are encouraged to apply an encoding such as base64 using
-* {@link #setEncoding(com.adaptris.core.util.EncodingHelper.Encoding)} to make sure that the
-* payload can be treated as a String. The reason for only using the default charset is to avoid
-* complications when the data is actually XML and the encoding specification does not match the
-* message's character set.
-* </p>
-*
-* @config payload-to-metadata
-*
-*/
+ * Takes the entire payload and writes it out to metadata (either object or normal metadata).
+ * 
+ * <p>
+ * If storing to {@link MetadataTarget#Object} then the raw byte[] will be stored in object metadata
+ * against the specified key. If storing to {@link MetadataTarget#Standard} then the payload will be
+ * treated as a String (using the default character set encoding); if storing as standard metadata,
+ * then you are encouraged to apply an encoding such as base64 using
+ * {@link #setEncoding(com.adaptris.core.util.EncodingHelper.Encoding)} to make sure that the
+ * payload can be treated as a String. The reason for only using the default charset is to avoid
+ * complications when the data is actually XML and the encoding specification does not match the
+ * message's character set.
+ * </p>
+ * 
+ * @config payload-to-metadata
+ *
+ */
 @JacksonXmlRootElement(localName = "payload-to-metadata")
 @XStreamAlias("payload-to-metadata")
 @AdapterComponent
@@ -64,120 +64,120 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"key", "encoding", "metadataTarget"})
 public class PayloadToMetadataService extends ServiceImp {
 
-/**
-* Enumeration of where the two types of metadata.
-*
-*/
-public enum MetadataTarget
-{
-/**
-* Standard Metadata.
-*
-*/
-Standard {
-@Override
-void apply(AdaptrisMessage msg, String key, ByteArrayOutputStream value) {
-msg.addMetadata(key, value.toString());
-}
-},
-/**
-* Object Metadata.
-*
-*/
-Object {
-@Override
-void apply(AdaptrisMessage msg, String key, ByteArrayOutputStream value) {
-msg.addObjectHeader(key, value.toByteArray());
-}
-};
-
-abstract void apply(AdaptrisMessage msg, String key, ByteArrayOutputStream value);
-};
-
-
-@NotBlank
-@AffectsMetadata
-private String key;
-@NotNull
-@AutoPopulated
-@InputFieldDefault(value = "Standard")
-private MetadataTarget metadataTarget;
-@AdvancedConfig
-@InputFieldDefault(value = "None")
-private Encoding encoding = Encoding.None;
-
-public PayloadToMetadataService() {
-setMetadataTarget(MetadataTarget.Standard);
-}
-
-public PayloadToMetadataService(String metadataKey, MetadataTarget target) {
-this();
-setMetadataTarget(target);
-setKey(metadataKey);
-}
-
-@Override
-public void doService(AdaptrisMessage msg) throws ServiceException {
-ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
-try (InputStream in = msg.getInputStream(); OutputStream out = encoding().wrap(bytesOut)) {
-IOUtils.copy(in, out);
-} catch (Exception e) {
-throw ExceptionHelper.wrapServiceException(e);
-}
-getMetadataTarget().apply(msg, getKey(), bytesOut);
-}
-
-@Override
-public void prepare() throws CoreException {
-}
+  /**
+   * Enumeration of where the two types of metadata.
+   * 
+   */
+  public enum MetadataTarget
+ {
+    /**
+     * Standard Metadata.
+     * 
+     */
+    Standard {
+      @Override
+      void apply(AdaptrisMessage msg, String key, ByteArrayOutputStream value) {
+        msg.addMetadata(key, value.toString());
+      }
+    },
+    /**
+     * Object Metadata.
+     * 
+     */
+    Object {
+      @Override
+      void apply(AdaptrisMessage msg, String key, ByteArrayOutputStream value) {
+        msg.addObjectHeader(key, value.toByteArray());
+      }
+    };
+    
+    abstract void apply(AdaptrisMessage msg, String key, ByteArrayOutputStream value);
+  };
 
 
-@Override
-protected void initService() throws CoreException {
-}
+  @NotBlank
+  @AffectsMetadata
+  private String key;
+  @NotNull
+  @AutoPopulated
+  @InputFieldDefault(value = "Standard")
+  private MetadataTarget metadataTarget;
+  @AdvancedConfig
+  @InputFieldDefault(value = "None")
+  private Encoding encoding = Encoding.None;
 
-@Override
-protected void closeService() {
+  public PayloadToMetadataService() {
+    setMetadataTarget(MetadataTarget.Standard);
+  }
 
-}
+  public PayloadToMetadataService(String metadataKey, MetadataTarget target) {
+    this();
+    setMetadataTarget(target);
+    setKey(metadataKey);
+  }
+
+  @Override
+  public void doService(AdaptrisMessage msg) throws ServiceException {
+    ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
+    try (InputStream in = msg.getInputStream(); OutputStream out = encoding().wrap(bytesOut)) {
+      IOUtils.copy(in, out);
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapServiceException(e);
+    }
+    getMetadataTarget().apply(msg, getKey(), bytesOut);
+  }
+
+  @Override
+  public void prepare() throws CoreException {
+  }
 
 
-public MetadataTarget getMetadataTarget() {
-return metadataTarget;
-}
+  @Override
+  protected void initService() throws CoreException {
+  }
 
-public void setMetadataTarget(MetadataTarget t) {
-this.metadataTarget = Args.notNull(t, "Metadata Target");
-}
+  @Override
+  protected void closeService() {
 
-public String getKey() {
-return key;
-}
+  }
 
-/**
-* Set the metadata key to store the current payload against.
-*
-* @param key the key.
-*/
-public void setKey(String key) {
-this.key = Args.notNull(key, "Metadata Key");
-}
 
-public Encoding getEncoding() {
-return encoding;
-}
+  public MetadataTarget getMetadataTarget() {
+    return metadataTarget;
+  }
 
-/**
-* Specify any encoding that should be applied to the payload before setting as metadata.
-*
-* @param enc the encoding, defaults to {@link Encoding#None}.
-*/
-public void setEncoding(Encoding enc) {
-this.encoding = Args.notNull(enc, "Encoding");
-}
+  public void setMetadataTarget(MetadataTarget t) {
+    this.metadataTarget = Args.notNull(t, "Metadata Target");
+  }
 
-private Encoding encoding() {
-return ObjectUtils.defaultIfNull(getEncoding(), Encoding.None);
-}
+  public String getKey() {
+    return key;
+  }
+
+  /**
+   * Set the metadata key to store the current payload against.
+   * 
+   * @param key the key.
+   */
+  public void setKey(String key) {
+    this.key = Args.notNull(key, "Metadata Key");
+  }
+
+  public Encoding getEncoding() {
+    return encoding;
+  }
+
+  /**
+   * Specify any encoding that should be applied to the payload before setting as metadata.
+   * 
+   * @param enc the encoding, defaults to {@link Encoding#None}.
+   */
+  public void setEncoding(Encoding enc) {
+    this.encoding = Args.notNull(enc, "Encoding");
+  }
+
+  private Encoding encoding() {
+    return ObjectUtils.defaultIfNull(getEncoding(), Encoding.None);
+  }
 
 }

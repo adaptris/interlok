@@ -1,17 +1,17 @@
 /*
-* Copyright 2015 Adaptris Ltd.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+ * Copyright 2015 Adaptris Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
 */
 
 package com.adaptris.core.services.system;
@@ -42,27 +42,27 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
-* Service that runs the specified system executable with the provided arguments, optionally
-* capturing the output.
-*
-* <p>
-* Note that no checking is peformed on the command to be executed; it will be executed as-is. If
-* used in combination with {@link com.adaptris.core.services.dynamic.DynamicServiceExecutor} then
-* you might have a large security hole if it is improperly configured or validated.
-* </p>
-* <p>
-* The following behaviour is non-configurable:
-* <ul>
-* <li>The exitcode is stored against the metadata key {@value #COMMAND_RETURN_VALUE_METADATA_KEY}
-* if the service does not throw an exception.</li>
-* <li>If a timeout occurs then a ServiceException is thrown, output that was captured before the
-* timeout should still be available</li>
-* </ul>
-* </p>
-*
-* @config system-command-executor
-*
-*/
+ * Service that runs the specified system executable with the provided arguments, optionally
+ * capturing the output.
+ *
+ * <p>
+ * Note that no checking is peformed on the command to be executed; it will be executed as-is. If
+ * used in combination with {@link com.adaptris.core.services.dynamic.DynamicServiceExecutor} then
+ * you might have a large security hole if it is improperly configured or validated.
+ * </p>
+ * <p>
+ * The following behaviour is non-configurable:
+ * <ul>
+ * <li>The exitcode is stored against the metadata key {@value #COMMAND_RETURN_VALUE_METADATA_KEY}
+ * if the service does not throw an exception.</li>
+ * <li>If a timeout occurs then a ServiceException is thrown, output that was captured before the
+ * timeout should still be available</li>
+ * </ul>
+ * </p>
+ *
+ * @config system-command-executor
+ *
+ */
 @JacksonXmlRootElement(localName = "system-command-executor")
 @XStreamAlias("system-command-executor")
 @AdapterComponent
@@ -70,106 +70,106 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"commandBuilder", "outputCapture", "timeout"})
 public class SystemCommandExecutorService extends ServiceImp {
 
-public static final String COMMAND_RETURN_VALUE_METADATA_KEY = "SystemCommandExecutorService.ReturnValue";
-private static final TimeInterval DEFAULT_TIMEOUT = new TimeInterval(30L, TimeUnit.SECONDS);
+  public static final String COMMAND_RETURN_VALUE_METADATA_KEY = "SystemCommandExecutorService.ReturnValue";
+  private static final TimeInterval DEFAULT_TIMEOUT = new TimeInterval(30L, TimeUnit.SECONDS);
 
-@Valid
-@AdvancedConfig
-private TimeInterval timeout;
-@NotNull
-@AutoPopulated
-@Valid
-private CommandBuilder commandBuilder;
-@NotNull
-@Valid
-@AutoPopulated
-private CommandOutputCapture outputCapture;
-
-
-public SystemCommandExecutorService() {
-this(new DefaultCommandBuilder(), new IgnoreOutput());
-}
-
-public SystemCommandExecutorService(CommandBuilder builder, CommandOutputCapture capture) {
-setCommandBuilder(builder);
-setOutputCapture(capture);
-}
-
-/**
-* Invokes the command line executable
-* @see com.adaptris.core.Service#doService(com.adaptris.core.AdaptrisMessage)
-*/
-@Override
-public void doService(AdaptrisMessage msg) throws ServiceException {
-
-try (OutputStream out = getOutputCapture().startCapture(msg)) {
-Executor cmd = getCommandBuilder().configure(new DefaultExecutor());
-ExecuteWatchdog watchdog = new ExecuteWatchdog(timeoutMs());
-cmd.setWatchdog(watchdog);
-CommandLine cl = getCommandBuilder().createCommandLine(msg);
-Map<String, String> env = getCommandBuilder().createEnvironment(msg);
-
-PumpStreamHandler pump = new PumpStreamHandler(out);
-cmd.setStreamHandler(pump);
-log.trace("Executing {}", cl);
-int exit = cmd.execute(cl, env);
-msg.addMetadata(COMMAND_RETURN_VALUE_METADATA_KEY, "" + exit);
-}
-catch (Exception e) {
-throw ExceptionHelper.wrapServiceException(e);
-}
-}
+  @Valid
+  @AdvancedConfig
+  private TimeInterval timeout;
+  @NotNull
+  @AutoPopulated
+  @Valid
+  private CommandBuilder commandBuilder;
+  @NotNull
+  @Valid
+  @AutoPopulated
+  private CommandOutputCapture outputCapture;
 
 
-@Override
-protected void initService() throws CoreException {
-}
+  public SystemCommandExecutorService() {
+    this(new DefaultCommandBuilder(), new IgnoreOutput());
+  }
 
-@Override
-protected void closeService() {
-}
+  public SystemCommandExecutorService(CommandBuilder builder, CommandOutputCapture capture) {
+    setCommandBuilder(builder);
+    setOutputCapture(capture);
+  }
 
-public CommandBuilder getCommandBuilder() {
-return commandBuilder;
-}
+  /**
+   * Invokes the command line executable
+   * @see com.adaptris.core.Service#doService(com.adaptris.core.AdaptrisMessage)
+   */
+  @Override
+  public void doService(AdaptrisMessage msg) throws ServiceException {
 
-/**
-* Set the command builder.
-*
-* @param builder the {@link CommandBuilder} implementation
-* @see DefaultCommandBuilder
-*/
-public void setCommandBuilder(CommandBuilder builder) {
-commandBuilder = Args.notNull(builder, "commandBuilder");
+    try (OutputStream out = getOutputCapture().startCapture(msg)) {
+      Executor cmd = getCommandBuilder().configure(new DefaultExecutor());
+      ExecuteWatchdog watchdog = new ExecuteWatchdog(timeoutMs());
+      cmd.setWatchdog(watchdog);
+      CommandLine cl = getCommandBuilder().createCommandLine(msg);
+      Map<String, String> env = getCommandBuilder().createEnvironment(msg);
 
-}
+      PumpStreamHandler pump = new PumpStreamHandler(out);
+      cmd.setStreamHandler(pump);
+      log.trace("Executing {}", cl);
+      int exit = cmd.execute(cl, env);
+      msg.addMetadata(COMMAND_RETURN_VALUE_METADATA_KEY, "" + exit);
+    }
+    catch (Exception e) {
+      throw ExceptionHelper.wrapServiceException(e);
+    }
+  }
 
-@Override
-public void prepare() throws CoreException {
-}
 
-/**
-* Specifies a maximum time for the executable to run, after which it will be terminated.
-*
-* @param t the timeout; default if not configured is 30 seconds.
-*/
-public void setTimeout(TimeInterval t) {
-timeout = t;
-}
+  @Override
+  protected void initService() throws CoreException {
+  }
 
-long timeoutMs() {
-return TimeInterval.toMillisecondsDefaultIfNull(getTimeout(), DEFAULT_TIMEOUT);
-}
+  @Override
+  protected void closeService() {
+  }
 
-public TimeInterval getTimeout() {
-return timeout;
-}
+  public CommandBuilder getCommandBuilder() {
+    return commandBuilder;
+  }
 
-public CommandOutputCapture getOutputCapture() {
-return outputCapture;
-}
+  /**
+   * Set the command builder.
+   *
+   * @param builder the {@link CommandBuilder} implementation
+   * @see DefaultCommandBuilder
+   */
+  public void setCommandBuilder(CommandBuilder builder) {
+    commandBuilder = Args.notNull(builder, "commandBuilder");
 
-public void setOutputCapture(CommandOutputCapture outputCapture) {
-this.outputCapture = Args.notNull(outputCapture, "outputCapture");
-}
+  }
+
+  @Override
+  public void prepare() throws CoreException {
+  }
+
+  /**
+   * Specifies a maximum time for the executable to run, after which it will be terminated.
+   *
+   * @param t the timeout; default if not configured is 30 seconds.
+   */
+  public void setTimeout(TimeInterval t) {
+    timeout = t;
+  }
+
+  long timeoutMs() {
+    return TimeInterval.toMillisecondsDefaultIfNull(getTimeout(), DEFAULT_TIMEOUT);
+  }
+
+  public TimeInterval getTimeout() {
+    return timeout;
+  }
+
+  public CommandOutputCapture getOutputCapture() {
+    return outputCapture;
+  }
+
+  public void setOutputCapture(CommandOutputCapture outputCapture) {
+    this.outputCapture = Args.notNull(outputCapture, "outputCapture");
+  }
 }

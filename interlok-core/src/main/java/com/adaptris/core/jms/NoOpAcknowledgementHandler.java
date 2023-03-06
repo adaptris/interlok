@@ -26,14 +26,14 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "JMS Acknowledgement handler that skips all acknowledgements, rollbacks and commits.", tag = "jms")
 public class NoOpAcknowledgementHandler implements AcknowledgementHandler {
 
-@Override
-public void acknowledgeMessage(JmsActorConfig actor, Message message) throws JMSException {
-//do nothing
-}
+  @Override
+  public void acknowledgeMessage(JmsActorConfig actor, Message message) throws JMSException {
+    //do nothing
+  }
 
-@Override
-public void rollbackMessage(JmsActorConfig actor, Message message) {
-//do nothing
-}
+  @Override
+  public void rollbackMessage(JmsActorConfig actor, Message message) {
+    //do nothing
+  }
 
 }

@@ -6,25 +6,25 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
-* <code>MetadataElement</code> key and value set as property of <code>javax.jms.Message</code>
-* using <code>setStringProperty(String key, String value)</code>.
-*
-* @config jms-string-metadata-converter
-* @author mwarman
-*/
+ * <code>MetadataElement</code> key and value set as property of <code>javax.jms.Message</code>
+ * using <code>setStringProperty(String key, String value)</code>.
+ *
+ * @config jms-string-metadata-converter
+ * @author mwarman
+ */
 @JacksonXmlRootElement(localName = "jms-string-metadata-converter")
 @XStreamAlias("jms-string-metadata-converter")
 @DisplayOrder(order = {"metadataFilter"})
 public class StringMetadataConverter extends MetadataConverter {
 
 
-/** @see MetadataConverter#MetadataConverter() */
-public StringMetadataConverter() {
-super();
-}
+  /** @see MetadataConverter#MetadataConverter() */
+  public StringMetadataConverter() {
+    super();
+  }
 
-public StringMetadataConverter(MetadataFilter metadataFilter) {
-super(metadataFilter);
-}
+  public StringMetadataConverter(MetadataFilter metadataFilter) {
+    super(metadataFilter);
+  }
 
 }

@@ -14,65 +14,65 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
-* Key and value element formatter.
-*
-* @author Ashley Anderson <ashley.anderson@reedbusiness.com>
-*/
+ * Key and value element formatter.
+ *
+ * @author Ashley Anderson <ashley.anderson@reedbusiness.com>
+ */
 @JacksonXmlRootElement(localName = "element-key-and-value-formatter")
 @XStreamAlias("element-key-and-value-formatter")
 public class ElementKeyAndValueFormatter implements ElementFormatter {
 
-private static final transient Logger LOGGER =
-LoggerFactory.getLogger(ElementKeyAndValueFormatter.class.getName());
+  private static final transient Logger LOGGER =
+      LoggerFactory.getLogger(ElementKeyAndValueFormatter.class.getName());
 
-/**
-* The default key/value separator.
-*/
-private static final String DEFAULT_SEPARATOR = "=";
+  /**
+   * The default key/value separator.
+   */
+  private static final String DEFAULT_SEPARATOR = "=";
 
-/**
-* The key/value separator.
-*/
-@NotNull
-@AutoPopulated
-@InputFieldDefault(value = DEFAULT_SEPARATOR)
-@InputFieldHint(style = "BLANKABLE")
-private String separator;
+  /**
+   * The key/value separator.
+   */
+  @NotNull
+  @AutoPopulated
+  @InputFieldDefault(value = DEFAULT_SEPARATOR)
+  @InputFieldHint(style = "BLANKABLE")
+  private String separator;
 
-/**
-* Default constructor.
-*/
-public ElementKeyAndValueFormatter() {
-setSeparator(DEFAULT_SEPARATOR);
-}
+  /**
+   * Default constructor.
+   */
+  public ElementKeyAndValueFormatter() {
+    setSeparator(DEFAULT_SEPARATOR);
+  }
 
-/**
-* {@inheritDoc}
-*/
-@Override
-public String format(final MetadataElement element) {
-if (element == null) {
-LOGGER.warn("Metadata element is null!");
-return null;
-}
-return element.getKey() + getSeparator() + element.getValue();
-}
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String format(final MetadataElement element) {
+    if (element == null) {
+      LOGGER.warn("Metadata element is null!");
+      return null;
+    }
+    return element.getKey() + getSeparator() + element.getValue();
+  }
 
-/**
-* Set the key/value separator.
-*
-* @param separator The key/value separator.
-*/
-public void setSeparator(final String separator) {
-this.separator = Args.notNull(separator, "separator");
-}
+  /**
+   * Set the key/value separator.
+   *
+   * @param separator The key/value separator.
+   */
+  public void setSeparator(final String separator) {
+    this.separator = Args.notNull(separator, "separator");
+  }
 
-/**
-* Get the key/value separator.
-*
-* @return The key/value separator.
-*/
-public String getSeparator() {
-return separator;
-}
+  /**
+   * Get the key/value separator.
+   *
+   * @return The key/value separator.
+   */
+  public String getSeparator() {
+    return separator;
+  }
 }

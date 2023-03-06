@@ -1,17 +1,17 @@
 /*
-* Copyright 2018 Adaptris Ltd.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+ * Copyright 2018 Adaptris Ltd.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
 */
 package com.adaptris.core.services.cache;
 
@@ -32,188 +32,188 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
-* Evaluates cache keys and values for the various cache services.
-*
-* @config cache-entry-evaluator
-*/
+ * Evaluates cache keys and values for the various cache services.
+ * 
+ * @config cache-entry-evaluator
+ */
 @JacksonXmlRootElement(localName = "cache-entry-evaluator")
 @XStreamAlias("cache-entry-evaluator")
 @DisplayOrder(order ={"friendlyName", "keyTranslator", "valueTranslator", "errorOnEmptyKey", "errorOnEmptyValue"})
 public class CacheEntryEvaluator {
-private transient Logger log = LoggerFactory.getLogger(this.getClass());
+  private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
-@InputFieldDefault(value = "true")
-@AdvancedConfig
-private Boolean errorOnEmptyKey;
-@InputFieldDefault(value = "true")
-@AdvancedConfig
-private Boolean errorOnEmptyValue;
-@Valid
-private CacheKeyTranslator keyTranslator;
-@Valid
-private CacheValueTranslator valueTranslator;
-@AdvancedConfig
-@InputFieldHint(style="BLANKABLE")
-private String friendlyName;
+  @InputFieldDefault(value = "true")
+  @AdvancedConfig
+  private Boolean errorOnEmptyKey;
+  @InputFieldDefault(value = "true")
+  @AdvancedConfig
+  private Boolean errorOnEmptyValue;
+  @Valid
+  private CacheKeyTranslator keyTranslator;
+  @Valid
+  private CacheValueTranslator valueTranslator;
+  @AdvancedConfig
+  @InputFieldHint(style="BLANKABLE")
+  private String friendlyName;
 
-public CacheEntryEvaluator() {
+  public CacheEntryEvaluator() {
 
-}
+  }
 
-protected String getKey(AdaptrisMessage msg) throws ServiceException {
+  protected String getKey(AdaptrisMessage msg) throws ServiceException {
 
-String value = null;
-try {
-value = keyTranslator().getKeyFromMessage(msg);
-if (value == null && errorOnEmptyKey()) {
-throw new ServiceException("Null cache-key returned");
-}
-}
-catch (Exception e) {
-rethrow(e, "cache-key");
-}
-return value;
-}
+    String value = null;
+    try {
+      value = keyTranslator().getKeyFromMessage(msg);
+      if (value == null && errorOnEmptyKey()) {
+        throw new ServiceException("Null cache-key returned");
+      }
+    }
+    catch (Exception e) {
+      rethrow(e, "cache-key");
+    }
+    return value;
+  }
 
-protected Object getValue(AdaptrisMessage msg) throws ServiceException {
-Object value = null;
-try {
-value = valueTranslator().getValueFromMessage(msg);
-if (value == null && errorOnEmptyValue()) {
-throw new ServiceException("Null cache-value returned");
-}
-}
-catch (Exception e) {
-rethrow(e, "cache-value");
-}
-return value;
-}
+  protected Object getValue(AdaptrisMessage msg) throws ServiceException {
+    Object value = null;
+    try {
+      value = valueTranslator().getValueFromMessage(msg);
+      if (value == null && errorOnEmptyValue()) {
+        throw new ServiceException("Null cache-value returned");
+      }
+    }
+    catch (Exception e) {
+      rethrow(e, "cache-value");
+    }
+    return value;
+  }
 
-private void rethrow(Exception e, String type) throws ServiceException {
-if (e instanceof ServiceException) {
-throw (ServiceException) e;
-}
-else {
-log.warn("Unable to generate {}:{}", type, e.getMessage());
-log.trace(e.getMessage(), e);
-}
-}
+  private void rethrow(Exception e, String type) throws ServiceException {
+    if (e instanceof ServiceException) {
+      throw (ServiceException) e;
+    }
+    else {
+      log.warn("Unable to generate {}:{}", type, e.getMessage());
+      log.trace(e.getMessage(), e);
+    }
+  }
 
-/**
-* Throw an error if we cannot look up the Key value
-*
-* @param bool default is true.
-*/
-public void setErrorOnEmptyKey(Boolean bool) {
-errorOnEmptyKey = bool;
-}
+  /**
+   * Throw an error if we cannot look up the Key value
+   *
+   * @param bool default is true.
+   */
+  public void setErrorOnEmptyKey(Boolean bool) {
+    errorOnEmptyKey = bool;
+  }
 
-public Boolean getErrorOnEmptyKey() {
-return errorOnEmptyKey;
-}
+  public Boolean getErrorOnEmptyKey() {
+    return errorOnEmptyKey;
+  }
 
-boolean errorOnEmptyKey() {
-return BooleanUtils.toBooleanDefaultIfNull(getErrorOnEmptyKey(), true);
-}
+  boolean errorOnEmptyKey() {
+    return BooleanUtils.toBooleanDefaultIfNull(getErrorOnEmptyKey(), true);
+  }
 
-/**
-* Throw an error if we cannot look up the Value to be stored in the cache
-*
-* @param bool default is true.
-*/
-public void setErrorOnEmptyValue(Boolean bool) {
-errorOnEmptyValue = bool;
-}
+  /**
+   * Throw an error if we cannot look up the Value to be stored in the cache
+   *
+   * @param bool default is true.
+   */
+  public void setErrorOnEmptyValue(Boolean bool) {
+    errorOnEmptyValue = bool;
+  }
 
-public Boolean getErrorOnEmptyValue() {
-return errorOnEmptyValue;
-}
+  public Boolean getErrorOnEmptyValue() {
+    return errorOnEmptyValue;
+  }
 
-boolean errorOnEmptyValue() {
-return BooleanUtils.toBooleanDefaultIfNull(getErrorOnEmptyValue(), true);
-}
+  boolean errorOnEmptyValue() {
+    return BooleanUtils.toBooleanDefaultIfNull(getErrorOnEmptyValue(), true);
+  }
 
-/**
-* Sets the translator to use to extract the Key value from the message
-*
-* @param translator default is null.
-*/
-public void setKeyTranslator(CacheKeyTranslator translator) {
-keyTranslator = Args.notNull(translator, "keyTranslator");
-}
+  /**
+   * Sets the translator to use to extract the Key value from the message
+   *
+   * @param translator default is null.
+   */
+  public void setKeyTranslator(CacheKeyTranslator translator) {
+    keyTranslator = Args.notNull(translator, "keyTranslator");
+  }
 
 
-/**
-* Get the configured key translator.
-*
-* @return the configured key translator.
-*/
-public CacheKeyTranslator getKeyTranslator() {
-return keyTranslator;
-}
+  /**
+   * Get the configured key translator.
+   *
+   * @return the configured key translator.
+   */
+  public CacheKeyTranslator getKeyTranslator() {
+    return keyTranslator;
+  }
 
-/**
-* Get the key translator.
-*
-* @return the configured key translator via {@link #setKeyTranslator(CacheKeyTranslator)} or a default translator if null.
-*/
-public CacheKeyTranslator keyTranslator() {
-return ObjectUtils.defaultIfNull(getKeyTranslator(), (msg) -> null);
-}
+  /**
+   * Get the key translator.
+   *
+   * @return the configured key translator via {@link #setKeyTranslator(CacheKeyTranslator)} or a default translator if null.
+   */
+  public CacheKeyTranslator keyTranslator() {
+    return ObjectUtils.defaultIfNull(getKeyTranslator(), (msg) -> null);
+  }
 
-/**
-* Sets the translator to extract the Value to be stored in the cache
-*
-* @param translator default is null.
-*/
-public void setValueTranslator(CacheValueTranslator translator) {
-valueTranslator = Args.notNull(translator, "valueTranslator");
-}
+  /**
+   * Sets the translator to extract the Value to be stored in the cache
+   * 
+   * @param translator default is null.
+   */
+  public void setValueTranslator(CacheValueTranslator translator) {
+    valueTranslator = Args.notNull(translator, "valueTranslator");
+  }
 
-/**
-* Get the configured value translator.
-*
-* @return the configured value translator.
-*/
-public CacheValueTranslator getValueTranslator() {
-return valueTranslator;
-}
+  /**
+   * Get the configured value translator.
+   *
+   * @return the configured value translator.
+   */
+  public CacheValueTranslator getValueTranslator() {
+    return valueTranslator;
+  }
 
-/**
-* Get the value translator.
-*
-* @return the configured key translator via {@link #setValueTranslator(CacheValueTranslator)} or a default translator if null.
-*/
-public CacheValueTranslator valueTranslator() {
-return ObjectUtils.defaultIfNull(getValueTranslator(), new NullCacheValueTranslator());
-}
+  /**
+   * Get the value translator.
+   *
+   * @return the configured key translator via {@link #setValueTranslator(CacheValueTranslator)} or a default translator if null.
+   */
+  public CacheValueTranslator valueTranslator() {
+    return ObjectUtils.defaultIfNull(getValueTranslator(), new NullCacheValueTranslator());
+  }
 
-public String getFriendlyName() {
-return friendlyName;
-}
+  public String getFriendlyName() {
+    return friendlyName;
+  }
 
-/**
-* Set the name of this cache entry generator for logging purposes.
-*
-* @param name
-*/
-public void setFriendlyName(String name) {
-friendlyName = name;
-}
+  /**
+   * Set the name of this cache entry generator for logging purposes.
+   *
+   * @param name
+   */
+  public void setFriendlyName(String name) {
+    friendlyName = name;
+  }
 
-public String friendlyName() {
-return ObjectUtils.defaultIfNull(getFriendlyName(), this.getClass().getSimpleName());
-}
+  public String friendlyName() {
+    return ObjectUtils.defaultIfNull(getFriendlyName(), this.getClass().getSimpleName());
+  }
+  
+  public static class NullCacheValueTranslator implements CacheValueTranslator {
+    @Override
+    public Object getValueFromMessage(AdaptrisMessage msg) throws CoreException {
+      return null;
+    }
 
-public static class NullCacheValueTranslator implements CacheValueTranslator {
-@Override
-public Object getValueFromMessage(AdaptrisMessage msg) throws CoreException {
-return null;
-}
+    @Override
+    public void addValueToMessage(AdaptrisMessage msg, Object value) throws CoreException {
 
-@Override
-public void addValueToMessage(AdaptrisMessage msg, Object value) throws CoreException {
-
-}
-}
+    }
+  }
 }

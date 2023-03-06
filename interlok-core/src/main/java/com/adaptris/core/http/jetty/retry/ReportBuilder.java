@@ -16,45 +16,45 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
-*
-* Supports reporting of what's in the retry store.
-* <p>
-* This is tightly coupled with {@link RetryFromJetty} and probably can't be used elsewhere.
-* </p>
-*/
+ *
+ * Supports reporting of what's in the retry store.
+ * <p>
+ * This is tightly coupled with {@link RetryFromJetty} and probably can't be used elsewhere.
+ * </p>
+ */
 @JacksonXmlRootElement(localName = "jetty-retry-report-builder")
 @XStreamAlias("jetty-retry-report-builder")
 @ComponentProfile(summary = "Generate a report on the files stored in the retry store.",
-since = "3.11.1")
+    since = "3.11.1")
 @DisplayOrder(order = {"reportRenderer", "contentType"})
 public class ReportBuilder implements ComponentLifecycle {
 
-@Getter
-@Setter
-@InputFieldDefault(value = "just the names newline separated")
-private BlobListRenderer reportRenderer;
+  @Getter
+  @Setter
+  @InputFieldDefault(value = "just the names newline separated")
+  private BlobListRenderer reportRenderer;
 
-/**
-* Set the content type to be associated with the report.
-*
-*/
-@Getter
-@Setter
-@InputFieldDefault(value = MimeConstants.CONTENT_TYPE_TEXT_PLAIN)
-private String contentType;
+  /**
+   * Set the content type to be associated with the report.
+   *
+   */
+  @Getter
+  @Setter
+  @InputFieldDefault(value = MimeConstants.CONTENT_TYPE_TEXT_PLAIN)
+  private String contentType;
 
-public AdaptrisMessage build(Iterable<RemoteBlob> list, AdaptrisMessage msg) throws Exception {
-renderer().render(list, msg);
-msg.addMessageHeader(RetryFromJetty.CONTENT_TYPE_METADATA_KEY, contentType());
-return msg;
-}
+  public AdaptrisMessage build(Iterable<RemoteBlob> list, AdaptrisMessage msg) throws Exception {
+    renderer().render(list, msg);
+    msg.addMessageHeader(RetryFromJetty.CONTENT_TYPE_METADATA_KEY, contentType());
+    return msg;
+  }
 
-private BlobListRenderer renderer() {
-return ObjectUtils.defaultIfNull(getReportRenderer(), new BlobListRenderer() {});
-}
+  private BlobListRenderer renderer() {
+    return ObjectUtils.defaultIfNull(getReportRenderer(), new BlobListRenderer() {});
+  }
 
-private String contentType() {
-return StringUtils.defaultIfBlank(getContentType(), MimeConstants.CONTENT_TYPE_TEXT_PLAIN);
-}
+  private String contentType() {
+    return StringUtils.defaultIfBlank(getContentType(), MimeConstants.CONTENT_TYPE_TEXT_PLAIN);
+  }
 
 }

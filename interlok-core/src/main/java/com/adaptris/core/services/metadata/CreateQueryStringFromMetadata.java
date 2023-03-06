@@ -1,17 +1,17 @@
 /*
-* Copyright 2015 Adaptris Ltd.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+ * Copyright 2015 Adaptris Ltd.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
 */
 
 package com.adaptris.core.services.metadata;
@@ -33,12 +33,12 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
-* Service that creates a URL query string from the specified metadata keys.
-*
-* @config create-query-string-from-metadata
-*
-* @author sellidge
-*/
+ * Service that creates a URL query string from the specified metadata keys.
+ * 
+ * @config create-query-string-from-metadata
+ * 
+ * @author sellidge
+ */
 @JacksonXmlRootElement(localName = "create-query-string-from-metadata")
 @XStreamAlias("create-query-string-from-metadata")
 @AdapterComponent
@@ -46,61 +46,61 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"metadata-filter", "resultKey", "separator", "includeQueryPrefix"})
 public class CreateQueryStringFromMetadata extends UrlEncodedMetadataValues {
 
-@NotBlank
-@AffectsMetadata
-private String resultKey;
-@AdvancedConfig
-@InputFieldDefault(value = "true")
-private Boolean includeQueryPrefix;
+  @NotBlank
+  @AffectsMetadata
+  private String resultKey;
+  @AdvancedConfig
+  @InputFieldDefault(value = "true")
+  private Boolean includeQueryPrefix;
 
-public CreateQueryStringFromMetadata() {
-}
+  public CreateQueryStringFromMetadata() {
+  }
 
-@Override
-public void prepare() throws CoreException {
-Args.notBlank(resultKey, "resultKey");
-}
+  @Override
+  public void prepare() throws CoreException {
+    Args.notBlank(resultKey, "resultKey");
+  }
 
-@Override
-public void doService(AdaptrisMessage msg) throws ServiceException {
-try {
-StringBuilder queryString = new StringBuilder(includeQueryPrefix() ? "?" : "");
-queryString.append(buildEncodedString(msg));
-if (queryString.length() > 1) {
-// We have added some parameters
-msg.addMetadata(getResultKey(), queryString.toString());
-} else {
-// No params - return an empty string
-msg.addMetadata(getResultKey(), "");
-}
-} catch (Exception e) {
-throw ExceptionHelper.wrapServiceException(e);
-}
-}
+  @Override
+  public void doService(AdaptrisMessage msg) throws ServiceException {
+    try {
+      StringBuilder queryString = new StringBuilder(includeQueryPrefix() ? "?" : "");
+      queryString.append(buildEncodedString(msg));
+      if (queryString.length() > 1) {
+        // We have added some parameters
+        msg.addMetadata(getResultKey(), queryString.toString());
+      } else {
+        // No params - return an empty string
+        msg.addMetadata(getResultKey(), "");
+      }
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapServiceException(e);
+    }
+  }
 
-public String getResultKey() {
-return resultKey;
-}
+  public String getResultKey() {
+    return resultKey;
+  }
 
-public void setResultKey(String resultKey) {
-this.resultKey = resultKey;
-}
+  public void setResultKey(String resultKey) {
+    this.resultKey = resultKey;
+  }
 
 
-public Boolean getIncludeQueryPrefix() {
-return includeQueryPrefix;
-}
+  public Boolean getIncludeQueryPrefix() {
+    return includeQueryPrefix;
+  }
 
-/**
-* Whether or not to include the standard query prefix
-*
-* @param b
-*/
-public void setIncludeQueryPrefix(Boolean b) {
-includeQueryPrefix = b;
-}
+  /**
+   * Whether or not to include the standard query prefix
+   * 
+   * @param b
+   */
+  public void setIncludeQueryPrefix(Boolean b) {
+    includeQueryPrefix = b;
+  }
 
-private boolean includeQueryPrefix() {
-return BooleanUtils.toBooleanDefaultIfNull(getIncludeQueryPrefix(), true);
-}
+  private boolean includeQueryPrefix() {
+    return BooleanUtils.toBooleanDefaultIfNull(getIncludeQueryPrefix(), true);
+  }
 }

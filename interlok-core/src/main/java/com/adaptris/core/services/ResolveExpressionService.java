@@ -20,33 +20,33 @@ import lombok.Setter;
 @ComponentProfile(summary = "Will perform an expression resolve on any input and put the result into the output.", tag = "service,resolve,expression")
 public class ResolveExpressionService extends ServiceImp {
 
-@Getter
-@Setter
-private DataInputParameter<String> input;
+  @Getter
+  @Setter
+  private DataInputParameter<String> input;
+  
+  @Getter
+  @Setter
+  private DataOutputParameter<String> output;
+  
+  @Override
+  public void doService(AdaptrisMessage message) throws ServiceException {
+    try {
+      getOutput().insert(message.resolve(getInput().extract(message)), message);
+    } catch (Throwable e) {
+      throw new ServiceException(e);
+    }
+  }
 
-@Getter
-@Setter
-private DataOutputParameter<String> output;
+  @Override
+  public void prepare() throws CoreException {
+  }
 
-@Override
-public void doService(AdaptrisMessage message) throws ServiceException {
-try {
-getOutput().insert(message.resolve(getInput().extract(message)), message);
-} catch (Throwable e) {
-throw new ServiceException(e);
-}
-}
+  @Override
+  protected void closeService() {
+  }
 
-@Override
-public void prepare() throws CoreException {
-}
-
-@Override
-protected void closeService() {
-}
-
-@Override
-protected void initService() throws CoreException {
-}
+  @Override
+  protected void initService() throws CoreException {
+  }
 
 }

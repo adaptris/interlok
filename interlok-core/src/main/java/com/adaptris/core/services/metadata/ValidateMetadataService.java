@@ -1,17 +1,17 @@
 /*
-* Copyright 2015 Adaptris Ltd.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+ * Copyright 2015 Adaptris Ltd.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
 */
 
 package com.adaptris.core.services.metadata;
@@ -36,14 +36,14 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
-* Verify that a message has all the required metadata keys set.
-* <p>
-* If any of the required keys does not have a values stored against it, a <code>ServiceException</code> is thrown.
-* </p>
-*
-* @config validate-metadata-service
-*
-*/
+ * Verify that a message has all the required metadata keys set.
+ * <p>
+ * If any of the required keys does not have a values stored against it, a <code>ServiceException</code> is thrown.
+ * </p>
+ * 
+ * @config validate-metadata-service
+ * 
+ */
 @JacksonXmlRootElement(localName = "validate-metadata-service")
 @XStreamAlias("validate-metadata-service")
 @AdapterComponent
@@ -51,82 +51,82 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 @DisplayOrder(order = {"requiredKeys"})
 public class ValidateMetadataService extends ServiceImp {
 
-@XStreamImplicit(itemFieldName = "required-key")
-@NotNull
-@AutoPopulated
-private List<String> requiredKeys;
+  @XStreamImplicit(itemFieldName = "required-key")
+  @NotNull
+  @AutoPopulated
+  private List<String> requiredKeys;
 
-/**
-* <p>
-* Creates a new instance.
-* </p>
-*/
-public ValidateMetadataService() {
-requiredKeys = new ArrayList<String>();
-}
+  /**
+   * <p>
+   * Creates a new instance.
+   * </p>
+   */
+  public ValidateMetadataService() {
+    requiredKeys = new ArrayList<String>();
+  }
 
-public ValidateMetadataService(List<String> list) {
-this();
-setRequiredKeys(list);
-}
+  public ValidateMetadataService(List<String> list) {
+    this();
+    setRequiredKeys(list);
+  }
 
-public void doService(AdaptrisMessage msg) throws ServiceException {
-try {
-for (String requiredKey : requiredKeys) {
-Args.notBlank(msg.getMetadataValue(requiredKey), requiredKey);
-}
-} catch (Exception e) {
-throw ExceptionHelper.wrapServiceException(e);
-}
-}
+  public void doService(AdaptrisMessage msg) throws ServiceException {
+    try {
+      for (String requiredKey : requiredKeys) {
+        Args.notBlank(msg.getMetadataValue(requiredKey), requiredKey);
+      }
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapServiceException(e);
+    }
+  }
 
-/**
-* <p>
-* Returns the <code>List</code> of keys which must be present and have non
-* empty values.
-* </p>
-*
-* @return the <code>List</code> of keys which must be present and have non
-*         empty values
-*/
-public List<String> getRequiredKeys() {
-return requiredKeys;
-}
+  /**
+   * <p>
+   * Returns the <code>List</code> of keys which must be present and have non
+   * empty values.
+   * </p>
+   *
+   * @return the <code>List</code> of keys which must be present and have non
+   *         empty values
+   */
+  public List<String> getRequiredKeys() {
+    return requiredKeys;
+  }
 
-/**
-* <p>
-* Sets the <code>List</code> of keys which must be present and have non empty
-* values.
-* </p>
-*
-* @param l the <code>List</code> of keys which must be present and have non
-*          empty values
-*/
-public void setRequiredKeys(List<String> l) {
-requiredKeys = Args.notNull(l, "requiredKeys");
-}
+  /**
+   * <p>
+   * Sets the <code>List</code> of keys which must be present and have non empty
+   * values.
+   * </p>
+   *
+   * @param l the <code>List</code> of keys which must be present and have non
+   *          empty values
+   */
+  public void setRequiredKeys(List<String> l) {
+    requiredKeys = Args.notNull(l, "requiredKeys");
+  }
 
-/**
-* <p>
-* Add a key to the <code>List</code>.
-* </p>
-*
-* @param key the key to add
-*/
-public void addRequiredKey(String key) {
-requiredKeys.add(Args.notBlank(key, "requiredKey"));
-}
+  /**
+   * <p>
+   * Add a key to the <code>List</code>.
+   * </p>
+   *
+   * @param key the key to add
+   */
+  public void addRequiredKey(String key) {
+    requiredKeys.add(Args.notBlank(key, "requiredKey"));
+  }
 
 
-@Override
-protected void initService() throws CoreException {
-}
+  @Override
+  protected void initService() throws CoreException {
+  }
 
-@Override
-protected void closeService() {
-}
-@Override
-public void prepare() throws CoreException {
-}
+  @Override
+  protected void closeService() {
+  }
+  @Override
+  public void prepare() throws CoreException {
+  }
 
 }

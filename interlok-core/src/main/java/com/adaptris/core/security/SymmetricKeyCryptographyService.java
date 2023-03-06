@@ -37,9 +37,9 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
-* @config symmetric-key-cryptography-service
-* @author mwarman
-*/
+ * @config symmetric-key-cryptography-service
+ * @author mwarman
+ */
 @JacksonXmlRootElement(localName = "symmetric-key-cryptography-service")
 @XStreamAlias("symmetric-key-cryptography-service")
 @AdapterComponent
@@ -47,266 +47,266 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"algorithm", "cipherTransformation", "operationMode", "key", "initialVector", "source", "target"})
 public class SymmetricKeyCryptographyService extends ServiceImp {
 
-@NotBlank
-@Valid
-@InputFieldHint(expression = true)
-private String algorithm;
+  @NotBlank
+  @Valid
+  @InputFieldHint(expression = true)
+  private String algorithm;
 
-@NotBlank
-@Valid
-@InputFieldHint(expression = true)
-private String cipherTransformation;
+  @NotBlank
+  @Valid
+  @InputFieldHint(expression = true)
+  private String cipherTransformation;
 
-@NotNull
-@Valid
-@AutoPopulated
-@InputFieldDefault(value = "DECRYPT")
-private OpMode operationMode;
+  @NotNull
+  @Valid
+  @AutoPopulated
+  @InputFieldDefault(value = "DECRYPT")
+  private OpMode operationMode;
+  
+  @NotNull
+  @Valid
+  private DataInputParameter<String> key;
 
-@NotNull
-@Valid
-private DataInputParameter<String> key;
+  @NotNull
+  @Valid
+  private DataInputParameter<String> initialVector;
 
-@NotNull
-@Valid
-private DataInputParameter<String> initialVector;
+  @Valid
+  @InputFieldDefault(value = "the payload")
+  private MessageWrapper<InputStream> source;
 
-@Valid
-@InputFieldDefault(value = "the payload")
-private MessageWrapper<InputStream> source;
+  @Valid
+  @InputFieldDefault(value = "the payload")
+  private MessageWrapper<OutputStream> target;
 
-@Valid
-@InputFieldDefault(value = "the payload")
-private MessageWrapper<OutputStream> target;
-
-public enum OpMode {
-DECRYPT {
-@Override
-void execute(Cipher cipher, SecretKeySpec secretKeySpec, IvParameterSpec ivParameterSpec,
-InputStream msgIn, OutputStream msgOut)
-throws InvalidAlgorithmParameterException, InvalidKeyException, IOException {
-cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, ivParameterSpec);
-try (CipherInputStream in = new CipherInputStream(msgIn, cipher);
-OutputStream out = msgOut) {
-StreamUtil.copyAndClose(in, out);
-}
-}
-},
-ENCRYPT {
-@Override
-void execute(Cipher cipher, SecretKeySpec secretKeySpec, IvParameterSpec ivParameterSpec,
-InputStream msgIn, OutputStream msgOut)
-throws InvalidAlgorithmParameterException, InvalidKeyException, IOException {
-cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivParameterSpec);
-try (InputStream in = msgIn;
-CipherOutputStream out = new CipherOutputStream(msgOut, cipher)) {
-StreamUtil.copyAndClose(in, out);
-}
-}
-};
-abstract void execute(Cipher cipher, SecretKeySpec secretKeySpec,
-IvParameterSpec ivParameterSpec, InputStream msgIn, OutputStream msgOut)
-throws InvalidAlgorithmParameterException, InvalidKeyException, IOException;
-}
-
-
-public SymmetricKeyCryptographyService() {
-SecurityUtil.addProvider();
-setOperationMode(OpMode.DECRYPT);
-}
+  public enum OpMode {
+    DECRYPT {
+      @Override
+      void execute(Cipher cipher, SecretKeySpec secretKeySpec, IvParameterSpec ivParameterSpec,
+          InputStream msgIn, OutputStream msgOut)
+          throws InvalidAlgorithmParameterException, InvalidKeyException, IOException {
+        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, ivParameterSpec);
+        try (CipherInputStream in = new CipherInputStream(msgIn, cipher);
+            OutputStream out = msgOut) {
+          StreamUtil.copyAndClose(in, out);
+        }
+      }
+    },
+    ENCRYPT {
+      @Override
+      void execute(Cipher cipher, SecretKeySpec secretKeySpec, IvParameterSpec ivParameterSpec,
+          InputStream msgIn, OutputStream msgOut)
+          throws InvalidAlgorithmParameterException, InvalidKeyException, IOException {
+        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivParameterSpec);
+        try (InputStream in = msgIn;
+            CipherOutputStream out = new CipherOutputStream(msgOut, cipher)) {
+          StreamUtil.copyAndClose(in, out);
+        }
+      }
+    };
+    abstract void execute(Cipher cipher, SecretKeySpec secretKeySpec,
+        IvParameterSpec ivParameterSpec, InputStream msgIn, OutputStream msgOut)
+        throws InvalidAlgorithmParameterException, InvalidKeyException, IOException;
+  }
 
 
-@Override
-public void doService(AdaptrisMessage msg) throws ServiceException {
-try {
-String algToUse = msg.resolve(getAlgorithm());
-String cipherToUse = msg.resolve(getCipherTransformation());
-byte[] keyBytes = Conversion.base64StringToByteArray(
-Password.decode(ExternalResolver.resolve(getKey().extract(msg))));
-byte[] initialVectorBytes =  Conversion.base64StringToByteArray(getInitialVector().extract(msg));
-Cipher cipher = Cipher.getInstance(cipherToUse);
-SecretKeySpec secretKeySpec = new SecretKeySpec(keyBytes, algToUse);
-IvParameterSpec ivParameterSpec = new IvParameterSpec(initialVectorBytes);
-getOperationMode().execute(cipher, secretKeySpec, ivParameterSpec, source().wrap(msg),
-target().wrap(msg));
-} catch (Exception e) {
-throw ExceptionHelper.wrapServiceException(e);
-}
-}
+  public SymmetricKeyCryptographyService() {
+    SecurityUtil.addProvider();
+    setOperationMode(OpMode.DECRYPT);
+  }
 
-@Override
-protected void initService() throws CoreException {
 
-}
+  @Override
+  public void doService(AdaptrisMessage msg) throws ServiceException {
+    try {
+      String algToUse = msg.resolve(getAlgorithm());
+      String cipherToUse = msg.resolve(getCipherTransformation());
+      byte[] keyBytes = Conversion.base64StringToByteArray(
+          Password.decode(ExternalResolver.resolve(getKey().extract(msg))));
+      byte[] initialVectorBytes =  Conversion.base64StringToByteArray(getInitialVector().extract(msg));
+      Cipher cipher = Cipher.getInstance(cipherToUse);
+      SecretKeySpec secretKeySpec = new SecretKeySpec(keyBytes, algToUse);
+      IvParameterSpec ivParameterSpec = new IvParameterSpec(initialVectorBytes);
+      getOperationMode().execute(cipher, secretKeySpec, ivParameterSpec, source().wrap(msg),
+          target().wrap(msg));
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapServiceException(e);
+    }
+  }
 
-@Override
-protected void closeService() {
+  @Override
+  protected void initService() throws CoreException {
 
-}
+  }
 
-@Override
-public void prepare() throws CoreException {
-try {
-Args.notBlank(getAlgorithm(), "algorithm");
-Args.notBlank(getCipherTransformation(), "cipherTransformation");
-Args.notNull(getKey(), "key");
-Args.notNull(getInitialVector(), "initalVector");
-} catch (Exception e) {
-throw ExceptionHelper.wrapCoreException(e);
-}
-}
+  @Override
+  protected void closeService() {
 
-/**
-* Set the name of the secret-key algorithm.
-* <p>
-* This value is passed in as one of the parameters to
-* {@link SecretKeySpec#SecretKeySpec(byte[], String)}; while it is free text, the correct value
-* will depend on what you have agreed with the remote party and support within your JVM.
-* </p>
-*
-* @param algorithm the name of the secret-key algorithm to be associated with the given key.
-*/
-public void setAlgorithm(String algorithm) {
-this.algorithm = algorithm;
-}
+  }
 
-public String getAlgorithm() {
-return algorithm;
-}
+  @Override
+  public void prepare() throws CoreException {
+    try {
+      Args.notBlank(getAlgorithm(), "algorithm");
+      Args.notBlank(getCipherTransformation(), "cipherTransformation");
+      Args.notNull(getKey(), "key");
+      Args.notNull(getInitialVector(), "initalVector");
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
+    }
+  }
 
-public SymmetricKeyCryptographyService withAlgorithm(String algorithm){
-setAlgorithm(algorithm);
-return this;
-}
+  /**
+   * Set the name of the secret-key algorithm.
+   * <p>
+   * This value is passed in as one of the parameters to
+   * {@link SecretKeySpec#SecretKeySpec(byte[], String)}; while it is free text, the correct value
+   * will depend on what you have agreed with the remote party and support within your JVM.
+   * </p>
+   * 
+   * @param algorithm the name of the secret-key algorithm to be associated with the given key.
+   */
+  public void setAlgorithm(String algorithm) {
+    this.algorithm = algorithm;
+  }
 
-/**
-* Set the cipher transformation to be applied
-* <p>
-* This value is passed into {@link Cipher#getInstance(String)}; while it is free text, the
-* correct value will depend on what you have agreed with the remote party and support within your
-* JVM.
-* </p>
-*
-* @param cipherTransformation the name of the transformation, e.g. {@code AES/CBC/PKCS5Padding}.
-*/
-public void setCipherTransformation(String cipherTransformation) {
-this.cipherTransformation = cipherTransformation;
-}
+  public String getAlgorithm() {
+    return algorithm;
+  }
 
-public String getCipherTransformation() {
-return cipherTransformation;
-}
+  public SymmetricKeyCryptographyService withAlgorithm(String algorithm){
+    setAlgorithm(algorithm);
+    return this;
+  }
 
-public SymmetricKeyCryptographyService withCipherTransformation(String cipherTransformation){
-setCipherTransformation(cipherTransformation);
-return this;
-}
+  /**
+   * Set the cipher transformation to be applied
+   * <p>
+   * This value is passed into {@link Cipher#getInstance(String)}; while it is free text, the
+   * correct value will depend on what you have agreed with the remote party and support within your
+   * JVM.
+   * </p>
+   *
+   * @param cipherTransformation the name of the transformation, e.g. {@code AES/CBC/PKCS5Padding}.
+   */
+  public void setCipherTransformation(String cipherTransformation) {
+    this.cipherTransformation = cipherTransformation;
+  }
 
-/**
-* Set the initial vector for the algorithm
-*
-* <p>
-* Depending on the algorithm you have chosen, then size of the initial vector will vary. For
-* instance, for AES, it needs to be 16 bytes
-* </p>
-*
-* @param initialVector the Base64 encoded string of initial vector bytes.
-*/
-public void setInitialVector(DataInputParameter<String> initialVector) {
-this.initialVector = initialVector;
-}
+  public String getCipherTransformation() {
+    return cipherTransformation;
+  }
 
-public DataInputParameter<String> getInitialVector() {
-return initialVector;
-}
+  public SymmetricKeyCryptographyService withCipherTransformation(String cipherTransformation){
+    setCipherTransformation(cipherTransformation);
+    return this;
+  }
 
-public SymmetricKeyCryptographyService withInitialVector(DataInputParameter<String> initialVector){
-setInitialVector(initialVector);
-return this;
-}
+  /**
+   * Set the initial vector for the algorithm
+   * 
+   * <p>
+   * Depending on the algorithm you have chosen, then size of the initial vector will vary. For
+   * instance, for AES, it needs to be 16 bytes
+   * </p>
+   * 
+   * @param initialVector the Base64 encoded string of initial vector bytes.
+   */
+  public void setInitialVector(DataInputParameter<String> initialVector) {
+    this.initialVector = initialVector;
+  }
 
-/**
-* Set the initial key the service
-*
-* <p>
-* Depending on the algorithm you have chosen, then size of the key will vary. For instance, for
-* AES, it needs to be 32 bytes
-* </p>
-*
-* @param key Base64 encoded string of key bytes.
-*/
-public void setKey(DataInputParameter<String> key) {
-this.key = key;
-}
+  public DataInputParameter<String> getInitialVector() {
+    return initialVector;
+  }
 
-public DataInputParameter<String> getKey() {
-return key;
-}
+  public SymmetricKeyCryptographyService withInitialVector(DataInputParameter<String> initialVector){
+    setInitialVector(initialVector);
+    return this;
+  }
 
-public SymmetricKeyCryptographyService withKey(DataInputParameter<String> key){
-setKey(key);
-return this;
-}
+  /**
+   * Set the initial key the service
+   * 
+   * <p>
+   * Depending on the algorithm you have chosen, then size of the key will vary. For instance, for
+   * AES, it needs to be 32 bytes
+   * </p>
+   * 
+   * @param key Base64 encoded string of key bytes.
+   */
+  public void setKey(DataInputParameter<String> key) {
+    this.key = key;
+  }
 
-/**
-*
-* @param mode the operation mode of the cipher: ENCRYPT or DECRYPT (default: DECRYPT)
-*/
-public void setOperationMode(OpMode mode) {
-this.operationMode = mode;
-}
+  public DataInputParameter<String> getKey() {
+    return key;
+  }
 
-public OpMode getOperationMode() {
-return operationMode;
-}
+  public SymmetricKeyCryptographyService withKey(DataInputParameter<String> key){
+    setKey(key);
+    return this;
+  }
 
-public MessageWrapper<InputStream> getSource() {
-return source;
-}
+  /**
+   *
+   * @param mode the operation mode of the cipher: ENCRYPT or DECRYPT (default: DECRYPT)
+   */
+  public void setOperationMode(OpMode mode) {
+    this.operationMode = mode;
+  }
 
-/**
-* Set the source for the input of the crypto service.
-*
-* @param source the source.
-*/
-public void setSource(MessageWrapper<InputStream> source) {
-this.source = source;
-}
+  public OpMode getOperationMode() {
+    return operationMode;
+  }
 
-public SymmetricKeyCryptographyService withSource(MessageWrapper<InputStream> source) {
-setSource(source);
-return this;
-}
+  public MessageWrapper<InputStream> getSource() {
+    return source;
+  }
 
-private MessageWrapper<InputStream> source() {
-return ObjectUtils.defaultIfNull(getSource(), (msg) -> {
-return msg.getInputStream();
-});
-}
+  /**
+   * Set the source for the input of the crypto service.
+   * 
+   * @param source the source.
+   */
+  public void setSource(MessageWrapper<InputStream> source) {
+    this.source = source;
+  }
 
-public MessageWrapper<OutputStream> getTarget() {
-return target;
-}
+  public SymmetricKeyCryptographyService withSource(MessageWrapper<InputStream> source) {
+    setSource(source);
+    return this;
+  }
 
-/**
-* Set the target for the output of the crypto service.
-*
-* @param target the target.
-*/
-public void setTarget(MessageWrapper<OutputStream> target) {
-this.target = target;
-}
+  private MessageWrapper<InputStream> source() {
+    return ObjectUtils.defaultIfNull(getSource(), (msg) -> {
+      return msg.getInputStream();
+    });
+  }
 
-public SymmetricKeyCryptographyService withTarget(MessageWrapper<OutputStream> target) {
-setTarget(target);
-return this;
-}
+  public MessageWrapper<OutputStream> getTarget() {
+    return target;
+  }
 
-private MessageWrapper<OutputStream> target() {
-return ObjectUtils.defaultIfNull(getTarget(), (msg) -> {
-return msg.getOutputStream();
-});
-}
+  /**
+   * Set the target for the output of the crypto service.
+   * 
+   * @param target the target.
+   */
+  public void setTarget(MessageWrapper<OutputStream> target) {
+    this.target = target;
+  }
+
+  public SymmetricKeyCryptographyService withTarget(MessageWrapper<OutputStream> target) {
+    setTarget(target);
+    return this;
+  }
+
+  private MessageWrapper<OutputStream> target() {
+    return ObjectUtils.defaultIfNull(getTarget(), (msg) -> {
+      return msg.getOutputStream();
+    });
+  }
 
 }
 

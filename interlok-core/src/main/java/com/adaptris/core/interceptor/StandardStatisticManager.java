@@ -12,16 +12,16 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @ComponentProfile(summary = "Base statistic manager that handles timeslices.", tag = "interceptor")
 public class StandardStatisticManager extends BaseStatisticManager {
 
-public StandardStatisticManager() {
-}
-
-public StandardStatisticManager(int maxHistoryCount) {
-super(maxHistoryCount);
-}
-
-@Override
-public void produce(InterceptorStatistic interceptorStatistic) throws ProduceException {
-log.trace("Standard statistic manager skipping timeslice producer.");
-}
+  public StandardStatisticManager() {
+  }
+  
+  public StandardStatisticManager(int maxHistoryCount) {
+    super(maxHistoryCount);
+  }
+  
+  @Override
+  public void produce(InterceptorStatistic interceptorStatistic) throws ProduceException {
+    log.trace("Standard statistic manager skipping timeslice producer.");
+  }
 
 }

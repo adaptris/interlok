@@ -1,17 +1,17 @@
 /*
-* Copyright 2015 Adaptris Ltd.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+ * Copyright 2015 Adaptris Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
 */
 
 package com.adaptris.core.jms;
@@ -40,15 +40,15 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
-* JMS 1.1 standard JMS connection.
-* <p>
-* In the adapter configuration file this class is aliased as <b>jms-connection</b> which is the preferred alternative to the fully
-* qualified classname when building your configuration.
-* </p>
-*
-* @config jms-connection
-*
-*/
+ * JMS 1.1 standard JMS connection.
+ * <p>
+ * In the adapter configuration file this class is aliased as <b>jms-connection</b> which is the preferred alternative to the fully
+ * qualified classname when building your configuration.
+ * </p>
+ *
+ * @config jms-connection
+ *
+ */
 @JacksonXmlRootElement(localName = "jms-connection")
 @XStreamAlias("jms-connection")
 @AdapterComponent
@@ -56,314 +56,314 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"userName", "password", "clientId", "vendorImplementation"})
 public class JmsConnection extends AllowsRetriesConnection implements JmsConnectionConfig, ConnectionComparator<JmsConnection> {
 
-protected transient Connection connection;
-private transient JmsConnectionErrorHandler connectionHandlerIfNotConfigured = new JmsConnectionErrorHandler();
+  protected transient Connection connection;
+  private transient JmsConnectionErrorHandler connectionHandlerIfNotConfigured = new JmsConnectionErrorHandler();
 
-@InputFieldDefault(value = "")
-private String userName;
-@InputFieldHint(style = "PASSWORD", external = true)
-private String password;
-private String clientId;
-@AdvancedConfig
-@InputFieldDefault(value = "false")
-private Boolean additionalDebug;
-@Valid
-@AutoPopulated
-private VendorImplementation vendorImplementation;
-
-
-/**
-* <p>
-* Create a new instance. Default settings are:
-* <ul>
-* <li>vendor-implementation - StandardJndiImplementation</li>
-* <li>username - "" (i.e. blank)</li>
-* </ul>
-* </p>
-*/
-public JmsConnection() {
-this(new StandardJndiImplementation());
-}
-
-public JmsConnection(VendorImplementation impl) {
-setUserName("");
-setVendorImplementation(impl);
-}
-
-/**
-*
-* @see com.adaptris.core.AdaptrisConnectionImp#initConnection()
-*/
-@Override
-protected void initConnection() throws CoreException {
-try {
-connect();
-}
-catch (Exception e) {
-throw ExceptionHelper.wrapCoreException(e);
-}
-}
-
-public Connection currentConnection() {
-return connection;
-}
-
-@Override
-public ConnectionErrorHandler connectionErrorHandler() {
-return getConnectionErrorHandler() != null ? getConnectionErrorHandler() : connectionHandlerIfNotConfigured;
-}
-
-/**
-*
-* @see com.adaptris.core.AdaptrisConnectionImp#startConnection()
-*/
-@Override
-protected void startConnection() throws CoreException {
-try {
-connection.start();
-}
-catch (Exception e) {
-throw ExceptionHelper.wrapCoreException(e);
-}
-}
-
-/**
-* @see com.adaptris.core.AdaptrisConnectionImp#stopConnection()
-*/
-@Override
-protected void stopConnection() {
-JmsUtils.stopQuietly(connection);
-}
-
-/**
-* @see com.adaptris.core.AdaptrisConnectionImp#closeConnection()
-*/
-@Override
-protected void closeConnection() {
-JmsUtils.closeQuietly(connection);
-connection = null;
-}
-
-/**
-* <p>
-* Creates a new <code>Session</code> on the underlying JMS <code>Connection</code>.
-* </p>
-*
-* @param transacted true if transacted
-* @param acknowledgeMode acknowledge mode
-* @return a new <code>Session</code>
-* @throws JMSException if any occurs
-*/
-public Session createSession(boolean transacted, int acknowledgeMode) throws JMSException {
-return getVendorImplementation().createSession(connection, transacted, acknowledgeMode);
-}
-
-public ConnectionFactory obtainConnectionFactory() throws Exception {
-return configuredVendorImplementation().createConnectionFactory();
-}
-
-private void connect() throws Exception {
-
-int attemptCount = 0;
-while (connection == null) {
-try {
-attemptCount++;
-if (additionalDebug()) {
-log.trace("Attempting connection to [{}]", brokerDetailsForLogging());
-}
-ConnectionFactory factory = obtainConnectionFactory();
-createConnection(factory);
-}
-catch (Exception e) {
-if (attemptCount == 1) {
-if (logWarning(attemptCount)) {
-log.warn("Connection attempt [{}] failed for {}", attemptCount, brokerDetailsForLogging(), e);
-}
-if (e instanceof JMSException) {
-if (((JMSException) e).getLinkedException() != null && additionalDebug()) {
-log.trace("Linked Exception Follows", ((JMSException) e).getLinkedException());
-}
-}
-}
-
-if (connectionAttempts() != -1 && attemptCount >= connectionAttempts()) {
-log.error("Failed to connect to broker [{}]", brokerDetailsForLogging(), e);
-throw e;
-}
-else {
-log.warn("Attempt [{}] failed for broker [{}], retrying", attemptCount, brokerDetailsForLogging());
-log.info(createLoggingStatement(attemptCount));
-Thread.sleep(connectionRetryInterval());
-continue;
-}
-}
-if (getClientId() != null && connection.getClientID() == null) {
-connection.setClientID(getClientId());
-}
-}
-}
-
-public String brokerDetailsForLogging() {
-String result = configuredVendorImplementation() != null
-? configuredVendorImplementation().retrieveBrokerDetailsForLogging()
-: null;
-
-if (result == null) {
-result = "No Connect Info";
-}
-
-return result;
-}
-
-protected void createConnection(ConnectionFactory factory) throws Exception {
-connection = configuredVendorImplementation().createConnection(factory, this);
-}
-
-@Override
-protected void prepareConnection() throws CoreException {
-getVendorImplementation().prepare();
-}
+  @InputFieldDefault(value = "")
+  private String userName;
+  @InputFieldHint(style = "PASSWORD", external = true)
+  private String password;
+  private String clientId;
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
+  private Boolean additionalDebug;
+  @Valid
+  @AutoPopulated
+  private VendorImplementation vendorImplementation;
 
 
-@Override
-public boolean connectionEquals(JmsConnection connection) {
-return getVendorImplementation().connectionEquals(connection.getVendorImplementation());
-}
+  /**
+   * <p>
+   * Create a new instance. Default settings are:
+   * <ul>
+   * <li>vendor-implementation - StandardJndiImplementation</li>
+   * <li>username - "" (i.e. blank)</li>
+   * </ul>
+   * </p>
+   */
+  public JmsConnection() {
+    this(new StandardJndiImplementation());
+  }
 
-/**
-* <p>
-* Returns the broker user name.
-* </p>
-*
-* @return the broker user name
-*/
-public String getUserName() {
-return userName;
-}
+  public JmsConnection(VendorImplementation impl) {
+    setUserName("");
+    setVendorImplementation(impl);
+  }
 
-/**
-* <p>
-* Sets the broker user name.
-* </p>
-*
-* @param s the broker user name
-*/
-public void setUserName(String s) {
-userName = s;
-}
+  /**
+   *
+   * @see com.adaptris.core.AdaptrisConnectionImp#initConnection()
+   */
+  @Override
+  protected void initConnection() throws CoreException {
+    try {
+      connect();
+    }
+    catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
+    }
+  }
 
-/**
-* <p>
-* Sets the broker password.
-* </p>
-*
-* @return the broker password
-*/
-public String getPassword() {
-return password;
-}
+  public Connection currentConnection() {
+    return connection;
+  }
 
-/**
-* <p>
-* Sets the broker password.
-* </p>
-* <p>
-* In additional to plain text passwords, the passwords can also be encoded using the appropriate {@link com.adaptris.security.password.Password}
-* </p>
-*
-* @param s the broker password
-*/
-public void setPassword(String s) {
-password = s;
-}
+  @Override
+  public ConnectionErrorHandler connectionErrorHandler() {
+    return getConnectionErrorHandler() != null ? getConnectionErrorHandler() : connectionHandlerIfNotConfigured;
+  }
 
-/**
-* <p>
-* Sets the broker connection client ID.
-* </p>
-*
-* @return the broker connection client ID
-*/
-public String getClientId() {
-return clientId;
-}
+  /**
+   *
+   * @see com.adaptris.core.AdaptrisConnectionImp#startConnection()
+   */
+  @Override
+  protected void startConnection() throws CoreException {
+    try {
+      connection.start();
+    }
+    catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
+    }
+  }
 
-/**
-* <p>
-* Returns the broker connection client ID.
-* </p>
-*
-* @param s the broker connection client ID
-*/
-public void setClientId(String s) {
-clientId = s;
-}
+  /**
+   * @see com.adaptris.core.AdaptrisConnectionImp#stopConnection()
+   */
+  @Override
+  protected void stopConnection() {
+    JmsUtils.stopQuietly(connection);
+  }
 
-/**
-* <p>
-* Sets the <code>VendorImplementation</code> to use.
-* </p>
-*
-* @return the <code>VendorImplementation</code> to use
-*/
-public VendorImplementation getVendorImplementation() {
-return vendorImplementation;
-}
+  /**
+   * @see com.adaptris.core.AdaptrisConnectionImp#closeConnection()
+   */
+  @Override
+  protected void closeConnection() {
+    JmsUtils.closeQuietly(connection);
+    connection = null;
+  }
 
-/**
-* <p>
-* Returns the <code>VendorImplementation</code> to use.
-* </p>
-*
-* @param imp the <code>VendorImplementation</code> to use
-*/
-public void setVendorImplementation(VendorImplementation imp) {
-vendorImplementation = imp;
-}
+  /**
+   * <p>
+   * Creates a new <code>Session</code> on the underlying JMS <code>Connection</code>.
+   * </p>
+   *
+   * @param transacted true if transacted
+   * @param acknowledgeMode acknowledge mode
+   * @return a new <code>Session</code>
+   * @throws JMSException if any occurs
+   */
+  public Session createSession(boolean transacted, int acknowledgeMode) throws JMSException {
+    return getVendorImplementation().createSession(connection, transacted, acknowledgeMode);
+  }
 
-public Boolean getAdditionalDebug() {
-return additionalDebug;
-}
+  public ConnectionFactory obtainConnectionFactory() throws Exception {
+    return configuredVendorImplementation().createConnectionFactory();
+  }
 
-/**
-* Whether or not to generate additional TRACE level debug when attempting connections.
-*
-* @param b true to enable additional logging; default false.
-*/
-public void setAdditionalDebug(Boolean b) {
-additionalDebug = b;
-}
+  private void connect() throws Exception {
 
-protected boolean additionalDebug() {
-return BooleanUtils.toBooleanDefaultIfNull(getAdditionalDebug(), false);
-}
+    int attemptCount = 0;
+    while (connection == null) {
+      try {
+        attemptCount++;
+        if (additionalDebug()) {
+          log.trace("Attempting connection to [{}]", brokerDetailsForLogging());
+        }
+        ConnectionFactory factory = obtainConnectionFactory();
+        createConnection(factory);
+      }
+      catch (Exception e) {
+        if (attemptCount == 1) {
+          if (logWarning(attemptCount)) {
+            log.warn("Connection attempt [{}] failed for {}", attemptCount, brokerDetailsForLogging(), e);
+          }
+          if (e instanceof JMSException) {
+            if (((JMSException) e).getLinkedException() != null && additionalDebug()) {
+              log.trace("Linked Exception Follows", ((JMSException) e).getLinkedException());
+            }
+          }
+        }
 
-@Override
-public String configuredClientId() {
-return getClientId();
-}
+        if (connectionAttempts() != -1 && attemptCount >= connectionAttempts()) {
+          log.error("Failed to connect to broker [{}]", brokerDetailsForLogging(), e);
+          throw e;
+        }
+        else {
+          log.warn("Attempt [{}] failed for broker [{}], retrying", attemptCount, brokerDetailsForLogging());
+          log.info(createLoggingStatement(attemptCount));
+          Thread.sleep(connectionRetryInterval());
+          continue;
+        }
+      }
+      if (getClientId() != null && connection.getClientID() == null) {
+        connection.setClientID(getClientId());
+      }
+    }
+  }
 
-@Override
-public String configuredPassword() {
-return getPassword();
-}
+  public String brokerDetailsForLogging() {
+    String result = configuredVendorImplementation() != null
+        ? configuredVendorImplementation().retrieveBrokerDetailsForLogging()
+        : null;
 
-@Override
-public String configuredUserName() {
-return getUserName();
-}
+    if (result == null) {
+      result = "No Connect Info";
+    }
 
-@Override
-public VendorImplementation configuredVendorImplementation() {
-return getVendorImplementation();
-}
+    return result;
+  }
 
-@Override
-public JmsConnection cloneForTesting() throws CoreException {
-AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
-JmsConnection copy = (JmsConnection) m.unmarshal(m.marshal(this));
-// Set the client id to be null.
-copy.setClientId(null);
-return copy;
-}
+  protected void createConnection(ConnectionFactory factory) throws Exception {
+    connection = configuredVendorImplementation().createConnection(factory, this);
+  }
+
+  @Override
+  protected void prepareConnection() throws CoreException {
+    getVendorImplementation().prepare();
+  }
+
+
+  @Override
+  public boolean connectionEquals(JmsConnection connection) {
+    return getVendorImplementation().connectionEquals(connection.getVendorImplementation());
+  }
+
+  /**
+   * <p>
+   * Returns the broker user name.
+   * </p>
+   *
+   * @return the broker user name
+   */
+  public String getUserName() {
+    return userName;
+  }
+
+  /**
+   * <p>
+   * Sets the broker user name.
+   * </p>
+   *
+   * @param s the broker user name
+   */
+  public void setUserName(String s) {
+    userName = s;
+  }
+
+  /**
+   * <p>
+   * Sets the broker password.
+   * </p>
+   *
+   * @return the broker password
+   */
+  public String getPassword() {
+    return password;
+  }
+
+  /**
+   * <p>
+   * Sets the broker password.
+   * </p>
+   * <p>
+   * In additional to plain text passwords, the passwords can also be encoded using the appropriate {@link com.adaptris.security.password.Password}
+   * </p>
+   *
+   * @param s the broker password
+   */
+  public void setPassword(String s) {
+    password = s;
+  }
+
+  /**
+   * <p>
+   * Sets the broker connection client ID.
+   * </p>
+   *
+   * @return the broker connection client ID
+   */
+  public String getClientId() {
+    return clientId;
+  }
+
+  /**
+   * <p>
+   * Returns the broker connection client ID.
+   * </p>
+   *
+   * @param s the broker connection client ID
+   */
+  public void setClientId(String s) {
+    clientId = s;
+  }
+
+  /**
+   * <p>
+   * Sets the <code>VendorImplementation</code> to use.
+   * </p>
+   *
+   * @return the <code>VendorImplementation</code> to use
+   */
+  public VendorImplementation getVendorImplementation() {
+    return vendorImplementation;
+  }
+
+  /**
+   * <p>
+   * Returns the <code>VendorImplementation</code> to use.
+   * </p>
+   *
+   * @param imp the <code>VendorImplementation</code> to use
+   */
+  public void setVendorImplementation(VendorImplementation imp) {
+    vendorImplementation = imp;
+  }
+
+  public Boolean getAdditionalDebug() {
+    return additionalDebug;
+  }
+
+  /**
+   * Whether or not to generate additional TRACE level debug when attempting connections.
+   *
+   * @param b true to enable additional logging; default false.
+   */
+  public void setAdditionalDebug(Boolean b) {
+    additionalDebug = b;
+  }
+
+  protected boolean additionalDebug() {
+    return BooleanUtils.toBooleanDefaultIfNull(getAdditionalDebug(), false);
+  }
+
+  @Override
+  public String configuredClientId() {
+    return getClientId();
+  }
+
+  @Override
+  public String configuredPassword() {
+    return getPassword();
+  }
+
+  @Override
+  public String configuredUserName() {
+    return getUserName();
+  }
+
+  @Override
+  public VendorImplementation configuredVendorImplementation() {
+    return getVendorImplementation();
+  }
+
+  @Override
+  public JmsConnection cloneForTesting() throws CoreException {
+    AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
+    JmsConnection copy = (JmsConnection) m.unmarshal(m.marshal(this));
+    // Set the client id to be null.
+    copy.setClientId(null);
+    return copy;
+  }
 }

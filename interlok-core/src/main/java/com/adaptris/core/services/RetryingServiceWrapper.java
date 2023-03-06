@@ -1,17 +1,17 @@
 /*
-* Copyright 2015 Adaptris Ltd.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+ * Copyright 2015 Adaptris Ltd.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
 */
 
 package com.adaptris.core.services;
@@ -45,31 +45,31 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
-* <p>
-* This service wrapper, will attempt to run the wrapped service and should the service fail with
-* a {@link ServiceException} we will attempt to retry the service according to your configuration.
-* </p>
-* <p>
-* You can control then retrying behaviour with the following two configurable options;
-*  <ul>
-*      <li>num-retries</li>
-*      <li>delay-between-retries</li>
-*  </ul>
-* </p>
-* <p>
-* A value of zero for num-retries will retry the wrapped service infinitely.  The default value if not set is 10.
-* </p>
-* <p>
-* The delay-between-retries is of type {@link TimeInterval}.  The default value if not set is 10 seconds.
-* </p>
-* <p>
-* You may also force the wrapped service to be restarted upon each retry by setting restart-on-failure to true;
-* </p>
-*
-* @author Aaron McGrath
-*
-*
-*/
+ * <p>
+ * This service wrapper, will attempt to run the wrapped service and should the service fail with
+ * a {@link ServiceException} we will attempt to retry the service according to your configuration.
+ * </p>
+ * <p>
+ * You can control then retrying behaviour with the following two configurable options;
+ *  <ul>
+ *      <li>num-retries</li>
+ *      <li>delay-between-retries</li>
+ *  </ul>
+ * </p>
+ * <p>
+ * A value of zero for num-retries will retry the wrapped service infinitely.  The default value if not set is 10.
+ * </p>
+ * <p>
+ * The delay-between-retries is of type {@link TimeInterval}.  The default value if not set is 10 seconds.
+ * </p>
+ * <p>
+ * You may also force the wrapped service to be restarted upon each retry by setting restart-on-failure to true;
+ * </p>
+ * 
+ * @author Aaron McGrath
+ * 
+ *
+ */
 @JacksonXmlRootElement(localName = "retrying-service-wrapper")
 @XStreamAlias("retrying-service-wrapper")
 @AdapterComponent
@@ -77,159 +77,159 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"service", "numRetries", "restartOnFailure", "delayBetweenRetries"})
 public class RetryingServiceWrapper extends ServiceImp implements EventHandlerAware, ServiceWrapper {
 
-private static final TimeInterval DEFAULT_DELAY = new TimeInterval(10l, TimeUnit.SECONDS);
-private static final int DEFAULT_NUM_RETRIES = 10;
+  private static final TimeInterval DEFAULT_DELAY = new TimeInterval(10l, TimeUnit.SECONDS);
+  private static final int DEFAULT_NUM_RETRIES = 10;
+  
+  @InputFieldDefault(value = "10")
+  private Integer numRetries;
+  @Valid
+  private TimeInterval delayBetweenRetries;
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
+  private Boolean restartOnFailure;
+  @NotNull
+  @Valid
+  @AutoPopulated
+  private Service service;
+  private transient EventHandler eventHandler;
+  
+  public RetryingServiceWrapper() {
+    super();
+    setService(new NullService());
+  }
+  
+  @Override
+  public void doService(AdaptrisMessage msg) throws ServiceException {
+    int currentRetries = 0;
+    int maxRetries = numRetries();
+    // Also test the "started" state of this service, in case we are trying to shutdown the Adapter, we then need to break this loop. 
+    while ((this.getNumRetries() == 0 || currentRetries <= maxRetries)
+        && this.retrieveComponentState().equals(StartedState.getInstance())) {
+      try {
+        this.getService().doService(msg);
+        break;
+      } catch(ServiceException ex) {
+        currentRetries++;
+        log.debug("Wrapped service: {} failed. Retrying (retry count: {})", this.getService().getClass().getSimpleName(),
+            currentRetries);
+        log.trace("Logging wrapped service exception for informational purposes only: ", ex);
+        
+        if(this.isRestartOnFailure()) {
+          this.stopAndCloseQuietly();
+          this.initAndStartQuietly();
+        }
+        
+        if (!(maxRetries == 0 || currentRetries <= maxRetries))
+            throw new ServiceException(ex);
+        
+        try {
+          Thread.sleep(delayBetweenRetriesMs());
+        } catch (InterruptedException iex) {
+          log.debug("RetryingServiceWrapper(" + this.getUniqueId() + ") has been interrupted - exiting service.");
+          break;
+        }
+      }
+    }
+  }
 
-@InputFieldDefault(value = "10")
-private Integer numRetries;
-@Valid
-private TimeInterval delayBetweenRetries;
-@AdvancedConfig
-@InputFieldDefault(value = "false")
-private Boolean restartOnFailure;
-@NotNull
-@Valid
-@AutoPopulated
-private Service service;
-private transient EventHandler eventHandler;
+  @Override
+  public void prepare() throws CoreException {
+    LifecycleHelper.prepare(getService());
+  }
 
-public RetryingServiceWrapper() {
-super();
-setService(new NullService());
-}
+  private void stopAndCloseQuietly() {
+    try {
+      LifecycleHelper.stop(this.getService());
+      LifecycleHelper.close(this.getService());
+    } catch (Exception ex) {
+      // do nothing
+    }
+  }
+  
+  private void initAndStartQuietly() {
+    try {
+      LifecycleHelper.registerEventHandler(this.getService(), eventHandler);
+      LifecycleHelper.init(this.getService());
+      LifecycleHelper.start(this.getService());
+    } catch (Exception ex) {
+      // do nothing here, because the service might not be able to start correctly, but we will
+      // still try to use it, which will cause another failure and so the loop continues.
+    }
+  }
 
-@Override
-public void doService(AdaptrisMessage msg) throws ServiceException {
-int currentRetries = 0;
-int maxRetries = numRetries();
-// Also test the "started" state of this service, in case we are trying to shutdown the Adapter, we then need to break this loop.
-while ((this.getNumRetries() == 0 || currentRetries <= maxRetries)
-&& this.retrieveComponentState().equals(StartedState.getInstance())) {
-try {
-this.getService().doService(msg);
-break;
-} catch(ServiceException ex) {
-currentRetries++;
-log.debug("Wrapped service: {} failed. Retrying (retry count: {})", this.getService().getClass().getSimpleName(),
-currentRetries);
-log.trace("Logging wrapped service exception for informational purposes only: ", ex);
+  @Override
+  protected void initService() throws CoreException {
+    LifecycleHelper.registerEventHandler(this.getService(), eventHandler);
+    LifecycleHelper.init(this.getService());
+  }
 
-if(this.isRestartOnFailure()) {
-this.stopAndCloseQuietly();
-this.initAndStartQuietly();
-}
+  @Override
+  protected void closeService() {
+    LifecycleHelper.close(this.getService());
+  }
 
-if (!(maxRetries == 0 || currentRetries <= maxRetries))
-throw new ServiceException(ex);
+  
+  @Override
+  public void start() throws CoreException {
+    LifecycleHelper.start(this.getService());
+  }
 
-try {
-Thread.sleep(delayBetweenRetriesMs());
-} catch (InterruptedException iex) {
-log.debug("RetryingServiceWrapper(" + this.getUniqueId() + ") has been interrupted - exiting service.");
-break;
-}
-}
-}
-}
+  @Override
+  public void stop() {
+    LifecycleHelper.stop(this.getService());
+  }
 
-@Override
-public void prepare() throws CoreException {
-LifecycleHelper.prepare(getService());
-}
+  public Service getService() {
+    return service;
+  }
 
-private void stopAndCloseQuietly() {
-try {
-LifecycleHelper.stop(this.getService());
-LifecycleHelper.close(this.getService());
-} catch (Exception ex) {
-// do nothing
-}
-}
+  public void setService(Service service) {
+    this.service = Args.notNull(service, "service");
+  }
 
-private void initAndStartQuietly() {
-try {
-LifecycleHelper.registerEventHandler(this.getService(), eventHandler);
-LifecycleHelper.init(this.getService());
-LifecycleHelper.start(this.getService());
-} catch (Exception ex) {
-// do nothing here, because the service might not be able to start correctly, but we will
-// still try to use it, which will cause another failure and so the loop continues.
-}
-}
+  public Integer getNumRetries() {
+    return numRetries;
+  }
 
-@Override
-protected void initService() throws CoreException {
-LifecycleHelper.registerEventHandler(this.getService(), eventHandler);
-LifecycleHelper.init(this.getService());
-}
+  int numRetries() {
+    return NumberUtils.toIntDefaultIfNull(getNumRetries(), DEFAULT_NUM_RETRIES);
+  }
 
-@Override
-protected void closeService() {
-LifecycleHelper.close(this.getService());
-}
+  public void setNumRetries(Integer numRetries) {
+    this.numRetries = numRetries;
+  }
 
+  public TimeInterval getDelayBetweenRetries() {
+    return delayBetweenRetries;
+  }
 
-@Override
-public void start() throws CoreException {
-LifecycleHelper.start(this.getService());
-}
+  long delayBetweenRetriesMs() {
+    return TimeInterval.toMillisecondsDefaultIfNull(getDelayBetweenRetries(), DEFAULT_DELAY);
+  }
 
-@Override
-public void stop() {
-LifecycleHelper.stop(this.getService());
-}
+  public void setDelayBetweenRetries(TimeInterval delayBetweenRetries) {
+    this.delayBetweenRetries = delayBetweenRetries;
+  }
 
-public Service getService() {
-return service;
-}
+  public boolean isRestartOnFailure() {
+    return BooleanUtils.toBooleanDefaultIfNull(getRestartOnFailure(), false);
+  }
 
-public void setService(Service service) {
-this.service = Args.notNull(service, "service");
-}
+  public void setRestartOnFailure(Boolean restartOnFailure) {
+    this.restartOnFailure = restartOnFailure;
+  }
 
-public Integer getNumRetries() {
-return numRetries;
-}
+  public Boolean getRestartOnFailure() {
+    return restartOnFailure;
+  }
 
-int numRetries() {
-return NumberUtils.toIntDefaultIfNull(getNumRetries(), DEFAULT_NUM_RETRIES);
-}
+  @Override
+  public void registerEventHandler(EventHandler eh) {
+    eventHandler = eh;
+  }
 
-public void setNumRetries(Integer numRetries) {
-this.numRetries = numRetries;
-}
-
-public TimeInterval getDelayBetweenRetries() {
-return delayBetweenRetries;
-}
-
-long delayBetweenRetriesMs() {
-return TimeInterval.toMillisecondsDefaultIfNull(getDelayBetweenRetries(), DEFAULT_DELAY);
-}
-
-public void setDelayBetweenRetries(TimeInterval delayBetweenRetries) {
-this.delayBetweenRetries = delayBetweenRetries;
-}
-
-public boolean isRestartOnFailure() {
-return BooleanUtils.toBooleanDefaultIfNull(getRestartOnFailure(), false);
-}
-
-public void setRestartOnFailure(Boolean restartOnFailure) {
-this.restartOnFailure = restartOnFailure;
-}
-
-public Boolean getRestartOnFailure() {
-return restartOnFailure;
-}
-
-@Override
-public void registerEventHandler(EventHandler eh) {
-eventHandler = eh;
-}
-
-@Override
-public Service[] wrappedServices() {
-return discardNulls(getService());
-}
+  @Override
+  public Service[] wrappedServices() {
+    return discardNulls(getService());
+  }
 }

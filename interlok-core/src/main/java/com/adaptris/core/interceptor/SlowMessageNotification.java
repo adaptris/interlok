@@ -1,17 +1,17 @@
 /*
-* Copyright 2015 Adaptris Ltd.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+ * Copyright 2015 Adaptris Ltd.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
 */
 
 package com.adaptris.core.interceptor;
@@ -45,248 +45,248 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
-* Interceptor that emits a {@link javax.management.Notification} if a message has exceeded the specified threshold
-* for processing within a workflow.
-*
-* <p>
-* The {@link javax.management.Notification#setUserData(Object)} part of the notification is a {@link java.util.Properties}
-* object containing information about the message that exceeded the interceptors threshold. Note
-* that notifications are emitted whenever a message is deemed to have exceeded the threshold; you
-* might get multiple notifications if a message exceeds the threshold, fails and is automatically
-* retried (which again exceeds the threshold).
-* </p>
-* <p>
-* A cleanup thread is also started as part of this interceptor which purges internal data on a
-* periodic basis; this period is calculated based on the notification threshold (+1 minute) and any
-* messages that are outstanding will have a notification emitted for it, and removed. Because of
-* this, it will be possible to be notified before the message formally exits the workflow, but the
-* notification will still be after the threshold has been exceeded. If this occurs, then the
-* endTime and timeTaken markers are set to {@code -1}
-* </p>
-*
-* @author lchan
-*
-* @since 3.0.4
-*/
+ * Interceptor that emits a {@link javax.management.Notification} if a message has exceeded the specified threshold
+ * for processing within a workflow.
+ * 
+ * <p>
+ * The {@link javax.management.Notification#setUserData(Object)} part of the notification is a {@link java.util.Properties}
+ * object containing information about the message that exceeded the interceptors threshold. Note
+ * that notifications are emitted whenever a message is deemed to have exceeded the threshold; you
+ * might get multiple notifications if a message exceeds the threshold, fails and is automatically
+ * retried (which again exceeds the threshold).
+ * </p>
+ * <p>
+ * A cleanup thread is also started as part of this interceptor which purges internal data on a
+ * periodic basis; this period is calculated based on the notification threshold (+1 minute) and any
+ * messages that are outstanding will have a notification emitted for it, and removed. Because of
+ * this, it will be possible to be notified before the message formally exits the workflow, but the
+ * notification will still be after the threshold has been exceeded. If this occurs, then the
+ * endTime and timeTaken markers are set to {@code -1}
+ * </p>
+ * 
+ * @author lchan
+ * 
+ * @since 3.0.4
+ */
 @JacksonXmlRootElement(localName = "slow-message-notification")
 @XStreamAlias("slow-message-notification")
 @ComponentProfile(summary = "Interceptor that issues a JMX notification if a message took too long",
-tag = "interceptor,jmx")
+    tag = "interceptor,jmx")
 public class SlowMessageNotification extends NotifyingInterceptor {
 
-private static final String MESSAGE_PREFIX = "Threshold exceeded for ";
+  private static final String MESSAGE_PREFIX = "Threshold exceeded for ";
 
-/**
-* Key within the properties containing the messageID
-*/
-public static final String KEY_MESSAGE_ID = "message.id";
-/**
-* Key within the properties containing the start time in milliseconds
-*
-*/
-public static final String KEY_MESSAGE_START = "message.startTime";
-/**
-* Key within the properties containing the end time in milliseconds
-*
-*/
-public static final String KEY_MESSAGE_END = "message.endTime";
-/**
-* Key within the properties containing the time taken in milliseconds
-*
-*/
-public static final String KEY_MESSAGE_DURATION = "message.timeTaken";
-/**
-* Key within the properties containing whether the message was successful or not
-*
-*/
-public static final String KEY_MESSAGE_SUCCESS = "message.wasSuccessful";
+  /**
+   * Key within the properties containing the messageID
+   */
+  public static final String KEY_MESSAGE_ID = "message.id";
+  /**
+   * Key within the properties containing the start time in milliseconds
+   * 
+   */
+  public static final String KEY_MESSAGE_START = "message.startTime";
+  /**
+   * Key within the properties containing the end time in milliseconds
+   * 
+   */
+  public static final String KEY_MESSAGE_END = "message.endTime";
+  /**
+   * Key within the properties containing the time taken in milliseconds
+   * 
+   */
+  public static final String KEY_MESSAGE_DURATION = "message.timeTaken";
+  /**
+   * Key within the properties containing whether the message was successful or not
+   * 
+   */
+  public static final String KEY_MESSAGE_SUCCESS = "message.wasSuccessful";
 
-private static final TimeInterval DEFAULT_THRESHOLD = new TimeInterval(1L, TimeUnit.MINUTES);
+  private static final TimeInterval DEFAULT_THRESHOLD = new TimeInterval(1L, TimeUnit.MINUTES);
 
-@Valid
-private TimeInterval notifyThreshold;
-private transient Map<String, MessageThroughputStat> currentMessages;
+  @Valid
+  private TimeInterval notifyThreshold;
+  private transient Map<String, MessageThroughputStat> currentMessages;
+  
+  private transient ScheduledExecutorService executor;
+  private transient ScheduledFuture cleanupTask;
+  private transient TimeInterval cleanupInterval;
 
-private transient ScheduledExecutorService executor;
-private transient ScheduledFuture cleanupTask;
-private transient TimeInterval cleanupInterval;
-
-static {
-RuntimeInfoComponentFactory.registerComponentFactory(new JmxFactory());
-}
-
-
-public SlowMessageNotification() {
-currentMessages = new ConcurrentHashMap<>();
-}
-
-public SlowMessageNotification(String uid, TimeInterval threshold) {
-this();
-setUniqueId(uid);
-setNotifyThreshold(threshold);
-}
-
-SlowMessageNotification(String uid, TimeInterval threshold, TimeInterval cleanup) {
-this(uid, threshold);
-cleanupInterval = cleanup;
-}
+  static {
+    RuntimeInfoComponentFactory.registerComponentFactory(new JmxFactory());
+  }
 
 
-@Override
-public void workflowStart(AdaptrisMessage inputMsg) {
-currentMessages.put(inputMsg.getUniqueId(), new MessageThroughputStat(inputMsg.getUniqueId()));
-}
+  public SlowMessageNotification() {
+    currentMessages = new ConcurrentHashMap<>();
+  }
 
-@Override
-public void workflowEnd(AdaptrisMessage inputMsg, AdaptrisMessage outputMsg) {
-String msgId = inputMsg.getUniqueId();
-MessageThroughputStat c = currentMessages.get(msgId);
-if (c != null) {
-currentMessages.remove(msgId);
-c.updateStats(inputMsg, outputMsg);
-if (c.timeTaken > notifyThreshold()) {
-sendNotification(c);
-}
-}
-}
+  public SlowMessageNotification(String uid, TimeInterval threshold) {
+    this();
+    setUniqueId(uid);
+    setNotifyThreshold(threshold);
+  }
 
-@Override
-public void init() throws CoreException {
-}
-
-@Override
-public void start() throws CoreException {
-executor = Executors.newSingleThreadScheduledExecutor(new ManagedThreadFactory(getClass().getSimpleName()));
-scheduleTask();
-}
-
-@Override
-public void stop() {
-cancelTask();
-shutdownExecutor();
-}
-
-@Override
-public void close() {
-currentMessages.clear();
-}
-
-public TimeInterval getNotifyThreshold() {
-return notifyThreshold;
-}
-
-/**
-* Specify the duration which if exceeded a {@link javax.management.Notification} will be sent.
-*
-* @param t the duration, if not specified then 1 minute.
-*/
-public void setNotifyThreshold(TimeInterval t) {
-this.notifyThreshold = t;
-}
-
-long notifyThreshold() {
-return TimeInterval.toMillisecondsDefaultIfNull(getNotifyThreshold(), DEFAULT_THRESHOLD);
-}
-
-long cleanupInterval() {
-return TimeInterval.toMillisecondsDefaultIfNull(cleanupInterval,
-notifyThreshold() + DEFAULT_THRESHOLD.toMilliseconds());
-}
-
-private void scheduleTask() {
-cleanupTask =
-executor.scheduleWithFixedDelay(new CleanupTask(), 100L, cleanupInterval(),
-TimeUnit.MILLISECONDS);
-log.trace("Scheduled {}", cleanupTask);
-}
+  SlowMessageNotification(String uid, TimeInterval threshold, TimeInterval cleanup) {
+    this(uid, threshold);
+    cleanupInterval = cleanup;
+  }
 
 
-private void cancelTask() {
-if (cleanupTask != null) {
-cleanupTask.cancel(true);
-log.trace("Poller {} cancelled", cleanupTask);
-cleanupTask = null;
-}
-}
+  @Override
+  public void workflowStart(AdaptrisMessage inputMsg) {
+    currentMessages.put(inputMsg.getUniqueId(), new MessageThroughputStat(inputMsg.getUniqueId()));
+  }
 
-private void shutdownExecutor() {
-ManagedThreadFactory.shutdownQuietly(executor, DEFAULT_THRESHOLD);
-executor = null;
-}
+  @Override
+  public void workflowEnd(AdaptrisMessage inputMsg, AdaptrisMessage outputMsg) {
+    String msgId = inputMsg.getUniqueId();
+    MessageThroughputStat c = currentMessages.get(msgId);
+    if (c != null) {
+      currentMessages.remove(msgId);
+      c.updateStats(inputMsg, outputMsg);
+      if (c.timeTaken > notifyThreshold()) {
+        sendNotification(c);
+      }
+    }
+  }
 
-private void sendNotification(MessageThroughputStat d) {
-sendNotification(MESSAGE_PREFIX + d.messageId, d.asProperties());
-}
+  @Override
+  public void init() throws CoreException {
+  }
 
-private class MessageThroughputStat {
+  @Override
+  public void start() throws CoreException {
+    executor = Executors.newSingleThreadScheduledExecutor(new ManagedThreadFactory(getClass().getSimpleName()));
+    scheduleTask();
+  }
 
-private long startTime;
-private long timeTaken = -1;
-private long endTime = -1;
-private String messageId;
-private boolean wasSuccessful;
+  @Override
+  public void stop() {
+    cancelTask();
+    shutdownExecutor();
+  }
 
-MessageThroughputStat(String msgId) {
-startTime = System.currentTimeMillis();
-messageId = msgId;
-}
+  @Override
+  public void close() {
+    currentMessages.clear();
+  }
 
-void updateStats(AdaptrisMessage... msgs) {
-endTime = System.currentTimeMillis();
-timeTaken = Math.abs(endTime - startTime);
-wasSuccessful = wasSuccessful(msgs);
-}
+  public TimeInterval getNotifyThreshold() {
+    return notifyThreshold;
+  }
 
-Properties asProperties() {
-Properties p = new Properties();
-p.setProperty(KEY_MESSAGE_DURATION, String.valueOf(timeTaken));
-p.setProperty(KEY_MESSAGE_START, String.valueOf(startTime));
-p.setProperty(KEY_MESSAGE_ID, messageId);
-p.setProperty(KEY_MESSAGE_END, String.valueOf(endTime));
-p.setProperty(KEY_MESSAGE_SUCCESS, String.valueOf(wasSuccessful));
-return p;
-}
-}
+  /**
+   * Specify the duration which if exceeded a {@link javax.management.Notification} will be sent.
+   * 
+   * @param t the duration, if not specified then 1 minute.
+   */
+  public void setNotifyThreshold(TimeInterval t) {
+    this.notifyThreshold = t;
+  }
 
+  long notifyThreshold() {
+    return TimeInterval.toMillisecondsDefaultIfNull(getNotifyThreshold(), DEFAULT_THRESHOLD);
+  }
 
-private class CleanupTask implements Runnable {
+  long cleanupInterval() {
+    return TimeInterval.toMillisecondsDefaultIfNull(cleanupInterval,
+        notifyThreshold() + DEFAULT_THRESHOLD.toMilliseconds());
+  }
 
-/** @see java.lang.Runnable#run() */
-@Override
-public void run() {
-long now = System.currentTimeMillis();
-List<String> keys = new ArrayList<>(currentMessages.keySet());
-for (String key : keys) {
-MessageThroughputStat c = currentMessages.get(key);
-if (c != null) {
-if (Math.abs(now - c.startTime) > notifyThreshold()) {
-// the threshold has been exceeded even though we haven't notified on the message.
-// Let's just notify on it, and discard it.
-sendNotification(c);
-currentMessages.remove(key);
-}
-}
-}
-}
-}
+  private void scheduleTask() {
+    cleanupTask =
+        executor.scheduleWithFixedDelay(new CleanupTask(), 100L, cleanupInterval(),
+            TimeUnit.MILLISECONDS);
+    log.trace("Scheduled {}", cleanupTask);
+  }
 
 
-private static class JmxFactory extends RuntimeInfoComponentFactory {
+  private void cancelTask() {
+    if (cleanupTask != null) {
+      cleanupTask.cancel(true);
+      log.trace("Poller {} cancelled", cleanupTask);
+      cleanupTask = null;
+    }
+  }
 
-@Override
-protected boolean isSupported(AdaptrisComponent e) {
-if (e != null && e instanceof SlowMessageNotification) {
-return !isEmpty(((SlowMessageNotification) e).getUniqueId());
-}
-return false;
-}
+  private void shutdownExecutor() {
+    ManagedThreadFactory.shutdownQuietly(executor, DEFAULT_THRESHOLD);
+    executor = null;
+  }
 
-@Override
-protected RuntimeInfoComponent createComponent(ParentRuntimeInfoComponent parent,
-AdaptrisComponent e) throws MalformedObjectNameException {
-return new InterceptorNotification((WorkflowManager) parent, (SlowMessageNotification) e);
-}
+  private void sendNotification(MessageThroughputStat d) {
+    sendNotification(MESSAGE_PREFIX + d.messageId, d.asProperties());
+  }
 
-}
+  private class MessageThroughputStat {
+
+    private long startTime;
+    private long timeTaken = -1;
+    private long endTime = -1;
+    private String messageId;
+    private boolean wasSuccessful;
+
+    MessageThroughputStat(String msgId) {
+      startTime = System.currentTimeMillis();
+      messageId = msgId;
+    }
+
+    void updateStats(AdaptrisMessage... msgs) {
+      endTime = System.currentTimeMillis();
+      timeTaken = Math.abs(endTime - startTime);
+      wasSuccessful = wasSuccessful(msgs);
+    }
+
+    Properties asProperties() {
+      Properties p = new Properties();
+      p.setProperty(KEY_MESSAGE_DURATION, String.valueOf(timeTaken));
+      p.setProperty(KEY_MESSAGE_START, String.valueOf(startTime));
+      p.setProperty(KEY_MESSAGE_ID, messageId);
+      p.setProperty(KEY_MESSAGE_END, String.valueOf(endTime));
+      p.setProperty(KEY_MESSAGE_SUCCESS, String.valueOf(wasSuccessful));
+      return p;
+    }
+  }
+
+
+  private class CleanupTask implements Runnable {
+
+    /** @see java.lang.Runnable#run() */
+    @Override
+    public void run() {
+      long now = System.currentTimeMillis();
+      List<String> keys = new ArrayList<>(currentMessages.keySet());
+      for (String key : keys) {
+        MessageThroughputStat c = currentMessages.get(key);
+        if (c != null) {
+          if (Math.abs(now - c.startTime) > notifyThreshold()) {
+            // the threshold has been exceeded even though we haven't notified on the message.
+            // Let's just notify on it, and discard it.
+            sendNotification(c);
+            currentMessages.remove(key);
+          }
+        }
+      }
+    }
+  }
+
+
+  private static class JmxFactory extends RuntimeInfoComponentFactory {
+
+    @Override
+    protected boolean isSupported(AdaptrisComponent e) {
+      if (e != null && e instanceof SlowMessageNotification) {
+        return !isEmpty(((SlowMessageNotification) e).getUniqueId());
+      }
+      return false;
+    }
+
+    @Override
+    protected RuntimeInfoComponent createComponent(ParentRuntimeInfoComponent parent,
+        AdaptrisComponent e) throws MalformedObjectNameException {
+      return new InterceptorNotification((WorkflowManager) parent, (SlowMessageNotification) e);
+    }
+
+  }
 
 }

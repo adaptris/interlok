@@ -9,26 +9,26 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
-* Allows you to configure a {@code org.eclipse.jetty.security.JDBCLoginService} as the login service to use with Jetty.
-* <p>
-* This simply exposes the Jetty JdbcLoginService as Interlok configuration. The documentation from
-* <a href="https://wiki.eclipse.org/Jetty/Tutorial/Realms">the eclipse jetty site</a> should always
-* be considered canonical.
-* </p>
-*
-* @config jetty-jdbc-login-service
-*/
+ * Allows you to configure a {@code org.eclipse.jetty.security.JDBCLoginService} as the login service to use with Jetty.
+ * <p>
+ * This simply exposes the Jetty JdbcLoginService as Interlok configuration. The documentation from
+ * <a href="https://wiki.eclipse.org/Jetty/Tutorial/Realms">the eclipse jetty site</a> should always
+ * be considered canonical.
+ * </p>
+ *
+ * @config jetty-jdbc-login-service
+ */
 @JacksonXmlRootElement(localName = "jetty-jdbc-login-service")
 @XStreamAlias("jetty-jdbc-login-service")
 @DisplayOrder(order = {"userRealm", "filename"})
 @ComponentProfile(summary = "allows use of org.eclipse.jetty.security.JDBCLoginService to authenticate users",
-tag = "jetty,authentication", since = "3.9.1")
+    tag = "jetty,authentication", since = "3.9.1")
 public class JdbcLoginServiceFactory extends LoginServiceFactoryImpl {
 
-@Override
-public LoginService retrieveLoginService() throws Exception {
-JDBCLoginService loginService = new JDBCLoginService(getUserRealm(), validateFilename());
-return new LoginServiceProxy().withLoginService(loginService);
-}
+  @Override
+  public LoginService retrieveLoginService() throws Exception {
+    JDBCLoginService loginService = new JDBCLoginService(getUserRealm(), validateFilename());
+    return new LoginServiceProxy().withLoginService(loginService);
+  }
 
 }

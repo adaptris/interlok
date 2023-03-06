@@ -1,18 +1,18 @@
 /*
-* Copyright 2015 Adaptris Ltd.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright 2015 Adaptris Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package com.adaptris.core.services.jdbc;
 
@@ -35,138 +35,138 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
-* Translate the ResultSet contents into an XML Payload.
-* <p>
-* The original message can be included in the output message in order to allow consolidation of XML data and SQL data in a
-* subsequent XSLT step.
-*
-* The format of the returned message is as follows:
-*
-* <pre>
-* {@code
-* <Results>
-*   <OriginalMessage>
-*   ...
-*   </OriginalMessage>
-*   <Row>
-*     <column1>...</column1>
-*     <column2>...</column2>
-*     ...
-*   </Row>
-*   <Row> ... </Row>
-* </Results>
-* }
-* </pre>
-* </p>
-* <p>
-* Note that column1, column2, etc. is replaced by the actual column name as returned in the query. As such, the column name must be
-* a valid XML element name. If the actual name (in the database table definition) is not valid, the query should specify an alias
-* name in the query. E.g: <code>SELECT "col 1" AS "col1" FROM mytable;</code>
-* </p>
-* <p>
-* If you want to see how many rows were processed you can set one/both of the following;
-* <table>
-* <tr>
-* <th>Item</th>
-* <th>Description</th>
-* <th>Value</th>
-* </tr>
-* <tr>
-* <td>result-count-metadata-item</td><td>If set to a String metadata item name will specify the metadata item to contain the number of rows returned by your query</td><td>Metadata item name</td>
-* </tr>
-* <tr>
-* <td>update-count-metadata-item</td><td>If set to a String metadata item name will specify the metadata item to contain the number of rows updated by your SQL statement</td><td>Metadata item name</td>
-* </tr>
-* </table>
-* <p>
-*
-* @config jdbc-xml-payload-translator
-*
-* @author lchan
-*
-*/
+ * Translate the ResultSet contents into an XML Payload.
+ * <p>
+ * The original message can be included in the output message in order to allow consolidation of XML data and SQL data in a
+ * subsequent XSLT step.
+ *
+ * The format of the returned message is as follows:
+ *
+ * <pre>
+ * {@code
+ * <Results>
+ *   <OriginalMessage>
+ *   ...
+ *   </OriginalMessage>
+ *   <Row>
+ *     <column1>...</column1>
+ *     <column2>...</column2>
+ *     ...
+ *   </Row>
+ *   <Row> ... </Row>
+ * </Results>
+ * }
+ * </pre>
+ * </p>
+ * <p>
+ * Note that column1, column2, etc. is replaced by the actual column name as returned in the query. As such, the column name must be
+ * a valid XML element name. If the actual name (in the database table definition) is not valid, the query should specify an alias
+ * name in the query. E.g: <code>SELECT "col 1" AS "col1" FROM mytable;</code>
+ * </p>
+ * <p>
+ * If you want to see how many rows were processed you can set one/both of the following;
+ * <table>
+ * <tr>
+ * <th>Item</th>
+ * <th>Description</th>
+ * <th>Value</th>
+ * </tr>
+ * <tr>
+ * <td>result-count-metadata-item</td><td>If set to a String metadata item name will specify the metadata item to contain the number of rows returned by your query</td><td>Metadata item name</td>
+ * </tr>
+ * <tr>
+ * <td>update-count-metadata-item</td><td>If set to a String metadata item name will specify the metadata item to contain the number of rows updated by your SQL statement</td><td>Metadata item name</td>
+ * </tr>
+ * </table>
+ * <p>
+ *
+ * @config jdbc-xml-payload-translator
+ *
+ * @author lchan
+ *
+ */
 @JacksonXmlRootElement(localName = "jdbc-xml-payload-translator")
 @XStreamAlias("jdbc-xml-payload-translator")
 @DisplayOrder(order = {"preserveOriginalMessage", "columnNameStyle", "columnTranslators", "mergeImplementation",
-"outputMessageEncoding", "stripIllegalXmlChars", "xmlColumnPrefix", "xmlColumnRegexp", "cdataColumnRegexp"})
+    "outputMessageEncoding", "stripIllegalXmlChars", "xmlColumnPrefix", "xmlColumnRegexp", "cdataColumnRegexp"})
 public class XmlPayloadTranslator extends XmlPayloadTranslatorImpl {
-private static final String ORIGINAL_MESSAGE_ELEMENT = "OriginalMessage";
-@InputFieldDefault(value = "false")
-private Boolean preserveOriginalMessage;
+  private static final String ORIGINAL_MESSAGE_ELEMENT = "OriginalMessage";
+  @InputFieldDefault(value = "false")
+  private Boolean preserveOriginalMessage;
 
-public XmlPayloadTranslator() {
-super();
-}
+  public XmlPayloadTranslator() {
+    super();
+  }
 
-@Override
-public long translateResult(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
-long resultSetCount = 0;
-try {
-DocumentWrapper wrapper = toDocument(source, target);
-XmlHelper.writeXmlDocument(wrapper.document, target, getOutputMessageEncoding(), createTransformer(wrapper));
-resultSetCount = wrapper.resultSetCount;
-}
-catch (SQLException e) {
-throw e;
-}
-catch (Exception e) {
-throw ExceptionHelper.wrapServiceException(e);
-}
-return resultSetCount;
-}
+  @Override
+  public long translateResult(JdbcResult source, AdaptrisMessage target) throws SQLException, ServiceException {
+    long resultSetCount = 0;
+    try {
+      DocumentWrapper wrapper = toDocument(source, target);
+      XmlHelper.writeXmlDocument(wrapper.document, target, getOutputMessageEncoding(), createTransformer(wrapper));
+      resultSetCount = wrapper.resultSetCount;
+    }
+    catch (SQLException e) {
+      throw e;
+    }
+    catch (Exception e) {
+      throw ExceptionHelper.wrapServiceException(e);
+    }
+    return resultSetCount;
+  }
 
-private DocumentWrapper toDocument(JdbcResult rs, AdaptrisMessage msg) throws Exception {
-XmlUtils xu = createXmlUtils(msg);
-DocumentWrapper wrapper = createWrapper(msg);
-Document doc = wrapper.document;
-ColumnStyle elementNameStyle = getColumnNameStyle();
+  private DocumentWrapper toDocument(JdbcResult rs, AdaptrisMessage msg) throws Exception {
+    XmlUtils xu = createXmlUtils(msg);
+    DocumentWrapper wrapper = createWrapper(msg);
+    Document doc = wrapper.document;
+    ColumnStyle elementNameStyle = getColumnNameStyle();
 
-Element results = doc.createElement(elementNameStyle.format(ELEMENT_NAME_RESULTS));
-doc.appendChild(results);
+    Element results = doc.createElement(elementNameStyle.format(ELEMENT_NAME_RESULTS));
+    doc.appendChild(results);
 
-if (isPreserveOriginalMessage()) {
-Element originalMessage = doc.createElement(elementNameStyle.format(ORIGINAL_MESSAGE_ELEMENT));
+    if (isPreserveOriginalMessage()) {
+      Element originalMessage = doc.createElement(elementNameStyle.format(ORIGINAL_MESSAGE_ELEMENT));
 
-if (xu.isDocumentValid()) {
-Node n = xu.getSingleNode("/").getFirstChild();
-originalMessage.appendChild(doc.importNode(n, true));
-}
-else {
-// Not XML, so let's add it in as a CDATA node.
-originalMessage.appendChild(createTextNode(doc, msg.getContent(), true));
-wrapper.hasCDATA = true;
-}
-results.appendChild(originalMessage);
-}
-for(JdbcResultSet rSet : rs.getResultSets()) {
-List<Element> elements = createListFromResultSet(wrapper, rSet);
-for (Element element : elements) {
-results.appendChild(element);
-}
-wrapper.resultSetCount += elements.size();
-}
-return wrapper;
-}
+      if (xu.isDocumentValid()) {
+        Node n = xu.getSingleNode("/").getFirstChild();
+        originalMessage.appendChild(doc.importNode(n, true));
+      }
+      else {
+        // Not XML, so let's add it in as a CDATA node.
+        originalMessage.appendChild(createTextNode(doc, msg.getContent(), true));
+        wrapper.hasCDATA = true;
+      }
+      results.appendChild(originalMessage);
+    }
+    for(JdbcResultSet rSet : rs.getResultSets()) {
+      List<Element> elements = createListFromResultSet(wrapper, rSet);
+      for (Element element : elements) {
+        results.appendChild(element);
+      }
+      wrapper.resultSetCount += elements.size();
+    }
+    return wrapper;
+  }
 
-private boolean isPreserveOriginalMessage() {
-return BooleanUtils.toBooleanDefaultIfNull(getPreserveOriginalMessage(), false);
-}
+  private boolean isPreserveOriginalMessage() {
+    return BooleanUtils.toBooleanDefaultIfNull(getPreserveOriginalMessage(), false);
+  }
 
-/**
-* @return whether to incorporate the original message in the output message
-*         body
-*/
-public Boolean getPreserveOriginalMessage() {
-return preserveOriginalMessage;
-}
+  /**
+   * @return whether to incorporate the original message in the output message
+   *         body
+   */
+  public Boolean getPreserveOriginalMessage() {
+    return preserveOriginalMessage;
+  }
 
-/**
-* Sets whether to incorporate the original message in the output message body
-*
-* @param b true or false, default is false.
-*/
-public void setPreserveOriginalMessage(Boolean b) {
-preserveOriginalMessage = b;
-}
+  /**
+   * Sets whether to incorporate the original message in the output message body
+   *
+   * @param b true or false, default is false.
+   */
+  public void setPreserveOriginalMessage(Boolean b) {
+    preserveOriginalMessage = b;
+  }
 
 }

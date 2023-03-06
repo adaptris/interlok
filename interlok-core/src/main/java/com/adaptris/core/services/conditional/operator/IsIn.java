@@ -15,17 +15,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
-* <p>
-* This {@link Operator} tests whether a specified value matches any value in a list
-* </p>
-* <p>
-* Allows you to add multiple values for comparision
-* </p>
-*
-* @config is-in
-* @author raney
-*
-*/
+ * <p>
+ * This {@link Operator} tests whether a specified value matches any value in a list
+ * </p>
+ * <p>
+ * Allows you to add multiple values for comparision
+ * </p>
+ *
+ * @config is-in
+ * @author raney
+ *
+ */
 
 @JacksonXmlRootElement(localName = "is-in")
 @XStreamAlias("is-in")
@@ -33,25 +33,25 @@ import java.util.List;
 @ComponentProfile(summary = "Test whether a specified value matches any value in a list", tag = "conditional,operator")
 public class IsIn implements Operator {
 
-@InputFieldHint
-@XStreamImplicit(itemFieldName = "value")
-@Size (min = 1)
-private List<String> values = new ArrayList<>();
+  @InputFieldHint
+  @XStreamImplicit(itemFieldName = "value")
+  @Size (min = 1)
+  private List<String> values = new ArrayList<>();
 
-@Override
-public boolean apply(AdaptrisMessage message, String object) {
-return getValues().contains(message.resolve(object));
-}
+  @Override
+  public boolean apply(AdaptrisMessage message, String object) {
+    return getValues().contains(message.resolve(object));
+  }
 
-public List<String> getValues() {
-return values;
-}
+  public List<String> getValues() {
+    return values;
+  }
 
-public void setValues(List<String> values) {
-this.values =  Args.notNull(values,"values");
-}
-
-public String toString() {
-return "is in " + getValues();
-}
+  public void setValues(List<String> values) {
+    this.values =  Args.notNull(values,"values");
+  }
+  
+  public String toString() {
+    return "is in " + getValues();
+  }
 }

@@ -14,51 +14,51 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
-* {@link MetadataFilter} that just uses the configured {@link KeyValuePairSet} as the metadata.
-* <p>
-* This class will have the effect of replacing all metadata with a fixed set of metadata.
-* </p>
-*
-* @config fixed-values-metadata-filter
-* @since 3.9.0
-*/
+ * {@link MetadataFilter} that just uses the configured {@link KeyValuePairSet} as the metadata.
+ * <p>
+ * This class will have the effect of replacing all metadata with a fixed set of metadata.
+ * </p>
+ * 
+ * @config fixed-values-metadata-filter
+ * @since 3.9.0
+ */
 @JacksonXmlRootElement(localName = "fixed-values-metadata-filter")
 @XStreamAlias("fixed-values-metadata-filter")
 @ComponentProfile(summary = "Replaces all metadata with a fixed set of metadata", since = "3.9.0")
 public class FixedValuesMetadataFilter extends MetadataFilterImpl {
+  
+  @Valid
+  @NotNull
+  @AutoPopulated
+  private KeyValuePairSet metadata;
+  
+  public FixedValuesMetadataFilter() {
+    setMetadata(new KeyValuePairSet());
+  }
 
-@Valid
-@NotNull
-@AutoPopulated
-private KeyValuePairSet metadata;
+  @Override
+  public MetadataCollection filter(MetadataCollection original) {
+    MetadataCollection result = new MetadataCollection();
+    getMetadata().forEach((e) -> {
+      result.add(new MetadataElement(e.getKey(), e.getValue()));
+    });
+    return result;
+  }
 
-public FixedValuesMetadataFilter() {
-setMetadata(new KeyValuePairSet());
-}
+  public KeyValuePairSet getMetadata() {
+    return metadata;
+  }
 
-@Override
-public MetadataCollection filter(MetadataCollection original) {
-MetadataCollection result = new MetadataCollection();
-getMetadata().forEach((e) -> {
-result.add(new MetadataElement(e.getKey(), e.getValue()));
-});
-return result;
-}
+  public void setMetadata(KeyValuePairSet metadata) {
+    this.metadata = Args.notNull(metadata, "metadata");
+  }
 
-public KeyValuePairSet getMetadata() {
-return metadata;
-}
-
-public void setMetadata(KeyValuePairSet metadata) {
-this.metadata = Args.notNull(metadata, "metadata");
-}
-
-public FixedValuesMetadataFilter withMetadata(KeyValuePairSet kvps) {
-setMetadata(kvps);
-return this;
-}
-
-public FixedValuesMetadataFilter withMetadata(KeyValuePair...keyValuePairs) {
-return withMetadata(new KeyValuePairSet(Arrays.asList(keyValuePairs)));
-}
+  public FixedValuesMetadataFilter withMetadata(KeyValuePairSet kvps) {
+    setMetadata(kvps);
+    return this;
+  }
+  
+  public FixedValuesMetadataFilter withMetadata(KeyValuePair...keyValuePairs) {
+    return withMetadata(new KeyValuePairSet(Arrays.asList(keyValuePairs)));
+  }
 }

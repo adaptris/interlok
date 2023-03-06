@@ -1,17 +1,17 @@
 /*
-* Copyright 2015 Adaptris Ltd.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
+ * Copyright 2015 Adaptris Ltd.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
 */
 
 package com.adaptris.core.services.metadata;
@@ -53,194 +53,194 @@ import java.util.Collection;
 import static com.adaptris.core.util.MetadataHelper.convertToProperties;
 
 /**
-* <p>
-* Implementation of {@link com.adaptris.core.Service} that writes metadata to the filesystem.
-* </p>
-* <p>
-* Used in conjunction with {@link ReadMetadataFromFilesystem} to allow preservation of metadata across integration points that make
-* use of the filesystem.
-* </p>
-*
-* @config write-metadata-to-filesystem
-*
-*
-*/
+ * <p>
+ * Implementation of {@link com.adaptris.core.Service} that writes metadata to the filesystem.
+ * </p>
+ * <p>
+ * Used in conjunction with {@link ReadMetadataFromFilesystem} to allow preservation of metadata across integration points that make
+ * use of the filesystem.
+ * </p>
+ * 
+ * @config write-metadata-to-filesystem
+ * 
+ * 
+ */
 @JacksonXmlRootElement(localName = "write-metadata-to-filesystem")
 @XStreamAlias("write-metadata-to-filesystem")
 @AdapterComponent
 @ComponentProfile(summary = "Write the current set of metadata to the filesystem", tag = "service,metadata")
 @DisplayOrder(order =
 {
-"destination", "outputStyle", "overwriteIfExists", "filenameCreator", "metadataFilter"
+    "destination", "outputStyle", "overwriteIfExists", "filenameCreator", "metadataFilter"
 })
 public class WriteMetadataToFilesystem extends ServiceImp {
 
-@Valid
-private FileNameCreator filenameCreator;
-private OutputStyle outputStyle;
+  @Valid
+  private FileNameCreator filenameCreator;
+  private OutputStyle outputStyle;
 
-@Getter
-@NotBlank
-private String baseUrl;
+  @Getter
+  @NotBlank
+  private String baseUrl;
 
-@InputFieldDefault(value = "false")
-private Boolean overwriteIfExists;
-@AdvancedConfig
-@Valid
-@InputFieldDefault(value = "preserve-all-metadata")
-private MetadataFilter metadataFilter;
+  @InputFieldDefault(value = "false")
+  private Boolean overwriteIfExists;
+  @AdvancedConfig
+  @Valid
+  @InputFieldDefault(value = "preserve-all-metadata")
+  private MetadataFilter metadataFilter;
 
-public enum OutputStyle {
-Text() {
-@Override
-void write(Collection<MetadataElement> p, OutputStream out) throws IOException {
-convertToProperties(p).store(out, "");
-}
-},
-XML() {
-@Override
-void write(Collection<MetadataElement> p, OutputStream out) throws IOException {
-convertToProperties(p).storeToXML(out, "");
-}
-};
-abstract void write(Collection<MetadataElement> p, OutputStream out) throws IOException;
-}
+  public enum OutputStyle {
+    Text() {
+      @Override
+      void write(Collection<MetadataElement> p, OutputStream out) throws IOException {
+        convertToProperties(p).store(out, "");
+      }
+    },
+    XML() {
+      @Override
+      void write(Collection<MetadataElement> p, OutputStream out) throws IOException {
+        convertToProperties(p).storeToXML(out, "");
+      }
+    };
+    abstract void write(Collection<MetadataElement> p, OutputStream out) throws IOException;
+  }
 
-public WriteMetadataToFilesystem() {
-super();
-}
+  public WriteMetadataToFilesystem() {
+    super();
+  }
 
-@Override
-public void doService(AdaptrisMessage msg) throws ServiceException {
-try {
-URL url = FsHelper.createUrlFromString(baseUrl, true);
-validateDir(url);
-File fileToWrite = new File(FsHelper.createFileReference(url), filenameCreator().createName(msg));
-if (overwriteIfExists()) {
-FileUtils.deleteQuietly(fileToWrite);
-}
-if (fileToWrite.exists()) {
-throw new IOException(fileToWrite.getCanonicalPath() + " already exists");
-}
-try (OutputStream out = new FileOutputStream(fileToWrite)) {
-getStyle(getOutputStyle()).write(metadataFilter().filter(msg.getMetadata()), out);
-}
-log.debug("Metadata produced to destination [" + fileToWrite.getCanonicalPath() + "]");
-}
-catch (Exception e) {
-throw new ServiceException(e);
-}
-}
-
-
-@Override
-protected void initService() throws CoreException {
-try {
-Args.notBlank(baseUrl, "Base URL");
-} catch (Exception e) {
-throw ExceptionHelper.wrapCoreException(e);
-}
-}
-
-@Override
-protected void closeService() {
-
-}
-
-public void setBaseUrl(String baseUrl) {
-Args.notBlank(baseUrl, "Base URL");
-this.baseUrl = baseUrl;
-}
+  @Override
+  public void doService(AdaptrisMessage msg) throws ServiceException {
+    try {
+      URL url = FsHelper.createUrlFromString(baseUrl, true);
+      validateDir(url);
+      File fileToWrite = new File(FsHelper.createFileReference(url), filenameCreator().createName(msg));
+      if (overwriteIfExists()) {
+        FileUtils.deleteQuietly(fileToWrite);
+      }
+      if (fileToWrite.exists()) {
+        throw new IOException(fileToWrite.getCanonicalPath() + " already exists");
+      }
+      try (OutputStream out = new FileOutputStream(fileToWrite)) {
+        getStyle(getOutputStyle()).write(metadataFilter().filter(msg.getMetadata()), out);
+      }
+      log.debug("Metadata produced to destination [" + fileToWrite.getCanonicalPath() + "]");
+    }
+    catch (Exception e) {
+      throw new ServiceException(e);
+    }
+  }
 
 
-public FileNameCreator getFilenameCreator() {
-return filenameCreator;
-}
+  @Override
+  protected void initService() throws CoreException {
+    try {
+      Args.notBlank(baseUrl, "Base URL");
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
+    }
+  }
 
-/**
-* Set the filename creator implementation used to create the filename.
-*
-* @param creator
-*/
-public void setFilenameCreator(FileNameCreator creator) {
-filenameCreator = creator;
-}
+  @Override
+  protected void closeService() {
 
-FileNameCreator filenameCreator() {
-return ObjectUtils.defaultIfNull(getFilenameCreator(), new FormattedFilenameCreator());
-}
+  }
 
-public OutputStyle getOutputStyle() {
-return outputStyle;
-}
-
-/**
-* Set the output style for the metadata.
-*
-* @param style one of Text or XML (default is null, which means Text)
-* @see OutputStyle
-*/
-public void setOutputStyle(OutputStyle style) {
-outputStyle = style;
-}
-
-/**
-*
-* @return the overwriteIfExists
-*/
-public Boolean getOverwriteIfExists() {
-return overwriteIfExists;
-}
-
-/**
-* If the file already exists then overwrite it with the current message in transit.
-* <p>
-* In reality, this performs a delete of the file (which fails silently if the file does not exist) prior to attempting to write
-* the file with the payload.
-* </p>
-*
-* @param b true or false (default false).
-*/
-public void setOverwriteIfExists(Boolean b) {
-overwriteIfExists = b;
-}
-
-public boolean overwriteIfExists() {
-return BooleanUtils.toBooleanDefaultIfNull(getOverwriteIfExists(), false);
-}
-
-private static OutputStyle getStyle(OutputStyle s) {
-return ObjectUtils.defaultIfNull(s, OutputStyle.Text);
-}
+  public void setBaseUrl(String baseUrl) {
+    Args.notBlank(baseUrl, "Base URL");
+    this.baseUrl = baseUrl;
+  }
 
 
-private void validateDir(URL url) throws IOException {
-File f = FsHelper.createFileReference(url);
-if (!f.exists()) {
-log.trace("creating non-existent directoy " + f.getCanonicalPath());
-f.mkdirs();
-}
-}
+  public FileNameCreator getFilenameCreator() {
+    return filenameCreator;
+  }
 
-public MetadataFilter getMetadataFilter() {
-return metadataFilter;
-}
+  /**
+   * Set the filename creator implementation used to create the filename.
+   *
+   * @param creator
+   */
+  public void setFilenameCreator(FileNameCreator creator) {
+    filenameCreator = creator;
+  }
 
-/**
-* Set a metadata filter that will filter out metadata before it is written to filesystem
-*
-* @param filter the filter.
-*/
-public void setMetadataFilter(MetadataFilter filter) {
-metadataFilter = filter;
-}
+  FileNameCreator filenameCreator() {
+    return ObjectUtils.defaultIfNull(getFilenameCreator(), new FormattedFilenameCreator());
+  }
 
-MetadataFilter metadataFilter() {
-return ObjectUtils.defaultIfNull(getMetadataFilter(), new NoOpMetadataFilter());
-}
+  public OutputStyle getOutputStyle() {
+    return outputStyle;
+  }
 
-@Override
-public void prepare() throws CoreException {
-}
+  /**
+   * Set the output style for the metadata.
+   *
+   * @param style one of Text or XML (default is null, which means Text)
+   * @see OutputStyle
+   */
+  public void setOutputStyle(OutputStyle style) {
+    outputStyle = style;
+  }
+
+  /**
+   *
+   * @return the overwriteIfExists
+   */
+  public Boolean getOverwriteIfExists() {
+    return overwriteIfExists;
+  }
+
+  /**
+   * If the file already exists then overwrite it with the current message in transit.
+   * <p>
+   * In reality, this performs a delete of the file (which fails silently if the file does not exist) prior to attempting to write
+   * the file with the payload.
+   * </p>
+   *
+   * @param b true or false (default false).
+   */
+  public void setOverwriteIfExists(Boolean b) {
+    overwriteIfExists = b;
+  }
+
+  public boolean overwriteIfExists() {
+    return BooleanUtils.toBooleanDefaultIfNull(getOverwriteIfExists(), false);
+  }
+
+  private static OutputStyle getStyle(OutputStyle s) {
+    return ObjectUtils.defaultIfNull(s, OutputStyle.Text);
+  }
+
+
+  private void validateDir(URL url) throws IOException {
+    File f = FsHelper.createFileReference(url);
+    if (!f.exists()) {
+      log.trace("creating non-existent directoy " + f.getCanonicalPath());
+      f.mkdirs();
+    }
+  }
+
+  public MetadataFilter getMetadataFilter() {
+    return metadataFilter;
+  }
+
+  /**
+   * Set a metadata filter that will filter out metadata before it is written to filesystem
+   *
+   * @param filter the filter.
+   */
+  public void setMetadataFilter(MetadataFilter filter) {
+    metadataFilter = filter;
+  }
+
+  MetadataFilter metadataFilter() {
+    return ObjectUtils.defaultIfNull(getMetadataFilter(), new NoOpMetadataFilter());
+  }
+
+  @Override
+  public void prepare() throws CoreException {
+  }
 
 }
