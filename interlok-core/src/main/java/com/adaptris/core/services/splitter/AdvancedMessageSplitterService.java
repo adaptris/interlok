@@ -1,17 +1,17 @@
 /*
- * Copyright 2015 Adaptris Ltd.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+* Copyright 2015 Adaptris Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
 */
 
 package com.adaptris.core.services.splitter;
@@ -37,159 +37,161 @@ import com.adaptris.core.ServiceWrapper;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * <p>
- * Splits incoming {@link com.adaptris.core.AdaptrisMessage}s into several using an implementation of {@link MessageSplitter}.
- * </p>
- * <p>
- * Rather than directly producing the message to a producer, this allows the use of a {@link com.adaptris.core.ServiceCollection} as
- * the target for the resulting split messages.
- * </p>
- *
- * @config advanced-message-splitter-service
- *
- *
- */
+* <p>
+* Splits incoming {@link com.adaptris.core.AdaptrisMessage}s into several using an implementation of {@link MessageSplitter}.
+* </p>
+* <p>
+* Rather than directly producing the message to a producer, this allows the use of a {@link com.adaptris.core.ServiceCollection} as
+* the target for the resulting split messages.
+* </p>
+*
+* @config advanced-message-splitter-service
+*
+*
+*/
+@JacksonXmlRootElement(localName = "advanced-message-splitter-service")
 @XStreamAlias("advanced-message-splitter-service")
 @AdapterComponent
 @ComponentProfile(summary = "Split a message and execute an arbitary number of services on the split message", tag = "service,splitter")
 @DisplayOrder(order =
 {
-    "splitter", "service", "ignoreSplitMessageFailures", "sendEvents"
+"splitter", "service", "ignoreSplitMessageFailures", "sendEvents"
 })
 public class AdvancedMessageSplitterService extends MessageSplitterServiceImp implements EventHandlerAware, ServiceWrapper {
 
-  @NotNull
-  @AutoPopulated
-  @Valid
-  private Service service;
-  protected transient EventHandler eventHandler;
-  @InputFieldDefault(value = "false")
-  private Boolean sendEvents;
+@NotNull
+@AutoPopulated
+@Valid
+private Service service;
+protected transient EventHandler eventHandler;
+@InputFieldDefault(value = "false")
+private Boolean sendEvents;
 
-  /**
-   * <p>
-   * Creates a new instance. Defaults to copying all metadata from the original message to the new, split messages.
-   * </p>
-   */
-  public AdvancedMessageSplitterService() {
-    super();
-    setService(new NullService());
-  }
-
-
-  @Override
-  protected void handleSplitMessage(AdaptrisMessage msg, Consumer<Exception> callback)
-      throws ServiceException {
-    try {
-      executeService(getService(), msg);
-      callback.accept(null);
-    } catch (Exception e) {
-      ServiceException exc = ExceptionHelper.wrapServiceException(e);
-      callback.accept(exc);
-      throw exc;
-    }
-  }
+/**
+* <p>
+* Creates a new instance. Defaults to copying all metadata from the original message to the new, split messages.
+* </p>
+*/
+public AdvancedMessageSplitterService() {
+super();
+setService(new NullService());
+}
 
 
-  protected void executeService(Service s, AdaptrisMessage msg) throws Exception {
-    try {
-      s.doService(msg);
-    } finally {
-      sendEvents(msg);
-    }
-  }
+@Override
+protected void handleSplitMessage(AdaptrisMessage msg, Consumer<Exception> callback)
+throws ServiceException {
+try {
+executeService(getService(), msg);
+callback.accept(null);
+} catch (Exception e) {
+ServiceException exc = ExceptionHelper.wrapServiceException(e);
+callback.accept(exc);
+throw exc;
+}
+}
 
-  protected void sendEvents(AdaptrisMessage msg) throws CoreException {
-    if (eventHandler != null && sendEvents()) {
-      eventHandler.send(msg.getMessageLifecycleEvent(), msg.getMessageHeaders());
-    }
-  }
 
-  @Override
-  protected void initService() throws CoreException {
-    LifecycleHelper.registerEventHandler(service, eventHandler);
-    super.initService();
-    LifecycleHelper.init(service);
-  }
+protected void executeService(Service s, AdaptrisMessage msg) throws Exception {
+try {
+s.doService(msg);
+} finally {
+sendEvents(msg);
+}
+}
 
-  @Override
-  protected void closeService() {
-    LifecycleHelper.stop(service);
-    super.closeService();
-  }
+protected void sendEvents(AdaptrisMessage msg) throws CoreException {
+if (eventHandler != null && sendEvents()) {
+eventHandler.send(msg.getMessageLifecycleEvent(), msg.getMessageHeaders());
+}
+}
 
-  /** @see com.adaptris.core.AdaptrisComponent#start() */
-  @Override
-  public void start() throws CoreException {
-    LifecycleHelper.start(service);
-    super.start();
+@Override
+protected void initService() throws CoreException {
+LifecycleHelper.registerEventHandler(service, eventHandler);
+super.initService();
+LifecycleHelper.init(service);
+}
 
-  }
+@Override
+protected void closeService() {
+LifecycleHelper.stop(service);
+super.closeService();
+}
 
-  /** @see com.adaptris.core.AdaptrisComponent#stop() */
-  @Override
-  public void stop() {
-    LifecycleHelper.stop(service);
-    super.stop();
-  }
+/** @see com.adaptris.core.AdaptrisComponent#start() */
+@Override
+public void start() throws CoreException {
+LifecycleHelper.start(service);
+super.start();
 
-  /**
-   * @return the serviceList
-   */
-  public Service getService() {
-    return service;
-  }
+}
 
-  /**
-   * @param sc the serviceList to set
-   */
-  public void setService(Service sc) {
-    service = Args.notNull(sc, "service");
-  }
+/** @see com.adaptris.core.AdaptrisComponent#stop() */
+@Override
+public void stop() {
+LifecycleHelper.stop(service);
+super.stop();
+}
 
-  /**
-   * @return the sendEvents
-   */
-  public Boolean getSendEvents() {
-    return sendEvents;
-  }
+/**
+* @return the serviceList
+*/
+public Service getService() {
+return service;
+}
 
-  public boolean sendEvents() {
-    return BooleanUtils.toBooleanDefaultIfNull(getSendEvents(), false);
-  }
+/**
+* @param sc the serviceList to set
+*/
+public void setService(Service sc) {
+service = Args.notNull(sc, "service");
+}
 
-  /**
-   * Whether or not to send events for the message that has been split.
-   * <p>
-   * Note that even if this is set to true, because each child message has its own unique id, you will have to externally correlate
-   * the message lifecycle events together. Child messages will always have the metadata
-   * {@link com.adaptris.core.CoreConstants#PARENT_UNIQUE_ID_KEY} set with the originating message id.
-   * </p>
-   *
-   * @param b true to send events (default false)
-   */
-  public void setSendEvents(Boolean b) {
-    sendEvents = b;
-  }
+/**
+* @return the sendEvents
+*/
+public Boolean getSendEvents() {
+return sendEvents;
+}
 
-  /**
-   * @see com.adaptris.core.EventHandlerAware#registerEventHandler(com.adaptris.core.EventHandler)
-   */
-  @Override
-  public void registerEventHandler(EventHandler eh) {
-    eventHandler = eh;
-  }
+public boolean sendEvents() {
+return BooleanUtils.toBooleanDefaultIfNull(getSendEvents(), false);
+}
 
-  @Override
-  public void prepare() throws CoreException {
-    LifecycleHelper.prepare(getService());
-  }
+/**
+* Whether or not to send events for the message that has been split.
+* <p>
+* Note that even if this is set to true, because each child message has its own unique id, you will have to externally correlate
+* the message lifecycle events together. Child messages will always have the metadata
+* {@link com.adaptris.core.CoreConstants#PARENT_UNIQUE_ID_KEY} set with the originating message id.
+* </p>
+*
+* @param b true to send events (default false)
+*/
+public void setSendEvents(Boolean b) {
+sendEvents = b;
+}
 
-  @Override
-  public Service[] wrappedServices() {
-    return discardNulls(getService());
-  }
+/**
+* @see com.adaptris.core.EventHandlerAware#registerEventHandler(com.adaptris.core.EventHandler)
+*/
+@Override
+public void registerEventHandler(EventHandler eh) {
+eventHandler = eh;
+}
+
+@Override
+public void prepare() throws CoreException {
+LifecycleHelper.prepare(getService());
+}
+
+@Override
+public Service[] wrappedServices() {
+return discardNulls(getService());
+}
 }

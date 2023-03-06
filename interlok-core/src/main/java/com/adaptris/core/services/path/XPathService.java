@@ -1,18 +1,18 @@
 /*
- * Copyright 2015 Adaptris Ltd.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *     http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+* Copyright 2015 Adaptris Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
 package com.adaptris.core.services.path;
 
@@ -54,262 +54,264 @@ import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
 import com.adaptris.util.text.xml.XPath;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
- * <p>
- * This service allows you to configure an xpath expression which will be executed on source xml, the result of which can be saved
- * to multiple locations.
- * </p>
- * <p>
- * To specify where the source xml, source xpath expression and the result of the xpath execution should be saved, you shoud use
- * {@link DataInputParameter} or {@link com.adaptris.interlok.config.DataOutputParameter}. <br />
- * For example you can specify the source xml can be found in the {@link com.adaptris.core.AdaptrisMessage} payload, by using
- * {@link StringPayloadDataInputParameter} like this : <pre>
- * {@code
- * <xpath-service>
- *   <xml-source class="string-payload-data-input-parameter"/>
- *   ...
- * }
- * </pre>
- * 
- * And perhaps the source xpath expression will be configured directly in Interlok config, using
- * {@link com.adaptris.core.common.ConstantDataInputParameter};
- * 
- * <pre>
- * {@code
- * <xpath-service>
- *   <xpath-execution>
- *     <source class="constant-data-input-parameter">
- *       <value>//my/xpath/expression</value>
- *     </source>
- *   ...
- * }
- * </pre>
- * 
- * And then maybe the result of the xpath execution is to be saved in {@link com.adaptris.core.AdaptrisMessage} metadata, using
- * {@link com.adaptris.core.common.MetadataDataOutputParameter};
- * 
- * <pre>
- * {@code
- * <xpath-service>
- *   <xpath-execution>
- *     <target class="metadata-data-output-parameter">
- *       <metadata-key>targetMetadataKey</metadata-key>
- *     </target>
- *   ...
- * }
- * </pre>
- * </p>
- * <p>
- * While you may only specify a single source xml destination, you may if you wish apply multiple XPath expressions, each of which
- * saves the result to a different location. To do this, simply configure multiple executions. Take the following example, where we
- * specify the payload containing the source xml and 3 XPath expressions will be executed each of which will store the result in 3
- * different metadata items; <pre>
- * {@code
- * <xpath-service>
- *   <xml-source class="string-payload-data-input-parameter"/>
- * 
- *   <xpath-execution>
- *     <source class="constant-data-input-parameter">
- *       <value>//my/first/xpath/expression</value>
- *     </source>
- *     
- *     <target class="metadata-data-output-parameter">
- *       <metadata-key>targetMetadataKey1</metadata-key>
- *     </target>
- *   </xpath-execution>
- *   
- *   <xpath-execution>
- *     <source class="constant-data-input-parameter">
- *       <value>//my/second/xpath/expression</value>
- *     </source>
- *     
- *     <target class="metadata-data-output-parameter">
- *       <metadata-key>targetMetadataKey2</metadata-key>
- *     </target>
- *   </xpath-execution>
- *   
- *   <xpath-execution>
- *     <source class="constant-data-input-parameter">
- *       <value>//my/third/xpath/expression</value>
- *     </source>
- *     
- *     <target class="metadata-data-output-parameter">
- *       <metadata-key>targetMetadataKey3</metadata-key>
- *     </target>
- *   </xpath-execution>
- * 
- * </xpath-service>
- * }
- * </pre>
- * </p>
- * <p>
- * Should your source xml contain namespaces, you will need to configure the mappings in this service like this; <pre>
- * {@code
- * <xpath-service>
- * ...
- *   <namespace-context>
- *     <key-value-pair>
- *       <key>n1</key>
- *       <value>http://adaptris.com/xml/namespace1</value>
- *     </key-value-pair>
- *     <key-value-pair>
- *       <key>n2</key>
- *       <value>http://adaptris.com/xml/namespace2</value>
- *     </key-value-pair>
- *     <key-value-pair>
- *       <key>n3</key>
- *       <value>http://adaptris.com/xml/namespace3</value>
- *     </key-value-pair>
- *     <key-value-pair>
- *       <key>n4</key>
- *       <value>http://adaptris.com/xml/namespace4</value>
- *     </key-value-pair>
- *    </namespace-context>
- *  ...
- * </xpath-service>
- * }
- * </pre>
- * </p>
- * <p>
- * If the {@code DocumentBuilderFactoryBuilder} has been explicitly set to be not namespace aware and the document does in fact
- * contain namespaces, then Saxon can cause merry havoc in the sense that {@code //NonNamespaceXpath} doesn't work if the document
- * has namespaces in it. We have included a shim so that behaviour can be toggled based on what you have configured.
- * </p>
- * 
- * @see XPath#newXPathInstance(DocumentBuilderFactoryBuilder, NamespaceContext)
- * 
- * @since 3.0.6
- * @author amcgrath
- * @config xpath-service
- * 
- */
+* <p>
+* This service allows you to configure an xpath expression which will be executed on source xml, the result of which can be saved
+* to multiple locations.
+* </p>
+* <p>
+* To specify where the source xml, source xpath expression and the result of the xpath execution should be saved, you shoud use
+* {@link DataInputParameter} or {@link com.adaptris.interlok.config.DataOutputParameter}. <br />
+* For example you can specify the source xml can be found in the {@link com.adaptris.core.AdaptrisMessage} payload, by using
+* {@link StringPayloadDataInputParameter} like this : <pre>
+* {@code
+* <xpath-service>
+*   <xml-source class="string-payload-data-input-parameter"/>
+*   ...
+* }
+* </pre>
+*
+* And perhaps the source xpath expression will be configured directly in Interlok config, using
+* {@link com.adaptris.core.common.ConstantDataInputParameter};
+*
+* <pre>
+* {@code
+* <xpath-service>
+*   <xpath-execution>
+*     <source class="constant-data-input-parameter">
+*       <value>//my/xpath/expression</value>
+*     </source>
+*   ...
+* }
+* </pre>
+*
+* And then maybe the result of the xpath execution is to be saved in {@link com.adaptris.core.AdaptrisMessage} metadata, using
+* {@link com.adaptris.core.common.MetadataDataOutputParameter};
+*
+* <pre>
+* {@code
+* <xpath-service>
+*   <xpath-execution>
+*     <target class="metadata-data-output-parameter">
+*       <metadata-key>targetMetadataKey</metadata-key>
+*     </target>
+*   ...
+* }
+* </pre>
+* </p>
+* <p>
+* While you may only specify a single source xml destination, you may if you wish apply multiple XPath expressions, each of which
+* saves the result to a different location. To do this, simply configure multiple executions. Take the following example, where we
+* specify the payload containing the source xml and 3 XPath expressions will be executed each of which will store the result in 3
+* different metadata items; <pre>
+* {@code
+* <xpath-service>
+*   <xml-source class="string-payload-data-input-parameter"/>
+*
+*   <xpath-execution>
+*     <source class="constant-data-input-parameter">
+*       <value>//my/first/xpath/expression</value>
+*     </source>
+*
+*     <target class="metadata-data-output-parameter">
+*       <metadata-key>targetMetadataKey1</metadata-key>
+*     </target>
+*   </xpath-execution>
+*
+*   <xpath-execution>
+*     <source class="constant-data-input-parameter">
+*       <value>//my/second/xpath/expression</value>
+*     </source>
+*
+*     <target class="metadata-data-output-parameter">
+*       <metadata-key>targetMetadataKey2</metadata-key>
+*     </target>
+*   </xpath-execution>
+*
+*   <xpath-execution>
+*     <source class="constant-data-input-parameter">
+*       <value>//my/third/xpath/expression</value>
+*     </source>
+*
+*     <target class="metadata-data-output-parameter">
+*       <metadata-key>targetMetadataKey3</metadata-key>
+*     </target>
+*   </xpath-execution>
+*
+* </xpath-service>
+* }
+* </pre>
+* </p>
+* <p>
+* Should your source xml contain namespaces, you will need to configure the mappings in this service like this; <pre>
+* {@code
+* <xpath-service>
+* ...
+*   <namespace-context>
+*     <key-value-pair>
+*       <key>n1</key>
+*       <value>http://adaptris.com/xml/namespace1</value>
+*     </key-value-pair>
+*     <key-value-pair>
+*       <key>n2</key>
+*       <value>http://adaptris.com/xml/namespace2</value>
+*     </key-value-pair>
+*     <key-value-pair>
+*       <key>n3</key>
+*       <value>http://adaptris.com/xml/namespace3</value>
+*     </key-value-pair>
+*     <key-value-pair>
+*       <key>n4</key>
+*       <value>http://adaptris.com/xml/namespace4</value>
+*     </key-value-pair>
+*    </namespace-context>
+*  ...
+* </xpath-service>
+* }
+* </pre>
+* </p>
+* <p>
+* If the {@code DocumentBuilderFactoryBuilder} has been explicitly set to be not namespace aware and the document does in fact
+* contain namespaces, then Saxon can cause merry havoc in the sense that {@code //NonNamespaceXpath} doesn't work if the document
+* has namespaces in it. We have included a shim so that behaviour can be toggled based on what you have configured.
+* </p>
+*
+* @see XPath#newXPathInstance(DocumentBuilderFactoryBuilder, NamespaceContext)
+*
+* @since 3.0.6
+* @author amcgrath
+* @config xpath-service
+*
+*/
+@JacksonXmlRootElement(localName = "xpath-service")
 @XStreamAlias("xpath-service")
 @AdapterComponent
 @ComponentProfile(summary = "Extract data via XPath and store it", tag = "service,xml")
 @DisplayOrder(order = {"xmlSource", "executions", "namespaceContext", "xmlDocumentFactoryConfig"})
 public class XPathService extends ServiceImp {
 
-  @NotNull
-  @AutoPopulated
-  @Valid
-  private DataInputParameter<String> xmlSource;
+@NotNull
+@AutoPopulated
+@Valid
+private DataInputParameter<String> xmlSource;
 
-  @NotNull
-  @Valid
-  @AutoPopulated
-  @XStreamImplicit(itemFieldName="xpath-execution")
-  private List<Execution> executions;
+@NotNull
+@Valid
+@AutoPopulated
+@XStreamImplicit(itemFieldName="xpath-execution")
+private List<Execution> executions;
 
-  @AdvancedConfig(rare = true)
-  @Valid
-  private KeyValuePairSet namespaceContext;
-  @AdvancedConfig(rare = true)
-  @Valid
-  private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
+@AdvancedConfig(rare = true)
+@Valid
+private KeyValuePairSet namespaceContext;
+@AdvancedConfig(rare = true)
+@Valid
+private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
-  public XPathService() {
-    this.setExecutions(new ArrayList<Execution>());
-    this.setXmlSource(new StringPayloadDataInputParameter());
-  }
+public XPathService() {
+this.setExecutions(new ArrayList<Execution>());
+this.setXmlSource(new StringPayloadDataInputParameter());
+}
 
-  // @Override
-  @Override
-  public void doService(AdaptrisMessage msg) throws ServiceException {
-    NamespaceContext namespaceContext = SimpleNamespaceContext.create(getNamespaceContext(), msg);
-    try {
-      DocumentBuilderFactoryBuilder builder = documentFactoryBuilder(namespaceContext);
-      Document document = buildDocument(builder, this.getXmlSource().extract(msg));
-      XPath xPathHandler = XPath.newXPathInstance(builder, namespaceContext);
-      for (Execution execution : this.getExecutions()) {
-        String result = this.serializeNode(xPathHandler.selectNodeList(document, execution.getSource().extract(msg)));
-        execution.getTarget().insert(result, msg);
-      }
-    } catch (Exception ex) {
-      throw new ServiceException(ex);
-    }
-  }
+// @Override
+@Override
+public void doService(AdaptrisMessage msg) throws ServiceException {
+NamespaceContext namespaceContext = SimpleNamespaceContext.create(getNamespaceContext(), msg);
+try {
+DocumentBuilderFactoryBuilder builder = documentFactoryBuilder(namespaceContext);
+Document document = buildDocument(builder, this.getXmlSource().extract(msg));
+XPath xPathHandler = XPath.newXPathInstance(builder, namespaceContext);
+for (Execution execution : this.getExecutions()) {
+String result = this.serializeNode(xPathHandler.selectNodeList(document, execution.getSource().extract(msg)));
+execution.getTarget().insert(result, msg);
+}
+} catch (Exception ex) {
+throw new ServiceException(ex);
+}
+}
 
-  @SuppressWarnings({"lgtm [java/xxe]"})
-  private Document buildDocument(DocumentBuilderFactoryBuilder builder, String xmlData)
-      throws ParserConfigurationException, SAXException, IOException {
-    // The user can explicitly configure for XXE mitigation, so we can ignore via lgtm
-    return builder.newDocumentBuilder(DocumentBuilderFactory.newInstance())
-        .parse(new InputSource(new StringReader(xmlData)));
-  }
+@SuppressWarnings({"lgtm [java/xxe]"})
+private Document buildDocument(DocumentBuilderFactoryBuilder builder, String xmlData)
+throws ParserConfigurationException, SAXException, IOException {
+// The user can explicitly configure for XXE mitigation, so we can ignore via lgtm
+return builder.newDocumentBuilder(DocumentBuilderFactory.newInstance())
+.parse(new InputSource(new StringReader(xmlData)));
+}
 
-  private String serializeNode(NodeList nodeList) throws TransformerException {
-    StringBuilder stringBuilder = new StringBuilder();
-    for(int counter = 0; counter < nodeList.getLength(); counter ++) {
-      stringBuilder.append(this.serializeNode(nodeList.item(counter)));
-    }
-    return stringBuilder.toString();
-  }
+private String serializeNode(NodeList nodeList) throws TransformerException {
+StringBuilder stringBuilder = new StringBuilder();
+for(int counter = 0; counter < nodeList.getLength(); counter ++) {
+stringBuilder.append(this.serializeNode(nodeList.item(counter)));
+}
+return stringBuilder.toString();
+}
 
-  private String serializeNode(Node node) throws TransformerException {
-    DOMSource source = new DOMSource(node);
-    StringWriter stringWriter = new StringWriter();
-    StreamResult xmlOutput = new StreamResult(stringWriter);
-    Transformer transformer = TransformerFactory.newInstance().newTransformer();
-    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-    if (source.getNode().getNodeType() != Node.ATTRIBUTE_NODE) {
-      transformer.transform(source, xmlOutput);
-    } else {
-      stringWriter.write(source.getNode().getNodeValue());
-    }
-    return stringWriter.toString();
-  }
+private String serializeNode(Node node) throws TransformerException {
+DOMSource source = new DOMSource(node);
+StringWriter stringWriter = new StringWriter();
+StreamResult xmlOutput = new StreamResult(stringWriter);
+Transformer transformer = TransformerFactory.newInstance().newTransformer();
+transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+if (source.getNode().getNodeType() != Node.ATTRIBUTE_NODE) {
+transformer.transform(source, xmlOutput);
+} else {
+stringWriter.write(source.getNode().getNodeValue());
+}
+return stringWriter.toString();
+}
 
-  @Override
-  public void prepare() throws CoreException {
-  }
-
-
-  @Override
-  protected void initService() throws CoreException {
-  }
-
-  @Override
-  protected void closeService() {
-  }
-
-  public DataInputParameter<String> getXmlSource() {
-    return xmlSource;
-  }
-
-  public void setXmlSource(DataInputParameter<String> sourceDestination) {
-    this.xmlSource = Args.notNull(sourceDestination, "source-xml");
-  }
-
-  public List<Execution> getExecutions() {
-    return executions;
-  }
-
-  public void setExecutions(List<Execution> list) {
-    this.executions = Args.notNull(list, "xpath executions");
-  }
-
-  public KeyValuePairSet getNamespaceContext() {
-    return namespaceContext;
-  }
-
-  public void setNamespaceContext(KeyValuePairSet namespaceContext) {
-    this.namespaceContext = namespaceContext;
-  }
-
-  public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
-    return xmlDocumentFactoryConfig;
-  }
+@Override
+public void prepare() throws CoreException {
+}
 
 
-  public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
-    this.xmlDocumentFactoryConfig = xml;
-  }
+@Override
+protected void initService() throws CoreException {
+}
 
-  DocumentBuilderFactoryBuilder documentFactoryBuilder(NamespaceContext namespaceCtx) {
-    return DocumentBuilderFactoryBuilder.newInstanceIfNull(getXmlDocumentFactoryConfig(), namespaceCtx);
-  }
+@Override
+protected void closeService() {
+}
+
+public DataInputParameter<String> getXmlSource() {
+return xmlSource;
+}
+
+public void setXmlSource(DataInputParameter<String> sourceDestination) {
+this.xmlSource = Args.notNull(sourceDestination, "source-xml");
+}
+
+public List<Execution> getExecutions() {
+return executions;
+}
+
+public void setExecutions(List<Execution> list) {
+this.executions = Args.notNull(list, "xpath executions");
+}
+
+public KeyValuePairSet getNamespaceContext() {
+return namespaceContext;
+}
+
+public void setNamespaceContext(KeyValuePairSet namespaceContext) {
+this.namespaceContext = namespaceContext;
+}
+
+public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
+return xmlDocumentFactoryConfig;
+}
+
+
+public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
+this.xmlDocumentFactoryConfig = xml;
+}
+
+DocumentBuilderFactoryBuilder documentFactoryBuilder(NamespaceContext namespaceCtx) {
+return DocumentBuilderFactoryBuilder.newInstanceIfNull(getXmlDocumentFactoryConfig(), namespaceCtx);
+}
 
 }

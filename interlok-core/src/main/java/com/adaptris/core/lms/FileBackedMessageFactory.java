@@ -1,17 +1,17 @@
 /*
- * Copyright 2015 Adaptris Ltd.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *     http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+* Copyright 2015 Adaptris Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
 */
 
 package com.adaptris.core.lms;
@@ -35,217 +35,219 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.util.Args;
 import com.adaptris.util.NumberUtils;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Message factory that returns an AdaptrisMessage Implementation that is backed by a pair of files.
- * <p>
- * In order to limit the number of temporary files that will exist in the filesystem; FileCleaningTracker is used to monitor all the
- * files that are created by temporary files. These are deleted when the underlying message is garbage collected.
- * </p>
- * 
- * @config file-backed-message-factory
- * @see FileBackedMessage
- * @see DefaultMessageFactory
- * @see AdaptrisMessageFactory
- */
+* Message factory that returns an AdaptrisMessage Implementation that is backed by a pair of files.
+* <p>
+* In order to limit the number of temporary files that will exist in the filesystem; FileCleaningTracker is used to monitor all the
+* files that are created by temporary files. These are deleted when the underlying message is garbage collected.
+* </p>
+*
+* @config file-backed-message-factory
+* @see FileBackedMessage
+* @see DefaultMessageFactory
+* @see AdaptrisMessageFactory
+*/
+@JacksonXmlRootElement(localName = "file-backed-message-factory")
 @XStreamAlias("file-backed-message-factory")
 @DisplayOrder(order = {"defaultCharEncoding", "tempDirectory", "maxMemorySizeBytes", "defaultBufferSize"})
 public class FileBackedMessageFactory extends DefaultMessageFactory {
 
-  // The default max size to limit a getStringPayload() to (10Mb)
-  private static final long INLINE_MAX_SIZE = 1024 * 1024 * 10;
-  // the default buffersize (256k) for read operations.
-  private static final int DEFAULT_BUFSIZE = 1024 * 256;
+// The default max size to limit a getStringPayload() to (10Mb)
+private static final long INLINE_MAX_SIZE = 1024 * 1024 * 10;
+// the default buffersize (256k) for read operations.
+private static final int DEFAULT_BUFSIZE = 1024 * 256;
 
-  static final String TMP_FILE_SUFFIX = ".tmp";
-  static final String TMP_FILE_PREFIX = "FBAM";
-  private static FileCleaningTracker cleaner = new FileCleaningTracker();
+static final String TMP_FILE_SUFFIX = ".tmp";
+static final String TMP_FILE_PREFIX = "FBAM";
+private static FileCleaningTracker cleaner = new FileCleaningTracker();
 
-  @InputFieldDefault(value = "System.getProperty(java.io.tmpdir)")
-  private String tempDirectory;
-  @AdvancedConfig(rare = true)
-  @InputFieldDefault(value = "256Kb")
-  private Integer defaultBufferSize;
-  @AdvancedConfig
-  @InputFieldDefault(value = "10Mb")
-  private Long maxMemorySizeBytes;
-  @AdvancedConfig
-  @InputFieldDefault(value = "false")
-  private Boolean createTempDir;
-  
-  @AdvancedConfig
-  @InputFieldDefault(value = "false")
-  private Boolean extendedLogging;
-  @AdvancedConfig(rare = true)
-  @InputFieldDefault(value = "false")
-  private Boolean useNio;
-  
-  private transient Logger log = LoggerFactory.getLogger(this.getClass());
+@InputFieldDefault(value = "System.getProperty(java.io.tmpdir)")
+private String tempDirectory;
+@AdvancedConfig(rare = true)
+@InputFieldDefault(value = "256Kb")
+private Integer defaultBufferSize;
+@AdvancedConfig
+@InputFieldDefault(value = "10Mb")
+private Long maxMemorySizeBytes;
+@AdvancedConfig
+@InputFieldDefault(value = "false")
+private Boolean createTempDir;
 
-  /**
-   * Default constructor.
-   * <ul>
-   * <li>temp-directory is based on the system property java.io.tmpdir</li>
-   * <li>max-memory-size-bytes is equivalent to 10Megabytes</li>
-   * <li>default-buffer-size is 256kilobytes</li>
-   * </ul>
-   */
-  public FileBackedMessageFactory() {
-    super();
-  }
+@AdvancedConfig
+@InputFieldDefault(value = "false")
+private Boolean extendedLogging;
+@AdvancedConfig(rare = true)
+@InputFieldDefault(value = "false")
+private Boolean useNio;
 
-  /**
-   * @return the tempDirectory
-   */
-  public String getTempDirectory() {
-    return tempDirectory;
-  }
+private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
-  /**
-   * @return the defaultBufferSize
-   */
-  public Integer getDefaultBufferSize() {
-    return defaultBufferSize;
-  }
+/**
+* Default constructor.
+* <ul>
+* <li>temp-directory is based on the system property java.io.tmpdir</li>
+* <li>max-memory-size-bytes is equivalent to 10Megabytes</li>
+* <li>default-buffer-size is 256kilobytes</li>
+* </ul>
+*/
+public FileBackedMessageFactory() {
+super();
+}
 
-  /**
-   * Set the default buffersize to use when writing to files.
-   *
-   * @param bufsiz the defaultBufferSize to set
-   */
-  public void setDefaultBufferSize(Integer bufsiz) {
-    defaultBufferSize = bufsiz;
-  }
+/**
+* @return the tempDirectory
+*/
+public String getTempDirectory() {
+return tempDirectory;
+}
 
-  protected int defaultBufferSize() {
-    return NumberUtils.toIntDefaultIfNull(getDefaultBufferSize(), DEFAULT_BUFSIZE);
-  }
+/**
+* @return the defaultBufferSize
+*/
+public Integer getDefaultBufferSize() {
+return defaultBufferSize;
+}
 
-  /**
-   * @return the maxSizeBeforeException
-   */
-  public Long getMaxMemorySizeBytes() {
-    return maxMemorySizeBytes;
-  }
+/**
+* Set the default buffersize to use when writing to files.
+*
+* @param bufsiz the defaultBufferSize to set
+*/
+public void setDefaultBufferSize(Integer bufsiz) {
+defaultBufferSize = bufsiz;
+}
 
-  /**
-   * Set the maximum size before throwing a runtime exception when
-   * {@link com.adaptris.core.AdaptrisMessage#getStringPayload()} or
-   * {@link com.adaptris.core.AdaptrisMessage#getPayload()} is invoked.
-   *
-   * @param l the max size before exception to set
-   */
-  public void setMaxMemorySizeBytes(Long l) {
-    maxMemorySizeBytes = l;
-  }
+protected int defaultBufferSize() {
+return NumberUtils.toIntDefaultIfNull(getDefaultBufferSize(), DEFAULT_BUFSIZE);
+}
 
-  protected long maxMemorySizeBytes() {
-    return NumberUtils.toLongDefaultIfNull(getMaxMemorySizeBytes(), INLINE_MAX_SIZE);
-  }
+/**
+* @return the maxSizeBeforeException
+*/
+public Long getMaxMemorySizeBytes() {
+return maxMemorySizeBytes;
+}
+
+/**
+* Set the maximum size before throwing a runtime exception when
+* {@link com.adaptris.core.AdaptrisMessage#getStringPayload()} or
+* {@link com.adaptris.core.AdaptrisMessage#getPayload()} is invoked.
+*
+* @param l the max size before exception to set
+*/
+public void setMaxMemorySizeBytes(Long l) {
+maxMemorySizeBytes = l;
+}
+
+protected long maxMemorySizeBytes() {
+return NumberUtils.toLongDefaultIfNull(getMaxMemorySizeBytes(), INLINE_MAX_SIZE);
+}
 
 
-  /**
-   * Set the temporary directory where files that will be used as the basis of
-   * AdaptrisMessage instances wlil be created.
-   *
-   * @param tempDirectory the tempDirectory to set
-   */
-  public void setTempDirectory(String tempDirectory) {
-    this.tempDirectory = tempDirectory;
-  }
+/**
+* Set the temporary directory where files that will be used as the basis of
+* AdaptrisMessage instances wlil be created.
+*
+* @param tempDirectory the tempDirectory to set
+*/
+public void setTempDirectory(String tempDirectory) {
+this.tempDirectory = tempDirectory;
+}
 
-  protected File tempDirectory() {
-    return check(getTempDirectory() != null ? new File(getTempDirectory()) : new File(System.getProperty("java.io.tmpdir")));
-  }
+protected File tempDirectory() {
+return check(getTempDirectory() != null ? new File(getTempDirectory()) : new File(System.getProperty("java.io.tmpdir")));
+}
 
-  private File check(File f) {
-    if (!f.exists() && createTempDir()) {
-      f.mkdirs();
-    }
-    return f;
-  }
+private File check(File f) {
+if (!f.exists() && createTempDir()) {
+f.mkdirs();
+}
+return f;
+}
 
-  @Override
-  public AdaptrisMessage newMessage() {
-    AdaptrisMessage m = new FileBackedMessageImpl(uniqueIdGenerator(), this);
-    if (!isEmpty(getDefaultCharEncoding())) {
-      m.setContentEncoding(getDefaultCharEncoding());
-    }
-    return m;
-  }
+@Override
+public AdaptrisMessage newMessage() {
+AdaptrisMessage m = new FileBackedMessageImpl(uniqueIdGenerator(), this);
+if (!isEmpty(getDefaultCharEncoding())) {
+m.setContentEncoding(getDefaultCharEncoding());
+}
+return m;
+}
 
-  private File createTempFile(File tempDir, Object marker) throws IOException {
-    File f = File.createTempFile(TMP_FILE_PREFIX, TMP_FILE_SUFFIX, tempDir);
-    cleaner.track(f, Args.notNull(marker, "marker"), FileDeleteStrategy.FORCE);
-    return f;
-  }
+private File createTempFile(File tempDir, Object marker) throws IOException {
+File f = File.createTempFile(TMP_FILE_PREFIX, TMP_FILE_SUFFIX, tempDir);
+cleaner.track(f, Args.notNull(marker, "marker"), FileDeleteStrategy.FORCE);
+return f;
+}
 
-  /**
-   * Create a temp file that will be deleted when {@code marker} goes out of scope and garbage collection occurs.
-   * 
-   * @param marker the marker object
-   * @return a temporary file.
-   * @throws IOException
-   */
-  public File createTempFile(Object marker) throws IOException {
-    return createTempFile(tempDirectory(), marker);
-  }
+/**
+* Create a temp file that will be deleted when {@code marker} goes out of scope and garbage collection occurs.
+*
+* @param marker the marker object
+* @return a temporary file.
+* @throws IOException
+*/
+public File createTempFile(Object marker) throws IOException {
+return createTempFile(tempDirectory(), marker);
+}
 
-  /**
-   * @return the createTempDir
-   */
-  public Boolean getCreateTempDir() {
-    return createTempDir;
-  }
+/**
+* @return the createTempDir
+*/
+public Boolean getCreateTempDir() {
+return createTempDir;
+}
 
-  /**
-   * Specify whether or not to create any configured tempDir.
-   * <p>
-   * Generally speaking; if you are using the default {@code java.io.tmpdir} then you can ignore this value.
-   * </p>
-   * 
-   * @param b whether or not to create the temporary directory; defaults to false.
-   */
-  public void setCreateTempDir(Boolean b) {
-    this.createTempDir = b;
-  }
+/**
+* Specify whether or not to create any configured tempDir.
+* <p>
+* Generally speaking; if you are using the default {@code java.io.tmpdir} then you can ignore this value.
+* </p>
+*
+* @param b whether or not to create the temporary directory; defaults to false.
+*/
+public void setCreateTempDir(Boolean b) {
+this.createTempDir = b;
+}
 
-  boolean createTempDir() {
-    return BooleanUtils.toBooleanDefaultIfNull(getCreateTempDir(), false);
-  }
-  
+boolean createTempDir() {
+return BooleanUtils.toBooleanDefaultIfNull(getCreateTempDir(), false);
+}
 
-  public Boolean getExtendedLogging() {
-    return extendedLogging;
-  }
 
-  public void setExtendedLogging(Boolean b) {
-    this.extendedLogging = b;
-  }
+public Boolean getExtendedLogging() {
+return extendedLogging;
+}
 
-  protected boolean extendedLogging() {
-    return BooleanUtils.toBooleanDefaultIfNull(getExtendedLogging(), false);
-  }
+public void setExtendedLogging(Boolean b) {
+this.extendedLogging = b;
+}
 
-  public Boolean getUseNio() {
-    return useNio;
-  }
+protected boolean extendedLogging() {
+return BooleanUtils.toBooleanDefaultIfNull(getExtendedLogging(), false);
+}
 
-  /**
-   * Whether or not to use the java NIO {@link java.nio.file.Files#newInputStream(Path, OpenOption[])} method.
-   * 
-   * @param useNio true to enable, false to use {@link FileInputStream} as always, default if not specified is false.
-   */
-  public void setUseNio(Boolean useNio) {
-    this.useNio = useNio;
-  }
+public Boolean getUseNio() {
+return useNio;
+}
 
-  protected boolean useNio() {
-    return BooleanUtils.toBooleanDefaultIfNull(getUseNio(), false);
-  }
+/**
+* Whether or not to use the java NIO {@link java.nio.file.Files#newInputStream(Path, OpenOption[])} method.
+*
+* @param useNio true to enable, false to use {@link FileInputStream} as always, default if not specified is false.
+*/
+public void setUseNio(Boolean useNio) {
+this.useNio = useNio;
+}
 
-  protected StreamWrapper newStreamWrapper() {
-    return useNio() ? new NioStreamWrapper(extendedLogging()) : new StandardStreamWrapper(extendedLogging());
-  }
+protected boolean useNio() {
+return BooleanUtils.toBooleanDefaultIfNull(getUseNio(), false);
+}
+
+protected StreamWrapper newStreamWrapper() {
+return useNio() ? new NioStreamWrapper(extendedLogging()) : new StandardStreamWrapper(extendedLogging());
+}
 }

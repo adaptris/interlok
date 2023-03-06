@@ -1,15 +1,15 @@
 /*
- * Copyright 2020 Adaptris Ltd.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS"
- * BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the License.
- */
+* Copyright 2020 Adaptris Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS"
+* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
+* governing permissions and limitations under the License.
+*/
 
 package com.adaptris.core.common;
 
@@ -30,91 +30,93 @@ import com.adaptris.interlok.types.InterlokMessage;
 import com.adaptris.interlok.types.MessageWrapper;
 import com.adaptris.util.text.ByteTranslator;
 import com.adaptris.util.text.SimpleByteTranslator;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * {@link MessageWrapper} implementation wraps a metadata value as an {@link OutputStream} along with a {@link ByteTranslator}
- * 
- * 
- * @config metadata-stream-output
- * @since 3.10.1
- */
+* {@link MessageWrapper} implementation wraps a metadata value as an {@link OutputStream} along with a {@link ByteTranslator}
+*
+*
+* @config metadata-stream-output
+* @since 3.10.1
+*/
+@JacksonXmlRootElement(localName = "metadata-stream-output")
 @XStreamAlias("metadata-stream-output")
 @DisplayOrder(order = {"metadataKey", "translator"})
 @ComponentProfile(summary = "MessageWrapper implementation wraps a metadata value as an Outputstream", since = "3.10.1")
 public class MetadataStreamOutput implements MessageWrapper<OutputStream> {
 
-  @NotBlank
-  private String metadataKey;
-  @AdvancedConfig
-  @Valid
-  @InputFieldDefault(value = "SimpleByteTranslator")
-  private ByteTranslator translator;
+@NotBlank
+private String metadataKey;
+@AdvancedConfig
+@Valid
+@InputFieldDefault(value = "SimpleByteTranslator")
+private ByteTranslator translator;
 
-  public MetadataStreamOutput() {
-    super();
-    setMetadataKey(DEFAULT_METADATA_KEY);
-  }
+public MetadataStreamOutput() {
+super();
+setMetadataKey(DEFAULT_METADATA_KEY);
+}
 
-  @Override
-  public OutputStream wrap(InterlokMessage m) throws Exception {
-    return new MetadataOutputStream(m, new ByteArrayOutputStream());
-  }
-
-
-  public String getMetadataKey() {
-    return metadataKey;
-  }
-
-  public void setMetadataKey(String key) {
-    metadataKey = Args.notBlank(key, "metadata key");
-  }
-
-  public <T extends MetadataStreamOutput> T withMetadataKey(String e) {
-    setMetadataKey(e);
-    return (T) this;
-  }
-  
-
-  public ByteTranslator getTranslator() {
-    return translator;
-  }
-
-  /**
-   * Set the translator that will give us bytes.
-   * 
-   * @param t
-   */
-  public void setTranslator(ByteTranslator t) {
-    translator = t;
-  }
-
-  private ByteTranslator translator() {
-    return ObjectUtils.defaultIfNull(getTranslator(), new SimpleByteTranslator());
-  }
+@Override
+public OutputStream wrap(InterlokMessage m) throws Exception {
+return new MetadataOutputStream(m, new ByteArrayOutputStream());
+}
 
 
-  public <T extends MetadataStreamOutput> T withTranslator(ByteTranslator s) {
-    setTranslator(s);
-    return (T) this;
-  }
+public String getMetadataKey() {
+return metadataKey;
+}
+
+public void setMetadataKey(String key) {
+metadataKey = Args.notBlank(key, "metadata key");
+}
+
+public <T extends MetadataStreamOutput> T withMetadataKey(String e) {
+setMetadataKey(e);
+return (T) this;
+}
 
 
-  private class MetadataOutputStream extends FilterOutputStream {
+public ByteTranslator getTranslator() {
+return translator;
+}
 
-    private InterlokMessage msg;
-    private ByteArrayOutputStream byteOut;
+/**
+* Set the translator that will give us bytes.
+*
+* @param t
+*/
+public void setTranslator(ByteTranslator t) {
+translator = t;
+}
 
-    public MetadataOutputStream(InterlokMessage msg, ByteArrayOutputStream out) {
-      super(out);
-      this.msg = msg;
-      byteOut = out;
-    }
+private ByteTranslator translator() {
+return ObjectUtils.defaultIfNull(getTranslator(), new SimpleByteTranslator());
+}
 
-    @Override
-    public void close() throws IOException {
-      super.close();
-      msg.addMessageHeader(getMetadataKey(), translator().translate(byteOut.toByteArray()));
-    }
-  }
+
+public <T extends MetadataStreamOutput> T withTranslator(ByteTranslator s) {
+setTranslator(s);
+return (T) this;
+}
+
+
+private class MetadataOutputStream extends FilterOutputStream {
+
+private InterlokMessage msg;
+private ByteArrayOutputStream byteOut;
+
+public MetadataOutputStream(InterlokMessage msg, ByteArrayOutputStream out) {
+super(out);
+this.msg = msg;
+byteOut = out;
+}
+
+@Override
+public void close() throws IOException {
+super.close();
+msg.addMessageHeader(getMetadataKey(), translator().translate(byteOut.toByteArray()));
+}
+}
 }

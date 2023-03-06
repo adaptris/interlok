@@ -1,17 +1,17 @@
 /*
- * Copyright 2015 Adaptris Ltd.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *     http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+* Copyright 2015 Adaptris Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
 */
 
 package com.adaptris.core.common;
@@ -28,32 +28,34 @@ import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.interlok.config.DataOutputParameter;
 import com.adaptris.interlok.types.InterlokMessage;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * {@code DataInputParameter} implementation that writes to a file.
- * 
- * @config file-data-output-parameter
- */
+* {@code DataInputParameter} implementation that writes to a file.
+*
+* @config file-data-output-parameter
+*/
+@JacksonXmlRootElement(localName = "file-data-output-parameter")
 @XStreamAlias("file-data-output-parameter")
 @DisplayOrder(order = {"destination"})
 public class FileDataOutputParameter extends FileParameter
-    implements DataOutputParameter<String> {
+implements DataOutputParameter<String> {
 
-  public FileDataOutputParameter() {
+public FileDataOutputParameter() {
 
-  }
+}
 
-  @Override
-  public void insert(String data, InterlokMessage message) throws CoreException {
-    try {
-      URL url = FsHelper.createUrlFromString(this.url(message), true);
-      try (OutputStream out = new FileOutputStream(FsHelper.createFileReference(url))) {
-        IOUtils.write(data, out, message.getContentEncoding());
-      }
-    } catch (Exception e) {
-      throw ExceptionHelper.wrapCoreException(e);
-    }
-  }
+@Override
+public void insert(String data, InterlokMessage message) throws CoreException {
+try {
+URL url = FsHelper.createUrlFromString(this.url(message), true);
+try (OutputStream out = new FileOutputStream(FsHelper.createFileReference(url))) {
+IOUtils.write(data, out, message.getContentEncoding());
+}
+} catch (Exception e) {
+throw ExceptionHelper.wrapCoreException(e);
+}
+}
 
 }

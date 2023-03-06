@@ -6,35 +6,37 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.ExceptionHelper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Simplified framework for retrieving OAUTH tokens from verious 3rd party resources (such as Salesforce, or Google).
- *
- *
- * @config get-oauth-token
- *
- */
+* Simplified framework for retrieving OAUTH tokens from verious 3rd party resources (such as Salesforce, or Google).
+*
+*
+* @config get-oauth-token
+*
+*/
+@JacksonXmlRootElement(localName = "get-oauth-token")
 @XStreamAlias("get-oauth-token")
 @AdapterComponent
 @ComponentProfile(summary = "Make a HTTP(s) request to an OAUTH server and retrieve an access token", tag = "service,http,https,oauth")
 @DisplayOrder(order =
 {
-    "accessTokenBuilder", "accessTokenWriter"
+"accessTokenBuilder", "accessTokenWriter"
 })
 public class GetOauthToken extends OauthTokenGetter {
 
-  public GetOauthToken() {
-  }
+public GetOauthToken() {
+}
 
-  @Override
-  public void doService(AdaptrisMessage msg) throws ServiceException {
-    try {
-      AccessToken token = getAccessTokenBuilder().build(msg);
-      tokenWriterToUse().apply(token, msg);
-    }
-    catch (Exception e) {
-      throw ExceptionHelper.wrapServiceException(e);
-    }
-  }
+@Override
+public void doService(AdaptrisMessage msg) throws ServiceException {
+try {
+AccessToken token = getAccessTokenBuilder().build(msg);
+tokenWriterToUse().apply(token, msg);
+}
+catch (Exception e) {
+throw ExceptionHelper.wrapServiceException(e);
+}
+}
 }

@@ -26,143 +26,145 @@ import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.fs.FsException;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Read a file from a specific path into the message payload.
- *
- * @config read-file-service
- */
+* Read a file from a specific path into the message payload.
+*
+* @config read-file-service
+*/
 @AdapterComponent
 @ComponentProfile(summary = "Read a file from a specific path into the message payload",
-    tag = "service,file")
+tag = "service,file")
+@JacksonXmlRootElement(localName = "read-file-service")
 @XStreamAlias("read-file-service")
 public class ReadFileService extends ServiceImp {
 
-  /**
-   * The parameter for the path to the file to read.
-   */
-  @NotBlank
-  @InputFieldHint(expression = true)
-  private String filePath;
+/**
+* The parameter for the path to the file to read.
+*/
+@NotBlank
+@InputFieldHint(expression = true)
+private String filePath;
 
-  @AffectsMetadata
-  @AdvancedConfig
-  @InputFieldDefault(value = "null")
-  private String contentTypeMetadataKey;
+@AffectsMetadata
+@AdvancedConfig
+@InputFieldDefault(value = "null")
+private String contentTypeMetadataKey;
 
-  @AdvancedConfig(rare = true)
-  @Valid
-  @InputFieldDefault(value = "Files.probeContentType(Path)")
-  private ContentTypeProbe contentTypeProbe;
+@AdvancedConfig(rare = true)
+@Valid
+@InputFieldDefault(value = "Files.probeContentType(Path)")
+private ContentTypeProbe contentTypeProbe;
 
-  @Override
-  public void doService(final AdaptrisMessage message) throws ServiceException {
-    try {
-      final File file = convertToFile(message.resolve(getFilePath()));
-      log.trace("Reading file : {}", file.getCanonicalPath());
-      try (FileInputStream in = new FileInputStream(file);
-          OutputStream out = message.getOutputStream()) {
-        copy(in, out);
-      }
-      if (isNotBlank(getContentTypeMetadataKey())) {
-        message.addMetadata(getContentTypeMetadataKey(), probeContentType(file));
-      }
-    } catch (Exception e) {
-      throw ExceptionHelper.wrapServiceException(e);
-    }
-  }
+@Override
+public void doService(final AdaptrisMessage message) throws ServiceException {
+try {
+final File file = convertToFile(message.resolve(getFilePath()));
+log.trace("Reading file : {}", file.getCanonicalPath());
+try (FileInputStream in = new FileInputStream(file);
+OutputStream out = message.getOutputStream()) {
+copy(in, out);
+}
+if (isNotBlank(getContentTypeMetadataKey())) {
+message.addMetadata(getContentTypeMetadataKey(), probeContentType(file));
+}
+} catch (Exception e) {
+throw ExceptionHelper.wrapServiceException(e);
+}
+}
 
-  @SuppressWarnings({"lgtm [java/path-injection]"})
-  private static File convertToFile(String filepath) throws FsException {
-    try {
-      return isFile(checkReadable(FsHelper.toFile(filepath)));
-    } catch (Exception e) {
-      return isFile(checkReadable(new File(filepath)));
-    }
-  }
+@SuppressWarnings({"lgtm [java/path-injection]"})
+private static File convertToFile(String filepath) throws FsException {
+try {
+return isFile(checkReadable(FsHelper.toFile(filepath)));
+} catch (Exception e) {
+return isFile(checkReadable(new File(filepath)));
+}
+}
 
-  private String probeContentType(File file) throws IOException {
-    return defaultIfBlank(contentTypeProbe().probeContentType(file), "");
-  }
+private String probeContentType(File file) throws IOException {
+return defaultIfBlank(contentTypeProbe().probeContentType(file), "");
+}
 
-  @Override
-  public void prepare() throws CoreException {
-    /* empty method */
-  }
+@Override
+public void prepare() throws CoreException {
+/* empty method */
+}
 
-  @Override
-  protected void closeService() {
-    /* empty method */
-  }
+@Override
+protected void closeService() {
+/* empty method */
+}
 
-  @Override
-  protected void initService() throws CoreException {
-    try {
-      Args.notBlank(getFilePath(), "filePath");
-    } catch (Exception e) {
-      throw ExceptionHelper.wrapCoreException(e);
-    }
-  }
+@Override
+protected void initService() throws CoreException {
+try {
+Args.notBlank(getFilePath(), "filePath");
+} catch (Exception e) {
+throw ExceptionHelper.wrapCoreException(e);
+}
+}
 
-  /**
-   * Get the file path parameter.
-   *
-   * @return The file path parameter.
-   */
-  public String getFilePath() {
-    return filePath;
-  }
+/**
+* Get the file path parameter.
+*
+* @return The file path parameter.
+*/
+public String getFilePath() {
+return filePath;
+}
 
-  /**
-   * Set the file path parameter.
-   *
-   * @param filePath The file path parameter.
-   */
-  public void setFilePath(final String filePath) {
-    this.filePath = Args.notBlank(filePath, "filePath");
-  }
+/**
+* Set the file path parameter.
+*
+* @param filePath The file path parameter.
+*/
+public void setFilePath(final String filePath) {
+this.filePath = Args.notBlank(filePath, "filePath");
+}
 
-  public String getContentTypeMetadataKey() {
-    return contentTypeMetadataKey;
-  }
+public String getContentTypeMetadataKey() {
+return contentTypeMetadataKey;
+}
 
-  /**
-   * Sets the metadata key set the content type as, if not provided will not be set. (default: null)
-   *
-   * @param contentTypeMetadataKey
-   */
-  public void setContentTypeMetadataKey(String contentTypeMetadataKey) {
-    this.contentTypeMetadataKey = contentTypeMetadataKey;
-  }
+/**
+* Sets the metadata key set the content type as, if not provided will not be set. (default: null)
+*
+* @param contentTypeMetadataKey
+*/
+public void setContentTypeMetadataKey(String contentTypeMetadataKey) {
+this.contentTypeMetadataKey = contentTypeMetadataKey;
+}
 
 
-  public ContentTypeProbe getContentTypeProbe() {
-    return contentTypeProbe;
-  }
+public ContentTypeProbe getContentTypeProbe() {
+return contentTypeProbe;
+}
 
-  /**
-   * If {@link #setContentTypeMetadataKey(String)} is set, then this interface is used to probe the content type of the file.
-   * <p>
-   * By default {@link Files#probeContentType(java.nio.file.Path)} is used which means no additional jars are required. This
-   * implementation is platform dependent; so an alternative is available in the {@code com.adaptris:interlok-filesystem} module.
-   * </p>
-   *
-   * @param contentTypeProbe how to probe for the content type; by default uses {@link Files#probeContentType(java.nio.file.Path)}
-   *        if not explicitly configured.
-   */
-  public void setContentTypeProbe(ContentTypeProbe contentTypeProbe) {
-    this.contentTypeProbe = contentTypeProbe;
-  }
+/**
+* If {@link #setContentTypeMetadataKey(String)} is set, then this interface is used to probe the content type of the file.
+* <p>
+* By default {@link Files#probeContentType(java.nio.file.Path)} is used which means no additional jars are required. This
+* implementation is platform dependent; so an alternative is available in the {@code com.adaptris:interlok-filesystem} module.
+* </p>
+*
+* @param contentTypeProbe how to probe for the content type; by default uses {@link Files#probeContentType(java.nio.file.Path)}
+*        if not explicitly configured.
+*/
+public void setContentTypeProbe(ContentTypeProbe contentTypeProbe) {
+this.contentTypeProbe = contentTypeProbe;
+}
 
-  protected ContentTypeProbe contentTypeProbe() {
-    return getContentTypeProbe() != null ? getContentTypeProbe() : e -> {
-      return Files.probeContentType(e.toPath());
-    };
-  }
+protected ContentTypeProbe contentTypeProbe() {
+return getContentTypeProbe() != null ? getContentTypeProbe() : e -> {
+return Files.probeContentType(e.toPath());
+};
+}
 
-  @FunctionalInterface
-  public interface ContentTypeProbe {
-    String probeContentType(File f) throws IOException;
-  }
+@FunctionalInterface
+public interface ContentTypeProbe {
+String probeContentType(File f) throws IOException;
+}
 }

@@ -14,88 +14,90 @@ import com.adaptris.core.AbstractMarshaller;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.XStreamMarshaller;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * <p>
- * This marshaller is designed for {@link InterceptorStatistic} and is used exclusively with the {@link ProducingStatisticManager}.
- * </p>
- * <p>
- * We convert the {@link InterceptorStatistic} into a {@link SerializableStatistic} and then use the configured XStream marshaller to serialize the object. <br />
- * The defauilt XStream marshaller is for XML, but you can configure the JSON version by setting the property "actual-marshaller".
- * </p>
- * @author aaron
- *
- */
+* <p>
+* This marshaller is designed for {@link InterceptorStatistic} and is used exclusively with the {@link ProducingStatisticManager}.
+* </p>
+* <p>
+* We convert the {@link InterceptorStatistic} into a {@link SerializableStatistic} and then use the configured XStream marshaller to serialize the object. <br />
+* The defauilt XStream marshaller is for XML, but you can configure the JSON version by setting the property "actual-marshaller".
+* </p>
+* @author aaron
+*
+*/
+@JacksonXmlRootElement(localName = "statistic-marshaller")
 @XStreamAlias("statistic-marshaller")
 @AdapterComponent
 @ComponentProfile(summary = "Serializer specifically used to create a human readable representation of a metric timeslice.", tag = "marshaller")
 public class StatisticMarshaller extends AbstractMarshaller {
-  
-  protected transient Logger log = LoggerFactory.getLogger(this.getClass());
-  
-  @AutoPopulated
-  @AdvancedConfig(rare = true)
-  private AdaptrisMarshaller actualMarshaller;
 
-  public StatisticMarshaller() {
-    this.setActualMarshaller(new XStreamMarshaller());
-  }
-  
-  @Override
-  public String marshal(Object obj) throws CoreException {
-    SerializableStatistic serializeStatistic = serializeStatistic(obj);
-    if(serializeStatistic != null)
-      return this.getActualMarshaller().marshal(serializeStatistic);
-    else return null;
-  }
+protected transient Logger log = LoggerFactory.getLogger(this.getClass());
 
-  @Override
-  public void marshal(Object obj, Writer writer) throws CoreException {
-    SerializableStatistic serializeStatistic = serializeStatistic(obj);
-    if(serializeStatistic != null)
-      this.getActualMarshaller().marshal(serializeStatistic, writer);
-  }
+@AutoPopulated
+@AdvancedConfig(rare = true)
+private AdaptrisMarshaller actualMarshaller;
 
-  @Override
-  public Object unmarshal(Reader reader) throws CoreException {
-    return this.getActualMarshaller().unmarshal(reader);
-  }
+public StatisticMarshaller() {
+this.setActualMarshaller(new XStreamMarshaller());
+}
 
-  private SerializableStatistic serializeStatistic(Object obj) throws CoreException {
-    if(obj instanceof InterceptorStatistic) {
-      
-      InterceptorStatistic stat = (InterceptorStatistic) obj;
-      SerializableStatistic serializableStatistic = new SerializableStatistic();
-      serializableStatistic.setStartMillis(stat.getStartMillis());
-      serializableStatistic.setEndMillis(stat.getEndMillis());
-      
-      if(stat instanceof MessageStatistic) {
-        serializableStatistic.setTotalMessageCount(((MessageStatistic) stat).getTotalMessageCount());
-        serializableStatistic.setTotalMessageErrorCount(((MessageStatistic) stat).getTotalMessageErrorCount());
-        serializableStatistic.setTotalMessageSize(((MessageStatistic) stat).getTotalMessageSize());
-      } else if (stat instanceof MetadataStatistic) {        
-        Map<String, String> mapOfProperties = ((MetadataStatistic) stat).getMetadataStatistics().entrySet().stream().collect(
-            Collectors.toMap(
-                e -> (String) e.getKey(),
-                e -> (String) e.getValue()
-        ));
-        
-        serializableStatistic.setMetadataStatistics(mapOfProperties);
-      }
-      
-      return serializableStatistic;
-      
-    } else
-      log.warn("Object is not a statistic object, therefore skipping serialization.");
-    return null;
-  }
+@Override
+public String marshal(Object obj) throws CoreException {
+SerializableStatistic serializeStatistic = serializeStatistic(obj);
+if(serializeStatistic != null)
+return this.getActualMarshaller().marshal(serializeStatistic);
+else return null;
+}
 
-  public AdaptrisMarshaller getActualMarshaller() {
-    return actualMarshaller;
-  }
+@Override
+public void marshal(Object obj, Writer writer) throws CoreException {
+SerializableStatistic serializeStatistic = serializeStatistic(obj);
+if(serializeStatistic != null)
+this.getActualMarshaller().marshal(serializeStatistic, writer);
+}
 
-  public void setActualMarshaller(AdaptrisMarshaller actualMarshaller) {
-    this.actualMarshaller = actualMarshaller;
-  }
+@Override
+public Object unmarshal(Reader reader) throws CoreException {
+return this.getActualMarshaller().unmarshal(reader);
+}
+
+private SerializableStatistic serializeStatistic(Object obj) throws CoreException {
+if(obj instanceof InterceptorStatistic) {
+
+InterceptorStatistic stat = (InterceptorStatistic) obj;
+SerializableStatistic serializableStatistic = new SerializableStatistic();
+serializableStatistic.setStartMillis(stat.getStartMillis());
+serializableStatistic.setEndMillis(stat.getEndMillis());
+
+if(stat instanceof MessageStatistic) {
+serializableStatistic.setTotalMessageCount(((MessageStatistic) stat).getTotalMessageCount());
+serializableStatistic.setTotalMessageErrorCount(((MessageStatistic) stat).getTotalMessageErrorCount());
+serializableStatistic.setTotalMessageSize(((MessageStatistic) stat).getTotalMessageSize());
+} else if (stat instanceof MetadataStatistic) {
+Map<String, String> mapOfProperties = ((MetadataStatistic) stat).getMetadataStatistics().entrySet().stream().collect(
+Collectors.toMap(
+e -> (String) e.getKey(),
+e -> (String) e.getValue()
+));
+
+serializableStatistic.setMetadataStatistics(mapOfProperties);
+}
+
+return serializableStatistic;
+
+} else
+log.warn("Object is not a statistic object, therefore skipping serialization.");
+return null;
+}
+
+public AdaptrisMarshaller getActualMarshaller() {
+return actualMarshaller;
+}
+
+public void setActualMarshaller(AdaptrisMarshaller actualMarshaller) {
+this.actualMarshaller = actualMarshaller;
+}
 }

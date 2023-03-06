@@ -1,17 +1,17 @@
 /*
- * Copyright 2015 Adaptris Ltd.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *     http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+* Copyright 2015 Adaptris Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
 */
 
 package com.adaptris.core.runtime;
@@ -25,152 +25,154 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * <p>
- * A {@link MessageCache} implementation that uses an {@link ArrayBlockingQueue} to hold the messages.
- * </p>
- * <p>
- * Once the internal queue reaches it's limit, the oldest message will be removed and the newer message added.
- * </p>
- * <p>
- * You can control the limit of the internal queue by configuring "max-messages".
- * </p>
- * @config lru-bounded-message-cache
- * 
- * @author Aaron McGrath
- *
- */
+* <p>
+* A {@link MessageCache} implementation that uses an {@link ArrayBlockingQueue} to hold the messages.
+* </p>
+* <p>
+* Once the internal queue reaches it's limit, the oldest message will be removed and the newer message added.
+* </p>
+* <p>
+* You can control the limit of the internal queue by configuring "max-messages".
+* </p>
+* @config lru-bounded-message-cache
+*
+* @author Aaron McGrath
+*
+*/
+@JacksonXmlRootElement(localName = "lru-bounded-message-cache")
 @XStreamAlias("lru-bounded-message-cache")
 public class LruBoundedMessageCache implements MessageCache {
-  
-  protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
-  private static final long DEFAULT_QUEUE_POLL = 50;
-  private static final int DEFAULT_MAX_MESSAGES = 100;
+protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
-  private int maxMessages;
+private static final long DEFAULT_QUEUE_POLL = 50;
+private static final int DEFAULT_MAX_MESSAGES = 100;
 
-  private transient ArrayBlockingQueue<CacheableAdaptrisMessageWrapper> boundedCache;
-  
-  private transient ReentrantLock lock = new ReentrantLock(true);
+private int maxMessages;
 
-  public LruBoundedMessageCache() {
-    maxMessages = DEFAULT_MAX_MESSAGES;
-  }
+private transient ArrayBlockingQueue<CacheableAdaptrisMessageWrapper> boundedCache;
 
-  @Override
-  public void put(CacheableAdaptrisMessageWrapper message) {
-    try {
-      lock.lock();
-      while (!this.getBoundedCache().offer(message)) {
-        try {
-          this.getBoundedCache().poll(DEFAULT_QUEUE_POLL, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-          log.warn("Interrupted while adding message '{}' to the message cache.", message.getMessageId());
-          break;
-        }
-      }
-      log.trace("Cached message: {}", message.getMessageId());
-    } finally {
-      lock.unlock();
-    }
-  }
+private transient ReentrantLock lock = new ReentrantLock(true);
 
-  @Override
-  public CacheableAdaptrisMessageWrapper remove(final String messageId) {
-    try {
-      lock.lock();
-      CacheableAdaptrisMessageWrapper wrapper = new CacheableAdaptrisMessageWrapper();
-      wrapper.setMessageId(messageId);
-      
-      log.trace("Removing message: {}", wrapper.getMessageId());
-      Spliterator<CacheableAdaptrisMessageWrapper> spliterator = this.getBoundedCache().spliterator();
-      CacheMessageConsumer cacheMessageConsumer = new CacheMessageConsumer();
-      cacheMessageConsumer.setLookupWrapper(wrapper);
-      spliterator.forEachRemaining(cacheMessageConsumer);
-      
-      return cacheMessageConsumer.getReturnValue();
-    } finally {
-      lock.unlock();
-    }
-  }
-  
-  @Override
-  public boolean contains(String messageId) {
-    try {
-      CacheableAdaptrisMessageWrapper wrapper = new CacheableAdaptrisMessageWrapper();
-      wrapper.setMessageId(messageId);
-      lock.lock();
-      return this.getBoundedCache().contains(wrapper);
-    } finally {
-      lock.unlock();
-    }
-  }
+public LruBoundedMessageCache() {
+maxMessages = DEFAULT_MAX_MESSAGES;
+}
 
-  @Override
-  public void init() {
-    boundedCache = new ArrayBlockingQueue<>(this.getMaxMessages(), true);
-  }
+@Override
+public void put(CacheableAdaptrisMessageWrapper message) {
+try {
+lock.lock();
+while (!this.getBoundedCache().offer(message)) {
+try {
+this.getBoundedCache().poll(DEFAULT_QUEUE_POLL, TimeUnit.MILLISECONDS);
+} catch (InterruptedException e) {
+log.warn("Interrupted while adding message '{}' to the message cache.", message.getMessageId());
+break;
+}
+}
+log.trace("Cached message: {}", message.getMessageId());
+} finally {
+lock.unlock();
+}
+}
 
-  @Override
-  public void start() {
+@Override
+public CacheableAdaptrisMessageWrapper remove(final String messageId) {
+try {
+lock.lock();
+CacheableAdaptrisMessageWrapper wrapper = new CacheableAdaptrisMessageWrapper();
+wrapper.setMessageId(messageId);
 
-  }
+log.trace("Removing message: {}", wrapper.getMessageId());
+Spliterator<CacheableAdaptrisMessageWrapper> spliterator = this.getBoundedCache().spliterator();
+CacheMessageConsumer cacheMessageConsumer = new CacheMessageConsumer();
+cacheMessageConsumer.setLookupWrapper(wrapper);
+spliterator.forEachRemaining(cacheMessageConsumer);
 
-  @Override
-  public void stop() {
-    boundedCache.clear();
-  }
+return cacheMessageConsumer.getReturnValue();
+} finally {
+lock.unlock();
+}
+}
 
-  @Override
-  public void close() {
+@Override
+public boolean contains(String messageId) {
+try {
+CacheableAdaptrisMessageWrapper wrapper = new CacheableAdaptrisMessageWrapper();
+wrapper.setMessageId(messageId);
+lock.lock();
+return this.getBoundedCache().contains(wrapper);
+} finally {
+lock.unlock();
+}
+}
 
-  }
+@Override
+public void init() {
+boundedCache = new ArrayBlockingQueue<>(this.getMaxMessages(), true);
+}
 
-  public int getMaxMessages() {
-    return maxMessages;
-  }
+@Override
+public void start() {
 
-  public void setMaxMessages(int maxMessages) {
-    this.maxMessages = maxMessages;
-  }
+}
 
-  public ArrayBlockingQueue<CacheableAdaptrisMessageWrapper> getBoundedCache() {
-    return boundedCache;
-  }
+@Override
+public void stop() {
+boundedCache.clear();
+}
 
-  public void setBoundedCache(ArrayBlockingQueue<CacheableAdaptrisMessageWrapper> boundedCache) {
-    this.boundedCache = boundedCache;
-  }
-  
-  class CacheMessageConsumer implements Consumer<CacheableAdaptrisMessageWrapper> {
-    private CacheableAdaptrisMessageWrapper lookupWrapper;
-    private CacheableAdaptrisMessageWrapper returnValue;
-    
-    @Override
-    public void accept(CacheableAdaptrisMessageWrapper cachedMessage) {
-      if(cachedMessage.getMessageId().equals(getLookupWrapper().getMessageId())) {
-        setReturnValue(cachedMessage);
-      }
-    }
+@Override
+public void close() {
 
-    public CacheableAdaptrisMessageWrapper getLookupWrapper() {
-      return lookupWrapper;
-    }
+}
 
-    public void setLookupWrapper(CacheableAdaptrisMessageWrapper lookupWrapper) {
-      this.lookupWrapper = lookupWrapper;
-    }
+public int getMaxMessages() {
+return maxMessages;
+}
 
-    public CacheableAdaptrisMessageWrapper getReturnValue() {
-      return returnValue;
-    }
+public void setMaxMessages(int maxMessages) {
+this.maxMessages = maxMessages;
+}
 
-    public void setReturnValue(CacheableAdaptrisMessageWrapper returnValue) {
-      this.returnValue = returnValue;
-    } 
-  }
+public ArrayBlockingQueue<CacheableAdaptrisMessageWrapper> getBoundedCache() {
+return boundedCache;
+}
+
+public void setBoundedCache(ArrayBlockingQueue<CacheableAdaptrisMessageWrapper> boundedCache) {
+this.boundedCache = boundedCache;
+}
+
+class CacheMessageConsumer implements Consumer<CacheableAdaptrisMessageWrapper> {
+private CacheableAdaptrisMessageWrapper lookupWrapper;
+private CacheableAdaptrisMessageWrapper returnValue;
+
+@Override
+public void accept(CacheableAdaptrisMessageWrapper cachedMessage) {
+if(cachedMessage.getMessageId().equals(getLookupWrapper().getMessageId())) {
+setReturnValue(cachedMessage);
+}
+}
+
+public CacheableAdaptrisMessageWrapper getLookupWrapper() {
+return lookupWrapper;
+}
+
+public void setLookupWrapper(CacheableAdaptrisMessageWrapper lookupWrapper) {
+this.lookupWrapper = lookupWrapper;
+}
+
+public CacheableAdaptrisMessageWrapper getReturnValue() {
+return returnValue;
+}
+
+public void setReturnValue(CacheableAdaptrisMessageWrapper returnValue) {
+this.returnValue = returnValue;
+}
+}
 
 }

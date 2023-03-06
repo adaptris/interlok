@@ -1,17 +1,17 @@
 /*
- * Copyright 2015 Adaptris Ltd.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *     http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+* Copyright 2015 Adaptris Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
 */
 
 package com.adaptris.core.services.metadata;
@@ -24,57 +24,59 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.util.text.ByteTranslator;
 import com.adaptris.util.text.CharsetByteTranslator;
 import com.adaptris.util.text.HexStringByteTranslator;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * This class will decode hex encoded metadata value(s) using the specified character encoding
- * 
- * @config hex-to-string-metadata-service
- * 
- * 
- * @see StringToHexService
- */
+* This class will decode hex encoded metadata value(s) using the specified character encoding
+*
+* @config hex-to-string-metadata-service
+*
+*
+* @see StringToHexService
+*/
+@JacksonXmlRootElement(localName = "hex-to-string-metadata-service")
 @XStreamAlias("hex-to-string-metadata-service")
 @AdapterComponent
 @ComponentProfile(summary = "Turn a hex encoded string into a java string using the specified character encoding",
-    tag = "service,metadata")
+tag = "service,metadata")
 @DisplayOrder(order = {"metadataKeyRegexp", "charset", "metadataLogger"})
 public class HexToStringService extends ReformatMetadata {
 
-  private String charset;
-  protected static final String UTF_8 = "UTF-8";
+private String charset;
+protected static final String UTF_8 = "UTF-8";
 
-  public HexToStringService() {
-    super();
-  }
+public HexToStringService() {
+super();
+}
 
-  public HexToStringService(String regex) {
-    super(regex);
-    setCharset(UTF_8);
-  }
+public HexToStringService(String regex) {
+super(regex);
+setCharset(UTF_8);
+}
 
-  public String getCharset() {
-    return charset;
-  }
+public String getCharset() {
+return charset;
+}
 
-  /**
-   * The character encoding to be applied when decoding the hex string. If no encoding is specified, UTF8 will be used.
-   *
-   * @param encoding
-   */
-  public void setCharset(String encoding) {
-    charset = encoding;
-  }
+/**
+* The character encoding to be applied when decoding the hex string. If no encoding is specified, UTF8 will be used.
+*
+* @param encoding
+*/
+public void setCharset(String encoding) {
+charset = encoding;
+}
 
-  protected String getCharacterEncoding() {
-    return defaultIfEmpty(getCharset(), UTF_8);
-  }
+protected String getCharacterEncoding() {
+return defaultIfEmpty(getCharset(), UTF_8);
+}
 
-  @Override
-  public String reformat(String s, String msgCharset) throws Exception {
-    ByteTranslator hexToBytes = new HexStringByteTranslator();
-    ByteTranslator bytesToString = new CharsetByteTranslator(getCharacterEncoding());
-    return bytesToString.translate(hexToBytes.translate(s));
-  }
+@Override
+public String reformat(String s, String msgCharset) throws Exception {
+ByteTranslator hexToBytes = new HexStringByteTranslator();
+ByteTranslator bytesToString = new CharsetByteTranslator(getCharacterEncoding());
+return bytesToString.translate(hexToBytes.translate(s));
+}
 
 }

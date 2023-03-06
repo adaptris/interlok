@@ -1,17 +1,17 @@
 /*
- * Copyright 2015 Adaptris Ltd.
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *     http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+* Copyright 2015 Adaptris Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
 */
 
 package com.adaptris.core;
@@ -26,311 +26,313 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * <p>
- * Wrapper class for a <code>AdaptrisMessageConsumer</code> and a <code>AdaptrisConnection</code>. Implements
- * <code>AdaptrisMessageConsumer</code> and delegates all method calls to the underlying consumer.
- * </p>
- * 
- * @config standalone-consumer
- */
+* <p>
+* Wrapper class for a <code>AdaptrisMessageConsumer</code> and a <code>AdaptrisConnection</code>. Implements
+* <code>AdaptrisMessageConsumer</code> and delegates all method calls to the underlying consumer.
+* </p>
+*
+* @config standalone-consumer
+*/
+@JacksonXmlRootElement(localName = "standalone-consumer")
 @XStreamAlias("standalone-consumer")
 @AdapterComponent
 @ComponentProfile(summary = "Standalone wrapper for a consumer and connection", tag = "consumer,base")
 public class StandaloneConsumer implements AdaptrisMessageConsumer, StateManagedComponent, ComponentLifecycleExtension {
-  private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
+private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
-  private AdaptrisConnection connection;
-  private AdaptrisMessageConsumer consumer;
-  @AdvancedConfig(rare = true)
-  @InputFieldDefault(value = "false")
-  private Boolean isTrackingEndpoint;
-  private transient ComponentState consumerState;
+private AdaptrisConnection connection;
+private AdaptrisMessageConsumer consumer;
+@AdvancedConfig(rare = true)
+@InputFieldDefault(value = "false")
+private Boolean isTrackingEndpoint;
+private transient ComponentState consumerState;
 
-  /**
-   * <p>
-   * Creates a new instance.
-   * </p>
-   */
-  public StandaloneConsumer() {
-    this(new NullConnection(), new NullMessageConsumer());
-  }
+/**
+* <p>
+* Creates a new instance.
+* </p>
+*/
+public StandaloneConsumer() {
+this(new NullConnection(), new NullMessageConsumer());
+}
 
-  public StandaloneConsumer(AdaptrisMessageConsumer consumer) {
-    this(new NullConnection(), consumer);
-  }
+public StandaloneConsumer(AdaptrisMessageConsumer consumer) {
+this(new NullConnection(), consumer);
+}
 
-  public StandaloneConsumer(AdaptrisConnection c) {
-    this(c, new NullMessageConsumer());
-  }
+public StandaloneConsumer(AdaptrisConnection c) {
+this(c, new NullMessageConsumer());
+}
 
-  public StandaloneConsumer(AdaptrisConnection c, AdaptrisMessageConsumer amc) {
-    setConnection(c);
-    setConsumer(amc);
-    changeState(ClosedState.getInstance());
-  }
+public StandaloneConsumer(AdaptrisConnection c, AdaptrisMessageConsumer amc) {
+setConnection(c);
+setConsumer(amc);
+changeState(ClosedState.getInstance());
+}
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#init()
-   */
-  @Override
-  public void init() throws CoreException {
-    getConnection().addExceptionListener(this);
-    getConnection().addMessageConsumer(getConsumer());
-    LifecycleHelper.init(getConnection());
-    LifecycleHelper.init(getConsumer());
-  }
+/**
+* @see com.adaptris.core.AdaptrisComponent#init()
+*/
+@Override
+public void init() throws CoreException {
+getConnection().addExceptionListener(this);
+getConnection().addMessageConsumer(getConsumer());
+LifecycleHelper.init(getConnection());
+LifecycleHelper.init(getConsumer());
+}
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#start()
-   */
-  @Override
-  public void start() throws CoreException {
-    LifecycleHelper.start(getConnection());
-    LifecycleHelper.start(getConsumer());
-  }
+/**
+* @see com.adaptris.core.AdaptrisComponent#start()
+*/
+@Override
+public void start() throws CoreException {
+LifecycleHelper.start(getConnection());
+LifecycleHelper.start(getConsumer());
+}
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#stop()
-   */
-  @Override
-  public void stop() {
-    LifecycleHelper.stop(getConsumer());
-    LifecycleHelper.stop(getConnection());
-  }
+/**
+* @see com.adaptris.core.AdaptrisComponent#stop()
+*/
+@Override
+public void stop() {
+LifecycleHelper.stop(getConsumer());
+LifecycleHelper.stop(getConnection());
+}
 
-  /**
-   * @see com.adaptris.core.AdaptrisComponent#close()
-   */
-  @Override
-  public void close() {
-    LifecycleHelper.close(getConsumer());
-    LifecycleHelper.close(getConnection());
-  }
+/**
+* @see com.adaptris.core.AdaptrisComponent#close()
+*/
+@Override
+public void close() {
+LifecycleHelper.close(getConsumer());
+LifecycleHelper.close(getConnection());
+}
 
-  // @Override
-  // public AdaptrisConnection retrieveConnection() {
-  // return connection;
-  // }
+// @Override
+// public AdaptrisConnection retrieveConnection() {
+// return connection;
+// }
 
-  @Override
-  public <T> T retrieveConnection(Class<T> type) {
-    return connection.retrieveConnection(type);
-  }
+@Override
+public <T> T retrieveConnection(Class<T> type) {
+return connection.retrieveConnection(type);
+}
 
-  @Override
-  public String createQualifier() {
-    return defaultIfEmpty(getUniqueId(), "");
-  }
+@Override
+public String createQualifier() {
+return defaultIfEmpty(getUniqueId(), "");
+}
 
-  @Override
-  public String getUniqueId() {
-    return getConsumer().getUniqueId();
-  }
+@Override
+public String getUniqueId() {
+return getConsumer().getUniqueId();
+}
 
-  /**
-   * Get the connection to be used.
-   * <p>
-   * As this class is designed to be marshalled to XML, the getter and setter for the connection is required to be present, and
-   * simply proxies the underlying AdaptrisMessageWorker implementation.
-   * </p>
-   * 
-   * @return the connection
-   */
-  public AdaptrisConnection getConnection() {
-    return connection;
-  }
+/**
+* Get the connection to be used.
+* <p>
+* As this class is designed to be marshalled to XML, the getter and setter for the connection is required to be present, and
+* simply proxies the underlying AdaptrisMessageWorker implementation.
+* </p>
+*
+* @return the connection
+*/
+public AdaptrisConnection getConnection() {
+return connection;
+}
 
-  /**
-   * Set the connection to be used.
-   * <p>
-   * As this class is designed to be marshalled to XML, the getter and setter
-   * for the connection is required to be present, and simply proxies the
-   * underlying AdaptrisMessageWorker implementation.
-   * </p>
-   *
-   * @see AdaptrisMessageWorker#registerConnection(AdaptrisConnection)
-   * @param conn the connection
-   */
-  public void setConnection(AdaptrisConnection conn) {
-    connection = Args.notNull(conn, "connection");
-  }
+/**
+* Set the connection to be used.
+* <p>
+* As this class is designed to be marshalled to XML, the getter and setter
+* for the connection is required to be present, and simply proxies the
+* underlying AdaptrisMessageWorker implementation.
+* </p>
+*
+* @see AdaptrisMessageWorker#registerConnection(AdaptrisConnection)
+* @param conn the connection
+*/
+public void setConnection(AdaptrisConnection conn) {
+connection = Args.notNull(conn, "connection");
+}
 
-  /**
-   * <p>
-   * Sets the <code>AdaptrisConnection</code> to use. May not be null.
-   * </p>
-   *
-   * @param conn the <code>AdaptrisConnection</code> to use
-   */
-  @Override
-  public void registerConnection(AdaptrisConnection conn) {
-    connection = Args.notNull(conn, "connection");;
-    connection.addExceptionListener(this);
-  }
+/**
+* <p>
+* Sets the <code>AdaptrisConnection</code> to use. May not be null.
+* </p>
+*
+* @param conn the <code>AdaptrisConnection</code> to use
+*/
+@Override
+public void registerConnection(AdaptrisConnection conn) {
+connection = Args.notNull(conn, "connection");;
+connection.addExceptionListener(this);
+}
 
-  /**
-   * <p>
-   * Returns the underlying <code>AdaptrisMessageConsumer</code>.
-   * </p>
-   *
-   * @return the underlying <code>AdaptrisMessageConsumer</code>
-   */
-  public AdaptrisMessageConsumer getConsumer() {
-    return consumer;
-  }
+/**
+* <p>
+* Returns the underlying <code>AdaptrisMessageConsumer</code>.
+* </p>
+*
+* @return the underlying <code>AdaptrisMessageConsumer</code>
+*/
+public AdaptrisMessageConsumer getConsumer() {
+return consumer;
+}
 
-  /**
-   * <p>
-   * Sets the underlying <code>AdaptrisMessageConsumer</code>. May not be null.
-   * </p>
-   *
-   * @param cons the underlying <code>AdaptrisMessageConsumer</code>
-   */
-  public void setConsumer(AdaptrisMessageConsumer cons) {
-    consumer = Args.notNull(cons, "consumer");
-  }
-
-
-  // methods below delegate to the underlying consumer...
-
-  /**
-   * @see com.adaptris.core.AdaptrisMessageConsumer
-   *      #registerAdaptrisMessageListener(com.adaptris.core.AdaptrisMessageListener)
-   */
-  @Override
-  public void registerAdaptrisMessageListener(AdaptrisMessageListener l) {
-    getConsumer().registerAdaptrisMessageListener(l);
-  }
+/**
+* <p>
+* Sets the underlying <code>AdaptrisMessageConsumer</code>. May not be null.
+* </p>
+*
+* @param cons the underlying <code>AdaptrisMessageConsumer</code>
+*/
+public void setConsumer(AdaptrisMessageConsumer cons) {
+consumer = Args.notNull(cons, "consumer");
+}
 
 
-  /**
-   * @see com.adaptris.core.AdaptrisMessageWorker#getEncoder()
-   */
-  @Override
-  public AdaptrisMessageEncoder getEncoder() {
-    return getConsumer().getEncoder();
-  }
+// methods below delegate to the underlying consumer...
 
-  /**
-   * @see com.adaptris.core.AdaptrisMessageWorker#setEncoder
-   *      (com.adaptris.core.AdaptrisMessageEncoder)
-   */
-  @Override
-  public void setEncoder(AdaptrisMessageEncoder encoder) {
-    if (getConsumer().getEncoder() != null) {
-      log.warn("Ignoring attempt to implicitly overwrite the inner encoder");
-    }
-    else {
-      getConsumer().setEncoder(encoder);
-    }
-  }
-
-  /**
-   * @see com.adaptris.core.AdaptrisMessageWorker#handleConnectionException()
-   */
-  @Override
-  public void handleConnectionException() throws CoreException {
-    getConsumer().handleConnectionException();
-  }
-
-  /**
-   * @see com.adaptris.core.AdaptrisMessageWorker#encode
-   *      (com.adaptris.core.AdaptrisMessage)
-   */
-  @Override
-  public byte[] encode(AdaptrisMessage msg) throws CoreException {
-    return getConsumer().encode(msg);
-  }
-
-  /**
-   * @see com.adaptris.core.AdaptrisMessageWorker#decode(byte[])
-   */
-  @Override
-  public AdaptrisMessage decode(byte[] bytes) throws CoreException {
-    return getConsumer().decode(bytes);
-  }
-
-  @Override
-  public void prepare() throws CoreException {
-    LifecycleHelper.prepare(getConnection());
-    LifecycleHelper.prepare(getConsumer());
-  }
+/**
+* @see com.adaptris.core.AdaptrisMessageConsumer
+*      #registerAdaptrisMessageListener(com.adaptris.core.AdaptrisMessageListener)
+*/
+@Override
+public void registerAdaptrisMessageListener(AdaptrisMessageListener l) {
+getConsumer().registerAdaptrisMessageListener(l);
+}
 
 
-  /**
-   * @see com.adaptris.core.MessageEventGenerator#createName()
-   */
-  @Override
-  public String createName() {
-    return getConsumer().createName();
-  }
+/**
+* @see com.adaptris.core.AdaptrisMessageWorker#getEncoder()
+*/
+@Override
+public AdaptrisMessageEncoder getEncoder() {
+return getConsumer().getEncoder();
+}
 
-  public Boolean getIsTrackingEndpoint() {
-    return isTrackingEndpoint;
-  }
+/**
+* @see com.adaptris.core.AdaptrisMessageWorker#setEncoder
+*      (com.adaptris.core.AdaptrisMessageEncoder)
+*/
+@Override
+public void setEncoder(AdaptrisMessageEncoder encoder) {
+if (getConsumer().getEncoder() != null) {
+log.warn("Ignoring attempt to implicitly overwrite the inner encoder");
+}
+else {
+getConsumer().setEncoder(encoder);
+}
+}
 
-  public void setIsTrackingEndpoint(Boolean b) {
-    isTrackingEndpoint = b;
-  }
+/**
+* @see com.adaptris.core.AdaptrisMessageWorker#handleConnectionException()
+*/
+@Override
+public void handleConnectionException() throws CoreException {
+getConsumer().handleConnectionException();
+}
 
-  /**
-   *
-   * @see com.adaptris.core.MessageEventGenerator#isTrackingEndpoint()
-   */
-  @Override
-  public boolean isTrackingEndpoint() {
-    return BooleanUtils.toBooleanDefaultIfNull(getIsTrackingEndpoint(), false);
-  }
+/**
+* @see com.adaptris.core.AdaptrisMessageWorker#encode
+*      (com.adaptris.core.AdaptrisMessage)
+*/
+@Override
+public byte[] encode(AdaptrisMessage msg) throws CoreException {
+return getConsumer().encode(msg);
+}
 
-  /**
-   *
-   * @see com.adaptris.core.AdaptrisMessageWorker#getMessageFactory()
-   */
-  @Override
-  public AdaptrisMessageFactory getMessageFactory() {
-    return getConsumer().getMessageFactory();
-  }
+/**
+* @see com.adaptris.core.AdaptrisMessageWorker#decode(byte[])
+*/
+@Override
+public AdaptrisMessage decode(byte[] bytes) throws CoreException {
+return getConsumer().decode(bytes);
+}
 
-  /**
-   *
-   * @see AdaptrisMessageWorker#setMessageFactory(AdaptrisMessageFactory)
-   */
-  @Override
-  public void setMessageFactory(AdaptrisMessageFactory f) {
-    getConsumer().setMessageFactory(f);
-  }
+@Override
+public void prepare() throws CoreException {
+LifecycleHelper.prepare(getConnection());
+LifecycleHelper.prepare(getConsumer());
+}
 
-  @Override
-  public void changeState(ComponentState newState) {
-    consumerState = newState;
-  }
 
-  @Override
-  public ComponentState retrieveComponentState() {
-    return consumerState;
-  }
+/**
+* @see com.adaptris.core.MessageEventGenerator#createName()
+*/
+@Override
+public String createName() {
+return getConsumer().createName();
+}
 
-  @Override
-  public void requestInit() throws CoreException {
-    consumerState.requestInit(this);
-  }
+public Boolean getIsTrackingEndpoint() {
+return isTrackingEndpoint;
+}
 
-  @Override
-  public void requestStart() throws CoreException {
-    consumerState.requestStart(this);
-  }
+public void setIsTrackingEndpoint(Boolean b) {
+isTrackingEndpoint = b;
+}
 
-  @Override
-  public void requestStop() {
-    consumerState.requestStop(this);
-  }
+/**
+*
+* @see com.adaptris.core.MessageEventGenerator#isTrackingEndpoint()
+*/
+@Override
+public boolean isTrackingEndpoint() {
+return BooleanUtils.toBooleanDefaultIfNull(getIsTrackingEndpoint(), false);
+}
 
-  @Override
-  public void requestClose() {
-    consumerState.requestClose(this);
-  }
+/**
+*
+* @see com.adaptris.core.AdaptrisMessageWorker#getMessageFactory()
+*/
+@Override
+public AdaptrisMessageFactory getMessageFactory() {
+return getConsumer().getMessageFactory();
+}
+
+/**
+*
+* @see AdaptrisMessageWorker#setMessageFactory(AdaptrisMessageFactory)
+*/
+@Override
+public void setMessageFactory(AdaptrisMessageFactory f) {
+getConsumer().setMessageFactory(f);
+}
+
+@Override
+public void changeState(ComponentState newState) {
+consumerState = newState;
+}
+
+@Override
+public ComponentState retrieveComponentState() {
+return consumerState;
+}
+
+@Override
+public void requestInit() throws CoreException {
+consumerState.requestInit(this);
+}
+
+@Override
+public void requestStart() throws CoreException {
+consumerState.requestStart(this);
+}
+
+@Override
+public void requestStop() {
+consumerState.requestStop(this);
+}
+
+@Override
+public void requestClose() {
+consumerState.requestClose(this);
+}
 
 }

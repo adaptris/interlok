@@ -5,6 +5,7 @@ import javax.jms.Message;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -19,19 +20,20 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 * @config no-op-acknowledgement-handler
 * @author amcgrath
 */
+@JacksonXmlRootElement(localName = "no-op-acknowledgement-handler")
 @XStreamAlias("no-op-acknowledgement-handler")
 @AdapterComponent
 @ComponentProfile(summary = "JMS Acknowledgement handler that skips all acknowledgements, rollbacks and commits.", tag = "jms")
 public class NoOpAcknowledgementHandler implements AcknowledgementHandler {
 
-  @Override
-  public void acknowledgeMessage(JmsActorConfig actor, Message message) throws JMSException {
-    //do nothing
-  }
+@Override
+public void acknowledgeMessage(JmsActorConfig actor, Message message) throws JMSException {
+//do nothing
+}
 
-  @Override
-  public void rollbackMessage(JmsActorConfig actor, Message message) {
-    //do nothing
-  }
+@Override
+public void rollbackMessage(JmsActorConfig actor, Message message) {
+//do nothing
+}
 
 }
