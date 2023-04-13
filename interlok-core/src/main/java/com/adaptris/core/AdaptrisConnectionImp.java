@@ -18,7 +18,7 @@ package com.adaptris.core;
 
 import java.util.Collections;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.WeakHashMap;
 
 import javax.validation.Valid;
 
@@ -60,9 +60,12 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
    * </p>
    */
   public AdaptrisConnectionImp() {
-    consumers = Collections.newSetFromMap(new ConcurrentHashMap<AdaptrisMessageConsumer, Boolean>());
-    producers = Collections.newSetFromMap(new ConcurrentHashMap<AdaptrisMessageProducer, Boolean>());
-    listeners = Collections.newSetFromMap(new ConcurrentHashMap<StateManagedComponent, Boolean>());
+    consumers = Collections.newSetFromMap(
+        Collections.synchronizedMap(new WeakHashMap<AdaptrisMessageConsumer, Boolean>()));
+    producers = Collections.newSetFromMap(
+        Collections.synchronizedMap(new WeakHashMap<AdaptrisMessageProducer, Boolean>()));
+    listeners = Collections.newSetFromMap(
+        Collections.synchronizedMap(new WeakHashMap<StateManagedComponent, Boolean>()));
     state = ClosedState.getInstance();
   }
 
