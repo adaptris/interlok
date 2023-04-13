@@ -18,11 +18,14 @@ package com.adaptris.core;
 
 import java.util.Collections;
 import java.util.Set;
-import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
+
 import javax.validation.Valid;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.LifecycleHelper;
@@ -57,9 +60,9 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
    * </p>
    */
   public AdaptrisConnectionImp() {
-    consumers = Collections.newSetFromMap(new WeakHashMap<AdaptrisMessageConsumer, Boolean>());
-    producers = Collections.newSetFromMap(new WeakHashMap<AdaptrisMessageProducer, Boolean>());
-    listeners = Collections.newSetFromMap(new WeakHashMap<StateManagedComponent, Boolean>());
+    consumers = Collections.newSetFromMap(new ConcurrentHashMap<AdaptrisMessageConsumer, Boolean>());
+    producers = Collections.newSetFromMap(new ConcurrentHashMap<AdaptrisMessageProducer, Boolean>());
+    listeners = Collections.newSetFromMap(new ConcurrentHashMap<StateManagedComponent, Boolean>());
     state = ClosedState.getInstance();
   }
 
