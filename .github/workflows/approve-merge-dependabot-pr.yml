@@ -16,3 +16,5 @@ jobs:
       auto-approve-merge: ${{ github.event.client_payload.auto-approve-merge }}
       sha: ${{ github.event.client_payload.sha }}
       update-type: ${{ github.event.client_payload.update-type }}
+    secrets:
+      DEPENDABOT_APPROVE_MERGE_GITHUB_TOKEN: ${{ secrets.DEPENDABOT_APPROVE_MERGE_GITHUB_TOKEN }}
