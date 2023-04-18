@@ -1,11 +1,18 @@
 name: Approve And Merge Dependabot PR
 
 on:
-  pull_request:
+  repository_dispatch:
+    types:
+      - approve-merge-dependabot-pr
 
 jobs:
-  gradle-check:
+  build:
     name: Approve And Merge Dependabot PR
-    uses: interlok-tooling/reusable-workflows/.github/workflows/approve-merge-dependabot-pr-trigger.yml@main
-    secrets:
-      DEPENDABOT_APPROVE_MERGE_GITHUB_TOKEN: ${{ secrets.DEPENDABOT_APPROVE_MERGE_GITHUB_TOKEN }}
+    uses: interlok-tooling/reusable-workflows/.github/workflows/approve-merge-dependabot-pr.yml@main
+    with:
+      branch: ${{ github.event.client_payload.branch }}
+      pull_request: ${{ github.event.client_payload.pull_request }}
+      pull_request_title: ${{ github.event.client_payload.pull_request_title }}
+      auto-approve-merge: ${{ github.event.client_payload.auto-approve-merge }}
+      sha: ${{ github.event.client_payload.sha }}
+      update-type: ${{ github.event.client_payload.update-type }}
