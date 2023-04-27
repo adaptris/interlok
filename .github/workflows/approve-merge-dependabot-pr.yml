@@ -6,6 +6,6 @@ on:
 jobs:
   gradle-check:
     name: Approve And Merge Dependabot PR
-    uses: interlok-tooling/reusable-workflows/.github/workflows/approve-merge-dependabot-pr.yml@main
+    uses: interlok-tooling/reusable-workflows/.github/workflows/approve-merge-dependabot-pr-trigger.yml@main
     secrets:
       DEPENDABOT_APPROVE_MERGE_GITHUB_TOKEN: ${{ secrets.DEPENDABOT_APPROVE_MERGE_GITHUB_TOKEN }}

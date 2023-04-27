@@ -19,13 +19,23 @@ package com.adaptris.core;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import java.lang.reflect.Method;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.awaitility.Awaitility;
 import org.junit.Test;
 import com.adaptris.core.stubs.MockConnection;
 import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.core.stubs.MockMessageProducer;
+import com.adaptris.interlok.junit.scaffolding.jms.MockConsumer;
+import com.adaptris.interlok.junit.scaffolding.jms.MockProducer;
 
 public class AdaptrisConnectionTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
 
@@ -44,6 +54,44 @@ public class AdaptrisConnectionTest extends com.adaptris.interlok.junit.scaffold
     NullConnectionErrorHandler nc = new NullConnectionErrorHandler();
     mc.setConnectionErrorHandler(nc);
     assertEquals(nc, mc.getConnectionErrorHandler());
+  }
+  
+  // INTERLOK-4039
+  @Test
+  public void testConcurrentListenerRegistration() throws Exception {
+    int threadCount = 100;
+    final MockConnection connection = new MockConnection();
+    
+    ThreadFactory tf = new ThreadFactory() {
+      @Override
+      public Thread newThread(Runnable r) {
+        return new Thread(r);
+      }
+    };
+    ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(threadCount, tf);
+    
+    List<Callable<Boolean>> callables = new ArrayList<>();
+    for(int index = 0; index < threadCount; index ++) {
+      Callable<Boolean> call = () -> {
+        StateManagedComponent comp = new ServiceList();
+        AdaptrisMessageConsumer consumer = new MockConsumer();
+        AdaptrisMessageProducer producer = new MockProducer();
+        connection.addExceptionListener(comp);
+        connection.addMessageConsumer(consumer);
+        connection.addMessageProducer(producer);
+        return true;
+      };
+      callables.add(call);
+    }
+    
+    newFixedThreadPool.invokeAll(callables);
+    
+    Awaitility
+      .await()
+      .atMost(Duration.ofSeconds(10))
+      .with()
+      .pollInterval(Duration.ofMillis(100))
+      .untilTrue(new AtomicBoolean(connection.retrieveExceptionListeners().size() == threadCount));
   }
 
   @Test
