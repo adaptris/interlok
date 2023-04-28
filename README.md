@@ -1,5 +1,13 @@
 # Interlok
-[![GitHub tag](https://img.shields.io/github/tag/adaptris/interlok.svg)]() [![Appveyor](https://ci.appveyor.com/api/projects/status/efwdjhhdh5ug3rkk/branch/develop?svg=true)](https://ci.appveyor.com/project/adaptris/interlok/branch/develop) [![codecov](https://codecov.io/gh/adaptris/interlok/branch/develop/graph/badge.svg)](https://codecov.io/gh/adaptris/interlok) [![Actions Status](https://github.com/adaptris/interlok/workflows/Java%20CI/badge.svg)](https://github.com/adaptris/interlok/actions) ![Closed PRs](https://img.shields.io/github/issues-pr-closed/adaptris/interlok) ![license](https://img.shields.io/github/license/adaptris/interlok.svg) [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/adaptris/interlok.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/adaptris/interlok/context:java) [![Total alerts](https://img.shields.io/lgtm/alerts/g/adaptris/interlok.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/adaptris/interlok/alerts/)
+
+[![GitHub tag](https://img.shields.io/github/tag/adaptris/interlok.svg)](https://github.com/adaptris/interlok/tags)
+[![license](https://img.shields.io/github/license/adaptris/interlok.svg)](https://github.com/adaptris/interlok/blob/develop/LICENSE)
+[![Actions Status](https://github.com/adaptris/interlok/actions/workflows/gradle-publish.yml/badge.svg)](https://github.com/adaptris/interlok/actions)
+[![codecov](https://codecov.io/gh/adaptris/interlok/branch/develop/graph/badge.svg)](https://codecov.io/gh/adaptris/interlok)
+[![CodeQL](https://github.com/adaptris/interlok/workflows/CodeQL/badge.svg)](https://github.com/adaptris/interlok/security/code-scanning)
+[![Known Vulnerabilities](https://snyk.io/test/github/adaptris/interlok/badge.svg?targetFile=build.gradle)](https://snyk.io/test/github/adaptris/interlok?targetFile=build.gradle)
+[![Closed PRs](https://img.shields.io/github/issues-pr-closed/adaptris/interlok)](https://github.com/adaptris/interlok/pulls?q=is%3Apr+is%3Aclosed)
+[![Appveyor](https://ci.appveyor.com/api/projects/status/efwdjhhdh5ug3rkk/branch/develop?svg=true)](https://ci.appveyor.com/project/adaptris/interlok/branch/develop)
 
 This is the base repository for Interlok. It contains the base adapter pared of all 3rd party dependencies other than open source ones. There is a single dependency (commented out) on Microsoft SQL Server JDBC provider which is not required unless you explicitly want to test JDBC against SQL Server.
 
