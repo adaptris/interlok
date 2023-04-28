@@ -16,8 +16,8 @@
 
 package com.adaptris.interlok.junit.scaffolding;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.InputStream;
@@ -38,9 +38,8 @@ import javax.validation.ValidatorFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +74,7 @@ public abstract class BaseCase {
 
   public static final Properties PROPERTIES;
   public static final String PROPERTIES_RESOURCE = "unit-tests.properties";
+ 
   static {
     PROPERTIES = new Properties();
     try (InputStream in = BaseCase.class.getClassLoader().getResourceAsStream(PROPERTIES_RESOURCE)) {
@@ -89,21 +89,22 @@ public abstract class BaseCase {
 
   protected transient Log log = LogFactory.getLog(this.getClass().getName());
   protected static transient Logger slf4jLogger = LoggerFactory.getLogger(BaseCase.class);
-  @Rule
-  public TestName testName = new TestName();
+  
+  protected TestInfo testInfo;
 
-  @Before
-  public void beforeTests() {
+  @BeforeEach
+  public void beforeTests(TestInfo info) {
     if (this instanceof UpgradedToJunit4) {
       if (!((UpgradedToJunit4) this).isAnnotatedForJunit4()) {
         throw new RuntimeException(this.getClass().getCanonicalName()
             + ": isAnnotatedForJunit4() method returned false, please add annotations, and override the method.");
       }
     }
+    testInfo = info;
   }
 
   public String getName() {
-    return testName.getMethodName();
+    return testInfo.getDisplayName();
   }
 
   public static void execute(StandaloneConsumer c, StandaloneProducer p, AdaptrisMessage m, MockMessageListener stub)
@@ -201,7 +202,7 @@ public abstract class BaseCase {
         Object a = ObjectUtils.invokeGetter(input, toCall[i]);
         Object b = ObjectUtils.invokeGetter(output, toCall[i]);
 
-        assertEquals(input.getClass().getName() + "." + toCall[i] + "()", a, b);
+        assertEquals(a, b);
       }
       // Right. This test will presumably depend on non-self-referential
       // getters and setters (back-refs should be called retrieve now).
@@ -261,7 +262,7 @@ public abstract class BaseCase {
     for (Object o : objs) {
       Set<ConstraintViolation<Object>> violations = validate(validator, o);
       logViolations(violations);
-      assertEquals("Expected 0 Constraint Violations, got " + violations.size(), 0, violations.size());
+      assertEquals(0, violations.size());
     }
   }
 

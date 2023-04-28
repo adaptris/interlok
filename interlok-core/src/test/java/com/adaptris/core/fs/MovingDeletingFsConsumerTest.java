@@ -13,17 +13,9 @@
 
 package com.adaptris.core.fs;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreConstants;
-import com.adaptris.core.FixedIntervalPoller;
-import com.adaptris.core.StandaloneConsumer;
-import com.adaptris.core.stubs.MockMessageListener;
-import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.GuidGenerator;
-import com.adaptris.util.TimeInterval;
-import org.apache.commons.io.FileUtils;
-import org.apache.oro.io.Perl5FilenameFilter;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -32,9 +24,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.apache.commons.io.FileUtils;
+import org.apache.oro.io.Perl5FilenameFilter;
+import org.junit.jupiter.api.Test;
+
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreConstants;
+import com.adaptris.core.FixedIntervalPoller;
+import com.adaptris.core.StandaloneConsumer;
+import com.adaptris.core.stubs.MockMessageListener;
+import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.util.GuidGenerator;
+import com.adaptris.util.TimeInterval;
 
 @SuppressWarnings("deprecation")
 public class MovingDeletingFsConsumerTest extends FsConsumerCase {
@@ -105,8 +106,8 @@ public class MovingDeletingFsConsumerTest extends FsConsumerCase {
 
   @Override
   protected void assertMessages(final List<AdaptrisMessage> list, final int count, final File[] remaining) {
-    assertEquals("All files produced", count, list.size());
-    assertEquals("All files left in dir", count, remaining.length);
+    assertEquals(count, list.size());
+    assertEquals(count, remaining.length);
     for (final AdaptrisMessage m : list) {
       assertTrue(m.containsKey(CoreConstants.ORIGINAL_NAME_KEY));
       assertTrue(m.containsKey(CoreConstants.FILE_LAST_MODIFIED_KEY));

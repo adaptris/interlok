@@ -16,24 +16,29 @@
 
 package com.adaptris.core.jms;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyByte;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
+
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageEOFException;
 import javax.jms.Session;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.mockito.Mockito;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.MetadataElement;
@@ -45,13 +50,13 @@ import com.adaptris.core.stubs.DefectiveMessageFactory;
 @SuppressWarnings("deprecation")
 public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpAll() throws Exception {
     activeMqBroker = new EmbeddedActiveMq();
     activeMqBroker.start();
   }
   
-  @AfterClass
+  @AfterAll
   public static void tearDownAll() throws Exception {
     if(activeMqBroker != null)
       activeMqBroker.destroy();
@@ -189,7 +194,7 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
       jmsMsg.reset();
       AdaptrisMessage msg = trans.translate(jmsMsg);
       assertMetadata(msg);
-      assertTrue("Payload is not equal", Arrays.equals(BYTES, msg.getPayload()));
+      assertTrue(Arrays.equals(BYTES, msg.getPayload()));
     }
     finally {
       stop(trans);
@@ -237,11 +242,11 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
   }
 
   @Test
-  public void testBytesMessageToAdaptrisMessage_StreamFailure_CheckedJMSException() throws Exception {
+  public void testBytesMessageToAdaptrisMessage_StreamFailure_CheckedJMSException(TestInfo info) throws Exception {
 
     BytesMessage jmsMsg = Mockito.mock(BytesMessage.class);
     Session session = Mockito.mock(Session.class);
-    doThrow(new JMSException(testName.getMethodName())).when(jmsMsg).readByte();
+    doThrow(new JMSException(info.getDisplayName())).when(jmsMsg).readByte();
     when(session.createBytesMessage()).thenReturn(jmsMsg);
     BytesMessageTranslator trans = new BytesMessageTranslator() {
       @Override
@@ -271,7 +276,7 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
       addMetadata(msg);
       Message jmsMsg = trans.translate(msg);
-      assertTrue("jmsMsg instanceof BytesMessage", jmsMsg instanceof BytesMessage);
+      assertTrue(jmsMsg instanceof BytesMessage);
       ((BytesMessage) jmsMsg).reset();
       assertEquals(TEXT, new String(getBytes((BytesMessage) jmsMsg)));
       assertJmsProperties(jmsMsg);
@@ -305,11 +310,11 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
   }
 
   @Test
-  public void testAdaptrisMessageToBytesMessage_StreamFailure_CheckedJMSException() throws Exception {
+  public void testAdaptrisMessageToBytesMessage_StreamFailure_CheckedJMSException(TestInfo info) throws Exception {
 
     BytesMessage jmsMsg = Mockito.mock(BytesMessage.class);
     Session session = Mockito.mock(Session.class);
-    doThrow(new JMSException(testName.getMethodName())).when(jmsMsg).writeByte(anyByte());
+    doThrow(new JMSException(info.getDisplayName())).when(jmsMsg).writeByte(anyByte());
     when(session.createBytesMessage()).thenReturn(jmsMsg);
     BytesMessageTranslator trans = new BytesMessageTranslator() {
       @Override
@@ -347,7 +352,7 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
       addMetadata(msg);
       Message jmsMsg = trans.translate(msg);
-      assertTrue("jmsMsg instanceof BytesMessage", jmsMsg instanceof BytesMessage);
+      assertTrue(jmsMsg instanceof BytesMessage);
       ((BytesMessage) jmsMsg).reset();
       assertEquals(TEXT, new String(getBytes((BytesMessage) jmsMsg)));
       assertJmsProperties(jmsMsg);

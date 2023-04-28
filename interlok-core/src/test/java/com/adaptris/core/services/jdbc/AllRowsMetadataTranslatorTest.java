@@ -16,12 +16,15 @@
 
 package com.adaptris.core.services.jdbc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 
 public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
@@ -52,8 +55,8 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
     String metadataKeyColumnVersion = t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION + t.getSeparator();
     String metadataKeyColumnType = t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE + t.getSeparator();
     for (int i = 0; i < 10; i++) {
-      assertTrue(metadataKeyColumnVersion + i, msg.headersContainsKey(metadataKeyColumnVersion + i));
-      assertTrue(metadataKeyColumnType + i, msg.headersContainsKey(metadataKeyColumnType + i));
+      assertTrue(msg.headersContainsKey(metadataKeyColumnVersion + i));
+      assertTrue(msg.headersContainsKey(metadataKeyColumnType + i));
 
     }
 
@@ -79,8 +82,8 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
     String metadataKeyColumnVersion = t.getMetadataKeyPrefix() + t.getSeparator() + "MY_VERSION" + t.getSeparator();
     String metadataKeyColumnType = t.getMetadataKeyPrefix() + t.getSeparator() + "MY_TYPE" + t.getSeparator();
     for (int i = 0; i < 10; i++) {
-      assertTrue(metadataKeyColumnVersion + i, msg.headersContainsKey(metadataKeyColumnVersion + i));
-      assertTrue(metadataKeyColumnType + i, msg.headersContainsKey(metadataKeyColumnType + i));
+      assertTrue(msg.headersContainsKey(metadataKeyColumnVersion + i));
+      assertTrue(msg.headersContainsKey(metadataKeyColumnType + i));
 
     }
 
@@ -133,8 +136,8 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
     String metadataKeyColumnVersion = t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION + t.getSeparator();
     String metadataKeyColumnType = t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE + t.getSeparator();
     for (int i = 0; i < 10; i++) {
-      assertTrue(metadataKeyColumnVersion + i, msg.headersContainsKey(metadataKeyColumnVersion + i));
-      assertTrue(metadataKeyColumnType + i, msg.headersContainsKey(metadataKeyColumnType + i));
+      assertTrue(msg.headersContainsKey(metadataKeyColumnVersion + i));
+      assertTrue(msg.headersContainsKey(metadataKeyColumnType + i));
 
     }
 
@@ -160,8 +163,8 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
     String metadataKeyColumnVersion = t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_VERSION.toUpperCase() + t.getSeparator();
     String metadataKeyColumnType = t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE.toUpperCase() + t.getSeparator();
     for (int i = 0; i < 10; i++) {
-      assertTrue(metadataKeyColumnVersion + i, msg.headersContainsKey(metadataKeyColumnVersion + i));
-      assertTrue(metadataKeyColumnType + i, msg.headersContainsKey(metadataKeyColumnType + i));
+      assertTrue(msg.headersContainsKey(metadataKeyColumnVersion + i));
+      assertTrue(msg.headersContainsKey(metadataKeyColumnType + i));
 
     }
 
@@ -187,8 +190,8 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
     String metadataKeyColumnType = t.getMetadataKeyPrefix() + t.getSeparator() + COLUMN_TYPE.toLowerCase() + t.getSeparator();
     System.out.println(msg);
     for (int i = 0; i < 10; i++) {
-      assertTrue(metadataKeyColumnVersion + i, msg.headersContainsKey(metadataKeyColumnVersion + i));
-      assertTrue(metadataKeyColumnType + i, msg.headersContainsKey(metadataKeyColumnType + i));
+      assertTrue(msg.headersContainsKey(metadataKeyColumnVersion + i));
+      assertTrue(msg.headersContainsKey(metadataKeyColumnType + i));
 
     }
 
@@ -213,8 +216,8 @@ public class AllRowsMetadataTranslatorTest extends JdbcQueryServiceCase {
     String metadataKeyColumnType = t.getMetadataKeyPrefix() + t.getSeparator() + StringUtils.capitalize(COLUMN_TYPE)
         + t.getSeparator();
     for (int i = 0; i < 10; i++) {
-      assertTrue(metadataKeyColumnVersion + i, msg.headersContainsKey(metadataKeyColumnVersion + i));
-      assertTrue(metadataKeyColumnType + i, msg.headersContainsKey(metadataKeyColumnType + i));
+      assertTrue(msg.headersContainsKey(metadataKeyColumnVersion + i));
+      assertTrue(msg.headersContainsKey(metadataKeyColumnType + i));
     }
   }
 

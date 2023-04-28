@@ -17,6 +17,7 @@
 package com.adaptris.core.jms;
 
 import javax.naming.Context;
+
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.util.KeyValuePair;

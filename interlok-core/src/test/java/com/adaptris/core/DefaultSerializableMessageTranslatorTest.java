@@ -16,10 +16,11 @@
 
 package com.adaptris.core;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.interlok.types.DefaultSerializableMessage;
-import org.junit.Test;
 import com.adaptris.interlok.types.SerializableMessage;
 
 public class DefaultSerializableMessageTranslatorTest {

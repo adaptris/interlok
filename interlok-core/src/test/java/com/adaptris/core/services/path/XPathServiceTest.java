@@ -16,11 +16,14 @@
 
 package com.adaptris.core.services.path;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceException;
@@ -52,7 +55,7 @@ public class XPathServiceTest
   }
 
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     service = new XPathService();
     message = DefaultMessageFactory.getDefaultInstance().newMessage();

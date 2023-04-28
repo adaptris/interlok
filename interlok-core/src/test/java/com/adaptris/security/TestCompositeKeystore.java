@@ -16,11 +16,12 @@
 
 package com.adaptris.security;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.File;
 import java.io.InputStream;
 import java.security.PrivateKey;
@@ -30,8 +31,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.security.exc.KeystoreException;
 import com.adaptris.security.keystore.CompositeKeystore;
 import com.adaptris.security.keystore.KeystoreFactory;
@@ -48,7 +51,7 @@ public class TestCompositeKeystore {
   public TestCompositeKeystore() {
   }
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     config = Config.getInstance();
     keystoreLocationList.add(config.newKeystore(null));
@@ -65,7 +68,7 @@ public class TestCompositeKeystore {
   @Test
   public void testKeystoreSize() throws Exception {
     CompositeKeystore composite = new CompositeKeystore(keystoreLocationList);
-    assertEquals("Composite Keystore size", 3, composite.size());
+    assertEquals(3, composite.size());
   }
 
   /**
@@ -135,7 +138,7 @@ public class TestCompositeKeystore {
   @Test
   public void testKeystoreGetKeyStore() throws Exception {
     CompositeKeystore composite = new CompositeKeystore(keystoreLocationList);
-    assertNull("Keystore should be null", composite.getKeystore());
+    assertNull(composite.getKeystore());
   }
 
   @Test

@@ -16,15 +16,18 @@
 
 package com.adaptris.core.services.jdbc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -41,7 +44,7 @@ public class SplittingXmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlRe
   private MockMessageProducer producer;
 
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     producer = new MockMessageProducer();
   }
@@ -62,8 +65,8 @@ public class SplittingXmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlRe
     assertFalse(msg.headersContainsKey(JdbcDataQueryService.class.getCanonicalName()));
     AdaptrisMessage outputMessage = producer.getMessages().get(0);
     XmlUtils xu = XmlHelper.createXmlUtils(outputMessage);
-    assertNull("Xpath /Results/OriginalMessage", xu.getSingleNode("/Results/OriginalMessage"));
-    assertNotNull("/Results/Row missing.", xu.getSingleNode("/Results/Row"));
+    assertNull(xu.getSingleNode("/Results/OriginalMessage"));
+    assertNotNull(xu.getSingleNode("/Results/Row"));
   }
 
   @Test
@@ -81,8 +84,8 @@ public class SplittingXmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlRe
     assertFalse(msg.headersContainsKey(JdbcDataQueryService.class.getCanonicalName()));
     AdaptrisMessage outputMessage = producer.getMessages().get(0);
     XmlUtils xu = XmlHelper.createXmlUtils(outputMessage);
-    assertNull("Xpath /Results/OriginalMessage", xu.getSingleNode("/Results/OriginalMessage"));
-    assertNotNull("/Results/Row", xu.getSingleNode("/Results/Row"));
+    assertNull(xu.getSingleNode("/Results/OriginalMessage"));
+    assertNotNull(xu.getSingleNode("/Results/Row"));
   }
 
   @Test
@@ -103,8 +106,8 @@ public class SplittingXmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlRe
     AdaptrisMessage outputMessage = producer.getMessages().get(0);
     XmlUtils xu = XmlHelper.createXmlUtils(outputMessage);
     log.warn(msg.getContent());
-    assertNull("Xpath /Results/OriginalMessage", xu.getSingleNode("/results/originalmessage"));
-    assertNotNull("/Results/Row", xu.getSingleNode("/results/row"));
+    assertNull(xu.getSingleNode("/results/originalmessage"));
+    assertNotNull(xu.getSingleNode("/results/row"));
   }
 
   @Override
@@ -187,8 +190,8 @@ public class SplittingXmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlRe
     int count = 0;
     for(AdaptrisMessage outputMessage: outputMessages) {
       XmlUtils xu = XmlHelper.createXmlUtils(outputMessage);
-      assertNull("Xpath /Results/OriginalMessage", xu.getSingleNode("/Results/OriginalMessage"));
-      assertEquals("/Results/Row", count<5 ? 2 : 1,
+      assertNull(xu.getSingleNode("/Results/OriginalMessage"));
+      assertEquals(count<5 ? 2 : 1,
           xu.getNodeList("/Results/Row").getLength());
       assertFalse(outputMessage.headersContainsKey(ADAPTER_ID_KEY));
       count++;
@@ -218,8 +221,8 @@ public class SplittingXmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlRe
     int count = 0;
     for (AdaptrisMessage outputMessage : outputMessages) {
       XmlUtils xu = XmlHelper.createXmlUtils(outputMessage);
-      assertNull("Xpath /Results/OriginalMessage", xu.getSingleNode("/Results/OriginalMessage"));
-      assertEquals("/Results/Row", count < 5 ? 2 : 1, xu.getNodeList("/Results/Row").getLength());
+      assertNull(xu.getSingleNode("/Results/OriginalMessage"));
+      assertEquals(count < 5 ? 2 : 1, xu.getNodeList("/Results/Row").getLength());
       assertTrue(outputMessage.headersContainsKey(ADAPTER_ID_KEY));
       count++;
     }

@@ -18,8 +18,10 @@ package com.adaptris.core.ftp;
 
 import static com.adaptris.core.ftp.SftpExampleHelper.createConnectionsForExamples;
 import static com.adaptris.core.ftp.SftpExampleHelper.getConfigSimpleName;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import com.adaptris.core.FormattedFilenameCreator;
 import com.adaptris.core.StandaloneProducer;
 

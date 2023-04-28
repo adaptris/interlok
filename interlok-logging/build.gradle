@@ -14,7 +14,7 @@ dependencies {
 
   javadoc project(':interlok-core-apt')
 
-  testImplementation ("junit:junit:4.13.2")
+  testImplementation ("org.junit.jupiter:junit-jupiter-api:5.9.2")
 
 }
 

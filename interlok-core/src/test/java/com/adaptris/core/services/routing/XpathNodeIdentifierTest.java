@@ -16,10 +16,12 @@
 
 package com.adaptris.core.services.routing;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 
@@ -52,7 +54,7 @@ public class XpathNodeIdentifierTest extends SyntaxIdentifierCase {
   public void testMatchSingleNode() throws Exception {
     XpathNodeIdentifier ident = createIdentifier();
     ident.addPattern(SINGLENODE_MATCH);
-    assertTrue("Xpath matches", ident.isThisSyntax(readInput(INPUT_FILE)));
+    assertTrue(ident.isThisSyntax(readInput(INPUT_FILE)));
   }
 
   @Test
@@ -60,7 +62,7 @@ public class XpathNodeIdentifierTest extends SyntaxIdentifierCase {
     XpathNodeIdentifier ident = createIdentifier();
     ident.setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder.newInstance());
     ident.addPattern(SINGLENODE_MATCH);
-    assertTrue("Xpath matches", ident.isThisSyntax(readInput(INPUT_FILE)));
+    assertTrue(ident.isThisSyntax(readInput(INPUT_FILE)));
   }
 
   @Test
@@ -68,7 +70,7 @@ public class XpathNodeIdentifierTest extends SyntaxIdentifierCase {
     XpathNodeIdentifier ident = createIdentifier();
     ident.addPattern(SINGLENODE_MATCH);
     ident.setResolveAsNodeset(true);
-    assertTrue("Xpath matches", ident.isThisSyntax(readInput(INPUT_FILE)));
+    assertTrue(ident.isThisSyntax(readInput(INPUT_FILE)));
   }
 
   @Test
@@ -76,7 +78,7 @@ public class XpathNodeIdentifierTest extends SyntaxIdentifierCase {
     XpathNodeIdentifier ident = createIdentifier();
     ident.addPattern(NODELIST_MATCH);
     ident.setResolveAsNodeset(false);
-    assertTrue("Xpath matches", ident.isThisSyntax(readInput(INPUT_FILE)));
+    assertTrue(ident.isThisSyntax(readInput(INPUT_FILE)));
   }
 
   @Test
@@ -84,7 +86,7 @@ public class XpathNodeIdentifierTest extends SyntaxIdentifierCase {
     XpathNodeIdentifier ident = createIdentifier();
     ident.addPattern(NODELIST_MATCH);
     ident.setResolveAsNodeset(true);
-    assertTrue("Xpath matches", ident.isThisSyntax(readInput(INPUT_FILE)));
+    assertTrue(ident.isThisSyntax(readInput(INPUT_FILE)));
   }
 
   @Test
@@ -92,14 +94,14 @@ public class XpathNodeIdentifierTest extends SyntaxIdentifierCase {
     XpathNodeIdentifier ident = createIdentifier();
     ident.addPattern(SINGLENODE_MATCH);
     ident.addPattern(UNMATCHING_1);
-    assertTrue("Xpath does not match", !ident.isThisSyntax(readInput(INPUT_FILE)));
+    assertTrue(!ident.isThisSyntax(readInput(INPUT_FILE)));
   }
 
   @Test
   public void testSingleUnMatchingRegexp() throws Exception {
     XpathNodeIdentifier ident = createIdentifier();
     ident.addPattern(UNMATCHING_1);
-    assertTrue("Xpath does not match", !ident.isThisSyntax(readInput(INPUT_FILE)));
+    assertTrue(!ident.isThisSyntax(readInput(INPUT_FILE)));
   }
 
   @Test

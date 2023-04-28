@@ -16,13 +16,13 @@
 
 package com.adaptris.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.util.text.mime.ByteArrayIterator;
 import com.adaptris.util.text.mime.MimeConstants;
@@ -38,7 +38,7 @@ public class TestMultipartOutput implements MimeConstants {
       + "from the woven jute bag";
   private GuidGenerator guid;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     guid = new GuidGenerator();
   }
@@ -50,7 +50,7 @@ public class TestMultipartOutput implements MimeConstants {
       MultiPartOutput output = new MultiPartOutput(guid.getUUID());
       output.addPart(PAYLOAD_1, guid.getUUID());
       ByteArrayIterator input = new ByteArrayIterator(output.getBytes());
-      assertEquals(NUMBER_OF_PARTS, 1, input.size());
+      assertEquals(1, input.size());
     }
     catch (Exception e) {
       fail(e.getMessage());
@@ -64,7 +64,7 @@ public class TestMultipartOutput implements MimeConstants {
       MultiPartOutput output = new MultiPartOutput(guid.getUUID());
       output.addPart(PAYLOAD_1, ENCODING_BASE64, guid.getUUID());
       ByteArrayIterator input = new ByteArrayIterator(output.getBytes());
-      assertEquals(NUMBER_OF_PARTS, 1, input.size());
+      assertEquals(1, input.size());
     }
     catch (Exception e) {
       fail(e.getMessage());
@@ -78,7 +78,7 @@ public class TestMultipartOutput implements MimeConstants {
       MultiPartOutput output = new MultiPartOutput(guid.getUUID());
       output.addPart(PAYLOAD_1, ENCODING_7BIT, guid.getUUID());
       ByteArrayIterator input = new ByteArrayIterator(output.getBytes());
-      assertEquals(NUMBER_OF_PARTS, 1, input.size());
+      assertEquals(1, input.size());
     }
     catch (Exception e) {
       fail(e.getMessage());
@@ -92,7 +92,7 @@ public class TestMultipartOutput implements MimeConstants {
       MultiPartOutput output = new MultiPartOutput(guid.getUUID());
       output.addPart(PAYLOAD_1, ENCODING_8BIT, guid.getUUID());
       ByteArrayIterator input = new ByteArrayIterator(output.getBytes());
-      assertEquals(NUMBER_OF_PARTS, 1, input.size());
+      assertEquals(1, input.size());
     }
     catch (Exception e) {
       fail(e.getMessage());
@@ -106,7 +106,7 @@ public class TestMultipartOutput implements MimeConstants {
       MultiPartOutput output = new MultiPartOutput(guid.getUUID());
       output.addPart(PAYLOAD_1, ENCODING_QUOTED, guid.getUUID());
       ByteArrayIterator input = new ByteArrayIterator(output.getBytes());
-      assertEquals(NUMBER_OF_PARTS, 1, input.size());
+      assertEquals(1, input.size());
     }
     catch (Exception e) {
       fail(e.getMessage());
@@ -125,7 +125,7 @@ public class TestMultipartOutput implements MimeConstants {
       output.addPart(out.toByteArray(), guid.getUUID());
 
       ByteArrayIterator input = new ByteArrayIterator(output.getBytes());
-      assertEquals(NUMBER_OF_PARTS, 3, input.size());
+      assertEquals(3, input.size());
     }
     catch (Exception e) {
       fail(e.getMessage());
@@ -141,7 +141,7 @@ public class TestMultipartOutput implements MimeConstants {
       output.addPart(nullOutput, guid.getUUID());
       byte[] mimePayload = output.getBytes();
       ByteArrayIterator input = new ByteArrayIterator(output.getBytes());
-      assertEquals(NUMBER_OF_PARTS, 1, input.size());
+      assertEquals(1, input.size());
     }
     catch (Exception e) {
       fail(e.getMessage());
@@ -163,7 +163,7 @@ public class TestMultipartOutput implements MimeConstants {
 
       byte[] mimePayload = output.getBytes();
       ByteArrayIterator input = new ByteArrayIterator(output.getBytes());
-      assertEquals(NUMBER_OF_PARTS, 2, input.size());
+      assertEquals(2, input.size());
     }
     catch (Exception e) {
       fail(e.getMessage());

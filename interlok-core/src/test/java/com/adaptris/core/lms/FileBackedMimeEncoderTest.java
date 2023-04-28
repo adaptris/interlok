@@ -16,22 +16,19 @@
 
 package com.adaptris.core.lms;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Properties;
 
-import com.adaptris.core.MultiPayloadAdaptrisMessage;
-import com.adaptris.core.MultiPayloadMessageFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreConstants;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.stubs.TempFileUtils;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.text.mime.MultiPartOutput;

@@ -13,10 +13,13 @@
 
 package com.adaptris.core.ftp;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.IOException;
-import org.junit.Assume;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
@@ -25,7 +28,7 @@ public abstract class FtpPasswordConnectionCase extends FtpConnectionCase {
 
   @Test
   public void testConnect_BadEncodedPassword() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     FileTransferConnectionUsingPassword connection = (FileTransferConnectionUsingPassword) createConnection();
     connection.setDefaultPassword("PW:BHFYENGMWEYQ");
     try {
@@ -42,7 +45,7 @@ public abstract class FtpPasswordConnectionCase extends FtpConnectionCase {
 
   @Test
   public void testConnect_EncodedPassword() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     FileTransferConnectionUsingPassword connection = (FileTransferConnectionUsingPassword) createConnection();
     String ensureEncodedPassword = Password.encode(Password.decode(connection.getDefaultPassword()), Password.PORTABLE_PASSWORD);
     connection.setDefaultPassword(ensureEncodedPassword);
@@ -57,7 +60,7 @@ public abstract class FtpPasswordConnectionCase extends FtpConnectionCase {
 
   @Test
   public void testConnect_OverrideUserOnly() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     FileTransferConnectionUsingPassword connection = (FileTransferConnectionUsingPassword) createConnection();
     connection.setDefaultUserName(null);
     try {
@@ -71,7 +74,7 @@ public abstract class FtpPasswordConnectionCase extends FtpConnectionCase {
 
   @Test
   public void testConnect_NoPassword() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     FileTransferConnectionUsingPassword connection = (FileTransferConnectionUsingPassword) createConnection();
     connection.setDefaultPassword(null);
     try {
@@ -88,7 +91,7 @@ public abstract class FtpPasswordConnectionCase extends FtpConnectionCase {
 
   @Test
   public void testConnect_PasswordOverride() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     FileTransferConnectionUsingPassword connection = (FileTransferConnectionUsingPassword) createConnection();
     connection.setDefaultPassword(null);
     try {

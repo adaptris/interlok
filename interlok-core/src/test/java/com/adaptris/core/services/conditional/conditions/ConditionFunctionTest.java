@@ -16,21 +16,21 @@
 
 package com.adaptris.core.services.conditional.conditions;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
-import com.adaptris.core.services.conditional.conditions.ConditionFunction;
 import com.adaptris.core.util.LifecycleHelper;
 
 public class ConditionFunctionTest {
-  
+
   @Test
   public void testDefinition() throws Exception {
     ConditionFunction condition = new ConditionFunction();
@@ -52,8 +52,7 @@ public class ConditionFunctionTest {
 
   @Test
   public void testScriptCondition_False() throws Exception {
-    ConditionFunction condition = new ConditionFunction(
-        "function evaluateScript(message) { return false; }");
+    ConditionFunction condition = new ConditionFunction("function evaluateScript(message) { return false; }");
     try {
       LifecycleHelper.initAndStart(condition);
       assertFalse(condition.evaluate(createMessage()));
@@ -75,21 +74,25 @@ public class ConditionFunctionTest {
     }
   }
 
-  @Test(expected = CoreException.class)
+  @Test
   public void testScriptCondition_BrokenFunction() throws Exception {
-    ConditionFunction condition = new ConditionFunction("function evaluateScript(message) }");
-    LifecycleHelper.initAndStart(condition);
+    Assertions.assertThrows(CoreException.class, () -> {
+      ConditionFunction condition = new ConditionFunction("function evaluateScript(message) }");
+      LifecycleHelper.initAndStart(condition);
+    });
   }
 
-  @Test(expected = CoreException.class)
+  @Test
   public void testScriptCondition_WrongFunction() throws Exception {
-    ConditionFunction condition = new ConditionFunction("function wrongFunctionName(message) {return true;}");
-    try {
-      LifecycleHelper.initAndStart(condition);
-      condition.evaluate(createMessage());
-    } finally {
-      LifecycleHelper.stopAndClose(condition);
-    }
+    Assertions.assertThrows(CoreException.class, () -> {
+      ConditionFunction condition = new ConditionFunction("function wrongFunctionName(message) {return true;}");
+      try {
+        LifecycleHelper.initAndStart(condition);
+        condition.evaluate(createMessage());
+      } finally {
+        LifecycleHelper.stopAndClose(condition);
+      }
+    });
   }
 
   private AdaptrisMessage createMessage() {

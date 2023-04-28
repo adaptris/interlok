@@ -22,28 +22,32 @@ import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_WORK_DIR_CANONICAL
 import static com.adaptris.core.ftp.EmbeddedFtpServer.PAYLOAD;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.PAYLOAD_ALTERNATE;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.SERVER_ADDRESS;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.charset.Charset;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPSClient;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockftpserver.fake.FakeFtpServer;
 import org.mockito.Mockito;
+
 import com.adaptris.core.fs.NewerThan;
 import com.adaptris.core.ftp.EmbeddedFtpServer;
 import com.adaptris.core.stubs.TempFileUtils;
@@ -64,7 +68,6 @@ public class FtpClientTest {
     assertSame(mock, ApacheFtpClientImpl.disconnect(mock));
     assertFalse(mock.isConnected());
   }
-
 
   @Test
   public void testNoFtpServer() throws Exception {
@@ -174,7 +177,8 @@ public class FtpClientTest {
     FakeFtpServer server = embedded.createAndStart(embedded.createFilesystem(10));
     try (CommonsNetFtpClient client = create(server);) {
       client.connect(DEFAULT_USERNAME, DEFAULT_PASSWORD);
-      // Since INTERLOK-2916 adds filtering for some extended attributes; then this should work.
+      // Since INTERLOK-2916 adds filtering for some extended attributes; then this
+      // should work.
       String[] files = client.dir(DEFAULT_WORK_DIR_CANONICAL, new NewerThan("-P30D"));
       assertEquals(10, files.length);
       files = client.dir(DEFAULT_WORK_DIR_CANONICAL, (FileFilter) null);
@@ -192,8 +196,8 @@ public class FtpClientTest {
       client.connect(DEFAULT_USERNAME, DEFAULT_PASSWORD);
       String[] files = client.dir(DEFAULT_WORK_DIR_CANONICAL);
       assertEquals(10, files.length);
-      String contents = new String(client.get(DEFAULT_WORK_DIR_CANONICAL + "/" + files[0]),
-          Charset.defaultCharset()).trim();
+      String contents = new String(client.get(DEFAULT_WORK_DIR_CANONICAL + "/" + files[0]), Charset.defaultCharset())
+          .trim();
       assertEquals(PAYLOAD.trim(), contents);
     } finally {
       server.stop();
@@ -221,11 +225,10 @@ public class FtpClientTest {
   public void testGetOutputStream() throws Exception {
     EmbeddedFtpServer embedded = new EmbeddedFtpServer();
     FakeFtpServer server = embedded.createAndStart(embedded.createFilesystem(10));
-    try (CommonsNetFtpClient client = create(server);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();) {
+    try (CommonsNetFtpClient client = create(server); ByteArrayOutputStream out = new ByteArrayOutputStream();) {
       client.connect(DEFAULT_USERNAME, DEFAULT_PASSWORD);
       String[] files = client.dir(DEFAULT_WORK_DIR_CANONICAL);
-      assertEquals(10, files.length);      
+      assertEquals(10, files.length);
       client.get(out, DEFAULT_WORK_DIR_CANONICAL + "/" + files[0]);
       String contents = out.toString(Charset.defaultCharset()).trim();
       assertEquals(PAYLOAD.trim(), contents);
@@ -238,8 +241,7 @@ public class FtpClientTest {
   public void testPutLocalFile() throws Exception {
     EmbeddedFtpServer embedded = new EmbeddedFtpServer();
     FakeFtpServer server = embedded.createAndStart(embedded.createFilesystem(10));
-    try (CommonsNetFtpClient client = create(server);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();) {
+    try (CommonsNetFtpClient client = create(server); ByteArrayOutputStream out = new ByteArrayOutputStream();) {
       client.connect(DEFAULT_USERNAME, DEFAULT_PASSWORD);
       File localFile = TempFileUtils.createTrackedFile(embedded);
       FileUtils.write(localFile, PAYLOAD_ALTERNATE, Charset.defaultCharset());
@@ -256,8 +258,7 @@ public class FtpClientTest {
   public void testPutLocalFileAppend() throws Exception {
     EmbeddedFtpServer embedded = new EmbeddedFtpServer();
     FakeFtpServer server = embedded.createAndStart(embedded.createFilesystem(10));
-    try (CommonsNetFtpClient client = create(server);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();) {
+    try (CommonsNetFtpClient client = create(server); ByteArrayOutputStream out = new ByteArrayOutputStream();) {
       client.connect(DEFAULT_USERNAME, DEFAULT_PASSWORD);
       File localFile = TempFileUtils.createTrackedFile(embedded);
       FileUtils.write(localFile, PAYLOAD_ALTERNATE, Charset.defaultCharset());
@@ -275,8 +276,7 @@ public class FtpClientTest {
   public void testPutBytes() throws Exception {
     EmbeddedFtpServer embedded = new EmbeddedFtpServer();
     FakeFtpServer server = embedded.createAndStart(embedded.createFilesystem(10));
-    try (CommonsNetFtpClient client = create(server);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();) {
+    try (CommonsNetFtpClient client = create(server); ByteArrayOutputStream out = new ByteArrayOutputStream();) {
       client.connect(DEFAULT_USERNAME, DEFAULT_PASSWORD);
       String remoteFileName = DEFAULT_BUILD_DIR_CANONICAL + "/" + GUID.safeUUID();
       client.put(PAYLOAD_ALTERNATE.getBytes(Charset.defaultCharset()), remoteFileName);
@@ -291,8 +291,7 @@ public class FtpClientTest {
   public void testPutBytes_Append() throws Exception {
     EmbeddedFtpServer embedded = new EmbeddedFtpServer();
     FakeFtpServer server = embedded.createAndStart(embedded.createFilesystem(10));
-    try (CommonsNetFtpClient client = create(server);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();) {
+    try (CommonsNetFtpClient client = create(server); ByteArrayOutputStream out = new ByteArrayOutputStream();) {
       client.connect(DEFAULT_USERNAME, DEFAULT_PASSWORD);
       String remoteFileName = DEFAULT_BUILD_DIR_CANONICAL + "/" + GUID.safeUUID();
       client.put(PAYLOAD_ALTERNATE.getBytes(Charset.defaultCharset()), remoteFileName);
@@ -308,8 +307,7 @@ public class FtpClientTest {
   public void testDelete() throws Exception {
     EmbeddedFtpServer embedded = new EmbeddedFtpServer();
     FakeFtpServer server = embedded.createAndStart(embedded.createFilesystem(10));
-    try (CommonsNetFtpClient client = create(server);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();) {
+    try (CommonsNetFtpClient client = create(server); ByteArrayOutputStream out = new ByteArrayOutputStream();) {
       client.connect(DEFAULT_USERNAME, DEFAULT_PASSWORD);
       String[] files = client.dir(DEFAULT_WORK_DIR_CANONICAL);
       assertEquals(10, files.length);
@@ -324,8 +322,7 @@ public class FtpClientTest {
   public void testRename() throws Exception {
     EmbeddedFtpServer embedded = new EmbeddedFtpServer();
     FakeFtpServer server = embedded.createAndStart(embedded.createFilesystem(10));
-    try (CommonsNetFtpClient client = create(server);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();) {
+    try (CommonsNetFtpClient client = create(server); ByteArrayOutputStream out = new ByteArrayOutputStream();) {
       client.connect(DEFAULT_USERNAME, DEFAULT_PASSWORD);
       String[] files = client.dir(DEFAULT_WORK_DIR_CANONICAL);
       assertEquals(10, files.length);
@@ -341,8 +338,7 @@ public class FtpClientTest {
   public void testMkdir() throws Exception {
     EmbeddedFtpServer embedded = new EmbeddedFtpServer();
     FakeFtpServer server = embedded.createAndStart(embedded.createFilesystem(10));
-    try (CommonsNetFtpClient client = create(server);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();) {
+    try (CommonsNetFtpClient client = create(server); ByteArrayOutputStream out = new ByteArrayOutputStream();) {
       client.connect(DEFAULT_USERNAME, DEFAULT_PASSWORD);
       String remoteDir = DEFAULT_BUILD_DIR_CANONICAL + "/" + GUID.safeUUID();
       client.mkdir(remoteDir);
@@ -357,8 +353,7 @@ public class FtpClientTest {
   public void testLastModified() throws Exception {
     EmbeddedFtpServer embedded = new EmbeddedFtpServer();
     FakeFtpServer server = embedded.createAndStart(embedded.createFilesystem(10));
-    try (CommonsNetFtpClient client = create(server);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();) {
+    try (CommonsNetFtpClient client = create(server); ByteArrayOutputStream out = new ByteArrayOutputStream();) {
       client.connect(DEFAULT_USERNAME, DEFAULT_PASSWORD);
       String[] files = client.dir(DEFAULT_WORK_DIR_CANONICAL);
       assertEquals(10, files.length);
@@ -370,20 +365,21 @@ public class FtpClientTest {
     }
   }
 
-  @Test(expected = FtpException.class)
+  @Test
   public void testLastModified_BadResponse() throws Exception {
-    EmbeddedFtpServer embedded = new EmbeddedFtpServer(false);
-    FakeFtpServer server = embedded.createAndStart(embedded.createFilesystem(10));
-    try (CommonsNetFtpClient client = create(server);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();) {
-      client.connect(DEFAULT_USERNAME, DEFAULT_PASSWORD);
-      String[] files = client.dir(DEFAULT_WORK_DIR_CANONICAL);
-      assertEquals(10, files.length);
-      String file = DEFAULT_WORK_DIR_CANONICAL + "/" + files[0];
-      client.lastModified(file);
-    } finally {
-      server.stop();
-    }
+    Assertions.assertThrows(FtpException.class, () -> {
+      EmbeddedFtpServer embedded = new EmbeddedFtpServer(false);
+      FakeFtpServer server = embedded.createAndStart(embedded.createFilesystem(10));
+      try (CommonsNetFtpClient client = create(server); ByteArrayOutputStream out = new ByteArrayOutputStream();) {
+        client.connect(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+        String[] files = client.dir(DEFAULT_WORK_DIR_CANONICAL);
+        assertEquals(10, files.length);
+        String file = DEFAULT_WORK_DIR_CANONICAL + "/" + files[0];
+        client.lastModified(file);
+      } finally {
+        server.stop();
+      }
+    });
   }
 
   @Test
@@ -404,8 +400,7 @@ public class FtpClientTest {
     client.postConnectSettings(mock);
   }
 
-  protected <T extends ApacheFtpClientImpl<FTPClient>> T create(FakeFtpServer server)
-      throws Exception {
+  protected <T extends ApacheFtpClientImpl<FTPClient>> T create(FakeFtpServer server) throws Exception {
     return (T) new CommonsNetFtpClient(SERVER_ADDRESS, server.getServerControlPort());
   }
 
@@ -444,17 +439,16 @@ public class FtpClientTest {
   private class BrokenConnection extends MockClient {
 
     public BrokenConnection() throws Exception {
-      // Since getReplyCode() is pretty much the first thing that happens this should break everything.
+      // Since getReplyCode() is pretty much the first thing that happens this should
+      // break everything.
       mock = Mockito.mock(FTPClient.class);
       Mockito.doThrow(new IOException()).when(mock).connect(anyString(), anyInt());
       Mockito.doThrow(new IOException()).when(mock).connect(any(InetAddress.class));
       Mockito.doThrow(new IOException()).when(mock).connect(any(InetAddress.class), anyInt());
       Mockito.doThrow(new IOException()).when(mock).connect(anyString());
-      Mockito.doThrow(new IOException()).when(mock).connect(any(InetAddress.class), anyInt(),
-          any(InetAddress.class), anyInt());
-      Mockito.doThrow(new IOException()).when(mock).connect(anyString(), anyInt(),
-          any(InetAddress.class),
+      Mockito.doThrow(new IOException()).when(mock).connect(any(InetAddress.class), anyInt(), any(InetAddress.class),
           anyInt());
+      Mockito.doThrow(new IOException()).when(mock).connect(anyString(), anyInt(), any(InetAddress.class), anyInt());
       Mockito.doNothing().when(mock).disconnect();
     }
   }

@@ -17,14 +17,18 @@
 package com.adaptris.core.interceptor;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import javax.management.JMX;
 import javax.management.ObjectName;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.Adapter;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.SerializableAdaptrisMessage;

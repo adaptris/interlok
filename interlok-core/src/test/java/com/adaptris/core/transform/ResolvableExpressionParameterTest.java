@@ -16,18 +16,19 @@
 
 package com.adaptris.core.transform;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.util.KeyValuePair;
-import com.adaptris.util.KeyValuePairList;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.util.KeyValuePair;
+import com.adaptris.util.KeyValuePairList;
 
 public class ResolvableExpressionParameterTest extends TransformParameterCase
 {
@@ -38,7 +39,7 @@ public class ResolvableExpressionParameterTest extends TransformParameterCase
   private KeyValuePairList expressions;
   private Map<Object, Object> existing;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception
   {
     message = createMessage();

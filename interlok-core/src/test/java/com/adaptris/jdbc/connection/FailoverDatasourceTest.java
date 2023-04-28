@@ -22,9 +22,10 @@ import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_DRIVER;
 import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_TEST_STATEMENT;
 import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_URL_ROOT;
 import static com.adaptris.jdbc.connection.FailoverConnectionTest.createTables;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLClientInfoException;
@@ -32,8 +33,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 import java.util.concurrent.Executors;
+
 import org.apache.commons.pool.impl.GenericObjectPool;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.util.JdbcUtil;
 
 public class FailoverDatasourceTest extends FailoverDataSource {
@@ -42,14 +46,18 @@ public class FailoverDatasourceTest extends FailoverDataSource {
     super(createProperties());
   }
 
-  @Test(expected = RuntimeException.class)
+  @Test
   public void testProperties() throws Exception {
-    FailoverDataSource fds = new FailoverDataSource(null);
+    Assertions.assertThrows(RuntimeException.class, () -> {
+      new FailoverDataSource(null);
+    });
   }
 
-  @Test(expected = RuntimeException.class)
+  @Test
   public void testProperties_Empty() throws Exception {
-    FailoverDataSource fds = new FailoverDataSource(new Properties());
+    Assertions.assertThrows(RuntimeException.class, () -> {
+      new FailoverDataSource(new Properties());
+    });
   }
 
   @Test
@@ -80,11 +88,13 @@ public class FailoverDatasourceTest extends FailoverDataSource {
     }
   }
 
-  @Test(expected = SQLException.class)
+  @Test
   public void testUnwrap() throws Exception {
-    FailoverDataSource fds = new FailoverDataSource(createProperties());
-    assertFalse(fds.isWrapperFor(Connection.class));
-    fds.unwrap(Connection.class);
+    Assertions.assertThrows(SQLException.class, () -> {
+      FailoverDataSource fds = new FailoverDataSource(createProperties());
+      assertFalse(fds.isWrapperFor(Connection.class));
+      fds.unwrap(Connection.class);
+    });
   }
 
   @Test
@@ -102,15 +112,16 @@ public class FailoverDatasourceTest extends FailoverDataSource {
     p.destroyObject(new Object());
   }
 
-  @Test(expected = SQLException.class)
+  @Test
   public void testBorrow() throws Exception {
-    GenericObjectPool objPool = new GenericObjectPool(new UselessLifeguard(config(), true, false), maxPoolSize(),
-        GenericObjectPool.WHEN_EXHAUSTED_BLOCK,
-        timeToWait());
-    objPool.setTestOnBorrow(true);
-    objPool.setTestWhileIdle(true);
-    overrideObjectPool(objPool);
-    getConnection();
+    Assertions.assertThrows(SQLException.class, () -> {
+      GenericObjectPool objPool = new GenericObjectPool(new UselessLifeguard(config(), true, false), maxPoolSize(),
+          GenericObjectPool.WHEN_EXHAUSTED_BLOCK, timeToWait());
+      objPool.setTestOnBorrow(true);
+      objPool.setTestWhileIdle(true);
+      overrideObjectPool(objPool);
+      getConnection();
+    });
   }
 
   @Test
@@ -146,9 +157,10 @@ public class FailoverDatasourceTest extends FailoverDataSource {
 
       }
       try {
-        conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE, ResultSet.CLOSE_CURSORS_AT_COMMIT);
+        conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE,
+            ResultSet.CLOSE_CURSORS_AT_COMMIT);
       } catch (Exception e) {
-        
+
       }
       try {
         conn.prepareStatement("SELECT * FROM SEQUENCES");
@@ -228,18 +240,13 @@ public class FailoverDatasourceTest extends FailoverDataSource {
 
       }
       try {
-        conn.createStruct("java.lang.String", new String[]
-        {
-            "hello"
+        conn.createStruct("java.lang.String", new String[] { "hello"
 
         });
       } catch (Exception e) {
       }
       try {
-        conn.createArrayOf("java.lang.String", new String[]
-        {
-            "hello", "world"
-        });
+        conn.createArrayOf("java.lang.String", new String[] { "hello", "world" });
       } catch (Exception e) {
       }
     } finally {
@@ -514,7 +521,6 @@ public class FailoverDatasourceTest extends FailoverDataSource {
     return p;
   }
 
-  
   private class UselessLifeguard extends PoolAttendant {
 
     private boolean throwOnMake, throwOnPassivate;

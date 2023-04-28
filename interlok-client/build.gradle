@@ -19,7 +19,7 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 dependencies {
   api project(':interlok-common')
   api ("org.slf4j:slf4j-api:2.0.6")
-  testImplementation ('junit:junit:4.13.2')
+  testImplementation ('org.junit.jupiter:junit-jupiter-api:5.9.2')
   // testCompile ("com.adaptris:interlok-stubs:$interlokCoreVersion") { changing= true}
   testImplementation ("org.apache.logging.log4j:log4j-core:$log4j2Version")
   testImplementation ("org.apache.logging.log4j:log4j-1.2-api:$log4j2Version")

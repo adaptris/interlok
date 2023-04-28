@@ -1,8 +1,10 @@
 package com.adaptris.core.jdbc;
 
 import static com.adaptris.core.jdbc.DefaultPoolFactoryTest.createConnection;
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.jdbc.HikariPoolBuilder.HikariDataSourceWrapper;
 import com.zaxxer.hikari.HikariDataSource;
 

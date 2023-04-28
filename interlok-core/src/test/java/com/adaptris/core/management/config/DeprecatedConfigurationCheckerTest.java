@@ -1,5 +1,15 @@
 package com.adaptris.core.management.config;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.commons.collections4.IterableUtils;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.Channel;
@@ -12,17 +22,9 @@ import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.management.BootstrapProperties;
 import com.adaptris.core.services.metadata.AddTimestampMetadataService;
 import com.adaptris.validation.constraints.ConfigDeprecated;
+
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.collections4.IterableUtils;
-import org.junit.Test;
-
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class DeprecatedConfigurationCheckerTest {
 

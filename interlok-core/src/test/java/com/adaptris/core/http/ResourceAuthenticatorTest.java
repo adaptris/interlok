@@ -1,16 +1,19 @@
 package com.adaptris.core.http;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.net.Authenticator;
 import java.net.Authenticator.RequestorType;
 import java.net.InetAddress;
 import java.net.PasswordAuthentication;
 import java.net.URL;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.http.auth.AdapterResourceAuthenticator;
 
 public class ResourceAuthenticatorTest {
@@ -20,13 +23,13 @@ public class ResourceAuthenticatorTest {
   private transient DummyResourceAuthenticator dummyAuth =
       new DummyResourceAuthenticator(new PasswordAuthentication("user", "password".toCharArray()));
 
-  @Before
+  @BeforeEach
   public void setup() {
     AdapterResourceAuthenticator.getInstance().addAuthenticator(dummyAuth);
     Authenticator.setDefault(AdapterResourceAuthenticator.getInstance());
   }
 
-  @After
+  @AfterEach
   public void teardown() {
     AdapterResourceAuthenticator.getInstance().removeAuthenticator(dummyAuth);
     Authenticator.setDefault(null);

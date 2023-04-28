@@ -1,11 +1,12 @@
 package com.adaptris.core;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
@@ -14,8 +15,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class MultiPayloadMessageFactoryTest extends AdaptrisMessageFactoryImplCase {
   private final MultiPayloadMessageFactory messageFactory = new MultiPayloadMessageFactory();
@@ -27,7 +29,7 @@ public class MultiPayloadMessageFactoryTest extends AdaptrisMessageFactoryImplCa
 
   private static final Set<MetadataElement> METADATA = new HashSet<>();
 
-  @Before
+  @BeforeEach
   public void setUp() {
     messageFactory.setDefaultCharEncoding(ENCODING);
     METADATA.add(new MetadataElement("KEY", "VALUE"));

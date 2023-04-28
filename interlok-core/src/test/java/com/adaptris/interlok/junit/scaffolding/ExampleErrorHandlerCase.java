@@ -17,6 +17,7 @@
 package com.adaptris.interlok.junit.scaffolding;
 
 import java.util.Arrays;
+
 import com.adaptris.core.Adapter;
 import com.adaptris.core.Channel;
 import com.adaptris.core.ChannelList;

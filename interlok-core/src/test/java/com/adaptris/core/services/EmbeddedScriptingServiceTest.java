@@ -17,14 +17,17 @@
 package com.adaptris.core.services;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BranchingServiceCollection;
@@ -99,11 +102,11 @@ public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
   @Test
   public void testInit() throws Exception {
     EmbeddedScriptingService service = new EmbeddedScriptingService();
-    assertThrows("Service initialised w/o a language", Exception.class, () -> {
+    Assertions.assertThrows(Exception.class, () -> {
       service.init();
     });
     service.setLanguage("BLAHBLAHBLAH");
-    assertThrows("Service initialised BLAHBLAHBLAH", Exception.class, () -> {
+    Assertions.assertThrows(Exception.class, () -> {
       LifecycleHelper.init(service);
     });
     service.setLanguage("jruby");
@@ -146,7 +149,7 @@ public class EmbeddedScriptingServiceTest extends GeneralServiceExample {
     EmbeddedScriptingService service = createService(getName());
     service.setScript("This Really Should Fail");
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    assertThrows("Service failure expected", Exception.class, () -> {
+    Assertions.assertThrows(Exception.class, () -> {
       execute(service, msg);
     });
   }

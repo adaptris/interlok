@@ -15,9 +15,12 @@
 */
 
 package com.adaptris.core.lifecycle;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.concurrent.TimeUnit;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.Channel;
 import com.adaptris.core.ClosedState;
 import com.adaptris.core.CoreException;

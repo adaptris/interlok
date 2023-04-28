@@ -26,22 +26,21 @@ import static com.adaptris.core.jms.JmsConstants.JMS_REDELIVERED;
 import static com.adaptris.core.jms.JmsConstants.JMS_REPLY_TO;
 import static com.adaptris.core.jms.JmsConstants.JMS_TIMESTAMP;
 import static com.adaptris.core.jms.JmsConstants.JMS_TYPE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessage;
@@ -77,18 +76,15 @@ public abstract class MessageTypeTranslatorCase {
   public static final String TEXT = "The quick brown fox";
   public static final String TEXT2 = "jumps over the lazy dog";
 
-  @Rule
-  public TestName testName = new TestName();
-
   protected static EmbeddedActiveMq activeMqBroker;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpAll() throws Exception {
     activeMqBroker = new EmbeddedActiveMq();
     activeMqBroker.start();
   }
 
-  @AfterClass
+  @AfterAll
   public static void tearDownAll() throws Exception {
     if(activeMqBroker != null) {
       activeMqBroker.destroy();
@@ -99,19 +95,19 @@ public abstract class MessageTypeTranslatorCase {
 
   protected abstract Message createMessage(Session session) throws Exception;
 
-  private StandaloneProducer createProducer(MessageTypeTranslator mt) throws Exception {
+  private StandaloneProducer createProducer(MessageTypeTranslator mt, TestInfo info) throws Exception {
     PasProducer producer = new PasProducer();
-    producer.withTopic(testName.getMethodName());
+    producer.withTopic(info.getDisplayName());
     producer.setMessageTranslator(mt);
     return new StandaloneProducer(new JmsConnection(), producer);
   }
 
   @Test
-  public void testRoundTrip() throws Exception {
+  public void testRoundTrip(TestInfo info) throws Exception {
     MessageTypeTranslatorImp translator =
         createTranslator().withMoveJmsHeaders(true).withMetadataFilter(new NoOpMetadataFilter())
         .withReportAllErrors(true);
-    StandaloneProducer p1 = createProducer(translator);
+    StandaloneProducer p1 = createProducer(translator, info);
     StandaloneProducer p2 = roundTrip(p1);
     BaseCase.assertRoundtripEquality(p1, p2);
   }
@@ -362,8 +358,8 @@ public abstract class MessageTypeTranslatorCase {
 
       Message jmsMsg = trans.translate(msg);
 
-      assertNotSame("JMS Priorities should be different", jmsMsg.getJMSPriority(), 9);
-      assertEquals("JMSType should be equal", "idaho", jmsMsg.getJMSType());
+      assertNotSame(jmsMsg.getJMSPriority(), 9);
+      assertEquals("idaho", jmsMsg.getJMSType());
     }
     finally {
       stop(trans);

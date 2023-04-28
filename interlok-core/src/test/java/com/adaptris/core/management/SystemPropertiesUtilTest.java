@@ -17,13 +17,13 @@
 package com.adaptris.core.management;
 
 import static com.adaptris.core.management.Constants.SYSTEM_PROPERTY_PREFIX;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Properties;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.security.password.Password;
 
@@ -31,11 +31,11 @@ public class SystemPropertiesUtilTest {
 
   private static final String DEFAULT_VALUE = "Back At The Chicken Shack 1960";
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
   }
 

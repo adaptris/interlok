@@ -16,21 +16,23 @@
 
 package com.adaptris.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.io.RandomAccessFile;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+
 import com.adaptris.core.lms.FileBackedMessage;
 import com.adaptris.core.lms.FileBackedMessageFactory;
 import com.adaptris.core.stubs.TempFileUtils;
 import com.adaptris.interlok.types.SerializableMessage;
 
 public class SerializableMessageTranslatorTest {
-  @Rule
-  public TestName testName = new TestName();
+  
+  
   @Test
   public void testMessageFactory() throws Exception {
     DefaultSerializableMessageTranslator translator = new DefaultSerializableMessageTranslator();
@@ -87,20 +89,20 @@ public class SerializableMessageTranslatorTest {
   }
 
   @Test
-  public void testUnserialize() throws Exception {
+  public void testUnserialize(TestInfo info) throws Exception {
     SerializableAdaptrisMessage serialisableAdaptrisMessage = new SerializableAdaptrisMessage();
     serialisableAdaptrisMessage.setContent("Some Payload");
     serialisableAdaptrisMessage.setUniqueId("uuid2");
     serialisableAdaptrisMessage.addMetadata("MetaKey3", "MetaValue3");
     serialisableAdaptrisMessage.addMetadata("MetaKey4", "MetaValue4");
-    serialisableAdaptrisMessage.setNextServiceId(testName.getMethodName());
+    serialisableAdaptrisMessage.setNextServiceId(info.getDisplayName());
     AdaptrisMessage adaptrisMessage = new DefaultSerializableMessageTranslator().translate(serialisableAdaptrisMessage);
     
     assertEquals("MetaValue3", adaptrisMessage.getMetadataValue("MetaKey3"));
     assertEquals("MetaValue4", adaptrisMessage.getMetadataValue("MetaKey4"));
     assertEquals("Some Payload", adaptrisMessage.getContent());
     assertEquals("uuid2", adaptrisMessage.getUniqueId());
-    assertEquals(testName.getMethodName(), adaptrisMessage.getNextServiceId());
+    assertEquals(info.getDisplayName(), adaptrisMessage.getNextServiceId());
   }
 
   @Test

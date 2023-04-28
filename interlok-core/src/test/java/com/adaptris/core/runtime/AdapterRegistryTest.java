@@ -16,32 +16,37 @@
 
 package com.adaptris.core.runtime;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
+
 import javax.management.InstanceNotFoundException;
 import javax.management.JMX;
 import javax.management.ObjectName;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+
 import org.apache.commons.io.FileUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+
 import com.adaptris.core.Adapter;
 import com.adaptris.core.ClosedState;
 import com.adaptris.core.CoreException;
@@ -86,7 +91,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
   }
 
 
-  @Before
+  @BeforeEach
   public void beforeMyTests() throws Exception {
     contextEnv.put(Context.INITIAL_CONTEXT_FACTORY, JndiContextFactory.class.getName());
     spyPreProcessorLoader = new DefaultPreProcessorLoader();
@@ -125,7 +130,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testPreProcessorsLoaded() throws Exception {
+  public void testPreProcessorsLoaded(TestInfo info) throws Exception {
 
     Properties bsProperties = new Properties();
     bsProperties.put(AdapterConfigManager.CONFIGURATION_PRE_PROCESSORS,
@@ -136,7 +141,7 @@ public class AdapterRegistryTest extends ComponentManagerCase {
 
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
-    File filename = deleteLater(adapter);
+    File filename = deleteLater(adapter, info);
     DefaultMarshaller.getDefaultMarshaller().marshal(adapter, filename);
 
     myAdapterRegistry.createAdapter(new URLString(filename));
@@ -145,10 +150,10 @@ public class AdapterRegistryTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testPreProcessorCalled() throws Exception {
+  public void testPreProcessorCalled(TestInfo info) throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
-    File filename = deleteLater(adapter);
+    File filename = deleteLater(adapter, info);
     DefaultMarshaller.getDefaultMarshaller().marshal(adapter, filename);
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -167,10 +172,10 @@ public class AdapterRegistryTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testMultiPreProcessorCalled() throws Exception {
+  public void testMultiPreProcessorCalled(TestInfo info) throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
-    File filename = deleteLater(adapter);
+    File filename = deleteLater(adapter, info);
     DefaultMarshaller.getDefaultMarshaller().marshal(adapter, filename);
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -231,10 +236,10 @@ public class AdapterRegistryTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testCreateAdapter_URL() throws Exception {
+  public void testCreateAdapter_URL(TestInfo info) throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
-    File filename = deleteLater(adapter);
+    File filename = deleteLater(adapter, info);
     DefaultMarshaller.getDefaultMarshaller().marshal(adapter, filename);
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -260,10 +265,10 @@ public class AdapterRegistryTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testCreateAdapterFromUrl_String() throws Exception {
+  public void testCreateAdapterFromUrl_String(TestInfo info) throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
-    File filename = deleteLater(adapter);
+    File filename = deleteLater(adapter, info);
     DefaultMarshaller.getDefaultMarshaller().marshal(adapter, filename);
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
@@ -290,14 +295,14 @@ public class AdapterRegistryTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testProxy_CreateAdapter_URL() throws Exception {
+  public void testProxy_CreateAdapter_URL(TestInfo info) throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
     AdapterRegistryMBean registry = JMX.newMBeanProxy(mBeanServer, myAdapterRegistry.createObjectName(),
         AdapterRegistryMBean.class);
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
-    File filename = deleteLater(adapter);
+    File filename = deleteLater(adapter, info);
     DefaultMarshaller.getDefaultMarshaller().marshal(adapter, filename);
     int expectedCount = myAdapterRegistry.getAdapters().size() + 1;
 
@@ -390,12 +395,12 @@ public class AdapterRegistryTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testPersistAdapter_MBean_to_URL() throws Exception {
+  public void testPersistAdapter_MBean_to_URL(TestInfo info) throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
-    File filename = deleteLater(adapter);
+    File filename = deleteLater(adapter, info);
     String xml = DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
     ObjectName objName = myAdapterRegistry.createAdapter(xml);
     assertNotNull(objName);
@@ -406,14 +411,14 @@ public class AdapterRegistryTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testProxy_PersistAdapter_Bean_to_URL() throws Exception {
+  public void testProxy_PersistAdapter_Bean_to_URL(TestInfo info) throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
     AdapterRegistryMBean registry = JMX.newMBeanProxy(mBeanServer, myAdapterRegistry.createObjectName(),
         AdapterRegistryMBean.class);
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
-    File filename = deleteLater(adapter);
+    File filename = deleteLater(adapter, info);
     String xml = DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
     ObjectName objName = registry.createAdapter(xml);
     assertNotNull(objName);
@@ -424,14 +429,14 @@ public class AdapterRegistryTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testProxy_PersistAdapter_Bean_to_URL_String() throws Exception {
+  public void testProxy_PersistAdapter_Bean_to_URL_String(TestInfo info) throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
     AdapterRegistryMBean registry = JMX.newMBeanProxy(mBeanServer, myAdapterRegistry.createObjectName(),
         AdapterRegistryMBean.class);
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
-    File filename = deleteLater(adapter);
+    File filename = deleteLater(adapter, info);
     String xml = DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
     ObjectName objName = registry.createAdapter(xml);
     assertNotNull(objName);
@@ -442,12 +447,12 @@ public class AdapterRegistryTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testPersistAdapter_ObjectName_To_File() throws Exception {
+  public void testPersistAdapter_ObjectName_To_File(TestInfo info) throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
-    File filename = deleteLater(adapter);
+    File filename = deleteLater(adapter, info);
     String xml = DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
     ObjectName objName = myAdapterRegistry.createAdapter(xml);
     myAdapterRegistry.persistAdapter(objName, new URLString(filename));
@@ -456,14 +461,14 @@ public class AdapterRegistryTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testProxy_PersistAdapter_ObjectName_To_URL() throws Exception {
+  public void testProxy_PersistAdapter_ObjectName_To_URL(TestInfo info) throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
     AdapterRegistryMBean registry = JMX.newMBeanProxy(mBeanServer, myAdapterRegistry.createObjectName(),
         AdapterRegistryMBean.class);
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
-    File filename = deleteLater(adapter);
+    File filename = deleteLater(adapter, info);
     String xml = DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
     ObjectName objName = registry.createAdapter(xml);
     registry.persistAdapter(objName, new URLString(filename));
@@ -472,14 +477,14 @@ public class AdapterRegistryTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testProxy_PersistAdapter_ObjectName_To_URL_String() throws Exception {
+  public void testProxy_PersistAdapter_ObjectName_To_URL_String(TestInfo info) throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
     AdapterRegistryMBean registry = JMX.newMBeanProxy(mBeanServer, myAdapterRegistry.createObjectName(),
         AdapterRegistryMBean.class);
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
-    File filename = deleteLater(adapter);
+    File filename = deleteLater(adapter, info);
     String xml = DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
     ObjectName objName = registry.createAdapter(xml);
     registry.persistAdapter(objName, filename.toURI().toString());
@@ -746,12 +751,12 @@ public class AdapterRegistryTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testGetConfigurationURL() throws Exception {
+  public void testGetConfigurationURL(TestInfo info) throws Exception {
     AdapterRegistry adapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
-    File filename = deleteLater(adapter);
+    File filename = deleteLater(adapter, info);
     DefaultMarshaller.getDefaultMarshaller().marshal(adapter, filename);
     URLString expectedURL = new URLString(filename);
     ObjectName objName = adapterRegistry.createAdapter(expectedURL);
@@ -774,12 +779,12 @@ public class AdapterRegistryTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testRemoveConfigurationURL() throws Exception {
+  public void testRemoveConfigurationURL(TestInfo info) throws Exception {
     AdapterRegistry adapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
-    File filename = deleteLater(adapter);
+    File filename = deleteLater(adapter, info);
     DefaultMarshaller.getDefaultMarshaller().marshal(adapter, filename);
     URLString expectedURL = new URLString(filename);
     ObjectName objName = adapterRegistry.createAdapter(expectedURL);
@@ -792,12 +797,12 @@ public class AdapterRegistryTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testDestroy_With_GetConfigurationURL() throws Exception {
+  public void testDestroy_With_GetConfigurationURL(TestInfo info) throws Exception {
     AdapterRegistry adapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
-    File filename = deleteLater(adapter);
+    File filename = deleteLater(adapter, info);
     DefaultMarshaller.getDefaultMarshaller().marshal(adapter, filename);
     URLString expectedURL = new URLString(filename);
     ObjectName objName = adapterRegistry.createAdapter(expectedURL);
@@ -809,14 +814,14 @@ public class AdapterRegistryTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testProxy_GetConfigurationURL() throws Exception {
+  public void testProxy_GetConfigurationURL(TestInfo info) throws Exception {
     AdapterRegistry myAdapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
     AdapterRegistryMBean registry = JMX.newMBeanProxy(mBeanServer, myAdapterRegistry.createObjectName(),
         AdapterRegistryMBean.class);
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
-    File filename = deleteLater(adapter);
+    File filename = deleteLater(adapter, info);
     DefaultMarshaller.getDefaultMarshaller().marshal(adapter, filename);
     URLString expectedURL = new URLString(filename);
     ObjectName objName = registry.createAdapter(expectedURL);
@@ -841,14 +846,14 @@ public class AdapterRegistryTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testProxy_RemoveConfigurationURL() throws Exception {
+  public void testProxy_RemoveConfigurationURL(TestInfo info) throws Exception {
     AdapterRegistry adapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
     AdapterRegistryMBean registry = JMX.newMBeanProxy(mBeanServer, adapterRegistry.createObjectName(),
         AdapterRegistryMBean.class);
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
-    File filename = deleteLater(adapter);
+    File filename = deleteLater(adapter, info);
     DefaultMarshaller.getDefaultMarshaller().marshal(adapter, filename);
     URLString expectedURL = new URLString(filename);
     ObjectName objName = registry.createAdapter(expectedURL);
@@ -862,13 +867,13 @@ public class AdapterRegistryTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testProxy_Destroy_With_GetConfigurationURL() throws Exception {
+  public void testProxy_Destroy_With_GetConfigurationURL(TestInfo info) throws Exception {
     AdapterRegistry adapterRegistry = (AdapterRegistry) AdapterRegistry
         .findInstance(new JunitBootstrapProperties(new Properties()));
     AdapterRegistryMBean registry = JMX.newMBeanProxy(mBeanServer, adapterRegistry.createObjectName(), AdapterRegistryMBean.class);
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
-    File filename = deleteLater(adapter);
+    File filename = deleteLater(adapter, info);
     DefaultMarshaller.getDefaultMarshaller().marshal(adapter, filename);
     URLString expectedURL = new URLString(filename);
     ObjectName objName = registry.createAdapter(expectedURL);
@@ -893,10 +898,10 @@ public class AdapterRegistryTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testReloadFromVersionControl_WithVCS() throws Exception {
+  public void testReloadFromVersionControl_WithVCS(TestInfo info) throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
-    File filename = deleteLater(adapter);
+    File filename = deleteLater(adapter, info);
     DefaultMarshaller.getDefaultMarshaller().marshal(adapter, filename);
     Properties p = new Properties();
     p.put("adapterConfigUrl.1", filename.toURI().toURL().toString());
@@ -914,13 +919,13 @@ public class AdapterRegistryTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testReloadFromVersionControl_WithVCS_2Builders() throws Exception {
+  public void testReloadFromVersionControl_WithVCS_2Builders(TestInfo info) throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter1 = createAdapter(adapterName, 2, 2);
-    File firstFile = deleteLater(adapter1);
+    File firstFile = deleteLater(adapter1, info);
     DefaultMarshaller.getDefaultMarshaller().marshal(adapter1, firstFile);
     Adapter adapter2 = createAdapter(adapterName + "2", 2, 2);
-    File secondFile = deleteLater(adapter2);
+    File secondFile = deleteLater(adapter2, info);
     DefaultMarshaller.getDefaultMarshaller().marshal(adapter2, secondFile);
 
     Properties first = new Properties();
@@ -946,10 +951,10 @@ public class AdapterRegistryTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testReloadFromConfig() throws Exception {
+  public void testReloadFromConfig(TestInfo info) throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName, 2, 2);
-    File filename = deleteLater(adapter);
+    File filename = deleteLater(adapter, info);
     DefaultMarshaller.getDefaultMarshaller().marshal(adapter, filename);
     Properties p = new Properties();
     p.put("adapterConfigUrl.1", filename.toURI().toURL().toString());

@@ -16,14 +16,17 @@
 
 package com.adaptris.core.services.jdbc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.XmlUtils;
@@ -59,13 +62,13 @@ public class MergeResultSetIntoPayloadTest extends JdbcQueryServiceCaseXmlResult
     s.setResultSetTranslator(new MergeResultSetIntoXmlPayload(new InsertNode("/root")));
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertTrue(ADAPTER_ID_KEY + " exists", msg.containsKey(ADAPTER_ID_KEY));
+    assertTrue(msg.containsKey(ADAPTER_ID_KEY));
     assertNotSame(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertFalse(msg.containsKey(JdbcDataQueryService.class.getCanonicalName()));
     XmlUtils xu = XmlHelper.createXmlUtils(msg);
     log.warn(msg.getContent());
-    assertNotNull("/root/document", xu.getSingleNode("/root/document"));
-    assertNotNull("/root/Results/Row", xu.getSingleNode("/root/Results/Row"));
+    assertNotNull(xu.getSingleNode("/root/document"));
+    assertNotNull(xu.getSingleNode("/root/Results/Row"));
   }
 
   @Test
@@ -81,13 +84,13 @@ public class MergeResultSetIntoPayloadTest extends JdbcQueryServiceCaseXmlResult
     s.setResultSetTranslator(t);
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertTrue(ADAPTER_ID_KEY + " exists", msg.containsKey(ADAPTER_ID_KEY));
+    assertTrue(msg.containsKey(ADAPTER_ID_KEY));
     assertNotSame(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertFalse(msg.containsKey(JdbcDataQueryService.class.getCanonicalName()));
     XmlUtils xu = XmlHelper.createXmlUtils(msg);
     log.warn(msg.getContent());
-    assertNotNull("/root/document", xu.getSingleNode("/root/document"));
-    assertNotNull("/root/Results/Row", xu.getSingleNode("/root/Results/Row"));
+    assertNotNull(xu.getSingleNode("/root/document"));
+    assertNotNull(xu.getSingleNode("/root/Results/Row"));
     assertTrue(msg.containsKey(getName()));
     assertEquals("1", msg.getMetadataValue(getName()));
   }
@@ -103,12 +106,12 @@ public class MergeResultSetIntoPayloadTest extends JdbcQueryServiceCaseXmlResult
     s.setResultSetTranslator(new MergeResultSetIntoXmlPayload(new InsertNode("/root")));
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertTrue(ADAPTER_ID_KEY + " exists", msg.containsKey(ADAPTER_ID_KEY));
+    assertTrue(msg.containsKey(ADAPTER_ID_KEY));
     assertNotSame(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertFalse(msg.containsKey(JdbcDataQueryService.class.getCanonicalName()));
     XmlUtils xu = XmlHelper.createXmlUtils(msg);
-    assertNotNull("/root/document", xu.getSingleNode("/root/document"));
-    assertNotNull("/root/Results/Row", xu.getSingleNode("/root/Results/Row"));
+    assertNotNull(xu.getSingleNode("/root/document"));
+    assertNotNull(xu.getSingleNode("/root/Results/Row"));
   }
 
   @Test
@@ -123,12 +126,12 @@ public class MergeResultSetIntoPayloadTest extends JdbcQueryServiceCaseXmlResult
     s.setResultSetTranslator(new MergeResultSetIntoXmlPayload(new InsertNode("/root/NonExistentNode")));
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertTrue(ADAPTER_ID_KEY + " exists", msg.containsKey(ADAPTER_ID_KEY));
+    assertTrue(msg.containsKey(ADAPTER_ID_KEY));
     assertNotSame(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertFalse(msg.containsKey(JdbcDataQueryService.class.getCanonicalName()));
     XmlUtils xu = XmlHelper.createXmlUtils(msg);
-    assertNotNull("/root/document doesn't exist", xu.getSingleNode("/root/document"));
-    assertNotNull("/root/NonExistentNode/Results/Row doesn't exist", xu.getSingleNode("/root/NonExistentNode/Results/Row"));
+    assertNotNull(xu.getSingleNode("/root/document"));
+    assertNotNull(xu.getSingleNode("/root/NonExistentNode/Results/Row"));
   }
 
   @Test
@@ -144,12 +147,12 @@ public class MergeResultSetIntoPayloadTest extends JdbcQueryServiceCaseXmlResult
     s.setResultSetTranslator(t);
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertTrue(ADAPTER_ID_KEY + " exists", msg.containsKey(ADAPTER_ID_KEY));
+    assertTrue(msg.containsKey(ADAPTER_ID_KEY));
     assertNotSame(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertFalse(msg.containsKey(JdbcDataQueryService.class.getCanonicalName()));
     XmlUtils xu = XmlHelper.createXmlUtils(msg);
-    assertNotNull("/root/document", xu.getSingleNode("/root/document"));
-    assertNotNull("/root/Results/Row", xu.getSingleNode("/root/results/row"));
+    assertNotNull(xu.getSingleNode("/root/document"));
+    assertNotNull(xu.getSingleNode("/root/results/row"));
   }
 
   @Override

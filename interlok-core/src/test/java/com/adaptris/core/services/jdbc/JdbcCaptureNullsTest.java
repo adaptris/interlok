@@ -16,13 +16,17 @@
 
 package com.adaptris.core.services.jdbc;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceException;
@@ -68,12 +72,14 @@ public class JdbcCaptureNullsTest {
     doBasicCaptureAsserts("");
   }
 
-  @Test(expected = ServiceException.class)
+  @Test
   public void testRawService_NotXML() throws Exception {
-    createDatabase();
-    JdbcDataCaptureServiceImpl service = configure(new JdbcRawDataCaptureService());
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("hello world");
-    ExampleServiceCase.execute(service, msg);
+    Assertions.assertThrows(ServiceException.class, () -> {
+      createDatabase();
+      JdbcDataCaptureServiceImpl service = configure(new JdbcRawDataCaptureService());
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("hello world");
+      ExampleServiceCase.execute(service, msg);
+    });
   }
 
   @Test
@@ -115,8 +121,7 @@ public class JdbcCaptureNullsTest {
         assertEquals(expectedValue, rs.getString("string_value"));
       }
       JdbcUtil.closeQuietly(rs);
-    }
-    finally {
+    } finally {
       JdbcUtil.closeQuietly(p);
       JdbcUtil.closeQuietly(c);
     }
@@ -150,8 +155,7 @@ public class JdbcCaptureNullsTest {
       executeQuietly(s, "DROP TABLE jdbc_capture_null");
       s.execute(
           "CREATE TABLE jdbc_capture_null (string_value VARCHAR(128) DEFAULT NULL, another_string_value VARCHAR(128) NOT NULL)");
-    }
-    finally {
+    } finally {
       JdbcUtil.closeQuietly(s);
       JdbcUtil.closeQuietly(c);
     }
@@ -160,8 +164,7 @@ public class JdbcCaptureNullsTest {
   private static void executeQuietly(Statement s, String sql) {
     try {
       s.execute(sql);
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       ;
     }
   }

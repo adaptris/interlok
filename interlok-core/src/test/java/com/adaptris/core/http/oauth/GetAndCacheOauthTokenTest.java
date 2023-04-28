@@ -17,17 +17,21 @@
 package com.adaptris.core.http.oauth;
 
 import static org.awaitility.Awaitility.await;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
@@ -41,7 +45,6 @@ import com.adaptris.util.TimeInterval;
 public class GetAndCacheOauthTokenTest extends HttpServiceExample {
   private static final String TEXT = "ABCDEFG";
 
-
   @Test
   public void testService_Lifecycle() throws Exception {
     GetAndCacheOauthToken service = new GetAndCacheOauthToken();
@@ -49,8 +52,7 @@ public class GetAndCacheOauthTokenTest extends HttpServiceExample {
       LifecycleHelper.prepare(service);
       LifecycleHelper.init(service);
       fail();
-    }
-    catch (Exception expected) {
+    } catch (Exception expected) {
 
     }
     service.setAccessTokenBuilder(new DummyAccessTokenBuilder());
@@ -62,9 +64,8 @@ public class GetAndCacheOauthTokenTest extends HttpServiceExample {
   public void testService() throws Exception {
     ExpiringMapCache cache = new ExpiringMapCache().withExpiration(new TimeInterval(5L, TimeUnit.SECONDS));
     AccessToken t = new AccessToken(getName());
-    GetAndCacheOauthToken service =
-        new GetAndCacheOauthToken().withCacheKey("OauthToken")
-            .withConnection(new CacheConnection(cache)).withAccessTokenBuilder(new DummyAccessTokenBuilder(t));
+    GetAndCacheOauthToken service = new GetAndCacheOauthToken().withCacheKey("OauthToken")
+        .withConnection(new CacheConnection(cache)).withAccessTokenBuilder(new DummyAccessTokenBuilder(t));
     try {
       AdaptrisMessage m1 = new DefaultMessageFactory().newMessage(TEXT);
       LifecycleHelper.initAndStart(service);
@@ -80,21 +81,22 @@ public class GetAndCacheOauthTokenTest extends HttpServiceExample {
       AccessToken t2 = (AccessToken) cache.get("OauthToken");
       assertNotNull(t2);
       assertSame(t1, t2);
-    }
-    finally {
+    } finally {
       LifecycleHelper.stopAndClose(service);
 
     }
   }
 
-  @Test(expected = ServiceException.class)
+  @Test
   public void testService_WithError() throws Exception {
-    ExpiringMapCache cache = new ExpiringMapCache().withExpiration(new TimeInterval(5L, TimeUnit.SECONDS));
-    AccessToken t = new AccessToken(getName());
-    GetAndCacheOauthToken service = new GetAndCacheOauthToken().withCacheKey("OauthToken")
-        .withConnection(new CacheConnection(cache)).withAccessTokenBuilder(new DummyAccessTokenBuilder(t, true));
-    AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
-    execute(service, msg);
+    Assertions.assertThrows(ServiceException.class, () -> {
+      ExpiringMapCache cache = new ExpiringMapCache().withExpiration(new TimeInterval(5L, TimeUnit.SECONDS));
+      AccessToken t = new AccessToken(getName());
+      GetAndCacheOauthToken service = new GetAndCacheOauthToken().withCacheKey("OauthToken")
+          .withConnection(new CacheConnection(cache)).withAccessTokenBuilder(new DummyAccessTokenBuilder(t, true));
+      AdaptrisMessage msg = new DefaultMessageFactory().newMessage(TEXT);
+      execute(service, msg);
+    });
   }
 
   @Test
@@ -109,11 +111,7 @@ public class GetAndCacheOauthTokenTest extends HttpServiceExample {
       service.doService(m1);
       AccessToken t1 = (AccessToken) cache.get("OauthToken");
       assertNotNull(t1);
-      await()
-          .atMost(Duration.ofSeconds(3))
-          .with()
-          .pollInterval(Duration.ofMillis(100))
-          .until(() -> cache.size() == 0);
+      await().atMost(Duration.ofSeconds(3)).with().pollInterval(Duration.ofMillis(100)).until(() -> cache.size() == 0);
       AdaptrisMessage m2 = new DefaultMessageFactory().newMessage(TEXT);
       service.doService(m2);
       AccessToken t2 = (AccessToken) cache.get("OauthToken");
@@ -126,10 +124,8 @@ public class GetAndCacheOauthTokenTest extends HttpServiceExample {
 
   @Override
   protected GetAndCacheOauthToken retrieveObjectForSampleConfig() {
-    return new GetAndCacheOauthToken()
-        .withCacheKey("%message{cachekey}")
-        .withAccessTokenWriter(new MetadataAccessTokenWriter())
-        .withAccessTokenBuilder(new DummyAccessTokenBuilder());
+    return new GetAndCacheOauthToken().withCacheKey("%message{cachekey}")
+        .withAccessTokenWriter(new MetadataAccessTokenWriter()).withAccessTokenBuilder(new DummyAccessTokenBuilder());
   }
 
   private class ExpiringAccessToken implements AccessTokenBuilder {
@@ -148,8 +144,8 @@ public class GetAndCacheOauthTokenTest extends HttpServiceExample {
     }
 
     private AccessToken rebuild() {
-      AccessToken t = new AccessToken(baseToken.getType(), baseToken.getToken()).withRefreshToken(baseToken.getRefreshToken())
-          .withExpiry(new Date(System.currentTimeMillis() + expiresIn));
+      AccessToken t = new AccessToken(baseToken.getType(), baseToken.getToken())
+          .withRefreshToken(baseToken.getRefreshToken()).withExpiry(new Date(System.currentTimeMillis() + expiresIn));
       return t;
     }
   }

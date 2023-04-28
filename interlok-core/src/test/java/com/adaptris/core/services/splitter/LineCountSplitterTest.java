@@ -16,19 +16,19 @@
 
 package com.adaptris.core.services.splitter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.Reader;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
@@ -43,7 +43,7 @@ public class LineCountSplitterTest extends SplitterCase {
   private MockMessageProducer producer;
   private BasicMessageSplitterService service;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     msg = createLineCountMessageInput();
     producer = new MockMessageProducer();
@@ -105,7 +105,7 @@ public class LineCountSplitterTest extends SplitterCase {
   public void testDefaultSplit() throws Exception {
     LineCountSplitter s = new LineCountSplitter();
     List<AdaptrisMessage> msgs = toList(s.splitMessage(msg));
-    assertEquals("10 split messages", 10, msgs.size());
+    assertEquals(10, msgs.size());
   }
 
   @Test
@@ -113,7 +113,7 @@ public class LineCountSplitterTest extends SplitterCase {
     LineCountSplitter s = new LineCountSplitter();
     msg.setContentEncoding(System.getProperty("file.encoding"));
     List<AdaptrisMessage> msgs = toList(s.splitMessage(msg));
-    assertEquals("10 split messages", 10, msgs.size());
+    assertEquals(10, msgs.size());
   }
 
   @Test
@@ -121,7 +121,7 @@ public class LineCountSplitterTest extends SplitterCase {
     LineCountSplitter s = new LineCountSplitter();
     s.setSplitOnLine(1);
     List<AdaptrisMessage> msgs = toList(s.splitMessage(msg));
-    assertEquals("100 split messages", 100, msgs.size());
+    assertEquals(100, msgs.size());
   }
 
   @Test
@@ -131,14 +131,14 @@ public class LineCountSplitterTest extends SplitterCase {
     List<AdaptrisMessage> msgs = toList(s.splitMessage(msg));
     // Tis' data,blankline,data for 100lines, so a 10line split should give
     // 5 actual splits
-    assertEquals("5 split messages", 5, msgs.size());
+    assertEquals(5, msgs.size());
   }
 
   @Test
   public void testDoServiceWithLineCountSplitter() throws Exception {
     msg.addMetadata("key", "value");
     execute(service, msg);
-    assertEquals("Number of messages", 10, producer.getMessages()
+    assertEquals(10, producer.getMessages()
         .size());
   }
 
@@ -148,9 +148,9 @@ public class LineCountSplitterTest extends SplitterCase {
     msg.addObjectHeader(obj, obj);
     LineCountSplitter s = new LineCountSplitter();
     List<AdaptrisMessage> result = toList(s.splitMessage(msg));
-    assertEquals("10 split messages", 10, result.size());
+    assertEquals(10, result.size());
     for (AdaptrisMessage m : result) {
-      assertFalse("Should not contain object metadata", m.getObjectHeaders().containsKey(obj));
+      assertFalse(m.getObjectHeaders().containsKey(obj));
     }
   }
 
@@ -161,9 +161,9 @@ public class LineCountSplitterTest extends SplitterCase {
     LineCountSplitter s = new LineCountSplitter();
     s.setCopyObjectMetadata(true);
     List<AdaptrisMessage> result = toList(s.splitMessage(msg));
-    assertEquals("10 split messages", 10, result.size());
+    assertEquals(10, result.size());
     for (AdaptrisMessage m : result) {
-      assertTrue("Should contain object metadata", m.getObjectHeaders().containsKey(obj));
+      assertTrue(m.getObjectHeaders().containsKey(obj));
       assertEquals(obj, m.getObjectHeaders().get(obj));
     }
   }
@@ -179,13 +179,13 @@ public class LineCountSplitterTest extends SplitterCase {
     List<AdaptrisMessage> result = toList(s.splitMessage(
         createLineCountMessageInputWithHeader(new String[] {HEADER_TEXT})));
 
-    assertEquals("50 split messages", 50, result.size());
+    assertEquals(50, result.size());
 
     for(AdaptrisMessage m: result) {
       List<String> lines = IOUtils.readLines(m.getReader());
-      assertEquals("2 lines per message", 2, lines.size());
-      assertEquals("Must be header line", HEADER_TEXT, lines.get(0));
-      assertEquals("Must be regular line", LINE, lines.get(1));
+      assertEquals(2, lines.size());
+      assertEquals(HEADER_TEXT, lines.get(0));
+      assertEquals(LINE, lines.get(1));
     }
   }
 
@@ -201,16 +201,16 @@ public class LineCountSplitterTest extends SplitterCase {
     List<AdaptrisMessage> result = toList(s.splitMessage(
         createLineCountMessageInputWithHeader(new String[] {HEADER_LINE_1, HEADER_LINE_2})));
 
-    assertEquals("5 split messages", 5, result.size());
+    assertEquals(5, result.size());
 
     for(AdaptrisMessage m: result) {
       try (Reader reader = m.getReader()) {
         List<String> lines = IOUtils.readLines(reader);
-        assertEquals("12 lines per message", 12, lines.size());
-        assertEquals("Must be header line 1", HEADER_LINE_1, lines.get(0));
-        assertEquals("Must be header line 2", HEADER_LINE_2, lines.get(1));
+        assertEquals(12, lines.size());
+        assertEquals(HEADER_LINE_1, lines.get(0));
+        assertEquals(HEADER_LINE_2, lines.get(1));
         for(int i=2; i<12; i++) {
-          assertEquals("Must be regular line", LINE, lines.get(i));
+          assertEquals(LINE, lines.get(i));
         }
       }
     }

@@ -15,15 +15,18 @@
 */
 
 package com.adaptris.core;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.fs.FsProducer;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
@@ -241,7 +244,7 @@ public class RetryMessageErrorHandlerTest
       channel.requestStart();
       workflow.onAdaptrisMessage(AdaptrisMessageFactory.getDefaultInstance().newMessage("XXXX"));
       waitForMessages(failProducer, 1);
-      assertEquals("Ensure produced to fail producer", 1, failProducer.getMessages().size());
+      assertEquals(1, failProducer.getMessages().size());
       channel.requestClose();
     }
     finally {
@@ -264,7 +267,7 @@ public class RetryMessageErrorHandlerTest
       channel.requestStart();
       workflow.onAdaptrisMessage(AdaptrisMessageFactory.getDefaultInstance().newMessage("XXXX"));
       channel.requestClose();
-      assertEquals("Ensure stop forces fail producer", 1, failProducer.getMessages().size());
+      assertEquals(1, failProducer.getMessages().size());
     }
     finally {
       renameThread(name);
@@ -293,7 +296,7 @@ public class RetryMessageErrorHandlerTest
       channel.requestStart();
       workflow.onAdaptrisMessage(AdaptrisMessageFactory.getDefaultInstance().newMessage("XXXX"));
       waitForMessages(failProducer, 1);
-      assertEquals("Ensure produced to fail producer", 1, failProducer.getMessages().size());
+      assertEquals(1, failProducer.getMessages().size());
     } finally {
       BaseCase.stop(channel);
       renameThread(name);
@@ -321,7 +324,7 @@ public class RetryMessageErrorHandlerTest
       workflow.onAdaptrisMessage(AdaptrisMessageFactory.getDefaultInstance().newMessage("XXXX"));
       waitForMessages(failProducer, 3);
       channel.requestClose();
-      assertTrue("Ensure 3 msgs produced to fail producer", failProducer.getMessages().size() == 3);
+      assertTrue(failProducer.getMessages().size() == 3);
     }
     finally {
       renameThread(name);
@@ -350,8 +353,8 @@ public class RetryMessageErrorHandlerTest
       workflow.onAdaptrisMessage(msg);
       waitForMessages(failProducer, 1);
       channel.requestClose();
-      assertEquals("Ensure produced to fail producer", 1, failProducer.getMessages().size());
-      assertEquals("Service should have been called twice", 2, service.callCount());
+      assertEquals(1, failProducer.getMessages().size());
+      assertEquals(2, service.callCount());
     }
     finally {
       renameThread(name);
@@ -376,7 +379,7 @@ public class RetryMessageErrorHandlerTest
       workflow.onAdaptrisMessage(msg);
       waitForMessages(workflowProducer, 1);
       channel.requestClose();
-      assertEquals("Ensure producer success", 1, workflowProducer.getMessages().size());
+      assertEquals(1, workflowProducer.getMessages().size());
     }
     finally {
       renameThread(name);
@@ -412,8 +415,8 @@ public class RetryMessageErrorHandlerTest
       workflow.onAdaptrisMessage(AdaptrisMessageFactory.getDefaultInstance().newMessage("XXXX"));
       waitForMessages(workflowProducer, 1);
       adapter.requestClose();
-      assertEquals("Ensure producer success", 1, workflowProducer.getMessages().size());
-      assertEquals("Should not have produced to failProducer", 0, failProducer.getMessages().size());
+      assertEquals(1, workflowProducer.getMessages().size());
+      assertEquals(0, failProducer.getMessages().size());
     }
     finally {
       renameThread(name);

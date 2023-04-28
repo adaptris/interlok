@@ -16,8 +16,9 @@
 
 package com.adaptris.core.services.routing;
 
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 
 public class AlwaysMatchSyntaxIdentifierTest {
 
@@ -31,7 +32,7 @@ public class AlwaysMatchSyntaxIdentifierTest {
   @Test
   public void testMatch() throws Exception {
     AlwaysMatchSyntaxIdentifier ident = createIdentifier();
-    assertTrue("Matches regexp", ident.isThisSyntax(LINE));
+    assertTrue(ident.isThisSyntax(LINE));
   }
 
 

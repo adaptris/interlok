@@ -16,15 +16,18 @@
 
 package com.adaptris.core.config;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+
 import java.util.Properties;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import com.adaptris.core.config.DefaultPreProcessorLoader.PropertyLoader;
 import com.adaptris.core.stubs.JunitBootstrapProperties;
 import com.adaptris.interlok.util.Closer;
@@ -40,7 +43,7 @@ public class ConfigurationPreProcessorFactoryTest {
   private Properties sampleProperties;
   private AutoCloseable openMocks;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     preProcessorFactory = new DefaultPreProcessorLoader();
     sampleProperties = new Properties();
@@ -50,7 +53,7 @@ public class ConfigurationPreProcessorFactoryTest {
 
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     Closer.closeQuietly(openMocks);
   }

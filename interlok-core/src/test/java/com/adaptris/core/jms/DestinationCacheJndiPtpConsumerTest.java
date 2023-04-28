@@ -17,6 +17,7 @@
 package com.adaptris.core.jms;
 
 import static com.adaptris.core.jms.JndiPtpProducerTest.createJndiVendorImpExample;
+
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.jms.jndi.CachedDestinationJndiImplementation;
 

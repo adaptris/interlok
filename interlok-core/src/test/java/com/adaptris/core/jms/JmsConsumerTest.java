@@ -30,12 +30,12 @@ import java.util.List;
 import javax.jms.MessageConsumer;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -56,23 +56,23 @@ public class JmsConsumerTest extends com.adaptris.interlok.junit.scaffolding.jms
   @Mock MessageConsumer mockMessageConsumer;
 
   private AutoCloseable openMocks;
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     openMocks = MockitoAnnotations.openMocks(this);
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     Closer.closeQuietly(openMocks);
   }
   
-  @BeforeClass
+  @BeforeAll
   public static void setUpAll() throws Exception {
     activeMqBroker = new EmbeddedArtemis();
     activeMqBroker.start();
   }
   
-  @AfterClass
+  @AfterAll
   public static void tearDownAll() throws Exception {
     if(activeMqBroker != null)
       activeMqBroker.destroy();
@@ -80,7 +80,7 @@ public class JmsConsumerTest extends com.adaptris.interlok.junit.scaffolding.jms
 
   @Test
   public void testDeferConsumerCreationToVendor() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    Assumptions.assumeTrue(JmsConfig.jmsTestsEnabled());
 
     when(mockVendor.createConsumer(any(), any(), any(JmsActorConfig.class))).thenReturn(mockMessageConsumer);
 
@@ -114,7 +114,7 @@ public class JmsConsumerTest extends com.adaptris.interlok.junit.scaffolding.jms
 
   @Test
   public void testDefaultFalseDeferConsumerCreationToVendor() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    Assumptions.assumeTrue(JmsConfig.jmsTestsEnabled());
 
     when(mockVendor.createConsumer(any(JmsDestination.class), any(String.class), any(JmsActorConfig.class)))
         .thenReturn(mockMessageConsumer);
@@ -150,7 +150,7 @@ public class JmsConsumerTest extends com.adaptris.interlok.junit.scaffolding.jms
 
   @Test
   public void testDurableTopicConsume() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    Assumptions.assumeTrue(JmsConfig.jmsTestsEnabled());
 
     String rfc6167 = "jms:topic:" + getName() + "?subscriptionId=" + getName();
 
@@ -172,7 +172,7 @@ public class JmsConsumerTest extends com.adaptris.interlok.junit.scaffolding.jms
 
   @Test
   public void testSharedDurableTopicConsume() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    Assumptions.assumeTrue(JmsConfig.jmsTestsEnabled());
 
     String rfc6167 = "jms:topic:" + getName() + "?subscriptionId=MySubId&sharedConsumerId=" + getName();
 
@@ -192,7 +192,7 @@ public class JmsConsumerTest extends com.adaptris.interlok.junit.scaffolding.jms
 
   @Test
   public void testSharedTopicConsume() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    Assumptions.assumeTrue(JmsConfig.jmsTestsEnabled());
 
     String rfc6167 = "jms:topic:" + getName() + "?sharedConsumerId=" + getName();
 
@@ -213,7 +213,7 @@ public class JmsConsumerTest extends com.adaptris.interlok.junit.scaffolding.jms
 
   @Test
   public void testTopicConsume() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    Assumptions.assumeTrue(JmsConfig.jmsTestsEnabled());
 
     String rfc6167 = "jms:topic:" + getName();
 
@@ -233,7 +233,7 @@ public class JmsConsumerTest extends com.adaptris.interlok.junit.scaffolding.jms
 
   @Test
   public void testQueueConsume() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    Assumptions.assumeTrue(JmsConfig.jmsTestsEnabled());
 
     String rfc6167 = "jms:queue:" + getName();
 

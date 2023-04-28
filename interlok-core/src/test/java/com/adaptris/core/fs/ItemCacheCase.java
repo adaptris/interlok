@@ -15,15 +15,15 @@
 */
 
 package com.adaptris.core.fs;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Random;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.interlok.junit.scaffolding.BaseCase;
 
@@ -87,7 +87,7 @@ public abstract class ItemCacheCase extends BaseCase {
       assertEquals(0, cache.size());
       for (int i = 0; i < count; i++) {
         assertFalse(cache.contains(CACHE_PREFIX + i));
-        assertNull(CACHE_PREFIX + i, cache.get(CACHE_PREFIX + i));
+        assertNull(cache.get(CACHE_PREFIX + i));
       }
     }
     finally {
@@ -103,7 +103,7 @@ public abstract class ItemCacheCase extends BaseCase {
     assertNotNull(cache);
     for (int i = 0; i < count; i++) {
       assertTrue(cache.contains(CACHE_PREFIX + i));
-      assertNotNull(CACHE_PREFIX + i, cache.get(CACHE_PREFIX + i));
+      assertNotNull(cache.get(CACHE_PREFIX + i));
     }
   }
 

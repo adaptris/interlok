@@ -17,7 +17,9 @@
 package com.adaptris.core;
 
 import java.io.InputStream;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdapterMarshallerFactory.MarshallingOutput;
 import com.thoughtworks.xstream.XStream;
 

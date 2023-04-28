@@ -16,8 +16,9 @@
 
 package com.adaptris.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.lang.reflect.Method;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -30,7 +31,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.awaitility.Awaitility;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.stubs.MockConnection;
 import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.core.stubs.MockMessageProducer;
@@ -188,7 +190,7 @@ public class AdaptrisConnectionTest extends com.adaptris.interlok.junit.scaffold
 
   private void assertState(List list, ComponentState state) {
     for (Object c : list) {
-      assertEquals("" + state, state, ((StateManagedComponent) c).retrieveComponentState());
+      assertEquals(state, ((StateManagedComponent) c).retrieveComponentState(), "" + state);
     }
   }
 

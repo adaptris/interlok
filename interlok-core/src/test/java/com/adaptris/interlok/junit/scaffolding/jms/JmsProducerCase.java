@@ -16,23 +16,27 @@
 
 package com.adaptris.interlok.junit.scaffolding.jms;
 
-import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.DEFAULT_PAYLOAD;
-import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.DEFAULT_TTL;
-import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.HIGHEST_PRIORITY;
 import static com.adaptris.core.jms.JmsConstants.JMS_DELIVERY_MODE;
 import static com.adaptris.core.jms.JmsConstants.JMS_EXPIRATION;
 import static com.adaptris.core.jms.JmsConstants.JMS_PRIORITY;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.DEFAULT_PAYLOAD;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.DEFAULT_TTL;
+import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.HIGHEST_PRIORITY;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
 import javax.jms.DeliveryMode;
 import javax.jms.JMSException;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.jms.DefinedJmsProducer;
@@ -61,10 +65,10 @@ public abstract class JmsProducerCase extends JmsProducerExample {
 
   public static void assertMessages(MockMessageListener jms, int size, boolean assertPayloads) {
     List<AdaptrisMessage> msgs = jms.getMessages();
-    assertEquals("Number of Messages", size, msgs.size());
+    assertEquals(size, msgs.size());
     if (assertPayloads) {
       for (int i = 0; i < size; i++) {
-        assertEquals("MessageText", DEFAULT_PAYLOAD, msgs.get(i).getContent());
+        assertEquals(DEFAULT_PAYLOAD, msgs.get(i).getContent());
       }
     }
   }
@@ -110,7 +114,7 @@ public abstract class JmsProducerCase extends JmsProducerExample {
     MockProducer p = createDummyProducer();
     AdaptrisMessage msg = createMessage();
     msg.addMetadata(JMS_EXPIRATION, String.valueOf(System.currentTimeMillis() + 9999));
-    assertTrue("Time to live > 0", p.calculateTimeToLive(msg, p.getTtl()) > 0);
+    assertTrue(p.calculateTimeToLive(msg, p.getTtl()) > 0);
     msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     assertEquals(0, p.calculateTimeToLive(msg, p.getTtl()));
   }
@@ -120,7 +124,7 @@ public abstract class JmsProducerCase extends JmsProducerExample {
     MockProducer p = createDummyProducer();
     AdaptrisMessage msg = createMessage();
     msg.addMetadata(JMS_EXPIRATION, createTimestamp(9999));
-    assertTrue("Time to live > 0", p.calculateTimeToLive(msg, p.getTtl()) > 0);
+    assertTrue(p.calculateTimeToLive(msg, p.getTtl()) > 0);
     msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     assertEquals(0, p.calculateTimeToLive(msg, p.getTtl()));
     msg = createMessage();

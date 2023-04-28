@@ -26,10 +26,12 @@ import static com.adaptris.core.http.jetty.StandardResponseProducerTest.URL_TO_P
 import static com.adaptris.core.http.jetty.StandardResponseProducerTest.createConnection;
 import static com.adaptris.core.http.jetty.StandardResponseProducerTest.createMessage;
 import static com.adaptris.core.http.jetty.StandardResponseProducerTest.createRequestor;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.Channel;
 import com.adaptris.core.PortManager;

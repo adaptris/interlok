@@ -16,11 +16,14 @@
 
 package com.adaptris.core.management;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.Properties;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.management.config.XStreamConfigManager;
 import com.adaptris.core.stubs.JunitBootstrapProperties;
 
@@ -31,7 +34,7 @@ public class AdapterConfigManagerTest extends com.adaptris.interlok.junit.scaffo
   public AdapterConfigManagerTest() {
   }
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     bootstrap = new JunitBootstrapProperties(new Properties());
   }

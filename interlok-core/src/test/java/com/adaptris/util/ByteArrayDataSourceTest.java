@@ -16,12 +16,12 @@
 
 package com.adaptris.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.util.text.mime.ByteArrayDataSource;
 
@@ -37,21 +37,21 @@ public class ByteArrayDataSourceTest {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     out.write(bads.getBytes());
     out.flush();
-    assertEquals("XML", out.toString(), EXAMPLE_XML);
+    assertEquals(out.toString(), EXAMPLE_XML);
   }
 
   @Test
   public void testContentType() throws Exception {
     ByteArrayDataSource bads = new ByteArrayDataSource(EXAMPLE_XML.getBytes(),
         "text/xml", "name");
-    assertEquals("content type", "text/xml", bads.getContentType());
+    assertEquals("text/xml", bads.getContentType());
   }
 
   @Test
   public void testName() throws Exception {
     ByteArrayDataSource bads = new ByteArrayDataSource(EXAMPLE_XML.getBytes(),
         "text/xml", "name");
-    assertEquals("name", "name", bads.getName());
+    assertEquals("name", bads.getName());
   }
 
   @Test

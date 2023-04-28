@@ -16,17 +16,20 @@
 
 package com.adaptris.security;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.ByteArrayInputStream;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.util.Properties;
 import java.util.Random;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.adaptris.security.certificate.CertRequestHandler;
 import com.adaptris.security.certificate.CertificateBuilder;
 import com.adaptris.security.certificate.CertificateHandler;
@@ -52,7 +55,7 @@ public class TestCertificateGeneration {
   public TestCertificateGeneration() {
   }
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     cfg = Config.getInstance().getProperties();
     if (cfg == null) {
@@ -80,10 +83,10 @@ public class TestCertificateGeneration {
 //    AlgorithmID algorithmID = SecurityUtil.getAlgorithmID(signatureAlgorithm);
 //    AlgorithmID configID = SecurityUtil.getAlgorithmID(property);
 
-    assertEquals("Signature Algorithm", signatureAlgorithm,
+    assertEquals(signatureAlgorithm,
             property);
 
-    assertEquals("Key Algorithm", cfg.getProperty(Config.CERTIFICATE_KEYALG),
+    assertEquals(cfg.getProperty(Config.CERTIFICATE_KEYALG),
         ch.getKeyAlgorithm());
 
   }

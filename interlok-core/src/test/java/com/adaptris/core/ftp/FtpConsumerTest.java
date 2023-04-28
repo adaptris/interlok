@@ -26,19 +26,22 @@ import static com.adaptris.core.ftp.EmbeddedFtpServer.DESTINATION_URL_OVERRIDE;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.PAYLOAD;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.SERVER_ADDRESS;
 import static com.adaptris.core.ftp.EmbeddedFtpServer.SLASH;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.oro.io.GlobFilenameFilter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockftpserver.fake.FakeFtpServer;
 import org.mockftpserver.fake.filesystem.FileEntry;
 import org.mockftpserver.fake.filesystem.FileSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.FixedIntervalPoller;

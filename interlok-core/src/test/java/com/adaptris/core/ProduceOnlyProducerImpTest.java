@@ -15,8 +15,12 @@
 */
 
 package com.adaptris.core;
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
 
@@ -50,47 +54,55 @@ public class ProduceOnlyProducerImpTest {
     }
   }
 
-  @Test(expected = UnsupportedOperationException.class)
+  @Test
   public void testRequest_Message() throws Exception {
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
-    MockMessageProducer mock = createAndStart();
-    try {
-      mock.request(msg);
-    } finally {
-      LifecycleHelper.stopAndClose(mock);
-    }
+    Assertions.assertThrows(UnsupportedOperationException.class, () -> {
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
+      MockMessageProducer mock = createAndStart();
+      try {
+        mock.request(msg);
+      } finally {
+        LifecycleHelper.stopAndClose(mock);
+      }
+    });
   }
 
-  @Test(expected = UnsupportedOperationException.class)
+  @Test
   public void testRequest_Message_Long() throws Exception {
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
-    MockMessageProducer mock = createAndStart();
-    try {
-      mock.request(msg, 100L);
-    } finally {
-      LifecycleHelper.stopAndClose(mock);
-    }
+    Assertions.assertThrows(UnsupportedOperationException.class, () -> {
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
+      MockMessageProducer mock = createAndStart();
+      try {
+        mock.request(msg, 100L);
+      } finally {
+        LifecycleHelper.stopAndClose(mock);
+      }
+    });
   }
 
-  @Test(expected = UnsupportedOperationException.class)
+  @Test
   public void testRequest_Message_Destination() throws Exception {
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
-    MockMessageProducer mock = createAndStart();
-    try {
-      mock.request(msg);
-    } finally {
-      LifecycleHelper.stopAndClose(mock);
-    }
+    Assertions.assertThrows(UnsupportedOperationException.class, () -> {
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
+      MockMessageProducer mock = createAndStart();
+      try {
+        mock.request(msg);
+      } finally {
+        LifecycleHelper.stopAndClose(mock);
+      }
+    });
   }
 
-  @Test(expected = UnsupportedOperationException.class)
+  @Test
   public void testRequest_Message_Destination_Long() throws Exception {
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
-    MockMessageProducer mock = createAndStart();
-    try {
-      mock.request(msg, 100L);
-    } finally {
-      LifecycleHelper.stopAndClose(mock);
-    }
+    Assertions.assertThrows(UnsupportedOperationException.class, () -> {
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("dummy");
+      MockMessageProducer mock = createAndStart();
+      try {
+        mock.request(msg, 100L);
+      } finally {
+        LifecycleHelper.stopAndClose(mock);
+      }
+    });
   }
 }

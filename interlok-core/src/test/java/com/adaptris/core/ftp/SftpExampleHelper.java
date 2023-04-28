@@ -21,7 +21,9 @@ import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.GaussianIntervalPoller;
 import com.adaptris.core.Poller;

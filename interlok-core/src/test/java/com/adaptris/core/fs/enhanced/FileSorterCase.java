@@ -22,9 +22,11 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+
 import com.adaptris.core.fs.FsHelper;
 import com.adaptris.util.SafeGuidGenerator;
 
@@ -34,7 +36,7 @@ public abstract class FileSorterCase extends com.adaptris.interlok.junit.scaffol
 
   private File baseDir;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     File parentDir =
         FsHelper.createFileReference(FsHelper.createUrlFromString(PROPERTIES.getProperty("FileSorterTest.tempDirUrl"), true));
@@ -42,7 +44,7 @@ public abstract class FileSorterCase extends com.adaptris.interlok.junit.scaffol
     baseDir.mkdirs();
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     FileUtils.deleteQuietly(baseDir);
   }

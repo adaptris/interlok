@@ -16,33 +16,34 @@
 
 package com.adaptris.core.http.client.net;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.Channel;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.Channel;
+
 public class NoOpRequestHeadersTest extends RequestHeadersCase {
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {}
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {}
 
   @Test
-  public void testAddHeaders() throws Exception {
-
+  public void testAddHeaders(TestInfo info) throws Exception {
     Channel c = null;
     HttpURLConnection urlC = null;
     try {
       c = HttpHelper.createAndStartChannel();
       URL url = new URL(HttpHelper.createProduceDestination(c));
       urlC = (HttpURLConnection) url.openConnection();
-      String name = testName.getMethodName();
+      String name = info.getDisplayName();
       NoRequestHeaders headers = new NoRequestHeaders();
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("");
       urlC = headers.addHeaders(msg, urlC);

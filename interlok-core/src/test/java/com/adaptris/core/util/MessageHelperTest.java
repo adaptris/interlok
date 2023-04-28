@@ -1,11 +1,15 @@
 package com.adaptris.core.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.nio.charset.UnsupportedCharsetException;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.DefaultMessageFactory;
@@ -22,11 +26,13 @@ public class MessageHelperTest {
     assertEquals("hello world", original.getContent());
   }
 
-  @Test(expected = IOException.class)
+  @Test
   public void testCopyPayload_Failure() throws Exception {
-    AdaptrisMessage reply = new DefectiveMessageFactory(WhenToBreak.BOTH).newMessage();
-    AdaptrisMessage original = new DefaultMessageFactory().newMessage();
-    MessageHelper.copyPayload(reply, original);
+    Assertions.assertThrows(IOException.class, () -> {
+      AdaptrisMessage reply = new DefectiveMessageFactory(WhenToBreak.BOTH).newMessage();
+      AdaptrisMessage original = new DefaultMessageFactory().newMessage();
+      MessageHelper.copyPayload(reply, original);
+    });
   }
 
   @Test
@@ -53,10 +59,12 @@ public class MessageHelperTest {
     MessageHelper.checkCharsetAndApply(msg, null, true);
   }
 
-  @Test(expected = UnsupportedCharsetException.class)
+  @Test
   public void testApplyCharset_Passthru_Invalid() {
-    AdaptrisMessage msg = new DefaultMessageFactory().newMessage();
-    MessageHelper.checkCharsetAndApply(msg, "UTF-9", true);
+    Assertions.assertThrows(UnsupportedCharsetException.class, () -> {
+      AdaptrisMessage msg = new DefaultMessageFactory().newMessage();
+      MessageHelper.checkCharsetAndApply(msg, "UTF-9", true);
+    });
   }
 
   @Test
@@ -65,7 +73,6 @@ public class MessageHelperTest {
     MessageHelper.checkCharsetAndApply(msg, "ISO-8859-2", true);
     assertEquals("ISO-8859-2", msg.getContentEncoding());
   }
-
 
   @Test
   public void testApplyCharset_PassthruDisabled_Invalid() {

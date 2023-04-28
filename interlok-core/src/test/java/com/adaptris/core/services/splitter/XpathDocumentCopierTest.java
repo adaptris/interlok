@@ -16,16 +16,16 @@
 
 package com.adaptris.core.services.splitter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -44,7 +44,7 @@ public class XpathDocumentCopierTest extends SplitterCase {
 
 
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     producer = new MockMessageProducer();
     service = createBasic(new XpathDocumentCopier(XPATH_DOCUMENT_COUNT));
@@ -106,7 +106,7 @@ public class XpathDocumentCopierTest extends SplitterCase {
     List<AdaptrisMessage> result = splitToList(splitter, msg);
     assertEquals(3, result.size());
     for (AdaptrisMessage m : result) {
-      assertFalse("No Object Metadata", m.getObjectHeaders().containsKey(obj));
+      assertFalse(m.getObjectHeaders().containsKey(obj));
     }
   }
 
@@ -130,7 +130,7 @@ public class XpathDocumentCopierTest extends SplitterCase {
     List<AdaptrisMessage> result = splitToList(splitter, msg);
     assertEquals(3, result.size());
     for (AdaptrisMessage m : result) {
-      assertTrue("Object Metadata", m.getObjectHeaders().containsKey(obj));
+      assertTrue(m.getObjectHeaders().containsKey(obj));
       assertEquals(obj, m.getObjectHeaders().get(obj));
     }
   }
@@ -170,7 +170,7 @@ public class XpathDocumentCopierTest extends SplitterCase {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
     msg.addMetadata("key", "value");
     execute(service, msg);
-    assertEquals("Number of messages", 3, producer.getMessages().size());
+    assertEquals(3, producer.getMessages().size());
   }
 
 }

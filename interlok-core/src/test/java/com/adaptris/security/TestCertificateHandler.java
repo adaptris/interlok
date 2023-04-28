@@ -16,18 +16,18 @@
 
 package com.adaptris.security;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.UnknownHostException;
 import java.util.Calendar;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.security.certificate.CertificateHandler;
 import com.adaptris.security.certificate.CertificateHandlerFactory;
@@ -43,7 +43,7 @@ public class TestCertificateHandler {
   public TestCertificateHandler() {
   }
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     config = Config.getInstance();
     if (config == null) {
@@ -62,7 +62,7 @@ public class TestCertificateHandler {
 
     input.close();
 
-    assertTrue("Expiry on \n" + handler.getCertificate().toString(), !handler.isExpired());
+    assertTrue(!handler.isExpired());
   }
 
   @Test
@@ -72,7 +72,7 @@ public class TestCertificateHandler {
     CertificateHandler handler = CertificateHandlerFactory.getInstance().generateHandler(input);
 
     input.close();
-    assertEquals("Revocation", handler.isRevoked(), false);
+    assertEquals(handler.isRevoked(), false);
     assertNotNull(handler.getLastRevocationCheck());
 
   }
@@ -85,9 +85,9 @@ public class TestCertificateHandler {
 
     input.close();
     
-    assertEquals("Revocation", handler.isRevoked(), false);
+    assertEquals(handler.isRevoked(), false);
     Calendar lastGoodCheck = handler.getLastRevocationCheck();
-    assertEquals("Calendar", handler.getLastRevocationCheck(), lastGoodCheck);
+    assertEquals(handler.getLastRevocationCheck(), lastGoodCheck);
 
   }
 
@@ -99,7 +99,7 @@ public class TestCertificateHandler {
 
     input.close();
 
-    assertTrue("Expiry on \n" + handler.getCertificate().toString(), handler.isExpired());
+    assertTrue(handler.isExpired());
 
   }
 
@@ -111,7 +111,7 @@ public class TestCertificateHandler {
       CertificateHandler handler = CertificateHandlerFactory.getInstance().generateHandler(input);
 
       input.close();
-      assertEquals("Revocation", handler.isRevoked(), false);
+      assertEquals(handler.isRevoked(), false);
       assertNotNull(handler.getLastRevocationCheck());
     }
     catch (CertException e) {
@@ -131,9 +131,9 @@ public class TestCertificateHandler {
 
       input.close();
       
-      assertEquals("Revocation", handler.isRevoked(), false);
+      assertEquals(handler.isRevoked(), false);
       Calendar lastExpiredCheck = handler.getLastRevocationCheck();
-      assertEquals("Calendar", handler.getLastRevocationCheck(), lastExpiredCheck);
+      assertEquals(handler.getLastRevocationCheck(), lastExpiredCheck);
     }
     catch (CertException e) {
       if (!(e.getCause() != null && e.getCause() instanceof UnknownHostException)) {

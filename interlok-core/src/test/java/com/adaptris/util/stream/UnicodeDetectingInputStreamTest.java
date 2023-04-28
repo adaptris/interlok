@@ -25,8 +25,8 @@ import static com.adaptris.util.stream.UnicodeDetectingInputStream.UTF_16_LE;
 import static com.adaptris.util.stream.UnicodeDetectingInputStream.UTF_32_BE;
 import static com.adaptris.util.stream.UnicodeDetectingInputStream.UTF_32_LE;
 import static com.adaptris.util.stream.UnicodeDetectingInputStream.UTF_8;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -36,28 +36,33 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class UnicodeDetectingInputStreamTest {
-  
+
   private static final String ISO_8859_1 = "ISO-8859-1";
 
   @Test
   public void testDefaultEncoding() throws Exception {
-    try (UnicodeDetectingInputStream stream = new UnicodeDetectingInputStream(roundTrip("hello", ISO_8859_1), ISO_8859_1)) {
+    try (UnicodeDetectingInputStream stream = new UnicodeDetectingInputStream(roundTrip("hello", ISO_8859_1),
+        ISO_8859_1)) {
       assertEquals(ISO_8859_1, stream.getDefaultEncoding());
       assertEquals(ISO_8859_1, stream.getEncoding());
       assertEquals(ISO_8859_1, stream.getEncoding());
     }
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void testBrokenInput() throws Exception {
-    try (UnicodeDetectingInputStream stream = new UnicodeDetectingInputStream(new StreamUtilTest.ErroringInputStream(),
-        ISO_8859_1)) {
-      assertEquals(ISO_8859_1, stream.getDefaultEncoding());
-      stream.getEncoding();
-    }
+    Assertions.assertThrows(IllegalStateException.class, () -> {
+      try (
+          UnicodeDetectingInputStream stream = new UnicodeDetectingInputStream(new StreamUtilTest.ErroringInputStream(),
+              ISO_8859_1)) {
+        assertEquals(ISO_8859_1, stream.getDefaultEncoding());
+        stream.getEncoding();
+      }
+    });
   }
 
   @Test
@@ -92,7 +97,8 @@ public class UnicodeDetectingInputStreamTest {
 
   @Test
   public void testUTF16_LittleEnd() throws Exception {
-    try (UnicodeDetectingInputStream stream = new UnicodeDetectingInputStream(roundTrip("hello", UTF_16_LE), ISO_8859_1)) {
+    try (UnicodeDetectingInputStream stream = new UnicodeDetectingInputStream(roundTrip("hello", UTF_16_LE),
+        ISO_8859_1)) {
       assertEquals(ISO_8859_1, stream.getDefaultEncoding());
       assertEquals(UTF_16_LE, stream.getEncoding());
     }
@@ -100,7 +106,8 @@ public class UnicodeDetectingInputStreamTest {
 
   @Test
   public void testUTF16_BigEnd() throws Exception {
-    try (UnicodeDetectingInputStream stream = new UnicodeDetectingInputStream(roundTrip("hello", UTF_16_BE), ISO_8859_1)) {
+    try (UnicodeDetectingInputStream stream = new UnicodeDetectingInputStream(roundTrip("hello", UTF_16_BE),
+        ISO_8859_1)) {
       assertEquals(ISO_8859_1, stream.getDefaultEncoding());
       assertEquals(UTF_16_BE, stream.getEncoding());
     }
@@ -108,7 +115,8 @@ public class UnicodeDetectingInputStreamTest {
 
   @Test
   public void testUTF32_BigEnd() throws Exception {
-    try (UnicodeDetectingInputStream stream = new UnicodeDetectingInputStream(roundTrip("hello", UTF_32_BE), ISO_8859_1)) {
+    try (UnicodeDetectingInputStream stream = new UnicodeDetectingInputStream(roundTrip("hello", UTF_32_BE),
+        ISO_8859_1)) {
       assertEquals(ISO_8859_1, stream.getDefaultEncoding());
       assertEquals(UTF_32_BE, stream.getEncoding());
     }
@@ -116,7 +124,8 @@ public class UnicodeDetectingInputStreamTest {
 
   @Test
   public void testUTF32_LittleEnd() throws Exception {
-    try (UnicodeDetectingInputStream stream = new UnicodeDetectingInputStream(roundTrip("hello", UTF_32_LE), ISO_8859_1)) {
+    try (UnicodeDetectingInputStream stream = new UnicodeDetectingInputStream(roundTrip("hello", UTF_32_LE),
+        ISO_8859_1)) {
       assertEquals(ISO_8859_1, stream.getDefaultEncoding());
       assertEquals(UTF_32_LE, stream.getEncoding());
     }
@@ -126,18 +135,14 @@ public class UnicodeDetectingInputStreamTest {
 
     // According to some people UTF-16 + OutputStreamWriter will write a BOM...
     if (UTF_8.equals(encoding)) {
-        out.write(UTF8_BOM, 0, UTF8_BOM.length);
-    }
-    else if (UTF_16_LE.equals(encoding)) {
+      out.write(UTF8_BOM, 0, UTF8_BOM.length);
+    } else if (UTF_16_LE.equals(encoding)) {
       out.write(UTF16LE_BOM, 0, UTF16LE_BOM.length);
-    }
-    else if ("UTF-16".equals(encoding) || UTF_16_BE.equals(encoding)) {
+    } else if ("UTF-16".equals(encoding) || UTF_16_BE.equals(encoding)) {
       out.write(UTF16BE_BOM, 0, UTF16BE_BOM.length);
-    }
-    else if (UTF_32_LE.equals(encoding)) {
+    } else if (UTF_32_LE.equals(encoding)) {
       out.write(UTF32LE_BOM, 0, UTF32LE_BOM.length);
-    }
-    else if ("UTF-32".equals(encoding) || UTF_32_BE.equals(encoding)) {
+    } else if ("UTF-32".equals(encoding) || UTF_32_BE.equals(encoding)) {
       out.write(UTF32BE_BOM, 0, UTF32BE_BOM.length);
     }
     return new OutputStreamWriter(out, encoding);

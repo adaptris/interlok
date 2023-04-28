@@ -16,16 +16,19 @@
 
 package com.adaptris.security;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.File;
 import java.io.InputStream;
 import java.security.cert.Certificate;
 import java.util.Random;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.adaptris.security.exc.KeystoreException;
 import com.adaptris.security.keystore.KeystoreFactory;
 import com.adaptris.security.keystore.KeystoreLocation;
@@ -62,7 +65,7 @@ public abstract class SingleEntryKeystoreBase {
     try {
       KeystoreProxy ksp = KeystoreFactory.getDefault().create(kloc);
       ksp.load();
-      assertNotNull("Keystore should not be null", ksp.getKeystore());
+      assertNotNull(ksp.getKeystore());
     }
     catch (Exception e) {
       logR.error(e.getMessage(), e);

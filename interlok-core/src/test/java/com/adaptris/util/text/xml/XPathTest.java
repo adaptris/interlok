@@ -16,17 +16,18 @@
 package com.adaptris.util.text.xml;
 
 import static com.adaptris.util.text.xml.SimpleNamespaceContextTest.createNamespaceEntries;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -37,39 +38,21 @@ import net.sf.saxon.xpath.XPathFactoryImpl;
 
 public class XPathTest {
   private final static String XML = "<root><test att='1'>one</test><test att='2'>two</test><node>one<child/>two</node></root>";
-  private static final String XML_WITH_EMPTY_NODES = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" + 
-      "<root>\n" + 
-      "  <segment_PIX>\n" + 
-      "    <segment_Contents>\n" + 
-      "      <record_>\n" + 
-      "        <PXREF1/>\n" + 
-      "      </record_>\n" + 
-      "      <record_>\n" + 
-      "        <PXREF1/>\n" + 
-      "      </record_>\n" + 
-      "      <record_>\n" + 
-      "        <PXREF1/>\n" + 
-      "      </record_>\n" + 
-      "      <record_>\n" + 
-      "        <PXREF1>91/01</PXREF1>\n" + 
-      "      </record_>\n" + 
-      "      <record_>\n" + 
-      "        <PXREF1>91/01</PXREF1>\n" + 
-      "      </record_>\n" + 
-      "      <record_>\n" + 
-      "        <PXREF1>91/01</PXREF1>\n" + 
-      "      </record_>\n" + 
-      "    </segment_Contents>\n" + 
-      "  </segment_PIX>\n" + 
-      "</root>";
-  
+  private static final String XML_WITH_EMPTY_NODES = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" + "<root>\n"
+      + "  <segment_PIX>\n" + "    <segment_Contents>\n" + "      <record_>\n" + "        <PXREF1/>\n"
+      + "      </record_>\n" + "      <record_>\n" + "        <PXREF1/>\n" + "      </record_>\n" + "      <record_>\n"
+      + "        <PXREF1/>\n" + "      </record_>\n" + "      <record_>\n" + "        <PXREF1>91/01</PXREF1>\n"
+      + "      </record_>\n" + "      <record_>\n" + "        <PXREF1>91/01</PXREF1>\n" + "      </record_>\n"
+      + "      <record_>\n" + "        <PXREF1>91/01</PXREF1>\n" + "      </record_>\n" + "    </segment_Contents>\n"
+      + "  </segment_PIX>\n" + "</root>";
+
   private static final String XPATH_EMPTY_NODES = "/root/segment_PIX/segment_Contents/record_/PXREF1";
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
   }
 
@@ -95,11 +78,14 @@ public class XPathTest {
     assertEquals("test", xpath.selectSingleTextItem(d, "//*[@att='2'][1]/local-name()"));
   }
 
-  @Test(expected = javax.xml.xpath.XPathExpressionException.class)
+  @Test
   public void testXpath_Xpath2Unsupported() throws Exception {
-    // so we expect XPathFactory.newInstance() equivalent to fail as it's not XPATH2.0
-    Document d = XmlHelper.createDocument(XML, DocumentBuilderFactoryBuilder.newInstance());
-    XPathFactory.newInstance().newXPath().evaluate("//*[@att='2'][1]/local-name()", d, XPathConstants.STRING);
+    Assertions.assertThrows(javax.xml.xpath.XPathExpressionException.class, () -> {
+      // so we expect XPathFactory.newInstance() equivalent to fail as it's not
+      // XPATH2.0
+      Document d = XmlHelper.createDocument(XML, DocumentBuilderFactoryBuilder.newInstance());
+      XPathFactory.newInstance().newXPath().evaluate("//*[@att='2'][1]/local-name()", d, XPathConstants.STRING);
+    });
   }
 
   @Test

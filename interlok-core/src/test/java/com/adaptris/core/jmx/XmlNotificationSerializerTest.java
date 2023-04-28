@@ -1,14 +1,13 @@
 package com.adaptris.core.jmx;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import javax.management.Notification;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -19,12 +18,12 @@ import com.adaptris.util.XmlUtils;
 public class XmlNotificationSerializerTest {
 
 
-  @Rule
-  public TestName testName = new TestName();
+  
+  
 
   @Test
-  public void testSerialize() throws Exception {
-    String myName = testName.getMethodName(); 
+  public void testSerialize(TestInfo info) throws Exception {
+    String myName = info.getDisplayName(); 
     Notification n = new Notification(myName, myName, 1, myName);
     n.setUserData(new Object());
     XmlNotificationSerializer serializer = new XmlNotificationSerializer();
@@ -40,8 +39,8 @@ public class XmlNotificationSerializerTest {
   }
 
   @Test
-  public void testSerialize_NoUserData() throws Exception {
-    String myName = testName.getMethodName();
+  public void testSerialize_NoUserData(TestInfo info) throws Exception {
+    String myName = info.getDisplayName();
     Notification n = new Notification(myName, myName, 1, myName);
     XmlNotificationSerializer serializer = new XmlNotificationSerializer();
     AdaptrisMessage msg = serializer.serialize(n, AdaptrisMessageFactory.getDefaultInstance().newMessage());
@@ -56,8 +55,8 @@ public class XmlNotificationSerializerTest {
   }
 
   @Test
-  public void testSerialize_WithContentEncoding() throws Exception {
-    String myName = testName.getMethodName();
+  public void testSerialize_WithContentEncoding(TestInfo info) throws Exception {
+    String myName = info.getDisplayName();
     Notification n = new Notification(myName, myName, 1, myName);
     n.setUserData(new Object());
     XmlNotificationSerializer serializer = new XmlNotificationSerializer();
@@ -74,8 +73,8 @@ public class XmlNotificationSerializerTest {
   }
 
   @Test
-  public void testSerialize_WithContentEncoding_FromMessage() throws Exception {
-    String myName = testName.getMethodName();
+  public void testSerialize_WithContentEncoding_FromMessage(TestInfo info) throws Exception {
+    String myName = info.getDisplayName();
     Notification n = new Notification(myName, myName, 1, myName);
     n.setUserData(new Object());
     XmlNotificationSerializer serializer = new XmlNotificationSerializer();

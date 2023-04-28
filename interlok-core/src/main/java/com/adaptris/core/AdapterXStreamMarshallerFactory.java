@@ -67,7 +67,7 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
    *
    */
   public static final transient boolean XSTREAM_JDK_STAX_ONLY =
-      BooleanUtils.toBoolean(System.getProperty("interlok.xstream.jdk.stax", "true"));
+      BooleanUtils.toBoolean(System.getProperty("interlok.xstream.jdk.stax", "false"));
 
   private enum XStreamTypes {
     XML {

@@ -16,10 +16,10 @@
 
 package com.adaptris.util.text;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -27,7 +27,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DateFormatUtilTest {
 
@@ -51,7 +51,7 @@ public class DateFormatUtilTest {
       String datetime = sdf.format(dateToParse);
       Date parsedDate = DateFormatUtil.parse(datetime);
       assertNotNull(parsedDate);
-      assertTrue(now + " should be after " + parsedDate, now.after(parsedDate));
+      assertTrue(now.after(parsedDate));
     }
   }
 

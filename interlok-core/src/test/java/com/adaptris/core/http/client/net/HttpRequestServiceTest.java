@@ -16,6 +16,18 @@
 
 package com.adaptris.core.http.client.net;
 
+import static com.adaptris.core.http.jetty.JettyHelper.createChannel;
+import static com.adaptris.core.http.jetty.JettyHelper.createConsumer;
+import static com.adaptris.core.http.jetty.JettyHelper.createWorkflow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.util.Arrays;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
@@ -42,17 +54,6 @@ import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.services.metadata.PayloadFromTemplateService;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
-import org.junit.Test;
-
-import java.util.Arrays;
-
-import static com.adaptris.core.http.jetty.JettyHelper.createChannel;
-import static com.adaptris.core.http.jetty.JettyHelper.createConsumer;
-import static com.adaptris.core.http.jetty.JettyHelper.createWorkflow;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class HttpRequestServiceTest extends HttpServiceExample {
   private static final String TEXT = "ABCDEFG";

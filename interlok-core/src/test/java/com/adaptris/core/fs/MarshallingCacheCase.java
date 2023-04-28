@@ -15,14 +15,17 @@
 */
 
 package com.adaptris.core.fs;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.File;
+
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.CoreException;
 
@@ -35,13 +38,13 @@ public abstract class MarshallingCacheCase extends ExpiringCacheCase {
   
   protected abstract AdaptrisMarshaller createMarshaller() throws Exception;
   
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     persistentStore = File.createTempFile(this.getClass().getSimpleName(), "");
     persistentStore.delete();
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     FileUtils.deleteQuietly(persistentStore);
   }
@@ -131,8 +134,7 @@ public abstract class MarshallingCacheCase extends ExpiringCacheCase {
       assertEquals(100, list.getProcessedItems().size());
       for (ProcessedItem item : list.getProcessedItems()){
         ProcessedItem cachedItem = cache.get(item.getAbsolutePath());
-        assertNotNull("Cache item " + item.getAbsolutePath()
-            + "should not be null", cachedItem);
+        assertNotNull(cachedItem);
         assertEquals(cachedItem.getAbsolutePath(), item.getAbsolutePath());
         assertEquals(cachedItem.getFilesize(), item.getFilesize());
         assertEquals(cachedItem.getLastModified(), item.getLastModified());

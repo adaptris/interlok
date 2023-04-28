@@ -16,15 +16,15 @@
 
 package com.adaptris.core.services.splitter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -115,7 +115,7 @@ public class MetadataDocumentCopierTest extends SplitterCase {
     try (CloseableIterable<AdaptrisMessage> result = splitter.splitMessage(msg)) {
       int count = 0;
       for (AdaptrisMessage m : result) {
-        assertFalse("No Object Metadata", m.getObjectHeaders().containsKey(obj));
+        assertFalse(m.getObjectHeaders().containsKey(obj));
         assertEquals(String.valueOf(count), m.getMetadataValue(METADATA_KEY_INDEX));
         count++;
       }
@@ -134,7 +134,7 @@ public class MetadataDocumentCopierTest extends SplitterCase {
     try (CloseableIterable<AdaptrisMessage> result = splitter.splitMessage(msg)) {
       int count = 0;
       for (AdaptrisMessage m : result) {
-        assertFalse("No Object Metadata", m.getObjectHeaders().containsKey(obj));
+        assertFalse(m.getObjectHeaders().containsKey(obj));
         assertFalse(m.containsKey(METADATA_KEY_INDEX));
         count++;
       }
@@ -151,7 +151,7 @@ public class MetadataDocumentCopierTest extends SplitterCase {
     try (CloseableIterable<AdaptrisMessage> result = splitter.splitMessage(msg)) {
       int count = 0;
       for (AdaptrisMessage m : result) {
-        assertFalse("No Object Metadata", m.getObjectHeaders().containsKey(obj));
+        assertFalse(m.getObjectHeaders().containsKey(obj));
         count++;
       }
       assertEquals(0, count);
@@ -170,7 +170,7 @@ public class MetadataDocumentCopierTest extends SplitterCase {
     try (CloseableIterable<AdaptrisMessage> result = splitter.splitMessage(msg)) {
       int count = 0;
       for (AdaptrisMessage m : result) {
-        assertTrue("Object Metadata", m.getObjectHeaders().containsKey(obj));
+        assertTrue(m.getObjectHeaders().containsKey(obj));
         assertEquals(obj, m.getObjectHeaders().get(obj));
         assertEquals(String.valueOf(count), m.getMetadataValue(METADATA_KEY_INDEX));
         count++;

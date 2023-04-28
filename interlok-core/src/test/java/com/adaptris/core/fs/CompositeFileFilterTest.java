@@ -16,14 +16,15 @@
 
 package com.adaptris.core.fs;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.stubs.TempFileUtils;
 
@@ -37,15 +38,8 @@ public class CompositeFileFilterTest {
   private static final String FILTER_NO_CLASSDEF = "SizeGT=1024__@@__Regex=.*\\.xml__@@__com.adaptris.core.fs.Blah=false";
   private static final String FILTER_EMPTY_EXPR = "com.adaptris.core.fs.IsFileFilter=__@@__Regex=.*\\.xml";
 
-  private static final String[] FILTER_STRINGS = {
-      "NewerThan=-PT1H",
-      "OlderThan=-PT1H",
-      "SizeGT=1024",
-      "SizeGTE=1024",
-      "SizeLT=1024",
-      "SizeLTE=1024",
-      "com.adaptris.core.fs.YesOrNo=false",
-  };
+  private static final String[] FILTER_STRINGS = { "NewerThan=-PT1H", "OlderThan=-PT1H", "SizeGT=1024", "SizeGTE=1024",
+      "SizeLT=1024", "SizeLTE=1024", "com.adaptris.core.fs.YesOrNo=false", };
 
   @Test
   public void testCreate() throws Exception {
@@ -54,9 +48,11 @@ public class CompositeFileFilterTest {
     }
   }
 
-  @Test(expected = RuntimeException.class)
+  @Test
   public void testCreate_Invalid() throws Exception {
-    new CompositeFileFilter("IWon'tWork", true);
+    Assertions.assertThrows(RuntimeException.class, () -> {
+      new CompositeFileFilter("IWon'tWork", true);
+    });
   }
 
   @Test
@@ -83,19 +79,19 @@ public class CompositeFileFilterTest {
     assertFalse(df.accept(src));
   }
 
-  @Test(expected = RuntimeException.class)
+  @Test
   public void testCustomFilterNoClassDef() throws Exception {
-    new CompositeFileFilter(FILTER_NO_CLASSDEF);
+    Assertions.assertThrows(RuntimeException.class, () -> {
+      new CompositeFileFilter(FILTER_NO_CLASSDEF);
+    });
   }
 
   @Test
   public void testCustomFilter_NoExpr() throws Exception {
     CompositeFileFilter df = new CompositeFileFilter(FILTER_EMPTY_EXPR);
-    File src = TempFileUtils.createTrackedFile(this.getClass().getSimpleName(), ".xml", null, df,
-        () -> "<xml/>");
+    File src = TempFileUtils.createTrackedFile(this.getClass().getSimpleName(), ".xml", null, df, () -> "<xml/>");
     assertTrue(df.accept(src));
   }
-
 
   private void write(long size, File f) throws IOException {
     RandomAccessFile rf = new RandomAccessFile(f, "rw");

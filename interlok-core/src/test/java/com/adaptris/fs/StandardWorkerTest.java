@@ -16,11 +16,11 @@
 
 package com.adaptris.fs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -35,9 +35,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.adaptris.core.fs.FsHelper;
@@ -54,7 +54,7 @@ public class StandardWorkerTest extends FsCase {
   protected URL baseUrl;
   protected File baseDir;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     String subDir = new GuidGenerator().safeUUID();
     baseUrl = new URL(PROPERTIES.getProperty(BASE_KEY) + "/" + subDir);
@@ -62,7 +62,7 @@ public class StandardWorkerTest extends FsCase {
     baseDir.mkdirs();
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     try {
       FileUtils.deleteDirectory(baseDir);

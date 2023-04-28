@@ -19,7 +19,9 @@ package com.adaptris.ftp.test;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+
 import org.apache.oro.io.GlobFilenameFilter;
+
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FtpCase;
 import com.adaptris.ftp.CommonsNetFtpSslClient;

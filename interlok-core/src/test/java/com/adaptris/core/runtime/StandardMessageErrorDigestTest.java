@@ -20,10 +20,10 @@ import static com.adaptris.core.runtime.AdapterComponentMBean.ADAPTER_PREFIX;
 import static com.adaptris.core.runtime.AdapterComponentMBean.ID_PREFIX;
 import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_MSG_ERR_DIGESTER_TYPE;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -36,7 +36,7 @@ import javax.management.ObjectName;
 
 import org.apache.commons.io.FileCleaningTracker;
 import org.apache.commons.io.FileDeleteStrategy;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessage;

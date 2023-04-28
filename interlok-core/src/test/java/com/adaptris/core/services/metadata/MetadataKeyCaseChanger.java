@@ -16,7 +16,8 @@
 
 package com.adaptris.core.services.metadata;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.metadata.RegexMetadataFilter;

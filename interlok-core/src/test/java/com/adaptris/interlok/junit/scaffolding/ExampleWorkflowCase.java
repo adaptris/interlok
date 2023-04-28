@@ -15,18 +15,19 @@
 */
 
 package com.adaptris.interlok.junit.scaffolding;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import com.adaptris.core.NullProduceExceptionHandler;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageConsumer;
@@ -37,6 +38,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultEventHandler;
 import com.adaptris.core.DefaultMessageLogger;
 import com.adaptris.core.NullProcessingExceptionHandler;
+import com.adaptris.core.NullProduceExceptionHandler;
 import com.adaptris.core.ProduceExceptionHandler;
 import com.adaptris.core.ServiceCollection;
 import com.adaptris.core.Workflow;

@@ -16,16 +16,20 @@
 
 package com.adaptris.core.lms;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageCase;
 import com.adaptris.core.MessageLifecycleEvent;
@@ -36,7 +40,7 @@ public class FileBackedMessageTest extends AdaptrisMessageCase {
 
   private FileBackedMessageFactory mf;
 
-  @Before
+  @BeforeEach
   public void setup() {
     mf = new FileBackedMessageFactory();
   }
@@ -52,7 +56,7 @@ public class FileBackedMessageTest extends AdaptrisMessageCase {
   @Test
   public void testSetNullPayloadBytes() {
     try {
-      getMessageFactory().newMessage((byte[])null);
+      getMessageFactory().newMessage((byte[]) null);
     } catch (NullPointerException e) {
       fail("Null payload must not throw NPE");
     }
@@ -61,7 +65,7 @@ public class FileBackedMessageTest extends AdaptrisMessageCase {
   @Test
   public void testSetNullPayloadString() {
     try {
-      getMessageFactory().newMessage((String)null);
+      getMessageFactory().newMessage((String) null);
     } catch (NullPointerException e) {
       fail("Null payload must not throw NPE");
     }
@@ -74,8 +78,7 @@ public class FileBackedMessageTest extends AdaptrisMessageCase {
     try {
       byte[] bytes = orig.getPayload();
       fail("Managed to get " + new String(bytes));
-    }
-    catch (RuntimeException e) {
+    } catch (RuntimeException e) {
       // expected.
     }
   }
@@ -87,8 +90,7 @@ public class FileBackedMessageTest extends AdaptrisMessageCase {
     try {
       String string = orig.getContent();
       fail("Managed to get " + string);
-    }
-    catch (RuntimeException e) {
+    } catch (RuntimeException e) {
       // expected.
     }
   }
@@ -100,8 +102,7 @@ public class FileBackedMessageTest extends AdaptrisMessageCase {
     try {
       orig.initialiseFrom(srcFile);
       fail("Managed to initialise from a non-existent file");
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       ; // expected
     }
   }
@@ -112,8 +113,8 @@ public class FileBackedMessageTest extends AdaptrisMessageCase {
     File srcFile = new File(BaseCase.PROPERTIES.getProperty("msg.initFromFile"));
     orig.initialiseFrom(srcFile);
 
-    assertEquals("file size ", srcFile.length(), orig.getSize());
-    assertEquals("payload size ", srcFile.length(), orig.getPayload().length);
+    assertEquals(srcFile.length(), orig.getSize());
+    assertEquals(srcFile.length(), orig.getPayload().length);
   }
 
   @Test
@@ -123,8 +124,8 @@ public class FileBackedMessageTest extends AdaptrisMessageCase {
     File srcFile = new File(BaseCase.PROPERTIES.getProperty("msg.initFromFile"));
     orig.initialiseFrom(srcFile);
 
-    assertEquals("file size ", srcFile.length(), orig.getSize());
-    assertEquals("payload size ", srcFile.length(), orig.getPayload().length);
+    assertEquals(srcFile.length(), orig.getSize());
+    assertEquals(srcFile.length(), orig.getPayload().length);
   }
 
   @Test
@@ -153,9 +154,9 @@ public class FileBackedMessageTest extends AdaptrisMessageCase {
     PrintStream printer = new PrintStream(out);
     printer.println("Quick zephyrs blow, vexing daft Jim");
     printer.close();
-    assertTrue("Message Size > 0", fileMsg.getSize() > 0);
+    assertTrue(fileMsg.getSize() > 0);
     out.close();
-    assertTrue("Message Size > 0 after 2nd close", fileMsg.getSize() > 0);
+    assertTrue(fileMsg.getSize() > 0);
   }
 
   @Test
@@ -175,10 +176,12 @@ public class FileBackedMessageTest extends AdaptrisMessageCase {
     assertEquals(0, fileMsg.getSize());
   }
 
-  @Test(expected = RuntimeException.class)
+  @Test
   public void testSetContent_BadEncoding() throws Exception {
-    FileBackedMessage fileMsg = (FileBackedMessage) getMessageFactory().newMessage();
-    fileMsg.setContent("xxx", "bad-encoding-hah");
+    Assertions.assertThrows(RuntimeException.class, () -> {
+      FileBackedMessage fileMsg = (FileBackedMessage) getMessageFactory().newMessage();
+      fileMsg.setContent("xxx", "bad-encoding-hah");
+    });
 
     // should throw RTE.
   }

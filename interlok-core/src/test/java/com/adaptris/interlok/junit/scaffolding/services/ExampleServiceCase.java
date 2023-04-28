@@ -16,14 +16,17 @@
 
 package com.adaptris.interlok.junit.scaffolding.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.BranchingServiceImp;
 import com.adaptris.core.ClosedState;
@@ -269,14 +272,14 @@ public abstract class ExampleServiceCase extends ExampleConfigGenerator {
   protected void assertDefaults(Service s, boolean assertBranching) throws Exception {
     if (assertBranching) {
       if (s instanceof BranchingServiceImp) {
-        assertTrue(s.getClass().getName(), s.isBranching());
+        assertTrue(s.isBranching());
       }
       else {
-        assertFalse(s.getClass().getName(), s.isBranching());
+        assertFalse(s.isBranching());
       }
     }
-    assertFalse(s.getClass().getName(), s.isTrackingEndpoint());
-    assertFalse(s.getClass().getName(), s.continueOnFailure());
+    assertFalse(s.isTrackingEndpoint());
+    assertFalse(s.continueOnFailure());
     if (s instanceof ServiceImp) {
       ((ServiceImp) s).setIsTrackingEndpoint(true);
       assertEquals(Boolean.TRUE, ((ServiceImp) s).getIsTrackingEndpoint());

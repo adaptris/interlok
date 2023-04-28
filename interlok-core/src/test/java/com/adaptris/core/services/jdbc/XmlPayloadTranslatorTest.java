@@ -16,17 +16,20 @@
 
 package com.adaptris.core.services.jdbc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.List;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.services.jdbc.StyledResultTranslatorImp.ColumnStyle;
 import com.adaptris.core.services.jdbc.types.IntegerColumnTranslator;
@@ -52,12 +55,12 @@ public class XmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlResults {
     s.setResultSetTranslator(new XmlPayloadTranslator());
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertTrue(ADAPTER_ID_KEY + " exists", msg.containsKey(ADAPTER_ID_KEY));
+    assertTrue(msg.containsKey(ADAPTER_ID_KEY));
     assertNotSame(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertFalse(msg.containsKey(JdbcDataQueryService.class.getCanonicalName()));
     XmlUtils xu = XmlHelper.createXmlUtils(msg);
-    assertNull("Xpath /Results/OriginalMessage", xu.getSingleNode("/Results/OriginalMessage"));
-    assertNotNull("/Results/Row", xu.getSingleNode("/Results/Row"));
+    assertNull(xu.getSingleNode("/Results/OriginalMessage"));
+    assertNotNull(xu.getSingleNode("/Results/Row"));
   }
 
   @Test
@@ -71,7 +74,7 @@ public class XmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlResults {
     s.setResultSetTranslator(new XmlPayloadTranslator());
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertTrue(ADAPTER_ID_KEY + " exists", msg.containsKey(ADAPTER_ID_KEY));
+    assertTrue(msg.containsKey(ADAPTER_ID_KEY));
     assertNotSame(XML_PAYLOAD_PREFIX + entry.getUniqueId() + XML_PAYLOAD_SUFFIX, msg.getContent());
     assertFalse(msg.containsKey(JdbcDataQueryService.class.getCanonicalName()));
     System.out.println(msg.getContent());
@@ -159,10 +162,10 @@ public class XmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlResults {
     s.setResultSetTranslator(t);
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertTrue(ADAPTER_ID_KEY + " exists", msg.containsKey(ADAPTER_ID_KEY));
+    assertTrue(msg.containsKey(ADAPTER_ID_KEY));
     XmlUtils xu = XmlHelper.createXmlUtils(msg);
-    assertNotNull("Xpath /Results/OriginalMessage", xu.getSingleNode("/Results/OriginalMessage"));
-    assertNotNull("/Results/Row", xu.getSingleNode("/Results/Row"));
+    assertNotNull(xu.getSingleNode("/Results/OriginalMessage"));
+    assertNotNull(xu.getSingleNode("/Results/Row"));
   }
 
   @Test
@@ -178,10 +181,10 @@ public class XmlPayloadTranslatorTest extends JdbcQueryServiceCaseXmlResults {
     s.setResultSetTranslator(t);
     AdaptrisMessage msg = createMessage(entry);
     execute(s, msg);
-    assertTrue(ADAPTER_ID_KEY + " exists", msg.containsKey(ADAPTER_ID_KEY));
+    assertTrue(msg.containsKey(ADAPTER_ID_KEY));
     XmlUtils xu = XmlHelper.createXmlUtils(msg);
-    assertNull("Xpath /Results/OriginalMessage", xu.getSingleNode("/Results/OriginalMessage"));
-    assertNotNull("/Results/Row", xu.getSingleNode("/Results/Row"));
+    assertNull(xu.getSingleNode("/Results/OriginalMessage"));
+    assertNotNull(xu.getSingleNode("/Results/Row"));
     assertTrue(msg.containsKey(getName()));
     assertEquals("1", msg.getMetadataValue(getName()));
   }

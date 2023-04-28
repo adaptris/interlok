@@ -1,6 +1,6 @@
 package com.adaptris.core.services.conditional;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
@@ -11,8 +11,8 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -41,7 +41,7 @@ public class ForEachTest extends ConditionalServiceExample
   @Mock
   private Service mock;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception
   {
     MockitoAnnotations.openMocks(this);

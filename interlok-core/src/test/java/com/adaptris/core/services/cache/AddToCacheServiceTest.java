@@ -1,15 +1,19 @@
 package com.adaptris.core.services.cache;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Arrays;
 import java.util.Collection;
+
 import javax.jms.JMSException;
 import javax.jms.Queue;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
@@ -57,7 +61,7 @@ public class AddToCacheServiceTest extends CacheServiceBaseCase {
       start(service);
       service.doService(msg);
       Object value = cache.get(CORRELATION_ID);
-      assertTrue("Cached object should be a JMS Queue", value instanceof Queue);
+      assertTrue(value instanceof Queue);
       assertEquals(QUEUE_NAME, ((Queue) value).getQueueName());
     }
     finally {

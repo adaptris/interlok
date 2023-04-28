@@ -18,10 +18,12 @@ package com.adaptris.core.security;
 
 import static com.adaptris.core.security.JunitSecurityHelper.SECURITY_ALIAS;
 import static com.adaptris.core.security.JunitSecurityHelper.SECURITY_PASSWORD;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreConstants;
@@ -81,7 +83,7 @@ public abstract class EncryptionServiceCase extends SecurityServiceCase {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(EXAMPLE_MSG);
     execute(input, msg);
     execute(output, msg);
-    assertEquals("Payload equality", EXAMPLE_MSG, msg.getContent());
+    assertEquals(EXAMPLE_MSG, msg.getContent());
   }
 
   @Test
@@ -96,7 +98,7 @@ public abstract class EncryptionServiceCase extends SecurityServiceCase {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(EXAMPLE_MSG);
     execute(input, msg);
     execute(output, msg);
-    assertEquals("Payload equality", EXAMPLE_MSG, msg.getContent());
+    assertEquals(EXAMPLE_MSG, msg.getContent());
   }
 
   @Test
@@ -111,7 +113,7 @@ public abstract class EncryptionServiceCase extends SecurityServiceCase {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(EXAMPLE_MSG);
     execute(input, msg);
     execute(output, msg);
-    assertEquals("Payload equality", EXAMPLE_MSG, msg.getContent());
+    assertEquals(EXAMPLE_MSG, msg.getContent());
   }
 
   @Test
@@ -128,7 +130,7 @@ public abstract class EncryptionServiceCase extends SecurityServiceCase {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(EXAMPLE_MSG);
     execute(input, msg);
     execute(output, msg);
-    assertEquals("Payload equality", EXAMPLE_MSG, msg.getContent());
+    assertEquals(EXAMPLE_MSG, msg.getContent());
   }
 
   @Test
@@ -177,7 +179,7 @@ public abstract class EncryptionServiceCase extends SecurityServiceCase {
     DecryptionService output = new DecryptionService();
     applyConfigForTests(output, url);
     execute(output, msg);
-    assertEquals("Payload equality", EXAMPLE_MSG, msg.getContent());
+    assertEquals(EXAMPLE_MSG, msg.getContent());
   }
 
   @Test
@@ -193,7 +195,7 @@ public abstract class EncryptionServiceCase extends SecurityServiceCase {
     msg.addMetadata(CoreConstants.SECURITY_REMOTE_PARTNER, PROPERTIES.getProperty(SECURITY_ALIAS));
     execute(input, msg);
     execute(output, msg);
-    assertEquals("Payload equality", EXAMPLE_MSG, msg.getContent());
+    assertEquals(EXAMPLE_MSG, msg.getContent());
   }
 
   @Test
@@ -211,7 +213,7 @@ public abstract class EncryptionServiceCase extends SecurityServiceCase {
     msg.addMetadata("MyRemotePartner", PROPERTIES.getProperty(SECURITY_ALIAS));
     execute(input, msg);
     execute(output, msg);
-    assertEquals("Payload equality", EXAMPLE_MSG, msg.getContent());
+    assertEquals(EXAMPLE_MSG, msg.getContent());
   }
 
   @Test

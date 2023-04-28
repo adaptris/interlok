@@ -16,12 +16,14 @@
 
 package com.adaptris.core.services;
 
-import static org.junit.Assert.assertNull;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
-import com.adaptris.core.GeneralServiceExample;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.GeneralServiceExample;
 
 public class ClearLoggingContextTest extends GeneralServiceExample {
 

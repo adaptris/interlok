@@ -16,11 +16,14 @@
 
 package com.adaptris.core.services.metadata;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Arrays;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.MetadataElement;
@@ -103,10 +106,10 @@ public class CopyMetadataServiceTest extends MetadataServiceExample {
     AdaptrisMessage msg = createMessage();
     execute(service, msg);
     assertTrue(msg.getMetadataValue(KEY_TO_BE_COPIED).equals(METADATA_VALUE));
-    assertTrue(NEW_KEY_1 + " must exist as metadata", msg.containsKey(NEW_KEY_1));
-    assertTrue(NEW_KEY_2 + " must exist as metadata", msg.containsKey(NEW_KEY_2));
-    assertTrue(NEW_KEY_3 + " must exist as metadata", msg.containsKey(NEW_KEY_3));
-    assertTrue(NEW_KEY_4 + " must exist as metadata", msg.containsKey(NEW_KEY_4));
+    assertTrue(msg.containsKey(NEW_KEY_1));
+    assertTrue(msg.containsKey(NEW_KEY_2));
+    assertTrue(msg.containsKey(NEW_KEY_3));
+    assertTrue(msg.containsKey(NEW_KEY_4));
     assertEquals(METADATA_VALUE, msg.getMetadataValue(NEW_KEY_1));
     assertEquals(METADATA_VALUE, msg.getMetadataValue(NEW_KEY_2));
     assertEquals(METADATA_VALUE, msg.getMetadataValue(NEW_KEY_3));

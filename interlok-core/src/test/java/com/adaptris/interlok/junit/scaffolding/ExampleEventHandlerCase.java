@@ -16,13 +16,16 @@
 
 package com.adaptris.interlok.junit.scaffolding;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Iterator;
 import java.util.Map;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdapterMarshallerFactory;
 import com.adaptris.core.AdapterMarshallerFactory.MarshallingOutput;
@@ -110,11 +113,11 @@ public abstract class ExampleEventHandlerCase<T extends EventHandlerBase>
     AdaptrisMarshaller cm = DefaultMarshaller.getDefaultMarshaller();
     MockMessageProducer producer = getProducer(eh);
     waitForMessages(producer, msgCount);
-    assertEquals("Should have " + msgCount + " produced message", msgCount, producer.getMessages().size());
+    assertEquals(msgCount, producer.getMessages().size(), "Should have " + msgCount + " produced message");
     for (Iterator i = producer.getMessages().iterator(); i.hasNext();) {
       AdaptrisMessage m = (AdaptrisMessage) i.next();
       Object o = cm.unmarshal(m.getContent());
-      assertEquals("Classname", expectedEventClass, o.getClass());
+      assertEquals(expectedEventClass, o.getClass(), "Classname");
     }
   }
 
