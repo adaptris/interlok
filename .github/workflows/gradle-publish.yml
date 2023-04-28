@@ -4,8 +4,9 @@ on:
   push:
     branches:
     - develop
-  schedule:
-    - cron: 0 3 * * * # Daily 3 a.m.
+    - develop-v4
+#  schedule:
+#    - cron: 0 3 * * * # Daily 3 a.m.
 
 permissions: read-all
 
