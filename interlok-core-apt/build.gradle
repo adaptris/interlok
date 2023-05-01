@@ -11,7 +11,7 @@ dependencies {
 
   testImplementation("junit:junit:4.13.2")
   testImplementation("org.hibernate.validator:hibernate-validator:6.1.7.Final")
-  testImplementation("org.glassfish:jakarta.el:3.0.4")
+  testImplementation("org.glassfish:jakarta.el:4.0.2")
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
