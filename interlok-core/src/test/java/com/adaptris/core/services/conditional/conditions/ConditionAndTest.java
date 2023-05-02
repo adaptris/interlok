@@ -46,7 +46,7 @@ private ConditionAnd conditionAnd;
 
   @Before
   public void setUp() throws Exception {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
 
     conditionAnd = new ConditionAnd().withConditions(mockConditionOne, mockConditionTwo, mockConditionThree);
     adaptrisMessage = DefaultMessageFactory.getDefaultInstance().newMessage();

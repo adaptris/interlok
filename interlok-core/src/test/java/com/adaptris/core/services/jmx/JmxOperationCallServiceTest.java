@@ -61,7 +61,7 @@ public class JmxOperationCallServiceTest
 
   @Before
   public void setUp() throws Exception {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
 
     callService = new JmxOperationCallService();
     callService.setInvoker(mockInvoker);

@@ -72,7 +72,7 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
   public void setUp() throws Exception {
     consumer = new RelaxedFtpConsumer();
 
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
 
     consumeDestination = "myDestination";
     consumer.setFtpEndpoint(consumeDestination);

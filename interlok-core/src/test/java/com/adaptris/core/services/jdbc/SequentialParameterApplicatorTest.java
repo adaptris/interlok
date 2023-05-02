@@ -49,7 +49,7 @@ public class SequentialParameterApplicatorTest {
 
   @Before
   public void setUp() throws Exception {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
 
     message = DefaultMessageFactory.getDefaultInstance().newMessage("SomePayload");
     parameterApplicator = new SequentialParameterApplicator();

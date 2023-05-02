@@ -58,6 +58,7 @@ import com.adaptris.core.http.auth.NoAuthentication;
 import com.adaptris.core.http.client.RequestMethodProvider;
 import com.adaptris.core.http.client.RequestMethodProvider.RequestMethod;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.core.util.MessageHelper;
 import com.adaptris.interlok.InterlokException;
 import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.interlok.config.DataOutputParameter;
@@ -311,7 +312,7 @@ public class StandardHttpProducer extends HttpProducer<HttpURLConnection, HttpUR
     } else {
       if (getEncoder() != null) {
         AdaptrisMessage decodedReply = getEncoder().readMessage(http);
-        AdaptrisMessageImp.copyPayload(decodedReply, reply);
+        MessageHelper.copyPayload(decodedReply, reply);
         reply.getObjectHeaders().putAll(decodedReply.getObjectHeaders());
         reply.setMetadata(decodedReply.getMetadata());
       } else {

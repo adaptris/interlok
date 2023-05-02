@@ -46,7 +46,7 @@ public class ConditionOrTest {
 
   @Before
   public void setUp() throws Exception {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
 
     conditionOr = new ConditionOr();
     conditionOr.getConditions().add(mockConditionOne);

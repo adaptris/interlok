@@ -62,7 +62,7 @@ public class IfElseTest extends ConditionalServiceExample {
 
   @Before
   public void setUp() throws Exception {
-    MockitoAnnotations.initMocks(this);
+    MockitoAnnotations.openMocks(this);
 
     thenService = new ThenService();
     elseService = new ElseService();

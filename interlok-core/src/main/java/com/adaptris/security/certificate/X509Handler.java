@@ -108,7 +108,7 @@ final class X509Handler implements CertificateHandler {
     try {
       CertificateFactory certFactory = CertificateFactory.getInstance("X.509", BouncyCastleProvider.PROVIDER_NAME);
       X509Certificate cert = (X509Certificate) certFactory.generateCertificate(input);
-      logR.trace("Handling [{}] SerialNumber: {}", cert.getSubjectDN().toString(), cert.getSerialNumber());
+      logR.trace("Handling [{}] SerialNumber: {}", cert.getSubjectX500Principal().toString(), cert.getSerialNumber());
       return cert;
       // X509CertParser x509parser = new X509CertParser();
       // x509parser.engineInit(input);
@@ -209,7 +209,7 @@ final class X509Handler implements CertificateHandler {
    * @see CertificateHandler#getIssuer()
    */
   public String getIssuer() {
-    return x509.getIssuerDN().getName();
+    return x509.getIssuerX500Principal().getName();
   }
 
   /**

@@ -138,7 +138,7 @@ public final class CertRequestHandler {
     X509Certificate x509 = (X509Certificate)c;
     x509.getSigAlgName();
 
-        X500Name entityName = new X500Name(x509.getSubjectDN().getName());
+        X500Name entityName = new X500Name(x509.getSubjectX500Principal().getName());
         KeyPair entityPair = KeyPairGenerator.getInstance("RSA").genKeyPair();
         SubjectPublicKeyInfo publicKeyInfo = SubjectPublicKeyInfo.getInstance(x509.getPublicKey().getEncoded());
         // Generate the certificate signing request
