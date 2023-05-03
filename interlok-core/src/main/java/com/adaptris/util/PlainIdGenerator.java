@@ -20,7 +20,6 @@ import java.security.SecureRandom;
 
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
-import com.adaptris.util.text.Conversion;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -53,7 +52,7 @@ public class PlainIdGenerator implements IdGenerator {
   public String create(Object msg) {
     byte[] bytes = new byte[8];
     random.nextBytes(bytes);
-    return Conversion.byteArrayToBase64String(bytes).replaceAll("=", "") + getSeparator()
+    return java.util.Base64.getEncoder().encodeToString(bytes).replaceAll("=", "") + getSeparator()
         + (msg == null ? "0" : Integer.toHexString(msg.hashCode()))
         + getSeparator() + System.currentTimeMillis();
   }

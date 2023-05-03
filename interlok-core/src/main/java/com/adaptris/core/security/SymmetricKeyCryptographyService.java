@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
@@ -13,7 +14,9 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.ObjectUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
@@ -32,7 +35,6 @@ import com.adaptris.interlok.types.MessageWrapper;
 import com.adaptris.security.password.Password;
 import com.adaptris.security.util.SecurityUtil;
 import com.adaptris.util.stream.StreamUtil;
-import com.adaptris.util.text.Conversion;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -119,9 +121,9 @@ public class SymmetricKeyCryptographyService extends ServiceImp {
     try {
       String algToUse = msg.resolve(getAlgorithm());
       String cipherToUse = msg.resolve(getCipherTransformation());
-      byte[] keyBytes = Conversion.base64StringToByteArray(
-          Password.decode(ExternalResolver.resolve(getKey().extract(msg))));
-      byte[] initialVectorBytes =  Conversion.base64StringToByteArray(getInitialVector().extract(msg));
+      byte[] keyBytes = java.util.Base64.getDecoder().decode(
+    		  Password.decode(ExternalResolver.resolve(getKey().extract(msg))));
+      byte[] initialVectorBytes =  java.util.Base64.getDecoder().decode(getInitialVector().extract(msg));
       Cipher cipher = Cipher.getInstance(cipherToUse);
       SecretKeySpec secretKeySpec = new SecretKeySpec(keyBytes, algToUse);
       IvParameterSpec ivParameterSpec = new IvParameterSpec(initialVectorBytes);

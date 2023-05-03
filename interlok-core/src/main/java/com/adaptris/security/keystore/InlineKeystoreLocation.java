@@ -22,8 +22,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.util.Properties;
+
 import com.adaptris.security.exc.AdaptrisSecurityException;
-import com.adaptris.util.text.Conversion;
 
 /**
  * Convenience wrapper for KeystoreLocation that wraps a byte array.
@@ -110,7 +110,7 @@ final class InlineKeystoreLocation implements KeystoreLocation {
    */
   @Override
   public int hashCode() {
-    return Conversion.byteArrayToBase64String(keystoreHash).hashCode() + getKeystoreType().hashCode();
+    return java.util.Base64.getEncoder().encodeToString(keystoreHash).hashCode() + getKeystoreType().hashCode();
   }
 
 
