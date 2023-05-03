@@ -52,25 +52,23 @@ public class PrettyStaxDriverTest {
 
   @Test
   public void testCreateWriter() {
-    PrettyStaxDriver driver = new PrettyStaxDriver(cdata, true);
+    PrettyStaxDriver driver = new PrettyStaxDriver(cdata);
     assertNotNull(driver.createWriter(new ByteArrayOutputStream()));
   }
 
   @Test
   public void testXmlInputFactory() {
-    assertNotNull(new PrettyStaxDriver(cdata, true).createInputFactory());
-    assertNotNull(new PrettyStaxDriver(cdata, false).createInputFactory());
+    assertNotNull(new PrettyStaxDriver(cdata).createInputFactory());
   }
 
   @Test
   public void testXmlOutputFactory() {
-    assertNotNull(new PrettyStaxDriver(cdata, true).createOutputFactory());
-    assertNotNull(new PrettyStaxDriver(cdata, false).createOutputFactory());
+    assertNotNull(new PrettyStaxDriver(cdata).createOutputFactory());
   }
 
   @Test
   public void testPrettyPrintWriter() throws Exception {
-    PrettyStaxDriver driver = new PrettyStaxDriver(cdata, true);
+    PrettyStaxDriver driver = new PrettyStaxDriver(cdata);
     // service
     //      <payload-from-template-service>
     //        <unique-id>naughty-hodgkin</unique-id>

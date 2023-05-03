@@ -104,7 +104,7 @@ public abstract class BaseCase {
   }
 
   public String getName() {
-    return testInfo.getDisplayName();
+    return testInfo.getDisplayName().substring(0, testInfo.getDisplayName().indexOf("("));
   }
 
   public static void execute(StandaloneConsumer c, StandaloneProducer p, AdaptrisMessage m, MockMessageListener stub)

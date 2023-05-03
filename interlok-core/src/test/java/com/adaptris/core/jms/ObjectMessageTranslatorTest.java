@@ -128,7 +128,7 @@ public class ObjectMessageTranslatorTest extends GenericMessageTypeTranslatorCas
   }
 
   protected static void assertException(Exception e1, Exception e2) {
-    assertEquals("Test Exception", e1.getMessage(), e2.getMessage());
+    assertEquals(e1.getMessage(), e2.getMessage());
     StackTraceElement[] s1 = e1.getStackTrace();
     StackTraceElement[] s2 = e2.getStackTrace();
     for (int i = 0; i < s1.length; i++) {

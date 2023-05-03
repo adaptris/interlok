@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInfo;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
@@ -38,11 +37,11 @@ public class RawContentTypeProviderTest {
   public void tearDown() throws Exception {}
 
   @Test
-  public void testGetContentType(TestInfo info) throws Exception {
-    RawContentTypeProvider provider = new RawContentTypeProvider("%message{" + info.getDisplayName() + "}");
+  public void testGetContentType() throws Exception {
+    RawContentTypeProvider provider = new RawContentTypeProvider("%message{testGetContentType}");
 
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("");
-    msg.addMetadata(info.getDisplayName(), "text/complicated");
+    msg.addMetadata("testGetContentType", "text/complicated");
 
     String contentType = provider.getContentType(msg);
     assertEquals("text/complicated", contentType);

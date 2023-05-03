@@ -125,7 +125,7 @@ public class MetadataCorrelationIdSourceTest {
       jmsMsg.setJMSCorrelationID(TEXT2);
       MetadataCorrelationIdSource mcs = new MetadataCorrelationIdSource(CORRELATIONID_KEY);
       mcs.processCorrelationId(jmsMsg, adpMsg);
-      assertEquals("Check Correlation Id Keys", jmsMsg.getJMSCorrelationID(), adpMsg.getMetadataValue(CORRELATIONID_KEY));
+      assertEquals(jmsMsg.getJMSCorrelationID(), adpMsg.getMetadataValue(CORRELATIONID_KEY));
       session.close();
     }
     finally {

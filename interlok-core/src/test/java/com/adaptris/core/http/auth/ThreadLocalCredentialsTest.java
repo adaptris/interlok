@@ -106,7 +106,7 @@ public class ThreadLocalCredentialsTest {
     assertTrue(t2PasswordOK.get(), "Password in other thread is wrong");
     
     PasswordAuthentication auth = requestAuthentication();
-    assertEquals("Main thread credentials must still be set", "username", auth.getUserName());
+    assertEquals("username", auth.getUserName());
     assertTrue(Arrays.areEqual("password".toCharArray(), auth.getPassword()), "Main thread credentials must still be set");
   }
   

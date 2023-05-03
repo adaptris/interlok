@@ -63,7 +63,7 @@ public class XStreamUtilsTest extends XStreamUtils {
 
   @Test
   public void testToXmlElementName() {
-    assertNull("", XStreamUtils.toXmlElementName(null));
+    assertNull(XStreamUtils.toXmlElementName(null));
     assertEquals("", XStreamUtils.toXmlElementName(""));
     assertEquals("m", XStreamUtils.toXmlElementName("m"));
     assertEquals("m", XStreamUtils.toXmlElementName("M"));
