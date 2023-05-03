@@ -14,6 +14,7 @@
 
 package com.adaptris.core;
 
+import java.time.Duration;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -171,11 +172,11 @@ public abstract class WorkflowWithObjectPool extends WorkflowImp {
     pool.setMaxTotal(poolSize());
     pool.setMinIdle(minIdle());
     pool.setMaxIdle(maxIdle());
-    pool.setMaxWaitMillis(-1L);
+    pool.setMaxWait(Duration.ofMillis(-1L));
     pool.setBlockWhenExhausted(true);
-    pool.setSoftMinEvictableIdleTimeMillis(lifetime);
-    pool.setTimeBetweenEvictionRunsMillis(
-        lifetime + ThreadLocalRandom.current().nextLong(lifetime));
+    pool.setSoftMinEvictableIdle(Duration.ofMillis(lifetime));
+    pool.setTimeBetweenEvictionRuns(Duration.ofMillis(
+        lifetime + ThreadLocalRandom.current().nextLong(lifetime)));
     return pool;
   }
 

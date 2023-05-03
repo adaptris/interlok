@@ -15,6 +15,7 @@
 */
 package com.adaptris.core.services.splitter;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -73,11 +74,11 @@ public class ServiceWorkerPool {
     pool.setMaxTotal(maxThreads);
     pool.setMinIdle(maxThreads);
     pool.setMaxIdle(maxThreads);
-    pool.setMaxWaitMillis(-1L);
+    pool.setMaxWait(Duration.ofMillis(-1L));
     pool.setBlockWhenExhausted(true);
-    pool.setSoftMinEvictableIdleTimeMillis(EVICT_RUN);
-    pool.setTimeBetweenEvictionRunsMillis(
-        EVICT_RUN + ThreadLocalRandom.current().nextLong(EVICT_RUN));
+    pool.setSoftMinEvictableIdle(Duration.ofMillis(EVICT_RUN));
+    pool.setTimeBetweenEvictionRuns(Duration.ofMillis(
+        EVICT_RUN + ThreadLocalRandom.current().nextLong(EVICT_RUN)));
     return pool;
   }
 

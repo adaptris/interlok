@@ -16,6 +16,8 @@ package com.adaptris.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
@@ -135,7 +137,7 @@ public class WorkflowWithObjectPoolTest extends WorkflowWithObjectPool {
     pool.setMaxTotal(poolSize());
     pool.setMinIdle(minIdle());
     pool.setMaxIdle(maxIdle());
-    pool.setMaxWaitMillis(-1L);
+    pool.setMaxWait(Duration.ofMillis(-1L));
     pool.setBlockWhenExhausted(true);
     return pool;
   }

@@ -19,13 +19,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
 import java.util.concurrent.ExecutorService;
+
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.NullService;
@@ -56,7 +59,7 @@ public class ServiceWorkerPoolTest extends ServiceWorkerPool {
     assertEquals(10, pool.getMaxTotal());
     assertEquals(10, pool.getMinIdle());
     assertEquals(10, pool.getMaxIdle());
-    assertEquals(-1, pool.getMaxWaitMillis());
+    assertEquals(-1, pool.getMaxWaitDuration().toMillis());
     assertTrue(pool.getBlockWhenExhausted());
   }
 
