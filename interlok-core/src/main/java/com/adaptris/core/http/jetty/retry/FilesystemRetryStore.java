@@ -156,7 +156,7 @@ public class FilesystemRetryStore implements RetryStore {
           IOUtils.copy(in, out);
         }
       }
-      msg.setMessageHeaders(metadata);
+      msg.addMessageHeaders(metadata);
       msg.setUniqueId(msgId);
       return msg;
     } catch (Exception e) {
