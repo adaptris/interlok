@@ -48,7 +48,7 @@ public class DefaultMessageFactory extends AdaptrisMessageFactory {
   public AdaptrisMessage newMessage(byte[] payload, Set metadata) {
     AdaptrisMessage result = newMessage();
     result.setPayload(payload);
-    result.setMetadata(metadata);
+    result.addMetadata(metadata);
 
     return result;
   }
@@ -65,7 +65,7 @@ public class DefaultMessageFactory extends AdaptrisMessageFactory {
   public AdaptrisMessage newMessage(String payload, Set metadata) {
     AdaptrisMessage result = newMessage();
     result.setContent(payload, getDefaultCharEncoding());
-    result.setMetadata(metadata);
+    result.addMetadata(metadata);
 
     return result;
   }
@@ -83,7 +83,7 @@ public class DefaultMessageFactory extends AdaptrisMessageFactory {
       throws UnsupportedEncodingException {
     AdaptrisMessage result = newMessage();
     result.setContent(payload, charEncoding);
-    result.setMetadata(metadata);
+    result.addMetadata(metadata);
 
     return result;
   }
@@ -101,7 +101,7 @@ public class DefaultMessageFactory extends AdaptrisMessageFactory {
     AdaptrisMessage result = newMessage();
     result.setUniqueId(source.getUniqueId());
     if (metadataKeysToPreserve == null) {
-      result.setMetadata(source.getMetadata());
+      result.addMetadata(source.getMetadata());
     } else {
       for (Iterator i = metadataKeysToPreserve.iterator(); i.hasNext();) {
         String key = (String) i.next();

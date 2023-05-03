@@ -314,7 +314,7 @@ public class StandardHttpProducer extends HttpProducer<HttpURLConnection, HttpUR
         AdaptrisMessage decodedReply = getEncoder().readMessage(http);
         MessageHelper.copyPayload(decodedReply, reply);
         reply.getObjectHeaders().putAll(decodedReply.getObjectHeaders());
-        reply.setMetadata(decodedReply.getMetadata());
+        reply.addMetadata(decodedReply.getMetadata());
       } else {
         responseBody().insert(
             new InputStreamWithEncoding(http.getInputStream(), getContentEncoding(http)), reply);

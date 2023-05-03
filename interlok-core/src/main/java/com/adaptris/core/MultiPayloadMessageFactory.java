@@ -97,7 +97,7 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory {
     if (!isEmpty(getDefaultCharEncoding())) {
       result.setContentEncoding(getDefaultCharEncoding());
     }
-    result.setMetadata(metadata);
+    result.addMetadata(metadata);
     return result;
   }
 
@@ -169,7 +169,7 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory {
       log.warn("Character set [" + charEncoding + "] is not available");
     }
     AdaptrisMessage result = new MultiPayloadAdaptrisMessageImp(payloadId, uniqueIdGenerator(), this, content, charset);
-    result.setMetadata(metadata);
+    result.addMetadata(metadata);
     return result;
   }
 
@@ -188,7 +188,7 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory {
     result.setUniqueId(source.getUniqueId());
     result.setCurrentPayloadId(payloadId);
     if (metadataKeysToPreserve == null) {
-      result.setMetadata(source.getMetadata());
+      result.addMetadata(source.getMetadata());
     } else {
       for (String metadataKey : metadataKeysToPreserve) {
         if (source.headersContainsKey(metadataKey)) {

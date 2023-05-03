@@ -118,7 +118,7 @@ public class XpathMetadataService extends MetadataServiceImpl {
         metadataElements.add(query.resolveXpath(doc, xpathToUse, query.createXpathQuery(msg)));
       }
       logMetadata("Xpath Metadata resolved {}", metadataElements);
-      msg.setMetadata(metadataElements);
+      msg.addMetadata(metadataElements);
     }
     catch (Exception e) {
       throw new ServiceException(e);

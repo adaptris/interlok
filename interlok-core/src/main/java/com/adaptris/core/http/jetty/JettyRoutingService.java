@@ -89,7 +89,7 @@ public class JettyRoutingService extends BranchingServiceImp {
         JettyRoute m = route.build(method, uri);
         if (m.matches()) {
           log.trace("[{}][{}], matched by {}", method, uri, route);
-          msg.setMetadata(m.metadata());
+          msg.addMetadata(m.metadata());
           msg.setNextServiceId(route.getServiceId());
           matched = true;
           break;

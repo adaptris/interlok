@@ -62,7 +62,7 @@ public class MetadataFilterService extends MetadataServiceImpl {
     log.trace("Filtering metadata using [{}]", filter.getClass().getCanonicalName());
     MetadataCollection filtered = filter.filter(msg);
     msg.clearMetadata();
-    msg.setMetadata(filtered.toSet());
+    msg.addMetadata(filtered.toSet());
     logMetadata("Metadata preserved : {}", filtered);
   }
 
