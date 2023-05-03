@@ -1,9 +1,9 @@
 package com.adaptris.interlok.client.jmx;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
@@ -16,11 +16,10 @@ import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 import com.adaptris.interlok.InterlokException;
 import com.adaptris.interlok.client.MessageTarget;
@@ -36,10 +35,7 @@ public class InterlokJmxClientTest {
   private JMXConnectorServer jmxConnectorServer;
   private Integer jmxPort;
 
-  @Rule
-  public TestName testName = new TestName();
-
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     jmxPort = PortManager.nextUnusedPort(5555);
     jmxConnectorServer = createConnectorServer(String.valueOf(jmxPort));
@@ -47,7 +43,7 @@ public class InterlokJmxClientTest {
     jmxConnectorServer.start();
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     jmxConnectorServer.stop();
     unregister();
@@ -78,12 +74,12 @@ public class InterlokJmxClientTest {
   }
 
   @Test
-  public void testProcessAsync_LocalJmx() throws Exception {
+  public void testProcessAsync_LocalJmx(TestInfo info) throws Exception {
     MyMessageProcessor proc = new MyMessageProcessor();
     MessageTarget target =
-        new MessageTarget().withAdapter(testName.getMethodName()).withChannel(testName.getMethodName())
-            .withWorkflow(testName.getMethodName());
-    DefaultSerializableMessage msg = new DefaultSerializableMessage().withPayload(testName.getMethodName());
+        new MessageTarget().withAdapter(info.getDisplayName()).withChannel(info.getDisplayName())
+            .withWorkflow(info.getDisplayName());
+    DefaultSerializableMessage msg = new DefaultSerializableMessage().withPayload(info.getDisplayName());
     register(createObjectName(target), proc);
     InterlokJmxClient client = new InterlokJmxClient();
     try {
@@ -98,12 +94,12 @@ public class InterlokJmxClientTest {
   }
 
   @Test
-  public void testProcessAsync_SerializableMessage() throws Exception {
+  public void testProcessAsync_SerializableMessage(TestInfo info) throws Exception {
     MyMessageProcessor proc = new MyMessageProcessor();
     MessageTarget target =
-        new MessageTarget().withAdapter(testName.getMethodName()).withChannel(testName.getMethodName())
-            .withWorkflow(testName.getMethodName());
-    DefaultSerializableMessage msg = new DefaultSerializableMessage().withPayload(testName.getMethodName());
+        new MessageTarget().withAdapter(info.getDisplayName()).withChannel(info.getDisplayName())
+            .withWorkflow(info.getDisplayName());
+    DefaultSerializableMessage msg = new DefaultSerializableMessage().withPayload(info.getDisplayName());
     register(createObjectName(target), proc);
     InterlokJmxClient client = new InterlokJmxClient(jmxConnectorServer.getAddress());
     try {
@@ -117,17 +113,17 @@ public class InterlokJmxClientTest {
   }
 
   @Test
-  public void testProcessAsync_Convenience() throws Exception {
+  public void testProcessAsync_Convenience(TestInfo info) throws Exception {
     MyMessageProcessor proc = new MyMessageProcessor();
     MessageTarget target =
-        new MessageTarget().withAdapter(testName.getMethodName()).withChannel(testName.getMethodName())
-            .withWorkflow(testName.getMethodName());
+        new MessageTarget().withAdapter(info.getDisplayName()).withChannel(info.getDisplayName())
+            .withWorkflow(info.getDisplayName());
     register(createObjectName(target), proc);
     InterlokJmxClient client = new InterlokJmxClient(jmxConnectorServer.getAddress());
     try {
       client.connect();
-      client.processAsync(target, testName.getMethodName(), new HashMap<String, String>());
-      assertEquals(testName.getMethodName(), proc.getMessage().getContent());
+      client.processAsync(target, info.getDisplayName(), new HashMap<String, String>());
+      assertEquals(info.getDisplayName(), proc.getMessage().getContent());
     } finally {
       client.disconnect();
     }
@@ -135,33 +131,33 @@ public class InterlokJmxClientTest {
 
 
   @Test
-  public void testProcess() throws Exception {
+  public void testProcess(TestInfo info) throws Exception {
     MyMessageProcessor proc = new MyMessageProcessor();
     MessageTarget target =
-        new MessageTarget().withAdapter(testName.getMethodName()).withChannel(testName.getMethodName())
-            .withWorkflow(testName.getMethodName());
-    DefaultSerializableMessage msg = new DefaultSerializableMessage().withPayload(testName.getMethodName());
+        new MessageTarget().withAdapter(info.getDisplayName()).withChannel(info.getDisplayName())
+            .withWorkflow(info.getDisplayName());
+    DefaultSerializableMessage msg = new DefaultSerializableMessage().withPayload(info.getDisplayName());
     register(createObjectName(target), proc);
     InterlokJmxClient client = new InterlokJmxClient(jmxConnectorServer.getAddress());
     try {
       client.connect();
       SerializableMessage reply = client.process(target, msg);
       assertNotSame(reply.getUniqueId(), proc.getMessage().getUniqueId());
-      assertEquals(testName.getMethodName(), reply.getContent());
-      assertEquals(testName.getMethodName(), reply.getContent());
+      assertEquals(info.getDisplayName(), reply.getContent());
+      assertEquals(info.getDisplayName(), reply.getContent());
     } finally {
       client.disconnect();
     }
   }
 
   @Test
-  public void testMessageTarget_NoWorkflow() throws Exception {
+  public void testMessageTarget_NoWorkflow(TestInfo info) throws Exception {
     MyMessageProcessor proc = new MyMessageProcessor();
-    DefaultSerializableMessage msg = new DefaultSerializableMessage().withPayload(testName.getMethodName());
-    register(createObjectName(new MessageTarget().withAdapter(testName.getMethodName()).withChannel(testName.getMethodName())
-        .withWorkflow(testName.getMethodName())), proc);
+    DefaultSerializableMessage msg = new DefaultSerializableMessage().withPayload(info.getDisplayName());
+    register(createObjectName(new MessageTarget().withAdapter(info.getDisplayName()).withChannel(info.getDisplayName())
+        .withWorkflow(info.getDisplayName())), proc);
     MessageTarget notFound =
-        new MessageTarget().withAdapter(testName.getMethodName()).withChannel(testName.getMethodName()).withWorkflow("abcde");
+        new MessageTarget().withAdapter(info.getDisplayName()).withChannel(info.getDisplayName()).withWorkflow("abcde");
     InterlokJmxClient client = new InterlokJmxClient(jmxConnectorServer.getAddress());
     try {
       client.connect();
@@ -175,22 +171,22 @@ public class InterlokJmxClientTest {
   }
 
   @Test
-  public void testMessageTarget_Wildcard() throws Exception {
+  public void testMessageTarget_Wildcard(TestInfo info) throws Exception {
     MyMessageProcessor proc = new MyMessageProcessor();
     MyMessageProcessor proc2 = new MyMessageProcessor();
     MessageTarget target1 =
-        new MessageTarget().withAdapter(testName.getMethodName()).withChannel(testName.getMethodName())
-            .withWorkflow(testName.getMethodName());
+        new MessageTarget().withAdapter(info.getDisplayName()).withChannel(info.getDisplayName())
+            .withWorkflow(info.getDisplayName());
     MessageTarget target2 =
-        new MessageTarget().withAdapter(testName.getMethodName()).withChannel(testName.getMethodName())
-            .withWorkflow(testName.getMethodName() + "2");
-    DefaultSerializableMessage msg = new DefaultSerializableMessage().withPayload(testName.getMethodName());
+        new MessageTarget().withAdapter(info.getDisplayName()).withChannel(info.getDisplayName())
+            .withWorkflow(info.getDisplayName() + "2");
+    DefaultSerializableMessage msg = new DefaultSerializableMessage().withPayload(info.getDisplayName());
     register(createObjectName(target1), proc);
     register(createObjectName(target2), proc2);
 
 
     MessageTarget wildcard =
-        new MessageTarget().withAdapter(testName.getMethodName()).withChannel(testName.getMethodName()).withWorkflow("*");
+        new MessageTarget().withAdapter(info.getDisplayName()).withChannel(info.getDisplayName()).withWorkflow("*");
     InterlokJmxClient client = new InterlokJmxClient(jmxConnectorServer.getAddress());
     try {
       client.connect();

@@ -1,16 +1,20 @@
 package com.adaptris.interlok.util;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+
 import org.apache.commons.io.FileCleaningTracker;
 import org.apache.commons.io.FileDeleteStrategy;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.management.webserver.JettyServerManager;
 
 public class ResourceLocatorTest extends ResourceLocator {
@@ -29,9 +33,10 @@ public class ResourceLocatorTest extends ResourceLocator {
     assertNotNull(toURL(JettyServerManager.DEFAULT_JETTY_XML));
   }
 
-  @Test(expected = URISyntaxException.class)
   public void testToURL_URISyntax() throws Exception {
-    toURL("file://localhost/c:/Program Files/Microsoft/Teams");
+    Assertions.assertThrows(URISyntaxException.class, () -> {
+      toURL("file://localhost/c:/Program Files/Microsoft/Teams");
+    });
   }
 
   @Test
