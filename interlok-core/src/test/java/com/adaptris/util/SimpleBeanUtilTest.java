@@ -44,7 +44,7 @@ public class SimpleBeanUtilTest extends SimpleBeanUtil {
     assertEquals(1L, bean.getLongParam());
     assertEquals(Double.parseDouble("1"), bean.getDoubleParam(), 0.1);
     assertEquals("1", bean.getStringParam());
-    assertEquals(true, bean.getBooleanParam());
+    assertEquals(true, bean.isBooleanParam());
     assertEquals(1, bean.getIntParam());
     assertEquals(Float.parseFloat("1"), bean.getFloatParam(), 0.1);
   }

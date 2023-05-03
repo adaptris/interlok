@@ -172,7 +172,7 @@ public class JmsAsyncProducerTest
   @Test
   public void testInitSetsEventhandlerAccept() throws Exception {
     LifecycleHelper.init(producer);
-    assertTrue(producer.getEventHandler().getAcceptSuccessCallbacks());
+    assertTrue(producer.getEventHandler().isAcceptSuccessCallbacks());
   }
 
   @Test

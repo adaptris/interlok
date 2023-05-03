@@ -42,7 +42,7 @@ public class JmsAsyncProducerEventHandler implements CompletionListener, Compone
   
   @Override
   public void onCompletion(Message message) {
-    if(this.getAcceptSuccessCallbacks()) {
+    if(this.isAcceptSuccessCallbacks()) {
       try {
         log.debug("Success callback received for message id {}", message.getStringProperty(ID_HEADER));
         CallbackConsumers callbackConsumers = this.getUnAckedMessages().get(message.getStringProperty(ID_HEADER));
