@@ -48,6 +48,7 @@ jar {
                "Implementation-Version": project.version,
                "Implementation-Vendor-Id": project.group,
                "Implementation-Vendor": organizationName,
+			   "Add-Opens": "java.base/java.lang java.base/java.util",
                "Main-Class": "com.adaptris.interlok.boot.InterlokLauncher")
   }
   from ("$project.buildDir/spring-boot-loader") {
