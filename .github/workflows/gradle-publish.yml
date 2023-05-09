@@ -13,7 +13,7 @@ permissions: read-all
 jobs:
   gradle-publish:
     name: Gradle Publish
-    uses: interlok-tooling/reusable-workflows/.github/workflows/gradle-publish.yml@main
+    uses: interlok-tooling/reusable-workflows/.github/workflows/gradle-publish.yml@v1.0.0
     secrets:
       NEXUS_REPO_PASSWORD: ${{ secrets.NEXUS_REPO_PASSWORD }}
       TEAMS_IDN_WH_URL: ${{ secrets.TEAMS_IDN_WH_URL }}
