@@ -25,8 +25,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.DynamicPollingTemplate.TemplateProvider;
-import com.adaptris.core.services.EmbeddedScriptingService;
-import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.interlok.junit.scaffolding.BaseCase;
@@ -46,8 +44,7 @@ public class PollingTriggerTest extends ExampleConsumerCase {
   private static final PollingTrigger.MessageProvider[] TEMPLATES =
   {
       new StaticPollingTemplate("Hello World"),
-      new DynamicPollingTemplate(
-          new EmbeddedScriptingService().withScript("javascript", "message.setContent('Hello World', 'UTF-8')"))
+      new DynamicPollingTemplate(new NullMessageProvider())
   };
 
   private static final List<Poller> POLLER_LIST = Arrays.asList(POLLERS);

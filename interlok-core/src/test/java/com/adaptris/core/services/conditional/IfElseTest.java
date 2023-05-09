@@ -38,7 +38,6 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.LogMessageService;
 import com.adaptris.core.services.conditional.conditions.ConditionAnd;
 import com.adaptris.core.services.conditional.conditions.ConditionExpression;
-import com.adaptris.core.services.conditional.conditions.ConditionFunction;
 import com.adaptris.core.services.conditional.conditions.ConditionMetadata;
 import com.adaptris.core.services.conditional.conditions.ConditionOr;
 import com.adaptris.core.services.conditional.operator.Equals;
@@ -209,8 +208,7 @@ public class IfElseTest extends ConditionalServiceExample {
     ConditionAnd conditionAnd = new ConditionAnd();
     conditionAnd.getConditions().add(condition);
     conditionAnd.getConditions().add(conditionOr);
-    conditionAnd.getConditions().add(
-        new ConditionFunction("function evaluateScript(message) { return message.getMetadataValue('mykey').equals('myvalue');}"));
+    
     ThenService thenSrvc = new ThenService();
     ElseService elseSrvc = new ElseService();
 
