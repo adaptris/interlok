@@ -5,7 +5,7 @@
 version: 2
 
 jobs:
-  buildjava11:
+  buildjava17:
     machine:
       image: ubuntu-2204:current
 
@@ -23,7 +23,7 @@ jobs:
           name: Configure
           command: |
             sudo -E apt-get -y -qq update
-            sudo -E apt-get -y -qq install haveged openjdk-11-jdk
+            sudo -E apt-get -y -qq install haveged openjdk-17-jdk
             sudo -E systemctl restart haveged
             mkdir -p ~/.gradle
             echo "org.gradle.warning.mode=none" > ~/.gradle/gradle.properties
@@ -43,7 +43,7 @@ jobs:
       - run:
           name: Run Tests
           command: |
-            export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+            export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
             chmod +x ./gradlew
             ./gradlew -PverboseTests=true test jacocoTestReport
 
@@ -68,7 +68,7 @@ workflows:
   version: 2
   commit:
     jobs:
-      - buildjava11
+      - buildjava17
       # - sonarbuild:
       #     context: SonarCloud
 
