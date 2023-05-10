@@ -5,7 +5,7 @@
 version: 2
 
 jobs:
-  buildjava11:
+  buildjava17:
     machine:
       image: ubuntu-2204:current
 
