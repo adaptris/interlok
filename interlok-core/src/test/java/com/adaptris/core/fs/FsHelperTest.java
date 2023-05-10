@@ -16,13 +16,13 @@
 
 package com.adaptris.core.fs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -30,7 +30,7 @@ import java.net.URL;
 
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.oro.io.AwkFilenameFilter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.stubs.TempFileUtils;
 import com.adaptris.fs.FsWorker;
@@ -137,17 +137,17 @@ public class FsHelperTest extends FsHelper {
     String urlString = "file:///c:/tmp/";
     URL url = FsHelper.createUrlFromString(urlString, true);
 
-    assertTrue("protocol", "file".equals(url.getProtocol()));
-    assertTrue("path " + url.getPath(), "/c:/tmp/".equals(url.getPath()));
+    assertTrue("file".equals(url.getProtocol()));
+    assertTrue("/c:/tmp/".equals(url.getPath()));
 
     String urlString2 = "file:/c:/tmp/";
     URL url2 = FsHelper.createUrlFromString(urlString2, true);
-    assertTrue("protocol", "file".equals(url2.getProtocol()));
-    assertTrue("path " + url.getPath(), "/c:/tmp/".equals(url2.getPath()));
+    assertTrue("file".equals(url2.getProtocol()));
+    assertTrue("/c:/tmp/".equals(url2.getPath()));
 
     String urlString3 = "../dir/";
     URL url3 = FsHelper.createUrlFromString(urlString3, true);
-    assertTrue("protocol", "file".equals(url3.getProtocol()));
+    assertTrue("file".equals(url3.getProtocol()));
 
     tryExpectingException(() -> {
       FsHelper.createUrlFromString("..\\dir\\");

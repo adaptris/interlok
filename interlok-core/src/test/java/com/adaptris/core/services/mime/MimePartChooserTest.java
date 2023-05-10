@@ -22,13 +22,16 @@ import static com.adaptris.interlok.junit.scaffolding.util.MimeJunitHelper.PAYLO
 import static com.adaptris.interlok.junit.scaffolding.util.MimeJunitHelper.PAYLOAD_3;
 import static com.adaptris.interlok.junit.scaffolding.util.MimeJunitHelper.create;
 import static com.adaptris.util.text.mime.MimeConstants.HEADER_CONTENT_ENCODING;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreConstants;
@@ -105,9 +108,9 @@ public class MimePartChooserTest extends MimeServiceExample {
     AdaptrisMessage msg = create();
     String original = msg.getContent();
     execute(mps, msg);
-    assertEquals(ASSERT_PAYLOAD, original, msg.getContent());
-    assertFalse(ASSERT_MSG_SUBJECT_HEADER, msg.containsKey(KEY_METADATA_SUBJECT));
-    assertFalse(ASSERT_PART_CID_HEADER, msg.containsKey(METADATA_PART_HDR_CONTENT_ID));
+    assertEquals(original, msg.getContent());
+    assertFalse(msg.containsKey(KEY_METADATA_SUBJECT));
+    assertFalse(msg.containsKey(METADATA_PART_HDR_CONTENT_ID));
   }
 
   @Test
@@ -117,9 +120,9 @@ public class MimePartChooserTest extends MimeServiceExample {
     mps.setSelector(new com.adaptris.util.text.mime.SelectByContentId(PART3_CONTENT_ID));
     AdaptrisMessage msg = create();
     execute(mps, msg);
-    assertEquals(ASSERT_PAYLOAD, PAYLOAD_3, msg.getContent());
-    assertTrue(ASSERT_MSG_SUBJECT_HEADER, msg.containsKey(KEY_METADATA_SUBJECT));
-    assertTrue(ASSERT_PART_CID_HEADER, msg.containsKey(METADATA_PART_HDR_CONTENT_ID));
+    assertEquals(PAYLOAD_3, msg.getContent());
+    assertTrue(msg.containsKey(KEY_METADATA_SUBJECT));
+    assertTrue(msg.containsKey(METADATA_PART_HDR_CONTENT_ID));
   }
 
   @Test
@@ -129,9 +132,9 @@ public class MimePartChooserTest extends MimeServiceExample {
     mps.setSelector(new com.adaptris.util.text.mime.SelectByHeader(HEADER_CONTENT_ENCODING, ".*base64.*"));
     AdaptrisMessage msg = create();
     execute(mps, msg);
-    assertEquals(ASSERT_PAYLOAD, PAYLOAD_1, msg.getContent());
-    assertTrue(ASSERT_MSG_SUBJECT_HEADER, msg.containsKey(KEY_METADATA_SUBJECT));
-    assertTrue(ASSERT_PART_CID_HEADER, msg.containsKey(METADATA_PART_HDR_CONTENT_ID));
+    assertEquals(PAYLOAD_1, msg.getContent());
+    assertTrue(msg.containsKey(KEY_METADATA_SUBJECT));
+    assertTrue(msg.containsKey(METADATA_PART_HDR_CONTENT_ID));
   }
 
   @Test
@@ -141,9 +144,9 @@ public class MimePartChooserTest extends MimeServiceExample {
     mps.setSelector(new com.adaptris.util.text.mime.SelectByPosition(1));
     AdaptrisMessage msg = create();
     execute(mps, msg);
-    assertEquals(ASSERT_PAYLOAD, PAYLOAD_2, msg.getContent());
-    assertTrue(ASSERT_MSG_SUBJECT_HEADER, msg.containsKey(KEY_METADATA_SUBJECT));
-    assertTrue(ASSERT_PART_CID_HEADER, msg.containsKey(METADATA_PART_HDR_CONTENT_ID));
+    assertEquals(PAYLOAD_2, msg.getContent());
+    assertTrue(msg.containsKey(KEY_METADATA_SUBJECT));
+    assertTrue(msg.containsKey(METADATA_PART_HDR_CONTENT_ID));
   }
 
   @Test
@@ -154,9 +157,9 @@ public class MimePartChooserTest extends MimeServiceExample {
     mps.setSelector(new com.adaptris.util.text.mime.SelectByPosition(1));
     AdaptrisMessage msg = create();
     execute(mps, msg);
-    assertEquals(ASSERT_PAYLOAD, PAYLOAD_2, msg.getContent());
-    assertFalse(ASSERT_MSG_SUBJECT_HEADER, msg.containsKey(KEY_METADATA_SUBJECT));
-    assertTrue(ASSERT_PART_CID_HEADER, msg.containsKey(METADATA_PART_HDR_CONTENT_ID));
+    assertEquals(PAYLOAD_2, msg.getContent());
+    assertFalse(msg.containsKey(KEY_METADATA_SUBJECT));
+    assertTrue(msg.containsKey(METADATA_PART_HDR_CONTENT_ID));
   }
 
   @Test
@@ -167,9 +170,9 @@ public class MimePartChooserTest extends MimeServiceExample {
     mps.setSelector(new com.adaptris.util.text.mime.SelectByPosition(1));
     AdaptrisMessage msg = create();
     execute(mps, msg);
-    assertEquals(ASSERT_PAYLOAD, PAYLOAD_2, msg.getContent());
-    assertTrue(ASSERT_MSG_SUBJECT_HEADER, msg.containsKey(KEY_METADATA_SUBJECT));
-    assertFalse(ASSERT_PART_CID_HEADER, msg.containsKey(METADATA_PART_HDR_CONTENT_ID));
+    assertEquals(PAYLOAD_2, msg.getContent());
+    assertTrue(msg.containsKey(KEY_METADATA_SUBJECT));
+    assertFalse(msg.containsKey(METADATA_PART_HDR_CONTENT_ID));
 
   }
 
@@ -179,12 +182,12 @@ public class MimePartChooserTest extends MimeServiceExample {
     mps.setSelector(new com.adaptris.util.text.mime.SelectByPosition(1));
     mps.setMarkAsNonMime(true);
     AdaptrisMessage msg = create();
-    assertTrue("Should be marked as a MIME Message", msg.containsKey(CoreConstants.MSG_MIME_ENCODED));
+    assertTrue(msg.containsKey(CoreConstants.MSG_MIME_ENCODED));
     execute(mps, msg);
-    assertEquals(ASSERT_PAYLOAD, PAYLOAD_2, msg.getContent());
-    assertTrue(ASSERT_MSG_SUBJECT_HEADER, msg.containsKey(KEY_METADATA_SUBJECT));
-    assertTrue(ASSERT_PART_CID_HEADER, msg.containsKey(METADATA_PART_HDR_CONTENT_ID));
-    assertFalse("Should no longer be marked as a MIME Message", msg.containsKey(CoreConstants.MSG_MIME_ENCODED));
+    assertEquals(PAYLOAD_2, msg.getContent());
+    assertTrue(msg.containsKey(KEY_METADATA_SUBJECT));
+    assertTrue(msg.containsKey(METADATA_PART_HDR_CONTENT_ID));
+    assertFalse(msg.containsKey(CoreConstants.MSG_MIME_ENCODED));
   }
 
   @Test
@@ -194,12 +197,12 @@ public class MimePartChooserTest extends MimeServiceExample {
     mps.setMarkAsNonMime(true);
     AdaptrisMessage msg = create();
     msg.removeMetadata(new MetadataElement(CoreConstants.MSG_MIME_ENCODED, "true"));
-    assertFalse("Should be not marked as a MIME Message", msg.containsKey(CoreConstants.MSG_MIME_ENCODED));
+    assertFalse(msg.containsKey(CoreConstants.MSG_MIME_ENCODED));
     execute(mps, msg);
-    assertEquals(ASSERT_PAYLOAD, PAYLOAD_2, msg.getContent());
-    assertTrue(ASSERT_MSG_SUBJECT_HEADER, msg.containsKey(KEY_METADATA_SUBJECT));
-    assertTrue(ASSERT_PART_CID_HEADER, msg.containsKey(METADATA_PART_HDR_CONTENT_ID));
-    assertFalse("Should no longer be marked as a MIME Message", msg.containsKey(CoreConstants.MSG_MIME_ENCODED));
+    assertEquals(PAYLOAD_2, msg.getContent());
+    assertTrue(msg.containsKey(KEY_METADATA_SUBJECT));
+    assertTrue(msg.containsKey(METADATA_PART_HDR_CONTENT_ID));
+    assertFalse(msg.containsKey(CoreConstants.MSG_MIME_ENCODED));
   }
 
   @Test

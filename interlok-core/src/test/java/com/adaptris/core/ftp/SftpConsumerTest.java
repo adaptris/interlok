@@ -20,8 +20,10 @@ import static com.adaptris.core.ftp.SftpExampleHelper.createConnectionsForExampl
 import static com.adaptris.core.ftp.SftpExampleHelper.createPollers;
 import static com.adaptris.core.ftp.SftpExampleHelper.getConfigSimpleName;
 import static com.adaptris.core.ftp.SftpExampleHelper.setConfigBuilder;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import com.adaptris.core.Poller;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.sftp.ConfigBuilder;

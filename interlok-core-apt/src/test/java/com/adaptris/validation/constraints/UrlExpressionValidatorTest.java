@@ -1,13 +1,15 @@
 package com.adaptris.validation.constraints;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class UrlExpressionValidatorTest {
   private final ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
@@ -17,7 +19,7 @@ public class UrlExpressionValidatorTest {
     TestBean testBean = new TestBean();
     testBean.urlField = "http://host";
     Set<ConstraintViolation<TestBean>> constraintViolations = validatorFactory.getValidator().validate(testBean);
-    Assert.assertTrue(constraintViolations.isEmpty());
+    assertTrue(constraintViolations.isEmpty());
   }
 
   @Test
@@ -25,7 +27,7 @@ public class UrlExpressionValidatorTest {
     TestBean testBean = new TestBean();
     testBean.urlField = "http://host:80";
     Set<ConstraintViolation<TestBean>> constraintViolations = validatorFactory.getValidator().validate(testBean);
-    Assert.assertTrue(constraintViolations.isEmpty());
+    assertTrue(constraintViolations.isEmpty());
   }
 
   @Test
@@ -33,7 +35,7 @@ public class UrlExpressionValidatorTest {
     TestBean testBean = new TestBean();
     testBean.urlFieldProtocol = "https://host";
     Set<ConstraintViolation<TestBean>> constraintViolations = validatorFactory.getValidator().validate(testBean);
-    Assert.assertTrue(constraintViolations.isEmpty());
+    assertTrue(constraintViolations.isEmpty());
   }
 
   @Test
@@ -41,7 +43,7 @@ public class UrlExpressionValidatorTest {
     TestBean testBean = new TestBean();
     testBean.urlFieldHost = "http://myhost";
     Set<ConstraintViolation<TestBean>> constraintViolations = validatorFactory.getValidator().validate(testBean);
-    Assert.assertTrue(constraintViolations.isEmpty());
+    assertTrue(constraintViolations.isEmpty());
   }
 
   @Test
@@ -49,7 +51,7 @@ public class UrlExpressionValidatorTest {
     TestBean testBean = new TestBean();
     testBean.urlFieldPort = "http://host:443";
     Set<ConstraintViolation<TestBean>> constraintViolations = validatorFactory.getValidator().validate(testBean);
-    Assert.assertTrue(constraintViolations.isEmpty());
+    assertTrue(constraintViolations.isEmpty());
   }
 
   @Test
@@ -57,7 +59,7 @@ public class UrlExpressionValidatorTest {
     TestBean testBean = new TestBean();
     testBean.urlField = "%message{key}";
     Set<ConstraintViolation<TestBean>> constraintViolations = validatorFactory.getValidator().validate(testBean);
-    Assert.assertTrue(constraintViolations.isEmpty());
+    assertTrue(constraintViolations.isEmpty());
   }
 
   @Test
@@ -65,7 +67,7 @@ public class UrlExpressionValidatorTest {
     TestBean testBean = new TestBean();
     testBean.urlField = null;
     Set<ConstraintViolation<TestBean>> constraintViolations = validatorFactory.getValidator().validate(testBean);
-    Assert.assertTrue(constraintViolations.isEmpty());
+    assertTrue(constraintViolations.isEmpty());
   }
 
   @Test
@@ -73,7 +75,7 @@ public class UrlExpressionValidatorTest {
     TestBean testBean = new TestBean();
     testBean.urlField = "";
     Set<ConstraintViolation<TestBean>> constraintViolations = validatorFactory.getValidator().validate(testBean);
-    Assert.assertTrue(constraintViolations.isEmpty());
+    assertTrue(constraintViolations.isEmpty());
   }
 
   @Test
@@ -81,9 +83,9 @@ public class UrlExpressionValidatorTest {
     TestBean testBean = new TestBean();
     testBean.urlField = "NotAUrl";
     Set<ConstraintViolation<TestBean>> constraintViolations = validatorFactory.getValidator().validate(testBean);
-    Assert.assertEquals(1, constraintViolations.size());
+    assertEquals(1, constraintViolations.size());
     ConstraintViolation<TestBean> constraintViolation = constraintViolations.iterator().next();
-    Assert.assertEquals("{com.adaptris.validation.constraints.UrlExpression.message}", constraintViolation.getMessageTemplate());
+    assertEquals("{com.adaptris.validation.constraints.UrlExpression.message}", constraintViolation.getMessageTemplate());
   }
 
   @Test
@@ -91,9 +93,9 @@ public class UrlExpressionValidatorTest {
     TestBean testBean = new TestBean();
     testBean.urlFieldProtocol = "http://host";
     Set<ConstraintViolation<TestBean>> constraintViolations = validatorFactory.getValidator().validate(testBean);
-    Assert.assertEquals(1, constraintViolations.size());
+    assertEquals(1, constraintViolations.size());
     ConstraintViolation<TestBean> constraintViolation = constraintViolations.iterator().next();
-    Assert.assertEquals("{com.adaptris.validation.constraints.UrlExpression.message}", constraintViolation.getMessageTemplate());
+    assertEquals("{com.adaptris.validation.constraints.UrlExpression.message}", constraintViolation.getMessageTemplate());
   }
 
   @Test
@@ -101,9 +103,9 @@ public class UrlExpressionValidatorTest {
     TestBean testBean = new TestBean();
     testBean.urlFieldHost = "http://host";
     Set<ConstraintViolation<TestBean>> constraintViolations = validatorFactory.getValidator().validate(testBean);
-    Assert.assertEquals(1, constraintViolations.size());
+    assertEquals(1, constraintViolations.size());
     ConstraintViolation<TestBean> constraintViolation = constraintViolations.iterator().next();
-    Assert.assertEquals("{com.adaptris.validation.constraints.UrlExpression.message}", constraintViolation.getMessageTemplate());
+    assertEquals("{com.adaptris.validation.constraints.UrlExpression.message}", constraintViolation.getMessageTemplate());
   }
 
   @Test
@@ -111,9 +113,9 @@ public class UrlExpressionValidatorTest {
     TestBean testBean = new TestBean();
     testBean.urlFieldPort = "http://host:80";
     Set<ConstraintViolation<TestBean>> constraintViolations = validatorFactory.getValidator().validate(testBean);
-    Assert.assertEquals(1, constraintViolations.size());
+    assertEquals(1, constraintViolations.size());
     ConstraintViolation<TestBean> constraintViolation = constraintViolations.iterator().next();
-    Assert.assertEquals("{com.adaptris.validation.constraints.UrlExpression.message}", constraintViolation.getMessageTemplate());
+    assertEquals("{com.adaptris.validation.constraints.UrlExpression.message}", constraintViolation.getMessageTemplate());
   }
 
   public static class TestBean {

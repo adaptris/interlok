@@ -23,19 +23,22 @@ import static com.adaptris.core.ftp.SftpExampleHelper.CFG_REMOTE_DIR;
 import static com.adaptris.core.ftp.SftpExampleHelper.CFG_TEMP_HOSTS_FILE;
 import static com.adaptris.core.ftp.SftpExampleHelper.CFG_UNKNOWN_HOSTS_FILE;
 import static com.adaptris.core.ftp.SftpExampleHelper.CFG_USER;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.io.FileCleaningTracker;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FileUtils;
-import org.junit.Assume;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.stubs.ExternalResourcesHelper;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
@@ -55,7 +58,7 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
     return Boolean.parseBoolean(PROPERTIES.getProperty("sftp.tests.enabled", "false")) && serverAvailable;
   }
 
-  @BeforeClass
+  @BeforeAll
   public static void beforeAnyTests() {
     String host = PROPERTIES.getProperty(CFG_HOST);
     int port = Integer.parseInt(PROPERTIES.getProperty(CFG_PORT, "22"));
@@ -89,7 +92,7 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
 
   @Test
   public void testConnectOnly_KeyAuth() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     StandardSftpConnection conn = createConnection();
     try {
       start(conn);
@@ -104,7 +107,7 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
 
   @Test
   public void testConnectOnly_PasswordAuth() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     StandardSftpConnection conn = createConnection();
     try {
       conn.setAuthentication(new SftpPasswordAuthentication(PROPERTIES.getProperty(CFG_PASSWORD)));
@@ -120,7 +123,7 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
 
   @Test
   public void testConnectOnly_PasswordAuth_Override() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     StandardSftpConnection conn = createConnection();
     try {
       conn.setAuthentication(new SftpPasswordAuthentication(""));
@@ -136,7 +139,7 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
 
   @Test
   public void testConnectOnly_Composite() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     StandardSftpConnection conn = createConnection();
     try {
       SftpAuthenticationWrapper auth =
@@ -155,7 +158,7 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
 
   @Test
   public void testConnectOnly_Composite_Fails() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     StandardSftpConnection conn = createConnection();
     SftpAuthenticationWrapper auth =
         new SftpAuthenticationWrapper(new SftpKeyAuthentication(PROPERTIES.getProperty(CFG_PRIVATE_KEY_FILE), "PW:abde"),
@@ -174,7 +177,7 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
 
   @Test
   public void testConnectOnly_StrictKnownHosts_UnknownHost() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_UNKNOWN_HOSTS_FILE)));
 
     StandardSftpConnection conn = createConnection();
@@ -194,7 +197,7 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
 
   @Test
   public void testConnectOnly_StrictKnownHosts_KnownHost() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_KNOWN_HOSTS_FILE)));
     StandardSftpConnection conn = createConnection();
     conn.setConfiguration(new InlineConfigRepositoryBuilder(true).build());
@@ -212,7 +215,7 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
 
   @Test
   public void testConnectOnly_LenientKnownHosts_UnknownHost() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_UNKNOWN_HOSTS_FILE)));
 
     StandardSftpConnection conn = createConnection();
@@ -231,7 +234,7 @@ public class StandardSftpConnectionTest extends FtpConnectionCase {
 
   @Test
   public void testConnectOnly_LenientKnownHosts_KnownHost() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     File tempHostsFile = copyHostsFile(new File(PROPERTIES.getProperty(CFG_KNOWN_HOSTS_FILE)));
 
     StandardSftpConnection conn = createConnection();

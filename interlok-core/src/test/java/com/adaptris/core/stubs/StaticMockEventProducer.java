@@ -19,6 +19,7 @@ package com.adaptris.core.stubs;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ProduceException;

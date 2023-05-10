@@ -16,11 +16,11 @@
 
 package com.adaptris.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
@@ -28,7 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.PseudoRandomIdGenerator;
@@ -175,15 +175,15 @@ public abstract class AdaptrisMessageFactoryImplCase {
     });
     AdaptrisMessage dest = getMessageFactory().newMessage(orig, keysToKeep);
     assertEquals(0, dest.getPayload().length);
-    assertEquals("Metadata Key Values", orig.getMetadataValue("key1"), dest
+    assertEquals(orig.getMetadataValue("key1"), dest
         .getMetadataValue("key1"));
     assertFalse(orig.headersContainsKey("key3"));
     assertFalse(dest.headersContainsKey("key3"));
-    assertEquals("MessageId", orig.getUniqueId(), dest.getUniqueId());
-    assertEquals("Mle MessageId", orig.getMessageLifecycleEvent()
+    assertEquals(orig.getUniqueId(), dest.getUniqueId());
+    assertEquals(orig.getMessageLifecycleEvent()
         .getMessageUniqueId(), dest.getMessageLifecycleEvent()
         .getMessageUniqueId());
-    assertEquals("MarkerSizes", orig.getMessageLifecycleEvent().getMleMarkers()
+    assertEquals(orig.getMessageLifecycleEvent().getMleMarkers()
         .size(), dest.getMessageLifecycleEvent().getMleMarkers().size());
   }
 
@@ -218,13 +218,13 @@ public abstract class AdaptrisMessageFactoryImplCase {
 
     AdaptrisMessage dest = getMessageFactory().newMessage(orig, null);
     assertEquals(0, dest.getPayload().length);
-    assertEquals("Metadata Key Values", orig.getMetadataValue("key1"), dest.getMetadataValue("key1"));
+    assertEquals(orig.getMetadataValue("key1"), dest.getMetadataValue("key1"));
     assertTrue(orig.headersContainsKey("key2"));
     assertTrue(dest.headersContainsKey("key2"));
-    assertEquals("MessageId", orig.getUniqueId(), dest.getUniqueId());
-    assertEquals("Mle MessageId", orig.getMessageLifecycleEvent().getMessageUniqueId(),
+    assertEquals(orig.getUniqueId(), dest.getUniqueId());
+    assertEquals(orig.getMessageLifecycleEvent().getMessageUniqueId(),
         dest.getMessageLifecycleEvent().getMessageUniqueId());
-    assertEquals("MarkerSizes", orig.getMessageLifecycleEvent().getMleMarkers().size(),
+    assertEquals(orig.getMessageLifecycleEvent().getMleMarkers().size(),
         dest.getMessageLifecycleEvent().getMleMarkers().size());
   }
 

@@ -16,30 +16,34 @@
 
 package com.adaptris.core.services.jmx;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.Properties;
+
 import javax.management.MBeanException;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
-import com.adaptris.interlok.junit.scaffolding.util.PortManager;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.management.Constants;
 import com.adaptris.core.management.jmx.JmxRemoteComponent;
 import com.adaptris.core.runtime.AdapterComponentMBean;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.junit.scaffolding.util.PortManager;
 import com.adaptris.util.GuidGenerator;
 
 public class TestDynamicJmxOperationalService
@@ -65,7 +69,7 @@ public class TestDynamicJmxOperationalService
   }
 
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     MockitoAnnotations.openMocks(this);
   }

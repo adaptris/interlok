@@ -15,13 +15,16 @@
 */
 
 package com.adaptris.core.lms;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
@@ -75,11 +78,11 @@ public class LargeMessageWorkflowTest extends StandardWorkflowTest {
       start(channel);
       workflow.onAdaptrisMessage(msg);
 
-      assertEquals("Make none produced", 0, producer.getMessages().size());
+      assertEquals(0, producer.getMessages().size());
       assertEquals(1, meh.getMessages().size());
       for (AdaptrisMessage m : meh.getMessages()) {
         assertEquals(PAYLOAD_2, m.getContent());
-        assertTrue("Contains correct metadata key", m.containsKey(METADATA_KEY));
+        assertTrue(m.containsKey(METADATA_KEY));
         assertEquals(METADATA_VALUE, m.getMetadataValue(METADATA_KEY));
         assertNotNull(m.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION));
         assertNotNull(m.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION_CAUSE));
@@ -124,11 +127,11 @@ public class LargeMessageWorkflowTest extends StandardWorkflowTest {
       start(channel);
       workflow.onAdaptrisMessage(msg);
 
-      assertEquals("Make none produced", 0, producer.getMessages().size());
+      assertEquals(0, producer.getMessages().size());
       assertEquals(1, meh.getMessages().size());
       for (AdaptrisMessage m : meh.getMessages()) {
         assertEquals(PAYLOAD_2, m.getContent());
-        assertTrue("Contains correct metadata key", m.containsKey(METADATA_KEY));
+        assertTrue(m.containsKey(METADATA_KEY));
         assertEquals(METADATA_VALUE, m.getMetadataValue(METADATA_KEY));
       }
     }
@@ -170,11 +173,11 @@ public class LargeMessageWorkflowTest extends StandardWorkflowTest {
       start(channel);
       workflow.onAdaptrisMessage(msg);
 
-      assertEquals("Make none produced", 0, producer.getMessages().size());
+      assertEquals(0, producer.getMessages().size());
       assertEquals(1, meh.getMessages().size());
       for (AdaptrisMessage m : meh.getMessages()) {
         assertEquals(PAYLOAD_2, m.getContent());
-        assertTrue("Contains correct metadata key", m.containsKey(METADATA_KEY));
+        assertTrue(m.containsKey(METADATA_KEY));
         assertEquals(METADATA_VALUE, m.getMetadataValue(METADATA_KEY));
       }
     }

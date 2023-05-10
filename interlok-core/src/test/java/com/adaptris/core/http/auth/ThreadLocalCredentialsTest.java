@@ -1,8 +1,9 @@
 package com.adaptris.core.http.auth;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.net.Authenticator;
 import java.net.Authenticator.RequestorType;
 import java.net.InetAddress;
@@ -12,16 +13,17 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+
 import org.bouncycastle.util.Arrays;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ThreadLocalCredentialsTest {
 
   private static final String TARGET = "http://localhost";
   
-  @Before
+  @BeforeEach
   public void setup() {
     ThreadLocalCredentials tlc = ThreadLocalCredentials.getInstance(TARGET);
     AdapterResourceAuthenticator.getInstance().addAuthenticator(ThreadLocalCredentials.getInstance("http://www.adaptris.com"));
@@ -29,7 +31,7 @@ public class ThreadLocalCredentialsTest {
     Authenticator.setDefault(AdapterResourceAuthenticator.getInstance());
   }
   
-  @After
+  @AfterEach
   public void teardown() {
     ThreadLocalCredentials tlc = ThreadLocalCredentials.getInstance(TARGET);
     tlc.removeThreadCredentials();
@@ -41,7 +43,7 @@ public class ThreadLocalCredentialsTest {
   
   @Test
   public void mainThreadInitialNull() throws InterruptedException, UnknownHostException, MalformedURLException {
-    assertNull("PasswordAuthentication must be null before it is set", requestAuthentication());
+    assertNull(requestAuthentication());
   }
   
   @Test
@@ -71,11 +73,11 @@ public class ThreadLocalCredentialsTest {
     t.start();
     t.join();
 
-    assertNull("PasswordAuthentication must be null from other thread before being set", fromOtherThread.get());
+    assertNull(fromOtherThread.get(), "PasswordAuthentication must be null from other thread before being set");
     
     PasswordAuthentication auth = requestAuthentication();
-    assertEquals("Main thread credentials must still be set", "username", auth.getUserName());
-    assertTrue("Main thread credentials must still be set", Arrays.areEqual("password".toCharArray(), auth.getPassword()));
+    assertEquals("username", auth.getUserName(), "Main thread credentials must still be set");
+    assertTrue(Arrays.areEqual("password".toCharArray(), auth.getPassword()), "Main thread credentials must still be set");
   }
   
   @Test
@@ -100,12 +102,12 @@ public class ThreadLocalCredentialsTest {
     t2.start();
     t2.join();
     
-    assertTrue("Username in other thread is wrong", t2UsernameOK.get());
-    assertTrue("Password in other thread is wrong", t2PasswordOK.get());
+    assertTrue(t2UsernameOK.get(), "Username in other thread is wrong");
+    assertTrue(t2PasswordOK.get(), "Password in other thread is wrong");
     
     PasswordAuthentication auth = requestAuthentication();
-    assertEquals("Main thread credentials must still be set", "username", auth.getUserName());
-    assertTrue("Main thread credentials must still be set", Arrays.areEqual("password".toCharArray(), auth.getPassword()));
+    assertEquals("username", auth.getUserName());
+    assertTrue(Arrays.areEqual("password".toCharArray(), auth.getPassword()), "Main thread credentials must still be set");
   }
   
   private PasswordAuthentication requestAuthentication() throws UnknownHostException, MalformedURLException {

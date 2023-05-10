@@ -1,11 +1,11 @@
 package com.adaptris.core.management.config;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.Adapter;
 import com.adaptris.core.Channel;
@@ -21,7 +21,7 @@ public class SharedServiceConfigurationCheckerTest {
 
   private SharedServiceConfigurationChecker checker;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     checker = new SharedServiceConfigurationChecker();
   }

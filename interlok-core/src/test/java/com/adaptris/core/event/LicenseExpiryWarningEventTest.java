@@ -16,16 +16,16 @@
 
 package com.adaptris.core.event;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.DefaultMarshaller;
@@ -44,7 +44,7 @@ public class LicenseExpiryWarningEventTest {
       "<source-id>gdltstadapterptp</source-id>" +
       "</license-expiry-warning-event>";
   
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
 
   }

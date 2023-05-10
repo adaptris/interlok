@@ -1,27 +1,23 @@
 package com.adaptris.core.common;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.DefaultMessageFactory;
-import com.adaptris.core.MultiPayloadAdaptrisMessage;
-import com.adaptris.core.MultiPayloadMessageFactory;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import org.junit.jupiter.api.Test;
+
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.DefaultMessageFactory;
+import com.adaptris.core.MultiPayloadAdaptrisMessage;
+import com.adaptris.core.MultiPayloadMessageFactory;
 
 public class MultiPayloadStreamOutputParameterTest
 {
   private static final String ID = "cupcake";
   private static final String PAYLOAD = "Cupcake ipsum dolor sit amet donut topping brownie wafer. Pie dessert tiramisu. Toffee candy canes fruitcake. Pastry cookie jelly-o tiramisu I love carrot cake lollipop cake halvah. Icing tart jelly ice cream. I love muffin chocolate cake sweet roll I love. Apple pie souffle I love I love pie cake. Carrot cake jelly beans cake.";
   private static final String ENCODING = "UTF-8";
-
-  @Rule
-  public TestName testName = new TestName();
 
   @Test
   public void testInsert() throws Exception

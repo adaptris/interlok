@@ -19,7 +19,8 @@ package com.adaptris.util.stream;
 import java.io.IOException;
 import java.io.PrintStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.util.stream.LoggingOutputStreamImpl.LogLevel;
 
@@ -51,14 +52,16 @@ public class Slf4jLoggingOutputStreamTest {
     out.close();
   }
 
-  @Test(expected = IOException.class)
+  @Test
   public void testLogPostClose() throws Exception {
-    Slf4jLoggingOutputStream out = new Slf4jLoggingOutputStream(LogLevel.INFO);
-    for (int i = 0; i < TEXT.length(); i++) {
-      out.write(TEXT.charAt(i));
-    }
-    out.close();
-    out.write(TEXT.charAt(0));
+    Assertions.assertThrows(IOException.class, () -> {
+      Slf4jLoggingOutputStream out = new Slf4jLoggingOutputStream(LogLevel.INFO);
+      for (int i = 0; i < TEXT.length(); i++) {
+        out.write(TEXT.charAt(i));
+      }
+      out.close();
+      out.write(TEXT.charAt(0));
+    });
   }
 
   @Test

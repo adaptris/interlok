@@ -16,10 +16,10 @@
 
 package com.adaptris.core.http.jetty;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.security.Principal;
 
@@ -31,7 +31,7 @@ import org.eclipse.jetty.security.DefaultIdentityService;
 import org.eclipse.jetty.security.DefaultUserIdentity;
 import org.eclipse.jetty.security.IdentityService;
 import org.eclipse.jetty.server.UserIdentity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 /**

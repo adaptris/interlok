@@ -2,8 +2,10 @@ package com.adaptris.core.management.jetty;
 
 import java.time.Duration;
 import java.util.Properties;
+
 import org.awaitility.Awaitility;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.management.Constants;
 import com.adaptris.core.management.webserver.JettyServerManager;
 import com.adaptris.interlok.junit.scaffolding.BaseCase;

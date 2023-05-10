@@ -15,7 +15,8 @@
  */
 package com.adaptris.core.common;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +25,9 @@ import java.io.Reader;
 import java.io.Writer;
 import java.security.MessageDigest;
 import java.util.Map;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.interlok.types.InterlokMessage;

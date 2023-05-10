@@ -18,17 +18,20 @@ package com.adaptris.core.jms.activemq;
 
 import static com.adaptris.interlok.junit.scaffolding.util.PortManager.nextUnusedPort;
 import static com.adaptris.interlok.junit.scaffolding.util.PortManager.release;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+
 import org.apache.activemq.artemis.core.config.Configuration;
 import org.apache.activemq.artemis.core.config.impl.ConfigurationImpl;
 import org.apache.activemq.artemis.core.server.embedded.EmbeddedActiveMQ;
 import org.apache.commons.io.FileUtils;
-import org.junit.Assume;
+import org.junit.jupiter.api.Assumptions;
+
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
 import com.adaptris.core.util.JmxHelper;
@@ -63,7 +66,7 @@ public class EmbeddedArtemis {
   }
 
   public EmbeddedArtemis() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    Assumptions.assumeTrue(JmsConfig.jmsTestsEnabled());
     port = nextUnusedPort(51616);
   }
 

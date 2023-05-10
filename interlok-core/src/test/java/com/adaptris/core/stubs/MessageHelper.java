@@ -28,8 +28,6 @@ import com.adaptris.core.MultiPayloadMessageFactory;
 import com.adaptris.core.lms.FileBackedMessage;
 import com.adaptris.util.stream.StreamUtil;
 
-import static org.junit.Assert.assertNotNull;
-
 public class MessageHelper {
 
   public static AdaptrisMessage createMessage(AdaptrisMessageFactory factory, String filename) throws IOException {

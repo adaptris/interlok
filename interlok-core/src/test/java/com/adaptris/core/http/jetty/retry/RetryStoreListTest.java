@@ -2,14 +2,18 @@ package com.adaptris.core.http.jetty.retry;
 
 import static com.adaptris.core.http.jetty.retry.FilesystemRetryStoreTest.INVALID_URL;
 import static com.adaptris.core.http.jetty.retry.FilesystemRetryStoreTest.TEST_BASE_URL;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceException;
@@ -21,7 +25,7 @@ public class RetryStoreListTest extends ExampleServiceCase {
 
   private File retryStoreDir;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     retryStoreDir = FsHelper.toFile(BaseCase.getConfiguration(TEST_BASE_URL));
   }
@@ -41,19 +45,19 @@ public class RetryStoreListTest extends ExampleServiceCase {
     }
   }
 
-  @Test(expected = ServiceException.class)
+  @Test
   public void testService_Exception() throws Exception {
-    AdaptrisMessage msg = new DefaultMessageFactory().newMessage("hello");
-    RetryStoreListService service = new RetryStoreListService()
-        .withRetryStore(
-            new FilesystemRetryStore().withBaseUrl(INVALID_URL));
-    execute(service, msg);
+    Assertions.assertThrows(ServiceException.class, () -> {
+      AdaptrisMessage msg = new DefaultMessageFactory().newMessage("hello");
+      RetryStoreListService service = new RetryStoreListService()
+          .withRetryStore(new FilesystemRetryStore().withBaseUrl(INVALID_URL));
+      execute(service, msg);
+    });
   }
 
   @Override
   protected RetryStoreListService retrieveObjectForSampleConfig() {
-    return new RetryStoreListService()
-        .withRetryStore(new FilesystemRetryStore().withBaseUrl("file:///path/to/store"));
+    return new RetryStoreListService().withRetryStore(new FilesystemRetryStore().withBaseUrl("file:///path/to/store"));
 
   }
 }

@@ -18,17 +18,21 @@ package com.adaptris.core.runtime;
 
 import static com.adaptris.core.runtime.AdapterComponentMBean.ID_PREFIX;
 import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_RETRY_MONITOR_TYPE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Arrays;
 import java.util.Properties;
+
 import javax.management.JMX;
 import javax.management.ObjectName;
 import javax.naming.Context;
 import javax.naming.InitialContext;
+
 import org.apache.commons.collections4.CollectionUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -46,7 +50,7 @@ public class RetryMessageErrorHandlerMonitorTest extends ComponentManagerCase {
   public RetryMessageErrorHandlerMonitorTest() {
   }
 
-  @Before
+  @BeforeEach
   public void beforeMyTests() throws Exception {
     env.put(Context.INITIAL_CONTEXT_FACTORY, JndiContextFactory.class.getName());
     initialContext = new InitialContext(env);

@@ -16,7 +16,7 @@
 
 package com.adaptris.zz.cleanup;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.lms.FilePurge;
 

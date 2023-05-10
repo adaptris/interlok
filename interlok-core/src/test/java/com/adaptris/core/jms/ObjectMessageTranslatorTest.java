@@ -16,33 +16,36 @@
 
 package com.adaptris.core.jms;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 
 public class ObjectMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpAll() throws Exception {
     activeMqBroker = new EmbeddedActiveMq();
     activeMqBroker.start();
   }
   
-  @AfterClass
+  @AfterAll
   public static void tearDownAll() throws Exception {
     if(activeMqBroker != null)
       activeMqBroker.destroy();
@@ -81,7 +84,7 @@ public class ObjectMessageTranslatorTest extends GenericMessageTypeTranslatorCas
       write(e, msg);
       addMetadata(msg);
       Message jmsMsg = trans.translate(msg);
-      assertTrue("jmsMsg instanceof ObjectMessage", jmsMsg instanceof ObjectMessage);
+      assertTrue(jmsMsg instanceof ObjectMessage);
       assertJmsProperties(jmsMsg);
       assertException(e, (Exception) ((ObjectMessage) jmsMsg).getObject());
     }
@@ -125,7 +128,7 @@ public class ObjectMessageTranslatorTest extends GenericMessageTypeTranslatorCas
   }
 
   protected static void assertException(Exception e1, Exception e2) {
-    assertEquals("Test Exception", e1.getMessage(), e2.getMessage());
+    assertEquals(e1.getMessage(), e2.getMessage());
     StackTraceElement[] s1 = e1.getStackTrace();
     StackTraceElement[] s2 = e2.getStackTrace();
     for (int i = 0; i < s1.length; i++) {

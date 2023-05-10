@@ -16,17 +16,16 @@
 
 package com.adaptris.core.services.conditional.conditions;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.services.conditional.conditions.ConditionExpression;
 import com.adaptris.core.util.LifecycleHelper;
 
 public class ConditionExpressionTest {
@@ -34,14 +33,14 @@ public class ConditionExpressionTest {
   private ConditionExpression condition;
   private AdaptrisMessage message;
   
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     message = DefaultMessageFactory.getDefaultInstance().newMessage();
     condition = new ConditionExpression();
     LifecycleHelper.initAndStart(condition);
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     LifecycleHelper.stopAndClose(condition);
   }

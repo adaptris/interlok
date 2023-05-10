@@ -16,16 +16,17 @@
 
 package com.adaptris.core.interceptor;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Map;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreConstants;
@@ -41,14 +42,14 @@ import com.adaptris.util.KeyValuePairList;
 
 public class LoggingContextInterceptorTest {
 
-  @Rule
-  public TestName testName = new TestName();
-  @Before
+  
+  
+  @BeforeEach
   public void setUp() {
 
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
 
   }

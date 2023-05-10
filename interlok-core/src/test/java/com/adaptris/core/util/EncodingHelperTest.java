@@ -1,10 +1,12 @@
 package com.adaptris.core.util;
 
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class EncodingHelperTest extends EncodingHelper {
 

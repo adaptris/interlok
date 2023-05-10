@@ -16,26 +16,27 @@
 
 package com.adaptris.core.lms;
 
+import static com.adaptris.core.fs.FsHelper.createFileReference;
+import static com.adaptris.core.fs.FsHelper.createUrlFromString;
+import static com.adaptris.core.fs.FsMessageProducerTest.BASE_KEY;
+import static com.adaptris.core.fs.FsMessageProducerTest.BASE_TEMP_DIR;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.io.File;
+
+import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.MimeEncoder;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.fs.FsProducerExample;
-import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.io.File;
-
-import static com.adaptris.core.fs.FsHelper.createFileReference;
-import static com.adaptris.core.fs.FsHelper.createUrlFromString;
-import static com.adaptris.core.fs.FsMessageProducerTest.BASE_KEY;
-import static com.adaptris.core.fs.FsMessageProducerTest.BASE_TEMP_DIR;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class LargeFsMessageProducerTest extends FsProducerExample {
 
@@ -44,14 +45,14 @@ public class LargeFsMessageProducerTest extends FsProducerExample {
   private File baseDir, tempDir, destDir;
 
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     baseDir = createFileReference(createUrlFromString(PROPERTIES.getProperty(BASE_KEY), true));
     destDir = createFileReference(createUrlFromString(PROPERTIES.getProperty(BASE_KEY) + DEFAULT_DEST, true));
     tempDir = createFileReference(createUrlFromString(PROPERTIES.getProperty(BASE_TEMP_DIR), true));
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     // delete contents of destination...
     FileUtils.deleteQuietly(baseDir);
@@ -142,8 +143,8 @@ public class LargeFsMessageProducerTest extends FsProducerExample {
     producer.produce(new FileBackedMessageFactory().newMessage("dummy"));
     stop(producer);
     File f = FsHelper.createFileReference(FsHelper.createUrlFromString(PROPERTIES.getProperty(BASE_TEMP_DIR), true));
-    assertTrue(tempDir + " exists", f.exists());
-    assertTrue(tempDir + " is a directory", f.isDirectory());
+    assertTrue(f.exists());
+    assertTrue(f.isDirectory());
   }
 
   @Override

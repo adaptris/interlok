@@ -1,17 +1,19 @@
 package com.adaptris.core.interceptor;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.io.StringWriter;
 import java.io.Writer;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class StatisticMarshallerTest {
   
   private StatisticMarshaller statisticMarshaller;
   
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     statisticMarshaller = new StatisticMarshaller();
   }

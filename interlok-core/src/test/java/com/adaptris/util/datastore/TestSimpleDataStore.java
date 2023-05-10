@@ -16,16 +16,16 @@
 
 package com.adaptris.util.datastore;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -41,13 +41,13 @@ public class TestSimpleDataStore {
   private Properties dataStoreProperties;
 
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     dataStoreProperties = createProperties();
     dataStore = new SimpleDataStore(dataStoreProperties);
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     File f = new File(dataStoreProperties.getProperty(SimpleDataStore.FILE_PROPERTY));
     FileUtils.deleteQuietly(f);

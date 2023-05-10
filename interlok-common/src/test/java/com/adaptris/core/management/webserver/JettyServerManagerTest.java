@@ -1,21 +1,21 @@
 package com.adaptris.core.management.webserver;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashMap;
+
 import javax.servlet.http.HttpServlet;
+
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 @SuppressWarnings("deprecation")
 public class JettyServerManagerTest {
-  @Rule
-  public TestName testName = new TestName();
   
   @Test
   @SuppressWarnings("removal")
@@ -85,15 +85,15 @@ public class JettyServerManagerTest {
   }
 
   @Test
-  public void testAddServer_WithKey() throws Exception {
+  public void testAddServer_WithKey(TestInfo info) throws Exception {
     JettyServerManager manager = new JettyServerManager();
     Server server = JettyServerBuilder.build();
     try {
       JettyServerBuilder.start(server);
 
-      manager.addServer(testName.getMethodName(), server);
+      manager.addServer(info.getDisplayName(), server);
       assertTrue(manager.isStarted());
-      manager.removeServer(testName.getMethodName());
+      manager.removeServer(info.getDisplayName());
       assertFalse(manager.isStarted());
     } finally {
       JettyServerBuilder.destroy(server);
@@ -101,15 +101,15 @@ public class JettyServerManagerTest {
   }
 
   @Test
-  public void testAddServlet() throws Exception {
+  public void testAddServlet(TestInfo info) throws Exception {
     JettyServerManager manager = new JettyServerManager();
     Server server = JettyServerBuilder.build();
     try {
       JettyServerBuilder.start(server);
 
-      manager.addServer(testName.getMethodName(), server);
+      manager.addServer(info.getDisplayName(), server);
       DummyServlet jettyServlet = new DummyServlet();
-      String uri = "/" + testName.getMethodName();
+      String uri = "/" + info.getDisplayName();
       HashMap<String, Object> properties = createProperties(uri, () -> JettyServerManager.defaultSecurityStub()); 
       manager.addServlet(jettyServlet, properties);
       manager.startDeployment(uri);
@@ -121,14 +121,14 @@ public class JettyServerManagerTest {
   }
 
   @Test
-  public void testAddServlet_WithKey() throws Exception {
+  public void testAddServlet_WithKey(TestInfo info) throws Exception {
     JettyServerManager manager = new JettyServerManager();
     Server server = JettyServerBuilder.build();
     try {
       JettyServerBuilder.start(server);
 
-      String uri = "/" + testName.getMethodName();
-      String key = testName.getMethodName();
+      String uri = "/" + info.getDisplayName();
+      String key = info.getDisplayName();
       
       manager.addServer(key, server);
       DummyServlet jettyServlet = new DummyServlet();
@@ -144,13 +144,13 @@ public class JettyServerManagerTest {
   }
   
   @Test
-  public void testRemoveDeployment_NotYetAdded() throws Exception {
+  public void testRemoveDeployment_NotYetAdded(TestInfo info) throws Exception {
     JettyServerManager manager = new JettyServerManager();
     Server server = JettyServerBuilder.build();
     try {
       JettyServerBuilder.start(server);
-      String uri = "/" + testName.getMethodName();
-      String key = testName.getMethodName();
+      String uri = "/" + info.getDisplayName();
+      String key = info.getDisplayName();
       ServletHolder jettyServlet = new ServletHolder( new DummyServlet());
       
       manager.addServer(key, server);
@@ -169,12 +169,12 @@ public class JettyServerManagerTest {
   }
   
   @Test
-  public void testDeploymentOperations_NotYetStarted() throws Exception {
+  public void testDeploymentOperations_NotYetStarted(TestInfo info) throws Exception {
     JettyServerManager manager = new JettyServerManager();
     Server server = JettyServerBuilder.build();
     try {
-      String uri = "/" + testName.getMethodName();
-      String key = testName.getMethodName();
+      String uri = "/" + info.getDisplayName();
+      String key = info.getDisplayName();
       
       manager.addServer(key, server);
       
@@ -192,15 +192,15 @@ public class JettyServerManagerTest {
   }
   
   @Test
-  public void testAddServletHolder() throws Exception {
+  public void testAddServletHolder(TestInfo info) throws Exception {
     JettyServerManager manager = new JettyServerManager();
     Server server = JettyServerBuilder.build();
     try {
       JettyServerBuilder.start(server);
 
-      manager.addServer(testName.getMethodName(), server);
+      manager.addServer(info.getDisplayName(), server);
       ServletHolder jettyServlet = new ServletHolder( new DummyServlet());
-      String uri = "/" + testName.getMethodName();
+      String uri = "/" + info.getDisplayName();
       
       HashMap<String, Object> properties = createProperties(uri, () -> JettyServerManager.defaultSecurityStub()); 
       manager.addServlet(jettyServlet, properties);
@@ -213,14 +213,14 @@ public class JettyServerManagerTest {
   }
   
   @Test
-  public void testAddServletHolder_WithKey() throws Exception {
+  public void testAddServletHolder_WithKey(TestInfo info) throws Exception {
     JettyServerManager manager = new JettyServerManager();
     Server server = JettyServerBuilder.build();
     try {
       JettyServerBuilder.start(server);
 
-      String key = testName.getMethodName();
-      String uri = "/" + testName.getMethodName();
+      String key = info.getDisplayName();
+      String uri = "/" + info.getDisplayName();
 
       manager.addServer(key, server);
       ServletHolder jettyServlet = new ServletHolder( new DummyServlet());

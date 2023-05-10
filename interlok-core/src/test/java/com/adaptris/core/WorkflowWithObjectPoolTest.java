@@ -14,20 +14,24 @@
 
 package com.adaptris.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.time.Duration;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.commons.pool2.impl.GenericObjectPool;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.adaptris.core.stubs.MockService;
 import com.adaptris.interlok.util.Closer;
 import com.adaptris.util.TimeInterval;
+
 import lombok.NoArgsConstructor;
 
 // Should actually test more, but this tests all the edge cases that
@@ -69,10 +73,12 @@ public class WorkflowWithObjectPoolTest extends WorkflowWithObjectPool {
 
   }
 
-  @Test(expected = CoreException.class)
+  @Test
   public void testWorkerFactory_Uncloneable() throws Exception {
-    WorkerFactory factory = new WorkerFactory(new ServiceList(new UnserializableService("")));
-    PooledObject<Worker> obj = factory.makeObject();
+    Assertions.assertThrows(CoreException.class, () -> {
+      WorkerFactory factory = new WorkerFactory(new ServiceList(new UnserializableService("")));
+      PooledObject<Worker> obj = factory.makeObject();
+    });
   }
 
   @Test
@@ -87,17 +93,19 @@ public class WorkflowWithObjectPoolTest extends WorkflowWithObjectPool {
     }
   }
 
-  @Test(expected = CoreException.class)
+  @Test
   public void testPopulatePool_FailToInit() throws Exception {
-    setMinIdle(10);
-    setServiceCollection(new ServiceList(new MockService(MockService.FailureCondition.Lifecycle)));
-    setInitWaitTime(new TimeInterval(1L, TimeUnit.SECONDS));
-    GenericObjectPool<Worker> pool = (GenericObjectPool<Worker>) createObjectPool();
-    try {
-      populatePool(pool);
-    } finally {
-      Closer.closeQuietly(pool);
-    }
+    Assertions.assertThrows(CoreException.class, () -> {
+      setMinIdle(10);
+      setServiceCollection(new ServiceList(new MockService(MockService.FailureCondition.Lifecycle)));
+      setInitWaitTime(new TimeInterval(1L, TimeUnit.SECONDS));
+      GenericObjectPool<Worker> pool = (GenericObjectPool<Worker>) createObjectPool();
+      try {
+        populatePool(pool);
+      } finally {
+        Closer.closeQuietly(pool);
+      }
+    });
   }
 
   @Test
@@ -126,14 +134,14 @@ public class WorkflowWithObjectPoolTest extends WorkflowWithObjectPool {
     GenericObjectPool<Worker> pool = dummyPool();
     Worker worker = pool.borrowObject();
     returnObject(pool, worker);
-    // On the 2nd return it should cause an IllegalState since it can't deallocate it?
+    // On the 2nd return it should cause an IllegalState since it can't deallocate
+    // it?
     // But the object itself can be destroyed/invalidated.
     returnObject(pool, worker);
   }
 
   private GenericObjectPool<Worker> dummyPool() {
-    GenericObjectPool<Worker> pool =
-        new GenericObjectPool<>(new DummyFactory());
+    GenericObjectPool<Worker> pool = new GenericObjectPool<>(new DummyFactory());
     pool.setMaxTotal(poolSize());
     pool.setMinIdle(minIdle());
     pool.setMaxIdle(maxIdle());

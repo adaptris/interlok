@@ -16,8 +16,8 @@
 
 package com.adaptris.util.stream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -29,7 +29,8 @@ import java.io.OutputStreamWriter;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class StreamUtilTest extends StreamUtil {
 
@@ -105,25 +106,29 @@ public class StreamUtilTest extends StreamUtil {
     assertEquals(TEXT, out.toString());
   }
 
-  @Test(expected = IOException.class)
+  @Test
   public void testCopyAndCloseStreams() throws Exception {
-    int bytes = TEXT.length();
-    ByteArrayInputStream in = new ByteArrayInputStream(TEXT.getBytes());
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    StreamUtil.copyAndClose(in, out);
-    assertEquals(TEXT, out.toString());
-    StreamUtil.copyAndClose(new ErroringInputStream(), new ByteArrayOutputStream());
+    Assertions.assertThrows(IOException.class, () -> {
+      int bytes = TEXT.length();
+      ByteArrayInputStream in = new ByteArrayInputStream(TEXT.getBytes());
+      ByteArrayOutputStream out = new ByteArrayOutputStream();
+      StreamUtil.copyAndClose(in, out);
+      assertEquals(TEXT, out.toString());
+      StreamUtil.copyAndClose(new ErroringInputStream(), new ByteArrayOutputStream());
+    });
   }
 
-  @Test(expected = IOException.class)
+  @Test
   public void testCopyAndCloseWriter() throws Exception {
-    int bytes = TEXT.length();
-    ByteArrayInputStream in = new ByteArrayInputStream(TEXT.getBytes());
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    OutputStreamWriter writer = new OutputStreamWriter(out);
-    StreamUtil.copyAndClose(in, writer);
-    assertEquals(TEXT, out.toString());
-    StreamUtil.copyAndClose(new ErroringInputStream(), new OutputStreamWriter(new ByteArrayOutputStream()));
+    Assertions.assertThrows(IOException.class, () -> {
+      int bytes = TEXT.length();
+      ByteArrayInputStream in = new ByteArrayInputStream(TEXT.getBytes());
+      ByteArrayOutputStream out = new ByteArrayOutputStream();
+      OutputStreamWriter writer = new OutputStreamWriter(out);
+      StreamUtil.copyAndClose(in, writer);
+      assertEquals(TEXT, out.toString());
+      StreamUtil.copyAndClose(new ErroringInputStream(), new OutputStreamWriter(new ByteArrayOutputStream()));
+    });
 
   }
 

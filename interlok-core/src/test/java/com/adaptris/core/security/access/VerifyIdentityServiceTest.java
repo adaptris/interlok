@@ -20,11 +20,14 @@ import static com.adaptris.core.http.jetty.HttpConsumerTest.JETTY_USER_REALM;
 import static com.adaptris.core.security.access.IdentityBuilderTest.PASSWORD;
 import static com.adaptris.core.security.access.IdentityBuilderTest.ROLE;
 import static com.adaptris.core.security.access.IdentityBuilderTest.USER;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceException;

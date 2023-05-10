@@ -13,9 +13,10 @@
 
 package com.adaptris.filetransfer;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
@@ -24,12 +25,14 @@ import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.Properties;
 import java.util.Random;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.stubs.TempFileUtils;
 import com.adaptris.util.GuidGenerator;
 
@@ -40,7 +43,7 @@ public abstract class FtpCase extends com.adaptris.interlok.junit.scaffolding.Ba
   protected transient Log logR = LogFactory.getLog(this.getClass());
 
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     try {
       initialiseConfig();
@@ -53,7 +56,7 @@ public abstract class FtpCase extends com.adaptris.interlok.junit.scaffolding.Ba
 
   @Test
   public void testLogin() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     String oldName = Thread.currentThread().getName();
     try {
       Thread.currentThread().setName(getName());
@@ -66,7 +69,7 @@ public abstract class FtpCase extends com.adaptris.interlok.junit.scaffolding.Ba
 
   @Test
   public void testLs() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
 
     String oldName = Thread.currentThread().getName();
     try {
@@ -86,7 +89,7 @@ public abstract class FtpCase extends com.adaptris.interlok.junit.scaffolding.Ba
 
   @Test
   public void testLsFull() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     String oldName = Thread.currentThread().getName();
     try {
       Thread.currentThread().setName(getName());
@@ -105,13 +108,13 @@ public abstract class FtpCase extends com.adaptris.interlok.junit.scaffolding.Ba
 
   @Test
   public void testLsWithFileFilter() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     String oldName = Thread.currentThread().getName();
     try {
       Thread.currentThread().setName(getName());
       FileTransferClient client = connectClientImpl();
       String[] files = client.dir(getRemoteGetDirectory(), getRemoteGetFileFilter());
-      assertEquals("Should only be one file matching " + getRemoteGetFilterString(), 1, files.length);
+      assertEquals(1, files.length);
       client.disconnect();
     } finally {
       Thread.currentThread().setName(oldName);
@@ -121,7 +124,7 @@ public abstract class FtpCase extends com.adaptris.interlok.junit.scaffolding.Ba
 
   @Test
   public void testLsWithNullFileFilter() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     String oldName = Thread.currentThread().getName();
     try {
       Thread.currentThread().setName(getName());
@@ -138,7 +141,7 @@ public abstract class FtpCase extends com.adaptris.interlok.junit.scaffolding.Ba
 
   @Test
   public void testCdThenLs() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     String oldName = Thread.currentThread().getName();
     try {
       Thread.currentThread().setName(getName());
@@ -156,7 +159,7 @@ public abstract class FtpCase extends com.adaptris.interlok.junit.scaffolding.Ba
 
   @Test
   public void testGet_ToLocalFile() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     String oldName = Thread.currentThread().getName();
     try {
       Thread.currentThread().setName(getName());
@@ -176,7 +179,7 @@ public abstract class FtpCase extends com.adaptris.interlok.junit.scaffolding.Ba
 
   @Test
   public void testGet() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     String oldName = Thread.currentThread().getName();
     try {
       Thread.currentThread().setName("testGet");
@@ -195,7 +198,7 @@ public abstract class FtpCase extends com.adaptris.interlok.junit.scaffolding.Ba
 
   @Test
   public void testPut() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     String oldName = Thread.currentThread().getName();
     try {
       Thread.currentThread().setName(getName());
@@ -212,7 +215,7 @@ public abstract class FtpCase extends com.adaptris.interlok.junit.scaffolding.Ba
 
   @Test
   public void testPut_append() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     String oldName = Thread.currentThread().getName();
     try {
       Thread.currentThread().setName(getName());
@@ -229,7 +232,7 @@ public abstract class FtpCase extends com.adaptris.interlok.junit.scaffolding.Ba
 
   @Test
   public void testPut_FromFile() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     String oldName = Thread.currentThread().getName();
     try {
       Thread.currentThread().setName(getName());
@@ -248,7 +251,7 @@ public abstract class FtpCase extends com.adaptris.interlok.junit.scaffolding.Ba
 
   @Test
   public void testRename() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     String oldName = Thread.currentThread().getName();
     try {
       Thread.currentThread().setName(getName());
@@ -268,7 +271,7 @@ public abstract class FtpCase extends com.adaptris.interlok.junit.scaffolding.Ba
 
   @Test
   public void testGetLastModifiedWithRelativePath() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     String oldName = Thread.currentThread().getName();
     try {
       Thread.currentThread().setName(getName());
@@ -278,7 +281,7 @@ public abstract class FtpCase extends com.adaptris.interlok.junit.scaffolding.Ba
       long mtime = client.lastModified(getRemoteGetFilename());
       logR.debug("testGetLastModifiedWithRelativePath : " + new Date(mtime));
       client.disconnect();
-      assertTrue("Comparing Dates", new Date().after(new Date(mtime)));
+      assertTrue(new Date().after(new Date(mtime)));
     } finally {
       Thread.currentThread().setName(oldName);
     }
@@ -287,7 +290,7 @@ public abstract class FtpCase extends com.adaptris.interlok.junit.scaffolding.Ba
 
   @Test
   public void testGetLastModifiedDateWithRelativePath() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     String oldName = Thread.currentThread().getName();
     try {
       Thread.currentThread().setName(getName());
@@ -297,7 +300,7 @@ public abstract class FtpCase extends com.adaptris.interlok.junit.scaffolding.Ba
       Date mtime = client.lastModifiedDate(getRemoteGetFilename());
       logR.debug("testGetLastModifiedWithRelativePath : " + mtime);
       client.disconnect();
-      assertTrue("Comparing Dates", new Date().after(mtime));
+      assertTrue(new Date().after(mtime));
     } finally {
       Thread.currentThread().setName(oldName);
     }
@@ -306,7 +309,7 @@ public abstract class FtpCase extends com.adaptris.interlok.junit.scaffolding.Ba
 
   @Test
   public void testGetLastModifiedWithAbsolutePath() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     String oldName = Thread.currentThread().getName();
     try {
       Thread.currentThread().setName(getName());
@@ -323,7 +326,7 @@ public abstract class FtpCase extends com.adaptris.interlok.junit.scaffolding.Ba
 
   @Test
   public void testGetLastModifiedDateWithAbsolutePath() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     String oldName = Thread.currentThread().getName();
     try {
       Thread.currentThread().setName("testGetLastModifiedDateWithAbsolutePath");
@@ -340,7 +343,7 @@ public abstract class FtpCase extends com.adaptris.interlok.junit.scaffolding.Ba
 
   @Test
   public void testDelete() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     String oldName = Thread.currentThread().getName();
     try {
       Thread.currentThread().setName("testDelete");
@@ -356,7 +359,7 @@ public abstract class FtpCase extends com.adaptris.interlok.junit.scaffolding.Ba
 
   @Test
   public void testMkdirThenRmDir() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     String oldName = Thread.currentThread().getName();
     String dirname = new GuidGenerator().getUUID().replaceAll(":", "").replaceAll("-", "");
     try {
@@ -376,7 +379,7 @@ public abstract class FtpCase extends com.adaptris.interlok.junit.scaffolding.Ba
 
   @Test
   public void testCdBadDirectory() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     String oldName = Thread.currentThread().getName();
     try {
       Thread.currentThread().setName("testCdBadDirectory");

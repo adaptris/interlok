@@ -17,6 +17,7 @@
 package com.adaptris.core.jms.activemq;
 
 import static com.adaptris.core.jms.activemq.AdvancedActiveMqImplementationTest.createImpl;
+
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.PtpConsumer;

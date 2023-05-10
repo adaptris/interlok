@@ -16,13 +16,15 @@
 
 package com.adaptris.core.http.jetty;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.security.JDBCLoginService;
 import org.eclipse.jetty.security.LoginService;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.interlok.junit.scaffolding.BaseCase;
 
 public class LoginServiceFactoryTest {

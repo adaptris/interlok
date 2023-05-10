@@ -16,24 +16,27 @@
 
 package com.adaptris.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import com.adaptris.core.services.metadata.AddMetadataService;
 import com.adaptris.core.stubs.EventHandlerAwareService;
 import com.adaptris.core.stubs.ExampleBranchingService;
@@ -65,7 +68,7 @@ public class BranchingServiceCollectionTest
     }
   }
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     branchService = new TestBranchingService();
     branchService.setUniqueId(FIRST_SERVICE_ID);
@@ -81,7 +84,7 @@ public class BranchingServiceCollectionTest
     openMocks = MockitoAnnotations.openMocks(this);
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     Closer.closeQuietly(openMocks);
   }
@@ -256,7 +259,7 @@ public class BranchingServiceCollectionTest
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     execute(services, msg);
 
-    assertTrue("msg " + msg, msg.getMetadataValue("service-id").equals(BRANCH_LOW));
+    assertTrue(msg.getMetadataValue("service-id").equals(BRANCH_LOW));
     assertEquals(2, msg.getMessageLifecycleEvent().getMleMarkers().size());
 
     services.setOutOfStateHandler(new NullOutOfStateHandler());
@@ -282,7 +285,7 @@ public class BranchingServiceCollectionTest
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     execute(services, msg);
 
-    assertTrue("msg " + msg, msg.getMetadataValue("service-id").equals(BRANCH_LOW));
+    assertTrue(msg.getMetadataValue("service-id").equals(BRANCH_LOW));
     assertEquals(2, msg.getMessageLifecycleEvent().getMleMarkers().size());
 
     services.setOutOfStateHandler(new NullOutOfStateHandler()); // this time run without checking states.

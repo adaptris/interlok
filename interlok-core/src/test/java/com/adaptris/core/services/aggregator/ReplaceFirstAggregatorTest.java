@@ -16,10 +16,14 @@
 
 package com.adaptris.core.services.aggregator;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -31,7 +35,6 @@ import com.adaptris.core.stubs.DefectiveMessageFactory.WhenToBreak;
 
 public class ReplaceFirstAggregatorTest extends AggregatorCase {
 
-
   @Test
   public void testJoinMessage() throws Exception {
     ReplaceWithFirstMessage aggr = createAggregatorForTests();
@@ -41,10 +44,7 @@ public class ReplaceFirstAggregatorTest extends AggregatorCase {
     AdaptrisMessage splitMsg1 = AdaptrisMessageFactory.getDefaultInstance().newMessage("Cruel");
     AdaptrisMessage splitMsg2 = AdaptrisMessageFactory.getDefaultInstance().newMessage("World");
     splitMsg2.addMetadata("originalKey", "newValue");
-    aggr.joinMessage(original, Arrays.asList(new AdaptrisMessage[]
-    {
-        splitMsg1, splitMsg2
-    }));
+    aggr.joinMessage(original, Arrays.asList(new AdaptrisMessage[] { splitMsg1, splitMsg2 }));
     assertEquals("Cruel", original.getContent());
     // It's part of split message 2 so it gets ignored.
     assertEquals("originalValue", original.getMetadataValue("originalKey"));
@@ -62,27 +62,25 @@ public class ReplaceFirstAggregatorTest extends AggregatorCase {
     AdaptrisMessage splitMsg3 = AdaptrisMessageFactory.getDefaultInstance().newMessage("ofSufficientLength");
     AdaptrisMessage splitMsg4 = AdaptrisMessageFactory.getDefaultInstance().newMessage("tooSmall");
     splitMsg2.addMetadata("originalKey", "newValue");
-    aggr.joinMessage(original, Arrays.asList(new AdaptrisMessage[]
-            {
-                    splitMsg1, splitMsg2, splitMsg3, splitMsg4
-            }));
+    aggr.joinMessage(original, Arrays.asList(new AdaptrisMessage[] { splitMsg1, splitMsg2, splitMsg3, splitMsg4 }));
     assertEquals("ofSufficientLength", original.getContent());
     // It's part of split message 2 so it gets ignored.
     assertEquals("originalValue", original.getMetadataValue("originalKey"));
   }
 
-  @Test(expected = CoreException.class)
+  @Test
   public void testAggregate_BrokenOutput() throws Exception {
-    ReplaceWithFirstMessage aggr = createAggregatorForTests();
-    aggr.setOverwriteMetadata(true);
-    AdaptrisMessageFactory fac = AdaptrisMessageFactory.getDefaultInstance();
-    AdaptrisMessage original =
-        new DefectiveMessageFactory(WhenToBreak.OUTPUT).newMessage("Goodbye");
-    AdaptrisMessage splitMsg1 = fac.newMessage("short");
-    AdaptrisMessage splitMsg2 = fac.newMessage("justShort");
-    AdaptrisMessage splitMsg3 = fac.newMessage("ofSufficientLength");
-    AdaptrisMessage splitMsg4 = fac.newMessage("tooSmall");
-    aggr.joinMessage(original, Arrays.asList(splitMsg1, splitMsg2, splitMsg3, splitMsg4));
+    Assertions.assertThrows(CoreException.class, () -> {
+      ReplaceWithFirstMessage aggr = createAggregatorForTests();
+      aggr.setOverwriteMetadata(true);
+      AdaptrisMessageFactory fac = AdaptrisMessageFactory.getDefaultInstance();
+      AdaptrisMessage original = new DefectiveMessageFactory(WhenToBreak.OUTPUT).newMessage("Goodbye");
+      AdaptrisMessage splitMsg1 = fac.newMessage("short");
+      AdaptrisMessage splitMsg2 = fac.newMessage("justShort");
+      AdaptrisMessage splitMsg3 = fac.newMessage("ofSufficientLength");
+      AdaptrisMessage splitMsg4 = fac.newMessage("tooSmall");
+      aggr.joinMessage(original, Arrays.asList(splitMsg1, splitMsg2, splitMsg3, splitMsg4));
+    });
   }
 
   @Test
@@ -114,8 +112,7 @@ public class ReplaceFirstAggregatorTest extends AggregatorCase {
   protected String getExampleCommentHeader(Object o) {
     return super.getExampleCommentHeader(o) + "\n<!--"
         + "\nThis aggregator implementation replaces the original payload with the first logical"
-        + "\nmessage that was aggregated"
-        + "\n-->\n";
+        + "\nmessage that was aggregated" + "\n-->\n";
   }
 
   @Override

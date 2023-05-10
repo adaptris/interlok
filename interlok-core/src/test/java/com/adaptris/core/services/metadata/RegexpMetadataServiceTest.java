@@ -16,13 +16,16 @@
 
 package com.adaptris.core.services.metadata;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceException;
@@ -51,8 +54,8 @@ public class RegexpMetadataServiceTest extends MetadataServiceExample {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD);
     RegexpMetadataService service = createService();
     execute(service, msg);
-    assertTrue("message contains key1", msg.containsKey("postcode"));
-    assertEquals("Found the post-code", "UB3 5AN", msg.getMetadataValue("postcode"));
+    assertTrue(msg.containsKey("postcode"));
+    assertEquals("UB3 5AN", msg.getMetadataValue("postcode"));
   }
 
   @Test
@@ -61,8 +64,8 @@ public class RegexpMetadataServiceTest extends MetadataServiceExample {
     msg.addMetadata("postcode", "GU34 1ET");
     RegexpMetadataService service = createService();
     execute(service, msg);
-    assertTrue("message contains key1", msg.containsKey("postcode"));
-    assertEquals("Found the post-code", "UB3 5AN", msg.getMetadataValue("postcode"));
+    assertTrue(msg.containsKey("postcode"));
+    assertEquals("UB3 5AN", msg.getMetadataValue("postcode"));
   }
 
   @Test
@@ -78,8 +81,8 @@ public class RegexpMetadataServiceTest extends MetadataServiceExample {
     catch (ServiceException expected) {
       ;
     }
-    assertTrue("message contains key1", msg.containsKey("postcode"));
-    assertEquals("Found the post-code", "UB3 5AN", msg.getMetadataValue("postcode"));
+    assertTrue(msg.containsKey("postcode"));
+    assertEquals("UB3 5AN", msg.getMetadataValue("postcode"));
   }
 
   @Test
@@ -90,8 +93,8 @@ public class RegexpMetadataServiceTest extends MetadataServiceExample {
     RegexpMetadataQuery q = service.getRegexpMetadataQueries().get(0);
     q.setAllowNulls(true);
     execute(service, msg);
-    assertTrue("message contains key1", msg.containsKey("postcode"));
-    assertEquals("Found the post-code", "", msg.getMetadataValue("postcode"));
+    assertTrue(msg.containsKey("postcode"));
+    assertEquals("", msg.getMetadataValue("postcode"));
   }
 
   @Test

@@ -16,11 +16,14 @@
 
 package com.adaptris.core.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.security.MessageDigest;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
@@ -36,7 +39,7 @@ public class GunzipServiceTest extends GeneralServiceExample {
     execute(new GzipService(), msg);
     assertFalse(MessageDigest.isEqual(LINE.getBytes("UTF-8"), msg.getPayload()));
     execute(new GunzipService(), msg);
-    assertEquals("zip then unzip gives same result", LINE, msg.getContent());
+    assertEquals(LINE, msg.getContent());
   }
 
   @Test

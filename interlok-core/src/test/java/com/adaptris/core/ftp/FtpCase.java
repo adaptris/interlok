@@ -13,6 +13,23 @@
 
 package com.adaptris.core.ftp;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.time.Duration;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.oro.io.GlobFilenameFilter;
+import org.awaitility.Awaitility;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreConstants;
@@ -26,22 +43,6 @@ import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.TimeInterval;
-import org.apache.oro.io.GlobFilenameFilter;
-import org.awaitility.Awaitility;
-import org.junit.After;
-import org.junit.Assume;
-import org.junit.Test;
-
-import java.time.Duration;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 public abstract class FtpCase extends FtpConsumerExample {
 
@@ -50,7 +51,7 @@ public abstract class FtpCase extends FtpConsumerExample {
   protected static final String PAYLOAD = "Quick zephyrs blow, vexing daft Jim";
 
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     if (areTestsEnabled()) {
 
@@ -79,7 +80,7 @@ public abstract class FtpCase extends FtpConsumerExample {
 
   @Test
   public void testBasicConsume() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     MockMessageListener listener = new MockMessageListener();
     FtpConsumer ftpConsumer = new FtpConsumer();
     ftpConsumer.setFtpEndpoint(getDestinationString());
@@ -101,7 +102,7 @@ public abstract class FtpCase extends FtpConsumerExample {
 
   @Test
   public void testConsume_CachedConnection() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     MockMessageListener listener = new MockMessageListener();
     FtpConsumer ftpConsumer = new FtpConsumer();
     ftpConsumer.setFtpEndpoint(getDestinationString());
@@ -131,7 +132,7 @@ public abstract class FtpCase extends FtpConsumerExample {
 
   @Test
   public void testConsume_WithEncoder() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     MockMessageListener listener = new MockMessageListener();
     FtpConsumer ftpConsumer = new FtpConsumer();
     ftpConsumer.setFtpEndpoint(getDestinationString());
@@ -163,7 +164,7 @@ public abstract class FtpCase extends FtpConsumerExample {
 
   @Test
   public void testBasicConsumeWithOverride() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
 
     MockMessageListener listener = new MockMessageListener();
     FtpConsumer ftpConsumer = new FtpConsumer();
@@ -190,7 +191,7 @@ public abstract class FtpCase extends FtpConsumerExample {
 
   @Test
   public void testConsumeWithFilter() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     MockMessageListener listener = new MockMessageListener();
     FtpConsumer ftpConsumer = new FtpConsumer();
     ftpConsumer.setFtpEndpoint(getDestinationString());
@@ -221,7 +222,7 @@ public abstract class FtpCase extends FtpConsumerExample {
 
   @Test
   public void testConsumeWithQuietPeriod() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     MockMessageListener listener = new MockMessageListener();
     FtpConsumer ftpConsumer = new FtpConsumer();
     ftpConsumer.setFtpEndpoint(getDestinationString());
@@ -246,7 +247,7 @@ public abstract class FtpCase extends FtpConsumerExample {
 
   @Test
   public void testConsumeWithNonMatchingFilter() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     MockMessageListener listener = new MockMessageListener();
     FtpConsumer ftpConsumer = new FtpConsumer();
     ftpConsumer.setFtpEndpoint(getDestinationString());
@@ -276,7 +277,7 @@ public abstract class FtpCase extends FtpConsumerExample {
 
   @Test
   public void testCachedConnection() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     FileTransferConnection connection = createConnection();
     connection.setCacheConnection(true);
     try {
@@ -300,7 +301,7 @@ public abstract class FtpCase extends FtpConsumerExample {
 
   @Test
   public void testCachedConnection_ExceedsMaxSize() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
 
     FileTransferConnection connection = createConnection();
     connection.setCacheConnection(true);
@@ -325,7 +326,7 @@ public abstract class FtpCase extends FtpConsumerExample {
 
   @Test
   public void testCachedConnection_DisconnectedClient() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
 
     FileTransferConnection connection = createConnection();
     connection.setCacheConnection(true);
@@ -374,7 +375,7 @@ public abstract class FtpCase extends FtpConsumerExample {
   protected abstract String getRemoteDirectory();
 
   protected void assertMessages(List<AdaptrisMessage> list, int count) {
-    assertEquals("All files consumed/produced", count, list.size());
+    assertEquals(count, list.size(), "All files consumed/produced");
     for (AdaptrisMessage m : list) {
       assertTrue(m.headersContainsKey(CoreConstants.ORIGINAL_NAME_KEY));
       assertEquals(PAYLOAD, m.getContent().trim());

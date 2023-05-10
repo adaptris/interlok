@@ -17,6 +17,7 @@
 package com.adaptris.core.jms;
 
 import static com.adaptris.core.jms.FailoverPtpProducerTest.createFailoverConfigExample;
+
 import com.adaptris.core.StandaloneProducer;
 
 public class FailoverPasProducerTest extends FailoverJmsProducerCase {

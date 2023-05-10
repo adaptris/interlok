@@ -16,17 +16,19 @@
 
 package com.adaptris.security;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 
-import com.adaptris.security.password.SeededAesPbeCrypto;
-import org.junit.Assume;
-import org.junit.Test;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.interlok.junit.scaffolding.util.Os;
 import com.adaptris.security.certificate.CertificateBuilder;
 import com.adaptris.security.password.Password;
 import com.adaptris.security.password.PasswordCodec;
+import com.adaptris.security.password.SeededAesPbeCrypto;
 
 /**
  */
@@ -48,7 +50,7 @@ public class TestPassword {
 
   @Test
   public void testMicrosoftCrypto() throws Exception {
-    Assume.assumeTrue(Os.isFamily(Os.WINDOWS_NT_FAMILY));
+    Assumptions.assumeTrue(Os.isFamily(Os.WINDOWS_NT_FAMILY));
     specificMicrosoftSetup();
     PasswordCodec pw = Password.create(Password.MSCAPI_STYLE);
     assertEquals(PW, pw.decode(pw.encode(PW)));
@@ -56,7 +58,7 @@ public class TestPassword {
 
   @Test
   public void testMicrosoftCryptoWithCharset() throws Exception {
-    Assume.assumeTrue(Os.isFamily(Os.WINDOWS_NT_FAMILY));
+    Assumptions.assumeTrue(Os.isFamily(Os.WINDOWS_NT_FAMILY));
     specificMicrosoftSetup();
     PasswordCodec pw = Password.create(Password.MSCAPI_STYLE);
     assertEquals(PW, pw.decode(pw.encode(PW, CHARSET), CHARSET));

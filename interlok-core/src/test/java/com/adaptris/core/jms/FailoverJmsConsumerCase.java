@@ -16,14 +16,16 @@
 
 package com.adaptris.core.jms;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.Channel;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
@@ -37,13 +39,13 @@ public abstract class FailoverJmsConsumerCase
 
   private static EmbeddedActiveMq activeMqBroker;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpAll() throws Exception {
     activeMqBroker = new EmbeddedActiveMq();
     activeMqBroker.start();
   }
   
-  @AfterClass
+  @AfterAll
   public static void tearDownAll() throws Exception {
     if(activeMqBroker != null)
       activeMqBroker.destroy();
@@ -61,7 +63,7 @@ public abstract class FailoverJmsConsumerCase
 
       assertEquals(1, connection.currentJmsConnection().retrieveExceptionListeners().size());
       AdaptrisComponent owner = (AdaptrisComponent) connection.currentJmsConnection().retrieveExceptionListeners().toArray()[0];
-      assertTrue("Owner should be failover connection", connection == owner);
+      assertTrue(connection == owner);
       LifecycleHelper.close(connection);
 
       Channel channel = new MockChannel();

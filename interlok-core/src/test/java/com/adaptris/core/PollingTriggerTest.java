@@ -15,13 +15,16 @@
 */
 
 package com.adaptris.core;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import org.junit.Test;
-import com.adaptris.core.services.EmbeddedScriptingService;
+
+import org.junit.jupiter.api.Test;
+
+import com.adaptris.core.DynamicPollingTemplate.TemplateProvider;
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.interlok.junit.scaffolding.BaseCase;
@@ -41,8 +44,7 @@ public class PollingTriggerTest extends ExampleConsumerCase {
   private static final PollingTrigger.MessageProvider[] TEMPLATES =
   {
       new StaticPollingTemplate("Hello World"),
-      new DynamicPollingTemplate(
-          new EmbeddedScriptingService().withScript("javascript", "message.setContent('Hello World', 'UTF-8')"))
+      new DynamicPollingTemplate(new NullMessageProvider())
   };
 
   private static final List<Poller> POLLER_LIST = Arrays.asList(POLLERS);
@@ -68,15 +70,14 @@ public class PollingTriggerTest extends ExampleConsumerCase {
   @Test
   public void testTriggerWithDynamicTemplate() throws Exception {
     Trigger trigger = new Trigger();
-    String script = "message.setContent('" + PAYLOAD + "', 'UTF-8')";
     MockMessageProducer mockProducer = new MockMessageProducer();
     Channel c = createChannel(new PollingTrigger(trigger,
-        new DynamicPollingTemplate(new EmbeddedScriptingService().withScript("nashorn", script))), mockProducer);
+        new DynamicPollingTemplate(new NullMessageProvider())), mockProducer);
     try {
       BaseCase.start(c);
       trigger.fire();
       AdaptrisMessage msg = mockProducer.getMessages().get(0);
-      assertEquals(PAYLOAD, msg.getContent());
+      assertEquals("PayloadContent", msg.getContent());
     }
     finally {
       BaseCase.stop(c);
@@ -101,11 +102,10 @@ public class PollingTriggerTest extends ExampleConsumerCase {
 
   @Test
   public void testTrigger_TemplateFails() throws Exception {
-    String script = "message.setContent('" + PAYLOAD + "')"; // setContent must have a encoding...
     Trigger trigger = new Trigger();
     MockMessageProducer mockProducer = new MockMessageProducer();
     Channel c = createChannel(new PollingTrigger(trigger,
-        new DynamicPollingTemplate(new EmbeddedScriptingService().withScript("nashorn", script))), mockProducer);
+        new DynamicPollingTemplate(new ExceptionMessageProvider())), mockProducer);
     try {
       BaseCase.start(c);
       trigger.fire();
@@ -157,6 +157,20 @@ public class PollingTriggerTest extends ExampleConsumerCase {
 
   private Channel createChannel(PollingTrigger trigger, MockMessageProducer mock) throws Exception {
     return new MockChannel().withWorkflow(new StandardWorkflow(trigger, mock));
+  }
+  
+  static class NullMessageProvider extends NullService implements TemplateProvider {
+    @Override
+    public void doService(AdaptrisMessage msg) throws ServiceException {
+      msg.setContent("PayloadContent", msg.getContentEncoding());
+    }
+  }
+  
+  static class ExceptionMessageProvider extends NullService implements TemplateProvider {
+    @Override
+    public void doService(AdaptrisMessage msg) throws ServiceException {
+      throw new ServiceException("Expected");
+    }
   }
 
   private class Trigger extends PollerImp {

@@ -16,6 +16,27 @@
 
 package com.adaptris.core.http.jetty;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import org.eclipse.jetty.util.security.Constraint;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
@@ -45,26 +66,6 @@ import com.adaptris.http.legacy.HttpProduceConnection;
 import com.adaptris.http.legacy.SimpleHttpProducer;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.TimeInterval;
-import org.eclipse.jetty.util.security.Constraint;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 @SuppressWarnings("deprecation")
 public class HttpConsumerTest extends HttpConsumerExample {
@@ -84,12 +85,12 @@ public class HttpConsumerTest extends HttpConsumerExample {
   protected SimpleHttpProducer httpProducer;
 
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     httpProducer = createProducer();
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     stop(httpProducer);
   }
@@ -241,7 +242,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       httpProducer.setUrl(createProduceDestinationUrl(connection.getPort()));
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
+      assertEquals(XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     }
     finally {
@@ -273,7 +274,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg);
       // Because of redmineID #4715 it should just "return immediatel" which flushes the stream so there's no content.
-      assertEquals("Reply Payloads", "", reply.getContent());
+      assertEquals("", reply.getContent());
     }
     finally {
       stop(httpProducer);
@@ -327,7 +328,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       httpProducer.setUrl(createProduceDestinationUrl(connection.getPort()));
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
+      assertEquals(XML_PAYLOAD, reply.getContent());
       AdaptrisMessage receivedMsg = doAssertions(mockProducer);
       assertFalse(receivedMsg.containsKey("Content-Type"));
     }
@@ -400,7 +401,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       httpProducer.setUrl(createProduceDestinationUrl(connection.getPort()));
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
+      assertEquals(XML_PAYLOAD, reply.getContent());
       AdaptrisMessage receivedMsg = doAssertions(mockProducer);
       assertEquals("text/xml", receivedMsg.getMetadataValue("Http_Header_Content-Type"));
     }
@@ -428,7 +429,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       httpProducer.setUrl(dest);
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
+      assertEquals(XML_PAYLOAD, reply.getContent());
       AdaptrisMessage receivedMsg = doAssertions(mockProducer);
 
       assertTrue(receivedMsg.containsKey(JettyConstants.JETTY_QUERY_STRING));
@@ -461,10 +462,8 @@ public class HttpConsumerTest extends HttpConsumerExample {
       httpProducer.setUrl(dest);
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
+      assertEquals(XML_PAYLOAD, reply.getContent());
       AdaptrisMessage receivedMsg = doAssertions(mockProducer);
-
-      System.out.println("XXX - " + receivedMsg);
 
       assertTrue(receivedMsg.containsKey(JettyConstants.JETTY_QUERY_STRING));
       assertEquals("queryParam1=1&queryParam2=2&queryParam3=3", receivedMsg.getMetadataValue(JettyConstants.JETTY_QUERY_STRING));
@@ -496,7 +495,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       httpProducer.setUrl(dest);
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
+      assertEquals(XML_PAYLOAD, reply.getContent());
       AdaptrisMessage receivedMsg = doAssertions(mockProducer);
       assertTrue(receivedMsg.containsKey(JettyConstants.JETTY_QUERY_STRING));
       assertEquals("queryParam1=1&queryParam2=2&queryParam3=3", receivedMsg.getMetadataValue(JettyConstants.JETTY_QUERY_STRING));
@@ -531,7 +530,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       httpProducer.setUrl(dest);
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
+      assertEquals(XML_PAYLOAD, reply.getContent());
       AdaptrisMessage receivedMsg = doAssertions(mockProducer);
       assertTrue(receivedMsg.containsKey(JettyConstants.JETTY_QUERY_STRING));
       assertEquals("queryParam1=1&queryParam2=2&queryParam3=3", receivedMsg.getMetadataValue(JettyConstants.JETTY_QUERY_STRING));
@@ -584,7 +583,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       httpProducer.setUrl(createProduceDestinationUrl(connection.getPort()));
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
+      assertEquals(XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     }
     finally {
@@ -635,7 +634,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       httpProducer.setUrl(createProduceDestinationUrl(connection.getPort()));
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
+      assertEquals(XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     }
     finally {
@@ -665,7 +664,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       httpProducer.setUrl(createProduceDestinationUrl(connection.getPort()));
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
+      assertEquals(XML_PAYLOAD, reply.getContent());
       doAssertions(mock2);
     }
     finally {
@@ -677,9 +676,9 @@ public class HttpConsumerTest extends HttpConsumerExample {
 
   protected AdaptrisMessage doAssertions(MockMessageProducer mockProducer) throws Exception {
     waitForMessages(mockProducer, 1);
-    assertEquals("Only 1 message consumed", 1, mockProducer.getMessages().size());
+    assertEquals(1, mockProducer.getMessages().size());
     AdaptrisMessage msg = mockProducer.getMessages().get(0);
-    assertEquals("Consumed Payload", XML_PAYLOAD, msg.getContent());
+    assertEquals(XML_PAYLOAD, msg.getContent());
     assertTrue(msg.containsKey(JettyConstants.JETTY_URI));
     assertEquals(URL_TO_POST_TO, msg.getMetadataValue(JettyConstants.JETTY_URI));
     assertTrue(msg.containsKey(JettyConstants.JETTY_URL));
@@ -711,11 +710,11 @@ public class HttpConsumerTest extends HttpConsumerExample {
       httpProducer.setUrl(createProduceDestinationUrl(connection.getPort()));
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
+      assertEquals(XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
 
       AdaptrisMessage consumedMsg = mockProducer.getMessages().get(0);
-      assertEquals("Consumed Payload", XML_PAYLOAD, consumedMsg.getContent());
+      assertEquals(XML_PAYLOAD, consumedMsg.getContent());
       assertTrue(consumedMsg.containsKey(X_HTTP_KEY1));
       assertEquals(METADATA_VALUE1, consumedMsg.getMetadataValue(X_HTTP_KEY1));
 
@@ -748,9 +747,9 @@ public class HttpConsumerTest extends HttpConsumerExample {
       httpProducer.setUrl(createProduceDestinationUrl(connection.getPort()));
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
+      assertEquals(XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
-      assertEquals("Consumed Message Java Class", AdaptrisMessageStub.class, mockProducer.getMessages().get(0).getClass());
+      assertEquals(AdaptrisMessageStub.class, mockProducer.getMessages().get(0).getClass());
     }
     finally {
       stop(httpProducer);
@@ -774,10 +773,10 @@ public class HttpConsumerTest extends HttpConsumerExample {
       pd += "/some/unknownURL";
       httpProducer.setUrl(pd);
       AdaptrisMessage reply = httpProducer.request(msg);
-      assertEquals("0 message consumed", 0, mockProducer.getMessages().size());
-      assertTrue("Reply Response Code present", reply.containsKey(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
+      assertEquals(0, mockProducer.getMessages().size());
+      assertTrue(reply.containsKey(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
       int rc = Integer.valueOf(reply.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE)).intValue();
-      assertEquals("Reply Response Code Value", HttpURLConnection.HTTP_NOT_FOUND, rc);
+      assertEquals(HttpURLConnection.HTTP_NOT_FOUND, rc);
 
     }
     catch (ProduceException e) {
@@ -819,7 +818,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       httpProducer.setUrl(createProduceDestinationUrl(connection.getPort()));
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
+      assertEquals(XML_PAYLOAD, reply.getContent());
       AdaptrisMessage consumedMessage = doAssertions(mockProducer);
       assertTrue(consumedMessage.headersContainsKey(JettyConstants.JETTY_USER_ROLES));
       List<String> roles = Arrays.asList(consumedMessage.getMetadataValue(JettyConstants.JETTY_USER_ROLES).split(","));
@@ -860,7 +859,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       httpProducer.setUrl(createProduceDestinationUrl(connection.getPort()));
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
+      assertEquals(XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     }
     finally {
@@ -900,10 +899,10 @@ public class HttpConsumerTest extends HttpConsumerExample {
       httpProducer.setUrl(createProduceDestinationUrl(connection.getPort()));
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg);
-      assertEquals("0 message consumed", 0, mockProducer.getMessages().size());
-      assertTrue("Reply Response Code present", reply.containsKey(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
+      assertEquals(0, mockProducer.getMessages().size());
+      assertTrue(reply.containsKey(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
       int rc = Integer.valueOf(reply.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE)).intValue();
-      assertTrue("Reply Response Value 401 || 403", rc == HttpURLConnection.HTTP_UNAUTHORIZED
+      assertTrue(rc == HttpURLConnection.HTTP_UNAUTHORIZED
           || rc == HttpURLConnection.HTTP_FORBIDDEN);
     }
     catch (Exception e) {
@@ -959,10 +958,10 @@ public class HttpConsumerTest extends HttpConsumerExample {
       httpProducer.setUrl(createProduceDestinationUrl(connection.getPort()));
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg);
-      assertEquals("0 message consumed", 0, mockProducer.getMessages().size());
-      assertTrue("Reply Response Code present", reply.containsKey(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
+      assertEquals(0, mockProducer.getMessages().size());
+      assertTrue(reply.containsKey(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
       int rc = Integer.valueOf(reply.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE)).intValue();
-      assertTrue("Reply Response Value 401 || 403", rc == HttpURLConnection.HTTP_UNAUTHORIZED
+      assertTrue(rc == HttpURLConnection.HTTP_UNAUTHORIZED
           || rc == HttpURLConnection.HTTP_FORBIDDEN);
     }
     catch (Exception e) {
@@ -1021,10 +1020,10 @@ public class HttpConsumerTest extends HttpConsumerExample {
       httpProducer.setUrl(createProduceDestinationUrl(connection.getPort()));
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg);
-      assertEquals("0 message consumed", 0, mockProducer.getMessages().size());
-      assertTrue("Reply Response Code present", reply.containsKey(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
+      assertEquals(0, mockProducer.getMessages().size());
+      assertTrue(reply.containsKey(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
       int rc = Integer.valueOf(reply.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE)).intValue();
-      assertTrue("Reply Response Value 401 || 403", rc == HttpURLConnection.HTTP_UNAUTHORIZED
+      assertTrue(rc == HttpURLConnection.HTTP_UNAUTHORIZED
           || rc == HttpURLConnection.HTTP_FORBIDDEN);
     }
     catch (ProduceException e) {
@@ -1071,7 +1070,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       httpProducer.setUrl(createProduceDestinationUrl(connection.getPort()));
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
+      assertEquals(XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     }
     finally {

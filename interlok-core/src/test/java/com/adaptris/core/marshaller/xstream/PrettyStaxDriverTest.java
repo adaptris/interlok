@@ -15,8 +15,9 @@
  */
 package com.adaptris.core.marshaller.xstream;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -26,8 +27,10 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.HashSet;
-import org.junit.BeforeClass;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.annotation.AnnotationConstants;
 import com.adaptris.core.services.metadata.PayloadFromTemplateService;
 import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
@@ -36,7 +39,7 @@ public class PrettyStaxDriverTest {
 
   private static HashSet<String> cdata = new HashSet<>();
 
-  @BeforeClass
+  @BeforeAll
   public static void setUp() throws Exception {
     cdata = loadCDATA();
   }
@@ -49,25 +52,23 @@ public class PrettyStaxDriverTest {
 
   @Test
   public void testCreateWriter() {
-    PrettyStaxDriver driver = new PrettyStaxDriver(cdata, true);
+    PrettyStaxDriver driver = new PrettyStaxDriver(cdata);
     assertNotNull(driver.createWriter(new ByteArrayOutputStream()));
   }
 
   @Test
   public void testXmlInputFactory() {
-    assertNotNull(new PrettyStaxDriver(cdata, true).createInputFactory());
-    assertNotNull(new PrettyStaxDriver(cdata, false).createInputFactory());
+    assertNotNull(new PrettyStaxDriver(cdata).createInputFactory());
   }
 
   @Test
   public void testXmlOutputFactory() {
-    assertNotNull(new PrettyStaxDriver(cdata, true).createOutputFactory());
-    assertNotNull(new PrettyStaxDriver(cdata, false).createOutputFactory());
+    assertNotNull(new PrettyStaxDriver(cdata).createOutputFactory());
   }
 
   @Test
   public void testPrettyPrintWriter() throws Exception {
-    PrettyStaxDriver driver = new PrettyStaxDriver(cdata, true);
+    PrettyStaxDriver driver = new PrettyStaxDriver(cdata);
     // service
     //      <payload-from-template-service>
     //        <unique-id>naughty-hodgkin</unique-id>

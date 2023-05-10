@@ -15,9 +15,10 @@
 */
 package com.adaptris.core.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -27,19 +28,22 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Map;
 import java.util.Properties;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.stubs.TempFileUtils;
 import com.adaptris.interlok.junit.scaffolding.BaseCase;
 
 public class PropertyHelperTest extends PropertyHelper {
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
   }
 
@@ -123,16 +127,18 @@ public class PropertyHelperTest extends PropertyHelper {
     assertEquals(0, doesNotExist.size());
   }
 
-  @Test(expected = IOException.class)
+  @Test
   public void testLoad_PropertyInputStream() throws Exception {
-    Properties sample = createTestSample();
-    byte[] bytes = asByteArray(sample);
-    Properties loaded = load(() -> {
-      return new ByteArrayInputStream(bytes);
-    });
-    assertEquals(sample.size(), loaded.size());
-    Properties doesNotExist = load(() -> {
-      throw new IOException();
+    Assertions.assertThrows(IOException.class, () -> {
+      Properties sample = createTestSample();
+      byte[] bytes = asByteArray(sample);
+      Properties loaded = load(() -> {
+        return new ByteArrayInputStream(bytes);
+      });
+      assertEquals(sample.size(), loaded.size());
+      Properties doesNotExist = load(() -> {
+        throw new IOException();
+      });
     });
   }
 

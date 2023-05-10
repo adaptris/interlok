@@ -52,9 +52,13 @@ public class PrettyStaxDriver extends StandardStaxDriver {
   private transient boolean jdkOnlyStax;
 
   public PrettyStaxDriver() {
-    this(new HashSet<String>(), true);
+    this(new HashSet<String>());
   }
 
+  public PrettyStaxDriver(Collection<String> pCdataFields) {
+    this(pCdataFields, false);
+  }
+  
   public PrettyStaxDriver(Collection<String> pCdataFields, boolean jdkOnlyStax) {
     super();
     this.cdataFields = new HashSet<>(pCdataFields);

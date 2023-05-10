@@ -18,15 +18,18 @@ package com.adaptris.core.http.jetty;
 
 import static com.adaptris.core.http.jetty.EmbeddedJettyHelper.URL_TO_POST_TO;
 import static com.adaptris.core.http.jetty.EmbeddedJettyHelper.XML_PAYLOAD;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jetty.util.security.Constraint;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
@@ -61,7 +64,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
   protected StandardHttpProducer httpProducer;
 
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     httpProducer = createProducer();
   }
@@ -98,7 +101,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
       httpProducer.setUrl(helper.createProduceDestination());
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
+      assertEquals(XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     }
     finally {
@@ -122,7 +125,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
       httpProducer.setUrl(helper.createProduceDestination());
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
+      assertEquals(XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     }
     finally {
@@ -163,7 +166,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
       httpProducer.setUrl(helper.createProduceDestination());
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
+      assertEquals(XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     } finally {
       stop(httpProducer);
@@ -188,7 +191,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
       httpProducer.setUrl(helper.createProduceDestination());
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
+      assertEquals(XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     }
     finally {
@@ -223,7 +226,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
       httpProducer.setUrl(helper.createProduceDestination());
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
+      assertEquals(XML_PAYLOAD, reply.getContent());
       doAssertions(mock2);
     }
     finally {
@@ -334,7 +337,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
       httpProducer.setUrl(helper.createProduceDestination());
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
+      assertEquals(XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     }
     finally {
@@ -370,7 +373,7 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg);
       // Because of redmineID #4715 it should just "return immediatel" which flushes the stream so there's no content.
-      assertEquals("Reply Payloads", "", reply.getContent());
+      assertEquals("", reply.getContent());
     }
     finally {
       stop(httpProducer);
@@ -401,8 +404,8 @@ public class EmbeddedHttpConsumerTest extends HttpConsumerExample {
 
   protected void doAssertions(MockMessageProducer mockProducer) throws Exception {
     waitForMessages(mockProducer, 1);
-    assertEquals("Only 1 message consumed", 1, mockProducer.getMessages().size());
-    assertEquals("Consumed Payload", XML_PAYLOAD, mockProducer.getMessages().get(0).getContent());
+    assertEquals(1, mockProducer.getMessages().size());
+    assertEquals(XML_PAYLOAD, mockProducer.getMessages().get(0).getContent());
     Map objMetadata = mockProducer.getMessages().get(0).getObjectHeaders();
     assertNotNull(objMetadata.get(JettyConstants.JETTY_WRAPPER));
   }

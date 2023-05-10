@@ -20,12 +20,13 @@ import static com.adaptris.core.jms.activemq.AdvancedActiveMqImplementationTest.
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.addBlobUrlRef;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
 import static com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase.assertMessages;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
@@ -76,13 +77,13 @@ public class BasicActiveMqConsumerTest
 
   private static EmbeddedActiveMq activeMqBroker;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpAll() throws Exception {
     activeMqBroker = new EmbeddedActiveMq();
     activeMqBroker.start();
   }
   
-  @AfterClass
+  @AfterAll
   public static void tearDownAll() throws Exception {
     if(activeMqBroker != null)
       activeMqBroker.destroy();

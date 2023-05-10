@@ -15,16 +15,20 @@
 */
 
 package com.adaptris.core.util;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.Properties;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.JndiContextFactory;
@@ -37,7 +41,7 @@ import com.adaptris.util.GuidGenerator;
 public class JndiHelperTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
   private Properties env = new Properties();
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     env.put(Context.INITIAL_CONTEXT_FACTORY, JndiContextFactory.class.getName());
   }

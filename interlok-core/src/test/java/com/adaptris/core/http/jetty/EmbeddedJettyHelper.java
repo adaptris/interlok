@@ -17,8 +17,10 @@
 package com.adaptris.core.http.jetty;
 
 import java.util.Properties;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.adaptris.core.management.jetty.JettyServerComponent;
 import com.adaptris.core.management.jetty.ServerBuilder;
 import com.adaptris.core.management.webserver.JettyServerManager;

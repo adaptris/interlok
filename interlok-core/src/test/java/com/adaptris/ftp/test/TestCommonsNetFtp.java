@@ -13,9 +13,10 @@
 
 package com.adaptris.ftp.test;
 
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -25,9 +26,11 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.apache.oro.io.GlobFilenameFilter;
-import org.junit.Assume;
-import org.junit.Test;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FtpCase;
 import com.adaptris.ftp.CommonsNetFtpClient;
@@ -59,7 +62,7 @@ public class TestCommonsNetFtp extends FtpCase {
 
   @Test
   public void testBug1924() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     String oldName = Thread.currentThread().getName();
     try {
       Thread.currentThread().setName("testBug1924");
@@ -82,7 +85,7 @@ public class TestCommonsNetFtp extends FtpCase {
 
   @Test
   public void testConnectWithTimeout() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     String oldName = Thread.currentThread().getName();
     try {
       Thread.currentThread().setName("testBug1924");
@@ -106,7 +109,7 @@ public class TestCommonsNetFtp extends FtpCase {
 
   @Test
   public void testBug1483() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     String oldName = Thread.currentThread().getName();
     try {
       Thread.currentThread().setName("testBug1483");
@@ -115,7 +118,7 @@ public class TestCommonsNetFtp extends FtpCase {
       for (int i = 0; i < files.length; i++) {
         logR.debug(files[i]);
         Matcher m = LIST_DIR_PATTERN.matcher(files[i]);
-        assertTrue("Output Should match " + LIST_DIR_FULL, m.matches());
+        assertTrue(m.matches());
         // logR.debug(HexDump.parse(files[i].getBytes()));
       }
       assertTrue(files.length > 0);
@@ -128,7 +131,7 @@ public class TestCommonsNetFtp extends FtpCase {
 
   @Test
   public void testGetLastModifiedWithTimezone() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     String oldName = Thread.currentThread().getName();
     try {
       Thread.currentThread().setName("testGetLastModifiedWithTimezone");
@@ -144,7 +147,7 @@ public class TestCommonsNetFtp extends FtpCase {
       tzClient.disconnect();
 
       logR.debug("testGetLastModifiedWithTimezone : " + new Date(tztime));
-      assertNotSame("" + new Date(mtime), mtime, tztime);
+      assertNotSame(mtime, tztime);
     } finally {
       Thread.currentThread().setName(oldName);
     }
@@ -153,7 +156,7 @@ public class TestCommonsNetFtp extends FtpCase {
 
   @Test
   public void testGetLastModifiedDateWithTimezone() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     String oldName = Thread.currentThread().getName();
     try {
       Thread.currentThread().setName("testGetLastModifiedDateWithTimezone");
@@ -169,7 +172,7 @@ public class TestCommonsNetFtp extends FtpCase {
       tzClient.disconnect();
       logR.debug("testGetLastModifiedWithTimezone : " + tzDate);
 
-      assertNotSame("" + mtime, mtime, tzDate);
+      assertNotSame(mtime, tzDate);
     } finally {
       Thread.currentThread().setName(oldName);
 
@@ -178,7 +181,7 @@ public class TestCommonsNetFtp extends FtpCase {
 
   @Test
   public void testSetTimeout() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     String oldName = Thread.currentThread().getName();
     try {
       Thread.currentThread().setName("testSetTimeout");

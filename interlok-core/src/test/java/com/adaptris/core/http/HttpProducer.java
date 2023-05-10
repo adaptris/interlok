@@ -20,8 +20,10 @@ import java.io.IOException;
 import java.net.PasswordAuthentication;
 import java.util.Iterator;
 import java.util.Properties;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;

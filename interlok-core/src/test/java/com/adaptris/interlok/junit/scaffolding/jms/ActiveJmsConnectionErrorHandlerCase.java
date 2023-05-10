@@ -16,23 +16,24 @@
 
 package com.adaptris.interlok.junit.scaffolding.jms;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.concurrent.TimeUnit;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.adaptris.core.jms.ActiveJmsConnectionErrorHandler;
 import com.adaptris.util.TimeInterval;
 
 public abstract class ActiveJmsConnectionErrorHandlerCase {
 
-  @Rule
-  public TestName testName = new TestName();
+  
+  
   protected Logger log = LoggerFactory.getLogger(this.getClass());
 
   @Test

@@ -565,8 +565,8 @@ public class AdapterRegistry implements AdapterRegistryMBean {
     return b;
   }
 
-
-  Set<AdapterBuilder> builders() {
+  @Override
+  public Set<AdapterBuilder> builders() {
     return new HashSet<AdapterBuilder>(builderByProps.values());
   }
 

@@ -1,14 +1,18 @@
 package com.adaptris.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.nio.charset.StandardCharsets;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.lms.FileBackedMessageFactory;
 import com.adaptris.core.stubs.DefectiveMessageFactory;
 import com.adaptris.core.stubs.DefectiveMessageFactory.WhenToBreak;
@@ -16,12 +20,12 @@ import com.adaptris.core.util.LifecycleHelper;
 
 public class RequestReplyProducerBaseTest extends RequestReplyProducerBase {
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     LifecycleHelper.initAndStart(this);
   }
 
-  @After
+  @AfterEach
   public void teardown() throws Exception {
     LifecycleHelper.stopAndClose(this);
   }
@@ -39,11 +43,13 @@ public class RequestReplyProducerBaseTest extends RequestReplyProducerBase {
     assertEquals("hello world", original.getContent());
   }
 
-  @Test(expected = ProduceException.class)
+  @Test
   public void testCopyReplyContents_Failure() throws Exception {
-    AdaptrisMessage reply = new DefectiveMessageFactory(WhenToBreak.BOTH).newMessage();
-    AdaptrisMessage original = new DefaultMessageFactory().newMessage();
-    copyReplyContents(reply, original);
+    Assertions.assertThrows(ProduceException.class, () -> {
+      AdaptrisMessage reply = new DefectiveMessageFactory(WhenToBreak.BOTH).newMessage();
+      AdaptrisMessage original = new DefaultMessageFactory().newMessage();
+      copyReplyContents(reply, original);
+    });
   }
 
   @Test

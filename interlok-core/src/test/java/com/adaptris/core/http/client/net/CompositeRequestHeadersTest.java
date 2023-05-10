@@ -16,29 +16,31 @@
 
 package com.adaptris.core.http.client.net;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.Channel;
-import com.adaptris.core.http.client.RequestHeaderProvider;
-import com.adaptris.core.metadata.RegexMetadataFilter;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.Channel;
+import com.adaptris.core.http.client.RequestHeaderProvider;
+import com.adaptris.core.metadata.RegexMetadataFilter;
 
 public class CompositeRequestHeadersTest extends RequestHeadersCase {
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {}
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {}
 
   @Test
@@ -53,7 +55,7 @@ public class CompositeRequestHeadersTest extends RequestHeadersCase {
   }
 
   @Test
-  public void testAddHeaders() throws Exception {
+  public void testAddHeaders(TestInfo info) throws Exception {
     Channel c = null;
     HttpURLConnection urlC = null;
     try {
@@ -64,7 +66,7 @@ public class CompositeRequestHeadersTest extends RequestHeadersCase {
       MetadataRequestHeaders meta = new MetadataRequestHeaders();
       meta.setFilter(new RegexMetadataFilter());
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("");
-      String name = testName.getMethodName();
+      String name = info.getDisplayName();
       headers.addProvider(meta);
       msg.addMetadata(name, name);
       urlC = headers.addHeaders(msg, urlC);

@@ -16,17 +16,20 @@
 
 package com.adaptris.security;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.util.Properties;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.security.keystore.ConfiguredUrl;
 import com.adaptris.security.util.Constants;
-import java.util.Properties;
+
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * Test Inline Keystore Functionality wrapping a single KEYSTORE_X509 certificate
@@ -36,7 +39,7 @@ public class TestConfiguredUrl {
 
   private ConfiguredUrl url, copy;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     Config config = Config.getInstance();
     Properties cfg = config.getProperties();

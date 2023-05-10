@@ -15,12 +15,10 @@
  */
 package com.adaptris.core.common;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -30,8 +28,8 @@ public class StringPayloadDataOutputParameterTest {
   private static final String TEXT = "Hello World";
   private static final String UTF_8 = "UTF-8";
 
-  @Rule
-  public TestName testName = new TestName();
+  
+  
 
   @Test
   public void testContentEncoding() {

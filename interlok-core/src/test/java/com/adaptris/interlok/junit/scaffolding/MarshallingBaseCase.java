@@ -16,11 +16,12 @@
 
 package com.adaptris.interlok.junit.scaffolding;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -35,9 +36,11 @@ import java.io.Writer;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
+
 import org.apache.commons.io.FileUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.Channel;
@@ -53,7 +56,7 @@ public abstract class MarshallingBaseCase extends com.adaptris.interlok.junit.sc
 
   protected File testOutputDir;
 
-  @Before
+  @BeforeEach
   public void beforeMyTests() throws Exception {
     testOutputDir = new File(PROPERTIES.getProperty(TEST_DIR));
     testOutputDir.mkdirs();

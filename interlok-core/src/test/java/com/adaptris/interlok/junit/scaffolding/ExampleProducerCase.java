@@ -16,9 +16,12 @@
 
 package com.adaptris.interlok.junit.scaffolding;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.StandaloneProducer;
 
 public abstract class ExampleProducerCase extends ExampleConfigGenerator {

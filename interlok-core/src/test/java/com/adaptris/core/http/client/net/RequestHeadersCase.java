@@ -20,15 +20,12 @@ import java.net.URLConnection;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Rule;
-import org.junit.rules.TestName;
-
 import com.adaptris.core.util.Args;
 
 public abstract class RequestHeadersCase {
 
-  @Rule
-  public TestName testName = new TestName();
+  
+  
 
 
   protected static boolean contains(URLConnection request, String headerKey, String headerValue) {

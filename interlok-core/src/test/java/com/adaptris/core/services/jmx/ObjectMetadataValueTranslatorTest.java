@@ -16,12 +16,15 @@
 
 package com.adaptris.core.services.jmx;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Date;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 
@@ -31,7 +34,7 @@ public class ObjectMetadataValueTranslatorTest {
 
   private AdaptrisMessage message;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     objectMetadataValueTranslator = new ObjectMetadataValueTranslator();
     message = DefaultMessageFactory.getDefaultInstance().newMessage();
@@ -70,7 +73,7 @@ public class ObjectMetadataValueTranslatorTest {
 
     objectMetadataValueTranslator.setValue(message, newValue);
 
-    assertNull(newValue, objectMetadataValueTranslator.getValue(message));
+    assertNull(objectMetadataValueTranslator.getValue(message));
   }
 
   @Test

@@ -1,58 +1,54 @@
 package com.adaptris.interlok.client;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 public class MessageTargetTest {
 
-  @Rule
-  public TestName testName = new TestName();
-
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {}
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {}
 
   @Test
-  public void testAdapter() {
+  public void testAdapter(TestInfo info) {
     MessageTarget t = new MessageTarget();
     assertNull(t.getAdapter());
-    t.setAdapter(testName.getMethodName());
-    assertEquals(testName.getMethodName(), t.getAdapter());
+    t.setAdapter(info.getDisplayName());
+    assertEquals(info.getDisplayName(), t.getAdapter());
   }
 
   @Test
-  public void testChannel() {
+  public void testChannel(TestInfo info) {
     MessageTarget t = new MessageTarget();
     assertNull(t.getChannel());
-    t.setChannel(testName.getMethodName());
-    assertEquals(testName.getMethodName(), t.getChannel());
+    t.setChannel(info.getDisplayName());
+    assertEquals(info.getDisplayName(), t.getChannel());
   }
 
 
   @Test
-  public void testWorkflow() {
+  public void testWorkflow(TestInfo info) {
     MessageTarget t = new MessageTarget();
     assertNull(t.getWorkflow());
-    t.setWorkflow(testName.getMethodName());
-    assertEquals(testName.getMethodName(), t.getWorkflow());
+    t.setWorkflow(info.getDisplayName());
+    assertEquals(info.getDisplayName(), t.getWorkflow());
   }
 
   @Test
-  public void testConvenience() {
+  public void testConvenience(TestInfo info) {
     MessageTarget t =
-        new MessageTarget().withAdapter(testName.getMethodName()).withChannel(testName.getMethodName())
-            .withWorkflow(testName.getMethodName());
-    assertEquals(testName.getMethodName(), t.getAdapter());
-    assertEquals(testName.getMethodName(), t.getChannel());
-    assertEquals(testName.getMethodName(), t.getWorkflow());
+        new MessageTarget().withAdapter(info.getDisplayName()).withChannel(info.getDisplayName())
+            .withWorkflow(info.getDisplayName());
+    assertEquals(info.getDisplayName(), t.getAdapter());
+    assertEquals(info.getDisplayName(), t.getChannel());
+    assertEquals(info.getDisplayName(), t.getWorkflow());
   }
 
 

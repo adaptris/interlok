@@ -20,8 +20,8 @@ import static com.adaptris.interlok.junit.scaffolding.jms.MessageTypeTranslatorC
 import static com.adaptris.interlok.junit.scaffolding.jms.MessageTypeTranslatorCase.addProperties;
 import static com.adaptris.interlok.junit.scaffolding.jms.MessageTypeTranslatorCase.assertJmsProperties;
 import static com.adaptris.interlok.junit.scaffolding.jms.MessageTypeTranslatorCase.assertMetadata;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
@@ -31,9 +31,9 @@ import javax.jms.Message;
 import javax.jms.Session;
 
 import org.apache.activemq.ActiveMQSession;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -53,13 +53,13 @@ public class BlobMessageTranslatorTest
 
   private static EmbeddedActiveMq activeMqBroker;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpAll() throws Exception {
     activeMqBroker = new EmbeddedActiveMq();
     activeMqBroker.start();
   }
   
-  @AfterClass
+  @AfterAll
   public static void tearDownAll() throws Exception {
     if(activeMqBroker != null)
       activeMqBroker.destroy();
@@ -175,8 +175,8 @@ public class BlobMessageTranslatorTest
 
       Message jmsMsg = trans.translate(msg);
 
-      assertNotSame("JMS Priorities should be different", jmsMsg.getJMSPriority(), 9);
-      assertEquals("JMSType should be equal", "idaho", jmsMsg.getJMSType());
+      assertNotSame(jmsMsg.getJMSPriority(), 9);
+      assertEquals("idaho", jmsMsg.getJMSType());
     }
     finally {
       stop(trans);

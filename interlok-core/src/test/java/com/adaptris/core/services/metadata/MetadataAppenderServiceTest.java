@@ -16,10 +16,12 @@
 
 package com.adaptris.core.services.metadata;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -31,7 +33,7 @@ public class MetadataAppenderServiceTest extends MetadataServiceExample {
   private AdaptrisMessage msg;
 
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata("key1", "val1");

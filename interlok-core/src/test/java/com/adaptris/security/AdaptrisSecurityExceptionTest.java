@@ -15,12 +15,15 @@
 */
 package com.adaptris.security;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.lang.reflect.Constructor;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.exc.CertException;
 import com.adaptris.security.exc.DecryptException;
@@ -40,11 +43,11 @@ public class AdaptrisSecurityExceptionTest {
       PasswordException.class.getName(), SignException.class.getName(), VerifyException.class.getName()
   };
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
   }
 

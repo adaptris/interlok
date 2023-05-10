@@ -13,16 +13,17 @@
 package com.adaptris.core.common;
 
 import static com.adaptris.core.common.MetadataDataOutputParameter.DEFAULT_METADATA_KEY;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
 import java.util.Base64;
+
 import org.apache.commons.io.IOUtils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.util.text.Base64ByteTranslator;
@@ -30,8 +31,8 @@ import com.adaptris.util.text.Base64ByteTranslator;
 public class MetadataStreamOutputTest {
   private static final String TEXT = "Hello World";
 
-  @Rule
-  public TestName testName = new TestName();
+  
+  
 
   @Test
   public void testMetadataKey() throws Exception {

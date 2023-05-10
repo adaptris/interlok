@@ -18,7 +18,6 @@ package com.adaptris.core;
 import javax.validation.Valid;
 import com.adaptris.core.PollingTrigger.MessageProvider;
 import com.adaptris.core.http.client.net.HttpRequestService;
-import com.adaptris.core.services.ScriptingServiceImp;
 import com.adaptris.core.services.jdbc.JdbcDataQueryService;
 import com.adaptris.core.services.jdbc.ResultSetTranslator;
 import com.adaptris.core.services.jdbc.SplittingXmlPayloadTranslator;

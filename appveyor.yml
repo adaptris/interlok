@@ -19,7 +19,7 @@ init:
     echo "org.gradle.warning.mode=none" >>$HOME/.gradle/gradle.properties
 
 environment:
-  JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
+  JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
 
 services: mysql
 

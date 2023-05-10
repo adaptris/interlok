@@ -15,9 +15,12 @@
 */
 
 package com.adaptris.core;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Arrays;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.util.LifecycleHelper;
 
 public class DefaultLifecycleStrategyTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {

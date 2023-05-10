@@ -14,14 +14,15 @@
 
 package com.adaptris.security.password;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.Properties;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.stubs.TempFileUtils;
 import com.adaptris.security.exc.PasswordException;
-import java.nio.charset.StandardCharsets;
-import java.util.Properties;
-import org.junit.Test;
 
 public class SeededAesPbeCryptoTest {
 
@@ -36,8 +37,8 @@ public class SeededAesPbeCryptoTest {
     p.setProperty("file-exists", seedFile);
     p.setProperty("non-existent-file", NON_EXISTENT_FILE);
     assertEquals(seedFile, SeededAesPbeCrypto.fromProperties("file-exists", p));
-    assertThrows(Exception.class, () -> SeededAesPbeCrypto.fromProperties("non-existent-file", p));
-    assertThrows(Exception.class, () -> SeededAesPbeCrypto.fromProperties("no-key", p));
+    Assertions.assertThrows(Exception.class, () -> SeededAesPbeCrypto.fromProperties("non-existent-file", p));
+    Assertions.assertThrows(Exception.class, () -> SeededAesPbeCrypto.fromProperties("no-key", p));
   }
 
   // Technically it's a slightly dodgy test because of the way ServiceLoaders work, so we can't
@@ -53,11 +54,11 @@ public class SeededAesPbeCryptoTest {
 
   @Test
   public void testSeededEncodeException() throws Exception {
-    assertThrows(PasswordException.class, () -> new SeededAesPbeCrypto(NON_EXISTENT_FILE).encode(TEXT));
+    Assertions.assertThrows(PasswordException.class, () -> new SeededAesPbeCrypto(NON_EXISTENT_FILE).encode(TEXT));
   }
 
   @Test
   public void testSeededDecodeException() throws Exception {
-    assertThrows(PasswordException.class, () -> new SeededAesPbeCrypto(NON_EXISTENT_FILE).decode(TEXT));
+    Assertions.assertThrows(PasswordException.class, () -> new SeededAesPbeCrypto(NON_EXISTENT_FILE).decode(TEXT));
   }
 }

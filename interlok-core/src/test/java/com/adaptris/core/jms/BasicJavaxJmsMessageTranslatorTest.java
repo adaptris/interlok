@@ -16,9 +16,10 @@
 
 package com.adaptris.core.jms;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import javax.jms.BytesMessage;
 import javax.jms.MapMessage;
 import javax.jms.Message;
@@ -27,22 +28,23 @@ import javax.jms.Session;
 import javax.jms.StreamMessage;
 import javax.jms.TextMessage;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 
 public class BasicJavaxJmsMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpAll() throws Exception {
     activeMqBroker = new EmbeddedActiveMq();
     activeMqBroker.start();
   }
   
-  @AfterClass
+  @AfterAll
   public static void tearDownAll() throws Exception {
     if(activeMqBroker != null)
       activeMqBroker.destroy();
@@ -75,13 +77,13 @@ public class BasicJavaxJmsMessageTranslatorTest extends GenericMessageTypeTransl
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
       addMetadata(msg);
       Message jmsMsg = trans.translate(msg);
-      assertFalse("jmsMsg instanceof TextMessage", jmsMsg instanceof TextMessage);
-      assertFalse("jmsMsg instanceof BytesMessage", jmsMsg instanceof BytesMessage);
-      assertFalse("jmsMsg instanceof MapMessage", jmsMsg instanceof MapMessage);
-      assertFalse("jmsMsg instanceof ObjectMessage", jmsMsg instanceof ObjectMessage);
-      assertFalse("jmsMsg instanceof StreamMessage", jmsMsg instanceof StreamMessage);
+      assertFalse(jmsMsg instanceof TextMessage);
+      assertFalse(jmsMsg instanceof BytesMessage);
+      assertFalse(jmsMsg instanceof MapMessage);
+      assertFalse(jmsMsg instanceof ObjectMessage);
+      assertFalse(jmsMsg instanceof StreamMessage);
       
-      assertTrue("jmsMsg instanceof Message", jmsMsg instanceof Message);
+      assertTrue(jmsMsg instanceof Message);
       assertJmsProperties(jmsMsg);
     }
     finally {
@@ -99,13 +101,13 @@ public class BasicJavaxJmsMessageTranslatorTest extends GenericMessageTypeTransl
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
       addMetadata(msg);
       Message jmsMsg = trans.translate(msg);
-      assertFalse("jmsMsg instanceof TextMessage", jmsMsg instanceof TextMessage);
-      assertFalse("jmsMsg instanceof BytesMessage", jmsMsg instanceof BytesMessage);
-      assertFalse("jmsMsg instanceof MapMessage", jmsMsg instanceof MapMessage);
-      assertFalse("jmsMsg instanceof ObjectMessage", jmsMsg instanceof ObjectMessage);
-      assertFalse("jmsMsg instanceof StreamMessage", jmsMsg instanceof StreamMessage);
+      assertFalse(jmsMsg instanceof TextMessage);
+      assertFalse(jmsMsg instanceof BytesMessage);
+      assertFalse(jmsMsg instanceof MapMessage);
+      assertFalse(jmsMsg instanceof ObjectMessage);
+      assertFalse(jmsMsg instanceof StreamMessage);
       
-      assertTrue("jmsMsg instanceof Message", jmsMsg instanceof Message);
+      assertTrue(jmsMsg instanceof Message);
       assertJmsProperties(jmsMsg);
     }
     finally {

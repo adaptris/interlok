@@ -16,6 +16,17 @@
 
 package com.adaptris.core.http.jetty;
 
+import static com.adaptris.core.security.JunitSecurityHelper.KEYSTORE_PATH;
+import static com.adaptris.core.security.JunitSecurityHelper.KEYSTORE_TYPE;
+import static com.adaptris.core.security.JunitSecurityHelper.SECURITY_PASSWORD;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.net.InetAddress;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
@@ -33,16 +44,6 @@ import com.adaptris.http.legacy.HttpsProduceConnection;
 import com.adaptris.http.legacy.SimpleHttpProducer;
 import com.adaptris.http.legacy.VersionedHttpsProduceConnection;
 import com.adaptris.util.KeyValuePair;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.net.InetAddress;
-
-import static com.adaptris.core.security.JunitSecurityHelper.KEYSTORE_PATH;
-import static com.adaptris.core.security.JunitSecurityHelper.KEYSTORE_TYPE;
-import static com.adaptris.core.security.JunitSecurityHelper.SECURITY_PASSWORD;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 @SuppressWarnings("deprecation")
 public class HttpsConsumerTest extends HttpConsumerTest {
@@ -51,7 +52,7 @@ public class HttpsConsumerTest extends HttpConsumerTest {
   private static final String URL_TO_POST_TO = "/url/to/post/to";
   private static final String XML_PAYLOAD = "<root><document>value</document></root>";
 
-  @Before
+  @BeforeEach
   public void doKeyStore() throws Exception {
     createKeystore();
   }
@@ -72,7 +73,7 @@ public class HttpsConsumerTest extends HttpConsumerTest {
       myHttpProducer.setUrl(createProduceDestinationUrl(connection.getPort()));
       start(myHttpProducer);
       AdaptrisMessage reply = myHttpProducer.request(msg);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
+      assertEquals(XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
     }
     finally {

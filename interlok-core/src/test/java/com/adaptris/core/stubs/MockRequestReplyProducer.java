@@ -17,8 +17,10 @@
 package com.adaptris.core.stubs;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;

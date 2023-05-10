@@ -16,16 +16,19 @@
 
 package com.adaptris.security;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Properties;
 import java.util.Random;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.adaptris.security.keystore.Alias;
 import com.adaptris.security.keystore.ConfiguredUrl;
 import com.adaptris.security.keystore.KeystoreLocation;
@@ -50,7 +53,7 @@ public class TestDefaultSecurityService {
   public TestDefaultSecurityService() {
   }
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     config = Config.getInstance().getProperties();
     if (config == null) {
@@ -71,7 +74,7 @@ public class TestDefaultSecurityService {
     them = new Alias(config.getProperty(Config.KEYSTORE_COMMON_PRIVKEY_ALIAS));
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
   }
 
@@ -88,7 +91,7 @@ public class TestDefaultSecurityService {
     String enc = output.getAsString();
     output = service.verify(enc, us, them);
     String dec = output.getAsString();
-    assertEquals("Data Verification", dec, RAW_DATA);
+    assertEquals(dec, RAW_DATA);
 
   }
 
@@ -105,7 +108,7 @@ public class TestDefaultSecurityService {
     String enc = output.getAsString();
     output = service.verify(enc, us, them);
     String dec = output.getAsString();
-    assertEquals("Data Verification", dec, RAW_DATA);
+    assertEquals(dec, RAW_DATA);
   }
 
   @Test
@@ -123,7 +126,7 @@ public class TestDefaultSecurityService {
     String enc = output.getAsString();
     output = service.verify(enc, us, them);
     String payload = output.getAsString();
-    assertEquals("Data Verification", payload, RAW_DATA);
+    assertEquals(payload, RAW_DATA);
   }
 
   @Test
@@ -142,7 +145,7 @@ public class TestDefaultSecurityService {
     output = service.verify(encrypted, them, us);
     String payload = output.getAsString();
 
-    assertEquals("Data Verification", payload, RAW_DATA);
+    assertEquals(payload, RAW_DATA);
   }
 
 }

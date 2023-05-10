@@ -16,16 +16,19 @@
 
 package com.adaptris.core.management;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class VersionReportTest {
 
@@ -68,9 +71,11 @@ public class VersionReportTest {
     assertEquals("/META-INF/adaptris-version", VersionReport.jarName(url2));
   }
 
-  @Test(expected = RuntimeException.class)
+  @Test
   public void testBuildReport_Broken() throws Exception {
-    new BrokenVersionReport();
+    Assertions.assertThrows(RuntimeException.class, () -> {
+      new BrokenVersionReport();
+    });
   }
 
   @Test

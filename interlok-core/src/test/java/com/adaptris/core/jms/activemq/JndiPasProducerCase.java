@@ -16,18 +16,18 @@
 
 package com.adaptris.core.jms.activemq;
 
+import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
 import static com.adaptris.interlok.junit.scaffolding.BaseCase.execute;
 import static com.adaptris.interlok.junit.scaffolding.BaseCase.start;
 import static com.adaptris.interlok.junit.scaffolding.BaseCase.stop;
 import static com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase.assertMessages;
-import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
@@ -41,31 +41,31 @@ import com.adaptris.util.KeyValuePairSet;
 
 public abstract class JndiPasProducerCase {
 
-  @Rule
-  public TestName testName = new TestName();
+  
+  
 
   protected abstract StandardJndiImplementation createVendorImplementation();
 
   protected static EmbeddedActiveMq activeMqBroker;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpAll() throws Exception {
     activeMqBroker = new EmbeddedActiveMq();
     activeMqBroker.start();
   }
   
-  @AfterClass
+  @AfterAll
   public static void tearDownAll() throws Exception {
     if(activeMqBroker != null)
       activeMqBroker.destroy();
   }
   
   @Test
-  public void testProduceAndConsume() throws Exception {
+  public void testProduceAndConsume(TestInfo info) throws Exception {
     StandardJndiImplementation recvVendorImp = createVendorImplementation();
     StandardJndiImplementation sendVendorImp = createVendorImplementation();
-    String queueName = testName.getMethodName() + "_queue";
-    String topicName = testName.getMethodName() + "_topic";
+    String queueName = info.getDisplayName() + "_queue";
+    String topicName = info.getDisplayName() + "_topic";
 
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJndiPasConnection(recvVendorImp, false, queueName,
             topicName), new PasConsumer().withTopic(topicName));
@@ -80,9 +80,9 @@ public abstract class JndiPasProducerCase {
   }
 
   @Test
-  public void testProduceAndConsume_ExtraConfig() throws Exception {
-    String queueName = testName.getMethodName() + "_queue";
-    String topicName = testName.getMethodName() + "_topic";
+  public void testProduceAndConsume_ExtraConfig(TestInfo info) throws Exception {
+    String queueName = info.getDisplayName() + "_queue";
+    String topicName = info.getDisplayName() + "_topic";
     SimpleFactoryConfiguration sfc = new SimpleFactoryConfiguration();
     KeyValuePairSet kvps = new KeyValuePairSet();
     kvps.add(new KeyValuePair("ClientID", "testProduceAndConsume_ExtraConfig"));
@@ -108,9 +108,9 @@ public abstract class JndiPasProducerCase {
   }
 
   @Test
-  public void testProduceAndConsumeUsingJndiOnly() throws Exception {
-    String queueName = testName.getMethodName() + "_queue";
-    String topicName = testName.getMethodName() + "_topic";
+  public void testProduceAndConsumeUsingJndiOnly(TestInfo info) throws Exception {
+    String queueName = info.getDisplayName() + "_queue";
+    String topicName = info.getDisplayName() + "_topic";
 
     StandardJndiImplementation recvVendorImp = createVendorImplementation();
     StandardJndiImplementation sendVendorImp = createVendorImplementation();
@@ -128,9 +128,9 @@ public abstract class JndiPasProducerCase {
   }
 
   @Test
-  public void testProduceJndiOnlyObjectNotFound() throws Exception {
-    String queueName = testName.getMethodName() + "_queue";
-    String topicName = testName.getMethodName() + "_topic";
+  public void testProduceJndiOnlyObjectNotFound(TestInfo info) throws Exception {
+    String queueName = info.getDisplayName() + "_queue";
+    String topicName = info.getDisplayName() + "_topic";
 
     StandardJndiImplementation sendVendorImp = createVendorImplementation();
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJndiPasConnection(sendVendorImp, true, queueName,

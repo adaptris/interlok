@@ -15,8 +15,12 @@
 */
 package com.adaptris.core.util;
 
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.annotation.InterlokLifecycle;
 import com.adaptris.core.Channel;
@@ -30,21 +34,19 @@ import com.adaptris.core.ServiceImp;
 import com.adaptris.core.StartedState;
 import com.adaptris.core.StateManagedComponent;
 import com.adaptris.core.security.access.EmptyIdentityBuilder;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 
 public class LifecycleHelperTest extends LifecycleHelper {
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
   }
 
@@ -63,8 +65,9 @@ public class LifecycleHelperTest extends LifecycleHelper {
     }
   }
 
-  @Test(expected = CoreException.class)
+  @Test
   public void testLifecycle_Failure() throws Exception {
+    Assertions.assertThrows(CoreException.class, () -> {
     StateManagedComponent failingService = new NullService() {
       @Override
       public void start() throws CoreException {
@@ -77,6 +80,7 @@ public class LifecycleHelperTest extends LifecycleHelper {
     finally {
       stopAndClose(failingService);
     }
+    });
   }
 
   @Test
@@ -129,7 +133,9 @@ public class LifecycleHelperTest extends LifecycleHelper {
     };
     WrappingService service = new WrappingService(nested);
     try {
-      assertThrows(RuntimeException.class, () -> initAndStart(service, false));
+      Assertions.assertThrows(RuntimeException.class, () -> {
+        initAndStart(service, false);
+      });
     } finally {
       stopAndClose(service, false);
     }

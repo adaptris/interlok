@@ -15,9 +15,9 @@
  */
 package com.adaptris.interlok.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.FileFilter;
 import java.util.Map;
@@ -27,7 +27,8 @@ import org.apache.commons.io.filefilter.DelegateFileFilter;
 import org.apache.commons.io.filefilter.FileFileFilter;
 import org.apache.commons.io.filefilter.SizeFileFilter;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class FileFilterBuilderTest extends FileFilterBuilder {
 
@@ -50,9 +51,11 @@ public class FileFilterBuilderTest extends FileFilterBuilder {
     assertEquals(WildcardFileFilter.class, f.getClass());
   }
 
-  @Test(expected = RuntimeException.class)
+  
   public void testNonPrimitiveConstructor() throws Exception {
-    build("*test*.java~*~", DelegateFileFilter.class.getCanonicalName());
+    Assertions.assertThrows(Exception.class, () -> {
+      build("*test*.java~*~", DelegateFileFilter.class.getCanonicalName());
+    });
   }
 
   @Test
@@ -75,10 +78,11 @@ public class FileFilterBuilderTest extends FileFilterBuilder {
     assertEquals(AcceptAny.class, f.getClass());
   }
 
-  @Test(expected = RuntimeException.class)
   public void testInvalidNoArgsConstructor() throws Exception {
+    Assertions.assertThrows(Exception.class, () -> {
     // Since FileFileFilter doesn't have a public noargs constructor.
-    build("", FileFileFilter.class.getCanonicalName());
+      build("", FileFileFilter.class.getCanonicalName());
+    });
   }
 
 }

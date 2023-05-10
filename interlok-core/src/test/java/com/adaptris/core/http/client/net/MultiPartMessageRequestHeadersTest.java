@@ -1,14 +1,14 @@
 package com.adaptris.core.http.client.net;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -99,7 +99,9 @@ public class MultiPartMessageRequestHeadersTest extends RequestHeadersCase {
       MultiPartMessageRequestHeaders headers = new MultiPartMessageRequestHeaders();
       AdaptrisMessage msg = new DefectiveMessageFactory().newMessage();
 
-      assertThrows(RuntimeException.class, () -> headers.addHeaders(msg, urlC));
+      Assertions.assertThrows(RuntimeException.class, () -> {
+        headers.addHeaders(msg, urlC);
+      });
     } finally {
       HttpHelper.stopChannelAndRelease(c);
     }

@@ -19,14 +19,17 @@ package com.adaptris.core.services.splitter;
 import static com.adaptris.core.services.splitter.MessageSplitterServiceImp.KEY_CURRENT_SPLIT_MESSAGE_COUNT;
 import static com.adaptris.core.services.splitter.SplitterCase.createAdvanced;
 import static com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase.execute;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Iterator;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -208,8 +211,8 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     AdaptrisMessage msg = createMessage(REGEXP_DATA);
     service.registerEventHandler(null);
     ExampleServiceCase.execute(service, msg);
-    assertEquals("Number of messages", 4, producer.getMessages().size());
-    assertEquals("splitCount metadata", 4, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
+    assertEquals(4, producer.getMessages().size());
+    assertEquals(4, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
     int count = 0;
     for (AdaptrisMessage m : producer.getMessages()) {
       count ++;
@@ -225,8 +228,8 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     service.registerEventHandler(null);
     service.setSendEvents(true);
     ExampleServiceCase.execute(service, msg);
-    assertEquals("Number of messages", 4, producer.getMessages().size());
-    assertEquals("splitCount metadata", 4,
+    assertEquals(4, producer.getMessages().size());
+    assertEquals(4,
         Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
     int count = 0;
     for (AdaptrisMessage m : producer.getMessages()) {
@@ -247,8 +250,8 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     service.registerEventHandler(eh);
     ExampleServiceCase.execute(service, msg);
     eh.requestClose();
-    assertEquals("Number of messages", 4, producer.getMessages().size());
-    assertEquals("splitCount metadata", 4,
+    assertEquals(4, producer.getMessages().size());
+    assertEquals(4,
         Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
     assertEvents(ehp, 0, MessageLifecycleEvent.class);
 
@@ -272,8 +275,8 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     service.setSendEvents(true);
     ExampleServiceCase.execute(service, msg);
     eh.requestClose();
-    assertEquals("Number of messages", 4, producer.getMessages().size());
-    assertEquals("splitCount metadata", 4, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
+    assertEquals(4, producer.getMessages().size());
+    assertEquals(4, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
     assertEvents(ehp, 4, MessageLifecycleEvent.class);
     int count = 0;
     for (AdaptrisMessage m : producer.getMessages()) {
@@ -295,8 +298,8 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     service.setSendEvents(false);
     ExampleServiceCase.execute(service, msg);
     eh.requestClose();
-    assertEquals("Number of messages", 4, producer.getMessages().size());
-    assertEquals("splitCount metadata", 4, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
+    assertEquals(4, producer.getMessages().size());
+    assertEquals(4, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
     assertEvents(ehp, 0, MessageLifecycleEvent.class);
     int count = 0;
     for (AdaptrisMessage m : producer.getMessages()) {
@@ -332,10 +335,10 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
     });
     service.setIgnoreSplitMessageFailures(true);
     execute(service, msg);
-    assertEquals("Number of messages", 0, producer.getMessages().size());
+    assertEquals(0, producer.getMessages().size());
     // We should still get 4 messages as the splitCount. They may not have been successfully
     // processed, but they were still results from the split!
-    assertEquals("splitCount metadata", 4, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
+    assertEquals(4, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
     int count = 0;
     for (AdaptrisMessage m : producer.getMessages()) {
       count ++;
@@ -360,11 +363,11 @@ public class AdvancedMessageSplitterServiceTest extends BasicMessageSplitterServ
 
   private void assertEvents(MockMessageProducer eh, int msgCount, Class expectedEventClass) throws Exception {
     AdaptrisMarshaller cm = DefaultMarshaller.getDefaultMarshaller();
-    assertEquals("Should have " + msgCount + " produced message", msgCount, eh.getMessages().size());
+    assertEquals(msgCount, eh.getMessages().size());
     for (Iterator i = eh.getMessages().iterator(); i.hasNext();) {
       AdaptrisMessage m = (AdaptrisMessage) i.next();
       Object o = cm.unmarshal(m.getContent());
-      assertEquals("Classname", expectedEventClass, o.getClass());
+      assertEquals(expectedEventClass, o.getClass());
     }
   }
 
