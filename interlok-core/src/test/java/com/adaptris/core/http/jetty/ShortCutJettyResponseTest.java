@@ -19,9 +19,12 @@ import static com.adaptris.core.http.jetty.HttpConsumerTest.JETTY_HTTP_PORT;
 import static com.adaptris.core.http.jetty.HttpConsumerTest.URL_TO_POST_TO;
 import static com.adaptris.core.http.jetty.HttpConsumerTest.XML_PAYLOAD;
 import static com.adaptris.core.http.jetty.JettyHelper.createConnection;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.concurrent.TimeUnit;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;

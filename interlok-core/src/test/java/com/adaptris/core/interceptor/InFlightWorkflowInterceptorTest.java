@@ -16,13 +16,14 @@
 
 package com.adaptris.core.interceptor;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.concurrent.TimeUnit;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.PoolingWorkflow;
@@ -36,14 +37,14 @@ import com.adaptris.util.TimeInterval;
 
 public class InFlightWorkflowInterceptorTest {
 
-  @Rule
-  public TestName testName = new TestName();
-  @Before
+  
+  
+  @BeforeEach
   public void setUp() {
 
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
 
   }

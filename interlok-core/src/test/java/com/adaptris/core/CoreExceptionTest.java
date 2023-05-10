@@ -15,12 +15,15 @@
 */
 package com.adaptris.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.lang.reflect.Constructor;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.jdbc.JdbcParameterException;
 import com.adaptris.core.management.vcs.VcsConflictException;
 import com.adaptris.core.management.vcs.VcsException;
@@ -45,11 +48,11 @@ public class CoreExceptionTest {
       SftpException.class.getName(), DataStoreException.class.getName()
   };
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
   }
 

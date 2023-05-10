@@ -16,13 +16,14 @@
 
 package com.adaptris.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.fail;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestKeyValuePair {
 
@@ -30,7 +31,7 @@ public class TestKeyValuePair {
   KeyValuePair pair2;
 
 
-  @Before
+  @BeforeEach
   public void setUp() {
     pair1 = new KeyValuePair("key", "value");
     pair2 = new KeyValuePair("key", "value");

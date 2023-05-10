@@ -16,30 +16,31 @@
 
 package com.adaptris.core.jms;
 
-import static org.junit.Assert.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+
 import javax.jms.Session;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 import com.adaptris.core.util.LifecycleHelper;
 
 public class JmsConnectionTest {
-  @Rule
-  public TestName testName = new TestName();
+  
+  
 
   private static EmbeddedActiveMq activeMqBroker;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpAll() throws Exception {
     activeMqBroker = new EmbeddedActiveMq();
     activeMqBroker.start();
   }
   
-  @AfterClass
+  @AfterAll
   public static void tearDownAll() throws Exception {
     if(activeMqBroker != null)
       activeMqBroker.destroy();
@@ -61,9 +62,9 @@ public class JmsConnectionTest {
   }
 
   @Test
-  public void testCloneForTesting() throws Exception {
+  public void testCloneForTesting(TestInfo info) throws Exception {
     JmsConnection conn = new JmsConnection();
-    conn.setClientId(testName.getMethodName());
+    conn.setClientId(info.getDisplayName());
     JmsConnection copy = conn.cloneForTesting();
     assertNotSame(conn.getClientId(), copy.getClientId());
   }

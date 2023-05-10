@@ -1,12 +1,16 @@
 package com.adaptris.core.jdbc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
+
 import javax.sql.DataSource;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.util.GuidGenerator;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 

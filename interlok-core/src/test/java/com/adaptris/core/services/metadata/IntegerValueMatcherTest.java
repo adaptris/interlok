@@ -16,12 +16,12 @@
 
 package com.adaptris.core.services.metadata;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
@@ -34,12 +34,12 @@ public class IntegerValueMatcherTest {
   private static final String LESS_THAN = "LessThan";
   private static final String EQUALS = "Equals";
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
 
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
 
   }

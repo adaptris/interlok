@@ -15,10 +15,14 @@
  *******************************************************************************/
 package com.adaptris.core.services.dynamic;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.InputStream;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMarshaller;
@@ -30,44 +34,42 @@ import com.adaptris.core.util.LifecycleHelper;
 
 public class ServiceFromCacheTest {
 
-
   @Test
   public void testGetInputStream() throws Exception {
     CacheConnection conn = createCache("actualCacheKey");
 
-    ServiceFromCache extractor =
-        new ServiceFromCache().withKey("%message{myKey}").withConnection(conn);
-    
+    ServiceFromCache extractor = new ServiceFromCache().withKey("%message{myKey}").withConnection(conn);
+
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata("myKey", "actualCacheKey");
     try {
       LifecycleHelper.initAndStart(extractor);
       try (InputStream in = extractor.getInputStream(msg)) {
         assertNotNull(in);
-        assertEquals(ServiceList.class,
-            DefaultMarshaller.getDefaultMarshaller().unmarshal(in).getClass());
+        assertEquals(ServiceList.class, DefaultMarshaller.getDefaultMarshaller().unmarshal(in).getClass());
       }
     } finally {
       LifecycleHelper.stopAndClose(extractor);
     }
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testNotFound() throws Exception {
-    CacheConnection conn = createCache("actualCacheKey");
+    Assertions.assertThrows(NullPointerException.class, () -> {
+      CacheConnection conn = createCache("actualCacheKey");
 
-    ServiceFromCache extractor =
-        new ServiceFromCache().withKey("%message{myKey}").withConnection(conn);
+      ServiceFromCache extractor = new ServiceFromCache().withKey("%message{myKey}").withConnection(conn);
 
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    msg.addMetadata("myKey", "nonExistentKey");
-    try {
-      LifecycleHelper.initAndStart(extractor);
-      // NPE will be thrown by IOUtils.toInputStream() since it's not in the cache.
-      InputStream in = extractor.getInputStream(msg);
-    } finally {
-      LifecycleHelper.stopAndClose(extractor);
-    }
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+      msg.addMetadata("myKey", "nonExistentKey");
+      try {
+        LifecycleHelper.initAndStart(extractor);
+        // NPE will be thrown by IOUtils.toInputStream() since it's not in the cache.
+        InputStream in = extractor.getInputStream(msg);
+      } finally {
+        LifecycleHelper.stopAndClose(extractor);
+      }
+    });
   }
 
   private CacheConnection createCache(String key) throws Exception {
@@ -76,8 +78,7 @@ public class ServiceFromCacheTest {
     conn.setCacheInstance(cacheInstance);
     LifecycleHelper.initAndStart(conn);
     conn.retrieveCache().put(key,
-        DynamicServiceExecutorTest.createMessage(new ServiceList(new LogMessageService()))
-            .getContent());
+        DynamicServiceExecutorTest.createMessage(new ServiceList(new LogMessageService())).getContent());
     return conn;
   }
 }

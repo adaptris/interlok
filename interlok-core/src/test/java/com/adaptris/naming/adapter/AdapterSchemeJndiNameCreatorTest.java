@@ -15,28 +15,31 @@
 */
 package com.adaptris.naming.adapter;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.NullConnection;
 
 public class AdapterSchemeJndiNameCreatorTest {
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
   }
 
-  @Test(expected = AdapterNamingException.class)
+  @Test
   public void testCreateName_NotConnection() throws Exception {
-    AdapterSchemeJndiNameCreator creator = new AdapterSchemeJndiNameCreator();
-    creator.createName(new Object());
+    Assertions.assertThrows(AdapterNamingException.class, () -> {
+      AdapterSchemeJndiNameCreator creator = new AdapterSchemeJndiNameCreator();
+      creator.createName(new Object());
+    });
   }
 
   @Test

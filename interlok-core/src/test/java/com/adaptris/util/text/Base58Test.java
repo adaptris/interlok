@@ -16,16 +16,20 @@
 
 package com.adaptris.util.text;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.nio.charset.StandardCharsets;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.util.GuidGenerator;
 
 public class Base58Test extends Base58 {
 
-  private static final byte[] BYTES_WITH_NULLS =
-      {(byte) 0x00, (byte) 0x00, (byte) 0x21, (byte) 0xcd, (byte) 0x00, (byte) 0x00, (byte) 0x00};
-  
+  private static final byte[] BYTES_WITH_NULLS = { (byte) 0x00, (byte) 0x00, (byte) 0x21, (byte) 0xcd, (byte) 0x00,
+      (byte) 0x00, (byte) 0x00 };
+
   @Test
   public void testTranslate() throws Exception {
     Base58ByteTranslator b = new Base58ByteTranslator();
@@ -46,9 +50,11 @@ public class Base58Test extends Base58 {
     assertEquals(b58, b.translate(b.translate(b58)));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testTranslate_Invalid() throws Exception {
-    Base58ByteTranslator b = new Base58ByteTranslator();
-    b.translate("blahblah");
+    Assertions.assertThrows(IllegalArgumentException.class, () -> {
+      Base58ByteTranslator b = new Base58ByteTranslator();
+      b.translate("blahblah");
+    });
   }
 }

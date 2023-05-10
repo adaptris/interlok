@@ -17,16 +17,21 @@ package com.adaptris.core.runtime;
 
 import static com.adaptris.core.runtime.AdapterComponentMBean.ID_PREFIX;
 import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_ADAPTER_TYPE;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 import javax.management.JMX;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import org.junit.After;
-import org.junit.Before;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInfo;
+
 import com.adaptris.core.Adapter;
 import com.adaptris.core.Channel;
 import com.adaptris.core.ComponentState;
@@ -49,13 +54,13 @@ public abstract class ComponentManagerCase
   public ComponentManagerCase() {
   }
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     mBeanServer = JmxHelper.findMBeanServer();
     registeredObjects = new ArrayList<ObjectName>();
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     for (ObjectName bean : registeredObjects) {
       if (mBeanServer.isRegistered(bean)) {
@@ -65,8 +70,8 @@ public abstract class ComponentManagerCase
     }
   }
 
-  protected File deleteLater(Object marker) throws IOException {
-    return TempFileUtils.createTrackedFile(testName.getMethodName(), null, marker);
+  protected File deleteLater(Object marker, TestInfo info) throws IOException {
+    return TempFileUtils.createTrackedFile(info.getDisplayName(), null, marker);
   }
 
   protected Adapter createAdapter(String uid) throws CoreException {

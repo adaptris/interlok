@@ -16,14 +16,17 @@
 
 package com.adaptris.security;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.security.cert.Certificate;
 import java.util.Properties;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.adaptris.security.keystore.KeystoreFactory;
 import com.adaptris.security.keystore.KeystoreLocation;
 import com.adaptris.security.keystore.KeystoreProxy;
@@ -46,7 +49,7 @@ public class TestKeyStoreInfoChange {
   }
 
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     config = Config.getInstance().getProperties();
     if (config == null) {

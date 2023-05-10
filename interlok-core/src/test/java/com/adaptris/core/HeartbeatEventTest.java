@@ -1,15 +1,18 @@
 package com.adaptris.core;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
+
 import java.util.Date;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
+
 import com.adaptris.interlok.util.Closer;
 
 public class HeartbeatEventTest {
@@ -20,7 +23,7 @@ public class HeartbeatEventTest {
 
   private AutoCloseable openMocks;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     openMocks = MockitoAnnotations.openMocks(this);
 
@@ -29,7 +32,7 @@ public class HeartbeatEventTest {
     event.setHeartbeatTime(new Date().getTime());
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     Closer.closeQuietly(openMocks);
   }

@@ -19,7 +19,9 @@ package com.adaptris.core.jms;
 import static com.adaptris.core.jms.JndiExtraConfigPtpProducerTest.DEFAULT_FILE_SUFFIX;
 import static com.adaptris.core.jms.JndiExtraConfigPtpProducerTest.DEFAULT_XML_COMMENT;
 import static com.adaptris.core.jms.JndiExtraConfigPtpProducerTest.createJndiVendorImpExample;
-import org.junit.Before;
+
+import org.junit.jupiter.api.BeforeEach;
+
 import com.adaptris.core.StandaloneProducer;
 
 public class JndiExtraConfigPasProducerTest
@@ -29,7 +31,7 @@ public class JndiExtraConfigPasProducerTest
   private PasProducer producer;
 
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     connection = new JmsConnection();
     producer = new PasProducer();

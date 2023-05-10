@@ -16,13 +16,16 @@
 
 package com.adaptris.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Iterator;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.quartz.Scheduler;
+
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
 
@@ -177,12 +180,12 @@ public class QuartzCronPollerTest extends com.adaptris.interlok.junit.scaffoldin
     finally {
       channel.requestClose();
     }
-    assertTrue("No. Produced Messages >=1", mock1.getMessages().size() >= 1);
+    assertTrue(mock1.getMessages().size() >= 1);
     for (Iterator i = mock1.getMessages().iterator(); i.hasNext();) {
       AdaptrisMessage msg = (AdaptrisMessage) i.next();
-      assertEquals("Payloads", PAYLOAD, msg.getContent());
+      assertEquals(PAYLOAD, msg.getContent());
     }
-    assertEquals("No. Produced messages = 0", 0, mock2.getMessages().size());
+    assertEquals(0, mock2.getMessages().size());
   }
 
   @Test
@@ -203,12 +206,12 @@ public class QuartzCronPollerTest extends com.adaptris.interlok.junit.scaffoldin
     finally {
       channel.requestClose();
     }
-    assertTrue("No. Produced Messages >=1", mock1.getMessages().size() >= 1);
+    assertTrue(mock1.getMessages().size() >= 1);
     for (Iterator i = mock1.getMessages().iterator(); i.hasNext();) {
       AdaptrisMessage msg = (AdaptrisMessage) i.next();
-      assertEquals("Payloads", PAYLOAD, msg.getContent());
+      assertEquals(PAYLOAD, msg.getContent());
     }
-    assertEquals("No. Produced messages = 0", 0, mock2.getMessages().size());
+    assertEquals(0, mock2.getMessages().size());
   }
 
   private StandardWorkflow createWorkflow(QuartzCronPoller poller, AdaptrisMessageProducer prod) {

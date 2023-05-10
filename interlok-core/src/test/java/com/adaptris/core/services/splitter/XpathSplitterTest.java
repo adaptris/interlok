@@ -16,12 +16,12 @@
 
 package com.adaptris.core.services.splitter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
@@ -30,8 +30,8 @@ import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
@@ -67,7 +67,7 @@ public class XpathSplitterTest extends SplitterCase {
   private BasicMessageSplitterService service;
 
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     producer = new MockMessageProducer();
     service = createBasic(new XpathMessageSplitter(ENVELOPE_DOCUMENT, ENCODING_UTF8));
@@ -157,11 +157,11 @@ public class XpathSplitterTest extends SplitterCase {
     int count = 0;
     try (CloseableIterable<AdaptrisMessage> closeable = splitter.splitMessage(msg)) {
       for (AdaptrisMessage m : closeable) {
-        assertFalse("No Object Metadata", m.getObjectHeaders().containsKey(obj));
+        assertFalse(m.getObjectHeaders().containsKey(obj));
         count++;
       }
     }
-    assertEquals("Number of messages", 3, count);
+    assertEquals(3, count);
 
   }
 
@@ -178,7 +178,7 @@ public class XpathSplitterTest extends SplitterCase {
         count++;
       }
     }
-    assertEquals("Number of messages", 3, count);
+    assertEquals(3, count);
   }
 
   @Test
@@ -191,12 +191,12 @@ public class XpathSplitterTest extends SplitterCase {
     int count = 0;
     try (CloseableIterable<AdaptrisMessage> closeable = splitter.splitMessage(msg)) {
       for (AdaptrisMessage m : closeable) {
-        assertTrue("Object Metadata", m.getObjectHeaders().containsKey(obj));
+        assertTrue(m.getObjectHeaders().containsKey(obj));
         assertEquals(obj, m.getObjectHeaders().get(obj));
         count++;
       }
     }
-    assertEquals("Number of messages", 3, count);
+    assertEquals(3, count);
   }
 
   @Test
@@ -235,7 +235,7 @@ public class XpathSplitterTest extends SplitterCase {
         count++;
       }
     }
-    assertEquals("Number of messages", 2, count);
+    assertEquals(2, count);
   }
 
   @Test
@@ -243,7 +243,7 @@ public class XpathSplitterTest extends SplitterCase {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
     msg.addMetadata("key", "value");
     execute(service, msg);
-    assertEquals("Number of messages", 3, producer.getMessages().size());
+    assertEquals(3, producer.getMessages().size());
   }
 
   @Test
@@ -262,7 +262,7 @@ public class XpathSplitterTest extends SplitterCase {
         assertNotNull(xpath.selectSingleNode(XmlHelper.createDocument(m, builder), "/svrl:failed-assert"));
       }
     }
-    assertEquals("Number of messages", 2, count);
+    assertEquals(2, count);
   }
 
   @Test

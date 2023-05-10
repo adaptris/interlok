@@ -17,7 +17,9 @@
 package com.adaptris.core;
 
 import java.util.concurrent.TimeUnit;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.stubs.MockChannel;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.util.TimeInterval;

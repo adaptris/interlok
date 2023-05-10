@@ -19,10 +19,12 @@ package com.adaptris.core.security;
 import static com.adaptris.core.security.EncryptionServiceCase.applyConfigForSamples;
 import static com.adaptris.core.security.JunitSecurityHelper.SECURITY_ALIAS;
 import static com.adaptris.core.security.JunitSecurityHelper.SECURITY_PASSWORD;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreConstants;
@@ -82,7 +84,7 @@ public class DecryptionServiceTest extends SecurityServiceCase {
     output.setFailId(FAIL);
     output.setSuccessId(SUCCESS);
     execute(output, msg);
-    assertEquals("Payload equality", EXAMPLE_MSG, msg.getContent());
+    assertEquals(EXAMPLE_MSG, msg.getContent());
     assertEquals(SUCCESS, msg.getNextServiceId());
     assertTrue(!msg.getObjectHeaders().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION));
 

@@ -14,15 +14,17 @@
 
 package com.adaptris.core.transform.schema;
 
-import static com.adaptris.core.BaseCase.PROPERTIES;
-import static com.adaptris.core.ServiceCase.execute;
 import static com.adaptris.core.transform.XmlValidationServiceTest.KEY_INPUT_FILE;
 import static com.adaptris.core.transform.XmlValidationServiceTest.KEY_WILL_NOT_VALIDATE;
 import static com.adaptris.core.transform.XmlValidationServiceTest.KEY_WILL_VALIDATE_SCHEMA;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
+import static com.adaptris.interlok.junit.scaffolding.BaseCase.PROPERTIES;
+import static com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase.execute;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.XStreamMarshaller;
 import com.adaptris.core.stubs.MessageHelper;

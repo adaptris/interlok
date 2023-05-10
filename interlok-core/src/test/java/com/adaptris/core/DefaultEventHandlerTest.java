@@ -15,11 +15,14 @@
 */
 
 package com.adaptris.core;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.UUID;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.event.AdapterCloseEvent;
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.PtpProducer;
@@ -93,8 +96,8 @@ public class DefaultEventHandlerTest
     input.requestClose();
     AdaptrisMessageProducer p2 = input.getProducer();
     AdaptrisConnection con2 = input.getConnection();
-    assertEquals("Producers when closed", p1, p2);
-    assertEquals("Connections when closed", con1, con2);
+    assertEquals(p1, p2, "Producers when closed");
+    assertEquals(con1, con2, "Connections when closed");
     assertRoundtripEquality(p1, p2);
     assertRoundtripEquality(con1, con2);
   }

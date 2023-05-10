@@ -9,7 +9,8 @@ dependencies {
   api ("jakarta.validation:jakarta.validation-api:2.0.2")
   // compile files("${System.getProperty('java.home')}/../lib/tools.jar")
 
-  testImplementation("junit:junit:4.13.2")
+  testImplementation ("org.junit.jupiter:junit-jupiter-api:5.9.2")
+  testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.9.2")
   testImplementation("org.hibernate.validator:hibernate-validator:6.1.7.Final")
   testImplementation("org.glassfish:jakarta.el:3.0.4")
 }

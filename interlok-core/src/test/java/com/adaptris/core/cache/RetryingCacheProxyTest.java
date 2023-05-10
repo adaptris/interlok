@@ -18,17 +18,17 @@ package com.adaptris.core.cache;
 import static com.adaptris.core.util.LifecycleHelper.initAndStart;
 import static com.adaptris.core.util.LifecycleHelper.stopAndClose;
 import static com.adaptris.core.util.LifecycleHelper.waitQuietly;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.LifecycleHelper;
@@ -36,11 +36,11 @@ import com.adaptris.util.TimeInterval;
 
 public class RetryingCacheProxyTest {
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
 
   }

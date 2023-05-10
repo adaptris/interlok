@@ -16,14 +16,13 @@
 
 package com.adaptris.core.http;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -31,21 +30,18 @@ import com.adaptris.core.DefaultMessageFactory;
 
 public class MetadataContentTypeProviderTest {
 
-  @Rule
-  public TestName testName = new TestName();
-
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {}
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {}
 
   @Test
-  public void testGetContentType() throws Exception {
-    MetadataContentTypeProvider provider = new MetadataContentTypeProvider(testName.getMethodName());
+  public void testGetContentType(TestInfo info) throws Exception {
+    MetadataContentTypeProvider provider = new MetadataContentTypeProvider(info.getDisplayName());
 
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("");
-    msg.addMetadata(testName.getMethodName(), "text/complicated");
+    msg.addMetadata(info.getDisplayName(), "text/complicated");
 
     String contentType = provider.getContentType(msg);
     assertEquals("text/complicated", contentType);
@@ -53,12 +49,12 @@ public class MetadataContentTypeProviderTest {
 
 
   @Test
-  public void testGetContentType_WithCharset() throws Exception {
-    MetadataContentTypeProvider provider = new MetadataContentTypeProvider(testName.getMethodName());
+  public void testGetContentType_WithCharset(TestInfo info) throws Exception {
+    MetadataContentTypeProvider provider = new MetadataContentTypeProvider(info.getDisplayName());
 
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("");
     msg.setContentEncoding("UTF-8");
-    msg.addMetadata(testName.getMethodName(), "text/complicated");
+    msg.addMetadata(info.getDisplayName(), "text/complicated");
 
     String contentType = provider.getContentType(msg);
     assertEquals("text/complicated; charset=UTF-8", contentType);
@@ -66,8 +62,8 @@ public class MetadataContentTypeProviderTest {
 
 
   @Test
-  public void testGetContentType_MetadataKeyNonExistent() throws Exception {
-    MetadataContentTypeProvider provider = new MetadataContentTypeProvider(testName.getMethodName());
+  public void testGetContentType_MetadataKeyNonExistent(TestInfo info) throws Exception {
+    MetadataContentTypeProvider provider = new MetadataContentTypeProvider(info.getDisplayName());
 
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("");
     String contentType = provider.getContentType(msg);
@@ -75,11 +71,11 @@ public class MetadataContentTypeProviderTest {
   }
 
   @Test
-  public void testGetContentType_NullMetadataKey() throws Exception {
+  public void testGetContentType_NullMetadataKey(TestInfo test) throws Exception {
     MetadataContentTypeProvider provider = new MetadataContentTypeProvider();
 
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("");
-    msg.addMetadata(testName.getMethodName(), "text/complicated");
+    msg.addMetadata(test.getDisplayName(), "text/complicated");
     try {
       provider.getContentType(msg);
       fail();

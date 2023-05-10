@@ -24,18 +24,21 @@ import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_PASSWORD;
 import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_TEST_STATEMENT;
 import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_URL_ROOT;
 import static com.adaptris.jdbc.connection.FailoverConfig.JDBC_USERNAME;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.util.JdbcUtil;
 
 /**
@@ -44,7 +47,7 @@ import com.adaptris.core.util.JdbcUtil;
  */
 public class FailoverConnectionTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     initialiseDatabase();
   }
@@ -114,8 +117,8 @@ public class FailoverConnectionTest extends com.adaptris.interlok.junit.scaffold
   public void testFailoverConfigClone() throws Exception {
     FailoverConfig fc1 = createFailoverConfig();
     FailoverConfig fc2 = (FailoverConfig) fc1.clone();
-    assertEquals(fc1.toString(), fc1, fc2);
-    assertEquals(fc1.toString(), fc1.hashCode(), fc2.hashCode());
+    assertEquals(fc1, fc2);
+    assertEquals(fc1.hashCode(), fc2.hashCode());
   }
 
   @Test

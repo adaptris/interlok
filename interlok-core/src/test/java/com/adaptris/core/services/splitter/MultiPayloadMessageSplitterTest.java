@@ -1,11 +1,14 @@
 package com.adaptris.core.services.splitter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.MessageLifecycleEvent;
@@ -25,7 +28,7 @@ public class MultiPayloadMessageSplitterTest extends SplitterCase
 	private MultiPayloadMessageSplitter splitter;
 	private MultiPayloadAdaptrisMessage message;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception
 	{
 		splitter = createSplitterForTests();

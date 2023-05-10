@@ -21,7 +21,7 @@ import static com.adaptris.interlok.junit.scaffolding.BaseCase.start;
 import static com.adaptris.interlok.junit.scaffolding.BaseCase.stop;
 import static com.adaptris.interlok.junit.scaffolding.BaseCase.waitForMessages;
 import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.DEFAULT_PAYLOAD;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,9 +31,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -74,13 +74,13 @@ public class ActiveMqJmsTransactedWorkflowTest {
 
   private static EmbeddedActiveMq activeMqBroker;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpAll() throws Exception {
     activeMqBroker = new EmbeddedActiveMq();
     activeMqBroker.start();
   }
   
-  @AfterClass
+  @AfterAll
   public static void tearDownAll() throws Exception {
     if(activeMqBroker != null)
       activeMqBroker.destroy();

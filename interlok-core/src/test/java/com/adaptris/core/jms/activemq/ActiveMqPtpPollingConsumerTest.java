@@ -24,11 +24,10 @@ import static com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase.create
 
 import java.util.concurrent.TimeUnit;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.StandaloneConsumer;
@@ -41,31 +40,31 @@ import com.adaptris.util.TimeInterval;
 
 public class ActiveMqPtpPollingConsumerTest {
   
-  @Rule
-  public TestName testName = new TestName();
+  
+  
   
   private static EmbeddedActiveMq activeMqBroker;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpAll() throws Exception {
     activeMqBroker = new EmbeddedActiveMq();
     activeMqBroker.start();
   }
   
-  @AfterClass
+  @AfterAll
   public static void tearDownAll() throws Exception {
     if(activeMqBroker != null)
       activeMqBroker.destroy();
   }
 
   @Test
-  public void testProduceConsume() throws Exception {
+  public void testProduceConsume(TestInfo info) throws Exception {
 
     int msgCount = 5;
     final StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
-        new PtpProducer().withQueue((testName.getMethodName())));
+        new PtpProducer().withQueue((info.getDisplayName())));
     final StandaloneConsumer receiver =
-        createConsumer(activeMqBroker, "testProduceConsume", testName.getMethodName());
+        createConsumer(activeMqBroker, "testProduceConsume", info.getDisplayName());
     try {
       MockMessageListener jms = new MockMessageListener();
       receiver.registerAdaptrisMessageListener(jms);

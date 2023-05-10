@@ -1,10 +1,13 @@
 package com.adaptris.core.jdbc;
 
 import static com.adaptris.core.jdbc.DefaultPoolFactoryTest.createConnection;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.concurrent.TimeUnit;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.util.TimeInterval;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 

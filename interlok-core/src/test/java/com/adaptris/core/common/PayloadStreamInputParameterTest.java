@@ -15,7 +15,7 @@
  */
 package com.adaptris.core.common;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,9 +24,8 @@ import java.nio.charset.Charset;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -38,9 +37,6 @@ import com.adaptris.util.GuidGenerator;
 public class PayloadStreamInputParameterTest {
 
   private static final String TEXT = "Hello World";
-
-  @Rule
-  public TestName testName = new TestName();
 
   @Test
   public void testExtract() throws Exception {
@@ -64,13 +60,14 @@ public class PayloadStreamInputParameterTest {
     }
   }
 
-
-  @Test(expected = CoreException.class)
+  @Test
   public void testExtractWithException() throws Exception {
-    PayloadStreamInputParameter p = new PayloadStreamInputParameter();
-    AdaptrisMessage msg = new MyDefectiveMessage();
-    try (InputStream in = p.extract(msg)) {
-    }
+    Assertions.assertThrows(CoreException.class, () -> {
+      PayloadStreamInputParameter p = new PayloadStreamInputParameter();
+      AdaptrisMessage msg = new MyDefectiveMessage();
+      try (InputStream in = p.extract(msg)) {
+      }
+    });
   }
 
   private class MyDefectiveMessage extends DefectiveAdaptrisMessage {

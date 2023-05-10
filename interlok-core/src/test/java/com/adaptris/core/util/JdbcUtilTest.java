@@ -15,22 +15,26 @@
 */
 package com.adaptris.core.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.util.Properties;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.jdbc.JdbcConnection;
@@ -39,7 +43,6 @@ import com.adaptris.security.exc.PasswordException;
 
 // This is all just a bit of fakery to get 100% (ha ha).
 public class JdbcUtilTest extends JdbcUtil {
-
 
   @Test
   public void testClose_AutoCloseable() throws Exception {
@@ -115,16 +118,18 @@ public class JdbcUtilTest extends JdbcUtil {
     }
   }
 
-  @Test(expected = PasswordException.class)
+  @Test
   public void testMergeProperties() throws Exception {
-    Properties p = new Properties();
-    mergeConnectionProperties(p, "user", "password");
-    assertEquals("user", p.getProperty("user"));
-    assertEquals("password", p.getProperty("password"));
-    p = new Properties();
-    mergeConnectionProperties(p, "", "");
-    assertEquals(0, p.size());
-    mergeConnectionProperties(p, "", "SEED:ABCDEFGGHJ");
+    Assertions.assertThrows(PasswordException.class, () -> {
+      Properties p = new Properties();
+      mergeConnectionProperties(p, "user", "password");
+      assertEquals("user", p.getProperty("user"));
+      assertEquals("password", p.getProperty("password"));
+      p = new Properties();
+      mergeConnectionProperties(p, "", "");
+      assertEquals(0, p.size());
+      mergeConnectionProperties(p, "", "SEED:ABCDEFGGHJ");
+    });
   }
 
   @Test
@@ -135,7 +140,6 @@ public class JdbcUtilTest extends JdbcUtil {
     testConnection(c, false); // won't fail because of the first isEmptyCheck
     testConnection(c, true);
   }
-
 
   @Test
   public void testTestConnection_NotValid() throws Exception {
@@ -150,7 +154,6 @@ public class JdbcUtilTest extends JdbcUtil {
 
     }
   }
-
 
   @Test
   public void testGetConnection() throws Exception {

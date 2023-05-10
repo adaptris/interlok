@@ -17,6 +17,7 @@
 package com.adaptris.core.jms;
 
 import java.util.concurrent.TimeUnit;
+
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 import com.adaptris.util.TimeInterval;

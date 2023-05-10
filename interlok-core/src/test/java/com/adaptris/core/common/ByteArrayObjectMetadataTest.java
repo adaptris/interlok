@@ -15,13 +15,17 @@
  */
 package com.adaptris.core.common;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
+
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 
@@ -37,12 +41,14 @@ public class ByteArrayObjectMetadataTest {
     byte[] wrapped = new ByteArrayFromObjectMetadata().withKey(KEY).wrap(msg);
     assertNull(wrapped);
   }
-  
-  @Test(expected = ClassCastException.class)
+
+  @Test
   public void testWrapNotByteArray() throws Exception {
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    msg.getObjectHeaders().put(KEY, new Object());
-    byte[] wrapped = new ByteArrayFromObjectMetadata().withKey(KEY).wrap(msg);
+    Assertions.assertThrows(ClassCastException.class, () -> {
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+      msg.getObjectHeaders().put(KEY, new Object());
+      byte[] wrapped = new ByteArrayFromObjectMetadata().withKey(KEY).wrap(msg);
+    });
   }
 
   @Test

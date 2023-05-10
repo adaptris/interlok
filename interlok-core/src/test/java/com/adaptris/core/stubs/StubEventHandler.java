@@ -17,6 +17,7 @@
 package com.adaptris.core.stubs;
 
 import java.util.Map;
+
 import com.adaptris.core.ClosedState;
 import com.adaptris.core.ComponentState;
 import com.adaptris.core.CoreException;

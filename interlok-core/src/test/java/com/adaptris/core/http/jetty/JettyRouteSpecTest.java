@@ -18,9 +18,11 @@ package com.adaptris.core.http.jetty;
 import static com.adaptris.core.http.jetty.JettyRouteConditionTest.RECORD_ID;
 import static com.adaptris.core.http.jetty.JettyRouteConditionTest.REGEX_WITH_GROUP;
 import static com.adaptris.core.http.jetty.JettyRouteConditionTest.URI;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.http.jetty.JettyRouteCondition.JettyRoute;
 import com.adaptris.core.util.LifecycleHelper;

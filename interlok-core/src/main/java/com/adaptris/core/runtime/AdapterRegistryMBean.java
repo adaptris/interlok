@@ -444,11 +444,18 @@ public interface AdapterRegistryMBean extends BaseComponentMBean {
   AdapterBuilderMBean getBuilder(Properties p) throws InstanceNotFoundException;
 
   /**
+   * Get All the builders object names.
+   * 
+   * @return all the available builders object names.
+   */
+  Set<ObjectName> getBuilders();
+  
+  /**
    * Get All the builders.
    * 
    * @return all the available builders.
    */
-  Set<ObjectName> getBuilders();
+  Set<AdapterBuilder> builders();
   
   /**
    * Will return a Map of {@link ManagementComponentInfo}'s.  The key to the map

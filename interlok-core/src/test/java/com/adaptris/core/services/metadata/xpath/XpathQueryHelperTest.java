@@ -1,14 +1,17 @@
 package com.adaptris.core.services.metadata.xpath;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.XmlHelper;
@@ -19,21 +22,21 @@ public class XpathQueryHelperTest {
   @Test
   public void testResolveSingleTextItem() throws Exception {
     DocumentBuilderFactoryBuilder builder = DocumentBuilderFactoryBuilder.newInstance();
-    Document doc =
-        XmlHelper.createDocument(XpathQueryCase.XML, builder);
+    Document doc = XmlHelper.createDocument(XpathQueryCase.XML, builder);
     XPath xpathToUse = XPath.newXPathInstance(builder, null);
 
     assertNotNull(XpathQueryHelper.resolveSingleTextItem(doc, xpathToUse, "//source-id", false));
-    assertEquals("partnera",
-        XpathQueryHelper.resolveSingleTextItem(doc, xpathToUse, "//source-id", false));
+    assertEquals("partnera", XpathQueryHelper.resolveSingleTextItem(doc, xpathToUse, "//source-id", false));
   }
 
-  @Test(expected = CoreException.class)
+  @Test
   public void testResolveSingleTextItem_Missing_AllowEmptyFalse() throws Exception {
-    DocumentBuilderFactoryBuilder builder = DocumentBuilderFactoryBuilder.newInstance();
-    Document doc = XmlHelper.createDocument(XpathQueryCase.XML, builder);
-    XPath xpathToUse = XPath.newXPathInstance(builder, null);
-    XpathQueryHelper.resolveSingleTextItem(doc, xpathToUse, "//@MissingAttribute", false);
+    Assertions.assertThrows(CoreException.class, () -> {
+      DocumentBuilderFactoryBuilder builder = DocumentBuilderFactoryBuilder.newInstance();
+      Document doc = XmlHelper.createDocument(XpathQueryCase.XML, builder);
+      XPath xpathToUse = XPath.newXPathInstance(builder, null);
+      XpathQueryHelper.resolveSingleTextItem(doc, xpathToUse, "//@MissingAttribute", false);
+    });
   }
 
   @Test
@@ -41,8 +44,7 @@ public class XpathQueryHelperTest {
     DocumentBuilderFactoryBuilder builder = DocumentBuilderFactoryBuilder.newInstance();
     Document doc = XmlHelper.createDocument(XpathQueryCase.XML, builder);
     XPath xpathToUse = XPath.newXPathInstance(builder, null);
-    assertEquals("",
-        XpathQueryHelper.resolveSingleTextItem(doc, xpathToUse, "//@MissingAttribute", true));
+    assertEquals("", XpathQueryHelper.resolveSingleTextItem(doc, xpathToUse, "//@MissingAttribute", true));
   }
 
   @Test
@@ -51,18 +53,18 @@ public class XpathQueryHelperTest {
     Document doc = XmlHelper.createDocument(XpathQueryCase.XML, builder);
     XPath xpathToUse = XPath.newXPathInstance(builder, null);
 
-    assertNotNull(
-        XpathQueryHelper.resolveMultipleTextItems(doc, xpathToUse, "//extra", false, "|"));
-    assertEquals("one|two|three",
-        XpathQueryHelper.resolveMultipleTextItems(doc, xpathToUse, "//extra", false, "|"));
+    assertNotNull(XpathQueryHelper.resolveMultipleTextItems(doc, xpathToUse, "//extra", false, "|"));
+    assertEquals("one|two|three", XpathQueryHelper.resolveMultipleTextItems(doc, xpathToUse, "//extra", false, "|"));
   }
 
-  @Test(expected = CoreException.class)
+  @Test
   public void testResolveMultipleTextItems_Missing_AllowEmptyFalse() throws Exception {
-    DocumentBuilderFactoryBuilder builder = DocumentBuilderFactoryBuilder.newInstance();
-    Document doc = XmlHelper.createDocument(XpathQueryCase.XML, builder);
-    XPath xpathToUse = XPath.newXPathInstance(builder, null);
-    XpathQueryHelper.resolveMultipleTextItems(doc, xpathToUse, "//@MissingAttribute", false, "|");
+    Assertions.assertThrows(CoreException.class, () -> {
+      DocumentBuilderFactoryBuilder builder = DocumentBuilderFactoryBuilder.newInstance();
+      Document doc = XmlHelper.createDocument(XpathQueryCase.XML, builder);
+      XPath xpathToUse = XPath.newXPathInstance(builder, null);
+      XpathQueryHelper.resolveMultipleTextItems(doc, xpathToUse, "//@MissingAttribute", false, "|");
+    });
   }
 
   @Test
@@ -70,11 +72,8 @@ public class XpathQueryHelperTest {
     DocumentBuilderFactoryBuilder builder = DocumentBuilderFactoryBuilder.newInstance();
     Document doc = XmlHelper.createDocument(XpathQueryCase.XML, builder);
     XPath xpathToUse = XPath.newXPathInstance(builder, null);
-    assertEquals("",
-        XpathQueryHelper.resolveMultipleTextItems(doc, xpathToUse, "//@MissingAttribute", true,
-            "|"));
+    assertEquals("", XpathQueryHelper.resolveMultipleTextItems(doc, xpathToUse, "//@MissingAttribute", true, "|"));
   }
-
 
   @Test
   public void testResolveSingleNode() throws Exception {
@@ -85,12 +84,14 @@ public class XpathQueryHelperTest {
     assertNotNull(XpathQueryHelper.resolveSingleNode(doc, xpathToUse, "//source-id", false));
   }
 
-  @Test(expected = CoreException.class)
+  @Test
   public void testResolveSingleNode_Missing_AllowEmptyFalse() throws Exception {
-    DocumentBuilderFactoryBuilder builder = DocumentBuilderFactoryBuilder.newInstance();
-    Document doc = XmlHelper.createDocument(XpathQueryCase.XML, builder);
-    XPath xpathToUse = XPath.newXPathInstance(builder, null);
-    XpathQueryHelper.resolveSingleNode(doc, xpathToUse, "//@MissingAttribute", false);
+    Assertions.assertThrows(CoreException.class, () -> {
+      DocumentBuilderFactoryBuilder builder = DocumentBuilderFactoryBuilder.newInstance();
+      Document doc = XmlHelper.createDocument(XpathQueryCase.XML, builder);
+      XPath xpathToUse = XPath.newXPathInstance(builder, null);
+      XpathQueryHelper.resolveSingleNode(doc, xpathToUse, "//@MissingAttribute", false);
+    });
   }
 
   @Test
@@ -100,7 +101,6 @@ public class XpathQueryHelperTest {
     XPath xpathToUse = XPath.newXPathInstance(builder, null);
     assertNull(XpathQueryHelper.resolveSingleNode(doc, xpathToUse, "//@MissingAttribute", true));
   }
-
 
   @Test
   public void testResolveMultipleNode() throws Exception {
@@ -113,12 +113,14 @@ public class XpathQueryHelperTest {
     assertEquals(3, nodelist.getLength());
   }
 
-  @Test(expected = CoreException.class)
+  @Test
   public void testResolveMultipleNode_Missing_AllowEmptyFalse() throws Exception {
-    DocumentBuilderFactoryBuilder builder = DocumentBuilderFactoryBuilder.newInstance();
-    Document doc = XmlHelper.createDocument(XpathQueryCase.XML, builder);
-    XPath xpathToUse = XPath.newXPathInstance(builder, null);
-    XpathQueryHelper.resolveNodeList(doc, xpathToUse, "//@MissingAttribute", false);
+    Assertions.assertThrows(CoreException.class, () -> {
+      DocumentBuilderFactoryBuilder builder = DocumentBuilderFactoryBuilder.newInstance();
+      Document doc = XmlHelper.createDocument(XpathQueryCase.XML, builder);
+      XPath xpathToUse = XPath.newXPathInstance(builder, null);
+      XpathQueryHelper.resolveNodeList(doc, xpathToUse, "//@MissingAttribute", false);
+    });
   }
 
   @Test
@@ -126,8 +128,7 @@ public class XpathQueryHelperTest {
     DocumentBuilderFactoryBuilder builder = DocumentBuilderFactoryBuilder.newInstance();
     Document doc = XmlHelper.createDocument(XpathQueryCase.XML, builder);
     XPath xpathToUse = XPath.newXPathInstance(builder, null);
-    NodeList nodelist =
-        XpathQueryHelper.resolveNodeList(doc, xpathToUse, "//@MissingAttribute", true);
+    NodeList nodelist = XpathQueryHelper.resolveNodeList(doc, xpathToUse, "//@MissingAttribute", true);
     assertNotNull(nodelist);
     assertEquals(0, nodelist.getLength());
   }

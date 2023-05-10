@@ -15,18 +15,20 @@
 */
 package com.adaptris.core.http.jetty;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -37,17 +39,17 @@ import com.adaptris.interlok.junit.scaffolding.BaseCase;
 
 public class JettyHashUserRealmVerifierTest {
 
-  @Rule
-  public TestName testName = new TestName();
+  
+  
 
   private Properties config;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     config = BaseCase.PROPERTIES;
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
 
   }
@@ -153,11 +155,11 @@ public class JettyHashUserRealmVerifierTest {
   }
 
   @Test
-  public void testValidate_BadPassword() throws Exception {
+  public void testValidate_BadPassword(TestInfo info) throws Exception {
     JettyHashUserRealmVerifier verify = new JettyHashUserRealmVerifier(config.getProperty(HttpConsumerTest.JETTY_USER_REALM));
     Map<String, Object> identityMap = new HashMap<>();
     identityMap.put(JettyHashUserRealmVerifier.KEY_USERNAME, "user");
-    identityMap.put(JettyHashUserRealmVerifier.KEY_PASSWORD, testName.getMethodName());
+    identityMap.put(JettyHashUserRealmVerifier.KEY_PASSWORD, info.getDisplayName());
     try {
       BaseCase.start(verify);
       assertFalse(verify.validate(createIdentityBuilderFromMap(identityMap), null));
@@ -168,11 +170,11 @@ public class JettyHashUserRealmVerifierTest {
   }
 
   @Test
-  public void testValidate_BadUser() throws Exception {
+  public void testValidate_BadUser(TestInfo info) throws Exception {
     JettyHashUserRealmVerifier verify = new JettyHashUserRealmVerifier(config.getProperty(HttpConsumerTest.JETTY_USER_REALM));
     Map<String, Object> identityMap = new HashMap<>();
-    identityMap.put(JettyHashUserRealmVerifier.KEY_USERNAME, testName.getMethodName());
-    identityMap.put(JettyHashUserRealmVerifier.KEY_PASSWORD, testName.getMethodName());
+    identityMap.put(JettyHashUserRealmVerifier.KEY_USERNAME, info.getDisplayName());
+    identityMap.put(JettyHashUserRealmVerifier.KEY_PASSWORD, info.getDisplayName());
     try {
       BaseCase.start(verify);
       assertFalse(verify.validate(createIdentityBuilderFromMap(identityMap), null));

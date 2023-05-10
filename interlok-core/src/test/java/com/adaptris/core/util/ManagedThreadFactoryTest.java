@@ -15,26 +15,27 @@
 */
 package com.adaptris.core.util;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.util.TimeInterval;
 
 public class ManagedThreadFactoryTest {
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
   }
 
@@ -62,33 +63,39 @@ public class ManagedThreadFactoryTest {
     t.join();
   }
 
-  @Test(expected = RejectedExecutionException.class)
+  @Test
   public void testShutdownQuietlyExecutors_Quick() throws Exception {
-    ManagedThreadFactory.shutdownQuietly(null, new TimeInterval(1L, TimeUnit.SECONDS));
-    ExecutorService executor = Executors.newCachedThreadPool(new ManagedThreadFactory());
-    executor.submit(new Runnable() {
-      @Override
-      public void run() {}
+    Assertions.assertThrows(RejectedExecutionException.class, () -> {
+      ManagedThreadFactory.shutdownQuietly(null, new TimeInterval(1L, TimeUnit.SECONDS));
+      ExecutorService executor = Executors.newCachedThreadPool(new ManagedThreadFactory());
+      executor.submit(new Runnable() {
+        @Override
+        public void run() {
+        }
 
-    });
-    ManagedThreadFactory.shutdownQuietly(executor, new TimeInterval(1L, TimeUnit.SECONDS));
-    executor.submit(new Runnable() {
-      @Override
-      public void run() {}
+      });
+      ManagedThreadFactory.shutdownQuietly(executor, new TimeInterval(1L, TimeUnit.SECONDS));
+      executor.submit(new Runnable() {
+        @Override
+        public void run() {
+        }
 
+      });
     });
   }
 
-
-  @Test(expected = RejectedExecutionException.class)
+  @Test
   public void testShutdownQuietlyExecutors_Slow() throws Exception {
-    ExecutorService executor = Executors.newCachedThreadPool(new ManagedThreadFactory());
-    executor.submit(new StayingAlive());
-    ManagedThreadFactory.shutdownQuietly(executor, new TimeInterval(1L, TimeUnit.SECONDS));
-    executor.submit(new Runnable() {
-      @Override
-      public void run() {}
-      
+    Assertions.assertThrows(RejectedExecutionException.class, () -> {
+      ExecutorService executor = Executors.newCachedThreadPool(new ManagedThreadFactory());
+      executor.submit(new StayingAlive());
+      ManagedThreadFactory.shutdownQuietly(executor, new TimeInterval(1L, TimeUnit.SECONDS));
+      executor.submit(new Runnable() {
+        @Override
+        public void run() {
+        }
+
+      });
     });
   }
 
@@ -98,8 +105,7 @@ public class ManagedThreadFactoryTest {
     public void run() {
       try {
         TimeUnit.MINUTES.sleep(1);
-      }
-      catch (InterruptedException e) {
+      } catch (InterruptedException e) {
       }
     }
 

@@ -16,16 +16,16 @@
 
 package com.adaptris.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.util.GuidGenerator;
 
@@ -96,16 +96,16 @@ public class MessageLifecycleEventTest {
   public void testSetChannelId() throws Exception {
     MessageLifecycleEvent mle = new MessageLifecycleEvent();
     mle.setChannelId(DEFAULT_ID);
-    assertEquals(mle.toString(), 0, mle.getMleMarkers().size());
-    assertEquals(mle.toString(), DEFAULT_ID, mle.getChannelId());
+    assertEquals(0, mle.getMleMarkers().size());
+    assertEquals(DEFAULT_ID, mle.getChannelId());
   }
 
   @Test
   public void testSetWorkflowId() throws Exception {
     MessageLifecycleEvent mle = new MessageLifecycleEvent();
     mle.setWorkflowId(DEFAULT_ID);
-    assertEquals(mle.toString(), 0, mle.getMleMarkers().size());
-    assertEquals(mle.toString(), DEFAULT_ID, mle.getWorkflowId());
+    assertEquals(0, mle.getMleMarkers().size());
+    assertEquals(DEFAULT_ID, mle.getWorkflowId());
   }
 
   @Test
@@ -119,42 +119,42 @@ public class MessageLifecycleEventTest {
     catch (IllegalArgumentException expected) {
 
     }
-    assertEquals(m.toString(), DEFAULT_ID, m.getName());
+    assertEquals(DEFAULT_ID, m.getName());
   }
 
   @Test
   public void testMleMarkerSetCreationTime() throws Exception {
     MleMarker m = new MleMarker();
     m.setCreationTime(0);
-    assertEquals(m.toString(), 0, m.getCreationTime());
+    assertEquals(0, m.getCreationTime());
   }
 
   @Test
   public void testMleMarkerSetSequenceNumber() throws Exception {
     MleMarker m = new MleMarker();
     m.setSequenceNumber(0);
-    assertEquals(m.toString(), 0, m.getSequenceNumber());
+    assertEquals(0, m.getSequenceNumber());
   }
 
   @Test
   public void testMleMarkerSetWasSuccessful() throws Exception {
     MleMarker m = new MleMarker();
     m.setWasSuccessful(false);
-    assertEquals(m.toString(), false, m.getWasSuccessful());
+    assertEquals(false, m.getWasSuccessful());
   }
 
   @Test
   public void testMleMarkerSetUniqueId() throws Exception {
     MleMarker m = new MleMarker();
     m.setUniqueId(DEFAULT_ID);
-    assertEquals(m.toString(), DEFAULT_ID, m.getUniqueId());
+    assertEquals(DEFAULT_ID, m.getUniqueId());
   }
 
   @Test
   public void testMleMarkerSetIsTrackingEndpoint() throws Exception {
     MleMarker m = new MleMarker();
     m.setIsTrackingEndpoint(true);
-    assertEquals(m.toString(), true, m.getIsTrackingEndpoint());
+    assertEquals(true, m.getIsTrackingEndpoint());
   }
 
   @Test
@@ -162,7 +162,7 @@ public class MessageLifecycleEventTest {
   public void testMleMarkerSetIsConfirmation() throws Exception {
     MleMarker m = new MleMarker();
     m.setIsConfirmation(true);
-    assertEquals(m.toString(), true, m.getIsConfirmation());
+    assertEquals(true, m.getIsConfirmation());
   }
 
   @Test
@@ -170,14 +170,14 @@ public class MessageLifecycleEventTest {
   public void testMleMarkerSetConfirmationId() throws Exception {
     MleMarker m = new MleMarker();
     m.setConfirmationId(DEFAULT_ID);
-    assertEquals(m.toString(), DEFAULT_ID, m.getConfirmationId());
+    assertEquals(DEFAULT_ID, m.getConfirmationId());
   }
 
   @Test
   public void testMleMarkerClone() throws Exception {
     MleMarker m = new MleMarker(MLEMARKER_NAME, true, 0, DEFAULT_ID);
     MleMarker m2 = (MleMarker) m.clone();
-    assertEquals(m.toString(), m, m2);
+    assertEquals(m, m2);
     assertFalse(m == m2);
   }
 

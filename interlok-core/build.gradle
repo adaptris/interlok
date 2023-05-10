@@ -102,7 +102,8 @@ dependencies {
   api ("org.apache.derby:derby:$derbyDriverVersion")
   api ("org.apache.derby:derbytools:$derbyDriverVersion")
 
-  testImplementation ("junit:junit:4.13.2")
+  testImplementation ("org.junit.jupiter:junit-jupiter-api:5.9.2")
+  testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.9.2")
   testImplementation ("org.apache.activemq:artemis-jms-server:2.28.0")
   testImplementation ("oro:oro:2.0.8")
   testImplementation ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
@@ -133,6 +134,21 @@ dependencies {
 
 }
 
+jar {
+  manifest {
+    attributes("Built-By": System.getProperty('user.name'),
+               "Build-Jdk": System.getProperty('java.version'),
+               "Implementation-Title": componentName,
+               "Implementation-Version": project.version,
+               "Implementation-Vendor-Id": project.group,
+               "Implementation-Vendor": organizationName,
+			   "Add-Opens": "java.base/java.lang java.base/java.util",
+               "Main-Class": "com.adaptris.interlok.boot.InterlokLauncher")
+  }
+  from ("$project.buildDir/spring-boot-loader") {
+    exclude 'META-INF/MANIFEST.MF'
+  }
+}
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
   classifier = 'javadoc'
@@ -302,6 +318,9 @@ test {
       maxFailures = 20
     }
   }
+  
+  jvmArgs = ['--add-opens', 'java.base/java.lang=ALL-UNNAMED', '--add-opens', 'java.base/java.util=ALL-UNNAMED']
+  useJUnitPlatform()
 }
 
 publishing {

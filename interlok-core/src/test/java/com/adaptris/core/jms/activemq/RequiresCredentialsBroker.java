@@ -18,6 +18,7 @@ package com.adaptris.core.jms.activemq;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
 import org.apache.activemq.broker.BrokerPlugin;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.filter.DestinationMapEntry;
@@ -26,7 +27,8 @@ import org.apache.activemq.security.AuthorizationEntry;
 import org.apache.activemq.security.AuthorizationPlugin;
 import org.apache.activemq.security.DefaultAuthorizationMap;
 import org.apache.activemq.security.SimpleAuthenticationPlugin;
-import org.junit.Assume;
+import org.junit.jupiter.api.Assumptions;
+
 import com.adaptris.interlok.junit.scaffolding.jms.JmsConfig;
 
 public class RequiresCredentialsBroker extends EmbeddedActiveMq {
@@ -38,7 +40,7 @@ public class RequiresCredentialsBroker extends EmbeddedActiveMq {
 
   public RequiresCredentialsBroker() throws Exception {
     super();
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    Assumptions.assumeTrue(JmsConfig.jmsTestsEnabled());
   }
 
   @Override

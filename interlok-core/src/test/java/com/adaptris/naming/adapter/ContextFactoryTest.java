@@ -15,7 +15,7 @@
 */
 package com.adaptris.naming.adapter;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Hashtable;
 
@@ -23,19 +23,20 @@ import javax.naming.ConfigurationException;
 import javax.naming.Context;
 import javax.naming.NamingException;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.JndiContextFactory;
 
 public class ContextFactoryTest {
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
   }
 
@@ -54,16 +55,20 @@ public class ContextFactoryTest {
     ctx.unbind("testGetObjectInstance_String");
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testGetObjectInstance_Object() throws Exception {
-    adapterURLContextFactory factory = new adapterURLContextFactory();
-    factory.getObjectInstance(new Object(), null, null, new Hashtable());
+    Assertions.assertThrows(IllegalArgumentException.class, () -> {
+      adapterURLContextFactory factory = new adapterURLContextFactory();
+      factory.getObjectInstance(new Object(), null, null, new Hashtable());
+    });
   }
 
-  @Test(expected = ConfigurationException.class)
+  @Test
   public void testGetObjectInstance_EmptyStringArray() throws Exception {
-    adapterURLContextFactory factory = new adapterURLContextFactory();
-    factory.getObjectInstance(new String[0], null, null, new Hashtable());
+    Assertions.assertThrows(ConfigurationException.class, () -> {
+      adapterURLContextFactory factory = new adapterURLContextFactory();
+      factory.getObjectInstance(new String[0], null, null, new Hashtable());
+    });
   }
 
   @Test
@@ -73,9 +78,9 @@ public class ContextFactoryTest {
     ctx.bind("testGetObjectInstance_StringArray", bindObject);
     adapterURLContextFactory factory = new adapterURLContextFactory();
     assertEquals(bindObject,
-    factory.getObjectInstance(new String[] {
-        "adapter:comp/env/xxx", "adapter:comp/env/yyy", "testGetObjectInstance_StringArray"
-        }, null, null, new Hashtable()));
+        factory.getObjectInstance(
+            new String[] { "adapter:comp/env/xxx", "adapter:comp/env/yyy", "testGetObjectInstance_StringArray" }, null,
+            null, new Hashtable()));
   }
 
 }

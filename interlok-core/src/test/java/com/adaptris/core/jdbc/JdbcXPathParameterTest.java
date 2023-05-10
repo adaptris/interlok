@@ -16,11 +16,13 @@
 
 package com.adaptris.core.jdbc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.util.KeyValuePair;
@@ -42,7 +44,7 @@ public class JdbcXPathParameterTest extends NullableParameterCase {
   		"</body>" +
   		"</head>";
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     message = DefaultMessageFactory.getDefaultInstance().newMessage(XML_PAYLOAD);
   }

@@ -16,6 +16,11 @@
 
 package com.adaptris.core.stubs;
 
+import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageProducerImp;
 import com.adaptris.core.CoreException;
@@ -26,11 +31,6 @@ import com.adaptris.interlok.util.Args;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.IdGenerator;
 import com.adaptris.util.PlainIdGenerator;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 
 /**
  * <p>

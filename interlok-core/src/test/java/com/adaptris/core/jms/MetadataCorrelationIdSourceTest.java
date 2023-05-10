@@ -18,19 +18,19 @@ package com.adaptris.core.jms;
 
 import static com.adaptris.interlok.junit.scaffolding.BaseCase.start;
 import static com.adaptris.interlok.junit.scaffolding.BaseCase.stop;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -44,13 +44,13 @@ public class MetadataCorrelationIdSourceTest {
 
   private static EmbeddedActiveMq activeMqBroker;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpAll() throws Exception {
     activeMqBroker = new EmbeddedActiveMq();
     activeMqBroker.start();
   }
 
-  @AfterClass
+  @AfterAll
   public static void tearDownAll() throws Exception {
     if(activeMqBroker != null) {
       activeMqBroker.destroy();
@@ -125,7 +125,7 @@ public class MetadataCorrelationIdSourceTest {
       jmsMsg.setJMSCorrelationID(TEXT2);
       MetadataCorrelationIdSource mcs = new MetadataCorrelationIdSource(CORRELATIONID_KEY);
       mcs.processCorrelationId(jmsMsg, adpMsg);
-      assertEquals("Check Correlation Id Keys", jmsMsg.getJMSCorrelationID(), adpMsg.getMetadataValue(CORRELATIONID_KEY));
+      assertEquals(jmsMsg.getJMSCorrelationID(), adpMsg.getMetadataValue(CORRELATIONID_KEY));
       session.close();
     }
     finally {

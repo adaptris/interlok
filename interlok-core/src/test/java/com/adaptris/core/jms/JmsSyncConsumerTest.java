@@ -29,12 +29,12 @@ import java.util.concurrent.TimeUnit;
 import javax.jms.MessageConsumer;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -60,24 +60,24 @@ public class JmsSyncConsumerTest extends PollingJmsConsumerCase {
   
   private static EmbeddedActiveMq activeMqBroker;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpAll() throws Exception {
     activeMqBroker = new EmbeddedActiveMq();
     activeMqBroker.start();
   }
   
-  @AfterClass
+  @AfterAll
   public static void tearDownAll() throws Exception {
     if(activeMqBroker != null)
       activeMqBroker.destroy();
   }
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     openMocks = MockitoAnnotations.openMocks(this);
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     Closer.closeQuietly(openMocks);
   }
@@ -129,7 +129,7 @@ public class JmsSyncConsumerTest extends PollingJmsConsumerCase {
 
   @Test
   public void testDeferConsumerCreationToVendor() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    Assumptions.assumeTrue(JmsConfig.jmsTestsEnabled());
 
     when(mockVendor.createConsumer(any(), any(), any(JmsActorConfig.class))).thenReturn(mockMessageConsumer);
 
@@ -156,7 +156,7 @@ public class JmsSyncConsumerTest extends PollingJmsConsumerCase {
 
   @Test
   public void testDefaultFalseDeferConsumerCreationToVendor() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    Assumptions.assumeTrue(JmsConfig.jmsTestsEnabled());
 
     when(mockVendor.createConsumer(any(JmsDestination.class), any(String.class), any(JmsActorConfig.class)))
     .thenReturn(mockMessageConsumer);

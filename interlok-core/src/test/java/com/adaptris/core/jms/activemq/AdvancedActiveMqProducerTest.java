@@ -17,11 +17,13 @@
 package com.adaptris.core.jms.activemq;
 
 import static com.adaptris.core.jms.activemq.AdvancedActiveMqImplementationTest.createImpl;
+
 import org.apache.activemq.ActiveMQPrefetchPolicy;
 import org.apache.activemq.RedeliveryPolicy;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.JmsConnection;
@@ -33,13 +35,13 @@ import com.adaptris.util.KeyValuePair;
 
 public class AdvancedActiveMqProducerTest extends BasicActiveMqProducerTest {
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpAll() throws Exception {
     activeMqBroker = new EmbeddedActiveMq();
     activeMqBroker.start();
   }
   
-  @AfterClass
+  @AfterAll
   public static void tearDownAll() throws Exception {
     if(activeMqBroker != null)
       activeMqBroker.destroy();

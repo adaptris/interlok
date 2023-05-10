@@ -19,7 +19,9 @@ package com.adaptris.http.legacy;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+
 import org.apache.commons.io.IOUtils;
+
 import com.adaptris.core.security.PrivateKeyPasswordProvider;
 import com.adaptris.http.Https;
 import com.adaptris.security.exc.PasswordException;

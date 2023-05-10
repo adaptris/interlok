@@ -16,6 +16,23 @@
 
 package com.adaptris.core.services.metadata;
 
+import static com.adaptris.core.services.metadata.ReadMetadataFromFilesystemTest.BASE_DIR;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
@@ -28,22 +45,6 @@ import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.services.metadata.WriteMetadataToFilesystem.OutputStyle;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.GuidGenerator;
-import org.junit.Test;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
-import static com.adaptris.core.services.metadata.ReadMetadataFromFilesystemTest.BASE_DIR;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class WriteMetadataToFilesystemTest extends MetadataServiceExample {
 

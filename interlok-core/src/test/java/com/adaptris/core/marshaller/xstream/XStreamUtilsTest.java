@@ -16,10 +16,10 @@
 
 package com.adaptris.core.marshaller.xstream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,7 +32,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.Adapter;
 import com.adaptris.core.ServiceList;
@@ -62,7 +63,7 @@ public class XStreamUtilsTest extends XStreamUtils {
 
   @Test
   public void testToXmlElementName() {
-    assertNull("", XStreamUtils.toXmlElementName(null));
+    assertNull(XStreamUtils.toXmlElementName(null));
     assertEquals("", XStreamUtils.toXmlElementName(""));
     assertEquals("m", XStreamUtils.toXmlElementName("m"));
     assertEquals("m", XStreamUtils.toXmlElementName("M"));
@@ -93,11 +94,13 @@ public class XStreamUtilsTest extends XStreamUtils {
     }
   }
 
-  @Test(expected = IOException.class)
+  @Test
   public void testGetClasses_Exception() throws Exception {
-    try (InputStream in = new StreamUtilTest.ErroringInputStream()) {
-      List<Class<?>> classes = getClasses(in);
-    }
+    Assertions.assertThrows(IOException.class, () -> {
+      try (InputStream in = new StreamUtilTest.ErroringInputStream()) {
+        List<Class<?>> classes = getClasses(in);
+      }
+    });
   }
 
   @Test

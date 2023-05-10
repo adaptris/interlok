@@ -18,6 +18,7 @@ package com.adaptris.core.stubs;
 
 import java.util.List;
 import java.util.function.Consumer;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageListener;
 import com.adaptris.core.Channel;

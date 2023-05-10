@@ -18,18 +18,19 @@ package com.adaptris.core.jms.activemq;
 import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
 import static com.adaptris.interlok.junit.scaffolding.BaseCase.start;
 import static com.adaptris.interlok.junit.scaffolding.BaseCase.stop;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
 
 import javax.jms.Queue;
 import javax.jms.Topic;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.StandaloneProducer;
@@ -39,13 +40,13 @@ import com.adaptris.util.KeyValuePair;
 
 public class DestinationCacheJndiPtpProducerTest extends JndiPtpProducerCase {
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpAll() throws Exception {
     activeMqBroker = new EmbeddedActiveMq();
     activeMqBroker.start();
   }
   
-  @AfterClass
+  @AfterAll
   public static void tearDownAll() throws Exception {
     if(activeMqBroker != null)
       activeMqBroker.destroy();
@@ -57,11 +58,11 @@ public class DestinationCacheJndiPtpProducerTest extends JndiPtpProducerCase {
   }
 
   @Test
-  public void testProduceWithCache() throws Exception {
+  public void testProduceWithCache(TestInfo info) throws Exception {
     DestinationCachingJndiVendorImpl sendVendorImp = new DestinationCachingJndiVendorImpl();
     sendVendorImp.setUseJndiForQueues(true);
-    String queueName = testName.getMethodName() + "_queue";
-    String topicName = testName.getMethodName() + "_topic";
+    String queueName = info.getDisplayName() + "_queue";
+    String topicName = info.getDisplayName() + "_topic";
 
     StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJndiPtpConnection(sendVendorImp, false,
             queueName, topicName), new PtpProducer().withQueue((queueName)));
@@ -78,10 +79,10 @@ public class DestinationCacheJndiPtpProducerTest extends JndiPtpProducerCase {
   }
 
   @Test
-  public void testProduceWithCacheExceeded() throws Exception {
+  public void testProduceWithCacheExceeded(TestInfo info) throws Exception {
     DestinationCachingJndiVendorImpl jv = new DestinationCachingJndiVendorImpl(2);
-    String queueName = testName.getMethodName() + "_queue";
-    String topicName = testName.getMethodName() + "_topic";
+    String queueName = info.getDisplayName() + "_queue";
+    String topicName = info.getDisplayName() + "_topic";
 
     StandaloneProducer sp1 =
         new StandaloneProducer(activeMqBroker.getJndiPtpConnection(jv, false, queueName, topicName),

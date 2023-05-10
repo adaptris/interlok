@@ -16,17 +16,20 @@
 
 package com.adaptris.core.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
 import java.util.concurrent.TimeUnit;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
@@ -45,7 +48,7 @@ public class RetryingServiceWrapperTest extends GeneralServiceExample {
   private Service wrappedService;
 
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     retryingServiceWrapper = new RetryingServiceWrapper();
 

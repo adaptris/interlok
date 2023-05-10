@@ -18,20 +18,25 @@ package com.adaptris.core.runtime;
 
 import static com.adaptris.core.runtime.AdapterComponentMBean.ID_PREFIX;
 import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_FAILED_MESSAGE_RETRIER_TYPE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.TimeUnit;
+
 import javax.management.JMX;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -169,7 +174,7 @@ public class DefaultFailedMessageRetrierJmxTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testMBean_Retry_File() throws Exception {
+  public void testMBean_Retry_File(TestInfo info) throws Exception {
     Adapter adapter = createAdapter(getName());
     Channel c = createChannel(getName());
     StandardWorkflow wf = createWorkflow(getName());
@@ -182,7 +187,7 @@ public class DefaultFailedMessageRetrierJmxTest extends ComponentManagerCase {
 
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata(Workflow.WORKFLOW_ID_KEY, getName() + "@" + getName());
-    File fileToRetry = writeFile(msg, new MimeEncoder());
+    File fileToRetry = writeFile(msg, new MimeEncoder(), info);
 
     AdapterManager adapterManager = new AdapterManager(adapter);
     try {
@@ -202,7 +207,7 @@ public class DefaultFailedMessageRetrierJmxTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testMBean_Retry_File_WorkflowNotFound() throws Exception {
+  public void testMBean_Retry_File_WorkflowNotFound(TestInfo info) throws Exception {
     Adapter adapter = createAdapter(getName());
     Channel c = createChannel(getName());
     StandardWorkflow wf = createWorkflow(getName());
@@ -215,7 +220,7 @@ public class DefaultFailedMessageRetrierJmxTest extends ComponentManagerCase {
 
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata(Workflow.WORKFLOW_ID_KEY, getName() + "@BLAHBLAH");
-    File fileToRetry = writeFile(msg, new MimeEncoder());
+    File fileToRetry = writeFile(msg, new MimeEncoder(), info);
 
     AdapterManager adapterManager = new AdapterManager(adapter);
     try {
@@ -235,7 +240,7 @@ public class DefaultFailedMessageRetrierJmxTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testMBean_Retry_File_NotEncoded() throws Exception {
+  public void testMBean_Retry_File_NotEncoded(TestInfo info) throws Exception {
     Adapter adapter = createAdapter(getName());
     Channel c = createChannel(getName());
     StandardWorkflow wf = createWorkflow(getName());
@@ -248,7 +253,7 @@ public class DefaultFailedMessageRetrierJmxTest extends ComponentManagerCase {
 
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata(Workflow.WORKFLOW_ID_KEY, getName() + "@BLAHBLAH");
-    File fileToRetry = writeFile(msg, null);
+    File fileToRetry = writeFile(msg, null, info);
 
     AdapterManager adapterManager = new AdapterManager(adapter);
     try {
@@ -273,7 +278,7 @@ public class DefaultFailedMessageRetrierJmxTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testMBean_Retry_File_NotFoundException() throws Exception {
+  public void testMBean_Retry_File_NotFoundException(TestInfo info) throws Exception {
     Adapter adapter = createAdapter(getName());
     Channel c = createChannel(getName());
     StandardWorkflow wf = createWorkflow(getName());
@@ -286,7 +291,7 @@ public class DefaultFailedMessageRetrierJmxTest extends ComponentManagerCase {
 
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata(Workflow.WORKFLOW_ID_KEY, getName() + "@BLAHBLAH");
-    File fileToRetry = writeFile(msg, new MimeEncoder());
+    File fileToRetry = writeFile(msg, new MimeEncoder(), info);
     fileToRetry.delete();
 
     AdapterManager adapterManager = new AdapterManager(adapter);
@@ -379,8 +384,8 @@ public class DefaultFailedMessageRetrierJmxTest extends ComponentManagerCase {
     }
   }
 
-  private File writeFile(AdaptrisMessage msg, MimeEncoder encoder) throws IOException, CoreException {
-    File result = deleteLater(msg);
+  private File writeFile(AdaptrisMessage msg, MimeEncoder encoder, TestInfo info) throws IOException, CoreException {
+    File result = deleteLater(msg, info);
     try (OutputStream out = new FileOutputStream(result)) {
       if (encoder != null) {
         encoder.writeMessage(msg, out);

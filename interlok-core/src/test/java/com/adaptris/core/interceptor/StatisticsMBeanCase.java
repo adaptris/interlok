@@ -23,17 +23,21 @@ import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_ADAPTER_TYPE;
 import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_METRICS_TYPE;
 import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_WORKFLOW_TYPE;
 import static com.adaptris.core.runtime.AdapterComponentMBean.WORKFLOW_PREFIX;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 import javax.management.JMX;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.Adapter;
 import com.adaptris.core.Channel;
 import com.adaptris.core.CoreException;
@@ -55,13 +59,13 @@ public abstract class StatisticsMBeanCase extends com.adaptris.interlok.junit.sc
   protected MBeanServer mBeanServer;
   protected List<ObjectName> registeredObjects;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     mBeanServer = JmxHelper.findMBeanServer();
     registeredObjects = new ArrayList<ObjectName>();
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     for (ObjectName bean : registeredObjects) {
       if (mBeanServer.isRegistered(bean)) {

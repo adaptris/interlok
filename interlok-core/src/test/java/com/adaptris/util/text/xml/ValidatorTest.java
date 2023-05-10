@@ -17,9 +17,11 @@ package com.adaptris.util.text.xml;
 
 import java.io.InputStream;
 import java.io.Reader;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.stubs.MessageHelper;
 import com.adaptris.core.transform.XmlValidationServiceTest;

@@ -16,6 +16,19 @@
 
 package com.adaptris.core.ftp;
 
+import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_FILENAME;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_PASSWORD;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_USERNAME;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_WORK_DIR_CANONICAL;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.PAYLOAD;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.SLASH;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import org.junit.jupiter.api.Test;
+import org.mockftpserver.fake.FakeFtpServer;
+import org.mockftpserver.fake.filesystem.FileSystem;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -29,18 +42,6 @@ import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.MimeHelper;
 import com.adaptris.util.text.mime.BodyPartIterator;
-import org.junit.Test;
-import org.mockftpserver.fake.FakeFtpServer;
-import org.mockftpserver.fake.filesystem.FileSystem;
-
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_FILENAME;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_PASSWORD;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_USERNAME;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_WORK_DIR_CANONICAL;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.PAYLOAD;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.SLASH;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 public class AggregatingFtpConsumeServiceTest extends AggregatingServiceExample {
 

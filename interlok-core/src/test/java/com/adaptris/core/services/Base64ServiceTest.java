@@ -16,10 +16,13 @@
 
 package com.adaptris.core.services;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
@@ -36,8 +39,7 @@ public class Base64ServiceTest extends GeneralServiceExample {
     execute(new Base64EncodeService().withStyle(Base64Encoding.MIME), msg);
     execute(new Base64DecodeService(), msg);
 
-    assertEquals("base64 then debase64 gives same result", LINE, msg
-        .getContent());
+    assertEquals(LINE, msg.getContent());
   }
 
   @Override

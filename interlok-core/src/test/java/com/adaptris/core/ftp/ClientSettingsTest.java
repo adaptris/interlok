@@ -15,28 +15,29 @@
 */
 package com.adaptris.core.ftp;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPSClient;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.ftp.ClientSettings;
 
 public class ClientSettingsTest extends ClientSettings {
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
   }
 
@@ -52,13 +53,15 @@ public class ClientSettingsTest extends ClientSettings {
     assertTrue(client.getAutodetectUTF8());
   }
 
-  @Test(expected = RuntimeException.class)
+  @Test
   public void testPreConnectSettings_FTP_Error() {
-    FTPClient client = new FTPClient();
-    Map<String, String> settings = createFtpSettings();
-    // Should throw a NumberFormatException, which is then wrapped
-    settings.put(FTP.SendDataSocketBufferSize.name(), "XXX");
-    preConnectSettings(client, FTP.values(), settings);
+    Assertions.assertThrows(RuntimeException.class, () -> {
+      FTPClient client = new FTPClient();
+      Map<String, String> settings = createFtpSettings();
+      // Should throw a NumberFormatException, which is then wrapped
+      settings.put(FTP.SendDataSocketBufferSize.name(), "XXX");
+      preConnectSettings(client, FTP.values(), settings);
+    });
   }
 
   @Test
@@ -95,7 +98,8 @@ public class ClientSettingsTest extends ClientSettings {
   private Map<String, String> createFtpsSettings() {
     Map<String, String> settings = new HashMap<>();
     settings.put(FTPS.AuthValue.name(), "localhost");
-    settings.put(FTPS.EnabledCipherSuites.name(), "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384");
+    settings.put(FTPS.EnabledCipherSuites.name(),
+        "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384");
     settings.put(FTPS.EnabledProtocols.name(), "SSLv3,SSLv2");
     settings.put(FTPS.EnabledSessionCreation.name(), "true");
     settings.put(FTPS.EndpointCheckingEnabled.name(), "true");

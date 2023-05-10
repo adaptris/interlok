@@ -14,10 +14,11 @@
 
 package com.adaptris.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,10 +29,12 @@ import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.awaitility.Awaitility;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.core.services.metadata.AddMetadataService;
@@ -74,11 +77,11 @@ public class ThreadContextWorkflowTest
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD_1);
       start(channel);
       workflow.onAdaptrisMessage(msg);
-      assertEquals("Make sure all produced", 1, producer.getMessages().size());
+      assertEquals(1, producer.getMessages().size());
       for (Iterator i = producer.getMessages().iterator(); i.hasNext();) {
         AdaptrisMessage m = (AdaptrisMessage) i.next();
         assertEquals(PAYLOAD_2, m.getContent());
-        assertTrue("Contains correct metadata key", m.headersContainsKey(METADATA_KEY));
+        assertTrue(m.headersContainsKey(METADATA_KEY));
         assertEquals(METADATA_VALUE, m.getMetadataValue(METADATA_KEY));
       }
       waitForMessages(eventProd, 1);
@@ -110,11 +113,11 @@ public class ThreadContextWorkflowTest
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD_1);
       start(channel);
       workflow.onAdaptrisMessage(msg);
-      assertEquals("Make sure all produced", 1, producer.getMessages().size());
+      assertEquals(1, producer.getMessages().size());
       for (Iterator i = producer.getMessages().iterator(); i.hasNext();) {
         AdaptrisMessage m = (AdaptrisMessage) i.next();
         assertEquals(PAYLOAD_2, m.getContent());
-        assertTrue("Contains correct metadata key", m.headersContainsKey(METADATA_KEY));
+        assertTrue(m.headersContainsKey(METADATA_KEY));
         assertEquals(METADATA_VALUE, m.getMetadataValue(METADATA_KEY));
       }
       waitForMessages(eventProd, 0);
@@ -148,11 +151,11 @@ public class ThreadContextWorkflowTest
         AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(PAYLOAD_1);
         workflow.onAdaptrisMessage(msg);
       }
-      assertEquals("Make sure all produced", count, producer.messageCount());
-      assertEquals("Make sure all intercepted", count, interceptor.messageCount());
+      assertEquals(count, producer.messageCount());
+      assertEquals(count, interceptor.messageCount());
       for (AdaptrisMessage m : producer.getMessages()) {
         assertEquals(PAYLOAD_2, m.getContent());
-        assertTrue("Contains correct metadata key", m.headersContainsKey(METADATA_KEY));
+        assertTrue(m.headersContainsKey(METADATA_KEY));
         assertEquals(METADATA_VALUE, m.getMetadataValue(METADATA_KEY));
       }
     }
@@ -189,11 +192,11 @@ public class ThreadContextWorkflowTest
       }, 500);
       workflow.onAdaptrisMessage(msg);
 
-      assertEquals("Make sure all produced", 1, producer.getMessages().size());
+      assertEquals(1, producer.getMessages().size());
       for (Iterator i = producer.getMessages().iterator(); i.hasNext();) {
         AdaptrisMessage m = (AdaptrisMessage) i.next();
         assertEquals(PAYLOAD_2, m.getContent());
-        assertTrue("Contains correct metadata key", m.headersContainsKey(METADATA_KEY));
+        assertTrue(m.headersContainsKey(METADATA_KEY));
         assertEquals(METADATA_VALUE, m.getMetadataValue(METADATA_KEY));
       }
     }
@@ -223,12 +226,12 @@ public class ThreadContextWorkflowTest
       start(channel);
       workflow.onAdaptrisMessage(msg);
 
-      assertEquals("Make none produced", 0, producer.getMessages().size());
+      assertEquals(0, producer.getMessages().size());
       assertEquals(1, meh.getMessages().size());
       for (Iterator i = meh.getMessages().iterator(); i.hasNext();) {
         AdaptrisMessage m = (AdaptrisMessage) i.next();
         assertEquals(PAYLOAD_1, m.getContent());
-        assertFalse("Does not contains correct metadata key", m.headersContainsKey(METADATA_KEY));
+        assertFalse(m.headersContainsKey(METADATA_KEY));
         assertNotNull(m.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION));
         assertNotNull(m.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION_CAUSE));
         assertEquals(ThrowExceptionService.class.getSimpleName(),
@@ -266,12 +269,12 @@ public class ThreadContextWorkflowTest
       workflow.getObjectPool().close();
       workflow.onAdaptrisMessage(msg);
 
-      assertEquals("Make none produced", 0, producer.getMessages().size());
+      assertEquals(0, producer.getMessages().size());
       assertEquals(1, meh.getMessages().size());
       for (Iterator i = meh.getMessages().iterator(); i.hasNext();) {
         AdaptrisMessage m = (AdaptrisMessage) i.next();
         assertEquals(PAYLOAD_1, m.getContent());
-        assertFalse("Does not contains correct metadata key", m.headersContainsKey(METADATA_KEY));
+        assertFalse(m.headersContainsKey(METADATA_KEY));
       }
     } finally {
       stop(channel);
@@ -302,12 +305,12 @@ public class ThreadContextWorkflowTest
       start(channel);
       workflow.onAdaptrisMessage(msg);
 
-      assertEquals("Make none produced", 0, producer.getMessages().size());
+      assertEquals(0, producer.getMessages().size());
       assertEquals(1, meh.getMessages().size());
       for (Iterator i = meh.getMessages().iterator(); i.hasNext();) {
         AdaptrisMessage m = (AdaptrisMessage) i.next();
         assertEquals(PAYLOAD_1, m.getContent());
-        assertFalse("Does not contains correct metadata key", m.headersContainsKey(METADATA_KEY));
+        assertFalse(m.headersContainsKey(METADATA_KEY));
       }
     }
     finally {
@@ -344,12 +347,12 @@ public class ThreadContextWorkflowTest
       start(channel);
       workflow.onAdaptrisMessage(msg);
 
-      assertEquals("Make none produced", 0, producer.getMessages().size());
+      assertEquals(0, producer.getMessages().size());
       assertEquals(1, meh.getMessages().size());
       for (Iterator i = meh.getMessages().iterator(); i.hasNext();) {
         AdaptrisMessage m = (AdaptrisMessage) i.next();
         assertEquals(PAYLOAD_1, m.getContent());
-        assertFalse("Does not contains correct metadata key", m.headersContainsKey(METADATA_KEY));
+        assertFalse(m.headersContainsKey(METADATA_KEY));
       }
     }
     finally {

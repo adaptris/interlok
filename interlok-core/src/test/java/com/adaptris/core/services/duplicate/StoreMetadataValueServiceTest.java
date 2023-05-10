@@ -16,12 +16,15 @@
 
 package com.adaptris.core.services.duplicate;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.File;
+
 import org.apache.commons.io.FileUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceException;
@@ -35,7 +38,7 @@ public class StoreMetadataValueServiceTest extends SyntaxRoutingServiceExample {
   private static final String DEFAULT_METADATA_KEY = "key";
 
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     File f = FsHelper.toFile(PROPERTIES.getProperty(STORE_URL));
     FileUtils.deleteQuietly(f);

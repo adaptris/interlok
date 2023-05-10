@@ -17,7 +17,9 @@
 package com.adaptris.core.jms;
 
 import static com.adaptris.core.jms.BasicPtpConsumerActiveErorHandlerTest.DEFAULT_XML_COMMENT;
+
 import java.util.concurrent.TimeUnit;
+
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 import com.adaptris.util.TimeInterval;

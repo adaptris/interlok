@@ -1,6 +1,6 @@
 package com.adaptris.core.cache;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class CacheEventLoggerTest {
 

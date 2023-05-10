@@ -16,13 +16,15 @@
 
 package com.adaptris.http.legacy;
 
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.adaptris.core.security.PrivateKeyPasswordProvider;
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.keystore.KeystoreLocation;
 import com.adaptris.security.util.Constants;
-import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author lchan

@@ -16,12 +16,15 @@
 
 package com.adaptris.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.concurrent.TimeUnit;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.stubs.FailFirstMockMessageProducer;
 import com.adaptris.core.stubs.StaticCounterFailFirstMockMessageProducer;
 import com.adaptris.util.TimeInterval;
@@ -31,7 +34,7 @@ public class RetryOnceStandaloneProducerTest extends GeneralServiceExample {
   private RetryOnceStandaloneProducer service;
 
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     service = new RetryOnceStandaloneProducer();
     service.setWaitBeforeRetry(new TimeInterval(0L, TimeUnit.MILLISECONDS));

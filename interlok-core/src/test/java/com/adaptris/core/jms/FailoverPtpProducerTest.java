@@ -15,12 +15,12 @@
 */
 
 package com.adaptris.core.jms;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
@@ -33,7 +33,7 @@ public class FailoverPtpProducerTest extends FailoverJmsProducerCase {
     String xml = defaultMarshaller.marshal(input);
     StandaloneProducer output = (StandaloneProducer) defaultMarshaller.unmarshal(xml);
     FailoverJmsConnection unmarshalled = (FailoverJmsConnection) output.getConnection();
-    assertEquals("Connection count == 2", 2, unmarshalled.getConnections().size());
+    assertEquals(2, unmarshalled.getConnections().size());
   }
 
   @Override

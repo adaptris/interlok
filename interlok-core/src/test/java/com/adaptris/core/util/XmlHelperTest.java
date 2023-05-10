@@ -16,35 +16,34 @@
 
 package com.adaptris.core.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+
+import java.io.IOException;
+
+import javax.xml.namespace.NamespaceContext;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.util.XmlUtils;
-import org.junit.Test;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-
-import javax.xml.namespace.NamespaceContext;
-import java.io.IOException;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 
 @SuppressWarnings("deprecation")
 public class XmlHelperTest extends XmlHelper {
-  private static final String EXAMPLE_XML =
-      "<document>\n   <content>text body</content>\n"
-          + "   <attachment encoding=\"base64\" filename=\"attachment1.txt\">dp/HSJfonUsSMM7QRBSRfg==</attachment>\n"
-          + "   <attachment encoding=\"base64\" filename=\"attachment2.txt\">OdjozpCZB9PbCCLZlKregQ</attachment>\n"
-          + "</document>";
+  private static final String EXAMPLE_XML = "<document>\n   <content>text body</content>\n"
+      + "   <attachment encoding=\"base64\" filename=\"attachment1.txt\">dp/HSJfonUsSMM7QRBSRfg==</attachment>\n"
+      + "   <attachment encoding=\"base64\" filename=\"attachment2.txt\">OdjozpCZB9PbCCLZlKregQ</attachment>\n"
+      + "</document>";
 
-  private static final String ILLEGAL_XML_CHAR = new String(new byte[]
-  {
-      (byte) 0x02
-  });
+  private static final String ILLEGAL_XML_CHAR = new String(new byte[] { (byte) 0x02 });
 
   @Test
   public void testCreateDocument() throws Exception {
@@ -71,28 +70,33 @@ public class XmlHelperTest extends XmlHelper {
 
   }
 
-  @Test(expected = Exception.class)
+  @Test
   public void testCreateDocumentInvalidXmlMessage() throws Exception {
-    createDocument(AdaptrisMessageFactory.getDefaultInstance().newMessage("AAAAAAAA"));
+    Assertions.assertThrows(Exception.class, () -> {
+      createDocument(AdaptrisMessageFactory.getDefaultInstance().newMessage("AAAAAAAA"));
+    });
   }
 
   @Test
   public void testCreateDocumentInvalidXmlMessage_NewDocOnFailure() throws Exception {
-    Document doc = createDocument(AdaptrisMessageFactory.getDefaultInstance().newMessage("AAAAAAAA"), DocumentBuilderFactoryBuilder.newInstance(), true);
+    Document doc = createDocument(AdaptrisMessageFactory.getDefaultInstance().newMessage("AAAAAAAA"),
+        DocumentBuilderFactoryBuilder.newInstance(), true);
     assertNotNull(doc);
   }
-  
-  @Test(expected = Exception.class)
+
+  @Test
   public void testCreateDocumentInvalidXmlString() throws Exception {
-    createDocument("AAAAAAAA");
+    Assertions.assertThrows(Exception.class, () -> {
+      createDocument("AAAAAAAA");
+    });
   }
-  
+
   @Test
   public void testCreateDocumentInvalidXmlString_NoDocOnFailure() throws Exception {
     Document doc = createDocument("AAAAAAAA", DocumentBuilderFactoryBuilder.newInstance(), true);
     assertNotNull(doc);
   }
-  
+
   @Test
   public void testCreateXmlUtils() throws Exception {
     assertNotNull(createXmlUtils(AdaptrisMessageFactory.getDefaultInstance().newMessage(EXAMPLE_XML)));
@@ -102,16 +106,20 @@ public class XmlHelperTest extends XmlHelper {
         DocumentBuilderFactoryBuilderTest.createNamespaceContext(), null));
   }
 
-  @Test(expected = CoreException.class)
+  @Test
   public void testXmlUtilsInvalidXmlString() throws Exception {
-    createXmlUtils(AdaptrisMessageFactory.getDefaultInstance().newMessage("AAAAAAAA"));
+    Assertions.assertThrows(Exception.class, () -> {
+      createXmlUtils(AdaptrisMessageFactory.getDefaultInstance().newMessage("AAAAAAAA"));
+    });
   }
 
-  @Test(expected = CoreException.class)
+  @Test
   public void testXmlUtilsBrokenInput() throws Exception {
-    AdaptrisMessage msg = mock(AdaptrisMessage.class);
-    doThrow(new IOException()).when(msg).getInputStream();
-    createXmlUtils(msg);
+    Assertions.assertThrows(CoreException.class, () -> {
+      AdaptrisMessage msg = mock(AdaptrisMessage.class);
+      doThrow(new IOException()).when(msg).getInputStream();
+      createXmlUtils(msg);
+    });
   }
 
   @Test
@@ -120,7 +128,8 @@ public class XmlHelperTest extends XmlHelper {
     assertEquals("hello", safeElementName("hello", "default"));
     assertEquals("_0hello", safeElementName("0hello", "default"));
     assertEquals("_0hel_lo", safeElementName("_0hel&lo", "default"));
-    // We add a _ to the start -> _?hello but ? is still invalid so we replace with another _ -> __hello
+    // We add a _ to the start -> _?hello but ? is still invalid so we replace with
+    // another _ -> __hello
     assertEquals("__hello", safeElementName("?hello", "default"));
   }
 

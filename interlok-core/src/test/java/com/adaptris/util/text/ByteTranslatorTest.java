@@ -16,11 +16,14 @@
 
 package com.adaptris.util.text;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.util.GuidGenerator;
 
 @SuppressWarnings("deprecation")

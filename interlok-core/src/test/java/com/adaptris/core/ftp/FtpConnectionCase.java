@@ -13,16 +13,19 @@
 
 package com.adaptris.core.ftp;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.concurrent.TimeUnit;
-import org.junit.Assume;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.util.TimeInterval;
 
@@ -141,7 +144,7 @@ public abstract class FtpConnectionCase extends com.adaptris.interlok.junit.scaf
 
   @Test
   public void testConnect() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     FileTransferConnection connection = createConnection();
     try {
       start(connection);
@@ -153,7 +156,7 @@ public abstract class FtpConnectionCase extends com.adaptris.interlok.junit.scaf
 
   @Test
   public void testCachedConnection() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
 
     FileTransferConnection connection = createConnection();
     connection.setCacheConnection(true);
@@ -178,7 +181,7 @@ public abstract class FtpConnectionCase extends com.adaptris.interlok.junit.scaf
 
   @Test
   public void testConnection_Cached_Disconnect() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
 
     FileTransferConnection connection = createConnection();
     connection.setCacheConnection(true);
@@ -195,7 +198,7 @@ public abstract class FtpConnectionCase extends com.adaptris.interlok.junit.scaf
 
   @Test
   public void testConnection_NoCache_Disconnect() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
 
     FileTransferConnection connection = createConnection();
     connection.setCacheConnection(false);
@@ -212,7 +215,7 @@ public abstract class FtpConnectionCase extends com.adaptris.interlok.junit.scaf
 
   @Test
   public void testCachedConnection_ExceedsMaxSize() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
 
     FileTransferConnection connection = createConnection();
     connection.setCacheConnection(true);
@@ -237,7 +240,7 @@ public abstract class FtpConnectionCase extends com.adaptris.interlok.junit.scaf
 
   @Test
   public void testCachedConnection_DisconnectedClient() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
 
     FileTransferConnection connection = createConnection();
     connection.setCacheConnection(true);
@@ -260,7 +263,7 @@ public abstract class FtpConnectionCase extends com.adaptris.interlok.junit.scaf
 
   @Test
   public void testConnect_NoUser() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     FileTransferConnection connection = createConnection();
     connection.setDefaultUserName(null);
     try {
@@ -277,7 +280,7 @@ public abstract class FtpConnectionCase extends com.adaptris.interlok.junit.scaf
 
   @Test
   public void testConnect_UserOverride() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     FileTransferConnection connection = createConnection();
     connection.setDefaultUserName(null);
     try {

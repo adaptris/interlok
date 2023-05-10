@@ -17,40 +17,47 @@ package com.adaptris.util.text.mime;
 
 import static com.adaptris.util.text.mime.PartIteratorCase.createMultipart;
 import static com.adaptris.util.text.mime.PartIteratorCase.generateByteArrayInput;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.List;
+
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class SelectByHeaderTest {
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
   }
 
-
-  @Test(expected = MessagingException.class)
+  @Test
   public void testSelectMimeMultipart() throws Exception {
-    MimeMultipart mmp = createMultipart();
-    SelectByHeader selector = new SelectByHeader("Content-Id", "payload1");
-    List<MimeBodyPart> parts = selector.select(mmp);
+    Assertions.assertThrows(MessagingException.class, () -> {
+      MimeMultipart mmp = createMultipart();
+      SelectByHeader selector = new SelectByHeader("Content-Id", "payload1");
+      List<MimeBodyPart> parts = selector.select(mmp);
+    });
   }
 
-  @Test(expected = MessagingException.class)
+  @Test
   public void testSelectNoHeader() throws Exception {
-    try (BodyPartIterator input = new BodyPartIterator(generateByteArrayInput(false))) {
-      SelectByHeader selector = new SelectByHeader();
-      selector.select(input);
-    }
+    Assertions.assertThrows(MessagingException.class, () -> {
+      try (BodyPartIterator input = new BodyPartIterator(generateByteArrayInput(false))) {
+        SelectByHeader selector = new SelectByHeader();
+        selector.select(input);
+      }
+    });
   }
 
   @Test

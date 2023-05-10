@@ -15,11 +15,14 @@
 */
 
 package com.adaptris.core;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.fs.FsProducer;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
@@ -59,7 +62,7 @@ public class StandardProcessingExceptionHandlerTest
       }))));
       start(meh);
       meh.handleProcessingException(msg);
-      assertTrue("Make sure all produced", producer.getMessages().size() == 1);
+      assertTrue(producer.getMessages().size() == 1);
     }
     finally {
       stop(meh);
@@ -79,7 +82,7 @@ public class StandardProcessingExceptionHandlerTest
       start(meh);
       meh.handleProcessingException(msg);
       log.debug("Number of messages " + producer.getMessages().size());
-      assertTrue("Make sure all produced", producer.getMessages().size() == 2);
+      assertTrue(producer.getMessages().size() == 2);
     }
     finally {
       stop(meh);
@@ -207,7 +210,7 @@ public class StandardProcessingExceptionHandlerTest
       meh.setProcessingExceptionService(services);
       start(meh);
       meh.handleProcessingException(msg);
-      assertTrue("Make sure none produced", producer.getMessages().size() == 0);
+      assertTrue(producer.getMessages().size() == 0);
     }
     finally {
       stop(meh);
@@ -228,7 +231,7 @@ public class StandardProcessingExceptionHandlerTest
       meh.setProcessingExceptionService(services);
       start(meh);
       meh.handleProcessingException(msg);
-      assertTrue("Make sure none produced", producer.getMessages().size() == 0);
+      assertTrue(producer.getMessages().size() == 0);
     }
     finally {
       stop(meh);
@@ -251,7 +254,7 @@ public class StandardProcessingExceptionHandlerTest
       start(meh);
       meh.handleProcessingException(msg);
       log.debug("Number of messages " + producer.getMessages().size());
-      assertTrue("Make sure all produced", producer.getMessages().size() == 2);
+      assertTrue(producer.getMessages().size() == 2);
       assertTrue(producer.getMessages().get(1).containsKey("myKey"));
       assertEquals("myValue", producer.getMessages().get(1).getMetadataValue("myKey"));
     }

@@ -16,10 +16,12 @@
 
 package com.adaptris.core.services.metadata.xpath;
 
-import static org.junit.Assert.assertNotNull;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;

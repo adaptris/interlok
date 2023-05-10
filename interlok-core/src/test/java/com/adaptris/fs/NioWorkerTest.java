@@ -16,8 +16,8 @@
 
 package com.adaptris.fs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.RandomAccessFile;
@@ -25,7 +25,7 @@ import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  */

@@ -2,6 +2,7 @@ package com.adaptris.interlok.junit.scaffolding.services;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import com.adaptris.core.BranchingServiceCollection;
 import com.adaptris.core.Service;
 import com.adaptris.core.cache.Cache;

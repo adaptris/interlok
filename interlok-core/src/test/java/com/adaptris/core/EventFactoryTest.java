@@ -16,9 +16,9 @@
 
 package com.adaptris.core;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
@@ -26,7 +26,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,15 +42,11 @@ import com.adaptris.core.event.StandardAdapterStartUpEvent;
 @SuppressWarnings("deprecation")
 public class EventFactoryTest extends EventFactory {
 
-  private static final String[] ALL_EVENT_CLASSES =
-  {
-      AdapterCloseEvent.class.getName(), AdapterInitEvent.class.getName(),
-      AdapterShutdownEvent.class.getName(), AdapterStartEvent.class.getName(), StandardAdapterStartUpEvent.class.getName(),
- DefaultAdapterStartUpEvent.class.getName(),
-      AdapterStopEvent.class.getName(), ChannelRestartEvent.class.getName()
-  };
+  private static final String[] ALL_EVENT_CLASSES = { AdapterCloseEvent.class.getName(),
+      AdapterInitEvent.class.getName(), AdapterShutdownEvent.class.getName(), AdapterStartEvent.class.getName(),
+      StandardAdapterStartUpEvent.class.getName(), DefaultAdapterStartUpEvent.class.getName(),
+      AdapterStopEvent.class.getName(), ChannelRestartEvent.class.getName() };
   private transient Logger log = LoggerFactory.getLogger(BaseCase.class);
-
 
   @Test
   public void testCreateInvalidEvents() {
@@ -60,39 +57,37 @@ public class EventFactoryTest extends EventFactory {
     try {
       EventFactory.create(invalid);
       fail("no CoreException from invalid class name");
-    }
-    catch (CoreException e) { /* ok */
+    } catch (CoreException e) { /* ok */
     }
 
     try {
       EventFactory.create(nonEvent);
       fail("no CoreException from non-Event class (String)");
-    }
-    catch (CoreException e) { /* ok */
+    } catch (CoreException e) { /* ok */
     }
 
     try {
       EventFactory.create(empty);
       fail("no CoreException from \"\"");
-    }
-    catch (CoreException e) { /* ok */
+    } catch (CoreException e) { /* ok */
     }
 
     try {
       EventFactory.create((String) null);
       fail("no CoreException from null");
-    }
-    catch (CoreException e) { /* ok */
+    } catch (CoreException e) { /* ok */
     }
   }
 
-  @Test(expected = CoreException.class)
+  @Test
   public void testCreateEvent() throws Exception {
-    for (int i = 0; i < ALL_EVENT_CLASSES.length; i++) {
-      Event e = (Event) EventFactory.create(Class.forName(ALL_EVENT_CLASSES[i]));
-      assertNotSame(ALL_EVENT_CLASSES[i], e.getNameSpace(), EventNameSpaceConstants.EVENT);
-    }
-    EventFactory.create(FailingEvent.class);
+    Assertions.assertThrows(CoreException.class, () -> {
+      for (int i = 0; i < ALL_EVENT_CLASSES.length; i++) {
+        Event e = (Event) EventFactory.create(Class.forName(ALL_EVENT_CLASSES[i]));
+        assertNotSame(ALL_EVENT_CLASSES[i], e.getNameSpace(), EventNameSpaceConstants.EVENT);
+      }
+      EventFactory.create(FailingEvent.class);
+    });
   }
 
   @Test
@@ -130,16 +125,14 @@ public class EventFactoryTest extends EventFactory {
       new EventStub(null);
       fail("allows namespace=null");
 
-    }
-    catch (IllegalArgumentException expected) {
+    } catch (IllegalArgumentException expected) {
 
     }
     try {
       new EventStub("");
       fail("allows namespace=''");
 
-    }
-    catch (IllegalArgumentException expected) {
+    } catch (IllegalArgumentException expected) {
 
     }
 
@@ -152,15 +145,13 @@ public class EventFactoryTest extends EventFactory {
       try {
         e.setUniqueId("");
         fail("allows unique-id=''");
-      }
-      catch (IllegalArgumentException expected) {
+      } catch (IllegalArgumentException expected) {
 
       }
       try {
         e.setUniqueId(null);
         fail("allows unique-id=null");
-      }
-      catch (IllegalArgumentException expected) {
+      } catch (IllegalArgumentException expected) {
 
       }
     }
@@ -173,16 +164,9 @@ public class EventFactoryTest extends EventFactory {
     List<String> list = getSimpleSetterMethods(clazz);
     for (String m : list) {
       try {
-        Method method = clazz.getMethod(m, new Class[]
-        {
-          String.class
-        });
-        method.invoke(event, new Object[]
-        {
-          text
-        });
-      }
-      catch (NoSuchMethodException e) {
+        Method method = clazz.getMethod(m, new Class[] { String.class });
+        method.invoke(event, new Object[] { text });
+      } catch (NoSuchMethodException e) {
         ;
       }
     }

@@ -2,7 +2,10 @@ package com.adaptris.core.http.jetty.retry;
 
 import static com.adaptris.core.http.jetty.retry.FilesystemRetryStoreTest.INVALID_URL;
 import static com.adaptris.core.http.jetty.retry.FilesystemRetryStoreTest.TEST_BASE_URL;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceException;
@@ -14,19 +17,20 @@ public class RetryStoreDeleteTest extends ExampleServiceCase {
   public void testService() throws Exception {
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("hello");
     msg.addMessageHeader("deleteMe", "xxx");
-    RetryStoreDeleteService service = new RetryStoreDeleteService()
-        .withMessageId("%message{deleteMe}")
+    RetryStoreDeleteService service = new RetryStoreDeleteService().withMessageId("%message{deleteMe}")
         .withRetryStore(new FilesystemRetryStore().withBaseUrl(getConfiguration(TEST_BASE_URL)));
     execute(service, msg);
   }
 
-  @Test(expected = ServiceException.class)
+  @Test
   public void testService_Exception() throws Exception {
-    AdaptrisMessage msg = new DefaultMessageFactory().newMessage("hello");
-    msg.addMessageHeader("deleteMe", "xxx");
-    RetryStoreDeleteService service = new RetryStoreDeleteService().withMessageId("%message{deleteMe}")
-        .withRetryStore(new FilesystemRetryStore().withBaseUrl(INVALID_URL));
-    execute(service, msg);
+    Assertions.assertThrows(ServiceException.class, () -> {
+      AdaptrisMessage msg = new DefaultMessageFactory().newMessage("hello");
+      msg.addMessageHeader("deleteMe", "xxx");
+      RetryStoreDeleteService service = new RetryStoreDeleteService().withMessageId("%message{deleteMe}")
+          .withRetryStore(new FilesystemRetryStore().withBaseUrl(INVALID_URL));
+      execute(service, msg);
+    });
   }
 
   @Override

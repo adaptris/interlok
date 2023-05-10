@@ -16,16 +16,19 @@
 
 package com.adaptris.security;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.util.Properties;
 import java.util.Random;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.keystore.KeystoreFactory;
 import com.adaptris.security.keystore.KeystoreLocation;
@@ -46,7 +49,7 @@ public class TestKeyStore {
   }
 
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     config = Config.getInstance();
     cfg = config.getProperties();
@@ -70,7 +73,7 @@ public class TestKeyStore {
     String alias = cfg.getProperty(Config.KEYSTORE_COMMON_PRIVKEY_ALIAS);
     if (ksp.containsAlias(alias)) {
       thisCert = ksp.getCertificate(alias);
-      assertNotNull("Certificate is not null", thisCert);
+      assertNotNull(thisCert);
     }
     else {
       fail(alias + " does not exist in the specified keystore");
@@ -106,7 +109,7 @@ public class TestKeyStore {
     if (ksp.containsAlias(alias)) {
       PrivateKey pk = ksp.getPrivateKey(alias, cfg.getProperty(
           Config.KEYSTORE_COMMON_PRIVKEY_PW).toCharArray());
-      assertNotNull("PrivateKey is not null", pk);
+      assertNotNull(pk);
     }
     else {
       fail(alias + " does not exist in the specified keystore");
@@ -120,7 +123,7 @@ public class TestKeyStore {
     String alias = cfg.getProperty(Config.KEYSTORE_COMMON_PRIVKEY_ALIAS);
     if (ksp.containsAlias(alias)) {
       PrivateKey pk = ksp.getPrivateKey(alias, null);
-      assertNotNull("PrivateKey is not null", pk);
+      assertNotNull(pk);
     }
     else {
       fail(alias + " does not exist in the specified keystore");
@@ -137,7 +140,7 @@ public class TestKeyStore {
     if (ksp.containsAlias(alias)) {
       PrivateKey pk = ksp.getPrivateKey(alias, cfg.getProperty(
           Config.KEYSTORE_COMMON_PRIVKEY_PW).toCharArray());
-      assertNotNull("PrivateKey is not null", pk);
+      assertNotNull(pk);
     }
     else {
       fail(alias + " does not exist in the specified keystore");

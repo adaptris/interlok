@@ -2,6 +2,7 @@ package com.adaptris.core.transaction;
 
 import javax.jms.XAConnectionFactory;
 import javax.transaction.xa.XAResource;
+
 import com.adaptris.core.CoreException;
 
 public class DummyTransactionManager implements TransactionManager {

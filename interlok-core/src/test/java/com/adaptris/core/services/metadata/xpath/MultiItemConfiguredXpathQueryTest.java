@@ -16,17 +16,18 @@
 
 package com.adaptris.core.services.metadata.xpath;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import org.junit.jupiter.api.Test;
+import org.w3c.dom.Document;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.text.xml.XPath;
-import org.junit.Test;
-import org.w3c.dom.Document;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 @SuppressWarnings("deprecation")
 public class MultiItemConfiguredXpathQueryTest extends ConfiguredXpathQueryCase {

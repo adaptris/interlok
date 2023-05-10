@@ -16,7 +16,7 @@
 
 package com.adaptris.core.jms;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -30,9 +30,9 @@ import javax.jms.Session;
 import javax.jms.Topic;
 import javax.jms.TopicSubscriber;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -58,12 +58,12 @@ public class JmsMessageConsumerFactoryTest {
   private JmsActorConfig jmsActorConfig;
 
   private AutoCloseable openMocks;
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     openMocks = MockitoAnnotations.openMocks(this);
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     Closer.closeQuietly(openMocks);
   }

@@ -16,8 +16,8 @@
 
 package com.adaptris.core.services.jdbc.types;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -33,8 +33,8 @@ import javax.sql.rowset.serial.SerialClob;
 
 import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.commons.io.output.WriterOutputStream;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.jdbc.JdbcResultRow;
 
@@ -43,7 +43,7 @@ public class ClobColumnTranslatorTest {
 
   private ClobColumnTranslator translator;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     translator = new ClobColumnTranslator();
   }

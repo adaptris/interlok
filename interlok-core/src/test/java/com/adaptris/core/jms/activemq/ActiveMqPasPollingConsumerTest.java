@@ -21,16 +21,17 @@ import static com.adaptris.interlok.junit.scaffolding.BaseCase.stop;
 import static com.adaptris.interlok.junit.scaffolding.BaseCase.waitForMessages;
 import static com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase.assertMessages;
 import static com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase.createMessage;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+
 import com.adaptris.core.AdaptrisPollingConsumer;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.RandomIntervalPoller;
@@ -51,18 +52,18 @@ public class ActiveMqPasPollingConsumerTest {
   private static final String MY_SUBSCRIPTION_ID = new SafeGuidGenerator().safeUUID();
   private static final ManagedThreadFactory MY_THREAD_FACTORY = new ManagedThreadFactory();
 
-  @Rule
-  public TestName testName = new TestName();
+  
+  
   
   private static EmbeddedActiveMq activeMqBroker;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpAll() throws Exception {
     activeMqBroker = new EmbeddedActiveMq();
     activeMqBroker.start();
   }
   
-  @AfterClass
+  @AfterAll
   public static void tearDownAll() throws Exception {
     if(activeMqBroker != null)
       activeMqBroker.destroy();
@@ -123,13 +124,13 @@ public class ActiveMqPasPollingConsumerTest {
   }
 
   @Test
-  public void testProduceConsume() throws Exception {
+  public void testProduceConsume(TestInfo info) throws Exception {
 
     int msgCount = 5;
     final StandaloneProducer sender = new StandaloneProducer(activeMqBroker.getJmsConnection(),
-        new PasProducer().withTopic(testName.getMethodName()));
+        new PasProducer().withTopic(info.getDisplayName()));
     final StandaloneConsumer receiver =
-        createStandalone(activeMqBroker, "testProduceConsume", testName.getMethodName());
+        createStandalone(activeMqBroker, "testProduceConsume", info.getDisplayName());
     try {
       MockMessageListener jms = new MockMessageListener();
       receiver.registerAdaptrisMessageListener(jms);

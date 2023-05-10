@@ -13,15 +13,16 @@
 
 package com.adaptris.core.interceptor;
 
-import static org.junit.Assert.assertEquals;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TimeSliceTest {
 
   private TimeSlice timeSlice;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     timeSlice = new TimeSlice();
   }

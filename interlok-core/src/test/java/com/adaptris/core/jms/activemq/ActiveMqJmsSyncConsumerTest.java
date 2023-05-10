@@ -25,11 +25,10 @@ import static com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase.create
 
 import java.util.concurrent.TimeUnit;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.Poller;
@@ -44,28 +43,28 @@ import com.adaptris.util.TimeInterval;
 
 public class ActiveMqJmsSyncConsumerTest {
 
-  @Rule
-  public TestName testName = new TestName();
+  
+  
 
   private static EmbeddedActiveMq activeMqBroker;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpAll() throws Exception {
     activeMqBroker = new EmbeddedActiveMq();
     activeMqBroker.start();
   }
   
-  @AfterClass
+  @AfterAll
   public static void tearDownAll() throws Exception {
     if(activeMqBroker != null)
       activeMqBroker.destroy();
   }
   
   @Test
-  public void testTopic_NoSubscriptionId() throws Exception {
-    String rfc6167 = "jms:topic:" + testName.getMethodName();
+  public void testTopic_NoSubscriptionId(TestInfo info) throws Exception {
+    String rfc6167 = "jms:topic:" + info.getDisplayName();
     final StandaloneConsumer consumer =
-        createStandaloneConsumer(activeMqBroker, testName.getMethodName(), rfc6167);
+        createStandaloneConsumer(activeMqBroker, info.getDisplayName(), rfc6167);
     try {
       consumer.registerAdaptrisMessageListener(new MockMessageListener());
       // This won't fail, but... there will be errors in the log file...
@@ -76,13 +75,13 @@ public class ActiveMqJmsSyncConsumerTest {
   }
 
   @Test
-  public void testQueue_ProduceConsume() throws Exception {
+  public void testQueue_ProduceConsume(TestInfo info) throws Exception {
     int msgCount = 5;
-    String rfc6167 = "jms:queue:" + testName.getMethodName();
+    String rfc6167 = "jms:queue:" + info.getDisplayName();
     final StandaloneProducer sender =
         new StandaloneProducer(activeMqBroker.getJmsConnection(), new JmsProducer().withEndpoint(rfc6167));
     final StandaloneConsumer receiver =
-        createStandaloneConsumer(activeMqBroker, testName.getMethodName(), rfc6167);
+        createStandaloneConsumer(activeMqBroker, info.getDisplayName(), rfc6167);
     try {
       MockMessageListener jms = new MockMessageListener();
       receiver.registerAdaptrisMessageListener(jms);
@@ -102,14 +101,14 @@ public class ActiveMqJmsSyncConsumerTest {
   }
 
   @Test
-  public void testTopic_ProduceConsume() throws Exception {
+  public void testTopic_ProduceConsume(TestInfo info) throws Exception {
     int msgCount = 5;
     String rfc6167 =
-        "jms:topic:" + testName.getMethodName() + "?subscriptionId=" + testName.getMethodName();
+        "jms:topic:" + info.getDisplayName() + "?subscriptionId=" + info.getDisplayName();
     final StandaloneProducer sender =
         new StandaloneProducer(activeMqBroker.getJmsConnection(), new JmsProducer().withEndpoint(rfc6167));
     Sometime poller = new Sometime();
-    JmsSyncConsumer consumer = createConsumer(testName.getMethodName(), rfc6167, poller);
+    JmsSyncConsumer consumer = createConsumer(info.getDisplayName(), rfc6167, poller);
     final StandaloneConsumer receiver = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     try {
       MockMessageListener jms = new MockMessageListener();

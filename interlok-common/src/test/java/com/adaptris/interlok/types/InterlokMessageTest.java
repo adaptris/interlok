@@ -1,6 +1,6 @@
 package com.adaptris.interlok.types;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,10 +11,12 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import org.junit.jupiter.api.Test;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.junit.Test;
 
 public class InterlokMessageTest  {
 

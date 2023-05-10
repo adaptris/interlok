@@ -16,15 +16,16 @@
 
 package com.adaptris.core;
 
-import static com.adaptris.core.PoolingWorkflow.DEFAULT_MAX_IDLE;
-import static com.adaptris.core.PoolingWorkflow.DEFAULT_MAX_POOLSIZE;
-import static com.adaptris.core.PoolingWorkflow.DEFAULT_MIN_IDLE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static com.adaptris.core.WorkflowWithObjectPool.DEFAULT_MAX_IDLE;
+import static com.adaptris.core.WorkflowWithObjectPool.DEFAULT_MAX_POOLSIZE;
+import static com.adaptris.core.WorkflowWithObjectPool.DEFAULT_MIN_IDLE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,7 +37,9 @@ import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.services.WaitService;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
@@ -245,10 +248,10 @@ public class PoolingWorkflowTest
       start(channel);
       submitMessages(wf, count);
       waitForMessages(prod, count);
-      assertTrue("ObjectPool > 1", wf.currentObjectPoolCount() > 1);
-      assertTrue("ThreadPool > 1", wf.currentThreadPoolCount() > 1);
-      assertTrue("ObjectPool >=0", wf.currentlyIdleObjects() >= 0);
-      assertTrue("ThreadPool >=0", wf.currentlyActiveObjects() >= 0);
+      assertTrue(wf.currentObjectPoolCount() > 1);
+      assertTrue(wf.currentThreadPoolCount() > 1);
+      assertTrue(wf.currentlyIdleObjects() >= 0);
+      assertTrue(wf.currentlyActiveObjects() >= 0);
       assertMessages(prod, count);
     }
     finally {
@@ -309,8 +312,8 @@ public class PoolingWorkflowTest
       submitMessages(wf, count);
       waitForMessages(prod, count);
       Thread.sleep(200);
-      assertTrue("ObjectPool >= 10", wf.currentObjectPoolCount() >= 1);
-      assertTrue("ObjectPool idle >= 1", wf.currentlyIdleObjects() >= 1);
+      assertTrue(wf.currentObjectPoolCount() >= 1);
+      assertTrue(wf.currentlyIdleObjects() >= 1);
       assertMessages(prod, count);
     }
     finally {
@@ -328,8 +331,8 @@ public class PoolingWorkflowTest
     try {
       start(channel);
       Thread.sleep(200);
-      assertTrue("ObjectPool >= 10", wf.currentObjectPoolCount() >= 1);
-      assertTrue("ObjectPool idle >= 1", wf.currentlyIdleObjects() >= 1);
+      assertTrue(wf.currentObjectPoolCount() >= 1);
+      assertTrue(wf.currentlyIdleObjects() >= 1);
     }
     finally {
       stop(channel);
@@ -346,10 +349,10 @@ public class PoolingWorkflowTest
       start(channel);
       submitMessages(wf, count);
       waitForMessages(prod, count);
-      assertTrue("ObjectPool > 1", wf.currentObjectPoolCount() > 1);
-      assertTrue("ThreadPool > 1", wf.currentThreadPoolCount() > 1);
-      assertTrue("ObjectPool >=0", wf.currentlyIdleObjects() >= 0);
-      assertTrue("ThreadPool >=0", wf.currentlyActiveObjects() >= 0);
+      assertTrue(wf.currentObjectPoolCount() > 1);
+      assertTrue(wf.currentThreadPoolCount() > 1);
+      assertTrue(wf.currentlyIdleObjects() >= 0);
+      assertTrue(wf.currentlyActiveObjects() >= 0);
       assertMessages(prod, count);
     }
     finally {
@@ -513,7 +516,7 @@ public class PoolingWorkflowTest
       start(channel);
       channel.toggleAvailability(false);
       workflow.onAdaptrisMessage(msg);
-      assertEquals("Make none produced", 0, producer.getMessages().size());
+      assertEquals(0, producer.getMessages().size());
       assertEquals(1, meh.getMessages().size());
     }
     finally {
@@ -592,12 +595,12 @@ public class PoolingWorkflowTest
   }
 
   private void assertMessages(MockMessageProducer producer, int count) {
-    assertEquals("Make sure all produced", count, producer.getMessages().size());
+    assertEquals(count, producer.getMessages().size());
     List<AdaptrisMessage> list = producer.getMessages();
     Collections.sort(list, new MyMetadataComparator());
     for (int i = 0; i < count; i++) {
       AdaptrisMessage msg = list.get(i);
-      assertEquals("Metadata value", i, Integer.valueOf(msg.getMetadataValue(COUNT)).intValue());
+      assertEquals(i, Integer.valueOf(msg.getMetadataValue(COUNT)).intValue());
     }
   }
 

@@ -16,26 +16,27 @@
 
 package com.adaptris.core.services.conditional.conditions;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.adaptris.core.services.metadata.compare.EndsWith;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.services.conditional.operator.IsNull;
 import com.adaptris.core.services.conditional.operator.NotNull;
+import com.adaptris.core.services.metadata.compare.EndsWith;
 import com.adaptris.core.util.LifecycleHelper;
 
 public class ConditionMetadataTest {
-  
+
   private ConditionMetadata condition;
   private AdaptrisMessage message;
-  
-  @Before
+
+  @BeforeEach
   public void setUp() throws Exception {
     message = DefaultMessageFactory.getDefaultInstance().newMessage();
     condition = new ConditionMetadata();
@@ -43,14 +44,16 @@ public class ConditionMetadataTest {
     LifecycleHelper.initAndStart(condition);
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     LifecycleHelper.stopAndClose(condition);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testNoOperator() throws Exception {
-    condition.operator();
+    Assertions.assertThrows(IllegalArgumentException.class, () -> {
+      condition.operator();
+    });
   }
 
   @Test
@@ -58,18 +61,18 @@ public class ConditionMetadataTest {
     condition.setMetadataKey("key1");
     condition.setOperator(new NotNull());
     message.addMessageHeader("key1", "value1");
-    
+
     assertTrue(condition.evaluate(message));
   }
-  
+
   @Test
   public void testMetadataDoesNotExist() throws Exception {
     condition.setMetadataKey("key1");
     condition.setOperator(new IsNull());
-    
+
     assertTrue(condition.evaluate(message));
   }
-  
+
   @Test
   public void testMetadataNotSet() throws Exception {
     assertFalse(condition.evaluate(message));

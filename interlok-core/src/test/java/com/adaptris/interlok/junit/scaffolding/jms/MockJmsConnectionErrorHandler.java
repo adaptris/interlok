@@ -18,10 +18,13 @@ package com.adaptris.interlok.junit.scaffolding.jms;
 
 import static org.apache.commons.lang3.StringUtils.abbreviate;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 import java.util.concurrent.CountDownLatch;
+
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Session;
+
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.jms.ActiveJmsConnectionErrorHandler;
