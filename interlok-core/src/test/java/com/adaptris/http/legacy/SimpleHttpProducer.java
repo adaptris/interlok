@@ -120,7 +120,7 @@ public class SimpleHttpProducer extends HttpProducer {
         out.write(msg.getPayload());
         out.flush();
       }
-      HttpSession httpSession = client.send(m, new Long(timeout).intValue(), handleRedirection());
+      HttpSession httpSession = client.send(m, Long.valueOf(timeout).intValue(), handleRedirection());
       readResponse(httpSession, reply);
       httpSession.close();
     } catch (HttpException e) {
