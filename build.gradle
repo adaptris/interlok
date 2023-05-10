@@ -145,7 +145,6 @@ subprojects { subproject ->
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
   }
 
-
   if (buildDetails.jacocoEnabled(subproject)) {
     jacocoTestReport {
       reports {
