@@ -593,7 +593,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
   public long getKeepAliveTimeout() throws FileTransferException {
     try {
       acquireLock();
-      return ftpClient().getControlKeepAliveTimeoutDuration().toMillis();
+      return ftpClient().getControlKeepAliveTimeoutDuration();
     } catch (IOException e) {
       throw new FtpException(e);
     } finally {
