@@ -61,7 +61,6 @@ javadoc {
     taglets = ["com.adaptris.taglet.ConfigTaglet", "com.adaptris.taglet.LicenseTaglet"]
     options.tags('apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:','implNote:a:Implementation Note:')
     options.addStringOption "tagletpath", configurations.javadoc.asPath
-    options.addBooleanOption "-no-module-directories", true
     options.addStringOption('Xdoclint:none', '-quiet')
     title= componentName
   }
