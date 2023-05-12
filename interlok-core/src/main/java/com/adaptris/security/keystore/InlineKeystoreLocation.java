@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.MessageDigest;
+import java.util.Base64;
 import java.util.Properties;
 
 import com.adaptris.security.exc.AdaptrisSecurityException;
@@ -69,8 +70,7 @@ final class InlineKeystoreLocation implements KeystoreLocation {
    * @see com.adaptris.security.keystore.KeystoreLocation#openOutput()
    */
   @Override
-  public OutputStream openOutput()
-      throws IOException, AdaptrisSecurityException {
+  public OutputStream openOutput() throws IOException, AdaptrisSecurityException {
     throw new IOException(this.getClass() + " is implicitly readonly");
   }
 
@@ -110,9 +110,8 @@ final class InlineKeystoreLocation implements KeystoreLocation {
    */
   @Override
   public int hashCode() {
-    return java.util.Base64.getEncoder().encodeToString(keystoreHash).hashCode() + getKeystoreType().hashCode();
+    return Base64.getEncoder().encodeToString(keystoreHash).hashCode() + getKeystoreType().hashCode();
   }
-
 
   /**
    *
@@ -123,7 +122,6 @@ final class InlineKeystoreLocation implements KeystoreLocation {
     return additionalParams;
   }
 
-
   /**
    *
    * @see KeystoreLocation#getKeystoreType()
@@ -133,7 +131,6 @@ final class InlineKeystoreLocation implements KeystoreLocation {
     return keystoreType;
   }
 
-
   /**
    *
    * @see KeystoreLocation#getKeystorePassword()
@@ -142,7 +139,6 @@ final class InlineKeystoreLocation implements KeystoreLocation {
   public char[] getKeystorePassword() {
     return keystorePassword;
   }
-
 
   /**
    *
@@ -162,7 +158,6 @@ final class InlineKeystoreLocation implements KeystoreLocation {
     keystorePassword = pw;
   }
 
-
   /**
    *
    * @see KeystoreLocation#setKeystoreType(java.lang.String)
@@ -172,15 +167,14 @@ final class InlineKeystoreLocation implements KeystoreLocation {
     keystoreType = s;
   }
 
-  @SuppressWarnings({"lgtm [java/weak-cryptographic-algorithm]"})
+  @SuppressWarnings({ "lgtm [java/weak-cryptographic-algorithm]" })
   private static byte[] calculateHash(byte[] b) {
     byte[] result = null;
     try {
       MessageDigest md = MessageDigest.getInstance("SHA1"); // java/weak-cryptographic-algorithm
       md.update(b);
       result = md.digest();
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       result = new byte[0];
     }
     return result;
