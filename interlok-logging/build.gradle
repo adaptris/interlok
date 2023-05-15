@@ -15,7 +15,7 @@ dependencies {
   javadoc project(':interlok-core-apt')
 
   testImplementation ("org.junit.jupiter:junit-jupiter-api:5.9.2")
-  testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.9.2")
+  testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.9.3")
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
