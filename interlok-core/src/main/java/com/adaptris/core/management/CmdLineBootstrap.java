@@ -17,9 +17,15 @@
 package com.adaptris.core.management;
 
 import static com.adaptris.core.management.Constants.CFG_KEY_START_QUIETLY;
+
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+
+import org.apache.commons.io.IOUtils;
+
 import com.adaptris.core.management.config.ConfigurationCheckReport;
 import com.adaptris.core.management.config.ConfigurationCheckRunner;
 import com.adaptris.core.management.config.ConfigurationReportRunner;
@@ -47,11 +53,17 @@ abstract class CmdLineBootstrap {
   {
       "-file", "--file"
   };
+  
+  private static final String[] ARG_HELP = new String[]
+  {
+      "-help", "--help"
+  };
 
   private transient String bootstrapResource;
   private transient ArgUtil arguments;
   private transient boolean configCheckOnly = false;
   private transient BootstrapProperties bootProperties;
+  private static final String HELP_FILE = "META-INF/help-file";
 
   protected boolean configCheckOnly() {
     return configCheckOnly;
@@ -144,6 +156,22 @@ abstract class CmdLineBootstrap {
     if (arguments.hasArgument(ARG_VERSION)) {
       reportPackageVersions();
       System.exit(0);
+    }
+  }
+  
+  protected void ArgHelp() throws Exception {
+    if (arguments.hasArgument(ARG_HELP)) {
+      try(InputStream in = this.getClass().getClassLoader().getResourceAsStream(HELP_FILE)) {
+        String contents = IOUtils.toString(in, StandardCharsets.UTF_8);
+        System.out.println(contents);
+      } 
+      catch (Throwable e) {
+        System.err.println("(Error) Adapter Startup failure, could not open 'help-file'");
+        logException(e);
+      }
+      finally {
+        System.exit(0); 
+      }    
     }
   }
 
