@@ -11,6 +11,7 @@ ext {
   jschVersion = '0.2.8'
   mssqlDriverVersion = '9.2.1.jre8'
   derbyDriverVersion = '10.15.2.0'
+  junitVersion = '5.9.3'
 
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
   classesToTest = project.hasProperty("junit.test.classes") ? project.getProperty("junit.test.classes") : "**/*Test*"
@@ -102,8 +103,8 @@ dependencies {
   api ("org.apache.derby:derby:$derbyDriverVersion")
   api ("org.apache.derby:derbytools:$derbyDriverVersion")
 
-  testImplementation ("org.junit.jupiter:junit-jupiter-api:5.9.2")
-  testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.9.2")
+  testImplementation ("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+  testImplementation ("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
   testImplementation ("org.apache.activemq:artemis-jms-server:2.28.0")
   testImplementation ("oro:oro:2.0.8")
   testImplementation ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
@@ -256,7 +257,6 @@ task prepareForTests(dependsOn: [copySecurityTestProperties, copyUnitTestPropert
   }
 }
 
-
 task deleteGeneratedFiles(type: Delete) {
   delete file(testResourcesDir() + '/unit-tests.properties')
   delete file(testResourcesDir() + '/unit-tests.properties.resolved')
@@ -353,7 +353,6 @@ publishing {
     }
   }
 }
-
 
 delombok {
   target = delombokTargetDir
