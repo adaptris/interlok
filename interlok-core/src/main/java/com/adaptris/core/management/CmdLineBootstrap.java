@@ -159,6 +159,13 @@ abstract class CmdLineBootstrap {
     }
   }
   
+  /**
+   * Print out argument options.
+   * <p>
+   * Note that if the commandline arguments contain "-help or --help" then System.exit() will be invoked after printing out possible cmdline arguments
+   * you can use.
+   * </p>
+   */
   protected void ArgHelp() throws Exception {
     if (arguments.hasArgument(ARG_HELP)) {
       try(InputStream in = this.getClass().getClassLoader().getResourceAsStream(HELP_FILE)) {
