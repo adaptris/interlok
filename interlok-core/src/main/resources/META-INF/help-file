@@ -1,0 +1,12 @@
+OPTIONS:
+
+-help, --help                                                   Shows this help message.
+-adapterClasspath, --adapterClasspath                           TBC
+-ignoreSubDirs, --ignoreSubDirs                                 TBC
+-failover <>, --failover <>                                     Start Interlok in failover mode, also passing the name of the chosen bootstrap.properties file as a parameter
+-serviceTest, --serviceTest                                     Switch the main class to be: com.adaptris.tester.runners.TestExecutor
+-container, --container                                         Switch the main class to be: com.adaptris.management.aar.SimpleBootstrap
+-password, --password                                           Switch the main class to be: com.adaptris.security.util.Password
+-jettyonly, --jettyonly, -jetty-only, --jetty-only              Switch the main class to be: com.adaptris.core.management.NoAdapterBootstrap
+
+For more information around startup options you can visit the following page: https://interlok.adaptris.net/interlok-docs/#/pages/user-guide/adapter-bootstrap
