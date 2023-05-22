@@ -27,7 +27,9 @@ import com.adaptris.core.MultiPayloadMessageFactory;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.StartedState;
+import com.adaptris.core.jms.AfterEach;
 import com.adaptris.core.services.LogMessageService;
+import com.adaptris.interlok.util.Closer;
 import com.adaptris.util.GuidGenerator;
 
 public class ForEachTest extends ConditionalServiceExample
@@ -41,10 +43,12 @@ public class ForEachTest extends ConditionalServiceExample
   @Mock
   private Service mock;
 
+  private AutoCloseable openMocks = null;
+  
   @BeforeEach
   public void setUp() throws Exception
   {
-    MockitoAnnotations.openMocks(this);
+	openMocks = MockitoAnnotations.openMocks(this);
 
     when(mock.retrieveComponentState())
     .thenReturn(StartedState.getInstance());
@@ -59,6 +63,11 @@ public class ForEachTest extends ConditionalServiceExample
     message.addPayload("cupcake", PAYLOAD_2);
   }
 
+  @AfterEach
+  public void tearDown() throws Exception {
+	  Closer.closeQuietly(openMocks);
+  }
+  
   @Test
   public void testForEach() throws Exception
   {

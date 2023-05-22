@@ -41,6 +41,7 @@ import com.adaptris.core.services.conditional.conditions.ConditionOr;
 import com.adaptris.core.services.conditional.operator.IsNull;
 import com.adaptris.core.services.conditional.operator.NotNull;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.util.Closer;
 
 public class WhileTest extends ConditionalServiceExample {
 
@@ -54,10 +55,11 @@ public class WhileTest extends ConditionalServiceExample {
 
   @Mock private Condition mockCondition;
 
+  private AutoCloseable openMocks = null;
 
   @BeforeEach
   public void setUp() throws Exception {
-    MockitoAnnotations.openMocks(this);
+	openMocks = MockitoAnnotations.openMocks(this);
 
     when(mockService.retrieveComponentState())
         .thenReturn(StartedState.getInstance());
@@ -76,6 +78,7 @@ public class WhileTest extends ConditionalServiceExample {
   @AfterEach
   public void tearDown() throws Exception {
     StopMe(logicalExpression);
+    Closer.closeQuietly(openMocks);
   }
   
   @Test

@@ -39,11 +39,13 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.jms.AfterEach;
 import com.adaptris.core.management.Constants;
 import com.adaptris.core.management.jmx.JmxRemoteComponent;
 import com.adaptris.core.runtime.AdapterComponentMBean;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.interlok.junit.scaffolding.util.PortManager;
+import com.adaptris.interlok.util.Closer;
 import com.adaptris.util.GuidGenerator;
 
 public class TestDynamicJmxOperationalService
@@ -62,6 +64,8 @@ public class TestDynamicJmxOperationalService
   @Mock
   private JmxOperationInvoker<Object> mockInvoker;
 
+  private AutoCloseable openMocks = null;
+  
   public TestDynamicJmxOperationalService() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
@@ -71,9 +75,14 @@ public class TestDynamicJmxOperationalService
 
   @BeforeEach
   public void setUp() throws Exception {
-    MockitoAnnotations.openMocks(this);
+	openMocks = MockitoAnnotations.openMocks(this);
   }
 
+  @AfterEach
+  public void tearDown() throws Exception {
+	  Closer.closeQuietly(openMocks);
+  }
+  
   @Test
   public void testMaxCache() throws Exception {
     DynamicJmxOperationService service = new DynamicJmxOperationService();

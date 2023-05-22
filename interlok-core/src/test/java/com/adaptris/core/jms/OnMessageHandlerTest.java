@@ -29,6 +29,7 @@ import com.adaptris.core.ProduceException;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.interlok.junit.scaffolding.jms.MockConsumer;
 import com.adaptris.interlok.junit.scaffolding.jms.MockProducer;
+import com.adaptris.interlok.util.Closer;
 
 public class OnMessageHandlerTest {
 
@@ -54,9 +55,11 @@ public class OnMessageHandlerTest {
 
   @Mock private AdaptrisMessageProducer mockProducer;
 
+  private AutoCloseable openMocks = null;
+  
   @BeforeEach
   public void setUp() throws Exception {
-    MockitoAnnotations.openMocks(this);
+	openMocks = MockitoAnnotations.openMocks(this);
 
     mockCorrelationSourceId = new MessageIdCorrelationIdSource();
     mockListener = new MockMessageListener();
@@ -90,7 +93,7 @@ public class OnMessageHandlerTest {
 
   @AfterEach
   public void tearDown() throws Exception {
-
+	  Closer.closeQuietly(openMocks);
   }
 
   @Test

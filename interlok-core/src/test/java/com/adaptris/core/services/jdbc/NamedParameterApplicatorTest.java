@@ -35,6 +35,8 @@ import org.mockito.MockitoAnnotations;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.jms.AfterEach;
+import com.adaptris.interlok.util.Closer;
 
 public class NamedParameterApplicatorTest {
 
@@ -56,9 +58,11 @@ public class NamedParameterApplicatorTest {
   @Mock
   private PreparedStatement mockStatement;
 
+  private AutoCloseable openMocks = null;
+  
   @BeforeEach
   public void setUp() throws Exception {
-    MockitoAnnotations.openMocks(this);
+	openMocks = MockitoAnnotations.openMocks(this);
 
     message = DefaultMessageFactory.getDefaultInstance().newMessage("SomePayload");
     parameterApplicator = new NamedParameterApplicator();
@@ -73,8 +77,9 @@ public class NamedParameterApplicatorTest {
     parameters.add(param2);
   }
 
+  @AfterEach
   public void tearDown() throws Exception {
-
+	  Closer.closeQuietly(openMocks);
   }
 
   @Test

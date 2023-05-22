@@ -32,6 +32,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.services.conditional.Condition;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.util.Closer;
 
 public class ConditionOrTest {
 
@@ -45,10 +46,11 @@ public class ConditionOrTest {
 
   @Mock private Condition mockConditionThree;
 
+  private AutoCloseable openMocks = null;
 
   @BeforeEach
   public void setUp() throws Exception {
-    MockitoAnnotations.openMocks(this);
+	openMocks = MockitoAnnotations.openMocks(this);
 
     conditionOr = new ConditionOr();
     conditionOr.getConditions().add(mockConditionOne);
@@ -62,6 +64,7 @@ public class ConditionOrTest {
   @AfterEach
   public void tearDown() throws Exception {
     LifecycleHelper.stopAndClose(conditionOr);
+    Closer.closeQuietly(openMocks);
   }
 
   @Test

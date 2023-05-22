@@ -44,6 +44,7 @@ import com.adaptris.core.services.conditional.operator.Equals;
 import com.adaptris.core.services.conditional.operator.NotNull;
 import com.adaptris.core.services.routing.AlwaysMatchSyntaxIdentifier;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.util.Closer;
 
 public class IfElseTest extends ConditionalServiceExample {
 
@@ -60,10 +61,12 @@ public class IfElseTest extends ConditionalServiceExample {
   @Mock private Service mockElseService;
 
   @Mock private Condition mockCondition;
+  
+  private AutoCloseable openMocks = null;
 
   @BeforeEach
   public void setUp() throws Exception {
-    MockitoAnnotations.openMocks(this);
+	openMocks = MockitoAnnotations.openMocks(this);
 
     thenService = new ThenService();
     elseService = new ElseService();
@@ -84,6 +87,7 @@ public class IfElseTest extends ConditionalServiceExample {
   @AfterEach
   public void tearDown() throws Exception {
     LifecycleHelper.stopAndClose(logicalExpression);
+    Closer.closeQuietly(openMocks);
   }
 
   @Test

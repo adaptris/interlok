@@ -35,7 +35,9 @@ import org.mockito.MockitoAnnotations;
 
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.jms.AfterEach;
 import com.adaptris.core.jmx.JmxConnection;
+import com.adaptris.interlok.util.Closer;
 import com.adaptris.util.TimeInterval;
 
 public class JmxWaitServiceTest
@@ -46,6 +48,8 @@ public class JmxWaitServiceTest
   @Mock
   private JmxOperationInvoker<Boolean> mockInvoker;
 
+  private AutoCloseable openMocks = null;
+  
   public JmxWaitServiceTest() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
@@ -55,9 +59,14 @@ public class JmxWaitServiceTest
 
   @BeforeEach
   public void setUp() throws Exception {
-    MockitoAnnotations.openMocks(this);
+	openMocks = MockitoAnnotations.openMocks(this);
   }
 
+  @AfterEach
+  public void tearDown() throws Exception {
+	  Closer.closeQuietly(openMocks);
+  }
+  
   @Test
   public void testWaitError() throws Exception {
     JmxWaitService service = new JmxWaitService();
