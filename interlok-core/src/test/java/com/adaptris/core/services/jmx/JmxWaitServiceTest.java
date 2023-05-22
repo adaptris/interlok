@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -35,7 +36,6 @@ import org.mockito.MockitoAnnotations;
 
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.jms.AfterEach;
 import com.adaptris.core.jmx.JmxConnection;
 import com.adaptris.interlok.util.Closer;
 import com.adaptris.util.TimeInterval;

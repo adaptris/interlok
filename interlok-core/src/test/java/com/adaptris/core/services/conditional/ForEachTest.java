@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -27,7 +28,6 @@ import com.adaptris.core.MultiPayloadMessageFactory;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.StartedState;
-import com.adaptris.core.jms.AfterEach;
 import com.adaptris.core.services.LogMessageService;
 import com.adaptris.interlok.util.Closer;
 import com.adaptris.util.GuidGenerator;
