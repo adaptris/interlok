@@ -167,7 +167,7 @@ abstract class CmdLineBootstrap {
    * you can use.
    * </p>
    */
-  protected void ArgHelp() throws Exception {
+  protected void argHelp() throws Exception {
     if (arguments.hasArgument(ARG_HELP)) {
       try(InputStream in = this.getClass().getClassLoader().getResourceAsStream(HELP_FILE)) {
         String contents = IOUtils.toString(in, StandardCharsets.UTF_8);

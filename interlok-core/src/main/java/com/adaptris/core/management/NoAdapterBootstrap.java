@@ -40,7 +40,7 @@ public class NoAdapterBootstrap extends CmdLineBootstrap {
     log.info("Starting Jetty/UI without a local adapter");
 
     logVersionInformation();
-    ArgHelp();
+    argHelp();
     // standard boot
     LoggingConfigurator.newConfigurator().defaultInitialisation();
     SystemPropertiesUtil.addSystemProperties(bootProperties());
