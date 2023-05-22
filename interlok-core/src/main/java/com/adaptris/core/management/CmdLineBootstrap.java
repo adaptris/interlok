@@ -58,12 +58,13 @@ abstract class CmdLineBootstrap {
   {
       "-help", "--help"
   };
+  
+  private static final String HELP_FILE = "META-INF/help-file";
 
   private transient String bootstrapResource;
   private transient ArgUtil arguments;
   private transient boolean configCheckOnly = false;
   private transient BootstrapProperties bootProperties;
-  private static final String HELP_FILE = "META-INF/help-file";
 
   protected boolean configCheckOnly() {
     return configCheckOnly;
