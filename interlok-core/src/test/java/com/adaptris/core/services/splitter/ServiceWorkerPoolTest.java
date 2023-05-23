@@ -59,7 +59,7 @@ public class ServiceWorkerPoolTest extends ServiceWorkerPool {
     assertEquals(10, pool.getMaxTotal());
     assertEquals(10, pool.getMinIdle());
     assertEquals(10, pool.getMaxIdle());
-    assertEquals(-1, pool.getMaxWaitMillis());
+    assertEquals(-1, pool.getMaxWaitDuration().toMillis());
     assertTrue(pool.getBlockWhenExhausted());
   }
 

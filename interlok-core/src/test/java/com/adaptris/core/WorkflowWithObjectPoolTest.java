@@ -14,9 +14,10 @@
 
 package com.adaptris.core;
 
+
+import java.time.Duration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.pool2.PooledObject;
@@ -144,7 +145,7 @@ public class WorkflowWithObjectPoolTest extends WorkflowWithObjectPool {
     pool.setMaxTotal(poolSize());
     pool.setMinIdle(minIdle());
     pool.setMaxIdle(maxIdle());
-    pool.setMaxWaitMillis(-1L);
+    pool.setMaxWait(Duration.ofMillis(-1L));
     pool.setBlockWhenExhausted(true);
     return pool;
   }

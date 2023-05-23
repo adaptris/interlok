@@ -137,7 +137,7 @@ public class SimpleSequenceNumberTest extends SequenceNumberServiceExample {
     service.setMaximumSequenceNumber(null);
     assertNull(service.getMaximumSequenceNumber());
     service.setMaximumSequenceNumber(12L);
-    assertEquals(new Long(12L), service.getMaximumSequenceNumber());
+    assertEquals(Long.valueOf(12L), service.getMaximumSequenceNumber());
   }
 
   @Test

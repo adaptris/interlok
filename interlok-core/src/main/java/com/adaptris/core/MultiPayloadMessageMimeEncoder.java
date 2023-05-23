@@ -126,7 +126,7 @@ public class MultiPayloadMessageMimeEncoder extends MimeEncoderImpl<OutputStream
     }
     MimeBodyPart metadataPart = Args.notNull(input.getBodyPart(METADATA_CONTENT_ID), "metadata");
     try (InputStream metadata = metadataPart.getInputStream()) {
-      message.setMetadata(getMetadataSet(metadata));
+      message.addMetadata(getMetadataSet(metadata));
     }
     if (retainUniqueId()) {
       message.setUniqueId(input.getMessageID());

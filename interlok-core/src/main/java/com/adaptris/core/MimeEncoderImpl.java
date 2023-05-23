@@ -90,7 +90,7 @@ public abstract class MimeEncoderImpl<T, S> extends AdaptrisMessageEncoderImp<T,
         InputStream metadata = metadataPart.getInputStream();
         OutputStream out = msg.getOutputStream()) {
       IOUtils.copy(payloadIn, out);
-      msg.setMetadata(getMetadataSet(metadata));
+      msg.addMetadata(getMetadataSet(metadata));
     }
     if (retainUniqueId()) {
       msg.setUniqueId(input.getMessageID());

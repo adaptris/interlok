@@ -73,7 +73,7 @@ public class ClobColumnTranslatorTest {
   @Test
   public void testClobIncorrectType() throws Exception {
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", new Integer(999), Types.CLOB);
+    row.setFieldValue("testField", Integer.valueOf(999), Types.CLOB);
 
     try {
       translator.translate(row, 0);
@@ -86,7 +86,7 @@ public class ClobColumnTranslatorTest {
   @Test
   public void testClobIncorrectTypeColumnName() throws Exception {
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", new Integer(999), Types.CLOB);
+    row.setFieldValue("testField", Integer.valueOf(999), Types.CLOB);
 
     try {
       translator.translate(row, "testField");

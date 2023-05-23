@@ -33,6 +33,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.services.conditional.Condition;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.util.Closer;
 
 public class ConditionAndTest {
 
@@ -46,9 +47,11 @@ private ConditionAnd conditionAnd;
 
   @Mock private Condition mockConditionThree;
 
+  private AutoCloseable openMocks = null;
+  
   @BeforeEach
   public void setUp() throws Exception {
-    MockitoAnnotations.initMocks(this);
+	openMocks = MockitoAnnotations.openMocks(this);
 
     conditionAnd = new ConditionAnd().withConditions(mockConditionOne, mockConditionTwo, mockConditionThree);
     adaptrisMessage = DefaultMessageFactory.getDefaultInstance().newMessage();
@@ -58,6 +61,7 @@ private ConditionAnd conditionAnd;
   @AfterEach
   public void tearDown() throws Exception {
     LifecycleHelper.stopAndClose(conditionAnd);
+    Closer.closeQuietly(openMocks);
   }
 
   @Test

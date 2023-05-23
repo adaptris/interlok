@@ -383,7 +383,7 @@ public abstract class RelaxedFtpCase extends FtpConsumerExample {
   protected void assertMessages(List<AdaptrisMessage> list, int count) {
     assertEquals(count, list.size());
     for (AdaptrisMessage m : list) {
-      assertTrue(m.containsKey(CoreConstants.ORIGINAL_NAME_KEY));
+      assertTrue(m.headersContainsKey(CoreConstants.ORIGINAL_NAME_KEY));
       assertEquals(PAYLOAD, m.getContent().trim());
     }
   }

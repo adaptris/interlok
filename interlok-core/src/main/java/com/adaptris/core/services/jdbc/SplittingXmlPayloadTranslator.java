@@ -204,7 +204,7 @@ public class SplittingXmlPayloadTranslator extends XmlPayloadTranslatorImpl {
         ObjectUtils.defaultIfNull(getMessageFactory(), original.getFactory());
     AdaptrisMessage result = factory.newMessage();
     if (copyMetadata()) {
-      result.setMetadata(original.getMetadata());
+      result.addMetadata(original.getMetadata());
     }
     result.addMetadata(CoreConstants.PARENT_UNIQUE_ID_KEY, original.getUniqueId());
     return result;

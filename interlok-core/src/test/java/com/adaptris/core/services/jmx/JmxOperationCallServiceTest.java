@@ -40,6 +40,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.jmx.JmxConnection;
+import com.adaptris.interlok.util.Closer;
 
 public class JmxOperationCallServiceTest
     extends com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase {
@@ -57,6 +58,8 @@ public class JmxOperationCallServiceTest
   @Mock
   private JmxConnection mockConnection;
 
+  private AutoCloseable openMocks = null;
+  
   public JmxOperationCallServiceTest() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
@@ -65,7 +68,7 @@ public class JmxOperationCallServiceTest
 
   @BeforeEach
   public void setUp() throws Exception {
-    MockitoAnnotations.initMocks(this);
+	openMocks = MockitoAnnotations.openMocks(this);
 
     callService = new JmxOperationCallService();
     callService.setInvoker(mockInvoker);
@@ -82,6 +85,7 @@ public class JmxOperationCallServiceTest
   public void tearDown() throws Exception {
     callService.stop();
     callService.close();
+    Closer.closeQuietly(openMocks);
   }
 
   /*************************************************************************************

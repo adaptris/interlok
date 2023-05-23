@@ -126,7 +126,7 @@ public class UnifiedBootstrap {
       AdapterManagerMBean mgr = JMX.newMBeanProxy(JmxHelper.findMBeanServer(bootstrapProperties), obj, AdapterManagerMBean.class);
       try {
         if (Constants.DBG) {
-          mgr.requestStart();
+          mgr.requestStart(timeout);
         }
         else {
           log.trace("Start operationTimeout : {}",

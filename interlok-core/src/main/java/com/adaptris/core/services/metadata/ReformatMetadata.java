@@ -73,7 +73,7 @@ public abstract class ReformatMetadata extends MetadataServiceImpl implements Me
         }
       }
       logMetadata("Modified metadata : {}", modifiedMetadata);
-      msg.setMetadata(modifiedMetadata);
+      msg.addMetadata(modifiedMetadata);
     }
     catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);

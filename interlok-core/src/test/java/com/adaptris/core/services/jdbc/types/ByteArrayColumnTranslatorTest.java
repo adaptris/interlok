@@ -72,7 +72,7 @@ public class ByteArrayColumnTranslatorTest {
   @Test
   public void testByteIncorrectObject() throws Exception {
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", new Integer(10), Types.ARRAY);
+    row.setFieldValue("testField", Integer.valueOf(10), Types.ARRAY);
 
     try {
       translator.translate(row, "testField");

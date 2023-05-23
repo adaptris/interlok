@@ -96,7 +96,7 @@ public abstract class MessageAggregatorImpl implements MessageAggregator {
 
   protected void overwriteMetadata(AdaptrisMessage src, AdaptrisMessage target) {
     if (overwriteMetadata()) {
-      target.setMetadata(src.getMetadata());
+      target.addMetadata(src.getMetadata());
     }
   }
 

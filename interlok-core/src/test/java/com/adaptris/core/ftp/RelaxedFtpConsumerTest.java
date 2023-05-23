@@ -51,6 +51,7 @@ import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
+import com.adaptris.interlok.util.Closer;
 import com.adaptris.util.TimeInterval;
 
 public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
@@ -71,11 +72,13 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
   private GregorianCalendar calendarNow;
   private GregorianCalendar calendarOneYearAgo;
 
+  private AutoCloseable openMocks = null;
+  
   @BeforeEach
   public void setUp() throws Exception {
     consumer = new RelaxedFtpConsumer();
 
-    MockitoAnnotations.initMocks(this);
+    openMocks = MockitoAnnotations.openMocks(this);
 
     consumeDestination = "myDestination";
     consumer.setFtpEndpoint(consumeDestination);
@@ -102,6 +105,7 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
   public void tearDown() throws Exception {
     LifecycleHelper.stop(consumer);
     LifecycleHelper.close(consumer);
+    Closer.closeQuietly(openMocks);
   }
 
   /***********************************************************************************************
