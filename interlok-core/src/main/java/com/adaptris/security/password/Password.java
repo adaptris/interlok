@@ -21,9 +21,6 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.ServiceLoader;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.adaptris.security.exc.PasswordException;
 
 /**
@@ -34,10 +31,8 @@ import com.adaptris.security.exc.PasswordException;
  */
 public abstract class Password {
 
-
   private static transient Password INSTANCE = new PasswordLoader();
 
-  private static Logger log = LoggerFactory.getLogger(Password.class);
   /**
    * Password obfuscation using Microsoft Crypto API which is only available on
    * windows.
@@ -143,8 +138,6 @@ public abstract class Password {
     generatePassword(argv);
     System.exit(0);
   }
-
-
 
   private static class PasswordLoader extends Password {
     private Collection<PasswordCodec> passwordImpls = new ArrayList<>();

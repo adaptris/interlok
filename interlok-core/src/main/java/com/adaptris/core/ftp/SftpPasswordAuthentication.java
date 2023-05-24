@@ -38,6 +38,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("sftp-password-authentication")
 public class SftpPasswordAuthentication implements SftpAuthenticationProvider {
+  
   @InputFieldHint(style = "PASSWORD", external = true)
   private String defaultPassword;
 
@@ -74,10 +75,11 @@ public class SftpPasswordAuthentication implements SftpAuthenticationProvider {
    * 
    * @param s the password to be used if not overridden as part of the destination.
    * @see Password#MSCAPI_STYLE
-   * @see Password#NON_PORTABLE_PASSWORD
    * @see Password#PORTABLE_PASSWORD
+   * @see Password#PORTABLE_PASSWORD_2
    */
   public void setDefaultPassword(String s) {
-    this.defaultPassword = s;
+    defaultPassword = s;
   }
+  
 }
