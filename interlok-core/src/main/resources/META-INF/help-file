@@ -1,10 +1,11 @@
 OPTIONS:
 
--help, --help                                                   Shows this help message.
--configtest, -configcheck                                       Checks that the configuration for things like depreceated services and license expiry. Interlok is terminated after this check.
--failover <BOOTSTRAP_PROPERTIES_FILE>                           Start Interlok in failover mode, also passing the name of the chosen 'bootstrap.properties' file as a parameter.
--serviceTest <PATH_TO_SERVICE_TEST_XML>                         Starts Interlok and runs the service tester.
--password,                                                      Generates an encrypted password using one of the following encryptions: 'MSCAPI', 'PW', 'AES_GCM' 'SEED'.
--jettyonly, -jetty-only                                         Starts just the jetty component of Interlok, you can access the UI but with no underlying adapter running.
+ -help, --help                                                Shows this help message.
+ -version, --version                                          Prints out the version number of Interlok along with any optional sub-components.
+ -configtest, -configcheck                                    Checks that the configuration for things like deprecated services and license expiry. Interlok is terminated after this check.
+ -failover <BOOTSTRAP_PROPERTIES_FILE>                        Start Interlok in failover mode, also passing the name of the chosen 'bootstrap.properties' file as a parameter.
+ -serviceTest <PATH_TO_SERVICE_TEST_XML>                      Starts Interlok and runs the service tester.
+ -password,                                                   Generates an encrypted password using one of the following encryptions: 'MSCAPI', 'PW', 'AES_GCM' 'SEED'.
+ -jettyonly, -jetty-only                                      Starts just the jetty component of Interlok, you can access the UI but with no underlying adapter running.
 
 For more information around startup options you can visit the following page: https://interlok.adaptris.net/interlok-docs/#/pages/user-guide/adapter-bootstrap
