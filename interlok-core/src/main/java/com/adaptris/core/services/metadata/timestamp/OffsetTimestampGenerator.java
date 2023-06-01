@@ -18,9 +18,11 @@ package com.adaptris.core.services.metadata.timestamp;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.util.Date;
+import java.util.regex.Matcher;
 
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
+import javax.validation.constraints.Pattern;
 
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
@@ -29,34 +31,43 @@ import com.adaptris.core.services.metadata.AddTimestampMetadataService;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Timestamp Generator implementation that mimics the default behaviour available in {@link AddTimestampMetadataService}.
+ * Timestamp Generator implementation that mimics the default behaviour
+ * available in {@link AddTimestampMetadataService}.
  * 
  * 
  * @see AddTimestampMetadataService
  * @since 3.5.0
  */
+
 @XStreamAlias("offset-timestamp-generator")
 public class OffsetTimestampGenerator implements TimestampGenerator {
 
+  private static final String OFFSET_VALIDATION_REGEX = "^\\-?P(?=\\w*\\d)(?:\\d+Y|Y)?(?:\\d+M|M)?(?:\\d+D|D)?(?:T(?:\\d+H|H)?(?:\\d+M|M)?(?:\\d+(?:\\­.\\d{1,2})?S|S)?)?$";
+  private static final String OFFSET_VALIDATION_MESSAGE = "Invalid offset pattern '%s', you must use the ISO8601 standard. I.e. 'P30D', '-P30D'";
+
   @InputFieldHint(expression = true)
+  @Pattern(regexp = OFFSET_VALIDATION_REGEX, message = OFFSET_VALIDATION_MESSAGE)
   private String offset;
 
   public OffsetTimestampGenerator() {
 
   }
 
-
   public OffsetTimestampGenerator(String offset) {
     this();
     setOffset(offset);
   }
-
 
   @Override
   public Date generateTimestamp(AdaptrisMessage msg) throws ServiceException {
     Date timestamp = new Date();
     try {
       if (!isBlank(offset)) {
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(OFFSET_VALIDATION_REGEX);
+        Matcher matcher = pattern.matcher(offset);
+        if (!matcher.find()) {
+          throw new IllegalArgumentException(String.format(OFFSET_VALIDATION_MESSAGE, offset));
+        }
         Duration duration;
         duration = DatatypeFactory.newInstance().newDuration(msg.resolve(offset));
         duration.addTo(timestamp);
