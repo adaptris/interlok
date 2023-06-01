@@ -31,6 +31,7 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
@@ -123,6 +124,10 @@ public class AddTimestampMetadataService extends ServiceImp {
   @Override
   protected void initService() throws CoreException {
     try {
+      if (timestampGenerator != null) {
+        AdaptrisMessage m = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+        timestampGenerator.generateTimestamp(m);
+      }
       Args.notBlank(getMetadataKey(), "metadata-key");
     } catch (IllegalArgumentException e) {
       throw ExceptionHelper.wrapCoreException(e);
