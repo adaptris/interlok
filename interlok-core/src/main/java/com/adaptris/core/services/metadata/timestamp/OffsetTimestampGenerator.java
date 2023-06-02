@@ -26,6 +26,7 @@ import javax.validation.constraints.Pattern;
 
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.metadata.AddTimestampMetadataService;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -63,11 +64,6 @@ public class OffsetTimestampGenerator implements TimestampGenerator {
     Date timestamp = new Date();
     try {
       if (!isBlank(offset)) {
-        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(OFFSET_VALIDATION_REGEX);
-        Matcher matcher = pattern.matcher(offset);
-        if (!matcher.find()) {
-          throw new IllegalArgumentException(String.format(OFFSET_VALIDATION_MESSAGE, offset));
-        }
         Duration duration;
         duration = DatatypeFactory.newInstance().newDuration(msg.resolve(offset));
         duration.addTo(timestamp);
@@ -76,6 +72,29 @@ public class OffsetTimestampGenerator implements TimestampGenerator {
       throw new ServiceException("Failed to parse " + offset + " using ISO8601", e);
     }
     return timestamp;
+  }
+  
+  @Override
+  public void init() throws CoreException {
+    if (!isBlank(offset)) {
+    java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(OFFSET_VALIDATION_REGEX);
+    Matcher matcher = pattern.matcher(offset);
+    if (!matcher.find()) {
+      throw new CoreException(String.format(OFFSET_VALIDATION_MESSAGE, offset));
+    }
+   }
+  }
+  
+  @Override
+  public void start() throws CoreException {
+  }
+  
+  @Override
+  public void stop() {
+  }
+  
+  @Override
+  public void close() {
   }
 
   /**
