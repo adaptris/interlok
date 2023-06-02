@@ -17,10 +17,11 @@ package com.adaptris.core.services.metadata.timestamp;
 
 import java.util.Date;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.ServiceException;
 
 @FunctionalInterface
-public interface TimestampGenerator {
+public interface TimestampGenerator extends ComponentLifecycle{
 
   Date generateTimestamp(AdaptrisMessage msg) throws ServiceException;
 }
