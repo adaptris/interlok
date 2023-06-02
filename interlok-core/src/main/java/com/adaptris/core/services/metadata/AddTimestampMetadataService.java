@@ -120,25 +120,39 @@ public class AddTimestampMetadataService extends ServiceImp {
     }
   }
 
+  @Override
+  public void start() throws CoreException {
+    if (timestampGenerator != null) {
+      timestampGenerator.start();
+    }
+  }
+
 
   @Override
   protected void initService() throws CoreException {
     try {
       if (timestampGenerator != null) {
-        AdaptrisMessage m = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-        timestampGenerator.generateTimestamp(m);
+        timestampGenerator.init();
       }
       Args.notBlank(getMetadataKey(), "metadata-key");
     } catch (IllegalArgumentException e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
   }
+  
+  @Override
+  public void stop() {
+    if (timestampGenerator != null) {
+      timestampGenerator.stop();
+    }
+  }
 
   @Override
   protected void closeService() {
-
+    if (timestampGenerator != null) {
+      timestampGenerator.close();
+    }
   }
-
 
   /**
    * @return the metadataKey
