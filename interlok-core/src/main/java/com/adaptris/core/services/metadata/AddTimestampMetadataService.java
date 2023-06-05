@@ -39,6 +39,7 @@ import com.adaptris.core.services.metadata.timestamp.OffsetTimestampGenerator;
 import com.adaptris.core.services.metadata.timestamp.TimestampGenerator;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -122,18 +123,14 @@ public class AddTimestampMetadataService extends ServiceImp {
 
   @Override
   public void start() throws CoreException {
-    if (timestampGenerator != null) {
-      timestampGenerator.start();
-    }
+    LifecycleHelper.start(timestampGenerator);
   }
 
 
   @Override
   protected void initService() throws CoreException {
     try {
-      if (timestampGenerator != null) {
-        timestampGenerator.init();
-      }
+      LifecycleHelper.init(timestampGenerator);
       Args.notBlank(getMetadataKey(), "metadata-key");
     } catch (IllegalArgumentException e) {
       throw ExceptionHelper.wrapCoreException(e);
@@ -142,16 +139,12 @@ public class AddTimestampMetadataService extends ServiceImp {
   
   @Override
   public void stop() {
-    if (timestampGenerator != null) {
-      timestampGenerator.stop();
-    }
+    LifecycleHelper.stop(timestampGenerator);
   }
 
   @Override
   protected void closeService() {
-    if (timestampGenerator != null) {
-      timestampGenerator.close();
-    }
+    LifecycleHelper.close(timestampGenerator);
   }
 
   /**
