@@ -194,4 +194,13 @@
     <packageUrl regex="true">^pkg:maven/commons\-validator/commons\-validator@.*$</packageUrl>
     <cpe>cpe:/a:apache:commons_net</cpe>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: json-utils-0.1.8.jar. This is a false positive
+    The CVE-2023-2972 issue is in https://github.com/antfu/utils and not in com.bazaarvoice.jolt:json-utils
+    Adding it here as the issue occurs into multiple optional components
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/com\.bazaarvoice\.jolt/json\-utils@.*$</packageUrl>
+    <cve>CVE-2023-2972</cve>
+  </suppress>
 </suppressions>
