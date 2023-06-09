@@ -21,7 +21,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -93,7 +93,7 @@ public class XStreamUtilsTest extends XStreamUtils {
     }
   }
 
-  @Test(expected = IOException.class)
+  @Test(expected = UncheckedIOException.class)
   public void testGetClasses_Exception() throws Exception {
     try (InputStream in = new StreamUtilTest.ErroringInputStream()) {
       List<Class<?>> classes = getClasses(in);
