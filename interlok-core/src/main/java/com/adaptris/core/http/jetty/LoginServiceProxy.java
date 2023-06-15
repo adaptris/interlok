@@ -4,7 +4,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.ServletRequest;
 
-import org.eclipse.jetty.security.AbstractLoginService.RolePrincipal;
+import org.eclipse.jetty.security.RolePrincipal;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.security.IdentityService;
 import org.eclipse.jetty.security.LoginService;
