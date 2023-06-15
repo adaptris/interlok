@@ -22,6 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.security.Principal;
+import java.util.Collections;
+import java.util.List;
 
 import javax.security.auth.Subject;
 import javax.servlet.ServletRequest;
@@ -30,6 +32,8 @@ import org.eclipse.jetty.security.AbstractLoginService;
 import org.eclipse.jetty.security.DefaultIdentityService;
 import org.eclipse.jetty.security.DefaultUserIdentity;
 import org.eclipse.jetty.security.IdentityService;
+import org.eclipse.jetty.security.RolePrincipal;
+import org.eclipse.jetty.security.UserPrincipal;
 import org.eclipse.jetty.server.UserIdentity;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -142,9 +146,9 @@ public class JettyLoginProxyTest {
     }
 
     @Override
-    protected String[] loadRoleInfo(UserPrincipal user) {
+    protected List<RolePrincipal> loadRoleInfo(UserPrincipal user) {
       // Never called since we override all the LoginService imps
-      return new String[0];
+      return Collections.emptyList();
     }
 
     @Override
@@ -166,14 +170,6 @@ public class JettyLoginProxyTest {
     @Override
     public String getName() {
       return username;
-    }
-
-    public boolean authenticate(KnownUser user) {
-      return true;
-    }
-
-    public boolean checkCredentials(Object credentials) {
-        return true;
     }
 
   }

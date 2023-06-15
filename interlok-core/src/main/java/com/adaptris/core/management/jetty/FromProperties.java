@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,7 +16,9 @@
 package com.adaptris.core.management.jetty;
 
 import static com.adaptris.core.management.jetty.JettyServerComponent.DEFAULT_JETTY_PORT;
+
 import java.util.Properties;
+
 import org.eclipse.jetty.deploy.DeploymentManager;
 import org.eclipse.jetty.deploy.providers.WebAppProvider;
 import org.eclipse.jetty.http.HttpCompliance;
@@ -95,8 +97,9 @@ final class FromProperties extends ServerBuilder {
   }
 
   private ServerConnector createConnector(Server server) {
-    ServerConnector connector = new ServerConnector(server, -1, -1,
-        new HttpConnectionFactory(configure(new HttpConfiguration()), HttpCompliance.RFC2616));
+    HttpConfiguration httpConfig = new HttpConfiguration();
+    httpConfig.setHttpCompliance(HttpCompliance.RFC2616);
+    ServerConnector connector = new ServerConnector(server, -1, -1, new HttpConnectionFactory(configure(httpConfig)));
     connector.setPort(Integer.parseInt(getConfigItem(WEB_SERVER_PORT_CFG_KEY, DEFAULT_JETTY_PORT)));
     return connector;
   }

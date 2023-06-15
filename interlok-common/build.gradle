@@ -6,6 +6,7 @@ ext {
   slf4jVersion = '2.0.7'
   log4j2Version = "2.20.0"
   mockitoVersion = '4.9.0'
+  jettyVersion= '10.0.15'
 }
 
 // In this section you declare the dependencies for your production and test code
@@ -21,7 +22,31 @@ dependencies {
 
   api ("org.slf4j:slf4j-api:$slf4jVersion")
   api ("javax.servlet:javax.servlet-api:4.0.1")
-  api ("org.eclipse.jetty.aggregate:jetty-all:9.4.51.v20230217")
+
+  api ("org.eclipse.jetty:jetty-alpn-client:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-annotations:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-client:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-deploy:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-http:$jettyVersion") // implicit dependency
+  api ("org.eclipse.jetty:jetty-io:$jettyVersion") // implicit dependency
+  api ("org.eclipse.jetty:jetty-jaspi:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-jmx:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-jndi:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-plus:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-quickstart:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-rewrite:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-security:$jettyVersion") // implicit dependency
+  api ("org.eclipse.jetty:jetty-server:$jettyVersion") // implicit dependency
+  api ("org.eclipse.jetty:jetty-servlet:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-servlets:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-util-ajax:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-util:$jettyVersion") // implicit dependency
+  api ("org.eclipse.jetty:jetty-webapp:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-xml:$jettyVersion")
+  api ("org.eclipse.jetty.http2:http2-hpack:$jettyVersion") // implicit dependency
+  api ("org.eclipse.jetty.http2:http2-common:$jettyVersion")
+  api ("org.eclipse.jetty.http2:http2-server:$jettyVersion")
+  api ("org.eclipse.jetty.http2:http2-client:$jettyVersion")
 
   implementation "org.apache.logging.log4j:log4j-api:$log4j2Version", optional
   implementation "org.apache.logging.log4j:log4j-core:$log4j2Version", optional

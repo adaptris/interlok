@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,7 +43,6 @@ import com.adaptris.core.Channel;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.PoolingWorkflow;
-import com.adaptris.core.PortManager;
 import com.adaptris.core.ProduceException;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
@@ -64,6 +63,7 @@ import com.adaptris.core.stubs.StaticMockMessageProducer;
 import com.adaptris.core.stubs.StubMessageFactory;
 import com.adaptris.http.legacy.HttpProduceConnection;
 import com.adaptris.http.legacy.SimpleHttpProducer;
+import com.adaptris.interlok.junit.scaffolding.util.PortManager;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.TimeInterval;
 
@@ -83,7 +83,6 @@ public class HttpConsumerTest extends HttpConsumerExample {
   public static final String XML_PAYLOAD = "<root><document>value</document></root>";
 
   protected SimpleHttpProducer httpProducer;
-
 
   @BeforeEach
   public void setUp() throws Exception {
@@ -142,8 +141,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     Channel channel = JettyHelper.createChannel(connection, JettyHelper.createConsumer(URL_TO_POST_TO), new MockMessageProducer());
     try {
       channel.requestStart();
-    }
-    finally {
+    } finally {
       channel.requestClose();
     }
 
@@ -155,8 +153,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     JettyMessageConsumer consumer1 = JettyHelper.createConsumer(URL_TO_POST_TO);
     StandardWorkflow workflow1 = new StandardWorkflow();
     workflow1.setConsumer(consumer1);
-    workflow1.getServiceCollection()
-        .add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
+    workflow1.getServiceCollection().add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
     Channel channel = JettyHelper.createChannel(connection, workflow1);
     try {
       channel.requestStart();
@@ -173,8 +170,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       AdaptrisMessage reply2 = httpProducer.request(msg2);
       assertEquals("404", reply2.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
 
-    }
-    finally {
+    } finally {
       channel.requestClose();
     }
   }
@@ -186,15 +182,13 @@ public class HttpConsumerTest extends HttpConsumerExample {
     JettyMessageConsumer consumer1 = JettyHelper.createConsumer(URL_TO_POST_TO);
     StandardWorkflow workflow1 = new StandardWorkflow();
     workflow1.setConsumer(consumer1);
-    workflow1.getServiceCollection()
-        .add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
+    workflow1.getServiceCollection().add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
     Channel channel = JettyHelper.createChannel(connection, workflow1);
 
     JettyMessageConsumer consumer2 = JettyHelper.createConsumer("/some/other/urlmapping/");
     StandardWorkflow workflow2 = new StandardWorkflow();
     workflow2.setConsumer(consumer2);
-    workflow2.getServiceCollection()
-        .add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
+    workflow2.getServiceCollection().add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.OK_200)));
     channel.getWorkflowList().add(workflow2);
 
     try {
@@ -213,8 +207,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       AdaptrisMessage reply2 = httpProducer.request(msg2);
       assertEquals("200", reply2.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
 
-    }
-    finally {
+    } finally {
       channel.requestClose();
     }
   }
@@ -244,8 +237,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       AdaptrisMessage reply = httpProducer.request(msg);
       assertEquals(XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
-    }
-    finally {
+    } finally {
       stop(httpProducer);
       channel.requestClose();
     }
@@ -275,8 +267,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       AdaptrisMessage reply = httpProducer.request(msg);
       // Because of redmineID #4715 it should just "return immediatel" which flushes the stream so there's no content.
       assertEquals("", reply.getContent());
-    }
-    finally {
+    } finally {
       stop(httpProducer);
       channel.requestClose();
     }
@@ -308,8 +299,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       AdaptrisMessage reply = httpProducer.request(msg);
       assertEquals(Integer.valueOf(HttpStatus.ACCEPTED_202.getStatusCode()),
           Integer.valueOf(reply.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE)));
-    }
-    finally {
+    } finally {
       stop(httpProducer);
       channel.requestClose();
     }
@@ -331,8 +321,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       assertEquals(XML_PAYLOAD, reply.getContent());
       AdaptrisMessage receivedMsg = doAssertions(mockProducer);
       assertFalse(receivedMsg.containsKey("Content-Type"));
-    }
-    finally {
+    } finally {
       stop(httpProducer);
       channel.requestClose();
       PortManager.release(connection.getPort());
@@ -356,8 +345,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       start(httpProducer);
       AdaptrisMessage reply = httpProducer.request(msg);
       assertEquals("405", reply.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
-    }
-    finally {
+    } finally {
       stop(httpProducer);
       channel.requestClose();
       PortManager.release(connection.getPort());
@@ -404,8 +392,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       assertEquals(XML_PAYLOAD, reply.getContent());
       AdaptrisMessage receivedMsg = doAssertions(mockProducer);
       assertEquals("text/xml", receivedMsg.getMetadataValue("Http_Header_Content-Type"));
-    }
-    finally {
+    } finally {
       stop(httpProducer);
       channel.requestClose();
       PortManager.release(connection.getPort());
@@ -437,8 +424,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       assertEquals("1", receivedMsg.getMetadataValue("queryParam1"));
       assertEquals("2", receivedMsg.getMetadataValue("queryParam2"));
       assertEquals("3", receivedMsg.getMetadataValue("queryParam3"));
-    }
-    finally {
+    } finally {
       stop(httpProducer);
       channel.requestClose();
       PortManager.release(connection.getPort());
@@ -470,8 +456,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       assertEquals("1", receivedMsg.getObjectHeaders().get("queryParam1"));
       assertEquals("2", receivedMsg.getObjectHeaders().get("queryParam2"));
       assertEquals("3", receivedMsg.getObjectHeaders().get("queryParam3"));
-    }
-    finally {
+    } finally {
       stop(httpProducer);
       channel.requestClose();
       PortManager.release(connection.getPort());
@@ -505,8 +490,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       assertEquals("1", receivedMsg.getMetadataValue("Http_Param_queryParam1"));
       assertEquals("2", receivedMsg.getMetadataValue("Http_Param_queryParam2"));
       assertEquals("3", receivedMsg.getMetadataValue("Http_Param_queryParam3"));
-    }
-    finally {
+    } finally {
       stop(httpProducer);
       channel.requestClose();
       PortManager.release(connection.getPort());
@@ -540,8 +524,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       assertEquals("1", receivedMsg.getObjectHeaders().get("Http_Param_queryParam1"));
       assertEquals("2", receivedMsg.getObjectHeaders().get("Http_Param_queryParam2"));
       assertEquals("3", receivedMsg.getObjectHeaders().get("Http_Param_queryParam3"));
-    }
-    finally {
+    } finally {
       stop(httpProducer);
       channel.requestClose();
       PortManager.release(connection.getPort());
@@ -552,17 +535,14 @@ public class HttpConsumerTest extends HttpConsumerExample {
   public void testBasicConsumeWorkflow_ConsumeDestinationContainsInvalidURL() throws Exception {
     // {} won't be valid for a URL, so this should immediately fail.
     HttpConnection con = createConnection(null);
-    Channel c = JettyHelper.createChannel(con, JettyHelper.createConsumer(URL_TO_POST_TO + "?token={}"),
-        new MockMessageProducer());
+    Channel c = JettyHelper.createChannel(con, JettyHelper.createConsumer(URL_TO_POST_TO + "?token={}"), new MockMessageProducer());
     c.requestInit();
     try {
       c.requestStart();
       fail();
-    }
-    catch (CoreException expected) {
+    } catch (CoreException expected) {
       expected.printStackTrace();
-    }
-    finally {
+    } finally {
       stop(c);
       PortManager.release(con.getPort());
     }
@@ -585,8 +565,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       AdaptrisMessage reply = httpProducer.request(msg);
       assertEquals(XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
-    }
-    finally {
+    } finally {
       stop(httpProducer);
       channel.requestClose();
       PortManager.release(connection.getPort());
@@ -606,13 +585,11 @@ public class HttpConsumerTest extends HttpConsumerExample {
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
       httpProducer.setUrl(createProduceDestinationUrl(connection.getPort()));
       start(httpProducer);
-      AdaptrisMessage reply = httpProducer.request(msg);
+      httpProducer.request(msg);
       AdaptrisMessage consumedMessage = doAssertions(mockProducer);
       assertFalse(consumedMessage.headersContainsKey(JettyConstants.JETTY_USER_ROLES));
       assertFalse(consumedMessage.headersContainsKey(JettyConstants.JETTY_QUERY_STRING));
-
-    }
-    finally {
+    } finally {
       stop(httpProducer);
       channel.requestClose();
       PortManager.release(connection.getPort());
@@ -636,8 +613,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       AdaptrisMessage reply = httpProducer.request(msg);
       assertEquals(XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
-    }
-    finally {
+    } finally {
       stop(httpProducer);
       channel.requestClose();
       PortManager.release(connection.getPort());
@@ -666,8 +642,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       AdaptrisMessage reply = httpProducer.request(msg);
       assertEquals(XML_PAYLOAD, reply.getContent());
       doAssertions(mock2);
-    }
-    finally {
+    } finally {
       stop(httpProducer);
       channel.requestClose();
       PortManager.release(connection.getPort());
@@ -682,7 +657,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
     assertTrue(msg.containsKey(JettyConstants.JETTY_URI));
     assertEquals(URL_TO_POST_TO, msg.getMetadataValue(JettyConstants.JETTY_URI));
     assertTrue(msg.containsKey(JettyConstants.JETTY_URL));
-    Map objMetadata = msg.getObjectHeaders();
+    Map<Object, Object> objMetadata = msg.getObjectHeaders();
     assertNotNull(objMetadata.get(JettyConstants.JETTY_WRAPPER));
     return msg;
   }
@@ -723,8 +698,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
 
       assertFalse(consumedMsg.containsKey(IGNORED_METADATA));
 
-    }
-    finally {
+    } finally {
       stop(httpProducer);
       adapter.requestClose();
       PortManager.release(connection.getPort());
@@ -750,8 +724,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       assertEquals(XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
       assertEquals(AdaptrisMessageStub.class, mockProducer.getMessages().get(0).getClass());
-    }
-    finally {
+    } finally {
       stop(httpProducer);
       adapter.requestClose();
       PortManager.release(connection.getPort());
@@ -778,13 +751,11 @@ public class HttpConsumerTest extends HttpConsumerExample {
       int rc = Integer.valueOf(reply.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE)).intValue();
       assertEquals(HttpURLConnection.HTTP_NOT_FOUND, rc);
 
-    }
-    catch (ProduceException e) {
+    } catch (ProduceException e) {
       if (!(e.getCause() instanceof FileNotFoundException)) {
         throw e;
       }
-    }
-    finally {
+    } finally {
       stop(httpProducer);
       adapter.requestClose();
       PortManager.release(connection.getPort());
@@ -861,8 +832,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       AdaptrisMessage reply = httpProducer.request(msg);
       assertEquals(XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
-    }
-    finally {
+    } finally {
       stop(httpProducer);
       adapter.requestClose();
       Thread.currentThread().setName(threadName);
@@ -902,10 +872,8 @@ public class HttpConsumerTest extends HttpConsumerExample {
       assertEquals(0, mockProducer.getMessages().size());
       assertTrue(reply.containsKey(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
       int rc = Integer.valueOf(reply.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE)).intValue();
-      assertTrue(rc == HttpURLConnection.HTTP_UNAUTHORIZED
-          || rc == HttpURLConnection.HTTP_FORBIDDEN);
-    }
-    catch (Exception e) {
+      assertTrue(rc == HttpURLConnection.HTTP_UNAUTHORIZED || rc == HttpURLConnection.HTTP_FORBIDDEN);
+    } catch (Exception e) {
       // This is expected actually,.
       if (e.getCause() instanceof IOException) {
         String s = ((IOException) e.getCause()).getMessage();
@@ -913,16 +881,13 @@ public class HttpConsumerTest extends HttpConsumerExample {
         if (s.startsWith(httpString)) {
           int rc = Integer.parseInt(s.substring(httpString.length(), httpString.length() + 3));
           assertTrue(rc == HttpURLConnection.HTTP_UNAUTHORIZED || rc == HttpURLConnection.HTTP_FORBIDDEN);
-        }
-        else {
+        } else {
           throw e;
         }
-      }
-      else {
+      } else {
         throw e;
       }
-    }
-    finally {
+    } finally {
       stop(httpProducer);
       adapter.requestClose();
       Thread.currentThread().setName(threadName);
@@ -961,10 +926,8 @@ public class HttpConsumerTest extends HttpConsumerExample {
       assertEquals(0, mockProducer.getMessages().size());
       assertTrue(reply.containsKey(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
       int rc = Integer.valueOf(reply.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE)).intValue();
-      assertTrue(rc == HttpURLConnection.HTTP_UNAUTHORIZED
-          || rc == HttpURLConnection.HTTP_FORBIDDEN);
-    }
-    catch (Exception e) {
+      assertTrue(rc == HttpURLConnection.HTTP_UNAUTHORIZED || rc == HttpURLConnection.HTTP_FORBIDDEN);
+    } catch (Exception e) {
       e.printStackTrace();
       // This is expected actually,.
       if (e.getCause() instanceof IOException) {
@@ -973,16 +936,13 @@ public class HttpConsumerTest extends HttpConsumerExample {
         if (s.startsWith(httpString)) {
           int rc = Integer.parseInt(s.substring(httpString.length(), httpString.length() + 3));
           assertTrue(rc == HttpURLConnection.HTTP_UNAUTHORIZED || rc == HttpURLConnection.HTTP_FORBIDDEN);
-        }
-        else {
+        } else {
           throw e;
         }
-      }
-      else {
+      } else {
         throw e;
       }
-    }
-    finally {
+    } finally {
       stop(httpProducer);
       adapter.requestClose();
       Thread.currentThread().setName(threadName);
@@ -1023,10 +983,8 @@ public class HttpConsumerTest extends HttpConsumerExample {
       assertEquals(0, mockProducer.getMessages().size());
       assertTrue(reply.containsKey(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
       int rc = Integer.valueOf(reply.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE)).intValue();
-      assertTrue(rc == HttpURLConnection.HTTP_UNAUTHORIZED
-          || rc == HttpURLConnection.HTTP_FORBIDDEN);
-    }
-    catch (ProduceException e) {
+      assertTrue(rc == HttpURLConnection.HTTP_UNAUTHORIZED || rc == HttpURLConnection.HTTP_FORBIDDEN);
+    } catch (ProduceException e) {
       // This is expected actually,.
       if (e.getCause() instanceof IOException) {
         String s = ((IOException) e.getCause()).getMessage();
@@ -1034,16 +992,13 @@ public class HttpConsumerTest extends HttpConsumerExample {
         if (s.startsWith(httpString)) {
           int rc = Integer.parseInt(s.substring(httpString.length(), httpString.length() + 3));
           assertTrue(rc == HttpURLConnection.HTTP_UNAUTHORIZED || rc == HttpURLConnection.HTTP_FORBIDDEN);
-        }
-        else {
+        } else {
           throw e;
         }
-      }
-      else {
+      } else {
         throw e;
       }
-    }
-    finally {
+    } finally {
       stop(httpProducer);
       adapter.requestClose();
       PortManager.release(connection.getPort());
@@ -1072,8 +1027,7 @@ public class HttpConsumerTest extends HttpConsumerExample {
       AdaptrisMessage reply = httpProducer.request(msg);
       assertEquals(XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
-    }
-    finally {
+    } finally {
       stop(httpProducer);
       channel.requestClose();
       PortManager.release(connection.getPort());
@@ -1124,25 +1078,24 @@ public class HttpConsumerTest extends HttpConsumerExample {
 
   SecurityHandlerWrapper createSecurityHandlerExample() {
     ConfigurableSecurityHandler csh = new ConfigurableSecurityHandler();
-    HashLoginServiceFactory hsl =
-        new HashLoginServiceFactory().withUserRealm("InterlokJetty").withFilename("/path/to/realm.properties");
+    HashLoginServiceFactory hsl = new HashLoginServiceFactory().withUserRealm("InterlokJetty").withFilename("/path/to/realm.properties");
     csh.setLoginService(hsl);
 
     SecurityConstraint securityConstraint = new SecurityConstraint();
     securityConstraint.setMustAuthenticate(false);
-    securityConstraint.setPaths(new ArrayList(Arrays.asList("/public")));
+    securityConstraint.setPaths(new ArrayList<>(Arrays.asList("/public")));
 
     SecurityConstraint securityConstraint2 = new SecurityConstraint();
     securityConstraint2.setMustAuthenticate(true);
     securityConstraint2.setRoles("adminUserRole");
-    securityConstraint2.setPaths(new ArrayList(Arrays.asList("/private", "/admin")));
+    securityConstraint2.setPaths(new ArrayList<>(Arrays.asList("/private", "/admin")));
 
     SecurityConstraint securityConstraint3 = new SecurityConstraint();
     securityConstraint3.setMustAuthenticate(true);
     securityConstraint3.setRoles("serviceUserRole,optionsUserRole,anotherUserRole");
-    securityConstraint3.setPaths(new ArrayList(Arrays.asList("/myServices", "/myOptions", "/myOtherURL")));
+    securityConstraint3.setPaths(new ArrayList<>(Arrays.asList("/myServices", "/myOptions", "/myOtherURL")));
 
-    csh.setSecurityConstraints(new ArrayList(Arrays.asList(securityConstraint, securityConstraint2, securityConstraint3)));
+    csh.setSecurityConstraints(new ArrayList<>(Arrays.asList(securityConstraint, securityConstraint2, securityConstraint3)));
     return csh;
   }
 
@@ -1150,4 +1103,5 @@ public class HttpConsumerTest extends HttpConsumerExample {
   protected String createBaseFileName(Object object) {
     return super.createBaseFileName(object) + "-HTTP";
   }
+
 }

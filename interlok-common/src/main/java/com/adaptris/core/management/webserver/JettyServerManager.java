@@ -26,13 +26,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+
 import javax.servlet.Servlet;
-import javax.servlet.ServletContext;
-import org.eclipse.jetty.security.Authenticator;
-import org.eclipse.jetty.security.Authenticator.AuthConfiguration;
+
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
-import org.eclipse.jetty.security.IdentityService;
-import org.eclipse.jetty.security.LoginService;
 import org.eclipse.jetty.security.SecurityHandler;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -47,7 +44,9 @@ import org.eclipse.jetty.servlet.ServletMapping;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.webapp.WebXmlConfiguration;
+
 import com.adaptris.interlok.util.Args;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Synchronized;
@@ -56,15 +55,15 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Implementation of the {@link ServerManager} interface for managing Jetty servers.
  * <p>
- * This class only deals with a specific handler structure. The uppermost handler must be a HandlerCollection and we add the
- * deployment to all of it's appropriate childhandlers.
+ * This class only deals with a specific handler structure. The uppermost handler must be a HandlerCollection and we add the deployment to
+ * all of it's appropriate childhandlers.
  * </p>
  *
  * @author gcsiki
  *
  */
 @Slf4j
-@SuppressWarnings({"removal"})
+@SuppressWarnings({ "removal" })
 public final class JettyServerManager implements ServerManager {
 
   public static final String DEFAULT_DESCRIPTOR_XML = "com/adaptris/core/management/webserver/jetty-webdefault-failsafe.xml";
@@ -87,16 +86,14 @@ public final class JettyServerManager implements ServerManager {
   public static final String SECURITY_CONSTRAINTS = "securityConstraints";
 
   /**
-   * Enable additional debug logging by specifying the system property {@code interlok.jetty.debug}
-   * to true.
+   * Enable additional debug logging by specifying the system property {@code interlok.jetty.debug} to true.
    *
    */
-  public static final boolean JETTY_DEBUG =
-      Boolean.getBoolean("adp.jetty.debug") || Boolean.getBoolean("interlok.jetty.debug");
+  public static final boolean JETTY_DEBUG = Boolean.getBoolean("adp.jetty.debug") || Boolean.getBoolean("interlok.jetty.debug");
 
   /**
-   * This string is for adding a attribute to the ContextHandler for servlets, because if we set the contextPath on the handler and
-   * not on the ServletHolder then the tests fail. (Absolutely no idea why...)
+   * This string is for adding a attribute to the ContextHandler for servlets, because if we set the contextPath on the handler and not on
+   * the ServletHolder then the tests fail. (Absolutely no idea why...)
    */
   private static final String SERVLET_CONTEXT_PATH_ATTRIBUTE = "servletContextPathAttribute";
 
@@ -118,8 +115,10 @@ public final class JettyServerManager implements ServerManager {
     return INSTANCE;
   }
 
-  /** Add a server.
-   *  @deprecated since 4.3.0; use addServer(String, Server) instead.
+  /**
+   * Add a server.
+   *
+   * @deprecated since 4.3.0; use addServer(String, Server) instead.
    */
   @Deprecated(since = "4.3.0")
   public void addServer(Server server) {
@@ -128,8 +127,10 @@ public final class JettyServerManager implements ServerManager {
     addServer(key, server);
   }
 
-  /** Remove a server
-   *  @deprecated since 4.3.0; use removeServer(String) instead.
+  /**
+   * Remove a server
+   *
+   * @deprecated since 4.3.0; use removeServer(String) instead.
    */
   @Deprecated(since = "4.3.0")
   public void removeServer(Server server) {
@@ -143,18 +144,23 @@ public final class JettyServerManager implements ServerManager {
     removeServer(key);
   }
 
-  /** Add a server.
+  /**
+   * Add a server.
    *
-   * @param key the key
-   * @param server the underlying jetty server
+   * @param key
+   *          the key
+   * @param server
+   *          the underlying jetty server
    */
   public void addServer(String key, Server server) {
     servers.put(Args.notNull(key, "server-id"), server);
   }
 
-  /** Remove a server
+  /**
+   * Remove a server
    *
-   * @param key the key.
+   * @param key
+   *          the key.
    */
   public void removeServer(String key) {
     servers.remove(key);
@@ -182,14 +188,12 @@ public final class JettyServerManager implements ServerManager {
   /**
    * This will add the servlet to all underlying server instances and is discouraged.
    *
-   * @deprecated since 4.3.0 use {@link #addServlet(String, ServletHolder, Map)}
-   *             instead. This will be removed without warning.
+   * @deprecated since 4.3.0 use {@link #addServlet(String, ServletHolder, Map)} instead. This will be removed without warning.
    */
-  @Deprecated(since="4.3.0")
+  @Deprecated(since = "4.3.0")
   @Synchronized("locker")
   // Note, only used by EmbeddedConnection so this can be removed at any time.
-  public void addServlet(ServletHolder servlet, HashMap<String, Object> props)
-      throws Exception {
+  public void addServlet(ServletHolder servlet, HashMap<String, Object> props) throws Exception {
     int timesAdded = 0;
     for (Server server : servers.values()) {
       timesAdded += addServlet(server, servlet, props) ? 1 : 0;
@@ -199,24 +203,32 @@ public final class JettyServerManager implements ServerManager {
     }
   }
 
-  /** Add a servlet to the corresponding server instance.
+  /**
+   * Add a servlet to the corresponding server instance.
    *
-   * @param serverId the id of the {@code Server} instance.
-   * @param servlet the servlet
-   * @param additionalProperties and additional properties to assist deployment
-   * @throws Exception on exception
+   * @param serverId
+   *          the id of the {@code Server} instance.
+   * @param servlet
+   *          the servlet
+   * @param additionalProperties
+   *          and additional properties to assist deployment
+   * @throws Exception
+   *           on exception
    * @see #addServlet(String, ServletHolder, Map)
    */
-  public void addServlet(String serverId, Servlet servlet, Map<String, Object> additionalProperties)
-      throws Exception {
+  public void addServlet(String serverId, Servlet servlet, Map<String, Object> additionalProperties) throws Exception {
     addServlet(serverId, new ServletHolder(servlet), additionalProperties);
   }
 
   /**
-   * @param serverId the id of the {@code Server} instance.
-   * @param servlet the servlet
-   * @param props and additional properties to assist deployment
-   * @throws Exception on exception
+   * @param serverId
+   *          the id of the {@code Server} instance.
+   * @param servlet
+   *          the servlet
+   * @param props
+   *          and additional properties to assist deployment
+   * @throws Exception
+   *           on exception
    * @return true if the servlet was added
    */
   @Synchronized("locker")
@@ -234,11 +246,15 @@ public final class JettyServerManager implements ServerManager {
     }
   }
 
-  /** Remove a deployment from the corresponding {@code Server} instance.
+  /**
+   * Remove a deployment from the corresponding {@code Server} instance.
    *
-   * @param serverId the id of the {@code Server} instance.
-   * @param contextPath the path
-   * @throws Exception on exception
+   * @param serverId
+   *          the id of the {@code Server} instance.
+   * @param contextPath
+   *          the path
+   * @throws Exception
+   *           on exception
    */
   @Synchronized("locker")
   public void removeDeployment(String serverId, String contextPath) throws Exception {
@@ -247,26 +263,30 @@ public final class JettyServerManager implements ServerManager {
   }
 
   /**
-   * This will remove the servlet from all underlying server instances and is discouraged (but not
-   * as much as adding the servlet to all instances).
+   * This will remove the servlet from all underlying server instances and is discouraged (but not as much as adding the servlet to all
+   * instances).
    *
-   * @deprecated since 4.3.0 use {@link #removeDeployment(String, ServletHolder, String)} instead.
-   *             This will be removed without warning.
+   * @deprecated since 4.3.0 use {@link #removeDeployment(String, ServletHolder, String)} instead. This will be removed without warning.
    */
   // Note, only used by EmbeddedConnection so this can be removed at any time.
-  @Deprecated(since="4.3.0")
+  @Deprecated(since = "4.3.0")
   public void removeDeployment(ServletHolder holder, String path) throws Exception {
     for (String serverId : getServers().keySet()) {
       removeDeployment(serverId, holder, path);
     }
   }
 
-  /** Remove a deployment.
+  /**
+   * Remove a deployment.
    *
-   * @param serverId the id of the {@code Server} instance.
-   * @param holder the servlet to remove
-   * @param path the path
-   * @throws Exception on exception
+   * @param serverId
+   *          the id of the {@code Server} instance.
+   * @param holder
+   *          the servlet to remove
+   * @param path
+   *          the path
+   * @throws Exception
+   *           on exception
    */
   @Synchronized("locker")
   public void removeDeployment(String serverId, ServletHolder holder, String path) throws Exception {
@@ -277,7 +297,6 @@ public final class JettyServerManager implements ServerManager {
     }
   }
 
-
   @Override
   @Deprecated
   public void startDeployment(String contextPath) throws Exception {
@@ -286,11 +305,15 @@ public final class JettyServerManager implements ServerManager {
     }
   }
 
-  /** Start a deployment
+  /**
+   * Start a deployment
    *
-   * @param serverId the id of the {@code Server} instance.
-   * @param contextPath the path
-   * @throws Exception on exception
+   * @param serverId
+   *          the id of the {@code Server} instance.
+   * @param contextPath
+   *          the path
+   * @throws Exception
+   *           on exception
    */
   @Synchronized("locker")
   public void startDeployment(String serverId, String contextPath) throws Exception {
@@ -300,8 +323,6 @@ public final class JettyServerManager implements ServerManager {
     }
   }
 
-
-
   @Override
   @Deprecated
   public void stopDeployment(String contextPath) throws Exception {
@@ -310,12 +331,15 @@ public final class JettyServerManager implements ServerManager {
     }
   }
 
-
-  /** Stop a deployment
+  /**
+   * Stop a deployment
    *
-   * @param serverId the id of the {@code Server} instance.
-   * @param contextPath the path
-   * @throws Exception on exception
+   * @param serverId
+   *          the id of the {@code Server} instance.
+   * @param contextPath
+   *          the path
+   * @throws Exception
+   *           on exception
    */
   @Synchronized("locker")
   public void stopDeployment(String serverId, String contextPath) throws Exception {
@@ -329,7 +353,6 @@ public final class JettyServerManager implements ServerManager {
     }
   }
 
-
   private boolean addServlet(Server server, ServletHolder servlet, Map<String, Object> additionalProperties) throws Exception {
     // this will always create a rootWar
     WebAppContext rootWar = findRootContext(server, true);
@@ -339,10 +362,9 @@ public final class JettyServerManager implements ServerManager {
     return true;
   }
 
-  private void reconfigureWar(WebAppContext rootWar, ServletHolder servlet, Map<String, Object> props)
-      throws Exception {
+  private void reconfigureWar(WebAppContext rootWar, ServletHolder servlet, Map<String, Object> props) throws Exception {
     // Have to stop the WAR before we can reconfigure the security handler, not true if we just want
-    // to add a new servlet; but it's probaby good practice to.
+    // to add a new servlet; but it's probably good practice to.
     rootWar.stop();
     rootWar.setThrowUnavailableOnStartupException(THROW_UNAVAILABLE_ON_START);
     String pathSpec = (String) props.get(CONTEXT_PATH);
@@ -352,11 +374,12 @@ public final class JettyServerManager implements ServerManager {
     if (w != null) {
       rootWar.setSecurityHandler(w.createSecurityHandler());
     }
+    // It seems that we need to add the class loader to load jetty classes.
+    rootWar.setClassLoader(getClass().getClassLoader());
     rootWar.start();
   }
 
-  private WebAppContext findRootContext(Server server, boolean create)
-      throws Exception {
+  private WebAppContext findRootContext(Server server, boolean create) throws Exception {
     WebAppContext root = rootContextFromHandler(server.getHandler());
     if (root == null && create) {
       log.trace("No ROOT WebAppContext, creating one");
@@ -366,16 +389,12 @@ public final class JettyServerManager implements ServerManager {
       URL defaultsURL = findDefaultDescriptorXML();
       log.trace("Using default descriptor [{}]", defaultsURL);
       root.setDefaultsDescriptor(defaultsURL.toString());
-      root.setConfigurations(new Configuration[]
-          {
-              new WebXmlConfiguration() {
-              }
-          });
+      root.setConfigurations(new Configuration[] { new WebXmlConfiguration() {
+      } });
       ContextHandlerCollection c = firstContextHandler(server.getHandler());
       if (c != null) {
         c.addHandler(root);
-      }
-      else {
+      } else {
         // Well, we could go down a rabbit warren here, but screw it
         // We make our root the root.
         server.setHandler(root);
@@ -392,16 +411,7 @@ public final class JettyServerManager implements ServerManager {
   // getKnownAuthenticatorFactories()...
   static SecurityHandler defaultSecurityStub() {
     ConstraintSecurityHandler defaultSecurity = new ConstraintSecurityHandler();
-    defaultSecurity.setAuthenticatorFactory(new Authenticator.Factory() {
-
-      @Override
-      public Authenticator getAuthenticator(Server server, ServletContext context,
-          AuthConfiguration configuration, IdentityService identityService,
-          LoginService loginService) {
-        return null;
-      }
-
-    });
+    defaultSecurity.setAuthenticatorFactory((server, context, configuration, identityService, loginService) -> null);
     return defaultSecurity;
   }
 
@@ -424,8 +434,7 @@ public final class JettyServerManager implements ServerManager {
       if ("/".equals(ctx.getContextPath())) {
         result = ctx;
       }
-    }
-    else if (parent instanceof HandlerCollection) {
+    } else if (parent instanceof HandlerCollection) {
       Handler[] children = ((HandlerCollection) parent).getChildHandlers();
       for (Handler child : children) {
         result = rootContextFromHandler(child);
@@ -444,8 +453,7 @@ public final class JettyServerManager implements ServerManager {
     }
     if (parent instanceof ContextHandlerCollection) {
       result = (ContextHandlerCollection) parent;
-    }
-    else if (parent instanceof HandlerCollection) {
+    } else if (parent instanceof HandlerCollection) {
       Handler[] children = ((HandlerCollection) parent).getChildHandlers();
       for (Handler child : children) {
         result = firstContextHandler(child);
@@ -456,7 +464,6 @@ public final class JettyServerManager implements ServerManager {
     }
     return result;
   }
-
 
   private void removeServlet(WebAppContext webAppContext, ServletHolder toRemove, String pathSpec) throws Exception {
     log.trace("{}: Removing servlet mapped to {}", webAppContext.getWar(), pathSpec);
@@ -518,10 +525,7 @@ public final class JettyServerManager implements ServerManager {
     } else if (handler instanceof ServletContextHandler) {
       ServletContextHandler sch = (ServletContextHandler) handler;
       String servletPath = (String) sch.getAttribute(SERVLET_CONTEXT_PATH_ATTRIBUTE);
-      if (contextPath.equals(servletPath)) {
-        destroyQuietly(sch);
-        return true;
-      } else if (contextPath.equals(sch.getContextPath())) {
+      if (contextPath.equals(servletPath) || contextPath.equals(sch.getContextPath())) {
         destroyQuietly(sch);
         return true;
       }
@@ -549,10 +553,9 @@ public final class JettyServerManager implements ServerManager {
     try {
       parent.removeHandler(child);
     } catch (Exception e) {
-      ;
+
     }
   }
-
 
   private void manageHandler(String contextPath, boolean start, Handler handler) throws Exception {
     if (handler instanceof ContextHandler) {
