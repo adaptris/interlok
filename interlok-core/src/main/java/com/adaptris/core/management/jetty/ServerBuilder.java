@@ -1,11 +1,11 @@
 /*
  * Copyright 2017 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS"
  * BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
@@ -14,13 +14,16 @@ package com.adaptris.core.management.jetty;
 
 import static com.adaptris.core.management.jetty.JettyServerComponent.ATTR_BOOTSTRAP_KEYS;
 import static com.adaptris.core.management.jetty.JettyServerComponent.ATTR_JMX_ADAPTER_UID;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+
 import org.eclipse.jetty.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.adaptris.core.management.Constants;
 
 public abstract class ServerBuilder {
@@ -57,20 +60,20 @@ public abstract class ServerBuilder {
       public boolean canBuild(Properties p) {
         return true;
       }
+
       @Override
       public ServerBuilder builder(Properties cfg) {
         return new FromClasspath(cfg);
       }
     };
-    
+
     public abstract boolean canBuild(Properties p);
 
     public abstract ServerBuilder builder(Properties p);
 
   }
 
-  private static List<Builder> FACTORIES = Collections
-      .unmodifiableList(Arrays.asList(Builder.XML, Builder.PROPERTIES, Builder.FAILSAFE));
+  private static List<Builder> FACTORIES = Collections.unmodifiableList(Arrays.asList(Builder.XML, Builder.PROPERTIES, Builder.FAILSAFE));
 
   protected static final Logger log = LoggerFactory.getLogger(JettyServerComponent.class);
   private Properties initialProperties;
@@ -88,7 +91,7 @@ public abstract class ServerBuilder {
   private static Server configure(final Server server, final Properties config) throws Exception {
     // TODO This is all wrong. Can't get server attributes from the ServletContext
     // OLD-SKOOL Do it via SystemProperties!!!!!
-    // Add Null Prodction in to avoid System.setProperty issues during tests.
+    // Add Null Production in to avoid System.setProperty issues during tests.
     // Or in fact if people decide to not enable JMXServiceUrl in bootstrap.properties
     if (config.containsKey(Constants.CFG_JMX_LOCAL_ADAPTER_UID)) {
       // server.setAttribute(ATTR_JMX_ADAPTER_UID, config.getProperty(Constants.CFG_JMX_LOCAL_ADAPTER_UID));
