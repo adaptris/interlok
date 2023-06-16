@@ -335,7 +335,7 @@ public class HttpConnection extends JettyConnection {
   /**
    * The Server Connector properties to set
    *
-   * @param httpConfiguration
+   * @param serverConnectorProperties
    *          KeyValuePairSet
    */
   @Getter
