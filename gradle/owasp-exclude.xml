@@ -203,4 +203,18 @@
     <packageUrl regex="true">^pkg:maven/com\.bazaarvoice\.jolt/json\-utils@.*$</packageUrl>
     <cve>CVE-2023-2972</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: jetty-javax-websocket-api-1.1.2.jar and jetty-servlet-api-4.0.6.jar
+    False positive, the CVEs are for org.eclipse.jetty components and less than 10.0.15 and not org.eclipse.jetty.toolchain components
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty\.toolchain/jetty\-.*\-api@.*$</packageUrl>
+    <cve>CVE-2017-7657</cve>
+    <cve>CVE-2017-7658</cve>
+    <cve>CVE-2009-5045</cve>
+    <cve>CVE-2017-7656</cve>
+    <cve>CVE-2017-9735</cve>
+    <cve>CVE-2022-2048</cve>
+    <cve>CVE-2020-27216</cve>
+   </suppress>
 </suppressions>
