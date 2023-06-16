@@ -38,18 +38,17 @@ import javax.jms.Message;
 import javax.jms.Queue;
 import javax.jms.Session;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.StandaloneConsumer;
@@ -86,8 +85,9 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
 
   @AfterAll
   public static void tearDownAll() throws Exception {
-    if (activeMqBroker != null)
+    if (activeMqBroker != null) {
       activeMqBroker.destroy();
+    }
   }
 
   @BeforeEach
@@ -351,7 +351,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
 
   @Test
   public void testProduceAndConsume_ResolvedEndpoint() throws Exception {
-    Queue queue = activeMqBroker.createQueue(getName());
+    activeMqBroker.createQueue(getName());
 
     String endpoint = "%message{metadataEndpoint}";
     String rfc6167 = "jms:queue:" + getName();
@@ -519,8 +519,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
     JmsProducer producer = createProducer(rfc6167);
-    TimedInactivityProducerSessionFactory psf = new TimedInactivityProducerSessionFactory(
-        new TimeInterval(10L, TimeUnit.MILLISECONDS));
+    TimedInactivityProducerSessionFactory psf = new TimedInactivityProducerSessionFactory(new TimeInterval(10L, TimeUnit.MILLISECONDS));
     producer.setSessionFactory(psf);
     standaloneConsumer.registerAdaptrisMessageListener(jms);
 
@@ -729,9 +728,8 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
     MockMessageListener jms = new MockMessageListener();
     standaloneConsumer.registerAdaptrisMessageListener(jms);
-    ServiceList serviceList = new ServiceList(
-        new Service[] { new StandaloneProducer(activeMqBroker.getJmsConnection(), createProducer(rfc6167)),
-            new StandaloneProducer(activeMqBroker.getJmsConnection(), createProducer(rfc6167)) });
+    ServiceList serviceList = new ServiceList(new StandaloneProducer(activeMqBroker.getJmsConnection(), createProducer(rfc6167)),
+        new StandaloneProducer(activeMqBroker.getJmsConnection(), createProducer(rfc6167)));
     try {
       start(standaloneConsumer, serviceList);
       AdaptrisMessage msg1 = createMessage();
@@ -748,11 +746,9 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   @Test
   public void testMultipleRequestorWithSession() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
-    ServiceList serviceList = new ServiceList(new Service[] {
-        new StandaloneRequestor(activeMqBroker.getJmsConnection(), createProducer(rfc6167),
-            new TimeInterval(1L, TimeUnit.SECONDS)),
-        new StandaloneRequestor(activeMqBroker.getJmsConnection(), createProducer(rfc6167),
-            new TimeInterval(1L, TimeUnit.SECONDS)) });
+    ServiceList serviceList = new ServiceList(
+        new StandaloneRequestor(activeMqBroker.getJmsConnection(), createProducer(rfc6167), new TimeInterval(1L, TimeUnit.SECONDS)),
+        new StandaloneRequestor(activeMqBroker.getJmsConnection(), createProducer(rfc6167), new TimeInterval(1L, TimeUnit.SECONDS)));
     Loopback echo = createLoopback(activeMqBroker, getName());
     try {
       echo.start();
@@ -772,8 +768,8 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   @Test
   public void testRequest_AsyncReplyTo_Metadata() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
-    StandaloneRequestor serviceList = new StandaloneRequestor(activeMqBroker.getJmsConnection(),
-        createProducer(rfc6167), new TimeInterval(1L, TimeUnit.SECONDS));
+    StandaloneRequestor serviceList = new StandaloneRequestor(activeMqBroker.getJmsConnection(), createProducer(rfc6167),
+        new TimeInterval(1L, TimeUnit.SECONDS));
     Loopback echo = createLoopback(activeMqBroker, getName());
     try {
       echo.start();
@@ -791,8 +787,8 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
   @Test
   public void testRequest_DefinedReplyTo() throws Exception {
     String rfc6167 = String.format("jms:queue:%1$s?replyToName=%1$s_reply", getName());
-    StandaloneRequestor serviceList = new StandaloneRequestor(activeMqBroker.getJmsConnection(),
-        createProducer(rfc6167), new TimeInterval(1L, TimeUnit.SECONDS));
+    StandaloneRequestor serviceList = new StandaloneRequestor(activeMqBroker.getJmsConnection(), createProducer(rfc6167),
+        new TimeInterval(1L, TimeUnit.SECONDS));
     Loopback echo = createLoopback(activeMqBroker, getName());
     try {
       echo.start();
