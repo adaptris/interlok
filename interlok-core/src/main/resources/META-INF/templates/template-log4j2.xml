@@ -30,6 +30,7 @@
     <Logger name="org.reflections" level="ERROR"/>
     <Logger name="java.sql.DatabaseMetadata" level="WARN"/>
     <Logger name="org.eclipse.jetty" level="WARN"/>
+    <Logger name="org.eclipse.jetty.annotations.AnnotationParser" level="ERROR"/>
     <Logger name="org.hibernate.cache" level="WARN"/>
     <Logger name="org.springframework.aop.framework.CglibAopProxy" level="ERROR"/>
     <Logger name="org.springframework.context.support.PropertySourcesPlaceholderConfigurer" level="ERROR"/>
