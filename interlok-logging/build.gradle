@@ -42,7 +42,7 @@ task deleteGeneratedFiles(type: Delete) {
 javadoc {
   configure(options) {
     options.addStringOption "tagletpath", configurations.javadoc.asPath
-    options.addStringOption('Xdoclint:none', '-quiet')
+    options.addStringOption "Xdoclint:none", "-quiet"
     options.tags('apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:','implNote:a:Implementation Note:')
     title= componentName
   }
