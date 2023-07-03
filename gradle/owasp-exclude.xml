@@ -216,5 +216,13 @@
     <cve>CVE-2017-9735</cve>
     <cve>CVE-2022-2048</cve>
     <cve>CVE-2020-27216</cve>
-   </suppress>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: jackson-databind-2.15.2.jar
+	This is not a really valid CVE and not realy exploitable as java code needs to be midified: https://github.com/FasterXML/jackson-databind/issues/3972
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
+    <cve>CVE-2023-35116</cve>
+  </suppress>
 </suppressions>
