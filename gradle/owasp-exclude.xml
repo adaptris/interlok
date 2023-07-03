@@ -194,4 +194,12 @@
     <packageUrl regex="true">^pkg:maven/commons\-validator/commons\-validator@.*$</packageUrl>
     <cpe>cpe:/a:apache:commons_net</cpe>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: jackson-databind-2.15.2.jar
+	This is not a really valid CVE and not realy exploitable as java code needs to be midified: https://github.com/FasterXML/jackson-databind/issues/3972
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
+    <cve>CVE-2023-35116</cve>
+  </suppress>
 </suppressions>
