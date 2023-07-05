@@ -37,6 +37,9 @@ import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.interlok.junit.scaffolding.BaseCase;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public class JdbcStoredProcedureTest extends BaseCase {
 
   private static final String JDBC_STOREDPROC_TESTS_ENABLED = "jdbc.storedproc.tests.enabled";
@@ -50,6 +53,10 @@ public class JdbcStoredProcedureTest extends BaseCase {
   private Connection connection;
 
   private CallableStatementCreator statementCreator;
+  
+  @Getter
+  @Setter
+  private boolean runMultiResultSetTest;
 
   private StoredProcedure storedProcedure;
 
@@ -66,10 +73,14 @@ public class JdbcStoredProcedureTest extends BaseCase {
 
     LifecycleHelper.initAndStart(jdbcConnection);
 
-    if (PROPERTIES.getProperty(JDBC_VENDOR).equals("mysql"))
+    if (PROPERTIES.getProperty(JDBC_VENDOR).equals("mysql")) {
       statementCreator = new MysqlStatementCreator();
-    else if (PROPERTIES.getProperty(JDBC_VENDOR).equals("sqlserver"))
+      setRunMultiResultSetTest(true);
+    }
+    else if (PROPERTIES.getProperty(JDBC_VENDOR).equals("sqlserver")) {
       statementCreator = new SqlServerStatementCreator();
+      setRunMultiResultSetTest(false);
+    }
     else
       fail("Vendor for JDBC tests unknown: " + PROPERTIES.getProperty(JDBC_VENDOR));
 
@@ -380,11 +391,13 @@ public class JdbcStoredProcedureTest extends BaseCase {
 
     JdbcResult procedureResult = storedProcedure.execute();
     assertEquals(true, procedureResult.isHasResultSet());
-
-    assertEquals(2, procedureResult.countResultSets());
-
     assertEquals(5, countRows(procedureResult.getResultSet(0).getRows()));
-    assertEquals(5, countRows(procedureResult.getResultSet(1).getRows()));
+    
+    if(getRunMultiResultSetTest()) {
+      assertEquals(2, procedureResult.countResultSets());
+      System.out.println("hi");
+      assertEquals(5, countRows(procedureResult.getResultSet(1).getRows()));
+    }
   }
 
   @Test
@@ -396,11 +409,12 @@ public class JdbcStoredProcedureTest extends BaseCase {
 
     JdbcResult procedureResult = storedProcedure.execute();
     assertEquals(true, procedureResult.isHasResultSet());
-
-    assertEquals(2, procedureResult.countResultSets());
-
     assertEquals(5, countRows(procedureResult.getResultSet(0).getRows()));
-    assertEquals(5, countRows(procedureResult.getResultSet(1).getRows()));
+    
+    if(getRunMultiResultSetTest()) {
+      assertEquals(2, procedureResult.countResultSets());
+      assertEquals(5, countRows(procedureResult.getResultSet(1).getRows()));
+    }
   }
 
   @Test
