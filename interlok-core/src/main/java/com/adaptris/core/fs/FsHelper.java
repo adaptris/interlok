@@ -42,6 +42,7 @@ import com.adaptris.interlok.util.FileFilterBuilder;
 public abstract class FsHelper {
 
   private static transient Logger log = LoggerFactory.getLogger(FsHelper.class);
+  private static final String WIN_DRIVE_REGEX = "^[a-zA-Z]{1}$"; //matches an alphabetic character exactly 1 time in the string.
 
   /**
    * Go straight to a {@link File} from a url style string.
@@ -143,9 +144,11 @@ public abstract class FsHelper {
       // nb for some reason, configuredUri.toUrl() doesn't work...
       // return configuredUri.toURL();
       return new URL(configuredUri.toString());
-    }
+    } 
     else {
       if (scheme == null) {
+        return new URL("file:///" + configuredUri.toString());
+      } else if (scheme.matches(WIN_DRIVE_REGEX)) {
         return new URL("file:///" + configuredUri.toString());
       }
       else {
