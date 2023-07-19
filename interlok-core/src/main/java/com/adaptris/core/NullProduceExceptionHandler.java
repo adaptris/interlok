@@ -30,8 +30,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @deprecated since 4.2.0
  */
 @Deprecated(since = "4.2.0")
-@ConfigDeprecated(message = "If you need restarting capability wrap your producer into a standalone-producer and set restart services on failure.", removalVersion = "5.0.0", groups = Deprecated.class)
-@Removal(message = "If you need restarting capability wrap your producer into a standalone-producer and set restart services on failure.", version = "5.0.0")
+@ConfigDeprecated(message = "If you need restarting capability wrap your producer into a standalone-producer and set restart services on failure.", removalVersion = "5.1.0", groups = Deprecated.class)
+@Removal(message = "If you need restarting capability wrap your producer into a standalone-producer and set restart services on failure.", version = "5.1.0")
 @XStreamAlias("null-produce-exception-handler")
 public class NullProduceExceptionHandler extends ProduceExceptionHandlerImp {
 

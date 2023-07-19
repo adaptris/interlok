@@ -19,7 +19,7 @@ package com.adaptris.core.services.mime;
 import com.adaptris.annotation.Removal;
 
 @Deprecated
-@Removal(version = "4.0.0", message = "moved to com.adaptris.interlok.junit.scaffolding")
+@Removal(version = "5.1.0", message = "moved to com.adaptris.interlok.junit.scaffolding")
 public class MimeJunitHelper extends com.adaptris.interlok.junit.scaffolding.util.MimeJunitHelper {
 
 

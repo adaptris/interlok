@@ -24,7 +24,7 @@ import com.adaptris.annotation.Removal;
  * @author lchan
  */
 @Deprecated
-@Removal(version = "4.0.0")
+@Removal(version = "5.1.0")
 public class Environment extends com.adaptris.interlok.junit.scaffolding.util.Environment {
 
 

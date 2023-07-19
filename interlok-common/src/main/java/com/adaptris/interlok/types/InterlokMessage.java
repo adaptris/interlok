@@ -87,7 +87,7 @@ public interface InterlokMessage {
    * {@link #replaceAllMessageHeaders(Map)} instead. instead.
    */
   @Deprecated
-  @Removal(version = "5.0.0")
+  @Removal(version = "5.1.0")
   void setMessageHeaders(Map<String, String> metadata);
 
   /**

@@ -21,7 +21,7 @@ import com.adaptris.core.stubs.UpgradedToJunit4;
 import com.adaptris.interlok.junit.scaffolding.ExampleConsumerCase;
 
 @Deprecated
-@Removal(version = "4.0.0", message = "moved to com.adaptris.interlok.junit.scaffolding")
+@Removal(version = "5.1.0", message = "moved to com.adaptris.interlok.junit.scaffolding")
 public abstract class ConsumerCase extends ExampleConsumerCase implements UpgradedToJunit4 {
 
 }

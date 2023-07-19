@@ -27,7 +27,7 @@ import com.adaptris.annotation.Removal;
 public interface ManagementComponent {
 
   @Deprecated
-  @Removal(version = "5.0.0", message = "Is ignored, and has no purpose.")
+  @Removal(version = "5.1.0", message = "Is ignored, and has no purpose.")
   default void setClassLoader(ClassLoader classLoader) {
 
   }
