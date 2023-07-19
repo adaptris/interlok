@@ -88,7 +88,7 @@ public class XmlUtils {
    * @deprecated URIResolver does nothing so use {@link #XmlUtils(EntityResolver)} instead.
    */
   @Deprecated
-  @Removal(version = "4.0.0")
+  @Removal(version = "5.1.0")
   public XmlUtils(EntityResolver er, URIResolver ur) {
     this(er);
   }
@@ -98,7 +98,7 @@ public class XmlUtils {
    *             instead.
    */
   @Deprecated
-  @Removal(version = "4.0.0")
+  @Removal(version = "5.1.0")
   public XmlUtils(EntityResolver er, URIResolver ur, NamespaceContext ctx) {
     this(er, ctx, DocumentBuilderFactory.newInstance());
   }
@@ -108,7 +108,7 @@ public class XmlUtils {
    *             instead.
    */
   @Deprecated
-  @Removal(version = "4.0.0")
+  @Removal(version = "5.1.0")
   public XmlUtils(EntityResolver er, URIResolver ur, NamespaceContext ctx, DocumentBuilderFactory dbf) {
     this(er, ctx, dbf);
   }

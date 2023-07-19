@@ -26,7 +26,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 @XStreamAlias("dummy-placeholder-service-element")
 @Deprecated
-@Removal(version = "4.0.0", message = "moved to com.adaptris.interlok.junit.scaffolding")
+@Removal(version = "5.1.0", message = "moved to com.adaptris.interlok.junit.scaffolding")
 public class ExampleServiceConfig
     extends com.adaptris.interlok.junit.scaffolding.ExampleServiceConfig {
 

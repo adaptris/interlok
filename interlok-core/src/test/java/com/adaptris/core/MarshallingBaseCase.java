@@ -20,7 +20,7 @@ import com.adaptris.annotation.Removal;
 import com.adaptris.core.stubs.UpgradedToJunit4;
 
 @Deprecated
-@Removal(version = "4.0.0")
+@Removal(version = "5.1.0")
 public abstract class MarshallingBaseCase extends
     com.adaptris.interlok.junit.scaffolding.MarshallingBaseCase
     implements UpgradedToJunit4 {
