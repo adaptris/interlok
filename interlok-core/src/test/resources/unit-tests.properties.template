@@ -161,6 +161,8 @@ junit.jdbc.queryservice.driver=org.apache.derby.jdbc.EmbeddedDriver
 junit.jdbc.captureservice.url=jdbc:derby:memory:JdbcDataQueryService;create=true
 junit.jdbc.captureservice.driver=org.apache.derby.jdbc.EmbeddedDriver
 
+junit.jdbc.retrystore.url=jdbc:derby:memory:retryStore;create=true
+junit.jdbc.retrystore.driver=org.apache.derby.jdbc.EmbeddedDriver
 
 
 junit.fs.SizeBasedFilter=@BASE_DIR@/src/test/resources/readme.txt
