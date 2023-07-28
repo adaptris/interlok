@@ -166,7 +166,7 @@ public class RetryMessagesService extends RetryServiceImp {
         for (AdaptrisMessage expired : expiredMsgs) {
           log.debug("Producing Expired Message " + expired.getUniqueId());
           log.debug("EXPIRED MESSAGE" + expired.toString());
-          getExpiredMessagesProducer().produce(expired.getPayload());
+          getExpiredMessagesProducer().produce(expired);
           getRetryStore().delete(expired.getUniqueId());
         }
       }
