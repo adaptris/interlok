@@ -4,6 +4,8 @@ import java.sql.SQLException;
 
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMarshaller;
@@ -44,7 +46,7 @@ public abstract class RetryServiceImp extends JdbcService {
   @NonNull
   private RetryStore retryStore;
 
-  @InputFieldDefault(value = "false")
+  @InputFieldDefault(value = "true")
   private boolean pruneAcknowledged;
 
   /**
@@ -88,7 +90,7 @@ public abstract class RetryServiceImp extends JdbcService {
 
   private void pruneAcknowledged() {
     try {
-      if (pruneAcknowledged) {
+      if (isPruneAcknowledged()) {
         log.debug("Pruning Previously Acknowledged Messages");
         getRetryStore().deleteAcknowledged();
       }
@@ -142,6 +144,10 @@ public abstract class RetryServiceImp extends JdbcService {
    */
   public void setPruneAcknowledged(boolean b) {
     this.pruneAcknowledged = b;
+  }
+  
+  private boolean isPruneAcknowledged() {
+    return BooleanUtils.toBooleanDefaultIfNull(getPruneAcknowledged(), false);
   }
   
   @Override

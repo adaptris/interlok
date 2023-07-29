@@ -5,6 +5,8 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -160,7 +162,7 @@ public class RetryMessagesService extends RetryServiceImp {
 
   private void pruneExpired() {
     try {
-      if (pruneExpired) {
+      if (isPruneExpired()) {
         log.debug("Pruning Expired Messages");
         List<AdaptrisMessage> expiredMsgs = getRetryStore().obtainExpiredMessages();
         for (AdaptrisMessage expired : expiredMsgs) {
@@ -211,5 +213,9 @@ public class RetryMessagesService extends RetryServiceImp {
    */
   public void setPruneExpired(boolean b) {
     pruneExpired = b;
+  }
+  
+  private boolean isPruneExpired() {
+    return BooleanUtils.toBooleanDefaultIfNull(getPruneExpired(), false);
   }
 }
