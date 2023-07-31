@@ -19,6 +19,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.Adapter;
+import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ChannelList;
@@ -409,6 +410,36 @@ public class RetryFromJettyTest extends FailedMessageRetrierCase {
     @Override
     public Iterable<RemoteBlob> report() throws InterlokException {
       throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void acknowledge(String acknowledgeId) throws InterlokException {
+     // null implementation
+    }
+
+    @Override
+    public void deleteAcknowledged() throws InterlokException {
+     // null implementation
+    }
+
+    @Override
+    public List<AdaptrisMessage> obtainExpiredMessages() throws InterlokException {
+      return null; // null implementation
+    }
+
+    @Override
+    public List<AdaptrisMessage> obtainMessagesToRetry() throws InterlokException {
+      return null; // null implementation
+    }
+
+    @Override
+    public void updateRetryCount(String messageId) throws InterlokException {
+     // null implementation
+    }
+
+    @Override
+    public void makeConnection(AdaptrisConnection connection) {
+    // null implementation
     }
   }
 

@@ -2,9 +2,11 @@ package com.adaptris.core.http.jetty.retry;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.interlok.InterlokException;
@@ -57,4 +59,33 @@ public class InMemoryRetryStore implements RetryStore {
     STORE.clear();
   }
 
+  @Override
+  public void acknowledge(String acknowledgeId) throws InterlokException {
+   // null implementation
+  }
+
+  @Override
+  public void deleteAcknowledged() throws InterlokException {
+   // null implementation   
+  }
+
+  @Override
+  public List<AdaptrisMessage> obtainExpiredMessages() throws InterlokException {
+    return null; // null implementation
+  }
+
+  @Override
+  public List<AdaptrisMessage> obtainMessagesToRetry() throws InterlokException {
+    return null; // null implementation
+  }
+
+  @Override
+  public void updateRetryCount(String messageId) throws InterlokException {
+   // null implementation   
+  }
+
+  @Override
+  public void makeConnection(AdaptrisConnection connection) {
+   // null implementation 
+  }
 }
