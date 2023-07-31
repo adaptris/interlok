@@ -3,6 +3,8 @@ package com.adaptris.core.jdbc.retry;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -60,7 +62,7 @@ public class StoreMessageForRetryService extends RetryServiceImp {
   
   @InputFieldDefault(value = "false")
   private boolean asynchronousAcknowledgment;
-  @InputFieldDefault(value = "false")
+  @InputFieldDefault(value = "true")
   private boolean asyncAutoRetryOnFail;
 
   /**
@@ -99,7 +101,7 @@ public class StoreMessageForRetryService extends RetryServiceImp {
    */
   @Override
   protected void performService(AdaptrisMessage msg) throws ServiceException {
-    if (getAsynchronousAcknowledgment()) {
+    if (isAsynchronousAcknowledgment()) {
       handleAsynchronous(msg);
     }
     else {
@@ -109,18 +111,18 @@ public class StoreMessageForRetryService extends RetryServiceImp {
 
   private void handleAsynchronous(AdaptrisMessage msg) throws ServiceException {
     try {
-      if (asyncAutoRetryOnFail) {
+      if (isAsyncAutoRetryOnFail()) {
         insertMessageForRetry(msg);
       }
 
       getService().doService(msg);
 
-      if (!asyncAutoRetryOnFail) {
+      if (!isAsyncAutoRetryOnFail()) {
         insertMessageForRetry(msg);
       }
     }
     catch (ServiceException e) {
-      if (asyncAutoRetryOnFail) {
+      if (isAsyncAutoRetryOnFail()) {
         log.warn("Inserted " + msg.getUniqueId() + " for retrying and ignoring ServiceException: " + e.getMessage());
       }
       else {
@@ -217,6 +219,10 @@ public class StoreMessageForRetryService extends RetryServiceImp {
   public void setAsynchronousAcknowledgment(boolean b) {
     asynchronousAcknowledgment = b;
   }
+  
+  private boolean isAsynchronousAcknowledgment() {
+    return BooleanUtils.toBooleanDefaultIfNull(getAsynchronousAcknowledgment(), false);
+  }
 
   /**
    * @return the retryOnFail
@@ -233,6 +239,10 @@ public class StoreMessageForRetryService extends RetryServiceImp {
    */
   public void setAsyncAutoRetryOnFail(boolean b) {
     asyncAutoRetryOnFail = b;
+  }
+  
+  private boolean isAsyncAutoRetryOnFail() {
+    return BooleanUtils.toBooleanDefaultIfNull(getAsyncAutoRetryOnFail(), true);
   }
 
   @Override
