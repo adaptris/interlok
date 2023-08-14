@@ -4,7 +4,7 @@ plugins {
   id 'com.github.spotbugs' version '5.1.2' apply false
   id "org.sonarqube" version '4.3.0.3225' apply false
   id 'org.owasp.dependencycheck' version '8.3.1' apply false
-  id "io.freefair.lombok" version "8.1.0" apply false
+  id "io.freefair.lombok" version "8.2.2" apply false
   // id 'org.kordamp.gradle.jdeps' version '0.12.0' apply false
   id "org.gradle.test-retry" version "1.5.4" apply false
   id 'org.barfuin.gradle.taskinfo' version '2.1.0'
