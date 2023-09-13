@@ -46,10 +46,12 @@ import lombok.NonNull;
     "keystoreUrls", "privateKeyPasswordProvider" })
 
 public class PayloadPathEncryptionService extends CoreSecurityService {
+  
+  private static final String EXCEPTION_MESSAGE = "Failed to encrypt message";
 
   @NotNull
   @NonNull
-  private PathBuilder pathBuilder = null;
+  private PathBuilder pathBuilder;
   
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
@@ -64,11 +66,11 @@ public class PayloadPathEncryptionService extends CoreSecurityService {
             retrieveRemotePartner(msg));
         pathKeyValuePairs.put(xpathKey, output.getAsString());
       } catch (AdaptrisSecurityException e) {
-        throw new ServiceException("unable to encrypt");
+        e.printStackTrace();
+        throw new ServiceException(EXCEPTION_MESSAGE);
       }
-
+      
       getPathBuilder().insert(msg, pathKeyValuePairs);
-
     }
   }
   

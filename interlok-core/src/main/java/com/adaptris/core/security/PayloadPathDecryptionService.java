@@ -18,19 +18,19 @@ package com.adaptris.core.security;
 
 import java.util.Map;
 
-import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.util.Args;
 import com.adaptris.security.Output;
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.NonNull;
 
 /**
  * Decrypt part of a message using a configurable path.
@@ -46,34 +46,40 @@ import lombok.Setter;
     "keystoreUrls", "privateKeyPasswordProvider" })
 
 public class PayloadPathDecryptionService extends CoreSecurityService {
+  
+  private static final String EXCEPTION_MESSAGE = "Failed to decrypt message";
 
-  @Getter
-  @Setter
-  @Valid
+  @NotNull
+  @NonNull
   private PathBuilder pathBuilder;
 
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-
     Map<String, String> pathKeyValuePairs;
     pathKeyValuePairs = getPathBuilder().extract(msg);
 
     for (Map.Entry<String, String> entry : pathKeyValuePairs.entrySet()) {
       String xpathKey = entry.getKey();
       String xpathValue = entry.getValue();
-      System.out.println("BYTES: " + xpathValue.getBytes());
       try {
         Output output = retrieveSecurityImplementation().verify(xpathValue.getBytes(), retrieveLocalPartner(),
             retrieveRemotePartner(msg));
         pathKeyValuePairs.put(xpathKey, output.getAsString());
       } catch (AdaptrisSecurityException e) {
         e.printStackTrace();
-        throw new ServiceException("unable to encrypt");
+        throw new ServiceException(EXCEPTION_MESSAGE);
       }
-
+      
       getPathBuilder().insert(msg, pathKeyValuePairs);
-
     }
+  }
+  
+  public PathBuilder getPathBuilder() {
+    return pathBuilder;
+  }
+
+  public void setPathBuilder(PathBuilder pathBuilder) {
+    this.pathBuilder = Args.notNull(pathBuilder, "pathBuilder");
   }
 
 }
