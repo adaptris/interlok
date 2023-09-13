@@ -38,6 +38,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -444,6 +446,20 @@ public class XmlHelper {
     } catch (Exception e) {
       return null;
     }
+  }
+  
+  /**
+   * Convert a String into an XML Node.
+   *
+   * @param xmlString The xml string to covert to a Node.
+   * @return The Node of the XML String passed to it.
+   * @throws Exception if unable to covnert to a node. This would
+   * be expected if the String passed to it would not make well formed XML
+   * or would not XML at all.
+   */
+  public static Node stringToNode(String xmlString) throws Exception {
+    return DocumentBuilderFactory.newInstance().newDocumentBuilder()
+        .parse(new ByteArrayInputStream(xmlString.getBytes())).getDocumentElement();
   }
 
   private static Transformer configure(Transformer serializer, String encoding)
