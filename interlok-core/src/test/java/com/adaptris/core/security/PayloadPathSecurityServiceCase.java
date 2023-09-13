@@ -47,48 +47,26 @@ public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase
       + "tItpX25JP3RhnzFrwriwUyFshUaF+J05O+6P2WilvUsX7+Q1prU7POnyizhdlvlt" + "6c+G3SjCAdM/oKJB1LSVLuxUzx0vTs2S"
       + "</X509Certificate>" + "</X509Data>" + "</KeyInfo>";
   
-  protected static final String XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n"
-      + "<root>\r\n"
-      + "   <xpath1>xpath1_result</xpath1>\r\n"
-      + "   <xpath2>xpath2_result</xpath2>\r\n"
-      + "   <xpath3>xpath3_result</xpath3>\r\n"
-      + "   <parent>\r\n"
-      + "      <child1>child1</child1>\r\n"
-      + "      <child2>child2</child2>\r\n"
-      + "   </parent>\r\n"
-      + "</root>\r\n";
-  
-  protected static final String JSON = "{\r\n"
-      + "    \"firstName\": \"John\",\r\n"
-      + "    \"lastName\": \"doe\",\r\n"
-      + "    \"age\": 26,\r\n"
-      + "    \"address\": {\r\n"
-      + "        \"streetAddress\": \"street\",\r\n"
-      + "        \"city\": \"city\",\r\n"
-      + "        \"postalCode\": \"TW12 3RR\"\r\n"
-      + "    },\r\n"
-      + "    \"phoneNumbers\": [\r\n"
-      + "        {\r\n"
-      + "            \"type\": \"mobile\",\r\n"
-      + "            \"number\": \"000-000-000\"\r\n"
-      + "        },\r\n"
-      + "        {\r\n"
-      + "            \"type\": \"home\",\r\n"
-      + "            \"number\": \"111-111-111\"\r\n"
-      + "        }\r\n"
-      + "    ]\r\n"
-      + "}";
-  
+  public static final String XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
+      + "<root>\n"
+      + "   <xpath1>xpath1_result</xpath1>\n"
+      + "   <xpath2>xpath2_result</xpath2>\n"
+      + "   <xpath3>xpath3_result</xpath3>\n"
+      + "   <xpath3>xpath3_result</xpath3>\n"
+      + "   <parent>\n"
+      + "      <child1>child1_result</child1>\n"
+      + "      <child2>child2_result</child2>\n"
+      + "      <childName name=\"test\">child_name</childName>\n"
+      + "      <subParent>\n"
+      + "         <subChild>subChild_result</subChild>\n"
+      + "      </subParent>\n"
+      + "   </parent>\n"
+      + "</root>\n";
+
   protected static final String XPATH_1 = "//xpath1";
   protected static final String XPATH_2 = "//xpath2";
   protected static final String XPATH_3 = "//xpath3";
-  
-  protected static final String JSON_SINGLE_OBJECT_PATH = "$.firstName";
-  protected static final String JSON_MULTI_OBJECT_PATH = "$.address";
-  protected static final String JSON_ARRAY_PATH = "$.phoneNumbers";
-  protected static final String JSON_EXPRESSION_PATH = "$.phoneNumbers[:1].type";
-  protected static final String JSON_INVALID_PATH = "invalid json path";
-  protected static final String JSON_NON_EXISTENT_PATH = "$.thirdName";
+  protected static final String XPATH_WITH_CHILDREN = "//parent";
   
   @Test
   public void testEncryptingDecryptingMultiplePathsWithConfiguredProvider() throws Exception {
@@ -109,6 +87,71 @@ public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase
     payloadPathDecryptionService.setPathBuilder(xpathBuilder);
     applyConfigForTests(payloadPathDecryptionService, url);
     configureForConfiguredPrivateKey(payloadPathDecryptionService, PROPERTIES.getProperty(SECURITY_PASSWORD));
+    execute(payloadPathDecryptionService, msg);
+    assertEquals(XML, msg.getContent());
+  }
+  
+  @Test
+  public void testEncryptingDecryptingMultiplePathsWithLegacyProvider() throws Exception {
+    List<String> path = new ArrayList<String>();
+    path.add(XPATH_1);
+    path.add(XPATH_2);
+    path.add(XPATH_3);
+    XpathBuilder xpathBuilder = new XpathBuilder();
+    xpathBuilder.setPaths(path);
+    PayloadPathEncryptionService payloadPathEncryptionService = new PayloadPathEncryptionService();
+    payloadPathEncryptionService.setPathBuilder(xpathBuilder);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
+    String url = createKeystore();
+    applyConfigForTests(payloadPathEncryptionService, url);
+    configureForLegacyProvider(payloadPathEncryptionService);
+    execute(payloadPathEncryptionService, msg);
+    PayloadPathDecryptionService payloadPathDecryptionService = new PayloadPathDecryptionService();
+    payloadPathDecryptionService.setPathBuilder(xpathBuilder);
+    applyConfigForTests(payloadPathDecryptionService, url);
+    configureForLegacyProvider(payloadPathDecryptionService);
+    execute(payloadPathDecryptionService, msg);
+    assertEquals(XML, msg.getContent());
+  }
+  
+  @Test
+  public void testEncryptingDecryptingParentPathWithConfiguredProvider() throws Exception {
+    List<String> path = new ArrayList<String>();
+    path.add(XPATH_WITH_CHILDREN);
+    XpathBuilder xpathBuilder = new XpathBuilder();
+    xpathBuilder.setPaths(path);
+    PayloadPathEncryptionService payloadPathEncryptionService = new PayloadPathEncryptionService();
+    payloadPathEncryptionService.setPathBuilder(xpathBuilder);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
+    String url = createKeystore();
+    applyConfigForTests(payloadPathEncryptionService, url);
+    configureForConfiguredPrivateKey(payloadPathEncryptionService, PROPERTIES.getProperty(SECURITY_PASSWORD));
+    execute(payloadPathEncryptionService, msg);
+    PayloadPathDecryptionService payloadPathDecryptionService = new PayloadPathDecryptionService();
+    payloadPathDecryptionService.setPathBuilder(xpathBuilder);
+    applyConfigForTests(payloadPathDecryptionService, url);
+    configureForConfiguredPrivateKey(payloadPathDecryptionService, PROPERTIES.getProperty(SECURITY_PASSWORD));
+    execute(payloadPathDecryptionService, msg);
+    assertEquals(XML, msg.getContent());
+  }
+  
+  @Test
+  public void testEncryptingDecryptingParentPathWithLegacyProvider() throws Exception {
+    List<String> path = new ArrayList<String>();
+    path.add(XPATH_WITH_CHILDREN);
+    XpathBuilder xpathBuilder = new XpathBuilder();
+    xpathBuilder.setPaths(path);
+    PayloadPathEncryptionService payloadPathEncryptionService = new PayloadPathEncryptionService();
+    payloadPathEncryptionService.setPathBuilder(xpathBuilder);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
+    String url = createKeystore();
+    applyConfigForTests(payloadPathEncryptionService, url);
+    configureForLegacyProvider(payloadPathEncryptionService);
+    execute(payloadPathEncryptionService, msg);
+    PayloadPathDecryptionService payloadPathDecryptionService = new PayloadPathDecryptionService();
+    payloadPathDecryptionService.setPathBuilder(xpathBuilder);
+    applyConfigForTests(payloadPathDecryptionService, url);
+    configureForLegacyProvider(payloadPathDecryptionService);
     execute(payloadPathDecryptionService, msg);
     assertEquals(XML, msg.getContent());
   }

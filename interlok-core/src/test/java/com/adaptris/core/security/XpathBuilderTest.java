@@ -21,35 +21,47 @@ import com.adaptris.util.KeyValuePairSet;
 
 public class XpathBuilderTest {
 
-  public static final String XML_NO_NAMESPACE = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n"
-      + "<root>\r\n"
-      + "   <xpath1>xpath1_result</xpath1>\r\n"
-      + "   <xpath2>xpath2_result</xpath2>\r\n"
-      + "   <xpath3>xpath3_result</xpath3>\r\n"
-      + "   <parent>\r\n"
-      + "      <child1>child1</child1>\r\n"
-      + "      <child2>child2</child2>\r\n"
-      + "   </parent>\r\n"
-      + "</root>\r\n";
+  public static final String XML_NO_NAMESPACE = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
+      + "<root>\n"
+      + "   <xpath1>xpath&amp;1_result</xpath1>\n"
+      + "   <xpath2>&lt;xpath2_result</xpath2>\n"
+      + "   <xpath3>xpath3_result</xpath3>\n"
+      + "   <xpath3>xpath3_result</xpath3>\n"
+      + "   <parent>\n"
+      + "      <child1>child1_result</child1>\n"
+      + "      <child2>child2_result</child2>\n"
+      + "      <childName name=\"test\">child_name</childName>\n"
+      + "      <subParent>\n"
+      + "         <subChild>subChild_result</subChild>\n"
+      + "      </subParent>\n"
+      + "   </parent>\n"
+      + "</root>\n";
 
-  public static final String XML_WITH_NAMESPACE = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><root xmlns:test=\"www.test.com\"><test:xpath1>xpath1_result</test:xpath1><test:xpath2>xpath2_result</test:xpath2>"
-      + "<test:xpath3>xpath3_result</test:xpath3></root>";
+  public static final String XML_WITH_NAMESPACE = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
+      + "<root xmlns:test=\"www.test.com\">\n"
+      + "   <test:xpath1>xpath1_result</test:xpath1>\n"
+      + "   <test:xpath2>xpath2_result</test:xpath2>\n"
+      + "   <test:xpath3>xpath3_result</test:xpath3>\n"
+      + "   <test:parent>\n"
+      + "      <test:child1>child1</test:child1>\n"
+      + "      <test:child2>child2</test:child2>\n"
+      + "   </test:parent>\n"
+      + "</root>";
 
   private static final String NOT_XML = "not xml";
 
-  private static final String XPATH_RELATIVE_ROOT = "./root";
+  private static final String XPATH_WITH_ATTRIBUTE = "//parent/childName/@name";
   private static final String XPATH_1_NO_NAMESPACE = "//xpath1";
   private static final String XPATH_1_WITH_NAMESPACE = "//test:xpath1";
   private static final String XPATH_2_NO_NAMESPACE = "//xpath2";
   private static final String XPATH_2_WITH_NAMESPACE = "//test:xpath2";
   private static final String XPATH_3_NO_NAMESPACE = "//xpath3";
   private static final String XPATH_3_WITH_NAMESPACE = "//test:xpath3";
-  private static final String XPATH_NESTED = "//parent";
   private static final String XPATH_NON_EXISTENT = "//doesNotExist";
   private static final String XPATH_INVALID = "invalid xpath";
   
   private static final String NON_XML_EXCEPTION_MESSAGE = "Unable to create XML document";
-  private static final String INVALID_XPATH_EXCEPTION_MESSAGE = "Unable to evaluate if Xpath exists, please ensure the Xpath is valid";
+  private static final String INVALID_XPATH_EXCEPTION_MESSAGE = "Unable to evaluate if Xpath [%s] exists, please ensure the Xpath is valid";
   private static final String XPATH_DOES_NOT_EXIST_EXCEPTION_MESSAGE = "XPath [%s] does not match any nodes";
   
   private static Map<String, String> resultKeyValuePairs;
@@ -58,7 +70,7 @@ public class XpathBuilderTest {
   
   @BeforeAll
   public static void setUp() {
-    resultKeyValuePairs  = new LinkedHashMap<>();
+    resultKeyValuePairs  = new LinkedHashMap<String, String>();
     xpath = new ArrayList<String>();
     xpathProvider = new XpathBuilder();
   }
@@ -68,38 +80,39 @@ public class XpathBuilderTest {
     resultKeyValuePairs.clear();
     xpath.clear();
   }
-
-  @Test
-  public void testExtractingRelativeXpath() {
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_NO_NAMESPACE);
-    xpath.add(XPATH_RELATIVE_ROOT);
-    xpathProvider.setPaths(xpath);
-    try {
-      resultKeyValuePairs = xpathProvider.extract(msg);
-    } catch (ServiceException e) {
-      e.printStackTrace();
-      fail();
-    }
-    assertEquals(1, resultKeyValuePairs.size(), "LinkedHashMap should have 1 entry");
-  }
   
   @Test
-  public void testExtractingSingleXpathNoNameSpace() {
+  public void testSingleXpathNoNameSpace() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_NO_NAMESPACE);
     xpath.add(XPATH_1_NO_NAMESPACE);
     xpathProvider.setPaths(xpath);
     try {
       resultKeyValuePairs = xpathProvider.extract(msg);
-      System.out.println(resultKeyValuePairs + "test");
+      xpathProvider.insert(msg, resultKeyValuePairs);
     } catch (ServiceException e) {
       e.printStackTrace();
       fail();
     }
-    assertEquals(1, resultKeyValuePairs.size(), "LinkedHashMap should have 1 entry");
+    assertEquals(XML_NO_NAMESPACE, msg.getContent());
   }
-
+  
   @Test
-  public void testExtractingMultipleXpathsNoNameSpace() {
+  public void testXpathWithAttribute() {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_NO_NAMESPACE);
+    xpath.add(XPATH_WITH_ATTRIBUTE);
+    xpathProvider.setPaths(xpath);
+    try {
+      resultKeyValuePairs = xpathProvider.extract(msg);
+      xpathProvider.insert(msg, resultKeyValuePairs);
+    } catch (ServiceException e) {
+      e.printStackTrace();
+      fail();
+    }
+    assertEquals(XML_NO_NAMESPACE, msg.getContent());
+  }
+  
+  @Test
+  public void testMultipleXpathsNoNameSpace() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_NO_NAMESPACE);
     xpath.add(XPATH_1_NO_NAMESPACE);
     xpath.add(XPATH_2_NO_NAMESPACE);
@@ -107,30 +120,32 @@ public class XpathBuilderTest {
     xpathProvider.setPaths(xpath);
     try {
       resultKeyValuePairs = xpathProvider.extract(msg);
+      xpathProvider.insert(msg, resultKeyValuePairs);
     } catch (ServiceException e) {
       e.printStackTrace();
       fail();
     }
-    assertEquals(3, resultKeyValuePairs.size(), "LinkedHashMap should have 3 entries");
+    assertEquals(XML_NO_NAMESPACE, msg.getContent());
   }
-
+  
   @Test
-  public void testExtractingSingleXpathWithNameSpace() {
+  public void testSingleXpathWithNameSpace() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_WITH_NAMESPACE);
     xpath.add(XPATH_1_WITH_NAMESPACE);
     xpathProvider.setPaths(xpath);
     xpathProvider.setNamespaceContext(createContextEntries());
     try {
       resultKeyValuePairs = xpathProvider.extract(msg);
+      xpathProvider.insert(msg, resultKeyValuePairs);
     } catch (ServiceException e) {
       e.printStackTrace();
       fail();
     }
-    assertEquals(1, resultKeyValuePairs.size(), "LinkedHashMap should have 1 entry");
+    assertEquals(XML_WITH_NAMESPACE, msg.getContent());
   }
-
+  
   @Test
-  public void testExtractingMultipleXpathsWithNameSpace() {
+  public void testMultipleXpathsWithNameSpace() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_WITH_NAMESPACE);
     xpath.add(XPATH_1_WITH_NAMESPACE);
     xpath.add(XPATH_2_WITH_NAMESPACE);
@@ -139,28 +154,49 @@ public class XpathBuilderTest {
     xpathProvider.setNamespaceContext(createContextEntries());
     try {
       resultKeyValuePairs = xpathProvider.extract(msg);
+      xpathProvider.insert(msg, resultKeyValuePairs);
     } catch (ServiceException e) {
       e.printStackTrace();
       fail();
     }
-    assertEquals(3, resultKeyValuePairs.size(), "LinkedHashMap should have 3 entries");
+    assertEquals(XML_WITH_NAMESPACE, msg.getContent());
   }
   
   @Test
-  public void testExtractingNestedXpaths() {
+  public void testMetadataXpath() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_NO_NAMESPACE);
-    xpath.add(XPATH_NESTED);
+    msg.addMetadata("xPath", XPATH_1_NO_NAMESPACE);
+    xpath.add("%message{xPath}");
     xpathProvider.setPaths(xpath);
-    xpathProvider.setNamespaceContext(createContextEntries());
     try {
       resultKeyValuePairs = xpathProvider.extract(msg);
+      xpathProvider.insert(msg, resultKeyValuePairs);
     } catch (ServiceException e) {
       e.printStackTrace();
       fail();
     }
-    assertEquals(1, resultKeyValuePairs.size(), "LinkedHashMap should have 1 entry");
+    assertEquals(XML_NO_NAMESPACE, msg.getContent());
   }
-
+  
+  @Test
+  public void testMixtureOfXpaths() {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_NO_NAMESPACE);
+    msg.addMetadata("xPath", XPATH_1_NO_NAMESPACE);
+    xpath.add(XPATH_1_NO_NAMESPACE);
+    xpath.add(XPATH_2_NO_NAMESPACE);
+    xpath.add(XPATH_WITH_ATTRIBUTE);
+    xpath.add("%message{xPath}");
+    xpathProvider.setPaths(xpath);
+    try {
+      resultKeyValuePairs = xpathProvider.extract(msg);
+      xpathProvider.insert(msg, resultKeyValuePairs);
+    } catch (ServiceException e) {
+      e.printStackTrace();
+      fail();
+    }
+    assertEquals(XML_NO_NAMESPACE, msg.getContent());
+  }
+ 
   @Test
   public void testExtractingNonExistentXpath() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_NO_NAMESPACE);
@@ -180,7 +216,7 @@ public class XpathBuilderTest {
     Throwable exception = Assertions.assertThrows(ServiceException.class, () -> {
       resultKeyValuePairs = xpathProvider.extract(msg);
     });
-    assertEquals(INVALID_XPATH_EXCEPTION_MESSAGE, exception.getMessage());
+    assertEquals(String.format(INVALID_XPATH_EXCEPTION_MESSAGE, XPATH_INVALID), exception.getMessage());
   }
 
   @Test
@@ -192,43 +228,6 @@ public class XpathBuilderTest {
       resultKeyValuePairs = xpathProvider.extract(msg);
     });
     assertEquals(NON_XML_EXCEPTION_MESSAGE, exception.getMessage());
-  }
-  
-  @Test
-  public void testSingleXpathNoNameSpace() {
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_NO_NAMESPACE);
-    AdaptrisMessage originalMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_NO_NAMESPACE);
-    xpath.add(XPATH_1_NO_NAMESPACE);
-    xpathProvider.setPaths(xpath);
-    try {
-      resultKeyValuePairs = xpathProvider.extract(msg);
-      xpathProvider.insert(msg, resultKeyValuePairs);
-    } catch (ServiceException e) {
-      e.printStackTrace();
-      fail();
-    }
-    System.out.println("original msg = " + originalMsg.getContent());
-    System.out.println("new msg = " + msg.getContent());
-    //assertEquals(msg.getContent(), originalMsg.getContent());
-  }
-  
-  @Test
-  public void testMultipleXpathsNoNameSpace() {
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_NO_NAMESPACE);
-    AdaptrisMessage originalMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_NO_NAMESPACE);
-    xpath.add(XPATH_1_NO_NAMESPACE);
-    xpath.add(XPATH_2_NO_NAMESPACE);
-    xpath.add(XPATH_3_NO_NAMESPACE);
-    xpathProvider.setPaths(xpath);
-    try {
-      resultKeyValuePairs = xpathProvider.extract(msg);
-      xpathProvider.insert(msg, resultKeyValuePairs);
-    } catch (ServiceException e) {
-      e.printStackTrace();
-      fail();
-    }
-    System.out.println("original msg = " + originalMsg.getContent());
-    System.out.println("new msg = " + msg.getContent() + "end");
   }
   
   private static KeyValuePairSet createContextEntries() {
