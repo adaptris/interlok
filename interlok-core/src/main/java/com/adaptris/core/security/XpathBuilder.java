@@ -22,6 +22,7 @@ import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -52,19 +53,25 @@ import lombok.Setter;
 @DisplayOrder(order = { "xpaths", "namespaceContext", "xmlDocumentFactoryConfig" })
 public class XpathBuilder implements PathBuilder {
 
+  private static final String ENCRYPTED_ELEMENTS_WRAPPER = "<encryptedNestedElements>%s</encryptedNestedElements>";
+
   private static final String NON_XML_EXCEPTION_MESSAGE = "Unable to create XML document";
-  private static final String INVALID_XPATH_EXCEPTION_MESSAGE = "Unable to evaluate if Xpath exists, please ensure the Xpath is valid";
+  private static final String INVALID_XPATH_EXCEPTION_MESSAGE = "Unable to evaluate if Xpath [%s] exists, please ensure the Xpath is valid";
   private static final String XPATH_DOES_NOT_EXIST_EXCEPTION_MESSAGE = "XPath [%s] does not match any nodes";
+  private static final String COULD_NOT_WRITE_TO_MSG_EXCEPTION_MESSAGE = "Could not write to msg";
 
   public XpathBuilder() {
     this.setPaths(new ArrayList<String>());
   }
+
+  private NamespaceContext namespaceCxt;
 
   @Getter
   @Setter
   @NotNull
   @AutoPopulated
   @XStreamImplicit(itemFieldName = "xpaths")
+  @InputFieldHint(expression = true)
   private List<String> paths;
   @AdvancedConfig(rare = true)
   @Valid
@@ -76,32 +83,31 @@ public class XpathBuilder implements PathBuilder {
   @Override
   public void prepare() throws CoreException {
     Args.notNull(getPaths(), "xpath");
-    Args.notNull(getNamespaceContext(), "namespaceContext");
-    }
-  
+  }
+
   @Override
   public Map<String, String> extract(AdaptrisMessage msg) throws ServiceException {
-    NamespaceContext namespaceContext = SimpleNamespaceContext.create(getNamespaceContext(), msg);
-    NodeList nodeList = null;
-    Document doc;
-    try {
-      doc = XmlHelper.createDocument(msg, documentFactoryBuilder(namespaceContext, msg));
-    } catch (ParserConfigurationException | IOException | SAXException e1) {
-      throw new ServiceException(NON_XML_EXCEPTION_MESSAGE);
-    }
+    Node node;
+    Document doc = prepareXmlDoc(msg);
     Map<String, String> pathKeyValuePairs = new LinkedHashMap<>();
     for (String path : this.getPaths()) {
+      String xPathToExecute = msg == null ? path : msg.resolve(path);
+      node = prepareNode(doc, xPathToExecute, msg);
       try {
-        XPath xPathHandler = XPath.newXPathInstance(documentFactoryBuilder(namespaceContext, msg), namespaceContext);
-        nodeList = xPathHandler.selectNodeList(doc, path);
+        XPath xPathHandler = XPath.newXPathInstance(documentFactoryBuilder(), createNamespaceCxt(msg));
+        node = xPathHandler.selectSingleNode(doc, xPathToExecute);
       } catch (XPathExpressionException e) {
-        throw new ServiceException(INVALID_XPATH_EXCEPTION_MESSAGE);
+        throw new ServiceException(String.format(INVALID_XPATH_EXCEPTION_MESSAGE, xPathToExecute));
       }
-      if (nodeList.getLength() > 0) {
-        Node node = nodeList.item(0);
-        pathKeyValuePairs.put(path, node.getTextContent());
+      if (node != null) {
+        NodeList childNodeList = node.getChildNodes();
+        if (childNodeList.getLength() > 1) {
+          pathKeyValuePairs.put(xPathToExecute, concatAndWrapNestedNodesToString(childNodeList));
+          continue;
+        }
+        pathKeyValuePairs.put(xPathToExecute, node.getTextContent());
       } else {
-        throw new ServiceException(String.format(XPATH_DOES_NOT_EXIST_EXCEPTION_MESSAGE, path));
+        throw new ServiceException(String.format(XPATH_DOES_NOT_EXIST_EXCEPTION_MESSAGE, xPathToExecute));
       }
     }
 
@@ -110,37 +116,33 @@ public class XpathBuilder implements PathBuilder {
 
   @Override
   public void insert(AdaptrisMessage msg, Map<String, String> pathKeyValuePairs) throws ServiceException {
-    NamespaceContext namespaceContext = SimpleNamespaceContext.create(getNamespaceContext(), msg);
-    NodeList nodeList = null;
-    Document doc;
-    try {
-      doc = XmlHelper.createDocument(msg, documentFactoryBuilder(namespaceContext, msg));
-      System.out.println(doc);
-    } catch (ParserConfigurationException | IOException | SAXException e1) {
-      throw new ServiceException(NON_XML_EXCEPTION_MESSAGE);
-    }
+    Node node;
+    Document doc = prepareXmlDoc(msg);
     for (Map.Entry<String, String> entry : pathKeyValuePairs.entrySet()) {
       String xpathKey = entry.getKey();
       String xpathValue = entry.getValue();
-      try {
-        XPath xPathHandler = XPath.newXPathInstance(documentFactoryBuilder(namespaceContext, msg), namespaceContext);
-        nodeList = xPathHandler.selectNodeList(doc, xpathKey);
-      } catch (XPathExpressionException e) {
-        throw new ServiceException(INVALID_XPATH_EXCEPTION_MESSAGE);
-      }
-      if (nodeList.getLength() > 0) {
-        Node node = nodeList.item(0);
-        node.setTextContent(xpathValue);
-        System.out.println(node.getTextContent());
+      node = prepareNode(doc, xpathKey, msg);
+      if (node != null) {
+        if (isStringNestedNodes(xpathValue)) {
+          try {
+            Node nestedNodes = XmlHelper.stringToNode(xpathValue);
+            Node nestedNodesToImport = doc.importNode(nestedNodes, true);
+            node.replaceChild(nestedNodesToImport, node.getFirstChild());
+          } catch (Exception e) {
+            throw new ServiceException(NON_XML_EXCEPTION_MESSAGE);
+          }
+        } else {
+          node.setTextContent(xpathValue);
+        }
       } else {
         throw new ServiceException(String.format(XPATH_DOES_NOT_EXIST_EXCEPTION_MESSAGE, xpathKey));
       }
+      doc = StripNestedNodesWrapper(doc);
     }
-    
     try {
       XmlHelper.writeXmlDocument(doc, msg, msg.getContentEncoding());
     } catch (Exception e) {
-      throw new ServiceException("could not write to msg");
+      throw new ServiceException(COULD_NOT_WRITE_TO_MSG_EXCEPTION_MESSAGE);
     }
   }
 
@@ -175,8 +177,67 @@ public class XpathBuilder implements PathBuilder {
     this.xmlDocumentFactoryConfig = xmlDocumentFactoryConfig;
   }
 
-  private DocumentBuilderFactoryBuilder documentFactoryBuilder(NamespaceContext namespaceCtx, AdaptrisMessage msg) {
-    return DocumentBuilderFactoryBuilder.newInstanceIfNull(getXmlDocumentFactoryConfig(), namespaceCtx);
+  private NamespaceContext createNamespaceCxt(AdaptrisMessage msg) {
+    return namespaceCxt = SimpleNamespaceContext.create(getNamespaceContext(), msg);
+  }
+
+  private DocumentBuilderFactoryBuilder documentFactoryBuilder() {
+    return DocumentBuilderFactoryBuilder.newInstanceIfNull(getXmlDocumentFactoryConfig());
+  }
+
+  private Document prepareXmlDoc(AdaptrisMessage msg) throws ServiceException {
+    try {
+      if (createNamespaceCxt(msg) != null) {
+        documentFactoryBuilder().setNamespaceAware(true);
+      }
+      return XmlHelper.createDocument(msg, documentFactoryBuilder());
+    } catch (ParserConfigurationException | IOException | SAXException e1) {
+      throw new ServiceException(NON_XML_EXCEPTION_MESSAGE);
+    }
+  }
+
+  private Node prepareNode(Document doc, String xPath, AdaptrisMessage msg) throws ServiceException {
+    try {
+      XPath xPathHandler = XPath.newXPathInstance(documentFactoryBuilder(), createNamespaceCxt(msg));
+      return xPathHandler.selectSingleNode(doc, xPath);
+    } catch (XPathExpressionException e) {
+      throw new ServiceException(String.format(INVALID_XPATH_EXCEPTION_MESSAGE, xPath));
+    }
+  }
+
+  private String concatAndWrapNestedNodesToString(NodeList nestedNodeList) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < nestedNodeList.getLength(); i++) {
+      if (nestedNodeList.item(i).getNodeType() == Node.ELEMENT_NODE) {
+        sb.append(XmlHelper.nodeToString(nestedNodeList.item(i)));
+      }
+    }
+    return String.format(ENCRYPTED_ELEMENTS_WRAPPER, sb.toString());
+  }
+
+  private Document StripNestedNodesWrapper(Document doc) {
+    NodeList wrapperNodes = doc.getElementsByTagName("encryptedNestedElements");
+    for (int i = 0; i < wrapperNodes.getLength(); i++) {
+      Node wrapperNode = wrapperNodes.item(i);
+      Node childNodes = wrapperNode.getFirstChild();
+      while (childNodes != null) {
+        Node nextSibling = childNodes.getNextSibling();
+        Node parentNode = wrapperNode.getParentNode();
+        parentNode.appendChild(childNodes);
+        childNodes = nextSibling;
+      }
+      wrapperNode.getParentNode().removeChild(wrapperNode);
+    }
+    return doc;
+  }
+
+  private boolean isStringNestedNodes(String xmlString) {
+    try {
+      XmlHelper.createDocument(xmlString, documentFactoryBuilder());
+    } catch (ParserConfigurationException | IOException | SAXException e) {
+      return false;
+    }
+    return true;
   }
 
 }
