@@ -22,7 +22,7 @@ public interface PathBuilder extends ComponentLifecycle, ComponentLifecycleExten
   /**
    * Extract from a payloads path.
    * 
-   * @return a Map<String, String> containing key/value pairs. 
+   * @return a 'Map&lt;String, String&gt;' containing key/value pairs. 
    * <strong>key = payloads path.<strong>
    * <strong>value = path's content.<strong>
    */
@@ -33,7 +33,7 @@ public interface PathBuilder extends ComponentLifecycle, ComponentLifecycleExten
    * Insert values back into a payload.
    * 
    * <p>
-   *  The Map<String, String> 
+   *  The 'Map&lt;String, String&gt;'
    *  param should contain:
    *  <strong>key = payloads path.<strong>
    *  <strong>value = path's content to be inserted.<strong>
