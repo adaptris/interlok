@@ -46,7 +46,7 @@ public class XpathBuilderTest {
       + "      <test:child1>child1</test:child1>\n"
       + "      <test:child2>child2</test:child2>\n"
       + "   </test:parent>\n"
-      + "</root>";
+      + "</root>\n";
 
   private static final String NOT_XML = "not xml";
 
