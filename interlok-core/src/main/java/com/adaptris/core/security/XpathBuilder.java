@@ -19,7 +19,6 @@ import org.xml.sax.SAXException;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
-import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
@@ -57,7 +56,7 @@ public class XpathBuilder implements PathBuilder {
 
   private static final String NON_XML_EXCEPTION_MESSAGE = "Unable to create XML document";
   private static final String INVALID_XPATH_EXCEPTION_MESSAGE = "Unable to evaluate if Xpath [%s] exists, please ensure the Xpath is valid";
-  private static final String XPATH_DOES_NOT_EXIST_EXCEPTION_MESSAGE = "XPath [%s] does not match any nodes";
+  private static final String XPATH_DOES_NOT_EXIST_EXCEPTION_MESSAGE = "XPath [%s] does not match any nodes. Please ensure it exists and if used that the namespace context is correct";
   private static final String COULD_NOT_WRITE_TO_MSG_EXCEPTION_MESSAGE = "Could not write to msg";
 
   public XpathBuilder() {
@@ -69,7 +68,6 @@ public class XpathBuilder implements PathBuilder {
   @Getter
   @Setter
   @NotNull
-  @AutoPopulated
   @XStreamImplicit(itemFieldName = "xpaths")
   @InputFieldHint(expression = true)
   private List<String> paths;
@@ -110,7 +108,7 @@ public class XpathBuilder implements PathBuilder {
         throw new ServiceException(String.format(XPATH_DOES_NOT_EXIST_EXCEPTION_MESSAGE, xPathToExecute));
       }
     }
-
+    
     return pathKeyValuePairs;
   }
 
@@ -204,6 +202,10 @@ public class XpathBuilder implements PathBuilder {
       throw new ServiceException(String.format(INVALID_XPATH_EXCEPTION_MESSAGE, xPath));
     }
   }
+  
+  //The below private methods are here so we can handle xml nodes that contain nested child nodes
+ //as we need to extract not only the text content but the entire xml 'structure'.
+//Possibly can be done in a more concise way.
 
   private String concatAndWrapNestedNodesToString(NodeList nestedNodeList) {
     StringBuilder sb = new StringBuilder();
@@ -239,5 +241,4 @@ public class XpathBuilder implements PathBuilder {
     }
     return true;
   }
-
 }
