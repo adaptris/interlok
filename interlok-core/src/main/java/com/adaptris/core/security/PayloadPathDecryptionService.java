@@ -18,6 +18,7 @@ package com.adaptris.core.security;
 
 import java.util.Map;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
@@ -30,7 +31,6 @@ import com.adaptris.security.Output;
 import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-import lombok.NonNull;
 
 /**
  * Decrypt part of a message using a configurable path.
@@ -50,8 +50,13 @@ public class PayloadPathDecryptionService extends CoreSecurityService {
   private static final String EXCEPTION_MESSAGE = "Failed to decrypt message";
 
   @NotNull
-  @NonNull
+  @Valid
   private PathBuilder pathBuilder;
+  
+  
+  public PayloadPathDecryptionService() {
+    pathBuilder = new XpathBuilder();
+  }
 
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
