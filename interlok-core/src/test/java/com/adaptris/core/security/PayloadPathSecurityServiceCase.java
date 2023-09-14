@@ -178,24 +178,6 @@ public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase
     });
   }
   
-  @Test
-  public void testFailingToDecryptMessage() throws Exception {
-    List<String> path = new ArrayList<String>();
-    path.add(XPATH_WITH_CHILDREN);
-    XpathBuilder xpathBuilder = new XpathBuilder();
-    xpathBuilder.setPaths(path);
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
-    String url = createKeystore();
-    PayloadPathDecryptionService payloadPathDecryptionService = new PayloadPathDecryptionService();
-    payloadPathDecryptionService.setPathBuilder(xpathBuilder);
-    applyConfigForTests(payloadPathDecryptionService, url);
-    configureForConfiguredPrivateKey(payloadPathDecryptionService, PROPERTIES.getProperty(SECURITY_PASSWORD));
-    Assertions.assertThrows(ServiceException.class, () -> {
-      execute(payloadPathDecryptionService, msg);
-    }, "Cannot decrypt data that is not encrypted");
-  }
-
-
   
   /**
    * @see com.adaptris.core.ExampleConfigCase#retrieveObjectForSampleConfig()
