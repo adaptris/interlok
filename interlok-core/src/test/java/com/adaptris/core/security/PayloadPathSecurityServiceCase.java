@@ -7,10 +7,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.ServiceException;
 import com.adaptris.security.EncryptionAlgorithm;
 import com.adaptris.security.keystore.ConfiguredUrl;
 import com.adaptris.security.keystore.InlineKeystore;
@@ -154,6 +156,43 @@ public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase
     configureForLegacyProvider(payloadPathDecryptionService);
     execute(payloadPathDecryptionService, msg);
     assertEquals(XML, msg.getContent());
+  }
+  
+  @Test
+  public void testFailingToEncryptMessage() throws Exception {
+    List<String> path = new ArrayList<String>();
+    path.add(XPATH_WITH_CHILDREN);
+    XpathBuilder xpathBuilder = new XpathBuilder();
+    xpathBuilder.setPaths(path);
+    PayloadPathEncryptionService payloadPathEncryptionService = new PayloadPathEncryptionService();
+    payloadPathEncryptionService.setPathBuilder(xpathBuilder);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
+    String url = createKeystore();
+    applyConfigForTests(payloadPathEncryptionService, url);
+    configureForConfiguredPrivateKey(payloadPathEncryptionService, PROPERTIES.getProperty(SECURITY_PASSWORD));
+    EncryptionAlgorithm ea = new EncryptionAlgorithm();
+    ea.setAlgorithm("invalid");
+    payloadPathEncryptionService.setEncryptionAlgorithm(ea);
+    Assertions.assertThrows(ServiceException.class, () -> {
+      execute(payloadPathEncryptionService, msg);
+    });
+  }
+  
+  @Test
+  public void testFailingToDecryptMessage() throws Exception {
+    List<String> path = new ArrayList<String>();
+    path.add(XPATH_WITH_CHILDREN);
+    XpathBuilder xpathBuilder = new XpathBuilder();
+    xpathBuilder.setPaths(path);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
+    String url = createKeystore();
+    PayloadPathDecryptionService payloadPathDecryptionService = new PayloadPathDecryptionService();
+    payloadPathDecryptionService.setPathBuilder(xpathBuilder);
+    applyConfigForTests(payloadPathDecryptionService, url);
+    configureForConfiguredPrivateKey(payloadPathDecryptionService, PROPERTIES.getProperty(SECURITY_PASSWORD));
+    Assertions.assertThrows(ServiceException.class, () -> {
+      execute(payloadPathDecryptionService, msg);
+    }, "Cannot decrypt data that is not encrypted");
   }
 
 
