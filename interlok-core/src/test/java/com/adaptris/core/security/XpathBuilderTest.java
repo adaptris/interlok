@@ -62,7 +62,7 @@ public class XpathBuilderTest {
   
   private static final String NON_XML_EXCEPTION_MESSAGE = "Unable to create XML document";
   private static final String INVALID_XPATH_EXCEPTION_MESSAGE = "Unable to evaluate if Xpath [%s] exists, please ensure the Xpath is valid";
-  private static final String XPATH_DOES_NOT_EXIST_EXCEPTION_MESSAGE = "XPath [%s] does not match any nodes";
+  private static final String XPATH_DOES_NOT_EXIST_EXCEPTION_MESSAGE = "XPath [%s] does not match any nodes. Please ensure it exists and if used that the namespace context is correct";
   
   private static Map<String, String> resultKeyValuePairs;
   private static List<String> xpath;
@@ -228,6 +228,20 @@ public class XpathBuilderTest {
       resultKeyValuePairs = xpathProvider.extract(msg);
     });
     assertEquals(NON_XML_EXCEPTION_MESSAGE, exception.getMessage());
+  }
+  
+  @Test
+  public void testMisMatchedNameSpace() {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_WITH_NAMESPACE);
+    xpath.add(XPATH_1_WITH_NAMESPACE);
+    xpathProvider.setPaths(xpath);
+    KeyValuePairSet contextEntries = new KeyValuePairSet();
+    contextEntries.add(new KeyValuePair("wrong", "wrong"));
+    xpathProvider.setNamespaceContext(contextEntries);
+    Throwable exception =  Assertions.assertThrows(ServiceException.class, () -> {
+      resultKeyValuePairs = xpathProvider.extract(msg);
+    });
+    assertEquals(String.format(XPATH_DOES_NOT_EXIST_EXCEPTION_MESSAGE, XPATH_1_WITH_NAMESPACE), exception.getMessage());
   }
   
   private static KeyValuePairSet createContextEntries() {
