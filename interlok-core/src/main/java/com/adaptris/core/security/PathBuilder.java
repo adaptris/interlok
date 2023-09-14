@@ -17,7 +17,7 @@ import com.adaptris.core.ServiceException;
  *
  */
 
-public interface PathBuilder extends ComponentLifecycle, ComponentLifecycleExtension {
+public interface PathBuilder {
   
   /**
    * Extract from a payloads path.

@@ -23,9 +23,7 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.util.Args;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.KeyValuePairSet;
@@ -77,11 +75,6 @@ public class XpathBuilder implements PathBuilder {
   @AdvancedConfig(rare = true)
   @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
-
-  @Override
-  public void prepare() throws CoreException {
-    Args.notNull(getPaths(), "xpath");
-  }
 
   @Override
   public Map<String, String> extract(AdaptrisMessage msg) throws ServiceException {
