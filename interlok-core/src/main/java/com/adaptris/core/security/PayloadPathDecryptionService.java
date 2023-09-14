@@ -71,7 +71,6 @@ public class PayloadPathDecryptionService extends CoreSecurityService {
             retrieveRemotePartner(msg));
         pathKeyValuePairs.put(xpathKey, output.getAsString());
       } catch (AdaptrisSecurityException e) {
-        e.printStackTrace();
         throw new ServiceException(EXCEPTION_MESSAGE);
       }
       
