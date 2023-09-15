@@ -24,6 +24,7 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.services.metadata.xpath.XpathQuery;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.KeyValuePairSet;
@@ -37,10 +38,26 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
+ * Extracts and inserts values from message payload using defined Xpaths {@link String}.
+ * <p>
+ * This component simple extracts and inserts values from an XML payload using defined Xpaths.
+ * While not coupled with {@link PayloadPathEncryptionService} and {@link PayloadPathDecryptionService} 
+ * this component was built to be used with those two services.
+ * </p>
+ * <p>
+ * This service will support XPath 2.0+ features, but in order to use XPath 2.0 features you must
+ * use Saxon as your XPath provider. This means either explicitly removing all
+ * {@link DocumentBuilderFactoryBuilder} configuration, or ensuring that {@code namespace-aware} is
+ * set to 'true' in the {@link DocumentBuilderFactoryBuilder} configuration.
+ * </p>
+ * <p>
+ * If the {@code DocumentBuilderFactoryBuilder} has been explicitly set to be not namespace aware
+ * and the document does in fact contain namespaces, then Saxon can cause merry havoc in the sense
+ * that {@code //NonNamespaceXpath} doesn't work if the document has namespaces in it. We have
+ * included a shim so that behaviour can be toggled based on what you have configured.
+ * </p>
  * 
- * @author jwickham
- * 
- *         Imp that expects an Xpath to be provided.
+ * @config xpath-builder
  *
  */
 
@@ -114,11 +131,14 @@ public class XpathBuilder implements PathBuilder {
       String xpathValue = entry.getValue();
       node = prepareNode(doc, xpathKey, msg);
       if (node != null) {
-        if (isStringNestedNodes(xpathValue)) {
+        if (xpathValue.startsWith("<") && isStringNestedNodes(xpathValue)) {
           try {
             Node nestedNodes = XmlHelper.stringToNode(xpathValue);
             Node nestedNodesToImport = doc.importNode(nestedNodes, true);
-            node.replaceChild(nestedNodesToImport, node.getFirstChild());
+            while (node.hasChildNodes()) {
+             node.removeChild(node.getFirstChild()); 
+            }
+            node.appendChild(nestedNodesToImport);
           } catch (Exception e) {
             throw new ServiceException(NON_XML_EXCEPTION_MESSAGE);
           }
@@ -128,6 +148,7 @@ public class XpathBuilder implements PathBuilder {
       } else {
         throw new ServiceException(String.format(XPATH_DOES_NOT_EXIST_EXCEPTION_MESSAGE, xpathKey));
       }
+      
       doc = StripNestedNodesWrapper(doc);
     }
     try {
