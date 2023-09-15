@@ -6,15 +6,11 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ComponentLifecycle;
 import com.adaptris.core.ComponentLifecycleExtension;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.services.metadata.MetadataValueBranchingService;
 
 
 /**
- * 
- * @author jwickham
- * 
- * Interface for handling paths to be used.
- * Used to validate paths, extract data from paths and insert data back into paths.
- *
+ * Interface for {@link PathBuilder}.
  */
 
 public interface PathBuilder {
