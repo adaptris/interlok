@@ -71,6 +71,27 @@ public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase
   protected static final String XPATH_WITH_CHILDREN = "//parent";
   
   @Test
+  public void testEncryptingDecryptingSinglePathWithConfiguredProvider() throws Exception {
+    List<String> path = new ArrayList<String>();
+    path.add(XPATH_1);
+    XpathBuilder xpathBuilder = new XpathBuilder();
+    xpathBuilder.setPaths(path);
+    PayloadPathEncryptionService payloadPathEncryptionService = new PayloadPathEncryptionService();
+    payloadPathEncryptionService.setPathBuilder(xpathBuilder);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
+    String url = createKeystore();
+    applyConfigForTests(payloadPathEncryptionService, url);
+    configureForConfiguredPrivateKey(payloadPathEncryptionService, PROPERTIES.getProperty(SECURITY_PASSWORD));
+    execute(payloadPathEncryptionService, msg);
+    PayloadPathDecryptionService payloadPathDecryptionService = new PayloadPathDecryptionService();
+    payloadPathDecryptionService.setPathBuilder(xpathBuilder);
+    applyConfigForTests(payloadPathDecryptionService, url);
+    configureForConfiguredPrivateKey(payloadPathDecryptionService, PROPERTIES.getProperty(SECURITY_PASSWORD));
+    execute(payloadPathDecryptionService, msg);
+    assertEquals(XML, msg.getContent());
+  }
+  
+  @Test
   public void testEncryptingDecryptingMultiplePathsWithConfiguredProvider() throws Exception {
     List<String> path = new ArrayList<String>();
     path.add(XPATH_1);
@@ -175,6 +196,31 @@ public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase
     payloadPathEncryptionService.setEncryptionAlgorithm(ea);
     Assertions.assertThrows(ServiceException.class, () -> {
       execute(payloadPathEncryptionService, msg);
+    });
+  }
+  
+  @Test
+  public void testFailingToDecryptMessage() throws Exception {
+    List<String> path = new ArrayList<String>();
+    path.add(XPATH_1);
+    XpathBuilder xpathBuilder = new XpathBuilder();
+    xpathBuilder.setPaths(path);
+    PayloadPathEncryptionService payloadPathEncryptionService = new PayloadPathEncryptionService();
+    payloadPathEncryptionService.setPathBuilder(xpathBuilder);
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
+    String url = createKeystore();
+    applyConfigForTests(payloadPathEncryptionService, url);
+    configureForConfiguredPrivateKey(payloadPathEncryptionService, PROPERTIES.getProperty(SECURITY_PASSWORD));
+    execute(payloadPathEncryptionService, msg);
+    PayloadPathDecryptionService payloadPathDecryptionService = new PayloadPathDecryptionService();
+    payloadPathDecryptionService.setPathBuilder(xpathBuilder);
+    applyConfigForTests(payloadPathDecryptionService, url);
+    configureForConfiguredPrivateKey(payloadPathDecryptionService, PROPERTIES.getProperty(SECURITY_PASSWORD));
+    EncryptionAlgorithm ea = new EncryptionAlgorithm();
+    ea.setAlgorithm("invalid");
+    payloadPathDecryptionService.setEncryptionAlgorithm(ea);
+    Assertions.assertThrows(ServiceException.class, () -> {
+      execute(payloadPathDecryptionService, msg);
     });
   }
   

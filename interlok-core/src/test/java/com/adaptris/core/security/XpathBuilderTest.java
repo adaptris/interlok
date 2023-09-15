@@ -52,6 +52,7 @@ public class XpathBuilderTest {
 
   private static final String XPATH_WITH_ATTRIBUTE = "//parent/childName/@name";
   private static final String XPATH_1_NO_NAMESPACE = "//xpath1";
+  private static final String XPATH_PARENT_NAMESPACE = "//parent";
   private static final String XPATH_1_WITH_NAMESPACE = "//test:xpath1";
   private static final String XPATH_2_NO_NAMESPACE = "//xpath2";
   private static final String XPATH_2_WITH_NAMESPACE = "//test:xpath2";
@@ -85,6 +86,21 @@ public class XpathBuilderTest {
   public void testSingleXpathNoNameSpace() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_NO_NAMESPACE);
     xpath.add(XPATH_1_NO_NAMESPACE);
+    xpathProvider.setPaths(xpath);
+    try {
+      resultKeyValuePairs = xpathProvider.extract(msg);
+      xpathProvider.insert(msg, resultKeyValuePairs);
+    } catch (ServiceException e) {
+      e.printStackTrace();
+      fail();
+    }
+    assertEquals(XML_NO_NAMESPACE, msg.getContent());
+  }
+  
+  @Test
+  public void testParentXpathNoNameSpace() {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_NO_NAMESPACE);
+    xpath.add(XPATH_PARENT_NAMESPACE);
     xpathProvider.setPaths(xpath);
     try {
       resultKeyValuePairs = xpathProvider.extract(msg);
