@@ -99,23 +99,22 @@ public class XpathBuilder implements PathBuilder {
     Document doc = prepareXmlDoc(msg);
     Map<String, String> pathKeyValuePairs = new LinkedHashMap<>();
     for (String path : this.getPaths()) {
-      String xPathToExecute = msg == null ? path : msg.resolve(path);
-      node = prepareNode(doc, xPathToExecute, msg);
+      node = prepareNode(doc, msg.resolve(path), msg);
       try {
         XPath xPathHandler = XPath.newXPathInstance(documentFactoryBuilder(), createNamespaceCxt(msg));
-        node = xPathHandler.selectSingleNode(doc, xPathToExecute);
+        node = xPathHandler.selectSingleNode(doc, msg.resolve(path));
       } catch (XPathExpressionException e) {
-        throw new ServiceException(String.format(INVALID_XPATH_EXCEPTION_MESSAGE, xPathToExecute));
+        throw new ServiceException(String.format(INVALID_XPATH_EXCEPTION_MESSAGE, msg.resolve(path)));
       }
       if (node != null) {
         NodeList childNodeList = node.getChildNodes();
         if (childNodeList.getLength() > 1) {
-          pathKeyValuePairs.put(xPathToExecute, concatAndWrapNestedNodesToString(childNodeList));
+          pathKeyValuePairs.put(msg.resolve(path), concatAndWrapNestedNodesToString(childNodeList));
           continue;
         }
-        pathKeyValuePairs.put(xPathToExecute, node.getTextContent());
+        pathKeyValuePairs.put(msg.resolve(path), node.getTextContent());
       } else {
-        throw new ServiceException(String.format(XPATH_DOES_NOT_EXIST_EXCEPTION_MESSAGE, xPathToExecute));
+        throw new ServiceException(String.format(XPATH_DOES_NOT_EXIST_EXCEPTION_MESSAGE, msg.resolve(path)));
       }
     }
     
