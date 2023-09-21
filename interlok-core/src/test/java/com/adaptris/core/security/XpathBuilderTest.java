@@ -1,6 +1,7 @@
 package com.adaptris.core.security;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
@@ -60,10 +61,6 @@ public class XpathBuilderTest {
   private static final String XPATH_3_WITH_NAMESPACE = "//test:xpath3";
   private static final String XPATH_NON_EXISTENT = "//doesNotExist";
   private static final String XPATH_INVALID = "invalid xpath";
-  
-  private static final String NON_XML_EXCEPTION_MESSAGE = "Unable to create XML document";
-  private static final String INVALID_XPATH_EXCEPTION_MESSAGE = "Unable to evaluate if Xpath [%s] exists, please ensure the Xpath is valid";
-  private static final String XPATH_DOES_NOT_EXIST_EXCEPTION_MESSAGE = "XPath [%s] does not match any nodes. Please ensure it exists and if used that the namespace context is correct";
   
   private static Map<String, String> resultKeyValuePairs;
   private static List<String> xpath;
@@ -218,10 +215,9 @@ public class XpathBuilderTest {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_NO_NAMESPACE);
     xpath.add(XPATH_NON_EXISTENT);
     xpathProvider.setPaths(xpath);
-    Throwable exception = Assertions.assertThrows(ServiceException.class, () -> {
+    assertThrows(ServiceException.class, () -> {
       resultKeyValuePairs = xpathProvider.extract(msg);
-    });
-    assertEquals(String.format(XPATH_DOES_NOT_EXIST_EXCEPTION_MESSAGE, XPATH_NON_EXISTENT), exception.getMessage());
+    }, "Xpath does not exist.");
   }
 
   @Test
@@ -229,35 +225,59 @@ public class XpathBuilderTest {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_NO_NAMESPACE);
     xpath.add(XPATH_INVALID);
     xpathProvider.setPaths(xpath);
-    Throwable exception = Assertions.assertThrows(ServiceException.class, () -> {
+    assertThrows(ServiceException.class, () -> {
       resultKeyValuePairs = xpathProvider.extract(msg);
-    });
-    assertEquals(String.format(INVALID_XPATH_EXCEPTION_MESSAGE, XPATH_INVALID), exception.getMessage());
+    }, "Invalid Xpath.");
   }
 
   @Test
-  public void testNonXml() {
+  public void testExtractingNonXml() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(NOT_XML);
     xpath.add(XPATH_1_NO_NAMESPACE);
     xpathProvider.setPaths(xpath);
-    Throwable exception =  Assertions.assertThrows(ServiceException.class, () -> {
+    assertThrows(ServiceException.class, () -> {
       resultKeyValuePairs = xpathProvider.extract(msg);
-    });
-    assertEquals(NON_XML_EXCEPTION_MESSAGE, exception.getMessage());
+    }, "Non xml message.");
   }
   
   @Test
-  public void testMisMatchedNameSpace() {
+  public void testExtractingMisMatchedNameSpace() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_WITH_NAMESPACE);
     xpath.add(XPATH_1_WITH_NAMESPACE);
     xpathProvider.setPaths(xpath);
     KeyValuePairSet contextEntries = new KeyValuePairSet();
     contextEntries.add(new KeyValuePair("wrong", "wrong"));
     xpathProvider.setNamespaceContext(contextEntries);
-    Throwable exception =  Assertions.assertThrows(ServiceException.class, () -> {
+    assertThrows(ServiceException.class, () -> {
       resultKeyValuePairs = xpathProvider.extract(msg);
-    });
-    assertEquals(String.format(XPATH_DOES_NOT_EXIST_EXCEPTION_MESSAGE, XPATH_1_WITH_NAMESPACE), exception.getMessage());
+    }, "Xpath not found due to unexpected namespace name.");
+  }
+  
+  @Test
+  public void testInsertingNonExistentXpath() {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_NO_NAMESPACE);
+    resultKeyValuePairs.put(XPATH_NON_EXISTENT, "Some value");
+    assertThrows(ServiceException.class, () -> {
+      xpathProvider.insert(msg, resultKeyValuePairs);
+    }, "Xpath does not exist.");
+  }
+
+  @Test
+  public void testInsertingInvalidXpath() {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_NO_NAMESPACE);
+    resultKeyValuePairs.put(XPATH_INVALID, "Some value");
+    assertThrows(ServiceException.class, () -> {
+      xpathProvider.insert(msg, resultKeyValuePairs);
+    }, "Invalid Xpath.");
+  }
+
+  @Test
+  public void testInsertingNonXml() {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(NOT_XML);
+    resultKeyValuePairs.put(XPATH_1_NO_NAMESPACE, "Some value");
+    assertThrows(ServiceException.class, () -> {
+      xpathProvider.insert(msg, resultKeyValuePairs);
+    }, "Not an XML file.");
   }
   
   private static KeyValuePairSet createContextEntries() {
