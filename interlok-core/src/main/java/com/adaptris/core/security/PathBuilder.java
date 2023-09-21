@@ -16,7 +16,7 @@ import com.adaptris.core.services.metadata.MetadataValueBranchingService;
 public interface PathBuilder {
   
   /**
-   * Extract from a payloads path.
+   * Extract from a payload's path.
    * 
    * @return a 'Map&lt;String, String&gt;' containing key/value pairs. 
    * <strong>key = payloads path.<strong>
