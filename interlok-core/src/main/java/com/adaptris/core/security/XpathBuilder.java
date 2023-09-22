@@ -38,23 +38,27 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Extracts and inserts values from message payload using defined Xpaths {@link String}.
+ * Extracts and inserts values from message payload using defined Xpaths
+ * {@link String}.
  * <p>
- * This component simple extracts and inserts values from an XML payload using defined Xpaths.
- * While not coupled with {@link PayloadPathEncryptionService} and {@link PayloadPathDecryptionService} 
- * this component was built to be used with those two services.
+ * This component simple extracts and inserts values from an XML payload using
+ * defined Xpaths. While not coupled with {@link PayloadPathEncryptionService}
+ * and {@link PayloadPathDecryptionService} this component was built to be used
+ * with those two services.
  * </p>
  * <p>
- * This service will support XPath 2.0+ features, but in order to use XPath 2.0 features you must
- * use Saxon as your XPath provider. This means either explicitly removing all
- * {@link DocumentBuilderFactoryBuilder} configuration, or ensuring that {@code namespace-aware} is
- * set to 'true' in the {@link DocumentBuilderFactoryBuilder} configuration.
+ * This service will support XPath 2.0+ features, but in order to use XPath 2.0
+ * features you must use Saxon as your XPath provider. This means either
+ * explicitly removing all {@link DocumentBuilderFactoryBuilder} configuration,
+ * or ensuring that {@code namespace-aware} is set to 'true' in the
+ * {@link DocumentBuilderFactoryBuilder} configuration.
  * </p>
  * <p>
- * If the {@code DocumentBuilderFactoryBuilder} has been explicitly set to be not namespace aware
- * and the document does in fact contain namespaces, then Saxon can cause merry havoc in the sense
- * that {@code //NonNamespaceXpath} doesn't work if the document has namespaces in it. We have
- * included a shim so that behaviour can be toggled based on what you have configured.
+ * If the {@code DocumentBuilderFactoryBuilder} has been explicitly set to be
+ * not namespace aware and the document does in fact contain namespaces, then
+ * Saxon can cause merry havoc in the sense that {@code //NonNamespaceXpath}
+ * doesn't work if the document has namespaces in it. We have included a shim so
+ * that behaviour can be toggled based on what you have configured.
  * </p>
  * 
  * @config xpath-builder
@@ -63,7 +67,7 @@ import lombok.Setter;
 
 @XStreamAlias("xpath-builder")
 @AdapterComponent
-@ComponentProfile(summary = "xpath builder to extract and insert", tag = "service,security,path", since = "4.8.9")
+@ComponentProfile(summary = "xpath builder to extract and insert", tag = "service,security,path", since = "5.0.0")
 @DisplayOrder(order = { "xpaths", "namespaceContext", "xmlDocumentFactoryConfig" })
 public class XpathBuilder implements PathBuilder {
 
@@ -117,7 +121,7 @@ public class XpathBuilder implements PathBuilder {
         throw new ServiceException(String.format(XPATH_DOES_NOT_EXIST_EXCEPTION_MESSAGE, msg.resolve(path)));
       }
     }
-    
+
     return pathKeyValuePairs;
   }
 
@@ -130,16 +134,20 @@ public class XpathBuilder implements PathBuilder {
       String xpathValue = entry.getValue();
       node = prepareNode(doc, xpathKey, msg);
       if (node != null) {
-        if (xpathValue.startsWith("<") && isStringNestedNodes(xpathValue)) {
-          try {
-            Node nestedNodes = XmlHelper.stringToNode(xpathValue);
-            Node nestedNodesToImport = doc.importNode(nestedNodes, true);
-            while (node.hasChildNodes()) {
-             node.removeChild(node.getFirstChild()); 
+        if (xpathValue.startsWith("<")) {
+          if (isStringNestedNodes(xpathValue)) {
+            try {
+              Node nestedNodes = XmlHelper.stringToNode(xpathValue);
+              Node nestedNodesToImport = doc.importNode(nestedNodes, true);
+              while (node.hasChildNodes()) {
+                node.removeChild(node.getFirstChild());
+              }
+              node.appendChild(nestedNodesToImport);
+            } catch (Exception e) {
+              throw new ServiceException(NON_XML_EXCEPTION_MESSAGE);
             }
-            node.appendChild(nestedNodesToImport);
-          } catch (Exception e) {
-            throw new ServiceException(NON_XML_EXCEPTION_MESSAGE);
+          } else {
+            node.setTextContent(xpathValue);
           }
         } else {
           node.setTextContent(xpathValue);
@@ -147,7 +155,7 @@ public class XpathBuilder implements PathBuilder {
       } else {
         throw new ServiceException(String.format(XPATH_DOES_NOT_EXIST_EXCEPTION_MESSAGE, xpathKey));
       }
-      
+
       doc = StripNestedNodesWrapper(doc);
     }
     try {
@@ -215,9 +223,11 @@ public class XpathBuilder implements PathBuilder {
       throw new ServiceException(String.format(INVALID_XPATH_EXCEPTION_MESSAGE, xPath));
     }
   }
-  
-  //The below private methods are here so we can handle xml nodes that contain nested child nodes
- //as we need to extract not only the text content but the entire xml 'structure'.
+
+  // The below private methods are here so we can handle xml nodes that contain
+  // nested child nodes
+  // as we need to extract not only the text content but the entire xml
+  // 'structure'.
 //Possibly can be done in a more concise way.
 
   private String concatAndWrapNestedNodesToString(NodeList nestedNodeList) {
