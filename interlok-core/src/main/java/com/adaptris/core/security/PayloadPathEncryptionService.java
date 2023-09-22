@@ -33,7 +33,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 
 /**
- * Perform encryption on part of a message using a configurable path.
+ * Encrypt part of a message using a configurable path.
  * 
  * @config payload-path-encryption-service
  * 
