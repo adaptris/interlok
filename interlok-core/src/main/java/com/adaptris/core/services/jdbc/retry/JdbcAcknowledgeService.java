@@ -1,36 +1,37 @@
-package com.adaptris.core.jdbc.retry;
+package com.adaptris.core.services.jdbc.retry;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.jdbc.retry.Constants;
 import com.adaptris.interlok.InterlokException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
  * Service which processes asynchronous acknowledgements for messages stored
- * using {@link StoreMessageForRetryServiceTest}.
+ * using {@link JdbcStoreMessageForRetryService}.
  * </p>
  * <p>
  * The following metadata keys are required.
  * <ul>
- * <li>{@value com.adaptris.core.services.retry.Constants#ACKNOWLEDGE_ID_KEY}
+ * <li>{@value com.adaptris.core.jdbc.retry.Constants#ACKNOWLEDGE_ID_KEY}
  * contains the ID that was previously used by
- * {@link StoreMessageForRetryServiceTest} as the correlation id.</li>
+ * {@link JdbcStoreMessageForRetryService} as the correlation id.</li>
  * </ul>
  * </p>
  */
-@XStreamAlias("acknowledge-message-service")
+@XStreamAlias("jdbc-acknowledge-message-service")
 @AdapterComponent
-@ComponentProfile(summary = "processes asynchronous acknowledgements.", since = "4.9.0", tag = "retry")
+@ComponentProfile(summary = "processes asynchronous acknowledgements.", since = "5.0.0", tag = "jdbc, retry")
 @DisplayOrder(order = { "pruneExpired", "retryStore" })
-public class AcknowledgeService extends RetryServiceImp {
+public class JdbcAcknowledgeService extends JdbcRetryServiceImp {
 
   /**
    *
-   * @see RetryServiceImpTest#performService(com.adaptris.core.AdaptrisMessage)
+   * @see JdbcRetryServiceImp#performService(com.adaptris.core.AdaptrisMessage)
    */
   @Override
   protected void performService(AdaptrisMessage msg) throws ServiceException {
@@ -42,7 +43,7 @@ public class AcknowledgeService extends RetryServiceImp {
     }
     try {
       log.debug("Acknowledging [" + acknowledgeId + "] as successfully sent");
-      getRetryStore().acknowledge(acknowledgeId);
+      acknowledge(acknowledgeId);
     } catch (InterlokException e) {
       throw new ServiceException(e);
     }

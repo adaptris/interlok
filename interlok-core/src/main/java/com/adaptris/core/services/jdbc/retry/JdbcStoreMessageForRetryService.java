@@ -1,4 +1,4 @@
-package com.adaptris.core.jdbc.retry;
+package com.adaptris.core.services.jdbc.retry;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -14,6 +14,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.jdbc.retry.Constants;
 import com.adaptris.interlok.InterlokException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -23,7 +24,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  * <p>
  * This class supports both synchronous and asynchronous acknowledgement. This is controlled by the field
- * {@linkplain StoreMessageForRetryServiceTest#setAsynchronousAcknowledgment(boolean)}.
+ * {@linkplain JdbcStoreMessageForRetryService#setAsynchronousAcknowledgment(boolean)}.
  * </p>
  * <p>
  * A message is deemed to be synchronously acknowledged if the wrapped service completes normally. In such cases it is not added to
@@ -48,12 +49,12 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  */
 
-@XStreamAlias("store-message-for-retry-service")
+@XStreamAlias("jdbc-store-message-for-retry-service")
 @AdapterComponent
-@ComponentProfile(summary = "Wraps an interlok service and gives the option to store the message in a retry store in the event of an exception.",
-    since = "4.9.0", tag = "retry")
-@DisplayOrder(order = {"asynchronousAcknowledgment", "asyncAutoRetryOnFail", "retryStore"})
-public class StoreMessageForRetryService extends RetryServiceImp {
+@ComponentProfile(summary = "Wraps an interlok service and gives the option to store the message into a Database table in the event of an exception.",
+    since = "5.0.0", tag = "retry")
+@DisplayOrder(order = {"asynchronousAcknowledgment", "asyncAutoRetryOnFail", "jdbc, retry"})
+public class JdbcStoreMessageForRetryService extends JdbcRetryServiceImp {
 
   // persistent
   @NotNull
@@ -74,7 +75,7 @@ public class StoreMessageForRetryService extends RetryServiceImp {
    * <li>asynchronousAcknowledgment is false</li>
    * <li>asyncAutoRetryOnFail is true</li> </p>
    */
-  public StoreMessageForRetryService() {
+  public JdbcStoreMessageForRetryService() {
     super();
     setService(new NullService());
     setAsyncAutoRetryOnFail(true);
@@ -97,7 +98,7 @@ public class StoreMessageForRetryService extends RetryServiceImp {
 
   /**
    *
-   * @see RetryServiceImpTest#performService(com.adaptris.core.AdaptrisMessage)
+   * @see JdbcRetryServiceImp#performService(com.adaptris.core.AdaptrisMessage)
    */
   @Override
   protected void performService(AdaptrisMessage msg) throws ServiceException {
@@ -163,7 +164,7 @@ public class StoreMessageForRetryService extends RetryServiceImp {
   private void insertMessageForRetry(AdaptrisMessage msg) throws ServiceException {
     try {
       String ackId = applyMetadata(msg);
-      getRetryStore().write(msg);
+      write(msg);
       log.debug("Storing [" + ackId + "] for future acknowledgement");
 
     }
