@@ -21,7 +21,6 @@ import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -231,33 +230,4 @@ public class FilesystemRetryStore implements RetryStore {
     return this;
   }
 
-  @Override
-  public void acknowledge(String acknowledgeId) throws InterlokException {
- // null implementation
-  }
-
-  @Override
-  public void deleteAcknowledged() throws InterlokException {
- // null implementation
-  }
-
-  @Override
-  public List<AdaptrisMessage> obtainExpiredMessages() throws InterlokException {
-    return null; // null implementation
-  }
-
-  @Override
-  public List<AdaptrisMessage> obtainMessagesToRetry() throws InterlokException {
-    return null; // null implementation
-  }
-
-  @Override
-  public void updateRetryCount(String messageId) throws InterlokException {
-   // null implementation
-  }
-
-  @Override
-  public void makeConnection(AdaptrisConnection connection) {
-   // null implementation 
-  }
 }
