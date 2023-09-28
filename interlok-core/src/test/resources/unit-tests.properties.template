@@ -163,7 +163,7 @@ junit.jdbc.captureservice.driver=org.apache.derby.jdbc.EmbeddedDriver
 
 junit.jdbc.retryservice.url=jdbc:derby:memory:JdbcRetryService;create=true
 junit.jdbc.retryservice.driver=org.apache.derby.jdbc.EmbeddedDriver
-junit.jdbc.retryservice.sql.properties.file=file:///@BUILD_DIR@/src/test/resources/retry-store-derby.properties
+junit.jdbc.retryservice.sql.properties.file=@BUILD_DIR@/resources/test/retry-store-derby.properties
 
 junit.fs.SizeBasedFilter=@BASE_DIR@/src/test/resources/readme.txt
 
@@ -230,3 +230,4 @@ junit.urlhelper.local=file://localhost/@BASE_DIR@/src/test/resources/xstream-sta
 # junit.urlhelper.remote=https://development.adaptris.net/index.html
 junit.urlhelper.remote=https://raw.githubusercontent.com/adaptris-labs/interlok-build-parent/master/build.gradle
 junit.urlhelper.classpath=xstream-standard.xml
+junit.retry.baseUrl=file://localhost/@BUILD_DIR@/tmp/retry-store
