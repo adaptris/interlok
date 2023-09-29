@@ -1,14 +1,12 @@
 package com.adaptris.core.services.jdbc.retry;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import com.adaptris.core.jdbc.JdbcService;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+public class JdbcStoreMessageForRetryServiceTest extends JdbcRetryServiceCase {
 
-
-public class JdbcStoreMessageForRetryServiceTest {
+  @Override
+  protected JdbcService createService() {
+    return new JdbcStoreMessageForRetryService();
+  }
 
 }
