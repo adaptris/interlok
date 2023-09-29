@@ -16,3 +16,4 @@ jobs:
     secrets:
       NEXUS_REPO_PASSWORD: ${{ secrets.NEXUS_REPO_PASSWORD }}
       TEAMS_IDN_WH_URL: ${{ secrets.TEAMS_IDN_WH_URL }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
