@@ -15,12 +15,13 @@ import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.jdbc.retry.Constants;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.interlok.InterlokException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Service which stores unacknowledged messages for future retry.
+ * Service which stores unacknowledged messages for future retry, with acknowledgment support.
  * </p>
  * <p>
  * This class supports both synchronous and asynchronous acknowledgement. This is controlled by the field
@@ -80,28 +81,27 @@ public class JdbcStoreMessageForRetryService extends JdbcRetryServiceImp {
     setService(new NullService());
     setAsyncAutoRetryOnFail(true);
   }
-
-  /** @see com.adaptris.core.ServiceImp#start() */
+  
+  /** @see com.adaptris.core.AdaptrisComponent#start() */
   @Override
-  public void start() throws CoreException {
-    super.start();
-    getService().start();
+  protected void startService() throws CoreException {
+    LifecycleHelper.start(getService());
   }
-
-  /** @see com.adaptris.core.ServiceImp#stop() */
+  
+  /** @see com.adaptris.core.AdaptrisComponent#stop() */
   @Override
-  public void stop() {
-    getService().stop();
-    super.stop();
+  protected void stopService() {
+    LifecycleHelper.stop(getService());
   }
-
 
   /**
-   *
-   * @see JdbcRetryServiceImp#performService(com.adaptris.core.AdaptrisMessage)
+   * The main service method, which stores a message and details of the wrapped service in the retry database table.
+   * 
+   * @see com.adaptris.core.Service#doService(com.adaptris.core.AdaptrisMessage)
    */
   @Override
-  protected void performService(AdaptrisMessage msg) throws ServiceException {
+  public void doService(AdaptrisMessage msg) throws ServiceException {
+    pruneAcknowledged();
     if (isAsynchronousAcknowledgment()) {
       handleAsynchronous(msg);
     }
@@ -244,12 +244,6 @@ public class JdbcStoreMessageForRetryService extends JdbcRetryServiceImp {
   
   private boolean isAsyncAutoRetryOnFail() {
     return BooleanUtils.toBooleanDefaultIfNull(getAsyncAutoRetryOnFail(), true);
-  }
-
-  @Override
-  protected void stopService() {
-    // TODO Auto-generated method stub
-    
   }
 
 }

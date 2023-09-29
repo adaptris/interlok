@@ -21,7 +21,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.MimeEncoder;
-import com.adaptris.core.ServiceException;
 import com.adaptris.core.jdbc.DatabaseConnection;
 import com.adaptris.core.jdbc.JdbcService;
 import com.adaptris.core.jdbc.retry.Constants;
@@ -29,16 +28,12 @@ import com.adaptris.core.jdbc.retry.JdbcRetryRowEntry;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.interlok.InterlokException;
-import com.adaptris.interlok.util.Args;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
 /**
- * <p>
- * JDBC services for storing and retrying messages with acknowledgment support.
  * </p>
  * <p>
  * If there is no explicit configuration of the sqlProperties then the SQL
@@ -100,8 +95,6 @@ import lombok.Setter;
  * </p>
  */
 
-
-@NoArgsConstructor
 public abstract class JdbcRetryServiceImp extends JdbcService {
   
   private static final String RETRY_STORE_PROPERTIES = "retry-store-derby.properties";
@@ -113,7 +106,7 @@ public abstract class JdbcRetryServiceImp extends JdbcService {
   private static final String UPDATE_RETRY_SQL = "update-retry.sql";
   private static final String DELETE_ACKNOWLEGED_SQL = "delete.acknowleged.sql";
   private static final String ACKNOWLEDGE_SQL = "acknowledge.sql";
-  
+
   private transient Properties sqlStatements;
   private transient MimeEncoder encoder;
 
@@ -137,7 +130,12 @@ public abstract class JdbcRetryServiceImp extends JdbcService {
  
   @InputFieldDefault(value = "true")
   private boolean pruneAcknowledged;
-
+  
+  public JdbcRetryServiceImp() {
+    setPruneAcknowledged(true);
+    setSqlPropertiesFile(RETRY_STORE_PROPERTIES);
+  }
+  
   /** @see com.adaptris.core.AdaptrisComponent#init() */
   @Override
   protected void initJdbcService() throws CoreException {
@@ -146,8 +144,6 @@ public abstract class JdbcRetryServiceImp extends JdbcService {
     if (getConnection() == null) {
       throw new CoreException("DatabaseConnection is null in service");
     }
-    getConnection().init();
-    
     if (sqlStatements == null) {
       sqlStatements = new Properties();
 
@@ -170,40 +166,17 @@ public abstract class JdbcRetryServiceImp extends JdbcService {
       }
     }
   }
-
-  /** @see com.adaptris.core.ServiceImp#start() */
-  @Override
-  public void start() throws CoreException {
-    getConnection().start();
-  }
-    
+   
+  /** @see com.adaptris.core.AdaptrisComponent#prepare() */
   @Override
   protected void prepareService() throws CoreException {
-    // TODO Auto-generated method stub
-    
-  }
-
-  @Override
-  protected void startService() throws CoreException {
-    // TODO Auto-generated method stub
-    
   }
 
   /** @see com.adaptris.core.AdaptrisComponent#close() */
   @Override
-  protected void closeJdbcService() {
-    getConnection().close();
-  }
+  protected void closeJdbcService() {}
 
-  public final void doService(AdaptrisMessage msg) throws ServiceException {
-    pruneAcknowledged();
-    performService(msg);
-  }
-
-  protected abstract void performService(AdaptrisMessage msg)
-      throws ServiceException;
-
-  private void pruneAcknowledged() {
+  void pruneAcknowledged() {
     try {
       if (isPruneAcknowledged()) {
         log.debug("Pruning Previously Acknowledged Messages");
@@ -237,7 +210,7 @@ public abstract class JdbcRetryServiceImp extends JdbcService {
     return BooleanUtils.toBooleanDefaultIfNull(getPruneAcknowledged(), true);
   }
 
-  public void write(AdaptrisMessage msg) throws InterlokException {
+   void write(AdaptrisMessage msg) throws InterlokException {
     PreparedStatement ps = null;
     validateMessage(msg);
     Object[] params = new Object[] { msg.getUniqueId(), msg.getMetadataValue(Constants.ACKNOWLEDGE_ID_KEY),
@@ -255,7 +228,7 @@ public abstract class JdbcRetryServiceImp extends JdbcService {
     }
   }
 
-  public boolean delete(String msgId) throws InterlokException {
+   boolean delete(String msgId) throws InterlokException {
     PreparedStatement ps = null;
     Object[] params = new Object[] { msgId };
     try {
@@ -270,7 +243,7 @@ public abstract class JdbcRetryServiceImp extends JdbcService {
     }
   }
 
-  public void acknowledge(String acknowledgeId) throws InterlokException {
+   void acknowledge(String acknowledgeId) throws InterlokException {
     PreparedStatement ps = null;
     Object[] params = { Constants.ACKNOWLEDGED, new Date(), acknowledgeId };
     try {
@@ -284,7 +257,7 @@ public abstract class JdbcRetryServiceImp extends JdbcService {
     }
   }
 
-  public void deleteAcknowledged() throws InterlokException {
+   void deleteAcknowledged() throws InterlokException {
     PreparedStatement ps = null;
     try {
       ps = prepareStatementWithoutParameters(sqlStatements.getProperty(DELETE_ACKNOWLEGED_SQL));
@@ -297,7 +270,7 @@ public abstract class JdbcRetryServiceImp extends JdbcService {
     }
   }
 
-  public List<AdaptrisMessage> obtainExpiredMessages() throws InterlokException {
+   List<AdaptrisMessage> obtainExpiredMessages() throws InterlokException {
     List<AdaptrisMessage> result = new ArrayList<AdaptrisMessage>();
     PreparedStatement ps = null;
     ResultSet rs = null;
@@ -322,7 +295,7 @@ public abstract class JdbcRetryServiceImp extends JdbcService {
     return result;
   }
 
-  public List<AdaptrisMessage> obtainMessagesToRetry() throws InterlokException {
+   List<AdaptrisMessage> obtainMessagesToRetry() throws InterlokException {
     PreparedStatement ps = null;
     ResultSet rs = null;
     List<AdaptrisMessage> result = new ArrayList<AdaptrisMessage>();
@@ -352,7 +325,7 @@ public abstract class JdbcRetryServiceImp extends JdbcService {
     return result;
   }
 
-  public void updateRetryCount(String messageId) throws InterlokException {
+   void updateRetryCount(String messageId) throws InterlokException {
     PreparedStatement ps = null;
     Object[] params = { new Date(), messageId };
     try {
@@ -425,13 +398,13 @@ public abstract class JdbcRetryServiceImp extends JdbcService {
   private PreparedStatement prepareStatementWithParameters(String query, Object[] parameters) throws SQLException {
     Connection conn;
     conn = makeConnection();
-    PreparedStatement preparedStatement = conn.prepareStatement(query);
+    PreparedStatement ps = conn.prepareStatement(query);
     int count = 1;
     for (Object o : parameters) {
-      preparedStatement.setObject(count, o);
+      ps.setObject(count, o);
       count++;
     }
-    return preparedStatement;
+    return ps;
   }
 
   private PreparedStatement prepareStatementWithoutParameters(String query) throws SQLException {
@@ -466,6 +439,5 @@ public abstract class JdbcRetryServiceImp extends JdbcService {
   private Connection makeConnection() throws SQLException {
    return getConnection().retrieveConnection(DatabaseConnection.class).connect();
   }
-
 
 }

@@ -17,6 +17,7 @@ import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jdbc.retry.Constants;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.interlok.InterlokException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -53,34 +54,27 @@ public class JdbcRetryMessagesService extends JdbcRetryServiceImp {
     setExpiredMessagesProducer(new StandaloneProducer());
     setPruneExpired(false);
   }
-
-  /** @see com.adaptris.core.ServiceImp#start() */
+  
+  /** @see com.adaptris.core.AdaptrisComponent#start() */
   @Override
-  public void start() throws CoreException {
-    super.start();
-    getExpiredMessagesProducer().start();
+  protected void startService() throws CoreException {
+    LifecycleHelper.start(getExpiredMessagesProducer());
   }
-
-  /** @see com.adaptris.core.ServiceImp#stop() */
-  @Override
-  public void stop() {
-    super.stop();
-    getExpiredMessagesProducer().stop();
-  }
-
+  
+  /** @see com.adaptris.core.AdaptrisComponent#stop() */
   @Override
   protected void stopService() {
-    super.close();
-    getExpiredMessagesProducer().close();
-    getConnection().stop();
+    LifecycleHelper.stop(getExpiredMessagesProducer());
   }
 
   /**
-   *
-   * @see JdbcRetryServiceImp#performService(com.adaptris.core.AdaptrisMessage)
+   * The main service method, which retries an entry in the retry database table if it meets it's criteria.
+   * 
+   * @see com.adaptris.core.Service#doService(com.adaptris.core.AdaptrisMessage)
    */
   @Override
-  protected void performService(AdaptrisMessage msg) throws ServiceException {
+  public void doService(AdaptrisMessage msg) throws ServiceException {
+    pruneAcknowledged();
     try {
       pruneExpired();
       List<AdaptrisMessage> retryMsgs = obtainMessagesToRetry();
@@ -109,8 +103,8 @@ public class JdbcRetryMessagesService extends JdbcRetryServiceImp {
 
     Service service = (Service) marshaller.unmarshal(marshalledService);
 
-    service.init();
-    service.start();
+    LifecycleHelper.init(service);
+    LifecycleHelper.start(service);
 
     try {
       log.debug("Retrying message [" + retry.getUniqueId()
@@ -125,26 +119,22 @@ public class JdbcRetryMessagesService extends JdbcRetryServiceImp {
       }
     }
     finally {
-      service.stop();
-      service.close();
+      LifecycleHelper.stop(service);
+      LifecycleHelper.close(service);
     }
   }
 
-  private void handleSynchronous(AdaptrisMessage retry, Service service)
-      throws InterlokException {
-
+  private void handleSynchronous(AdaptrisMessage retry, Service service) throws InterlokException {
     try {
       service.doService(retry);
-      acknowledge(
-          retry.getMetadataValue(Constants.ACKNOWLEDGE_ID_KEY));
+      acknowledge(retry.getMetadataValue(Constants.ACKNOWLEDGE_ID_KEY));
     }
     catch (InterlokException e) {
       updateRetryCount(retry.getUniqueId());
     }
   }
 
-  private void handleAsynchronous(AdaptrisMessage retry, Service service)
-      throws InterlokException {
+  private void handleAsynchronous(AdaptrisMessage retry, Service service) throws InterlokException {
     try {
       service.doService(retry);
       updateRetryCount(retry.getUniqueId());
