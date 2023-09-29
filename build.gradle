@@ -235,5 +235,13 @@ subprojects { subproject ->
     }
   }
 
+  sonar {
+    properties {
+      property "sonar.projectKey", "adaptris_interlok"
+      property "sonar.organization", "adaptris-org"
+      property "sonar.host.url", "https://sonarcloud.io"
+    }
+  }
+
   processResources.dependsOn generateVersionFile
 }
