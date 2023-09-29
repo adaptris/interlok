@@ -4,8 +4,8 @@ import java.util.Date;
 
 /**
  * <p>
- * Represents an entry in <code>retry_store</code>, the sole table in the 
- * 'retry store database'.
+ * Represents an entry in <code>retry table</code>, the sole table in the 
+ * 'retry database'.
  * </p>
  */
 public class JdbcRetryRowEntry {
