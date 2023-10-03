@@ -24,7 +24,6 @@ This is the base repository for Interlok. It contains the base adapter pared of 
 
 ## Doing your first build ##
 
-
 ```
 #!shell
 
