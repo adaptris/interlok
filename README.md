@@ -15,7 +15,7 @@ This is the base repository for Interlok. It contains the base adapter pared of 
 
 ### Pre-requisites ###
 
-* JAVA 11
+* JAVA 17
 
 ### Optional pre-reqs ###
 
@@ -23,7 +23,6 @@ This is the base repository for Interlok. It contains the base adapter pared of 
 * SFTP Server (for tests)
 
 ## Doing your first build ##
-
 
 ```
 #!shell
