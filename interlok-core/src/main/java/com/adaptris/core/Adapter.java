@@ -555,7 +555,7 @@ public final class Adapter implements StateManagedComponentContainer, ComponentL
   }
 
   @Override
-  public synchronized void requestClose() {
+  public void requestClose() {
     state.requestClose(this);
   }
 
