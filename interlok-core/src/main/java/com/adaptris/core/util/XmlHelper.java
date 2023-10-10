@@ -455,7 +455,7 @@ public class XmlHelper {
    * @return The Node of the XML String passed to it.
    * @throws Exception if unable to covnert to a node. This would
    * be expected if the String passed to it would not make well formed XML
-   * or would not XML at all.
+   * or is not XML at all.
    */
   public static Node stringToNode(String xmlString) throws Exception {
     return DocumentBuilderFactory.newInstance().newDocumentBuilder()
