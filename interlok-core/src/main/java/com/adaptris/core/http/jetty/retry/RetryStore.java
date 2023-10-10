@@ -1,10 +1,8 @@
 package com.adaptris.core.http.jetty.retry;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
-import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ComponentLifecycle;
@@ -91,69 +89,4 @@ public interface RetryStore extends ComponentLifecycle, ComponentLifecycleExtens
   default void prepare() throws CoreException {
   }
   
-  /**
-   * <p>
-   * Acknowledge that the message with the passed ID has now been successfully
-   * processed and should not be retried again. NB this method does not throw an
-   * Exception if the acknowledge ID does not exist in the store.
-   * </p>
-   * 
-   * @param acknowledgeId the acknowledge ID of the message to acknowledge
-   * @throws InterlokException wrapping any <code>Exception</code> which occurs
-   */
-  void acknowledge(String acknowledgeId) throws InterlokException;
-  
-  /**
-   * Delete any messages that have been successfully Acknowledged.
-   *
-   * @throws InterlokException wrapping any <code>Exception</code> which occurs
-   */
-  void deleteAcknowledged() throws InterlokException;
-  
-  /**
-   * <p>
-   * Obtain a list of <code>AdaptrisMessage</code>s which meet the expiration
-   * criteria.
-   * In the most abstract sense, expired messages are those that have exceeded
-   * their max retry count but not yet been acknowledged.
-   * </p>
-   * 
-   * @return a list of <code>AdaptrisMessage</code>s which meet the expiration
-   * criteria.
-   * @throws InterlokException wrapping any <code>Exception</code> which occurs
-   */
-  List<AdaptrisMessage> obtainExpiredMessages() throws InterlokException;
-  
-  /**
-   * <p>
-   * Obtain a list of <code>AdaptrisMessage</code>s which meet the criteria
-   * for retrying.
-   * </p>
-   *
-   * @return a list of <code>AdaptrisMessage</code>s which meet the criteria
-   * for retrying
-   * @throws InterlokException wrapping any <code>Exception</code> which occurs
-   */
-  List<AdaptrisMessage> obtainMessagesToRetry() throws InterlokException;
-  
-  /**
-   * <p>
-   * Update the number of retries which have taken place for the message with
-   * the passed ID. NB this method does not throw an Exception if an attempt is
-   * made to update the retry count for a message ID which does not exist in the
-   * store.
-   * </p>
-   *
-   * @param messageId the ID of the message to update
-   * @throws InterlokException wrapping any <code>Exception</code> which occurs
-   */
-  void updateRetryCount(String messageId) throws InterlokException;
-  
-  /**
-   * <p>
-   * Used for any implementations that have a connected RetryStore
-   * </p>
-   */
-  void makeConnection(AdaptrisConnection connection);
-
 }

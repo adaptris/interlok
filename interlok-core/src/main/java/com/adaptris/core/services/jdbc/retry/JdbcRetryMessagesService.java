@@ -1,4 +1,4 @@
-package com.adaptris.core.jdbc.retry;
+package com.adaptris.core.services.jdbc.retry;
 
 import java.util.List;
 
@@ -16,12 +16,14 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.StandaloneProducer;
+import com.adaptris.core.jdbc.retry.Constants;
+import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.interlok.InterlokException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Service which obtains messages from the retry store that meet the appropriate
+ * Service which obtains messages from the Database that meet the appropriate
  * criteria and retries them. This service is intended to be used in conjunction
  * with <code>PollingTrigger</code>.
  * </p>
@@ -35,12 +37,11 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * </p>
  */
 
-@XStreamAlias("retry-message-service")
+@XStreamAlias("jdbc-retry-message-service")
 @AdapterComponent
-@ComponentProfile(summary = "retries a message from the retry store.",
-    since = "4.9.0", tag = "retry")
+@ComponentProfile(summary = "retries a message from the retry store.", since = "5.0.0", tag = "jdbc, retry")
 @DisplayOrder(order = {"pruneExpired", "retryStore"})
-public class RetryMessagesService extends RetryServiceImp {
+public class JdbcRetryMessagesService extends JdbcRetryServiceImp {
   
   @InputFieldDefault(value = "false")
   private boolean pruneExpired;
@@ -49,41 +50,34 @@ public class RetryMessagesService extends RetryServiceImp {
   @Valid
   private StandaloneProducer expiredMessagesProducer;
 
-  public RetryMessagesService() {
+  public JdbcRetryMessagesService() {
     setExpiredMessagesProducer(new StandaloneProducer());
     setPruneExpired(false);
   }
-
-  /** @see com.adaptris.core.ServiceImp#start() */
+  
+  /** @see com.adaptris.core.AdaptrisComponent#start() */
   @Override
-  public void start() throws CoreException {
-    super.start();
-    getExpiredMessagesProducer().start();
+  protected void startService() throws CoreException {
+    LifecycleHelper.start(getExpiredMessagesProducer());
   }
-
-  /** @see com.adaptris.core.ServiceImp#stop() */
-  @Override
-  public void stop() {
-    super.stop();
-    getExpiredMessagesProducer().stop();
-  }
-
+  
+  /** @see com.adaptris.core.AdaptrisComponent#stop() */
   @Override
   protected void stopService() {
-    super.close();
-    getExpiredMessagesProducer().close();
-    getConnection().stop();
+    LifecycleHelper.stop(getExpiredMessagesProducer());
   }
 
   /**
-   *
-   * @see RetryServiceImpTest#performService(com.adaptris.core.AdaptrisMessage)
+   * The main service method, which retries an entry in the retry database table if it meets it's criteria.
+   * 
+   * @see com.adaptris.core.Service#doService(com.adaptris.core.AdaptrisMessage)
    */
   @Override
-  protected void performService(AdaptrisMessage msg) throws ServiceException {
+  public void doService(AdaptrisMessage msg) throws ServiceException {
+    pruneAcknowledged();
     try {
       pruneExpired();
-      List<AdaptrisMessage> retryMsgs = getRetryStore().obtainMessagesToRetry();
+      List<AdaptrisMessage> retryMsgs = obtainMessagesToRetry();
       for (AdaptrisMessage retry : retryMsgs) {
         doRetry(retry);
       }
@@ -109,8 +103,8 @@ public class RetryMessagesService extends RetryServiceImp {
 
     Service service = (Service) marshaller.unmarshal(marshalledService);
 
-    service.init();
-    service.start();
+    LifecycleHelper.init(service);
+    LifecycleHelper.start(service);
 
     try {
       log.debug("Retrying message [" + retry.getUniqueId()
@@ -125,34 +119,30 @@ public class RetryMessagesService extends RetryServiceImp {
       }
     }
     finally {
-      service.stop();
-      service.close();
+      LifecycleHelper.stop(service);
+      LifecycleHelper.close(service);
     }
   }
 
-  private void handleSynchronous(AdaptrisMessage retry, Service service)
-      throws InterlokException {
-
+  private void handleSynchronous(AdaptrisMessage retry, Service service) throws InterlokException {
     try {
       service.doService(retry);
-      getRetryStore().acknowledge(
-          retry.getMetadataValue(Constants.ACKNOWLEDGE_ID_KEY));
+      acknowledge(retry.getMetadataValue(Constants.ACKNOWLEDGE_ID_KEY));
     }
     catch (InterlokException e) {
-      getRetryStore().updateRetryCount(retry.getUniqueId());
+      updateRetryCount(retry.getUniqueId());
     }
   }
 
-  private void handleAsynchronous(AdaptrisMessage retry, Service service)
-      throws InterlokException {
+  private void handleAsynchronous(AdaptrisMessage retry, Service service) throws InterlokException {
     try {
       service.doService(retry);
-      getRetryStore().updateRetryCount(retry.getUniqueId());
+      updateRetryCount(retry.getUniqueId());
     }
     catch (ServiceException e) {
       if ("true".equalsIgnoreCase(retry
           .getMetadataValue(Constants.ASYNC_AUTO_RETRY))) {
-        getRetryStore().updateRetryCount(retry.getUniqueId());
+        updateRetryCount(retry.getUniqueId());
       }
       else {
         throw e;
@@ -164,12 +154,12 @@ public class RetryMessagesService extends RetryServiceImp {
     try {
       if (isPruneExpired()) {
         log.debug("Pruning Expired Messages");
-        List<AdaptrisMessage> expiredMsgs = getRetryStore().obtainExpiredMessages();
+        List<AdaptrisMessage> expiredMsgs = obtainExpiredMessages();
         for (AdaptrisMessage expired : expiredMsgs) {
           log.debug("Producing Expired Message " + expired.getUniqueId());
           log.debug("EXPIRED MESSAGE" + expired.toString());
           getExpiredMessagesProducer().produce(expired);
-          getRetryStore().delete(expired.getUniqueId());
+          delete(expired.getUniqueId());
         }
       }
     }

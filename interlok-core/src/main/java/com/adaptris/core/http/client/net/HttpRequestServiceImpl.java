@@ -102,7 +102,7 @@ public abstract class HttpRequestServiceImpl extends ServiceImp {
    * Set the read timeout.
    * <p>
    * Note that any read timeout will be overridden by the timeout value passed in via the
-   * {{@link #request(AdaptrisMessage, long)} method; if it is not the same as
+   * {{@link com.adaptris.core.RequestReplyProducerImp#request(AdaptrisMessage, long)} method; if it is not the same as
    * {@value com.adaptris.core.http.HttpConstants#DEFAULT_SOCKET_TIMEOUT}
    * </p>
    */

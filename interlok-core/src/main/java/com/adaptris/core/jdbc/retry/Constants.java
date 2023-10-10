@@ -58,8 +58,8 @@ public final class Constants {
    */
   public static final String ASYNC_AUTO_RETRY = "retryAsyncRetry";
 
-  protected static final String ACKNOWLEDGED = "T";
-  protected static final String NOT_ACKNOWLEDGED = "F";
+  public static final String ACKNOWLEDGED = "T";
+  public static final String NOT_ACKNOWLEDGED = "F";
 
   private Constants() {
     // no instances

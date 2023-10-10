@@ -4,11 +4,11 @@ import java.util.Date;
 
 /**
  * <p>
- * Represents an entry in <code>retry_store</code>, the sole table in the 
- * 'retry store database'.
+ * Represents an entry in <code>retry table</code>, the sole table in the 
+ * 'retry database'.
  * </p>
  */
-class JdbcRetryStoreEntry {
+public class JdbcRetryRowEntry {
 
   private String messageId;
   private String acknowledgeId;
@@ -21,83 +21,83 @@ class JdbcRetryStoreEntry {
   private Date insertedOn;
   private Date updatedOn;
 
-  Date getInsertedOn() {
+  public Date getInsertedOn() {
     return insertedOn;
   }
   
-  void setInsertedOn(Date d) {
+  public void setInsertedOn(Date d) {
     this.insertedOn = d;
   }
   
-  Date getUpdatedOn() {
+  public Date getUpdatedOn() {
     return updatedOn;
   }
   
-  void setUpdatedOn(Date d) {
+  public void setUpdatedOn(Date d) {
     this.updatedOn = d;
   }
   
-  String getAcknowledgeId() {
+  public String getAcknowledgeId() {
     return acknowledgeId;
   }
   
-  void setAcknowledgeId(String s) {
+  public void setAcknowledgeId(String s) {
     this.acknowledgeId = s;
   }
   
-  byte[] getEncodedMessage() {
+  public byte[] getEncodedMessage() {
     return encodedMessage;
   }
   
-  void setEncodedMessage(byte[] b) {
+  public void setEncodedMessage(byte[] b) {
     this.encodedMessage = b;
   }
   
-  String getMessageId() {
+  public String getMessageId() {
     return messageId;
   }
   
-  void setMessageId(String s) {
+  public void setMessageId(String s) {
     this.messageId = s;
   }
   
-  int getTotalRetries() {
+  public int getTotalRetries() {
     return totalRetries;
   }
   
-  void setTotalRetries(int i) {
+  public void setTotalRetries(int i) {
     this.totalRetries = i;
   }
   
-  int getRetriesToDate() {
+  public int getRetriesToDate() {
     return retriesToDate;
   }
   
-  void setRetriesToDate(int i) {
+  public void setRetriesToDate(int i) {
     this.retriesToDate = i;
   }
   
-  int getRetryInterval() {
+  public int getRetryInterval() {
     return retryInterval;
   }
   
-  void setRetryInterval(int i) {
+  public void setRetryInterval(int i) {
     this.retryInterval = i;
   }
   
-  String getMarshalledService() {
+  public String getMarshalledService() {
     return marshalledService;
   }
   
-  void setMarshalledService(String s) {
+  public void setMarshalledService(String s) {
     this.marshalledService = s;
   }
   
-  boolean getAcknowledged() {
+  public boolean getAcknowledged() {
     return acknowledged;
   }
   
-  void setAcknowledged(boolean b) {
+  public void setAcknowledged(boolean b) {
     this.acknowledged = b;
   }
 }
