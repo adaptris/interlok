@@ -20,7 +20,7 @@ public interface RetryStore extends ComponentLifecycle, ComponentLifecycleExtens
    * @implNote The default implementation just returns an empty list.
    */
   default Iterable<RemoteBlob> report() throws InterlokException {
-    return Collections.EMPTY_LIST;
+    return Collections.emptyList();
   }
 
   /**

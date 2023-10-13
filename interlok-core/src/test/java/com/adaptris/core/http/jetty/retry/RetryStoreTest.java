@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
@@ -39,6 +38,20 @@ public class RetryStoreTest implements RetryStore {
   }
 
   @Test
+  public void testDefaultObtainExpiredMessages() throws Exception {
+    Assertions.assertThrows(UnsupportedOperationException.class, () -> {
+      obtainExpiredMessages();
+    });
+  }
+
+  @Test
+  public void testDefaultObtainMessagesToRetry() throws Exception {
+    Assertions.assertThrows(UnsupportedOperationException.class, () -> {
+      obtainMessagesToRetry();
+    });
+  }
+
+  @Test
   public void testDefaultBuild() throws Exception {
     assertNull(buildForRetry(""));
   }
@@ -61,27 +74,27 @@ public class RetryStoreTest implements RetryStore {
 
   @Override
   public Map<String, String> getMetadata(String msgId) throws InterlokException {
-    return Collections.EMPTY_MAP;
+    return Collections.emptyMap();
   }
 
   @Override
   public void acknowledge(String acknowledgeId) throws InterlokException {
-   // null implementation
+    // null implementation
   }
 
   @Override
   public void deleteAcknowledged() throws InterlokException {
-   // null implementation   
+    // null implementation
   }
- 
+
   @Override
   public void updateRetryCount(String messageId) throws InterlokException {
- // null implementation
+    // null implementation
   }
 
   @Override
   public void makeConnection(AdaptrisConnection connection) {
-   // null implementation
+    // null implementation
   }
 
 }

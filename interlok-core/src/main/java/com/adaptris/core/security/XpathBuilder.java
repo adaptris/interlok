@@ -24,13 +24,11 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.services.metadata.xpath.XpathQuery;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.XmlHelper;
 import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.text.xml.SimpleNamespaceContext;
 import com.adaptris.util.text.xml.XPath;
-
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -38,29 +36,23 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Extracts and inserts values from message payload using defined Xpaths
- * {@link String}.
+ * Extracts and inserts values from message payload using defined Xpaths {@link String}.
  * <p>
- * This component simple extracts and inserts values from an XML payload using
- * defined Xpaths. While not coupled with {@link PayloadPathEncryptionService}
- * and {@link PayloadPathDecryptionService} this component was built to be used
- * with those two services.
+ * This component simple extracts and inserts values from an XML payload using defined Xpaths. While not coupled with
+ * {@link PayloadPathEncryptionService} and {@link PayloadPathDecryptionService} this component was built to be used with those two
+ * services.
  * </p>
  * <p>
- * This service will support XPath 2.0+ features, but in order to use XPath 2.0
- * features you must use Saxon as your XPath provider. This means either
- * explicitly removing all {@link DocumentBuilderFactoryBuilder} configuration,
- * or ensuring that {@code namespace-aware} is set to 'true' in the
- * {@link DocumentBuilderFactoryBuilder} configuration.
+ * This service will support XPath 2.0+ features, but in order to use XPath 2.0 features you must use Saxon as your XPath provider. This
+ * means either explicitly removing all {@link DocumentBuilderFactoryBuilder} configuration, or ensuring that {@code namespace-aware} is set
+ * to 'true' in the {@link DocumentBuilderFactoryBuilder} configuration.
  * </p>
  * <p>
- * If the {@code DocumentBuilderFactoryBuilder} has been explicitly set to be
- * not namespace aware and the document does in fact contain namespaces, then
- * Saxon can cause merry havoc in the sense that {@code //NonNamespaceXpath}
- * doesn't work if the document has namespaces in it. We have included a shim so
- * that behaviour can be toggled based on what you have configured.
+ * If the {@code DocumentBuilderFactoryBuilder} has been explicitly set to be not namespace aware and the document does in fact contain
+ * namespaces, then Saxon can cause merry havoc in the sense that {@code //NonNamespaceXpath} doesn't work if the document has namespaces in
+ * it. We have included a shim so that behaviour can be toggled based on what you have configured.
  * </p>
- * 
+ *
  * @config xpath-builder
  *
  */
@@ -78,31 +70,49 @@ public class XpathBuilder implements PathBuilder {
   private static final String XPATH_DOES_NOT_EXIST_EXCEPTION_MESSAGE = "XPath [%s] does not match any nodes. Please ensure it exists and if used that the namespace context is correct";
   private static final String COULD_NOT_WRITE_TO_MSG_EXCEPTION_MESSAGE = "Could not write to msg";
 
-  public XpathBuilder() {
-    this.setPaths(new ArrayList<String>());
-  }
-
-  private NamespaceContext namespaceCxt;
-
   @Getter
   @Setter
   @NotNull
   @XStreamImplicit(itemFieldName = "xpaths")
   @InputFieldHint(expression = true)
   private List<String> paths;
+
+  /**
+   * Set the namespace context for resolving namespaces.
+   * <ul>
+   * <li>The key is the namespace prefix</li>
+   * <li>The value is the namespace uri</li>
+   * </ul>
+   *
+   * @param namespaceContext
+   */
   @AdvancedConfig(rare = true)
   @Valid
+  @Getter
+  @Setter
   private KeyValuePairSet namespaceContext;
+
+  /**
+   * Set the document factory config
+   *
+   * @param xmlDocumentFactoryConfig
+   */
   @AdvancedConfig(rare = true)
   @Valid
+  @Getter
+  @Setter
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
+
+  public XpathBuilder() {
+    setPaths(new ArrayList<>());
+  }
 
   @Override
   public Map<String, String> extract(AdaptrisMessage msg) throws ServiceException {
     Node node;
     Document doc = prepareXmlDoc(msg);
     Map<String, String> pathKeyValuePairs = new LinkedHashMap<>();
-    for (String path : this.getPaths()) {
+    for (String path : getPaths()) {
       node = prepareNode(doc, msg.resolve(path), msg);
       try {
         XPath xPathHandler = XPath.newXPathInstance(documentFactoryBuilder(), createNamespaceCxt(msg));
@@ -134,20 +144,16 @@ public class XpathBuilder implements PathBuilder {
       String xpathValue = entry.getValue();
       node = prepareNode(doc, xpathKey, msg);
       if (node != null) {
-        if (xpathValue.startsWith("<")) {
-          if (isStringNestedNodes(xpathValue)) {
-            try {
-              Node nestedNodes = XmlHelper.stringToNode(xpathValue);
-              Node nestedNodesToImport = doc.importNode(nestedNodes, true);
-              while (node.hasChildNodes()) {
-                node.removeChild(node.getFirstChild());
-              }
-              node.appendChild(nestedNodesToImport);
-            } catch (Exception e) {
-              throw new ServiceException(NON_XML_EXCEPTION_MESSAGE);
+        if (xpathValue.startsWith("<") && isStringNestedNodes(xpathValue)) {
+          try {
+            Node nestedNodes = XmlHelper.stringToNode(xpathValue);
+            Node nestedNodesToImport = doc.importNode(nestedNodes, true);
+            while (node.hasChildNodes()) {
+              node.removeChild(node.getFirstChild());
             }
-          } else {
-            node.setTextContent(xpathValue);
+            node.appendChild(nestedNodesToImport);
+          } catch (Exception e) {
+            throw new ServiceException(NON_XML_EXCEPTION_MESSAGE, e);
           }
         } else {
           node.setTextContent(xpathValue);
@@ -165,39 +171,8 @@ public class XpathBuilder implements PathBuilder {
     }
   }
 
-  public KeyValuePairSet getNamespaceContext() {
-    return namespaceContext;
-  }
-
-  /**
-   * Set the namespace context for resolving namespaces.
-   * <ul>
-   * <li>The key is the namespace prefix</li>
-   * <li>The value is the namespace uri</li>
-   * </ul>
-   *
-   * @param namespaceContext
-   */
-  public void setNamespaceContext(KeyValuePairSet namespaceContext) {
-    this.namespaceContext = namespaceContext;
-  }
-
-  public DocumentBuilderFactoryBuilder getXmlDocumentFactoryConfig() {
-    return xmlDocumentFactoryConfig;
-  }
-
-  /**
-   * Set the document factory config
-   * 
-   * @param xmlDocumentFactoryConfig
-   */
-
-  public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig) {
-    this.xmlDocumentFactoryConfig = xmlDocumentFactoryConfig;
-  }
-
   private NamespaceContext createNamespaceCxt(AdaptrisMessage msg) {
-    return namespaceCxt = SimpleNamespaceContext.create(getNamespaceContext(), msg);
+    return SimpleNamespaceContext.create(getNamespaceContext(), msg);
   }
 
   private DocumentBuilderFactoryBuilder documentFactoryBuilder() {
@@ -228,8 +203,7 @@ public class XpathBuilder implements PathBuilder {
   // nested child nodes
   // as we need to extract not only the text content but the entire xml
   // 'structure'.
-//Possibly can be done in a more concise way.
-
+  // Possibly can be done in a more concise way.
   private String concatAndWrapNestedNodesToString(NodeList nestedNodeList) {
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < nestedNodeList.getLength(); i++) {
@@ -259,9 +233,10 @@ public class XpathBuilder implements PathBuilder {
   private boolean isStringNestedNodes(String xmlString) {
     try {
       XmlHelper.createDocument(xmlString, documentFactoryBuilder());
-    } catch (ParserConfigurationException | IOException | SAXException e) {
+    } catch (ParserConfigurationException | IOException | SAXException expts) {
       return false;
     }
     return true;
   }
+
 }

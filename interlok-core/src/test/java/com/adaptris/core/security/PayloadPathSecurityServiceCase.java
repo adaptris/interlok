@@ -18,8 +18,8 @@ import com.adaptris.security.keystore.ConfiguredUrl;
 import com.adaptris.security.keystore.InlineKeystore;
 import com.adaptris.security.util.Constants;
 
-public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase{
-  
+public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase {
+
   protected static final String EXAMPLE_KEYINFO = "<KeyInfo xmlns=\"http://www.w3.org/2000/09/xmldsig#\""
       + "xmlns:tns=\"http://www.oasis-open.org/committees/ebxml-cppa/schema/cpp-cpa-2_0.xsd\">"
       + "<KeyName>message_signing_cert-Key</KeyName>" + "<X509Data>" + "<X509Certificate>"
@@ -46,7 +46,8 @@ public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase
       + "a4iRuBzjXufW+AgOV+eRtBaatcChvc5QI7TZuPp4k57bOG4GJCafEWo89SmVsWy/"
       + "9XJU+fmuaTt72i3EEMOsiUWJJqVdcNxAdC2cGSKV1wP4nwhFI+WzdtpJKImEl9LY"
       + "GDiqn9b96Oz2eH8FPA4qzNNkoA/36s/iPl1Zn3VF7mzR4jHe9aKUg/XvNWXpKAvd"
-      + "tItpX25JP3RhnzFrwriwUyFshUaF+J05O+6P2WilvUsX7+Q1prU7POnyizhdlvlt" + "6c+G3SjCAdM/oKJB1LSVLuxUzx0vTs2S"
+      + "tItpX25JP3RhnzFrwriwUyFshUaF+J05O+6P2WilvUsX7+Q1prU7POnyizhdlvlt"
+      + "6c+G3SjCAdM/oKJB1LSVLuxUzx0vTs2S"
       + "</X509Certificate>" + "</X509Data>" + "</KeyInfo>";
   
   public static final String XML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
@@ -69,10 +70,10 @@ public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase
   protected static final String XPATH_2 = "//xpath2";
   protected static final String XPATH_3 = "//xpath3";
   protected static final String XPATH_WITH_CHILDREN = "//parent";
-  
+
   @Test
   public void testEncryptingDecryptingSinglePathWithConfiguredProvider() throws Exception {
-    List<String> path = new ArrayList<String>();
+    List<String> path = new ArrayList<>();
     path.add(XPATH_1);
     XpathBuilder xpathBuilder = new XpathBuilder();
     xpathBuilder.setPaths(path);
@@ -90,10 +91,10 @@ public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase
     execute(payloadPathDecryptionService, msg);
     assertEquals(XML, msg.getContent());
   }
-  
+
   @Test
   public void testEncryptingDecryptingMultiplePathsWithConfiguredProvider() throws Exception {
-    List<String> path = new ArrayList<String>();
+    List<String> path = new ArrayList<>();
     path.add(XPATH_1);
     path.add(XPATH_2);
     path.add(XPATH_3);
@@ -113,10 +114,10 @@ public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase
     execute(payloadPathDecryptionService, msg);
     assertEquals(XML, msg.getContent());
   }
-  
+
   @Test
   public void testEncryptingDecryptingMultiplePathsWithLegacyProvider() throws Exception {
-    List<String> path = new ArrayList<String>();
+    List<String> path = new ArrayList<>();
     path.add(XPATH_1);
     path.add(XPATH_2);
     path.add(XPATH_3);
@@ -136,10 +137,10 @@ public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase
     execute(payloadPathDecryptionService, msg);
     assertEquals(XML, msg.getContent());
   }
-  
+
   @Test
   public void testEncryptingDecryptingParentPathWithConfiguredProvider() throws Exception {
-    List<String> path = new ArrayList<String>();
+    List<String> path = new ArrayList<>();
     path.add(XPATH_WITH_CHILDREN);
     XpathBuilder xpathBuilder = new XpathBuilder();
     xpathBuilder.setPaths(path);
@@ -157,10 +158,10 @@ public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase
     execute(payloadPathDecryptionService, msg);
     assertEquals(XML, msg.getContent());
   }
-  
+
   @Test
   public void testEncryptingDecryptingParentPathWithLegacyProvider() throws Exception {
-    List<String> path = new ArrayList<String>();
+    List<String> path = new ArrayList<>();
     path.add(XPATH_WITH_CHILDREN);
     XpathBuilder xpathBuilder = new XpathBuilder();
     xpathBuilder.setPaths(path);
@@ -178,10 +179,10 @@ public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase
     execute(payloadPathDecryptionService, msg);
     assertEquals(XML, msg.getContent());
   }
-  
+
   @Test
   public void testFailingToEncryptMessage() throws Exception {
-    List<String> path = new ArrayList<String>();
+    List<String> path = new ArrayList<>();
     path.add(XPATH_WITH_CHILDREN);
     XpathBuilder xpathBuilder = new XpathBuilder();
     xpathBuilder.setPaths(path);
@@ -198,10 +199,10 @@ public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase
       execute(payloadPathEncryptionService, msg);
     });
   }
-  
+
   @Test
   public void testFailingToDecryptMessage() throws Exception {
-    List<String> path = new ArrayList<String>();
+    List<String> path = new ArrayList<>();
     path.add(XPATH_1);
     XpathBuilder xpathBuilder = new XpathBuilder();
     xpathBuilder.setPaths(path);
@@ -223,8 +224,7 @@ public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase
       execute(payloadPathDecryptionService, msg);
     });
   }
-  
-  
+
   /**
    * @see com.adaptris.core.ExampleConfigCase#retrieveObjectForSampleConfig()
    */
@@ -234,7 +234,7 @@ public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase
     applyConfigForSamples(s);
     return s;
   }
-  
+
   protected void applyConfigForTests(CoreSecurityService service, String url) {
     applyConfigForTests(service, new ConfiguredUrl(url, PROPERTIES.getProperty(SECURITY_PASSWORD)));
   }
@@ -255,19 +255,18 @@ public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase
     configured.setEncodedPassword(password);
     service.setPrivateKeyPasswordProvider(configured);
   }
-  
+
   protected static void applyConfigForSamples(CoreSecurityService service) {
     try {
       service.setLocalPartner("local partner alias in keystore");
       service.setRemotePartner("remote partner alias in keystore");
-      service.addKeystoreUrl(new ConfiguredUrl("http://localhost/path/to/JKS/keystore?keystoreType="
-          + "JKS&keystorePassword=somePlainTextPassword"));
-      service.addKeystoreUrl(new ConfiguredUrl("file://localhost/path/to/a/X509/Certificate?keystoreType="
-          + "X509?keystoreAlias=CertificateAlias"));
-      service.addKeystoreUrl(new ConfiguredUrl("file://localhost/path/to/another/X509/Certificate?keystoreType="
-          + "X509?keystoreAlias=AnotherAlias"));
-      service.addKeystoreUrl(new ConfiguredUrl("http://host/path/to/a/PKCS12/Keystore?keystoreType="
-          + "PKCS12&keystoreAlias=PKCS12Alias",
+      service.addKeystoreUrl(
+          new ConfiguredUrl("http://localhost/path/to/JKS/keystore?keystoreType=" + "JKS&keystorePassword=somePlainTextPassword"));
+      service.addKeystoreUrl(
+          new ConfiguredUrl("file://localhost/path/to/a/X509/Certificate?keystoreType=" + "X509?keystoreAlias=CertificateAlias"));
+      service.addKeystoreUrl(
+          new ConfiguredUrl("file://localhost/path/to/another/X509/Certificate?keystoreType=" + "X509?keystoreAlias=AnotherAlias"));
+      service.addKeystoreUrl(new ConfiguredUrl("http://host/path/to/a/PKCS12/Keystore?keystoreType=" + "PKCS12&keystoreAlias=PKCS12Alias",
           "PW:AAAAEF+zZCbvHeIXDx8HUslqiYwAAAAQ3wi4/BVycX+uzc5zF4F6EQAAABD0hhpr46IrKSu7XxFhEAYN"));
       // service.addKeystoreUrl(new ConfiguredUrl("http://host/path/to/keystore?keystoreType=" + "PKCS12&keystoreAlias=myalias",
       // PROPERTIES.getProperty(SECURITY_PASSWORD)));
@@ -276,8 +275,7 @@ public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase
       // service.addKeystoreUrl(new ConfiguredUrl("http://host/path/to/keystore?keystoreType=" + "JCEKS&keystoreAlias=myalias",
       // Password.encode(PROPERTIES.getProperty(SECURITY_PASSWORD), Password.NON_PORTABLE_PASSWORD)));
 
-      service.addKeystoreUrl(new ConfiguredUrl("file://local/path/to/anoter/JKS/keystore?keystoreType="
-          + "JKS&keystoreAlias=myalias",
+      service.addKeystoreUrl(new ConfiguredUrl("file://local/path/to/anoter/JKS/keystore?keystoreType=" + "JKS&keystoreAlias=myalias",
           "somePlainTextPassword"));
       InlineKeystore inline = new InlineKeystore();
       inline.setCertificate(EXAMPLE_KEYINFO);
@@ -285,18 +283,16 @@ public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase
       inline.setAlias("myAlias");
       service.addKeystoreUrl(inline);
       addEncryptionAlgsForFactoryType(service);
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       throw new RuntimeException(e);
     }
   }
-  
+
   private static void addEncryptionAlgsForFactoryType(CoreSecurityService s) {
     if (s.getSecurityFactory() == null) {
       s.setEncryptionAlgorithm(new EncryptionAlgorithm("AES/CBC/PKCS5Padding", 256));
       return;
     }
-    return;
   }
-  
+
 }

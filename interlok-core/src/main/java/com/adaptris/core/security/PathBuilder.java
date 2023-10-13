@@ -3,16 +3,11 @@ package com.adaptris.core.security;
 import java.util.Map;
 
 import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.ComponentLifecycle;
-import com.adaptris.core.ComponentLifecycleExtension;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.services.metadata.MetadataValueBranchingService;
-
 
 /**
  * Interface for {@link PathBuilder}.
  */
-
 public interface PathBuilder {
   
   /**
@@ -22,7 +17,6 @@ public interface PathBuilder {
    * <strong>key = payloads path.<strong>
    * <strong>value = path's content.<strong>
    */
-  
   Map<String, String> extract(AdaptrisMessage msg) throws ServiceException;
   
   /**
@@ -35,7 +29,6 @@ public interface PathBuilder {
    *  <strong>value = path's content to be inserted.<strong>
    *  <p>
    */
-   
   void insert(AdaptrisMessage msg, Map<String, String> pathKeyValuePairs) throws ServiceException;
   
 }
