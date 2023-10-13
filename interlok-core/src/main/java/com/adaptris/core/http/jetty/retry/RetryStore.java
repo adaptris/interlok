@@ -20,7 +20,7 @@ public interface RetryStore extends ComponentLifecycle, ComponentLifecycleExtens
    * @implNote The default implementation just returns an empty list.
    */
   default Iterable<RemoteBlob> report() throws InterlokException {
-    return Collections.EMPTY_LIST;
+    return Collections.emptyList();
   }
 
   /**
@@ -120,9 +120,13 @@ public interface RetryStore extends ComponentLifecycle, ComponentLifecycleExtens
    * 
    * @return a list of <code>AdaptrisMessage</code>s which meet the expiration
    * criteria.
+   * @implNote The default implementation throws an instance of
+   * {@link UnsupportedOperationException} and performs no other action.
    * @throws InterlokException wrapping any <code>Exception</code> which occurs
    */
-  List<AdaptrisMessage> obtainExpiredMessages() throws InterlokException;
+  default List<AdaptrisMessage> obtainExpiredMessages() throws InterlokException {
+    throw new UnsupportedOperationException("Not supported by implementation");
+  }
   
   /**
    * <p>
@@ -132,9 +136,13 @@ public interface RetryStore extends ComponentLifecycle, ComponentLifecycleExtens
    *
    * @return a list of <code>AdaptrisMessage</code>s which meet the criteria
    * for retrying
+   * @implNote The default implementation throws an instance of
+   * {@link UnsupportedOperationException} and performs no other action.
    * @throws InterlokException wrapping any <code>Exception</code> which occurs
    */
-  List<AdaptrisMessage> obtainMessagesToRetry() throws InterlokException;
+  default List<AdaptrisMessage> obtainMessagesToRetry() throws InterlokException {
+    throw new UnsupportedOperationException("Not supported by implementation");
+  }
   
   /**
    * <p>

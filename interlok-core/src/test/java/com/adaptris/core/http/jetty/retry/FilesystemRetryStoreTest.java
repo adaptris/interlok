@@ -128,8 +128,7 @@ public class FilesystemRetryStoreTest {
       AdaptrisMessage msg = new DefaultMessageFactory().newMessage("hello");
       store.write(msg);
       Map<String, String> metadata = store.getMetadata(msg.getUniqueId());
-      AdaptrisMessage retry = store.buildForRetry(msg.getUniqueId(), store.getMetadata(msg.getUniqueId()),
-          new FileBackedMessageFactory());
+      AdaptrisMessage retry = store.buildForRetry(msg.getUniqueId(), metadata, new FileBackedMessageFactory());
       assertEquals(msg.getUniqueId(), retry.getUniqueId());
       assertEquals(msg.getMessageHeaders(), retry.getMessageHeaders());
     } finally {
@@ -143,7 +142,7 @@ public class FilesystemRetryStoreTest {
       FilesystemRetryStore store = new FilesystemRetryStore().withBaseUrl(INVALID_URL);
       try {
         LifecycleHelper.initAndStart(store);
-        AdaptrisMessage retry = store.buildForRetry("xxx", Collections.EMPTY_MAP);
+        store.buildForRetry("xxx", Collections.emptyMap());
       } finally {
         LifecycleHelper.stopAndClose(store);
       }
@@ -197,7 +196,7 @@ public class FilesystemRetryStoreTest {
 
       try {
         LifecycleHelper.initAndStart(store);
-        AdaptrisMessage msg = new DefaultMessageFactory().newMessage("hello");
+        new DefaultMessageFactory().newMessage("hello");
         store.report();
       } finally {
         LifecycleHelper.stopAndClose(store);
