@@ -76,7 +76,7 @@ public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase
     List<String> path = new ArrayList<>();
     path.add(XPATH_1);
     XpathBuilder xpathBuilder = new XpathBuilder();
-    xpathBuilder.setPaths(path);
+    xpathBuilder.setXpaths(path);
     PayloadPathEncryptionService payloadPathEncryptionService = new PayloadPathEncryptionService();
     payloadPathEncryptionService.setPathBuilder(xpathBuilder);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
@@ -99,7 +99,7 @@ public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase
     path.add(XPATH_2);
     path.add(XPATH_3);
     XpathBuilder xpathBuilder = new XpathBuilder();
-    xpathBuilder.setPaths(path);
+    xpathBuilder.setXpaths(path);
     PayloadPathEncryptionService payloadPathEncryptionService = new PayloadPathEncryptionService();
     payloadPathEncryptionService.setPathBuilder(xpathBuilder);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
@@ -122,7 +122,7 @@ public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase
     path.add(XPATH_2);
     path.add(XPATH_3);
     XpathBuilder xpathBuilder = new XpathBuilder();
-    xpathBuilder.setPaths(path);
+    xpathBuilder.setXpaths(path);
     PayloadPathEncryptionService payloadPathEncryptionService = new PayloadPathEncryptionService();
     payloadPathEncryptionService.setPathBuilder(xpathBuilder);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
@@ -143,7 +143,7 @@ public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase
     List<String> path = new ArrayList<>();
     path.add(XPATH_WITH_CHILDREN);
     XpathBuilder xpathBuilder = new XpathBuilder();
-    xpathBuilder.setPaths(path);
+    xpathBuilder.setXpaths(path);
     PayloadPathEncryptionService payloadPathEncryptionService = new PayloadPathEncryptionService();
     payloadPathEncryptionService.setPathBuilder(xpathBuilder);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
@@ -164,7 +164,7 @@ public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase
     List<String> path = new ArrayList<>();
     path.add(XPATH_WITH_CHILDREN);
     XpathBuilder xpathBuilder = new XpathBuilder();
-    xpathBuilder.setPaths(path);
+    xpathBuilder.setXpaths(path);
     PayloadPathEncryptionService payloadPathEncryptionService = new PayloadPathEncryptionService();
     payloadPathEncryptionService.setPathBuilder(xpathBuilder);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
@@ -185,7 +185,7 @@ public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase
     List<String> path = new ArrayList<>();
     path.add(XPATH_WITH_CHILDREN);
     XpathBuilder xpathBuilder = new XpathBuilder();
-    xpathBuilder.setPaths(path);
+    xpathBuilder.setXpaths(path);
     PayloadPathEncryptionService payloadPathEncryptionService = new PayloadPathEncryptionService();
     payloadPathEncryptionService.setPathBuilder(xpathBuilder);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
@@ -205,7 +205,7 @@ public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase
     List<String> path = new ArrayList<>();
     path.add(XPATH_1);
     XpathBuilder xpathBuilder = new XpathBuilder();
-    xpathBuilder.setPaths(path);
+    xpathBuilder.setXpaths(path);
     PayloadPathEncryptionService payloadPathEncryptionService = new PayloadPathEncryptionService();
     payloadPathEncryptionService.setPathBuilder(xpathBuilder);
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML);
@@ -291,7 +291,6 @@ public abstract class PayloadPathSecurityServiceCase extends SecurityServiceCase
   private static void addEncryptionAlgsForFactoryType(CoreSecurityService s) {
     if (s.getSecurityFactory() == null) {
       s.setEncryptionAlgorithm(new EncryptionAlgorithm("AES/CBC/PKCS5Padding", 256));
-      return;
     }
   }
 

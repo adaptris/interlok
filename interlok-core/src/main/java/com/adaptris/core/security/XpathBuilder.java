@@ -63,6 +63,7 @@ import lombok.Setter;
 @DisplayOrder(order = { "xpaths", "namespaceContext", "xmlDocumentFactoryConfig" })
 public class XpathBuilder implements PathBuilder {
 
+  private static final String ENCRYPTED_ELEMENTS_WRAPPER_NODE_NAME = "encryptedNestedElements";
   private static final String ENCRYPTED_ELEMENTS_WRAPPER = "<encryptedNestedElements>%s</encryptedNestedElements>";
 
   private static final String NON_XML_EXCEPTION_MESSAGE = "Unable to create XML document";
@@ -73,9 +74,9 @@ public class XpathBuilder implements PathBuilder {
   @Getter
   @Setter
   @NotNull
-  @XStreamImplicit(itemFieldName = "xpaths")
+  @XStreamImplicit(itemFieldName = "xpath")
   @InputFieldHint(expression = true)
-  private List<String> paths;
+  private List<String> xpaths;
 
   /**
    * Set the namespace context for resolving namespaces.
@@ -104,7 +105,7 @@ public class XpathBuilder implements PathBuilder {
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
   public XpathBuilder() {
-    setPaths(new ArrayList<>());
+    setXpaths(new ArrayList<>());
   }
 
   @Override
@@ -112,7 +113,7 @@ public class XpathBuilder implements PathBuilder {
     Node node;
     Document doc = prepareXmlDoc(msg);
     Map<String, String> pathKeyValuePairs = new LinkedHashMap<>();
-    for (String path : getPaths()) {
+    for (String path : getXpaths()) {
       node = prepareNode(doc, msg.resolve(path), msg);
       try {
         XPath xPathHandler = XPath.newXPathInstance(documentFactoryBuilder(), createNamespaceCxt(msg));
@@ -124,9 +125,9 @@ public class XpathBuilder implements PathBuilder {
         NodeList childNodeList = node.getChildNodes();
         if (childNodeList.getLength() > 1) {
           pathKeyValuePairs.put(msg.resolve(path), concatAndWrapNestedNodesToString(childNodeList));
-          continue;
+        } else {
+          pathKeyValuePairs.put(msg.resolve(path), node.getTextContent());
         }
-        pathKeyValuePairs.put(msg.resolve(path), node.getTextContent());
       } else {
         throw new ServiceException(String.format(XPATH_DOES_NOT_EXIST_EXCEPTION_MESSAGE, msg.resolve(path)));
       }
@@ -215,7 +216,7 @@ public class XpathBuilder implements PathBuilder {
   }
 
   private Document StripNestedNodesWrapper(Document doc) {
-    NodeList wrapperNodes = doc.getElementsByTagName("encryptedNestedElements");
+    NodeList wrapperNodes = doc.getElementsByTagName(ENCRYPTED_ELEMENTS_WRAPPER_NODE_NAME);
     for (int i = 0; i < wrapperNodes.getLength(); i++) {
       Node wrapperNode = wrapperNodes.item(i);
       Node childNodes = wrapperNode.getFirstChild();

@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -61,29 +60,29 @@ public class XpathBuilderTest {
   private static final String XPATH_3_WITH_NAMESPACE = "//test:xpath3";
   private static final String XPATH_NON_EXISTENT = "//doesNotExist";
   private static final String XPATH_INVALID = "invalid xpath";
-  
+
   private static Map<String, String> resultKeyValuePairs;
   private static List<String> xpath;
   private static XpathBuilder xpathProvider;
-  
+
   @BeforeAll
   public static void setUp() {
-    resultKeyValuePairs  = new LinkedHashMap<String, String>();
-    xpath = new ArrayList<String>();
+    resultKeyValuePairs = new LinkedHashMap<>();
+    xpath = new ArrayList<>();
     xpathProvider = new XpathBuilder();
   }
-  
+
   @AfterEach
   public void tearDown() {
     resultKeyValuePairs.clear();
     xpath.clear();
   }
-  
+
   @Test
   public void testSingleXpathNoNameSpace() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_NO_NAMESPACE);
     xpath.add(XPATH_1_NO_NAMESPACE);
-    xpathProvider.setPaths(xpath);
+    xpathProvider.setXpaths(xpath);
     try {
       resultKeyValuePairs = xpathProvider.extract(msg);
       xpathProvider.insert(msg, resultKeyValuePairs);
@@ -93,12 +92,12 @@ public class XpathBuilderTest {
     }
     assertEquals(XML_NO_NAMESPACE, msg.getContent());
   }
-  
+
   @Test
   public void testParentXpathNoNameSpace() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_NO_NAMESPACE);
     xpath.add(XPATH_PARENT_NAMESPACE);
-    xpathProvider.setPaths(xpath);
+    xpathProvider.setXpaths(xpath);
     try {
       resultKeyValuePairs = xpathProvider.extract(msg);
       xpathProvider.insert(msg, resultKeyValuePairs);
@@ -108,12 +107,12 @@ public class XpathBuilderTest {
     }
     assertEquals(XML_NO_NAMESPACE, msg.getContent());
   }
-  
+
   @Test
   public void testXpathWithAttribute() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_NO_NAMESPACE);
     xpath.add(XPATH_WITH_ATTRIBUTE);
-    xpathProvider.setPaths(xpath);
+    xpathProvider.setXpaths(xpath);
     try {
       resultKeyValuePairs = xpathProvider.extract(msg);
       xpathProvider.insert(msg, resultKeyValuePairs);
@@ -123,14 +122,14 @@ public class XpathBuilderTest {
     }
     assertEquals(XML_NO_NAMESPACE, msg.getContent());
   }
-  
+
   @Test
   public void testMultipleXpathsNoNameSpace() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_NO_NAMESPACE);
     xpath.add(XPATH_1_NO_NAMESPACE);
     xpath.add(XPATH_2_NO_NAMESPACE);
     xpath.add(XPATH_3_NO_NAMESPACE);
-    xpathProvider.setPaths(xpath);
+    xpathProvider.setXpaths(xpath);
     try {
       resultKeyValuePairs = xpathProvider.extract(msg);
       xpathProvider.insert(msg, resultKeyValuePairs);
@@ -140,12 +139,12 @@ public class XpathBuilderTest {
     }
     assertEquals(XML_NO_NAMESPACE, msg.getContent());
   }
-  
+
   @Test
   public void testSingleXpathWithNameSpace() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_WITH_NAMESPACE);
     xpath.add(XPATH_1_WITH_NAMESPACE);
-    xpathProvider.setPaths(xpath);
+    xpathProvider.setXpaths(xpath);
     xpathProvider.setNamespaceContext(createContextEntries());
     try {
       resultKeyValuePairs = xpathProvider.extract(msg);
@@ -156,14 +155,14 @@ public class XpathBuilderTest {
     }
     assertEquals(XML_WITH_NAMESPACE, msg.getContent());
   }
-  
+
   @Test
   public void testMultipleXpathsWithNameSpace() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_WITH_NAMESPACE);
     xpath.add(XPATH_1_WITH_NAMESPACE);
     xpath.add(XPATH_2_WITH_NAMESPACE);
     xpath.add(XPATH_3_WITH_NAMESPACE);
-    xpathProvider.setPaths(xpath);
+    xpathProvider.setXpaths(xpath);
     xpathProvider.setNamespaceContext(createContextEntries());
     try {
       resultKeyValuePairs = xpathProvider.extract(msg);
@@ -174,13 +173,13 @@ public class XpathBuilderTest {
     }
     assertEquals(XML_WITH_NAMESPACE, msg.getContent());
   }
-  
+
   @Test
   public void testMetadataXpath() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_NO_NAMESPACE);
     msg.addMetadata("xPath", XPATH_1_NO_NAMESPACE);
     xpath.add("%message{xPath}");
-    xpathProvider.setPaths(xpath);
+    xpathProvider.setXpaths(xpath);
     try {
       resultKeyValuePairs = xpathProvider.extract(msg);
       xpathProvider.insert(msg, resultKeyValuePairs);
@@ -190,7 +189,7 @@ public class XpathBuilderTest {
     }
     assertEquals(XML_NO_NAMESPACE, msg.getContent());
   }
-  
+
   @Test
   public void testMixtureOfXpaths() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_NO_NAMESPACE);
@@ -199,7 +198,7 @@ public class XpathBuilderTest {
     xpath.add(XPATH_2_NO_NAMESPACE);
     xpath.add(XPATH_WITH_ATTRIBUTE);
     xpath.add("%message{xPath}");
-    xpathProvider.setPaths(xpath);
+    xpathProvider.setXpaths(xpath);
     try {
       resultKeyValuePairs = xpathProvider.extract(msg);
       xpathProvider.insert(msg, resultKeyValuePairs);
@@ -209,12 +208,12 @@ public class XpathBuilderTest {
     }
     assertEquals(XML_NO_NAMESPACE, msg.getContent());
   }
- 
+
   @Test
   public void testExtractingNonExistentXpath() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_NO_NAMESPACE);
     xpath.add(XPATH_NON_EXISTENT);
-    xpathProvider.setPaths(xpath);
+    xpathProvider.setXpaths(xpath);
     assertThrows(ServiceException.class, () -> {
       resultKeyValuePairs = xpathProvider.extract(msg);
     }, "Xpath does not exist.");
@@ -224,7 +223,7 @@ public class XpathBuilderTest {
   public void testExtractingInvalidXpath() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_NO_NAMESPACE);
     xpath.add(XPATH_INVALID);
-    xpathProvider.setPaths(xpath);
+    xpathProvider.setXpaths(xpath);
     assertThrows(ServiceException.class, () -> {
       resultKeyValuePairs = xpathProvider.extract(msg);
     }, "Invalid Xpath.");
@@ -234,17 +233,17 @@ public class XpathBuilderTest {
   public void testExtractingNonXml() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(NOT_XML);
     xpath.add(XPATH_1_NO_NAMESPACE);
-    xpathProvider.setPaths(xpath);
+    xpathProvider.setXpaths(xpath);
     assertThrows(ServiceException.class, () -> {
       resultKeyValuePairs = xpathProvider.extract(msg);
     }, "Non xml message.");
   }
-  
+
   @Test
   public void testExtractingMisMatchedNameSpace() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_WITH_NAMESPACE);
     xpath.add(XPATH_1_WITH_NAMESPACE);
-    xpathProvider.setPaths(xpath);
+    xpathProvider.setXpaths(xpath);
     KeyValuePairSet contextEntries = new KeyValuePairSet();
     contextEntries.add(new KeyValuePair("wrong", "wrong"));
     xpathProvider.setNamespaceContext(contextEntries);
@@ -252,7 +251,7 @@ public class XpathBuilderTest {
       resultKeyValuePairs = xpathProvider.extract(msg);
     }, "Xpath not found due to unexpected namespace name.");
   }
-  
+
   @Test
   public void testInsertingNonExistentXpath() {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_NO_NAMESPACE);
@@ -279,7 +278,7 @@ public class XpathBuilderTest {
       xpathProvider.insert(msg, resultKeyValuePairs);
     }, "Not an XML file.");
   }
-  
+
   private static KeyValuePairSet createContextEntries() {
     KeyValuePairSet contextEntries = new KeyValuePairSet();
     contextEntries.add(new KeyValuePair("test", "www.test.com"));
