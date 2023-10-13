@@ -60,7 +60,7 @@ import lombok.Setter;
 @XStreamAlias("xpath-builder")
 @AdapterComponent
 @ComponentProfile(summary = "xpath builder to extract and insert", tag = "service,security,path", since = "5.0.0")
-@DisplayOrder(order = { "xpaths", "namespaceContext", "xmlDocumentFactoryConfig" })
+@DisplayOrder(order = { "xpath", "namespaceContext", "xmlDocumentFactoryConfig" })
 public class XpathBuilder implements PathBuilder {
 
   private static final String ENCRYPTED_ELEMENTS_WRAPPER_NODE_NAME = "encryptedNestedElements";
