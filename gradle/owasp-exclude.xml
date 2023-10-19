@@ -221,10 +221,18 @@
   <suppress>
     <notes><![CDATA[
     file name: grpc-api-1.58.0.jar and grpc-context-1.58.0.jar
-    False positive, the CVEs are for grpc-go
+    False positive, the CVE is for grpc-go
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/io\.grpc/grpc\-.*@.*$</packageUrl>
     <cve>CVE-2023-44487</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: netty-handler-4.1.100.Final.jar
+    False positive, the CVE is for version earlier than 4.1.100.Final
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/io\.netty/netty\-.*@.*$</packageUrl>
+    <cve>CVE-2023-4586</cve>
   </suppress>
   <suppress>
     <notes><![CDATA[
