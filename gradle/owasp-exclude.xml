@@ -216,6 +216,7 @@
     <cve>CVE-2017-9735</cve>
     <cve>CVE-2022-2048</cve>
     <cve>CVE-2020-27216</cve>
+    <cve>CVE-2023-44487</cve>
   </suppress>
   <suppress>
     <notes><![CDATA[
