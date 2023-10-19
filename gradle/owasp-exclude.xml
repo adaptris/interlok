@@ -249,4 +249,12 @@
     <packageUrl regex="true">^pkg:maven/org\.quartz\-scheduler/quartz@.*$</packageUrl>
     <cve>CVE-2023-39017</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: json-20231013.jar
+	False positive, the CVE is for version 20230618 and earlier.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.json/json@.*$</packageUrl>
+    <cve>CVE-2023-5072</cve>
+  </suppress>
 </suppressions>
