@@ -220,6 +220,14 @@
   </suppress>
   <suppress>
     <notes><![CDATA[
+    file name: grpc-api-1.58.0.jar and grpc-context-1.58.0.jar
+    False positive, the CVEs are for grpc-go
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/io\.grpc/grpc\-.*@.*$</packageUrl>
+    <cve>CVE-2023-44487</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
     file name: jackson-databind-2.15.2.jar
 	This is not a really valid CVE and not realy exploitable as java code needs to be midified: https://github.com/FasterXML/jackson-databind/issues/3972
     ]]></notes>
