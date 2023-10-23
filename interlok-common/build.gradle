@@ -4,7 +4,7 @@ ext {
 
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
   slf4jVersion = '2.0.9'
-  log4j2Version = "2.20.0"
+  log4j2Version = "2.21.0"
   mockitoVersion = '4.9.0'
   jettyVersion= '10.0.17'
 }
