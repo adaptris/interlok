@@ -140,7 +140,7 @@
       <Set name="handlers">
         <Array type="org.eclipse.jetty.server.Handler">
           <Item>
-            <Ref id="RewriteHandler"></Ref>
+            <Ref refid="RewriteHandler"></Ref>
           </Item>
           <Item>
              <New id="Contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection"/>
@@ -175,7 +175,7 @@
     <Arg>
       <New id="DeploymentManager" class="org.eclipse.jetty.deploy.DeploymentManager">
         <Set name="contexts">
-          <Ref id="Contexts" />
+          <Ref refid="Contexts" />
         </Set>
         <Call name="setContextAttribute">
           <Arg>org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern</Arg>
@@ -203,7 +203,7 @@
               <Set name="scanInterval"><Property name="jetty.deploy.scanInterval" default="120"/></Set>
               <Set name="extractWars"><Property name="jetty.deploy.extractWars" default="true"/></Set>
               <Set name="configurationClasses">
-                <Ref id="plusConfig" />
+                <Ref refid="plusConfig" />
               </Set>
               <Set name="configurationManager">
                 <New class="org.eclipse.jetty.deploy.PropertiesConfigurationManager">
