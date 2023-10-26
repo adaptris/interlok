@@ -6,7 +6,7 @@ ext {
   activeMqVersion='5.16.0'
   bouncyCastleVersion='1.68'
   mysqlDriverVersion='8.0.22'
-  slf4jVersion = '1.7.30'
+  slf4jVersion = '1.7.36'
   mockitoVersion = '3.7.0'
 
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
@@ -87,7 +87,7 @@ dependencies {
   compile ("org.glassfish.external:opendmk_jdmkrt_jar:1.0-b01-ea")
   compile ("javax.xml.bind:jaxb-api:2.3.1")
   compile ("com.jcraft:jsch:0.1.55")
-  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.36.v20210114")
+  compile ("org.eclipse.jetty.aggregate:jetty-all:9.4.53.v20231009")
   compile ("javax.servlet:javax.servlet-api:4.0.1")
   compile ("net.sf.joost:joost:0.9.1")
   compile ("org.quartz-scheduler:quartz:2.3.2") {
