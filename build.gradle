@@ -1,13 +1,12 @@
 plugins {
   // Manage optional dependencies in maven pom.
-  id 'nebula.optional-base' version '7.0.0' apply false
-  id 'com.github.spotbugs' version '5.2.1' apply false
-  id "org.sonarqube" version '4.4.1.3373'
-  id 'org.owasp.dependencycheck' version '8.4.0' apply false
+  id "nebula.optional-base" version "7.0.0" apply false
+  id "com.github.spotbugs" version "5.2.1" apply false
+  id "org.sonarqube" version "4.4.1.3373"
+  id "org.owasp.dependencycheck" version "8.4.2" apply false
   id "io.freefair.lombok" version "8.4" apply false
-  // id 'org.kordamp.gradle.jdeps' version '0.12.0' apply false
   id "org.gradle.test-retry" version "1.5.6" apply false
-  id 'org.barfuin.gradle.taskinfo' version '2.1.0'
+  id "org.barfuin.gradle.taskinfo" version "2.1.0"
 }
 
 ext {
@@ -83,15 +82,14 @@ allprojects {
 }
 
 subprojects { subproject ->
-  apply plugin: 'java-library'
-  apply plugin: 'maven-publish'
-  apply plugin: 'nebula.optional-base'
-  apply plugin: 'com.github.spotbugs'
-  apply plugin: 'org.sonarqube'
-  apply plugin: 'org.owasp.dependencycheck'
-  apply plugin: 'io.freefair.lombok'
-  // apply plugin: 'org.kordamp.gradle.jdeps'
-  apply plugin: 'org.gradle.test-retry'
+  apply plugin: "java-library"
+  apply plugin: "maven-publish"
+  apply plugin: "nebula.optional-base"
+  apply plugin: "com.github.spotbugs"
+  apply plugin: "org.sonarqube"
+  apply plugin: "org.owasp.dependencycheck"
+  apply plugin: "io.freefair.lombok"
+  apply plugin: "org.gradle.test-retry"
 
   if (buildDetails.jacocoEnabled(subproject)) {
     apply plugin: "jacoco"
