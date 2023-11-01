@@ -10,7 +10,7 @@ permissions: read-all
 jobs:
   gradle-check:
     name: Gradle Check
-    uses: interlok-tooling/reusable-workflows/.github/workflows/gradle-check.yml@sonarcloud
+    uses: interlok-tooling/reusable-workflows/.github/workflows/gradle-check.yml@main
     secrets:
       NEXUS_REPO_PASSWORD: ${{ secrets.NEXUS_REPO_PASSWORD }}
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
