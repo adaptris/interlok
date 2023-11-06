@@ -11,7 +11,7 @@ dependencies {
 
   testImplementation ("org.junit.jupiter:junit-jupiter-api:5.10.0")
   testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.10.0")
-  testImplementation("org.hibernate.validator:hibernate-validator:6.1.7.Final")
+  testImplementation("org.hibernate.validator:hibernate-validator:8.0.1.Final")
   testImplementation("org.glassfish:jakarta.el:3.0.4")
 }
 
