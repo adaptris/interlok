@@ -1,18 +1,18 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 ext {
-  componentName='Interlok Core/Base'
+  componentName="Interlok Core/Base"
   componentDesc="The Core Interlok framework component; this is your must have"
-  activeMqVersion='5.18.3'
-  bouncyCastleVersion='1.76'
-  mysqlDriverVersion='8.0.33'
-  slf4jVersion = '2.0.9'
-  mockitoVersion = '4.9.0'
-  jschVersion = '0.2.12'
-  mssqlDriverVersion = '9.2.1.jre8'
-  derbyDriverVersion = '10.15.2.0'
-  junitVersion = '5.10.0'
-  jettyVersion= '10.0.17'
+  activeMqVersion="5.18.3"
+  bouncyCastleVersion="1.76"
+  mysqlDriverVersion="8.0.33"
+  slf4jVersion = "2.0.9"
+  mockitoVersion = "4.9.0"
+  jschVersion = "0.2.12"
+  mssqlDriverVersion = "9.2.1.jre8"
+  derbyDriverVersion = "10.15.2.0"
+  junitVersion = "5.10.0"
+  jettyVersion= "10.0.18"
 
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
   classesToTest = project.hasProperty("junit.test.classes") ? project.getProperty("junit.test.classes") : "**/*Test*"
