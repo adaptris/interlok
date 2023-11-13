@@ -1,7 +1,7 @@
 plugins {
   // Manage optional dependencies in maven pom.
   id "nebula.optional-base" version "7.0.0" apply false
-  id "com.github.spotbugs" version "5.2.1" apply false
+  id "com.github.spotbugs" version "5.2.3" apply false
   id "org.sonarqube" version "4.4.1.3373"
   id "org.owasp.dependencycheck" version "8.4.2" apply false
   id "io.freefair.lombok" version "8.4" apply false
