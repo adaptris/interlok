@@ -21,10 +21,14 @@ import javax.xml.transform.Transformer;
 import org.xml.sax.EntityResolver;
 
 public interface XmlTransformerFactory {
-
-  Transformer createTransformer(String transformUrl) throws Exception;
   
-  Transformer createTransformer(String transformUrl, EntityResolver entityResolver) throws Exception;
+  Transformer createTransformerFromUrl(String transformUrl) throws Exception;
+
+  Transformer createTransformerFromUrl(String transformUrl, EntityResolver entityResolver) throws Exception;
+  
+  Transformer createTransformerFromRawXslt(String xsl) throws Exception;
+  
+  Transformer createTransformerFromRawXslt(String xsl, EntityResolver entityResolver) throws Exception;
   
   XmlTransformer configure(XmlTransformer xmlTransformer) throws Exception;
 }
