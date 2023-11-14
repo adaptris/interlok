@@ -45,7 +45,7 @@ import net.sf.joost.trax.TransformerFactoryImpl;
 public class StxTransformerFactory extends XmlTransformerFactoryImpl {
 
   @Override
-  public Transformer createTransformerFromRawXslt(String xsl, EntityResolver entityResolver) throws Exception {
+  public Transformer createTransformerFromRawXsl(String xsl, EntityResolver entityResolver) throws Exception {
 	 StreamSource xslStream = new StreamSource(new StringReader(xsl));
 	 return configure( new TransformerFactoryImpl()).newTransformer(xslStream);
   }

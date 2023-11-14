@@ -95,12 +95,12 @@ public abstract class XmlTransformerFactoryImpl implements XmlTransformerFactory
 	} catch (Exception e) {
 	   throw new ServiceException("unable to extract the xsl content.", e);
 	}
-    return this.createTransformerFromRawXslt(xsl, entityResolver);
+    return this.createTransformerFromRawXsl(xsl, entityResolver);
   }
   
   @Override
-  public Transformer createTransformerFromRawXslt(String xsl) throws Exception {
-	return this.createTransformerFromRawXslt(xsl, null);
+  public Transformer createTransformerFromRawXsl(String xsl) throws Exception {
+	return this.createTransformerFromRawXsl(xsl, null);
   }
 
   @Override

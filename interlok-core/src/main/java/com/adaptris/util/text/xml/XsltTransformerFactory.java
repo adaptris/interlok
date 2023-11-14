@@ -64,7 +64,7 @@ public class XsltTransformerFactory extends XmlTransformerFactoryImpl {
 
  
   @Override
-  public Transformer createTransformerFromRawXslt(String xsl, EntityResolver entityResolver) throws Exception {
+  public Transformer createTransformerFromRawXsl(String xsl, EntityResolver entityResolver) throws Exception {
 	  DocumentBuilder docBuilder = documentFactoryBuilder().newDocumentBuilder(DocumentBuilderFactory.newInstance());
 	    if (entityResolver != null) {
 	      docBuilder.setEntityResolver(entityResolver);
