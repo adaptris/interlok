@@ -15,18 +15,30 @@
  */
 package com.adaptris.util.text.xml;
 
+import static com.adaptris.util.URLHelper.connect;
+
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.nio.charset.Charset;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.xml.transform.ErrorListener;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.EntityResolver;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.ServiceException;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.util.KeyValuePair;
@@ -67,6 +79,28 @@ public abstract class XmlTransformerFactoryImpl implements XmlTransformerFactory
 
   DocumentBuilderFactoryBuilder documentFactoryBuilder() {
     return DocumentBuilderFactoryBuilder.newInstanceIfNull(getXmlDocumentFactoryConfig());
+  }
+  
+  @Override
+  public Transformer createTransformerFromUrl(String xsl) throws Exception {
+    return this.createTransformerFromUrl(xsl, null);
+  }
+
+  @Override
+  public Transformer createTransformerFromUrl(String xsl, EntityResolver entityResolver) throws Exception {
+	try (InputStream inputStream = connect(xsl)) {
+	   StringWriter writer = new StringWriter();
+	   IOUtils.copy(inputStream, writer, Charset.defaultCharset());
+	   xsl = writer.toString();
+	} catch (Exception e) {
+	   throw new ServiceException("unable to extract the xsl content.", e);
+	}
+    return this.createTransformerFromRawXslt(xsl, entityResolver);
+  }
+  
+  @Override
+  public Transformer createTransformerFromRawXslt(String xsl) throws Exception {
+	return this.createTransformerFromRawXslt(xsl, null);
   }
 
   @Override

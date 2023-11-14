@@ -16,6 +16,8 @@
 
 package com.adaptris.util.text.xml;
 
+import java.io.StringReader;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
@@ -60,17 +62,15 @@ public class XsltTransformerFactory extends XmlTransformerFactoryImpl {
     setTransformerFactoryImpl(impl);
   }
 
-  public Transformer createTransformer(String url) throws Exception {
-    return this.createTransformer(url, null);
-  }
-
-  public Transformer createTransformer(String url, EntityResolver entityResolver) throws Exception {
-    DocumentBuilder docBuilder = documentFactoryBuilder().newDocumentBuilder(DocumentBuilderFactory.newInstance());
-    if (entityResolver != null) {
-      docBuilder.setEntityResolver(entityResolver);
-    }
-    Document xmlDoc = docBuilder.parse(new InputSource(url));
-    return configure(newInstance()).newTransformer(new DOMSource(xmlDoc, url));
+ 
+  @Override
+  public Transformer createTransformerFromRawXslt(String xsl, EntityResolver entityResolver) throws Exception {
+	  DocumentBuilder docBuilder = documentFactoryBuilder().newDocumentBuilder(DocumentBuilderFactory.newInstance());
+	    if (entityResolver != null) {
+	      docBuilder.setEntityResolver(entityResolver);
+	    }
+	    Document xmlDoc = docBuilder.parse(new InputSource(new StringReader(xsl)));
+	    return configure(newInstance()).newTransformer(new DOMSource(xmlDoc, xsl));
   }
 
   /**
@@ -98,4 +98,5 @@ public class XsltTransformerFactory extends XmlTransformerFactoryImpl {
     return StringUtils.isEmpty(getTransformerFactoryImpl()) ? TransformerFactory.newInstance()
         : TransformerFactory.newInstance(getTransformerFactoryImpl(), null);
   }
+
 }
