@@ -67,8 +67,12 @@ import net.jodah.expiringmap.ExpiringMap;
  * implementation.
  * </p>
  * <p>
- * If you wish to call an external mapping source such as via http you can use
- * {@link #FileDataInputParameter}.
+ * Cache transforms functionality only works if <code>url</code> is used. Caching is not supported with
+ * <code>mappingSource</code>.
+ * </p>
+ * <p>
+ * If you wish to call an external mapping source when using <code>mappingSource</code> such as via http you can use
+ * <strong>FileDataInputParameter</strong>. 
  * </p>
  *
  * @config xml-transform-service
@@ -170,18 +174,10 @@ public class XmlTransformService extends ServiceImp {
 	 * </p>
 	 */
 	String obtainMappingContent(AdaptrisMessage msg) throws ServiceException {
-		String mappingUrl = null;
 		try {
-			if (!isEmpty(getUrl())) {
-				mappingUrl = getUrl();
-			}
-			if (allowOverride() && msg.headersContainsKey(getMetadataKey())) {
-				mappingUrl = isEmpty(msg.getMetadataValue(getMetadataKey())) ? getUrl() : msg.getMetadataValue(getMetadataKey());
-			}
-			
-			if (!isEmpty(mappingUrl)) {
+			if (!isEmpty(mappingUrlSource(msg))) {
 				this.isUrlMappingSource = true;
-				return mappingUrl;
+				return mappingUrlSource(msg);
 			} else if (getMappingSource() != null) {
 				this.isUrlMappingSource = false;
 				return getMappingSource().extract(msg);
@@ -192,6 +188,17 @@ public class XmlTransformService extends ServiceImp {
 		} catch (Exception e) {
 			throw new ServiceException(e);
 		}
+	}
+	
+	private String mappingUrlSource(AdaptrisMessage msg) {
+		String mappingUrl = null;
+		if (!isEmpty(getUrl())) {
+			mappingUrl = getUrl();
+		}
+		if (allowOverride() && msg.headersContainsKey(getMetadataKey())) {
+			mappingUrl = isEmpty(msg.getMetadataValue(getMetadataKey())) ? getUrl() : msg.getMetadataValue(getMetadataKey());
+		}
+		return mappingUrl;
 	}
 
 	private void doTransform(AdaptrisMessage msg, String xslSourceToUse) throws ServiceException {
@@ -207,7 +214,7 @@ public class XmlTransformService extends ServiceImp {
 					transformer = getXmlTransformerFactory().createTransformerFromUrl(xslSourceToUse);
 				}
 			} else {
-				transformer = getXmlTransformerFactory().createTransformerFromRawXslt(xslSourceToUse);
+				transformer = getXmlTransformerFactory().createTransformerFromRawXsl(xslSourceToUse);
 			}
 			
 			getXmlTransformerFactory().configure(xmlTransformerImpl);
@@ -295,7 +302,8 @@ public class XmlTransformService extends ServiceImp {
 
 	/**
 	 * <p>
-	 * Returns true if XSLTs should be cached.
+	 * Returns true if XSLTs should be cached. This functionality only works if 
+	 * {@link XmlTransformService#getUrl()} is used.
 	 * </p>
 	 *
 	 * @see #setCacheTransforms(Boolean)
@@ -310,7 +318,8 @@ public class XmlTransformService extends ServiceImp {
 	 * Sets whether XSLTs should be cached or not. If this is false the XSLT will be
 	 * read for each message processed. Therefore while any changes to the XSLT will
 	 * be picked up immediately, processing will take significantly longer,
-	 * particularly if the XSLT is on a remote machine.
+	 * particularly if the XSLT is on a remote machine. This functionality only works if 
+	 * {@link XmlTransformService#getUrl()} is used.
 	 * </p>
 	 *
 	 * @param b whether XSLTs should be cached or not, defaults to true.
@@ -343,7 +352,7 @@ public class XmlTransformService extends ServiceImp {
 	 * </p>
 	 *
 	 * @param b whether the configured XSLT URL may be over-ridden by one stored
-	 *          against a metaddata key, defaults to null (false)
+	 *          against a metadata key, defaults to null (false)
 	 */
 	public void setAllowOverride(Boolean b) {
 		allowOverride = b;
