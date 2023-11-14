@@ -46,6 +46,15 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  *
  * Configuration including allow over-ride behaviour matches previous
  * implementation.
+ * 
+ * <p>
+ * Cache transforms functionality only works if <code>url</code> is used. Caching is not supported with
+ * <code>mappingSource</code>.
+ * </p>
+ * <p>
+ * If you wish to call an external mapping source when using <code>mappingSource</code> such as via http you can use
+ * <strong>FileDataInputParameter</strong>. 
+ * </p>
  *
  * @author aanderson
  * @config new-xml-transform-service
@@ -98,7 +107,7 @@ public class MultiPayloadXmlTransformService extends XmlTransformService {
 				transformer = getXmlTransformerFactory().createTransformerFromUrl(xslSourceToUse);
 			}
 		} else {
-			transformer = getXmlTransformerFactory().createTransformerFromRawXslt(xslSourceToUse);
+			transformer = getXmlTransformerFactory().createTransformerFromRawXsl(xslSourceToUse);
 		}
 		
 		getXmlTransformerFactory().configure(xmlTransformerImpl);
