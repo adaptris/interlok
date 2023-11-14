@@ -17,15 +17,18 @@
 package com.adaptris.core.transform;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.xml.transform.Transformer;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -37,24 +40,35 @@ import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.interlok.config.DataInputParameter;
 import com.adaptris.util.TimeInterval;
 import com.adaptris.util.text.xml.XmlTransformer;
 import com.adaptris.util.text.xml.XmlTransformerFactory;
 import com.adaptris.util.text.xml.XsltTransformerFactory;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+import lombok.Getter;
+import lombok.Setter;
 import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
 
 /**
  * <p>
- * Implementation of <code>Service</code> which provides transformation of XML payloads.
+ * Implementation of <code>Service</code> which provides transformation of XML
+ * payloads.
  * </p>
  * <p>
- * You are required to configure the XML transformer factory; see the javadoc and implementations of {@link XmlTransformerFactory}
- * for details on the supported transformer factories.
+ * You are required to configure the XML transformer factory; see the javadoc
+ * and implementations of {@link XmlTransformerFactory} for details on the
+ * supported transformer factories.
  * </p>
  * <p>
- * Configuration including allow over-ride behaviour matches previous implementation.
+ * Configuration including allow over-ride behaviour matches previous
+ * implementation.
+ * </p>
+ * <p>
+ * If you wish to call an external mapping source such as via http you can use
+ * {@link #FileDataInputParameter}.
  * </p>
  *
  * @config xml-transform-service
@@ -63,303 +77,332 @@ import net.jodah.expiringmap.ExpiringMap;
 @XStreamAlias("xml-transform-service")
 @AdapterComponent
 @ComponentProfile(summary = "Execute an XSLT transform", tag = "service,transform,xml")
-@DisplayOrder(order = {"url", "outputMessageEncoding", "cacheTransforms", "allowOverride", "metadataKey", "transformParameter",
-    "xmlTransformerFactory"})
+@DisplayOrder(order = { "url", "outputMessageEncoding", "cacheTransforms", "allowOverride", "metadataKey",
+		"transformParameter", "xmlTransformerFactory", "mappingSource" })
 public class XmlTransformService extends ServiceImp {
-  private static final int DEFAULT_MAX_CACHE_SIZE = 16;
-  private static final TimeInterval DEFAULT_EXPIRATION = new TimeInterval(1L, TimeUnit.HOURS);
+	private static final int DEFAULT_MAX_CACHE_SIZE = 16;
+	private static final TimeInterval DEFAULT_EXPIRATION = new TimeInterval(1L, TimeUnit.HOURS);
 
-  // marshalled
-  private String url;
-  @AdvancedConfig
-  private String metadataKey;
+	/**
+	 * @deprecated since 5.0.0 use {@link #DataInputParameter} instead.
+	 */
+	@Deprecated(since = "5.0.0")
+	private String url;
 
-  @AdvancedConfig
-  @InputFieldDefault(value = "true")
-  private Boolean cacheTransforms;
-  @AdvancedConfig
-  @InputFieldDefault(value = "false")
-  private Boolean allowOverride;
+	@AdvancedConfig
+	private String metadataKey;
 
-  // Default to null is fine
-  private String outputMessageEncoding;
-  @NotNull
-  @AutoPopulated
-  @Valid
-  private XmlTransformerFactory xmlTransformerFactory;
-  @Valid
-  private XmlTransformParameter transformParameter;
+	@Getter
+	@Setter
+	@AutoPopulated
+	@Valid
+	private DataInputParameter<String> mappingSource;
 
-  private transient Map<String, Transformer> transforms = null;
-  // This is the override value which is set to true if url is null
-  private transient Boolean overrideAllowOverride;
+	@AdvancedConfig
+	@InputFieldDefault(value = "true")
+	private Boolean cacheTransforms;
+	@AdvancedConfig
+	@InputFieldDefault(value = "false")
+	private Boolean allowOverride;
 
-  /**
-   * <p>
-   * Creates a new instance. Defaults to caching transforms and not allowing over-rides. Default metadata key is
-   * <code>transformurl</code>.
-   * </p>
-   */
-  public XmlTransformService() {
-    setMetadataKey(CoreConstants.TRANSFORM_OVERRIDE);
-    xmlTransformerFactory = new XsltTransformerFactory();
-  }
+	// Default to null is fine
+	private String outputMessageEncoding;
+	@NotNull
+	@AutoPopulated
+	@Valid
+	private XmlTransformerFactory xmlTransformerFactory;
+	@Valid
+	private XmlTransformParameter transformParameter;
 
-  @Override
-  protected void initService() throws CoreException {
-    if (isEmpty(getUrl())) {
-      overrideAllowOverride = Boolean.TRUE;
-    }
-    if (isEmpty(getUrl()) && isEmpty(getMetadataKey())) {
-      throw new CoreException("metadata-key & url are both empty, cannot initialise");
-    }
-  }
+	private transient Map<String, Transformer> transforms = null;
+	// This is the override value which is set to true if url is null
+	private transient Boolean overrideAllowOverride;
+	
+	protected transient Boolean isUrlMappingSource;
 
-  @Override
-  protected void closeService() {
-  }
+	/**
+	 * <p>
+	 * Creates a new instance. Defaults to caching transforms and not allowing
+	 * over-rides. Default metadata key is <code>transformurl</code>.
+	 * </p>
+	 */
+	public XmlTransformService() {
+		setMetadataKey(CoreConstants.TRANSFORM_OVERRIDE);
+		xmlTransformerFactory = new XsltTransformerFactory();
+	}
 
-  /**
-   * @see com.adaptris.core.Service#doService (com.adaptris.core.AdaptrisMessage)
-   */
-  @Override
-  public void doService(AdaptrisMessage msg) throws ServiceException {
-    doTransform(msg, obtainUrlToUse(msg));
-  }
+	@Override
+	protected void initService() throws CoreException {
+		if (isEmpty(getUrl())) {
+			overrideAllowOverride = Boolean.TRUE;
+		}
+		if (isEmpty(getUrl()) && isEmpty(getMetadataKey()) && getMappingSource() == null) {
+			throw new CoreException("metadata-key, mapping source & url are empty, cannot initialise");
+		}
+	}
 
-  @Override
-  public void prepare() throws CoreException {
-    transforms = ExpiringMap.builder().maxSize(DEFAULT_MAX_CACHE_SIZE)
-        .expirationPolicy(ExpirationPolicy.ACCESSED)
-        .expiration(DEFAULT_EXPIRATION.toMilliseconds(), TimeUnit.MILLISECONDS).build();
-  }
+	@Override
+	protected void closeService() {
+	}
 
+	/**
+	 * @see com.adaptris.core.Service#doService (com.adaptris.core.AdaptrisMessage)
+	 */
+	@Override
+	public void doService(AdaptrisMessage msg) throws ServiceException {
+		doTransform(msg, obtainMappingContent(msg));
+	}
 
-  /**
-   * <p>
-   * If <code>this.getAllowOverride()</code> is true and <code>msg.containsKey(getMetadataKey())</code> is true then the value of
-   * <code>msg.getMetadataValue(this.getMetadataKey()</code> is the URL to use, otherwise the value of <code>this.getUrl()</code> is
-   * used, unless this returns null in which case a <code>ServiceException</code> is thrown.
-   * </p>
-   */
-  String obtainUrlToUse(AdaptrisMessage msg) throws ServiceException {
-    String result = getUrl(); // maybe null
+	@Override
+	public void prepare() throws CoreException {
+		transforms = ExpiringMap.builder().maxSize(DEFAULT_MAX_CACHE_SIZE).expirationPolicy(ExpirationPolicy.ACCESSED)
+				.expiration(DEFAULT_EXPIRATION.toMilliseconds(), TimeUnit.MILLISECONDS).build();
+	}
 
-    if (allowOverride() && msg.headersContainsKey(getMetadataKey())) {
-      result = isEmpty(msg.getMetadataValue(getMetadataKey())) ? getUrl() : msg.getMetadataValue(getMetadataKey());
-    }
-    if (isEmpty(result)) {
-      throw new ServiceException("no URL configured and metadata key [" + getMetadataKey() + "] returned null");
-    }
-    result = backslashToSlash(result);
-    log.debug("using URL [{}]", result);
+	/**
+	 * <p>
+	 * If <code>this.getAllowOverride()</code> is true and
+	 * <code>msg.containsKey(getMetadataKey())</code> is true then the value of
+	 * <code>msg.getMetadataValue(this.getMetadataKey()</code> is the URL to use,
+	 * otherwise the value of <code>this.getUrl()</code> is used, if <code>this.getUrl()</code>
+	 * is empty or null then it checks <code>this.getMappingSource()</code> if this is also null
+	 * a <code>ServiceException</code> is thrown.
+	 * </p>
+	 */
+	String obtainMappingContent(AdaptrisMessage msg) throws ServiceException {
+		String mappingUrl = null;
+		try {
+			if (!isEmpty(getUrl())) {
+				mappingUrl = getUrl();
+			}
+			if (allowOverride() && msg.headersContainsKey(getMetadataKey())) {
+				mappingUrl = isEmpty(msg.getMetadataValue(getMetadataKey())) ? getUrl() : msg.getMetadataValue(getMetadataKey());
+			}
+			
+			if (!isEmpty(mappingUrl)) {
+				this.isUrlMappingSource = true;
+				return mappingUrl;
+			} else if (getMappingSource() != null) {
+				this.isUrlMappingSource = false;
+				return getMappingSource().extract(msg);
+			} else {
+				throw new ServiceException("no URL or mapping source has been configured and metadata key [" + getMetadataKey() + "] returned null");
+			}
 
-    return result;
-  }
+		} catch (Exception e) {
+			throw new ServiceException(e);
+		}
+	}
 
-  private static String backslashToSlash(String url) {
-    if (!isEmpty(url)) {
-      return url.replaceAll("\\\\", "/");
-    }
-    return url;
-  }
+	private void doTransform(AdaptrisMessage msg, String xslSourceToUse) throws ServiceException {
+		XmlTransformer xmlTransformerImpl = new XmlTransformer();
+		Transformer transformer = null;
 
-  private void doTransform(AdaptrisMessage msg, String urlToUse) throws ServiceException {
-    XmlTransformer xmlTransformerImpl = new XmlTransformer();
-    Transformer transformer = null;
+		try {
+			
+			if (this.isUrlMappingSource) {
+				if (cacheTransforms()) {
+					transformer = cacheAndGetTransformer(xslSourceToUse, getXmlTransformerFactory());
+				} else {
+					transformer = getXmlTransformerFactory().createTransformerFromUrl(xslSourceToUse);
+				}
+			} else {
+				transformer = getXmlTransformerFactory().createTransformerFromRawXslt(xslSourceToUse);
+			}
+			
+			getXmlTransformerFactory().configure(xmlTransformerImpl);
+		} catch (Exception ex) {
+			throw new ServiceException(ex);
+		}
+		// INTERLOK-2022 Let the XML parser do its thing, rather than using a
+		// reader/writer.
+		try (InputStream input = msg.getInputStream(); OutputStream output = msg.getOutputStream()) {
+			Map<Object, Object> parameters = getParameterBuilder().createParameters(msg, null);
+			xmlTransformerImpl.transform(transformer, input, output, xslSourceToUse, parameters);
+			if (!StringUtils.isBlank(getOutputMessageEncoding())) {
+				msg.setContentEncoding(getOutputMessageEncoding());
+			}
+		} catch (Exception e) {
+			throw new ServiceException("failed to transform message", e);
+		}
+	}
 
-    try {
+	protected Transformer cacheAndGetTransformer(String xslToUse, XmlTransformerFactory xmlTransformerFactory)
+			throws Exception {
+		if (getTransforms().containsKey(xslToUse))
+			return getTransforms().get(xslToUse);
+		else {
+			Transformer transformer = xmlTransformerFactory.createTransformerFromUrl(xslToUse);
+			getTransforms().put(xslToUse, transformer);
+			return transformer;
+		}
+	}
 
-      if (cacheTransforms()) {
-        transformer = cacheAndGetTransformer(urlToUse, getXmlTransformerFactory());
-      }
-      else {
-        transformer = getXmlTransformerFactory().createTransformer(urlToUse);
-      }
-      getXmlTransformerFactory().configure(xmlTransformerImpl);
-    }
-    catch (Exception ex) {
-      throw new ServiceException(ex);
-    }
-    // INTERLOK-2022 Let the XML parser do its thing, rather than using a reader/writer.
-    try (InputStream input = msg.getInputStream(); OutputStream output = msg.getOutputStream()) {
-      Map<Object, Object> parameters = getParameterBuilder().createParameters(msg, null);
-      xmlTransformerImpl.transform(transformer, input, output, urlToUse, parameters);
-      if (!StringUtils.isBlank(getOutputMessageEncoding())) {
-        msg.setContentEncoding(getOutputMessageEncoding());
-      }
-    }
-    catch (Exception e) {
-      throw new ServiceException("failed to transform message", e);
-    }
-  }
+	// properties...
 
-  protected Transformer cacheAndGetTransformer(String urlToUse, XmlTransformerFactory xmlTransformerFactory) throws Exception {
-    if (getTransforms().containsKey(urlToUse)) return getTransforms().get(urlToUse);
-    else {
-      Transformer transformer = xmlTransformerFactory.createTransformer(urlToUse);
-      getTransforms().put(urlToUse, transformer);
-      return transformer;
-    }
-  }
+	/**
+	 * <p>
+	 * Returns the URL of the XSLT to use.
+	 * </p>
+	 *
+	 * @return the URL of the XSLT to use
+	 */
+	public String getUrl() {
+		return url;
+	}
 
-  // properties...
+	/**
+	 * <p>
+	 * Sets the URL of the XSLT to use. May not be empty.
+	 * </p>
+	 *
+	 * @param s the URL of the XSLT to use
+	 */
+	public void setUrl(String s) {
+		if ("".equals(s)) {
+			throw new IllegalArgumentException("null param");
+		}
+		url = s;
+	}
 
-  /**
-   * <p>
-   * Returns the URL of the XSLT to use.
-   * </p>
-   *
-   * @return the URL of the XSLT to use
-   */
-  public String getUrl() {
-    return url;
-  }
+	/**
+	 * <p>
+	 * Returns the metadata key against which an over-ride XSLT URL may be stored.
+	 * </p>
+	 *
+	 * @return the metadata key against which an over-ride XSLT URL may be stored
+	 */
+	public String getMetadataKey() {
+		return metadataKey;
+	}
 
-  /**
-   * <p>
-   * Sets the URL of the XSLT to use. May not be empty.
-   * </p>
-   *
-   * @param s the URL of the XSLT to use
-   */
-  public void setUrl(String s) {
-    if ("".equals(s)) {
-      throw new IllegalArgumentException("null param");
-    }
-    url = s;
-  }
+	/**
+	 * <p>
+	 * Sets the metadata key against which an over-ride XSLT URL may be stored. May
+	 * not be empty.
+	 * </p>
+	 *
+	 * @param s the metadata key against which an over-ride XSLT URL may be stored,
+	 *          defaults to
+	 *          {@value com.adaptris.core.CoreConstants#TRANSFORM_OVERRIDE}
+	 */
+	public void setMetadataKey(String s) {
+		if ("".equals(s)) {
+			throw new IllegalArgumentException("null param");
+		}
+		metadataKey = s;
+	}
 
-  /**
-   * <p>
-   * Returns the metadata key against which an over-ride XSLT URL may be stored.
-   * </p>
-   *
-   * @return the metadata key against which an over-ride XSLT URL may be stored
-   */
-  public String getMetadataKey() {
-    return metadataKey;
-  }
+	/**
+	 * <p>
+	 * Returns true if XSLTs should be cached.
+	 * </p>
+	 *
+	 * @see #setCacheTransforms(Boolean)
+	 * @return true if XSLTs should be cached, otherwise false
+	 */
+	public Boolean getCacheTransforms() {
+		return cacheTransforms;
+	}
 
-  /**
-   * <p>
-   * Sets the metadata key against which an over-ride XSLT URL may be stored. May not be empty.
-   * </p>
-   *
-   * @param s the metadata key against which an over-ride XSLT URL may be stored, defaults to
-   *          {@value com.adaptris.core.CoreConstants#TRANSFORM_OVERRIDE}
-   */
-  public void setMetadataKey(String s) {
-    if ("".equals(s)) {
-      throw new IllegalArgumentException("null param");
-    }
-    metadataKey = s;
-  }
+	/**
+	 * <p>
+	 * Sets whether XSLTs should be cached or not. If this is false the XSLT will be
+	 * read for each message processed. Therefore while any changes to the XSLT will
+	 * be picked up immediately, processing will take significantly longer,
+	 * particularly if the XSLT is on a remote machine.
+	 * </p>
+	 *
+	 * @param b whether XSLTs should be cached or not, defaults to true.
+	 */
+	public void setCacheTransforms(Boolean b) {
+		cacheTransforms = b;
+	}
 
-  /**
-   * <p>
-   * Returns true if XSLTs should be cached.
-   * </p>
-   *
-   * @see #setCacheTransforms(Boolean)
-   * @return true if XSLTs should be cached, otherwise false
-   */
-  public Boolean getCacheTransforms() {
-    return cacheTransforms;
-  }
+	boolean cacheTransforms() {
+		return BooleanUtils.toBooleanDefaultIfNull(getCacheTransforms(), true);
+	}
 
-  /**
-   * <p>
-   * Sets whether XSLTs should be cached or not. If this is false the XSLT will be read for each message processed. Therefore while
-   * any changes to the XSLT will be picked up immediately, processing will take significantly longer, particularly if the XSLT is
-   * on a remote machine.
-   * </p>
-   *
-   * @param b whether XSLTs should be cached or not, defaults to true.
-   */
-  public void setCacheTransforms(Boolean b) {
-    cacheTransforms = b;
-  }
+	/**
+	 * <p>
+	 * Returns true if a configured XSLT URL may be over-ridden by one stored
+	 * against a metadata key.
+	 * </p>
+	 *
+	 * @return true if a configured XSLT URL may be over-ridden by one stored
+	 *         against a metadata key, otherwise false
+	 */
+	public Boolean getAllowOverride() {
+		return allowOverride;
+	}
 
-  boolean cacheTransforms() {
-    return BooleanUtils.toBooleanDefaultIfNull(getCacheTransforms(), true);
-  }
+	/**
+	 * <p>
+	 * Sets whether the configured XSLT URL may be over-ridden by one stored against
+	 * a metaddata key. If URL is configured this is implicitly true.
+	 * </p>
+	 *
+	 * @param b whether the configured XSLT URL may be over-ridden by one stored
+	 *          against a metaddata key, defaults to null (false)
+	 */
+	public void setAllowOverride(Boolean b) {
+		allowOverride = b;
+	}
 
-  /**
-   * <p>
-   * Returns true if a configured XSLT URL may be over-ridden by one stored against a metadata key.
-   * </p>
-   *
-   * @return true if a configured XSLT URL may be over-ridden by one stored against a metadata key, otherwise false
-   */
-  public Boolean getAllowOverride() {
-    return allowOverride;
-  }
+	boolean allowOverride() {
+		if (overrideAllowOverride != null) {
+			return overrideAllowOverride.booleanValue();
+		}
+		return BooleanUtils.toBooleanDefaultIfNull(getAllowOverride(), false);
+	}
 
-  /**
-   * <p>
-   * Sets whether the configured XSLT URL may be over-ridden by one stored against a metaddata key. If URL is configured this is
-   * implicitly true.
-   * </p>
-   *
-   * @param b whether the configured XSLT URL may be over-ridden by one stored against a metaddata key, defaults to null (false)
-   */
-  public void setAllowOverride(Boolean b) {
-    allowOverride = b;
-  }
+	public String getOutputMessageEncoding() {
+		return outputMessageEncoding;
+	}
 
-  boolean allowOverride() {
-    if (overrideAllowOverride != null) {
-      return overrideAllowOverride.booleanValue();
-    }
-    return BooleanUtils.toBooleanDefaultIfNull(getAllowOverride(), false);
-  }
+	/**
+	 * Force the output message encoding to be a particular encoding.
+	 * <p>
+	 * If specified then the underlying
+	 * {@link com.adaptris.core.AdaptrisMessage#setCharEncoding(String)} is changed
+	 * to match the encoding specified here before attempting any write operations.
+	 * </p>
+	 * <p>
+	 * This is only useful if the underlying message is encoded in one way, and you
+	 * wish to force the encoding directly in your stylesheet; e.g. the message is
+	 * physically encoded using ISO-8859-1; but your xslt has &lt;xsl:output
+	 * method="xml" encoding="UTF-8" indent="yes"/&gt; and you need to ensure that
+	 * the message is physically encoded using UTF-8 after the transform.
+	 * </p>
+	 *
+	 * @param s the output encoding; if null, the the existing encoding specified by
+	 *          {@link com.adaptris.core.AdaptrisMessage#getCharEncoding()} is used.
+	 */
+	public void setOutputMessageEncoding(String s) {
+		outputMessageEncoding = s;
+	}
 
-  public String getOutputMessageEncoding() {
-    return outputMessageEncoding;
-  }
+	public XmlTransformerFactory getXmlTransformerFactory() {
+		return xmlTransformerFactory;
+	}
 
-  /**
-   * Force the output message encoding to be a particular encoding.
-   * <p>
-   * If specified then the underlying {@link com.adaptris.core.AdaptrisMessage#setCharEncoding(String)} is changed to match the encoding specified
-   * here before attempting any write operations.
-   * </p>
-   * <p>
-   * This is only useful if the underlying message is encoded in one way, and you wish to force the encoding directly in your
-   * stylesheet; e.g. the message is physically encoded using ISO-8859-1; but your xslt has &lt;xsl:output method="xml"
-   * encoding="UTF-8" indent="yes"/&gt; and you need to ensure that the message is physically encoded using UTF-8 after the
-   * transform.
-   * </p>
-   *
-   * @param s the output encoding; if null, the the existing encoding specified by {@link com.adaptris.core.AdaptrisMessage#getCharEncoding()} is
-   *          used.
-   */
-  public void setOutputMessageEncoding(String s) {
-    outputMessageEncoding = s;
-  }
+	public void setXmlTransformerFactory(XmlTransformerFactory xmlTransformerFactory) {
+		this.xmlTransformerFactory = xmlTransformerFactory;
+	}
 
-  public XmlTransformerFactory getXmlTransformerFactory() {
-    return xmlTransformerFactory;
-  }
+	public XmlTransformParameter getTransformParameter() {
+		return transformParameter;
+	}
 
-  public void setXmlTransformerFactory(XmlTransformerFactory xmlTransformerFactory) {
-    this.xmlTransformerFactory = xmlTransformerFactory;
-  }
+	public void setTransformParameter(XmlTransformParameter param) {
+		transformParameter = param;
+	}
 
-  public XmlTransformParameter getTransformParameter() {
-    return transformParameter;
-  }
+	protected XmlTransformParameter getParameterBuilder() {
+		return getTransformParameter() != null ? getTransformParameter() : new IgnoreMetadataParameter();
+	}
 
-  public void setTransformParameter(XmlTransformParameter param) {
-    transformParameter = param;
-  }
-
-  protected XmlTransformParameter getParameterBuilder() {
-    return getTransformParameter() != null ? getTransformParameter() : new IgnoreMetadataParameter();
-  }
-
-  Map<String, Transformer> getTransforms() {
-    return transforms;
-  }
+	Map<String, Transformer> getTransforms() {
+		return transforms;
+	}
 }

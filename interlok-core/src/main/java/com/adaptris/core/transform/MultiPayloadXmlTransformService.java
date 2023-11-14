@@ -80,30 +80,36 @@ public class MultiPayloadXmlTransformService extends XmlTransformService {
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     if (msg instanceof MultiPayloadAdaptrisMessage) {
-      this.doTransform((MultiPayloadAdaptrisMessage)msg, obtainUrlToUse(msg));
+      this.doTransform((MultiPayloadAdaptrisMessage)msg, obtainMappingContent(msg));
     } else {
       super.doService(msg);
     }
   }
 
-  private void doTransform(MultiPayloadAdaptrisMessage msg, String urlToUse) throws ServiceException {
+  private void doTransform(MultiPayloadAdaptrisMessage msg, String xslSourceToUse) throws ServiceException {
     XmlTransformer xmlTransformerImpl = new XmlTransformer();
     Transformer transformer;
     try {
-      if (cacheTransforms()) {
-        transformer = cacheAndGetTransformer(urlToUse, getXmlTransformerFactory());
-      } else {
-        transformer = getXmlTransformerFactory().createTransformer(urlToUse);
-      }
-      getXmlTransformerFactory().configure(xmlTransformerImpl);
-    } catch (Exception ex) {
+		
+		if (super.isUrlMappingSource) {
+			if (cacheTransforms()) {
+				transformer = cacheAndGetTransformer(xslSourceToUse, getXmlTransformerFactory());
+			} else {
+				transformer = getXmlTransformerFactory().createTransformerFromUrl(xslSourceToUse);
+			}
+		} else {
+			transformer = getXmlTransformerFactory().createTransformerFromRawXslt(xslSourceToUse);
+		}
+		
+		getXmlTransformerFactory().configure(xmlTransformerImpl);
+	} catch (Exception ex) {
       throw new ServiceException(ex);
     }
     // INTERLOK-2022 Let the XML parser do its thing, rather than using a reader/writer.
 
     try (InputStream input = msg.getInputStream(sourcePayloadId); OutputStream output = msg.getOutputStream(outputPayloadId)) {
       Map<Object, Object> parameters = getParameterBuilder().createParameters(msg, null);
-      xmlTransformerImpl.transform(transformer, input, output, urlToUse, parameters);
+      xmlTransformerImpl.transform(transformer, input, output, xslSourceToUse, parameters);
       if (!StringUtils.isBlank(getOutputMessageEncoding())) {
         msg.setContentEncoding(outputPayloadId, getOutputMessageEncoding());
       }
