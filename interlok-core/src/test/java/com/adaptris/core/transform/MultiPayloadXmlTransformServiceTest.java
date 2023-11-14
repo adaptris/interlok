@@ -255,7 +255,7 @@ public class MultiPayloadXmlTransformServiceTest
     try {
       service.setUrl(URL);
       LifecycleHelper.init(service);
-      assertEquals(URL, service.obtainUrlToUse(msg));
+      assertEquals(URL, service.obtainMappingContent(msg));
     }
     finally {
       LifecycleHelper.close(service);
@@ -270,7 +270,7 @@ public class MultiPayloadXmlTransformServiceTest
       service.setUrl(URL);
       service.setMetadataKey("key");
       LifecycleHelper.init(service);
-      assertEquals(URL, service.obtainUrlToUse(msg));
+      assertEquals(URL, service.obtainMappingContent(msg));
     }
     finally {
       LifecycleHelper.close(service);
@@ -286,7 +286,7 @@ public class MultiPayloadXmlTransformServiceTest
       service.setUrl(URL);
       service.setMetadataKey("key");
       LifecycleHelper.init(service);
-      assertEquals(URL, service.obtainUrlToUse(msg));
+      assertEquals(URL, service.obtainMappingContent(msg));
     }
     finally {
       LifecycleHelper.close(service);
@@ -303,7 +303,7 @@ public class MultiPayloadXmlTransformServiceTest
       service.setMetadataKey("key");
       LifecycleHelper.init(service);
       // allow override is false
-      assertEquals(URL, service.obtainUrlToUse(msg));
+      assertEquals(URL, service.obtainMappingContent(msg));
     }
     finally {
       LifecycleHelper.close(service);
@@ -322,7 +322,7 @@ public class MultiPayloadXmlTransformServiceTest
       service.setAllowOverride(true);
       LifecycleHelper.init(service);
       // allow override is false
-      assertEquals("val", service.obtainUrlToUse(msg));
+      assertEquals("val", service.obtainMappingContent(msg));
     }
     finally {
       LifecycleHelper.close(service);
@@ -338,7 +338,7 @@ public class MultiPayloadXmlTransformServiceTest
       service.setAllowOverride(true);
       LifecycleHelper.init(service);
       try {
-        service.obtainUrlToUse(msg);
+        service.obtainMappingContent(msg);
         fail();
       }
       catch (ServiceException expected) {
@@ -359,7 +359,7 @@ public class MultiPayloadXmlTransformServiceTest
       service.setMetadataKey("key");
       service.setAllowOverride(true);
       LifecycleHelper.init(service);
-      assertEquals(URL, service.obtainUrlToUse(msg));
+      assertEquals(URL, service.obtainMappingContent(msg));
     }
     finally {
       LifecycleHelper.close(service);
@@ -376,7 +376,7 @@ public class MultiPayloadXmlTransformServiceTest
       service.setMetadataKey("key");
       service.setAllowOverride(true);
       LifecycleHelper.init(service);
-      assertEquals(URL, service.obtainUrlToUse(msg));
+      assertEquals(URL, service.obtainMappingContent(msg));
     }
     finally {
       LifecycleHelper.close(service);

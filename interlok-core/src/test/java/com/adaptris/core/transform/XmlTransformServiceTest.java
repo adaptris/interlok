@@ -235,7 +235,7 @@ public class XmlTransformServiceTest
       service.setUrl("url");
       LifecycleHelper.init(service);
 
-      assertTrue(service.obtainUrlToUse(msg).equals("url"));
+      assertTrue(service.obtainMappingContent(msg).equals("url"));
     }
     finally {
       LifecycleHelper.close(service);
@@ -251,7 +251,7 @@ public class XmlTransformServiceTest
       service.setMetadataKey("key");
       LifecycleHelper.init(service);
 
-      assertTrue(service.obtainUrlToUse(msg).equals("url"));
+      assertTrue(service.obtainMappingContent(msg).equals("url"));
     }
     finally {
       LifecycleHelper.close(service);
@@ -268,7 +268,7 @@ public class XmlTransformServiceTest
       service.setMetadataKey("key");
       LifecycleHelper.init(service);
 
-      assertTrue(service.obtainUrlToUse(msg).equals("url"));
+      assertTrue(service.obtainMappingContent(msg).equals("url"));
     }
     finally {
       LifecycleHelper.close(service);
@@ -286,7 +286,7 @@ public class XmlTransformServiceTest
       LifecycleHelper.init(service);
 
       // allow override is false
-      assertTrue(service.obtainUrlToUse(msg).equals("url"));
+      assertTrue(service.obtainMappingContent(msg).equals("url"));
     }
     finally {
       LifecycleHelper.close(service);
@@ -306,7 +306,7 @@ public class XmlTransformServiceTest
       LifecycleHelper.init(service);
 
       // allow override is false
-      assertTrue(service.obtainUrlToUse(msg).equals("val"));
+      assertTrue(service.obtainMappingContent(msg).equals("val"));
     }
     finally {
       LifecycleHelper.close(service);
@@ -322,7 +322,7 @@ public class XmlTransformServiceTest
       service.setAllowOverride(true);
       LifecycleHelper.init(service);
       try {
-        service.obtainUrlToUse(msg);
+        service.obtainMappingContent(msg);
       }
       catch (ServiceException expected) {
       }
@@ -341,7 +341,7 @@ public class XmlTransformServiceTest
       service.setMetadataKey("key");
       service.setAllowOverride(true);
       LifecycleHelper.init(service);
-      assertTrue(service.obtainUrlToUse(msg).equals("url"));
+      assertTrue(service.obtainMappingContent(msg).equals("url"));
     }
     finally {
       LifecycleHelper.close(service);
@@ -359,7 +359,7 @@ public class XmlTransformServiceTest
       service.setAllowOverride(true);
       LifecycleHelper.init(service);
 
-      assertTrue(service.obtainUrlToUse(msg).equals("url"));
+      assertTrue(service.obtainMappingContent(msg).equals("url"));
     }
     finally {
       LifecycleHelper.close(service);

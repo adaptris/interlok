@@ -59,14 +59,14 @@ public class XmlTransformerTest extends com.adaptris.interlok.junit.scaffolding.
     try (InputStream in = m1.getInputStream(); OutputStream out = m1.getOutputStream()) {
       StreamResult output = new StreamResult(out);
       StreamSource input = new StreamSource(in);
-      transform.transform(factory.createTransformer(xsl), input, output, xsl, new HashMap<>(System.getProperties()));
+      transform.transform(factory.createTransformerFromUrl(xsl), input, output, xsl, new HashMap<>(System.getProperties()));
     }
     AdaptrisMessage m2 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
 
     try (InputStream in = m2.getInputStream(); OutputStream out = m2.getOutputStream()) {
       StreamResult output = new StreamResult(out);
       StreamSource input = new StreamSource(in);
-      transform.transform(factory.createTransformer(xsl), input, output, xsl);
+      transform.transform(factory.createTransformerFromUrl(xsl), input, output, xsl);
     }
   }
 
@@ -77,7 +77,7 @@ public class XmlTransformerTest extends com.adaptris.interlok.junit.scaffolding.
     String xsl = backslashToSlash(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
     AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     try (InputStream in = m1.getInputStream(); OutputStream out = m1.getOutputStream()) {
-      transform.transform(factory.createTransformer(xsl), in, out, xsl);
+      transform.transform(factory.createTransformerFromUrl(xsl), in, out, xsl);
     }
   }
 
@@ -88,7 +88,7 @@ public class XmlTransformerTest extends com.adaptris.interlok.junit.scaffolding.
     String xsl = backslashToSlash(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
     AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     try (Reader in = m1.getReader(); Writer out = m1.getWriter()) {
-      transform.transform(factory.createTransformer(xsl), in, out, xsl);
+      transform.transform(factory.createTransformerFromUrl(xsl), in, out, xsl);
     }
   }
 
