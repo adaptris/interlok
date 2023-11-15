@@ -32,14 +32,19 @@ import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_S
 import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_TRANSFORM_URL;
 import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_TRANSFORM_URL_XSL_MESSAGE;
 import static com.adaptris.core.transform.XmlTransformServiceTest.XML_WITH_NAMESPACE;
+import static com.adaptris.util.URLHelper.connect;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,15 +55,21 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.MultiPayloadAdaptrisMessage;
 import com.adaptris.core.MultiPayloadMessageFactory;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.common.ConstantDataInputParameter;
+import com.adaptris.core.common.FileDataInputParameter;
+import com.adaptris.core.common.MetadataDataInputParameter;
+import com.adaptris.core.common.MultiPayloadStringInputParameter;
 import com.adaptris.core.stubs.MessageHelper;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.LifecycleHelper;
@@ -80,6 +91,7 @@ public class MultiPayloadXmlTransformServiceTest
   private static final String URL = "url";
   private static final String PAYLOAD_ID_SOURCE = "source-payload";
   private static final String PAYLOAD_ID_OUTPUT = "output-payload";
+  private static final String PAYLOAD_ID_MAPPING = "mapping-payload";
 
   private enum FactoryConfig {
     STX(new StxTransformerFactory()),
@@ -392,6 +404,13 @@ public class MultiPayloadXmlTransformServiceTest
     service.setOutputPayloadId(PAYLOAD_ID_OUTPUT);
     return service;
   }
+  
+  protected MultiPayloadXmlTransformService createBaseExampleWithSourceInput() {
+	    MultiPayloadXmlTransformService service = new MultiPayloadXmlTransformService();
+	    service.setSourcePayloadId(PAYLOAD_ID_SOURCE);
+	    service.setOutputPayloadId(PAYLOAD_ID_OUTPUT);
+	    return service;
+	  }
 
   @Override
   protected String createBaseFileName(Object object) {
@@ -493,6 +512,112 @@ public class MultiPayloadXmlTransformServiceTest
     service.setXmlTransformerFactory(fac);
     execute(service, m1);
     assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getContent(PAYLOAD_ID_OUTPUT));
+  }
+  
+  @Test
+  public void testXSLTOutputMultiPayloadDataInputParameter() throws Exception {
+    MultiPayloadAdaptrisMessage msg = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    AdaptrisMessage mappingMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage(loadFilesForTests(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL)));
+    msg.addPayload(PAYLOAD_ID_MAPPING, mappingMsg.getPayload());
+	MultiPayloadStringInputParameter mpsip = new MultiPayloadStringInputParameter();
+	mpsip.setPayloadId(PAYLOAD_ID_MAPPING);
+	MultiPayloadXmlTransformService service = createBaseExampleWithSourceInput();
+	service.setMappingSource(mpsip);
+	
+    execute(service, msg);
+    assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), msg.getContent(PAYLOAD_ID_OUTPUT));
+  }
+  
+  @Test
+  public void testXSLTOutputConstantDataInputParameter() throws Exception {
+	MultiPayloadAdaptrisMessage msg = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    ConstantDataInputParameter cdip = new ConstantDataInputParameter(loadFilesForTests(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL)));
+    MultiPayloadXmlTransformService service = createBaseExampleWithSourceInput();
+    service.setMappingSource(cdip);
+    
+    execute(service, msg);
+    assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), msg.getContent(PAYLOAD_ID_OUTPUT));
+  }
+  
+  @Test
+  public void testXSLTOutputFileDataInputParameter() throws Exception {
+	MultiPayloadAdaptrisMessage msg = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    FileDataInputParameter fdip = new FileDataInputParameter();
+    fdip.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
+    MultiPayloadXmlTransformService service = createBaseExampleWithSourceInput();
+    service.setMappingSource(fdip);
+    
+    execute(service, msg);
+    assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), msg.getContent(PAYLOAD_ID_OUTPUT));
+  }
+  
+  @Test
+  public void testXSLTOutputMetadataDataInputParameter() throws Exception {
+	MultiPayloadAdaptrisMessage msg = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    msg.addMetadata("mappingKey", loadFilesForTests(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL)));
+    MetadataDataInputParameter mdip = new MetadataDataInputParameter("mappingKey");
+    MultiPayloadXmlTransformService service = createBaseExampleWithSourceInput();
+    service.setMappingSource(mdip);
+    
+    execute(service, msg);
+    assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), msg.getContent(PAYLOAD_ID_OUTPUT));
+  }
+
+  @Test
+  public void testSTXMultiPayloadDataInputParameter() throws Exception {
+	MultiPayloadAdaptrisMessage msg = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+	AdaptrisMessage mappingMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage(loadFilesForTests(PROPERTIES.getProperty(KEY_XML_TEST_STX_TRANSFORM_URL)));
+	msg.addPayload(PAYLOAD_ID_MAPPING, mappingMsg.getPayload());
+    MultiPayloadStringInputParameter mpsip = new MultiPayloadStringInputParameter();
+	mpsip.setPayloadId(PAYLOAD_ID_MAPPING);
+	MultiPayloadXmlTransformService service = createBaseExampleWithSourceInput();
+	service.setMappingSource(mpsip);
+	
+	service.setXmlTransformerFactory(new StxTransformerFactory());
+		
+	execute(service, msg);
+	assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), msg.getContent(PAYLOAD_ID_OUTPUT));
+  }
+  
+  @Test
+  public void testSTXOutputConstantDataInputParameter() throws Exception {
+	MultiPayloadAdaptrisMessage msg = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    ConstantDataInputParameter cdip = new ConstantDataInputParameter(loadFilesForTests(PROPERTIES.getProperty(KEY_XML_TEST_STX_TRANSFORM_URL)));
+    MultiPayloadXmlTransformService service = createBaseExampleWithSourceInput();
+    service.setMappingSource(cdip);
+    
+    service.setXmlTransformerFactory(new StxTransformerFactory());
+ 
+    execute(service, msg);
+    assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), msg.getContent(PAYLOAD_ID_OUTPUT));
+  }
+  
+  @Test
+  public void testSTXOutputFileDataInputParameter() throws Exception {
+	MultiPayloadAdaptrisMessage msg = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    FileDataInputParameter fdip = new FileDataInputParameter();
+    fdip.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_STX_TRANSFORM_URL));
+    MultiPayloadXmlTransformService service = createBaseExampleWithSourceInput();
+    service.setMappingSource(fdip);
+
+    service.setXmlTransformerFactory(new StxTransformerFactory());
+
+    execute(service, msg);
+    assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), msg.getContent(PAYLOAD_ID_OUTPUT));
+  }
+  
+  @Test
+  public void testSTXOutputMetadataDataInputParameter() throws Exception {
+	MultiPayloadAdaptrisMessage msg = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    msg.addMetadata("mappingKey", loadFilesForTests(PROPERTIES.getProperty(KEY_XML_TEST_STX_TRANSFORM_URL)));
+    MetadataDataInputParameter mdip = new MetadataDataInputParameter("mappingKey");
+    MultiPayloadXmlTransformService service = createBaseExampleWithSourceInput();
+    service.setMappingSource(mdip);
+
+    service.setXmlTransformerFactory(new StxTransformerFactory());
+
+    execute(service, msg);
+    assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), msg.getContent(PAYLOAD_ID_OUTPUT));
   }
 
   @Test
@@ -755,6 +880,17 @@ public class MultiPayloadXmlTransformServiceTest
       stop(service);
     }
   }
+  
+  public void testfailNoMappingDefined() throws Exception {
+	    MultiPayloadAdaptrisMessage msg = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_SOURCE, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+	    MultiPayloadXmlTransformService service = new MultiPayloadXmlTransformService();
+	    service.setSourcePayloadId(PAYLOAD_ID_SOURCE);
+	    service.setOutputPayloadId(PAYLOAD_ID_OUTPUT);
+
+	    assertThrows(ServiceException.class, () -> {
+	    	execute(service, msg);
+	      });  
+	  }
 
   private static DocumentBuilder newDocumentBuilder() throws ParserConfigurationException {
     return DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -772,5 +908,15 @@ public class MultiPayloadXmlTransformServiceTest
     boolean matches =
         validClasses.stream().anyMatch((clazz) -> clazz.isAssignableFrom(t.getClass()));
     assertTrue(matches);
+  }
+  
+  private String loadFilesForTests(String filePath) throws Exception {
+	  String fileContent;
+	  try (InputStream inputStream = connect(filePath)) {
+		   StringWriter writer = new StringWriter();
+		   IOUtils.copy(inputStream, writer, Charset.defaultCharset());
+		   fileContent= writer.toString();
+		} 
+	  return  fileContent;
   }
 }

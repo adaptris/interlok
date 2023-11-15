@@ -16,13 +16,18 @@
 
 package com.adaptris.core.transform;
 
+import static com.adaptris.util.URLHelper.connect;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,6 +38,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -41,8 +47,13 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
+import com.adaptris.core.MultiPayloadAdaptrisMessage;
 import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.common.ConstantDataInputParameter;
+import com.adaptris.core.common.FileDataInputParameter;
+import com.adaptris.core.common.MetadataDataInputParameter;
+import com.adaptris.core.common.MultiPayloadStringInputParameter;
 import com.adaptris.core.stubs.MessageHelper;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 import com.adaptris.core.util.LifecycleHelper;
@@ -89,6 +100,9 @@ public class XmlTransformServiceTest
       + "<svrl:failed-assert test=\"string-length(.) = 5\" location=\"/SageData[1]/JoinedData[1]/AF_NUMBER[1]\">\n"
       + "<svrl:text>Error: Anglia Farmer's Supplier Number must be 5 digits long. (Current Value: 62826123)</svrl:text>\n"
       + "</svrl:failed-assert>\n" + "</svrl:schematron-output>";
+  
+  private static final String PAYLOAD_ID_DATA = "data-payload";
+  private static final String PAYLOAD_ID_MAPPING = "mapping-payload";
 
   private enum FactoryConfig {
     STX(new StxTransformerFactory()),
@@ -470,16 +484,124 @@ public class XmlTransformServiceTest
     execute(service, m1);
     assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getContent());
   }
+ 
+  @Test
+  public void testXSLTOutputMultiPayloadDataInputParameter() throws Exception {
+    MultiPayloadAdaptrisMessage msg = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_DATA, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    AdaptrisMessage mappingMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage(loadFilesForTests(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL)));
+    msg.addPayload(PAYLOAD_ID_MAPPING, mappingMsg.getPayload());
+	MultiPayloadStringInputParameter mpsip = new MultiPayloadStringInputParameter();
+	mpsip.setPayloadId(PAYLOAD_ID_MAPPING);
+	XmlTransformService service = new XmlTransformService();
+	service.setMappingSource(mpsip);
+	msg.switchPayload(PAYLOAD_ID_DATA);
+    execute(service, msg);
+    assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), msg.getContent());
+  }
+  
+  @Test
+  public void testXSLTOutputConstantDataInputParameter() throws Exception {
+    AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    ConstantDataInputParameter cdip = new ConstantDataInputParameter(loadFilesForTests(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL)));
+    XmlTransformService service = new XmlTransformService();
+    service.setMappingSource(cdip);
+    
+    execute(service, msg);
+    assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), msg.getContent());
+  }
+  
+  @Test
+  public void testXSLTOutputFileDataInputParameter() throws Exception {
+    AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    FileDataInputParameter fdip = new FileDataInputParameter();
+    fdip.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
+    XmlTransformService service = new XmlTransformService();
+    service.setMappingSource(fdip);
+    
+    execute(service, msg);
+    assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), msg.getContent());
+  }
+  
+  @Test
+  public void testXSLTOutputMetadataDataInputParameter() throws Exception {
+    AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    msg.addMetadata("mappingKey", loadFilesForTests(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL)));
+    MetadataDataInputParameter mdip = new MetadataDataInputParameter("mappingKey");
+    XmlTransformService service = new XmlTransformService();
+    service.setMappingSource(mdip);
+    
+    execute(service, msg);
+    assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), msg.getContent());
+  }
 
   @Test
   public void testXSLTOutput_NamedXsltTransformFactory() throws Exception {
-    AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     XmlTransformService service = new XmlTransformService();
     XsltTransformerFactory fac = new XsltTransformerFactory(net.sf.saxon.TransformerFactoryImpl.class.getCanonicalName());
     service.setXmlTransformerFactory(fac);
     service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
-    execute(service, m1);
-    assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getContent());
+    
+    execute(service, msg);
+    assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), msg.getContent());
+  }
+
+  @Test
+  public void testSTXMultiPayloadDataInputParameter() throws Exception {
+	MultiPayloadAdaptrisMessage msg = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_DATA, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+	AdaptrisMessage mappingMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage(loadFilesForTests(PROPERTIES.getProperty(KEY_XML_TEST_STX_TRANSFORM_URL)));
+    msg.addPayload(PAYLOAD_ID_MAPPING, mappingMsg.getPayload());
+	MultiPayloadStringInputParameter mpsip = new MultiPayloadStringInputParameter();
+	mpsip.setPayloadId(PAYLOAD_ID_MAPPING);
+	XmlTransformService service = new XmlTransformService();
+	service.setMappingSource(mpsip);
+	msg.switchPayload(PAYLOAD_ID_DATA);
+
+    service.setXmlTransformerFactory(new StxTransformerFactory());
+
+    execute(service, msg);
+    assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), msg.getContent());
+  }
+  
+  @Test
+  public void testSTXOutputConstantDataInputParameter() throws Exception {
+    AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    ConstantDataInputParameter cdip = new ConstantDataInputParameter(loadFilesForTests(PROPERTIES.getProperty(KEY_XML_TEST_STX_TRANSFORM_URL)));
+    XmlTransformService service = new XmlTransformService();
+    service.setMappingSource(cdip);
+    
+    service.setXmlTransformerFactory(new StxTransformerFactory());
+ 
+    execute(service, msg);
+    assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), msg.getContent());
+  }
+  
+  @Test
+  public void testSTXOutputFileDataInputParameter() throws Exception {
+    AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    FileDataInputParameter fdip = new FileDataInputParameter();
+    fdip.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_STX_TRANSFORM_URL));
+    XmlTransformService service = new XmlTransformService();
+    service.setMappingSource(fdip);
+
+    service.setXmlTransformerFactory(new StxTransformerFactory());
+
+    execute(service, msg);
+    assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), msg.getContent());
+  }
+  
+  @Test
+  public void testSTXOutputMetadataDataInputParameter() throws Exception {
+    AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    msg.addMetadata("mappingKey", loadFilesForTests(PROPERTIES.getProperty(KEY_XML_TEST_STX_TRANSFORM_URL)));
+    MetadataDataInputParameter mdip = new MetadataDataInputParameter("mappingKey");
+    XmlTransformService service = new XmlTransformService();
+    service.setMappingSource(mdip);
+
+    service.setXmlTransformerFactory(new StxTransformerFactory());
+
+    execute(service, msg);
+    assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), msg.getContent());
   }
 
   @Test
@@ -658,6 +780,16 @@ public class XmlTransformServiceTest
   }
 
   @Test
+  public void testfailNoMappingDefined() throws Exception {
+    AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    XmlTransformService service = new XmlTransformService();
+
+    assertThrows(ServiceException.class, () -> {
+    	execute(service, msg);
+      });  
+  }
+  
+  @Test
   public void testIssue2641() throws Exception {
     DefaultMessageFactory factory = new DefaultMessageFactory();
     factory.setDefaultCharEncoding("ISO-8859-1");
@@ -751,6 +883,16 @@ public class XmlTransformServiceTest
     boolean matches =
         validClasses.stream().anyMatch((clazz) -> clazz.isAssignableFrom(t.getClass()));
     assertTrue(matches);
+  }
+  
+  private String loadFilesForTests(String filePath) throws Exception {
+	  String fileContent;
+	  try (InputStream inputStream = connect(filePath)) {
+		   StringWriter writer = new StringWriter();
+		   IOUtils.copy(inputStream, writer, Charset.defaultCharset());
+		   fileContent= writer.toString();
+		} 
+	  return  fileContent;
   }
 
 }
