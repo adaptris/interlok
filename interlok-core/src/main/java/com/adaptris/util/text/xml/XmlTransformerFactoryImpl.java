@@ -16,6 +16,7 @@
 package com.adaptris.util.text.xml;
 
 import static com.adaptris.util.URLHelper.connect;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -88,6 +89,7 @@ public abstract class XmlTransformerFactoryImpl implements XmlTransformerFactory
 
   @Override
   public Transformer createTransformerFromUrl(String xsl, EntityResolver entityResolver) throws Exception {
+	  xsl = backslashToSlash(xsl);
 	try (InputStream inputStream = connect(xsl)) {
 	   StringWriter writer = new StringWriter();
 	   IOUtils.copy(inputStream, writer, Charset.defaultCharset());
@@ -198,6 +200,13 @@ public abstract class XmlTransformerFactoryImpl implements XmlTransformerFactory
       throw e;
     }
   }
+  
+  private static String backslashToSlash(String url) {
+	    if (!isEmpty(url)) {
+	      return url.replaceAll("\\\\", "/");
+	    }
+	    return url;
+	  }
 
 
 }
