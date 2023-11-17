@@ -16,22 +16,28 @@
 
 package com.adaptris.core.services.jmx;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+
 import java.util.concurrent.TimeUnit;
+
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.jmx.JmxConnection;
+import com.adaptris.interlok.util.Closer;
 import com.adaptris.util.TimeInterval;
 
 public class JmxWaitServiceTest
@@ -42,6 +48,8 @@ public class JmxWaitServiceTest
   @Mock
   private JmxOperationInvoker<Boolean> mockInvoker;
 
+  private AutoCloseable openMocks = null;
+  
   public JmxWaitServiceTest() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
       setBaseDir(PROPERTIES.getProperty(BASE_DIR_KEY));
@@ -49,11 +57,16 @@ public class JmxWaitServiceTest
   }
 
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
-    MockitoAnnotations.initMocks(this);
+	openMocks = MockitoAnnotations.openMocks(this);
   }
 
+  @AfterEach
+  public void tearDown() throws Exception {
+	  Closer.closeQuietly(openMocks);
+  }
+  
   @Test
   public void testWaitError() throws Exception {
     JmxWaitService service = new JmxWaitService();

@@ -16,14 +16,14 @@
 
 package com.adaptris.core.services.splitter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -50,10 +50,10 @@ public class SplitByMetadataTest extends SplitterCase {
     SplitByMetadata splitter = new SplitByMetadata(SPLIT_ON_METADATA_KEY, SPLIT_METADATA_KEY);
     msg.addMetadata(SPLIT_ON_METADATA_KEY, A_B_C_D);
     List<AdaptrisMessage> result = splitToList(splitter, msg);
-    assertEquals("Number of messages", 4, result.size());
+    assertEquals(4, result.size());
     int count = 0;
     for (AdaptrisMessage m : result) {
-      assertFalse("No Object Metadata", m.getObjectHeaders().containsKey(obj));
+      assertFalse(m.getObjectHeaders().containsKey(obj));
       // May as well explicitly test the indexes.
       switch(count) {
         case 0: {
@@ -91,9 +91,9 @@ public class SplitByMetadataTest extends SplitterCase {
     splitter.setCopyObjectMetadata(true);
     msg.addMetadata(SPLIT_ON_METADATA_KEY, A_B_C_D);
     List<AdaptrisMessage> result = splitToList(splitter, msg);
-    assertEquals("Number of messages", 4, result.size());
+    assertEquals(4, result.size());
     for (AdaptrisMessage m : result) {
-      assertTrue("Object Metadata", m.getObjectHeaders().containsKey(obj));
+      assertTrue(m.getObjectHeaders().containsKey(obj));
       doStandardAssertions(m);
     }
   }
@@ -106,7 +106,7 @@ public class SplitByMetadataTest extends SplitterCase {
     service.setProducer(producer);
     msg.addMetadata(SPLIT_ON_METADATA_KEY, A_B_C_D);
     execute(service, msg);
-    assertEquals("Number of messages", 4, producer.getMessages().size());
+    assertEquals(4, producer.getMessages().size());
     for (AdaptrisMessage m : producer.getMessages()) {
       doStandardAssertions(m);
     }
@@ -119,7 +119,7 @@ public class SplitByMetadataTest extends SplitterCase {
     BasicMessageSplitterService service = createBasic(new SplitByMetadata(SPLIT_ON_METADATA_KEY, SPLIT_METADATA_KEY));
     service.setProducer(producer);
     execute(service, msg);
-    assertEquals("Number of messages", 1, producer.getMessages().size());
+    assertEquals(1, producer.getMessages().size());
     for (AdaptrisMessage m : producer.getMessages()) {
       assertFalse(m.headersContainsKey(SPLIT_METADATA_KEY));
       assertEquals(XML_MESSAGE, m.getContent());

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,6 +18,7 @@ package com.adaptris.core.http.jetty;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
 import org.eclipse.jetty.http.HttpCompliance;
 import org.eclipse.jetty.security.SecurityHandler;
 import org.eclipse.jetty.server.AbstractConnector;
@@ -29,6 +30,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -42,6 +44,9 @@ import com.adaptris.util.KeyValuePairSet;
 import com.adaptris.util.SimpleBeanUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Concrete implementation of JettyConnection that allows HTTP traffic.
  * <p>
@@ -49,11 +54,10 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * information on the behaviour and configuration required.
  * </p>
  * <p>
- * The key from the {@code server-connector-properties} element should match the name of the underlying {@link ServerConnector}
- * setter.
- * 
+ * The key from the {@code server-connector-properties} element should match the name of the underlying {@link ServerConnector} setter.
+ *
  * <pre>
- * {@code 
+ * {@code
  *   <server-connector-properties>
  *     <key-value-pair>
  *        <key>ReuseAddress</key>
@@ -61,35 +65,33 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  *     </key-value-pair>
  *   </server-connector-properties>
  * }
- * </pre> will invoke {@code ServerConnector#setReuseAddress(boolean)}, setting the ReuseAddress property to true. Note that no
- * validation of the various properties is performed and will be passed as-is to the {@link AbstractConnector} with an attempt to
- * transform into the correct type. Invalid combinations may result in undefined behaviour. Similarly additional
- * {@code HttpConfiguration} properties can be configured via the {@code http-connection} element.
+ * </pre>
+ *
+ * will invoke {@code ServerConnector#setReuseAddress(boolean)}, setting the ReuseAddress property to true. Note that no validation of the
+ * various properties is performed and will be passed as-is to the {@link AbstractConnector} with an attempt to transform into the correct
+ * type. Invalid combinations may result in undefined behaviour. Similarly additional {@code HttpConfiguration} properties can be configured
+ * via the {@code http-connection} element.
  * </p>
- * 
+ *
  * @config jetty-http-connection
- * 
+ *
  * @author lchan
  */
 @XStreamAlias("jetty-http-connection")
 @AdapterComponent
-@ComponentProfile(summary = "Connection that creates its own jetty engine instance and listens on the specified port",
-    tag = "connections,http,jetty")
-@DisplayOrder(order =
-{
-    "port", "httpConfiguration", "serverConnectorProperties"
-})
+@ComponentProfile(summary = "Connection that creates its own jetty engine instance and listens on the specified port", tag = "connections,http,jetty")
+@DisplayOrder(order = { "port", "httpConfiguration", "serverConnectorProperties" })
 public class HttpConnection extends JettyConnection {
 
   /**
    * Standard {@link ServerConnector} properties for use with {@link HttpConnection#setServerConnectorProperties(KeyValuePairSet)}.
-   * 
+   *
    */
   public enum ServerConnectorProperty {
 
     /**
      * @see ServerConnector#setAcceptQueueSize(int)
-     * 
+     *
      */
     AcceptQueueSize {
       @Override
@@ -99,7 +101,7 @@ public class HttpConnection extends JettyConnection {
     },
     /**
      * @see ServerConnector#setAcceptorPriorityDelta(int)
-     * 
+     *
      */
     AcceptorPriorityDelta {
       @Override
@@ -109,7 +111,7 @@ public class HttpConnection extends JettyConnection {
     },
     /**
      * @see ServerConnector#setIdleTimeout(long)
-     * 
+     *
      */
     IdleTimeout {
       @Override
@@ -119,7 +121,7 @@ public class HttpConnection extends JettyConnection {
     },
     /**
      * @see ServerConnector#setInheritChannel(boolean)
-     * 
+     *
      */
     InheritChannel {
       @Override
@@ -136,29 +138,30 @@ public class HttpConnection extends JettyConnection {
         connector.setReuseAddress(Boolean.valueOf(value).booleanValue());
       }
     };
+
     abstract void applyProperty(ServerConnector connector, String value) throws Exception;
   }
 
   /**
    * Standard {@link HttpConfiguration} properties for use with {@link HttpConnection#setHttpConfiguration(KeyValuePairSet)}.
-   * 
+   *
    */
   public enum HttpConfigurationProperty {
     /**
      * @see HttpConfiguration#setSecureScheme(String).
-     * 
+     *
      */
     SecureScheme {
 
       @Override
       void applyProperty(HttpConfiguration config, String value) throws Exception {
-        config.setSecureScheme(value);        
+        config.setSecureScheme(value);
       }
-      
+
     },
     /**
      * @see HttpConfiguration#setSecurePort(int).
-     * 
+     *
      */
     SecurePort {
 
@@ -166,7 +169,7 @@ public class HttpConnection extends JettyConnection {
       void applyProperty(HttpConfiguration config, String value) throws Exception {
         config.setSecurePort(Integer.parseInt(value));
       }
-      
+
     },
     /**
      * @see HttpConfiguration#setOutputBufferSize(int)
@@ -291,7 +294,7 @@ public class HttpConnection extends JettyConnection {
       @Override
       void applyProperty(HttpConfiguration config, String value) throws Exception {
         config.setMinResponseDataRate(Long.parseLong(value));
-      }      
+      }
     },
     /**
      * @see HttpConfiguration#setPersistentConnectionsEnabled(boolean)
@@ -302,14 +305,41 @@ public class HttpConnection extends JettyConnection {
         config.setPersistentConnectionsEnabled(Boolean.valueOf(value).booleanValue());
       }
     };
+
     abstract void applyProperty(HttpConfiguration config, String value) throws Exception;
 
   }
 
+  /**
+   * Set the port to listen on for HTTP traffic.
+   *
+   * @param port
+   *          the port, by default it is 8080
+   */
+  @Getter
+  @Setter
   private int port;
+
+  /**
+   * Specify the SecurityHandler implementation.
+   *
+   * @param securityHandler
+   *          the securityHandler wrapper implementation.
+   */
+  @Getter
+  @Setter
   @Valid
   @AdvancedConfig
   private SecurityHandlerWrapper securityHandler;
+
+  /**
+   * The Server Connector properties to set
+   *
+   * @param serverConnectorProperties
+   *          KeyValuePairSet
+   */
+  @Getter
+  @Setter
   @NotNull
   @Valid
   @AutoPopulated
@@ -317,13 +347,20 @@ public class HttpConnection extends JettyConnection {
   @InputFieldHint(style = "com.adaptris.core.http.jetty.HttpConnection.ServerConnectorProperty")
   private KeyValuePairSet serverConnectorProperties;
 
+  /**
+   * The HTTP Configuration properties to set
+   *
+   * @param httpConfiguration
+   *          KeyValuePairSet
+   */
+  @Getter
+  @Setter
   @NotNull
   @Valid
   @AutoPopulated
   @AdvancedConfig
   @InputFieldHint(style = "com.adaptris.core.http.jetty.HttpConnection.HttpConfigurationProperty")
   private KeyValuePairSet httpConfiguration;
-
 
   public HttpConnection() {
     super();
@@ -333,10 +370,7 @@ public class HttpConnection extends JettyConnection {
   }
 
   protected ConnectionFactory[] createConnectionFactory() throws Exception {
-    return new ConnectionFactory[]
-    {
-        new HttpConnectionFactory(createConfig(), HttpCompliance.RFC2616)
-    };
+    return new ConnectionFactory[] { new HttpConnectionFactory(createConfig()) };
   }
 
   protected HttpConfiguration createConfig() throws Exception {
@@ -356,6 +390,7 @@ public class HttpConnection extends JettyConnection {
         }
       }
     }
+    cfg.setHttpCompliance(HttpCompliance.RFC2616);
     return cfg;
   }
 
@@ -398,64 +433,8 @@ public class HttpConnection extends JettyConnection {
     return connector;
   }
 
-  /**
-   * Set the port to listen on.
-   * 
-   * @param i the port, by default it is 8080
-   */
-  public void setPort(int i) {
-    port = i;
-  }
-
-  /**
-   * Get the port to listen on for HTTP traffic.
-   * 
-   * @return the port
-   */
-  public int getPort() {
-    return port;
-  }
-
-  public KeyValuePairSet getServerConnectorProperties() {
-    return serverConnectorProperties;
-  }
-
-  public void setServerConnectorProperties(KeyValuePairSet httpProperties) {
-    this.serverConnectorProperties = httpProperties;
-  }
-
-  /**
-   * @return the securityHandler wrapper implementation
-   */
-  public SecurityHandlerWrapper getSecurityHandler() {
-    return securityHandler;
-  }
-
-  /**
-   * Specify the SecurityHandler implementation.
-   * 
-   * @param s the securityHandler wrapper implementation.
-   */
-  public void setSecurityHandler(SecurityHandlerWrapper s) {
-    securityHandler = s;
-  }
-
   @Override
   protected void prepareConnection() throws CoreException {
-  }
-
-  /**
-   * @return the httpConfiguration
-   */
-  public KeyValuePairSet getHttpConfiguration() {
-    return httpConfiguration;
-  }
-
-  /**
-   * @param kvps the httpConfiguration to set
-   */
-  public void setHttpConfiguration(KeyValuePairSet kvps) {
-    this.httpConfiguration = kvps;
   }
 
 }

@@ -15,11 +15,14 @@
 */
 
 package com.adaptris.core.transform;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.transform.validate.NotInListContentValidation;
 import com.adaptris.transform.validate.SimpleListContentValidation;
 

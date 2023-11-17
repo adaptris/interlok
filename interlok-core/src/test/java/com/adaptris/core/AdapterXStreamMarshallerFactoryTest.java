@@ -15,22 +15,23 @@
 */
 package com.adaptris.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdapterMarshallerFactory.MarshallingOutput;
 
 public class AdapterXStreamMarshallerFactoryTest {
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
   }
 
@@ -43,21 +44,21 @@ public class AdapterXStreamMarshallerFactoryTest {
       assertEquals(XStreamJsonMarshaller.class, factory.createMarshaller("JSON").getClass());
       assertEquals(XStreamMarshaller.class, factory.createMarshaller("").getClass());
       assertEquals(XStreamMarshaller.class, factory.createMarshaller("Hello").getClass());
-    }
-    finally {
+    } finally {
       AdapterXStreamMarshallerFactory.reset();
     }
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testCreateMarshaller_Null() throws Exception {
-    try {
-      AdapterXStreamMarshallerFactory factory = AdapterXStreamMarshallerFactory.getInstance();
-      factory.createMarshaller((MarshallingOutput) null);
-    }
-    finally {
-      AdapterXStreamMarshallerFactory.reset();
-    }
+    Assertions.assertThrows(NullPointerException.class, () -> {
+      try {
+        AdapterXStreamMarshallerFactory factory = AdapterXStreamMarshallerFactory.getInstance();
+        factory.createMarshaller((MarshallingOutput) null);
+      } finally {
+        AdapterXStreamMarshallerFactory.reset();
+      }
+    });
   }
 
   @Test
@@ -66,8 +67,7 @@ public class AdapterXStreamMarshallerFactoryTest {
       AdapterXStreamMarshallerFactory factory = AdapterXStreamMarshallerFactory.getInstance();
       assertNotNull(factory.createXStreamInstance(MarshallingOutput.XML));
       assertNotNull(factory.createXStreamInstance(MarshallingOutput.JSON));
-    }
-    finally {
+    } finally {
       AdapterXStreamMarshallerFactory.reset();
     }
   }
@@ -78,20 +78,20 @@ public class AdapterXStreamMarshallerFactoryTest {
       AdapterXStreamMarshallerFactory factory = AdapterXStreamMarshallerFactory.getInstance();
       assertNotNull(factory.createXStreamInstance(MarshallingOutput.XML));
       assertNotNull(factory.createXStreamInstance(MarshallingOutput.JSON));
-    }
-    finally {
+    } finally {
       AdapterXStreamMarshallerFactory.reset();
     }
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void testCreateXStream_null() throws Exception {
-    try {
-      AdapterXStreamMarshallerFactory factory = AdapterXStreamMarshallerFactory.getInstance();
-      factory.createXStreamInstance((MarshallingOutput) null);
-    }
-    finally {
-      AdapterXStreamMarshallerFactory.reset();
-    }
+    Assertions.assertThrows(NullPointerException.class, () -> {
+      try {
+        AdapterXStreamMarshallerFactory factory = AdapterXStreamMarshallerFactory.getInstance();
+        factory.createXStreamInstance((MarshallingOutput) null);
+      } finally {
+        AdapterXStreamMarshallerFactory.reset();
+      }
+    });
   }
 }

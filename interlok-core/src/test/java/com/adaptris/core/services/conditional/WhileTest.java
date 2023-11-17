@@ -15,16 +15,18 @@
 */
 
 package com.adaptris.core.services.conditional;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
@@ -39,6 +41,7 @@ import com.adaptris.core.services.conditional.conditions.ConditionOr;
 import com.adaptris.core.services.conditional.operator.IsNull;
 import com.adaptris.core.services.conditional.operator.NotNull;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.util.Closer;
 
 public class WhileTest extends ConditionalServiceExample {
 
@@ -52,10 +55,11 @@ public class WhileTest extends ConditionalServiceExample {
 
   @Mock private Condition mockCondition;
 
+  private AutoCloseable openMocks = null;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
-    MockitoAnnotations.openMocks(this);
+	openMocks = MockitoAnnotations.openMocks(this);
 
     when(mockService.retrieveComponentState())
         .thenReturn(StartedState.getInstance());
@@ -71,9 +75,10 @@ public class WhileTest extends ConditionalServiceExample {
 
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     StopMe(logicalExpression);
+    Closer.closeQuietly(openMocks);
   }
   
   @Test

@@ -1,5 +1,8 @@
 package com.adaptris.validation.constraints;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -9,8 +12,7 @@ import javax.validation.Valid;
 import javax.validation.Validation;
 import javax.validation.ValidatorFactory;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ConfigDeprecatedValidatorTest {
   private final ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
@@ -21,7 +23,7 @@ public class ConfigDeprecatedValidatorTest {
 
     Set<ConstraintViolation<TestBean>> constraintViolations = validatorFactory.getValidator().validate(testBean, Deprecated.class);
 
-    Assert.assertTrue(constraintViolations.isEmpty());
+    assertTrue(constraintViolations.isEmpty());
   }
 
   @Test
@@ -31,7 +33,7 @@ public class ConfigDeprecatedValidatorTest {
 
     Set<ConstraintViolation<TestBean>> constraintViolations = validatorFactory.getValidator().validate(testBean);
 
-    Assert.assertTrue(constraintViolations.isEmpty());
+    assertTrue(constraintViolations.isEmpty());
   }
 
   @Test
@@ -41,10 +43,10 @@ public class ConfigDeprecatedValidatorTest {
 
     Set<ConstraintViolation<TestBean>> constraintViolations = validatorFactory.getValidator().validate(testBean, Deprecated.class);
 
-    Assert.assertEquals(1, constraintViolations.size());
+    assertEquals(1, constraintViolations.size());
     ConstraintViolation<TestBean> constraintViolation = constraintViolations.iterator().next();
-    Assert.assertEquals(ConfigDeprecated.MESSAGE_TEMPLATE, constraintViolation.getMessageTemplate());
-    Assert.assertEquals("Is deprecated. It will be removed in " + ConfigDeprecated.DEFAULT_VERSION, constraintViolation.getMessage());
+    assertEquals(ConfigDeprecated.MESSAGE_TEMPLATE, constraintViolation.getMessageTemplate());
+    assertEquals("Is deprecated. It will be removed in " + ConfigDeprecated.DEFAULT_VERSION, constraintViolation.getMessage());
   }
 
   @Test
@@ -54,10 +56,10 @@ public class ConfigDeprecatedValidatorTest {
 
     Set<ConstraintViolation<TestBean>> constraintViolations = validatorFactory.getValidator().validate(testBean, Deprecated.class);
 
-    Assert.assertEquals(1, constraintViolations.size());
+    assertEquals(1, constraintViolations.size());
     ConstraintViolation<TestBean> constraintViolation = constraintViolations.iterator().next();
-    Assert.assertEquals(ConfigDeprecated.MESSAGE_TEMPLATE, constraintViolation.getMessageTemplate());
-    Assert.assertEquals("Is deprecated. It will be removed in 4.0.0", constraintViolation.getMessage());
+    assertEquals(ConfigDeprecated.MESSAGE_TEMPLATE, constraintViolation.getMessageTemplate());
+    assertEquals("Is deprecated. It will be removed in 4.0.0", constraintViolation.getMessage());
   }
 
   @Test
@@ -67,10 +69,10 @@ public class ConfigDeprecatedValidatorTest {
 
     Set<ConstraintViolation<TestBean>> constraintViolations = validatorFactory.getValidator().validate(testBean, Deprecated.class);
 
-    Assert.assertEquals(1, constraintViolations.size());
+    assertEquals(1, constraintViolations.size());
     ConstraintViolation<TestBean> constraintViolation = constraintViolations.iterator().next();
-    Assert.assertEquals(ConfigDeprecated.MESSAGE_TEMPLATE, constraintViolation.getMessageTemplate());
-    Assert.assertEquals("Is deprecated. It will be removed in " + ConfigDeprecated.DEFAULT_VERSION, constraintViolation.getMessage());
+    assertEquals(ConfigDeprecated.MESSAGE_TEMPLATE, constraintViolation.getMessageTemplate());
+    assertEquals("Is deprecated. It will be removed in " + ConfigDeprecated.DEFAULT_VERSION, constraintViolation.getMessage());
   }
 
   @Test
@@ -80,7 +82,7 @@ public class ConfigDeprecatedValidatorTest {
 
     Set<ConstraintViolation<TestBean>> constraintViolations = validatorFactory.getValidator().validate(testBean, Deprecated.class);
 
-    Assert.assertTrue(constraintViolations.isEmpty());
+    assertTrue(constraintViolations.isEmpty());
   }
 
   @Test
@@ -90,9 +92,9 @@ public class ConfigDeprecatedValidatorTest {
 
     Set<ConstraintViolation<TestBean>> constraintViolations = validatorFactory.getValidator().validate(testBean, Deprecated.class);
 
-    Assert.assertEquals(1, constraintViolations.size());
+    assertEquals(1, constraintViolations.size());
     ConstraintViolation<TestBean> constraintViolation = constraintViolations.iterator().next();
-    Assert.assertEquals(ConfigDeprecated.MESSAGE_TEMPLATE, constraintViolation.getMessageTemplate());
+    assertEquals(ConfigDeprecated.MESSAGE_TEMPLATE, constraintViolation.getMessageTemplate());
   }
 
   @Test
@@ -102,7 +104,7 @@ public class ConfigDeprecatedValidatorTest {
 
     Set<ConstraintViolation<TestBean>> constraintViolations = validatorFactory.getValidator().validate(testBean, Deprecated.class);
 
-    Assert.assertTrue(constraintViolations.isEmpty());
+    assertTrue(constraintViolations.isEmpty());
   }
 
   @Test
@@ -112,9 +114,9 @@ public class ConfigDeprecatedValidatorTest {
 
     Set<ConstraintViolation<TestBean>> constraintViolations = validatorFactory.getValidator().validate(testBean, Deprecated.class);
 
-    Assert.assertEquals(1, constraintViolations.size());
+    assertEquals(1, constraintViolations.size());
     ConstraintViolation<TestBean> constraintViolation = constraintViolations.iterator().next();
-    Assert.assertEquals(ConfigDeprecated.MESSAGE_TEMPLATE, constraintViolation.getMessageTemplate());
+    assertEquals(ConfigDeprecated.MESSAGE_TEMPLATE, constraintViolation.getMessageTemplate());
   }
 
   public interface TestInterface {

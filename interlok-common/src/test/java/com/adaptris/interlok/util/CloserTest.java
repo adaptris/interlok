@@ -2,8 +2,10 @@ package com.adaptris.interlok.util;
 
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+
 import java.io.IOException;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 public class CloserTest extends Closer {
 

@@ -1,12 +1,17 @@
 package com.adaptris.core.http.jetty.retry;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.Collections;
 import java.util.Map;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.util.LifecycleHelper;
@@ -14,20 +19,36 @@ import com.adaptris.interlok.InterlokException;
 
 public class RetryStoreTest implements RetryStore {
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     LifecycleHelper.initAndStart(this, false);
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     LifecycleHelper.stopAndClose(this, false);
 
   }
 
-  @Test(expected = UnsupportedOperationException.class)
+  @Test
   public void testDefaultDelete() throws Exception {
-    delete("");
+    Assertions.assertThrows(UnsupportedOperationException.class, () -> {
+      delete("");
+    });
+  }
+
+  @Test
+  public void testDefaultObtainExpiredMessages() throws Exception {
+    Assertions.assertThrows(UnsupportedOperationException.class, () -> {
+      obtainExpiredMessages();
+    });
+  }
+
+  @Test
+  public void testDefaultObtainMessagesToRetry() throws Exception {
+    Assertions.assertThrows(UnsupportedOperationException.class, () -> {
+      obtainMessagesToRetry();
+    });
   }
 
   @Test
@@ -40,21 +61,40 @@ public class RetryStoreTest implements RetryStore {
     assertFalse(report().iterator().hasNext());
   }
 
-
   @Override
   public void write(AdaptrisMessage msg) throws InterlokException {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public AdaptrisMessage buildForRetry(String msgId, Map<String, String> metadata,
-      AdaptrisMessageFactory factory) throws InterlokException {
+  public AdaptrisMessage buildForRetry(String msgId, Map<String, String> metadata, AdaptrisMessageFactory factory)
+      throws InterlokException {
     return null;
   }
 
   @Override
   public Map<String, String> getMetadata(String msgId) throws InterlokException {
-    return Collections.EMPTY_MAP;
+    return Collections.emptyMap();
+  }
+
+  @Override
+  public void acknowledge(String acknowledgeId) throws InterlokException {
+    // null implementation
+  }
+
+  @Override
+  public void deleteAcknowledged() throws InterlokException {
+    // null implementation
+  }
+
+  @Override
+  public void updateRetryCount(String messageId) throws InterlokException {
+    // null implementation
+  }
+
+  @Override
+  public void makeConnection(AdaptrisConnection connection) {
+    // null implementation
   }
 
 }

@@ -1,15 +1,16 @@
 package com.adaptris.fs;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.DefaultMessageFactory;
-import com.adaptris.interlok.resolver.FileResolver;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
+
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.DefaultMessageFactory;
+import com.adaptris.interlok.resolver.FileResolver;
 
 public class FileResolverTest
 {

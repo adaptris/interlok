@@ -16,10 +16,11 @@
 
 package com.adaptris.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -27,10 +28,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Constructor;
 import java.net.URL;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.stubs.TempFileUtils;
 
 /**
@@ -46,7 +49,7 @@ public class TestURLString extends com.adaptris.interlok.junit.scaffolding.BaseC
 
   protected File testOutputDir;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     testOutputDir = new File(PROPERTIES.getProperty(TEST_DIR));
     testOutputDir.mkdirs();

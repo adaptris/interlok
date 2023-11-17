@@ -15,17 +15,20 @@
  */
 
 package com.adaptris.core.services.jdbc.types;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.sql.Types;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.jdbc.JdbcResultRow;
 
 public class BooleanColumnTranslatorTest {
 
   private BooleanColumnTranslator translator;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     translator = new BooleanColumnTranslator();
   }

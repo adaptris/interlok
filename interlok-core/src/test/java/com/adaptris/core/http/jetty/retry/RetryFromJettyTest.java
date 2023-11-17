@@ -2,20 +2,24 @@ package com.adaptris.core.http.jetty.retry;
 
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
 import org.apache.commons.io.IOUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.Adapter;
+import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ChannelList;
@@ -46,7 +50,7 @@ public class RetryFromJettyTest extends FailedMessageRetrierCase {
   private static EmbeddedJettyHelper jettyHelper = new EmbeddedJettyHelper();
   private static InMemoryRetryStore retryStore = new InMemoryRetryStore();
 
-  @BeforeClass
+  @BeforeAll
   public static void beforeAll() throws Exception {
     LifecycleHelper.initAndStart(retryStore);
     // Seed some messages into the retry store which has a
@@ -57,7 +61,7 @@ public class RetryFromJettyTest extends FailedMessageRetrierCase {
     jettyHelper.startServer();
   }
 
-  @AfterClass
+  @AfterAll
   public static void afterAll() throws Exception {
     LifecycleHelper.stopAndClose(retryStore);
     InMemoryRetryStore.removeAll();
@@ -406,6 +410,26 @@ public class RetryFromJettyTest extends FailedMessageRetrierCase {
     @Override
     public Iterable<RemoteBlob> report() throws InterlokException {
       throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void acknowledge(String acknowledgeId) throws InterlokException {
+     // null implementation
+    }
+
+    @Override
+    public void deleteAcknowledged() throws InterlokException {
+     // null implementation
+    }
+
+    @Override
+    public void updateRetryCount(String messageId) throws InterlokException {
+     // null implementation
+    }
+
+    @Override
+    public void makeConnection(AdaptrisConnection connection) {
+    // null implementation
     }
   }
 

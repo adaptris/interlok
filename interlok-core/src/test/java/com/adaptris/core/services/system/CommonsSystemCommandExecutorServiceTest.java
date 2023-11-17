@@ -17,19 +17,22 @@
 package com.adaptris.core.services.system;
 
 import static org.apache.commons.lang3.StringUtils.strip;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.Executor;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -98,12 +101,12 @@ public class CommonsSystemCommandExecutorServiceTest extends GeneralServiceExamp
   private String oldThreadName;
 
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     oldThreadName = Thread.currentThread().getName();
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     Thread.currentThread().setName(oldThreadName);
   }

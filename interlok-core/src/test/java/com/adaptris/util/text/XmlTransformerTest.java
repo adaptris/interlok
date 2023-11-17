@@ -18,16 +18,20 @@ package com.adaptris.util.text;
 import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_INPUT;
 import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_TRANSFORM_URL;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.HashMap;
+
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.stubs.MessageHelper;
 import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
@@ -37,11 +41,11 @@ import com.adaptris.util.text.xml.XsltTransformerFactory;
 
 public class XmlTransformerTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
   }
 

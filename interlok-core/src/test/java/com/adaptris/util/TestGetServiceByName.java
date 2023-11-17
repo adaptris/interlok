@@ -13,8 +13,9 @@
 
 package com.adaptris.util;
 
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 public class TestGetServiceByName {
 
@@ -26,22 +27,22 @@ public class TestGetServiceByName {
 
   @Test
   public void testGetHttpsServicePort() {
-    assertEquals("Get Https port", GetServiceByName.getPort("https", "tcp"), 443);
+    assertEquals(GetServiceByName.getPort("https", "tcp"), 443);
   }
 
   @Test
   public void testGetSmtpServicePort() {
-    assertEquals("Get SMTP port", GetServiceByName.getPort("smtp", "tcp"), 25);
+    assertEquals(GetServiceByName.getPort("smtp", "tcp"), 25);
   }
 
   @Test
   public void testGetHttpServicePort() {
-    assertEquals("Get Http port", GetServiceByName.getPort("http", "tcp"), 80);
+    assertEquals(GetServiceByName.getPort("http", "tcp"), 80);
   }
 
   @Test
   public void testGetNonExistentPort() {
-    assertEquals("Non-Existent Port", GetServiceByName.getPort("asdfasdfadsf", "tcp"), -1);
+    assertEquals(GetServiceByName.getPort("asdfasdfadsf", "tcp"), -1);
   }
 }
 

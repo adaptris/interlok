@@ -16,8 +16,9 @@
 
 package com.adaptris.core.lifecycle;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.Channel;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.Workflow;
@@ -35,7 +36,7 @@ public abstract class WorkflowLifecycleStrategyCase
   protected IdGenerator idGenerator;
 
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     idGenerator = new PlainIdGenerator();
   }

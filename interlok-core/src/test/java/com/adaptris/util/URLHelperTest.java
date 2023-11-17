@@ -16,10 +16,14 @@
 
 package com.adaptris.util;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.interlok.junit.scaffolding.BaseCase;
 
 public class URLHelperTest extends URLHelper {
@@ -52,11 +56,13 @@ public class URLHelperTest extends URLHelper {
     }
   }
 
-  @Test(expected = IOException.class)
+  @Test
   public void testConnectLocal_String_DoesNotExist() throws Exception {
-    GuidGenerator g = new GuidGenerator();
-    // if this is successful I think we have a different class of problems...
-    connect("file://localhost/c:/" + g.safeUUID() + "/" + g.safeUUID());
+    Assertions.assertThrows(IOException.class, () -> {
+      GuidGenerator g = new GuidGenerator();
+      // if this is successful I think we have a different class of problems...
+      connect("file://localhost/c:/" + g.safeUUID() + "/" + g.safeUUID());
+    });
   }
 
   @Test

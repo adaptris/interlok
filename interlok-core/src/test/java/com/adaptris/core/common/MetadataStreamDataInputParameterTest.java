@@ -14,17 +14,15 @@
 package com.adaptris.core.common;
 
 import static com.adaptris.core.common.MetadataDataInputParameter.DEFAULT_METADATA_KEY;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -33,9 +31,6 @@ public class MetadataStreamDataInputParameterTest {
   private static final String METADATA_KEY = "myMetadataKey";
   private static final String UTF_8 = "UTF-8";
   private static final String TEXT = "Hello World";
-
-  @Rule
-  public TestName testName = new TestName();
 
   @Test
   public void testMetadataKey() throws Exception {

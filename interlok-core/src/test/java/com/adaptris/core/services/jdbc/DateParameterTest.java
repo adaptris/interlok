@@ -16,14 +16,17 @@
 
 package com.adaptris.core.services.jdbc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.text.SimpleDateFormat;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.services.jdbc.StatementParameterImpl.QueryType;
 import com.adaptris.interlok.junit.scaffolding.BaseCase;
 
@@ -36,14 +39,14 @@ public class DateParameterTest {
   public DateParameterTest() {
   }
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
     dateString = sdf.format(new java.util.Date());
     date = new java.sql.Date(sdf.parse(dateString).getTime());
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
   }
 
@@ -78,7 +81,7 @@ public class DateParameterTest {
     sp.setConvertNull(true);
     long convertedTime = ((java.sql.Date) sp.convert(null)).getTime();
     long now = System.currentTimeMillis();
-    assertTrue("now > convertedTime", now >= convertedTime);
+    assertTrue(now >= convertedTime);
   }
 
   private DateStatementParameter create() throws Exception {

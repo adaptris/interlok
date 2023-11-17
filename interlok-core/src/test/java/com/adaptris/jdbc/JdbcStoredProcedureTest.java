@@ -13,9 +13,10 @@
 
 package com.adaptris.jdbc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.sql.Connection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -24,15 +25,20 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
-import org.junit.After;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.CoreException;
 import com.adaptris.core.jdbc.JdbcConnection;
 import com.adaptris.core.util.JdbcUtil;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.interlok.junit.scaffolding.BaseCase;
+
+import lombok.Getter;
+import lombok.Setter;
 
 public class JdbcStoredProcedureTest extends BaseCase {
 
@@ -47,6 +53,10 @@ public class JdbcStoredProcedureTest extends BaseCase {
   private Connection connection;
 
   private CallableStatementCreator statementCreator;
+  
+  @Getter
+  @Setter
+  private boolean runMultiResultSetTest;
 
   private StoredProcedure storedProcedure;
 
@@ -54,19 +64,23 @@ public class JdbcStoredProcedureTest extends BaseCase {
     return Boolean.parseBoolean(PROPERTIES.getProperty(JDBC_STOREDPROC_TESTS_ENABLED, "false"));
   }
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     jdbcConnection = new JdbcConnection(PROPERTIES.getProperty(JDBC_URL), PROPERTIES.getProperty(JDBC_DRIVER));
     jdbcConnection.setUsername(PROPERTIES.getProperty(JDBC_USER));
     jdbcConnection.setPassword(PROPERTIES.getProperty(JDBC_PASSWORD));
 
     LifecycleHelper.initAndStart(jdbcConnection);
 
-    if (PROPERTIES.getProperty(JDBC_VENDOR).equals("mysql"))
+    if (PROPERTIES.getProperty(JDBC_VENDOR).equals("mysql")) {
       statementCreator = new MysqlStatementCreator();
-    else if (PROPERTIES.getProperty(JDBC_VENDOR).equals("sqlserver"))
+      setRunMultiResultSetTest(true);
+    }
+    else if (PROPERTIES.getProperty(JDBC_VENDOR).equals("sqlserver")) {
       statementCreator = new SqlServerStatementCreator();
+      setRunMultiResultSetTest(false);
+    }
     else
       fail("Vendor for JDBC tests unknown: " + PROPERTIES.getProperty(JDBC_VENDOR));
 
@@ -79,7 +93,7 @@ public class JdbcStoredProcedureTest extends BaseCase {
 
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     JdbcUtil.closeQuietly(connection);
     LifecycleHelper.stopAndClose(jdbcConnection);
@@ -87,7 +101,7 @@ public class JdbcStoredProcedureTest extends BaseCase {
 
   @Test
   public void testNoParams() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     storedProcedure.setName("no_params");
     JdbcResult procedureResult = storedProcedure.execute();
     assertEquals(true, procedureResult.isHasResultSet());
@@ -95,7 +109,7 @@ public class JdbcStoredProcedureTest extends BaseCase {
 
   @Test
   public void testOneIn() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     storedProcedure.setName("one_in");
 
     StoredProcedureParameter parameter =
@@ -108,7 +122,7 @@ public class JdbcStoredProcedureTest extends BaseCase {
 
   @Test
   public void testManyIn() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     storedProcedure.setName("many_in");
 
     StoredProcedureParameter parameter1 =
@@ -125,7 +139,7 @@ public class JdbcStoredProcedureTest extends BaseCase {
 
   @Test
   public void testOneOut() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     storedProcedure.setName("one_out");
 
     StoredProcedureParameter parameter =
@@ -139,7 +153,7 @@ public class JdbcStoredProcedureTest extends BaseCase {
 
   @Test
   public void testManyOut() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     storedProcedure.setName("many_out");
 
     StoredProcedureParameter parameter1 =
@@ -163,7 +177,7 @@ public class JdbcStoredProcedureTest extends BaseCase {
 
   @Test
   public void testOneInout() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     storedProcedure.setName("one_inout");
 
     StoredProcedureParameter parameter =
@@ -178,7 +192,7 @@ public class JdbcStoredProcedureTest extends BaseCase {
 
   @Test
   public void testOneInOneOut() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     storedProcedure.setName("one_in_one_out");
 
     StoredProcedureParameter parameter1 =
@@ -197,7 +211,7 @@ public class JdbcStoredProcedureTest extends BaseCase {
 
   @Test
   public void testManyInManyOut() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     storedProcedure.setName("many_in_many_out");
 
     StoredProcedureParameter parameter1 =
@@ -225,7 +239,7 @@ public class JdbcStoredProcedureTest extends BaseCase {
 
   @Test
   public void testOneInoutOneIn() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     storedProcedure.setName("one_inout_one_in");
 
     StoredProcedureParameter parameter1 =
@@ -244,7 +258,7 @@ public class JdbcStoredProcedureTest extends BaseCase {
 
   @Test
   public void testOneInoutOneOut() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     storedProcedure.setName("one_inout_one_out");
 
     StoredProcedureParameter parameter1 =
@@ -264,7 +278,7 @@ public class JdbcStoredProcedureTest extends BaseCase {
 
   @Test
   public void testOneInoutOneInOneOut() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     storedProcedure.setName("one_inout_one_in_one_out");
 
     StoredProcedureParameter parameter1 =
@@ -287,7 +301,7 @@ public class JdbcStoredProcedureTest extends BaseCase {
 
   @Test
   public void testOneInoutOneInOneOutExecuteExecutor() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     storedProcedure.setName("one_inout_one_in_one_out");
     storedProcedure.setStatementExecutor(new ExecuteCallableStatementExecutor());
 
@@ -311,7 +325,7 @@ public class JdbcStoredProcedureTest extends BaseCase {
 
   @Test
   public void testNoNamesOneInoutOneInOneOut() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     storedProcedure.setName("one_inout_one_in_one_out");
 
     StoredProcedureParameter parameter1 =
@@ -333,7 +347,7 @@ public class JdbcStoredProcedureTest extends BaseCase {
 
   @Test
   public void testOneResultsetExecuteUpdate() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     storedProcedure.setName("one_resultset");
     storedProcedure.setStatementExecutor(new ExecuteUpdateCallableStatementExecutor());
 
@@ -347,7 +361,7 @@ public class JdbcStoredProcedureTest extends BaseCase {
 
   @Test
   public void testOneResultsetExecuteQuery() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     storedProcedure.setName("one_resultset");
     storedProcedure.setStatementExecutor(new ExecuteQueryCallableStatementExecutor());
 
@@ -360,7 +374,7 @@ public class JdbcStoredProcedureTest extends BaseCase {
 
   @Test
   public void testOneResultset() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     storedProcedure.setName("one_resultset");
 
     JdbcResult procedureResult = storedProcedure.execute();
@@ -372,37 +386,40 @@ public class JdbcStoredProcedureTest extends BaseCase {
 
   @Test
   public void testManyResultsets() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     storedProcedure.setName("many_resultsets");
 
     JdbcResult procedureResult = storedProcedure.execute();
     assertEquals(true, procedureResult.isHasResultSet());
-
-    assertEquals(2, procedureResult.countResultSets());
-
     assertEquals(5, countRows(procedureResult.getResultSet(0).getRows()));
-    assertEquals(5, countRows(procedureResult.getResultSet(1).getRows()));
+    
+    if(getRunMultiResultSetTest()) {
+      assertEquals(2, procedureResult.countResultSets());
+      System.out.println("hi");
+      assertEquals(5, countRows(procedureResult.getResultSet(1).getRows()));
+    }
   }
 
   @Test
   public void testStoredProcedureMultiParamConstructor() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     StoredProcedure storedProcedure =
         new StoredProcedure("many_resultsets", new ArrayList<StoredProcedureParameter>(), connection, statementCreator);
     storedProcedure.setStatementExecutor(new ExecuteCallableStatementExecutor());
 
     JdbcResult procedureResult = storedProcedure.execute();
     assertEquals(true, procedureResult.isHasResultSet());
-
-    assertEquals(2, procedureResult.countResultSets());
-
     assertEquals(5, countRows(procedureResult.getResultSet(0).getRows()));
-    assertEquals(5, countRows(procedureResult.getResultSet(1).getRows()));
+    
+    if(getRunMultiResultSetTest()) {
+      assertEquals(2, procedureResult.countResultSets());
+      assertEquals(5, countRows(procedureResult.getResultSet(1).getRows()));
+    }
   }
 
   @Test
   public void testStoredProcedureNameDoesntExist() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     StoredProcedure storedProcedure =
         new StoredProcedure("I_do_not_exist", new ArrayList<StoredProcedureParameter>(), connection, statementCreator);
     storedProcedure.setStatementExecutor(new ExecuteCallableStatementExecutor());

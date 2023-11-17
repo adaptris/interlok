@@ -16,9 +16,11 @@
 
 package com.adaptris.core.fs;
 
-import static org.junit.Assert.fail;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.CoreException;
 import com.adaptris.core.PollingTrigger;
 import com.adaptris.util.TimeInterval;
@@ -28,7 +30,7 @@ public class FsImmediateEventPollerTest {
   private FsConsumer consumer;
   private FsImmediateEventPoller poller;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     consumer = new FsConsumer();
     consumer.setBaseDirectoryUrl(".");

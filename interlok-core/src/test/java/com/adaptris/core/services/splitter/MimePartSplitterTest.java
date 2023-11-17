@@ -17,14 +17,14 @@
 package com.adaptris.core.services.splitter;
 
 import static com.adaptris.interlok.junit.scaffolding.util.MimeJunitHelper.create;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.Service;
@@ -59,7 +59,7 @@ public class MimePartSplitterTest extends SplitterCase {
     List<AdaptrisMessage> result = m.splitMessage(msg);
     assertEquals(3, result.size());
     for (AdaptrisMessage smsg : result) {
-      assertFalse("Should not contain object metadata", smsg.getObjectHeaders().containsKey(obj));
+      assertFalse(smsg.getObjectHeaders().containsKey(obj));
     }
   }
 
@@ -73,7 +73,7 @@ public class MimePartSplitterTest extends SplitterCase {
     List<AdaptrisMessage> result = m.splitMessage(msg);
     assertEquals(3, result.size());
     for (AdaptrisMessage smsg : result) {
-      assertTrue("Should contain object metadata", smsg.getObjectHeaders().containsKey(obj));
+      assertTrue(smsg.getObjectHeaders().containsKey(obj));
       assertEquals(obj, smsg.getObjectHeaders().get(obj));
     }
   }

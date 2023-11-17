@@ -31,6 +31,7 @@ import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
@@ -38,6 +39,7 @@ import com.adaptris.core.services.metadata.timestamp.OffsetTimestampGenerator;
 import com.adaptris.core.services.metadata.timestamp.TimestampGenerator;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
+import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -119,21 +121,31 @@ public class AddTimestampMetadataService extends ServiceImp {
     }
   }
 
+  @Override
+  public void start() throws CoreException {
+    LifecycleHelper.start(timestampGenerator);
+  }
+
 
   @Override
   protected void initService() throws CoreException {
     try {
+      LifecycleHelper.init(timestampGenerator);
       Args.notBlank(getMetadataKey(), "metadata-key");
     } catch (IllegalArgumentException e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
   }
+  
+  @Override
+  public void stop() {
+    LifecycleHelper.stop(timestampGenerator);
+  }
 
   @Override
   protected void closeService() {
-
+    LifecycleHelper.close(timestampGenerator);
   }
-
 
   /**
    * @return the metadataKey

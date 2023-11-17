@@ -2,12 +2,16 @@ package com.adaptris.core.http.jetty.retry;
 
 import static com.adaptris.core.http.jetty.retry.FilesystemRetryStoreTest.INVALID_URL;
 import static com.adaptris.core.http.jetty.retry.FilesystemRetryStoreTest.TEST_BASE_URL;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.util.Optional;
+
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceException;
@@ -26,17 +30,17 @@ public class RetryStoreWriteTest extends ExampleServiceCase {
     File[] files = retryStoreDir.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
     int base = Optional.ofNullable(files).orElse(new File[0]).length;
     execute(service, msg);
-    assertEquals(1,
-        retryStoreDir.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY).length - base);
+    assertEquals(1, retryStoreDir.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY).length - base);
   }
 
-  @Test(expected = ServiceException.class)
+  @Test
   public void testService_Exception() throws Exception {
-    AdaptrisMessage msg = new DefaultMessageFactory().newMessage("hello");
-    RetryStoreWriteService service = new RetryStoreWriteService()
-        .withRetryStore(
-            new FilesystemRetryStore().withBaseUrl(INVALID_URL));
-    execute(service, msg);
+    Assertions.assertThrows(ServiceException.class, () -> {
+      AdaptrisMessage msg = new DefaultMessageFactory().newMessage("hello");
+      RetryStoreWriteService service = new RetryStoreWriteService()
+          .withRetryStore(new FilesystemRetryStore().withBaseUrl(INVALID_URL));
+      execute(service, msg);
+    });
   }
 
   @Override

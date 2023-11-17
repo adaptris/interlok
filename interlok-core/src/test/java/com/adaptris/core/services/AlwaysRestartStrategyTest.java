@@ -16,9 +16,11 @@
 
 package com.adaptris.core.services;
 
-import static org.junit.Assert.assertTrue;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMessageFactory;
 
@@ -27,7 +29,7 @@ public class AlwaysRestartStrategyTest {
   private RestartStrategy restartStrategy;
   private AdaptrisMessageFactory messageFactory;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     restartStrategy = new AlwaysRestartStrategy();
     messageFactory = DefaultMessageFactory.getDefaultInstance();

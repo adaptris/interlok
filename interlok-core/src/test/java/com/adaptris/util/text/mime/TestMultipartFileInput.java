@@ -16,24 +16,25 @@
 
 package com.adaptris.util.text.mime;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.File;
 
 import javax.mail.internet.MimeBodyPart;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestMultipartFileInput extends PartIteratorCase {
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
   }
 
@@ -59,7 +60,8 @@ public class TestMultipartFileInput extends PartIteratorCase {
           assertEquals(PAYLOAD_3, toString(part));
           break;
         }
-        default : {}  
+        default: {
+        }
         }
       }
       assertEquals(3, count);
@@ -87,12 +89,14 @@ public class TestMultipartFileInput extends PartIteratorCase {
     }
   }
 
-  @Test(expected = UnsupportedOperationException.class)
+  @Test
   public void testRemove() throws Exception {
-    File input = generateFileInput();
-    try (MultiPartFileInput mimeInput = new MultiPartFileInput(input)) {
-      mimeInput.next();
-      mimeInput.remove();
-    }
+    Assertions.assertThrows(UnsupportedOperationException.class, () -> {
+      File input = generateFileInput();
+      try (MultiPartFileInput mimeInput = new MultiPartFileInput(input)) {
+        mimeInput.next();
+        mimeInput.remove();
+      }
+    });
   }
 }

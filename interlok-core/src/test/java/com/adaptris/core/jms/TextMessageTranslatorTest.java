@@ -16,16 +16,18 @@
 
 package com.adaptris.core.jms;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import javax.jms.Message;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
@@ -33,13 +35,13 @@ import com.adaptris.core.metadata.RegexMetadataFilter;
 
 public class TextMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpAll() throws Exception {
     activeMqBroker = new EmbeddedActiveMq();
     activeMqBroker.start();
   }
   
-  @AfterClass
+  @AfterAll
   public static void tearDownAll() throws Exception {
     if(activeMqBroker != null)
       activeMqBroker.destroy();
@@ -72,7 +74,7 @@ public class TextMessageTranslatorTest extends GenericMessageTypeTranslatorCase 
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
       addMetadata(msg);
       Message jmsMsg = trans.translate(msg);
-      assertTrue("jmsMsg instanceof TextMessage", jmsMsg instanceof TextMessage);
+      assertTrue(jmsMsg instanceof TextMessage);
       assertEquals(TEXT, ((TextMessage) jmsMsg).getText());
       assertJmsProperties(jmsMsg);
     }
@@ -95,7 +97,7 @@ public class TextMessageTranslatorTest extends GenericMessageTypeTranslatorCase 
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
       addMetadata(msg);
       Message jmsMsg = trans.translate(msg);
-      assertTrue("jmsMsg instanceof TextMessage", jmsMsg instanceof TextMessage);
+      assertTrue(jmsMsg instanceof TextMessage);
       assertEquals(TEXT, ((TextMessage) jmsMsg).getText());
 
       assertEquals(STRING_VALUE, jmsMsg.getStringProperty(STRING_METADATA));

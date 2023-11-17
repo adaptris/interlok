@@ -25,7 +25,7 @@ import com.adaptris.core.stubs.UpgradedToJunit4;
  * </p>
  */
 @Deprecated
-@Removal(version = "4.0.0", message = "moved to com.adaptris.interlok.junit.scaffolding")
+@Removal(version = "5.1.0", message = "moved to com.adaptris.interlok.junit.scaffolding")
 public abstract class ServiceCase
     extends com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase
     implements UpgradedToJunit4 {

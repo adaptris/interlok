@@ -16,10 +16,12 @@
 
 package com.adaptris.core.services.metadata;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BranchingServiceCollection;
@@ -32,7 +34,7 @@ public class MetadataExistsBranchingServiceTest extends BranchingServiceExample 
   private AdaptrisMessage msg;
 
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     service = new MetadataExistsBranchingService();
     service.addMetadataKey("key1");

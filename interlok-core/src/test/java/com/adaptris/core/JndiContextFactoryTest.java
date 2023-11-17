@@ -16,18 +16,22 @@
 
 package com.adaptris.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Properties;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.ftp.FtpConnection;
 import com.adaptris.core.http.jetty.HttpConnection;
 import com.adaptris.core.jdbc.MockJdbcConnection;
@@ -42,7 +46,7 @@ public class JndiContextFactoryTest {
   private Properties env = new Properties();
   private Properties bootstrapProps = new Properties();
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     env.put(Context.INITIAL_CONTEXT_FACTORY, JndiContextFactory.class.getName());
 

@@ -15,9 +15,10 @@
  */
 package com.adaptris.core.services.conditional;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -33,11 +34,13 @@ public class MaxLoopBehaviourTest {
     behaviour.onMax(msg);
   }
 
-  @Test(expected = ServiceException.class)
+  @Test
   public void testOnMaxThrowException() throws Exception {
-    OnMaxThrowException behaviour = new OnMaxThrowException();
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    behaviour.onMax(msg);
+    Assertions.assertThrows(ServiceException.class, () -> {
+      OnMaxThrowException behaviour = new OnMaxThrowException();
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+      behaviour.onMax(msg);
+    });
   }
 
   @Test

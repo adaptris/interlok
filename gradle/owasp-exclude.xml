@@ -194,4 +194,67 @@
     <packageUrl regex="true">^pkg:maven/commons\-validator/commons\-validator@.*$</packageUrl>
     <cpe>cpe:/a:apache:commons_net</cpe>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: json-utils-0.1.8.jar. This is a false positive
+    The CVE-2023-2972 issue is in https://github.com/antfu/utils and not in com.bazaarvoice.jolt:json-utils
+    Adding it here as the issue occurs into multiple optional components
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/com\.bazaarvoice\.jolt/json\-utils@.*$</packageUrl>
+    <cve>CVE-2023-2972</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: jetty-javax-websocket-api-1.1.2.jar and jetty-servlet-api-4.0.6.jar
+    False positive, the CVEs are for org.eclipse.jetty components and less than 10.0.15 and not org.eclipse.jetty.toolchain components
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty\.toolchain/jetty\-.*\-api@.*$</packageUrl>
+    <cve>CVE-2017-7657</cve>
+    <cve>CVE-2017-7658</cve>
+    <cve>CVE-2009-5045</cve>
+    <cve>CVE-2017-7656</cve>
+    <cve>CVE-2017-9735</cve>
+    <cve>CVE-2022-2048</cve>
+    <cve>CVE-2020-27216</cve>
+    <cve>CVE-2023-44487</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: grpc-api-1.58.0.jar and grpc-context-1.58.0.jar
+    False positive, the CVE is for grpc-go
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/io\.grpc/grpc\-.*@.*$</packageUrl>
+    <cve>CVE-2023-44487</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: netty-handler-4.1.100.Final.jar
+    False positive, the CVE is for version earlier than 4.1.100.Final
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/io\.netty/netty\-.*@.*$</packageUrl>
+    <cve>CVE-2023-4586</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: jackson-databind-2.15.2.jar
+	This is not a really valid CVE and not realy exploitable as java code needs to be midified: https://github.com/FasterXML/jackson-databind/issues/3972
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
+    <cve>CVE-2023-35116</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: quartz-2.3.2.jar. The CVE is only for quartz-jobs-2.3.2.jar and org.quartz.jobs.ee.jms.SendQueueMessageJob.execute which we are not using. 
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.quartz\-scheduler/quartz@.*$</packageUrl>
+    <cve>CVE-2023-39017</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: json-20231013.jar
+	False positive, the CVE is for version 20230618 and earlier.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.json/json@.*$</packageUrl>
+    <cve>CVE-2023-5072</cve>
+  </suppress>
 </suppressions>

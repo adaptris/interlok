@@ -6,7 +6,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 import org.apache.commons.io.input.ReaderInputStream;
+
 import com.adaptris.core.management.BootstrapProperties;
 
 public class MockBootProperties extends BootstrapProperties {

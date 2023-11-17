@@ -19,9 +19,11 @@ package com.adaptris.core.services.metadata;
 import static com.adaptris.core.services.metadata.UrlDecodeMetadataServiceTest.DECODED;
 import static com.adaptris.core.services.metadata.UrlDecodeMetadataServiceTest.ENCODED;
 import static com.adaptris.core.services.metadata.UrlDecodeMetadataServiceTest.SOURCE_METADATA_KEY;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 

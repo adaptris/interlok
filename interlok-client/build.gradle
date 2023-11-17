@@ -2,7 +2,7 @@ ext {
   componentName='Interlok Core/Client'
   componentDesc="Interlok client API; allows you to programatically submit messages to an Interlok workflow"
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
-  log4j2Version = "2.20.0"
+  log4j2Version = "2.21.1"
   mockitoVersion = '4.9.0'
 }
 
@@ -18,9 +18,9 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 
 dependencies {
   api project(':interlok-common')
-  api ("org.slf4j:slf4j-api:2.0.6")
-  testImplementation ('junit:junit:4.13.2')
-  // testCompile ("com.adaptris:interlok-stubs:$interlokCoreVersion") { changing= true}
+  api ("org.slf4j:slf4j-api:2.0.9")
+  testImplementation ("org.junit.jupiter:junit-jupiter-api:5.10.1")
+  testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.10.1")
   testImplementation ("org.apache.logging.log4j:log4j-core:$log4j2Version")
   testImplementation ("org.apache.logging.log4j:log4j-1.2-api:$log4j2Version")
   testImplementation ("org.apache.logging.log4j:log4j-api:$log4j2Version")
@@ -36,8 +36,7 @@ dependencies {
 javadoc {
   configure(options) {
     taglets = ["com.adaptris.taglet.ConfigTaglet", "com.adaptris.taglet.LicenseTaglet"]
-    options.addBooleanOption "-no-module-directories", true
-    options.addStringOption('Xdoclint:none', '-quiet')
+    options.addStringOption "Xdoclint:none", "-quiet"
     options.addStringOption "tagletpath", configurations.javadoc.asPath
     options.tags('apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:','implNote:a:Implementation Note:')
     title= componentName
@@ -69,7 +68,7 @@ publishing {
       pom.withXml {
         asNode().appendNode("name", componentName)
         asNode().appendNode("description", componentDesc)
-		asNode().appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
+        asNode().appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
         def properties = asNode().appendNode("properties")
         properties.appendNode("target", "3.0.5+")
         properties.appendNode("license", "false")

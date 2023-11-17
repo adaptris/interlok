@@ -2,17 +2,17 @@ ext {
   componentName='Interlok Core/JMX Client'
   componentDesc="JMX implementation of the Interlok Client API"
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
-  log4j2Version = "2.20.0"
+  log4j2Version = "2.21.1"
   mockitoVersion = '4.9.0'
 }
 
 dependencies {
   api project(':interlok-common')
   api project(':interlok-client')
-  api ("org.slf4j:slf4j-api:2.0.6")
+  api ("org.slf4j:slf4j-api:2.0.9")
 
-  testImplementation ('junit:junit:4.13.2')
-  // testCompile ("com.adaptris:interlok-stubs:$interlokCoreVersion") { changing= true}
+  testImplementation ("org.junit.jupiter:junit-jupiter-api:5.10.1")
+  testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.10.1")
   testImplementation ("org.apache.logging.log4j:log4j-core:$log4j2Version")
   testImplementation ("org.apache.logging.log4j:log4j-1.2-api:$log4j2Version")
   testImplementation ("org.apache.logging.log4j:log4j-api:$log4j2Version")
@@ -53,8 +53,7 @@ delombok {
 javadoc {
   configure(options) {
     taglets = ["com.adaptris.taglet.ConfigTaglet", "com.adaptris.taglet.LicenseTaglet"]
-    options.addBooleanOption "-no-module-directories", true
-    options.addStringOption('Xdoclint:none', '-quiet')
+    options.addStringOption "Xdoclint:none", "-quiet"
     options.addStringOption "tagletpath", configurations.javadoc.asPath
     options.tags('apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:','implNote:a:Implementation Note:')
     title= componentName
@@ -72,7 +71,7 @@ publishing {
       pom.withXml {
         asNode().appendNode("name", componentName)
         asNode().appendNode("description", componentDesc)
-		asNode().appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
+        asNode().appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
         def properties = asNode().appendNode("properties")
         properties.appendNode("target", "3.0.5+")
         properties.appendNode("license", "false")

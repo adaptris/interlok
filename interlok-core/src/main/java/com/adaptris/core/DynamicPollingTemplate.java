@@ -18,7 +18,6 @@ package com.adaptris.core;
 import javax.validation.Valid;
 import com.adaptris.core.PollingTrigger.MessageProvider;
 import com.adaptris.core.http.client.net.HttpRequestService;
-import com.adaptris.core.services.ScriptingServiceImp;
 import com.adaptris.core.services.jdbc.JdbcDataQueryService;
 import com.adaptris.core.services.jdbc.ResultSetTranslator;
 import com.adaptris.core.services.jdbc.SplittingXmlPayloadTranslator;
@@ -33,7 +32,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * message before submitting to a workflow. At the moment only a limited subset of services are
  * enabled for this provider :
  * <ul>
- * <li>{@link ScriptingServiceImp}</li>
+ * <li>interlok-scripting ScriptingServiceImp</li>
  * <li>{@link JdbcDataQueryService}</li>
  * <li>{@link HttpRequestService}</li>
  * </p>
@@ -116,6 +115,5 @@ public class DynamicPollingTemplate implements PollingTrigger.MessageProvider {
   private static class NullMessageProvider extends NullService implements TemplateProvider {
 
   }
-
 
 }

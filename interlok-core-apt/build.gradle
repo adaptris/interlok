@@ -9,7 +9,8 @@ dependencies {
   api ("jakarta.validation:jakarta.validation-api:2.0.2")
   // compile files("${System.getProperty('java.home')}/../lib/tools.jar")
 
-  testImplementation("junit:junit:4.13.2")
+  testImplementation ("org.junit.jupiter:junit-jupiter-api:5.10.1")
+  testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.10.1")
   testImplementation("org.hibernate.validator:hibernate-validator:6.1.7.Final")
   testImplementation("org.glassfish:jakarta.el:3.0.4")
 }
@@ -32,8 +33,7 @@ artifacts {
 javadoc {
   configure(options) {
     options.tags('apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:','implNote:a:Implementation Note:')
-    options.addStringOption('Xdoclint:none', '-quiet')
-    options.addBooleanOption "-no-module-directories", true
+    options.addStringOption "Xdoclint:none", "-quiet"
     title= componentName
   }
 }
@@ -57,7 +57,7 @@ publishing {
       pom.withXml {
         asNode().appendNode("name", componentName)
         asNode().appendNode("description", componentDesc)
-		asNode().appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
+        asNode().appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
         def properties = asNode().appendNode("properties")
         properties.appendNode("target", "3.8.0+")
         properties.appendNode("tags", "annotations")

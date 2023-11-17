@@ -16,17 +16,19 @@
 
 package com.adaptris.core.management.jmx;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
@@ -35,9 +37,11 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.management.Constants;
 import com.adaptris.core.management.SystemPropertiesUtilTest;
 import com.adaptris.core.management.jmx.provider.junit.ServerProvider;
@@ -57,7 +61,7 @@ public class JmxRemoteComponentTest extends com.adaptris.interlok.junit.scaffold
 
   private Integer unusedPort = -1;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     unusedPort = PortManager.nextUnusedPort(5555);
     ObjectName jmxObjName = new ObjectName(JmxRemoteComponent.DEFAULT_JMX_OBJECT_NAME);
@@ -67,7 +71,7 @@ public class JmxRemoteComponentTest extends com.adaptris.interlok.junit.scaffold
     }
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     PortManager.release(unusedPort);
     ObjectName jmxObjName = new ObjectName(JmxRemoteComponent.DEFAULT_JMX_OBJECT_NAME);

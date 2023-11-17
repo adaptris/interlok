@@ -16,16 +16,18 @@
 package com.adaptris.core.common;
 
 import static com.adaptris.core.common.MetadataDataOutputParameter.DEFAULT_METADATA_KEY;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -34,9 +36,6 @@ public class MetadataStreamDataOutputParameterTest {
   private static final String UTF_8 = "UTF-8";
 
   private static final String TEXT = "Hello World";
-
-  @Rule
-  public TestName testName = new TestName();
 
   @Test
   public void testMetadataKey() throws Exception {
@@ -52,7 +51,7 @@ public class MetadataStreamDataOutputParameterTest {
     }
     assertEquals("myKey", p.getMetadataKey());
   }
-  
+
   @Test
   public void testContentEncoding() {
     MetadataStreamOutputParameter p = new MetadataStreamOutputParameter();
@@ -72,8 +71,7 @@ public class MetadataStreamDataOutputParameterTest {
     assertNotSame(TEXT, msg.getContent());
     assertEquals(TEXT, msg.getMetadataValue(DEFAULT_METADATA_KEY));
   }
-  
-  
+
   @Test
   public void testInsert_NullStream() throws Exception {
     // INTERLOK-3527
@@ -94,28 +92,30 @@ public class MetadataStreamDataOutputParameterTest {
     assertEquals(TEXT, msg.getMetadataValue(DEFAULT_METADATA_KEY));
   }
 
-  @Test(expected = CoreException.class)
+  @Test
   public void testInsert_Broken() throws Exception {
-    MetadataStreamOutputParameter p = new MetadataStreamOutputParameter();
-    p.setContentEncoding(UTF_8);
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    FilterInputStream in = new FilterInputStream(new ByteArrayInputStream(new byte[0])) {
-      @Override
-      public int read() throws IOException {
-        throw new IOException("Failed to read");
-      }
+    Assertions.assertThrows(CoreException.class, () -> {
+      MetadataStreamOutputParameter p = new MetadataStreamOutputParameter();
+      p.setContentEncoding(UTF_8);
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+      FilterInputStream in = new FilterInputStream(new ByteArrayInputStream(new byte[0])) {
+        @Override
+        public int read() throws IOException {
+          throw new IOException("Failed to read");
+        }
 
-      @Override
-      public int read(byte[] b) throws IOException {
-        throw new IOException("Failed to read");
-      }
+        @Override
+        public int read(byte[] b) throws IOException {
+          throw new IOException("Failed to read");
+        }
 
-      @Override
-      public int read(byte[] b, int off, int len) throws IOException {
-        throw new IOException("Failed to read");
-      }
-    };
-    p.insert(new InputStreamWithEncoding(in, null), msg);
+        @Override
+        public int read(byte[] b, int off, int len) throws IOException {
+          throw new IOException("Failed to read");
+        }
+      };
+      p.insert(new InputStreamWithEncoding(in, null), msg);
+    });
   }
 
 }

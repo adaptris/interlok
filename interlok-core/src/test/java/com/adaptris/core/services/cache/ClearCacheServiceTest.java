@@ -1,7 +1,9 @@
 package com.adaptris.core.services.cache;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -27,21 +29,25 @@ public class ClearCacheServiceTest {
     ExampleServiceCase.execute(service, AdaptrisMessageFactory.getDefaultInstance().newMessage());
   }
 
-  @Test(expected = ServiceException.class)
+  @Test
   public void testDoService_NotQuietly() throws Exception {
-    Cache mockCache = Mockito.mock(Cache.class);
-    Mockito.doThrow(new UnsupportedOperationException()).when(mockCache).clear();
-    CacheConnection cache = new CacheConnection(mockCache);
-    ClearCacheService service = new ClearCacheService().withConnection(cache);
-    ExampleServiceCase.execute(service, AdaptrisMessageFactory.getDefaultInstance().newMessage());
+    Assertions.assertThrows(ServiceException.class, () -> {
+      Cache mockCache = Mockito.mock(Cache.class);
+      Mockito.doThrow(new UnsupportedOperationException()).when(mockCache).clear();
+      CacheConnection cache = new CacheConnection(mockCache);
+      ClearCacheService service = new ClearCacheService().withConnection(cache);
+      ExampleServiceCase.execute(service, AdaptrisMessageFactory.getDefaultInstance().newMessage());
+    });
   }
 
-  @Test(expected = ServiceException.class)
+  @Test
   public void testDoService_Exception() throws Exception {
-    Cache mockCache = Mockito.mock(Cache.class);
-    Mockito.doThrow(new CoreException()).when(mockCache).clear();
-    CacheConnection cache = new CacheConnection(mockCache);
-    ClearCacheService service = new ClearCacheService().withIgnoreUnsupported(true).withConnection(cache);
-    ExampleServiceCase.execute(service, AdaptrisMessageFactory.getDefaultInstance().newMessage());
+    Assertions.assertThrows(ServiceException.class, () -> {
+      Cache mockCache = Mockito.mock(Cache.class);
+      Mockito.doThrow(new CoreException()).when(mockCache).clear();
+      CacheConnection cache = new CacheConnection(mockCache);
+      ClearCacheService service = new ClearCacheService().withIgnoreUnsupported(true).withConnection(cache);
+      ExampleServiceCase.execute(service, AdaptrisMessageFactory.getDefaultInstance().newMessage());
+    });
   }
 }

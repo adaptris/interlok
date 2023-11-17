@@ -16,6 +16,17 @@
 
 package com.adaptris.core.ftp;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.oro.io.GlobFilenameFilter;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreConstants;
@@ -31,16 +42,6 @@ import com.adaptris.security.password.Password;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.SafeGuidGenerator;
 import com.adaptris.util.TimeInterval;
-import org.apache.oro.io.GlobFilenameFilter;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public abstract class RelaxedFtpCase extends FtpConsumerExample {
   private static final TimeInterval DEFAULT_QUIET_PERIOD = new TimeInterval(1L, TimeUnit.SECONDS);
@@ -49,7 +50,7 @@ public abstract class RelaxedFtpCase extends FtpConsumerExample {
 
   protected static final String PAYLOAD = "Quick zephyrs blow, vexing daft Jim";
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     if (areTestsEnabled()) {
       FileTransferClient client = connectRawClient();
@@ -65,7 +66,7 @@ public abstract class RelaxedFtpCase extends FtpConsumerExample {
     }
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     if (areTestsEnabled()) {
       FileTransferClient client = connectRawClient();
@@ -380,9 +381,9 @@ public abstract class RelaxedFtpCase extends FtpConsumerExample {
   protected abstract String getRemoteDirectory();
 
   protected void assertMessages(List<AdaptrisMessage> list, int count) {
-    assertEquals("All files consumed/produced", count, list.size());
+    assertEquals(count, list.size());
     for (AdaptrisMessage m : list) {
-      assertTrue(m.containsKey(CoreConstants.ORIGINAL_NAME_KEY));
+      assertTrue(m.headersContainsKey(CoreConstants.ORIGINAL_NAME_KEY));
       assertEquals(PAYLOAD, m.getContent().trim());
     }
   }

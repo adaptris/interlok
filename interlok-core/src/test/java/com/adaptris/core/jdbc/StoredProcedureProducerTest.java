@@ -17,20 +17,24 @@
 package com.adaptris.core.jdbc;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
 import javax.xml.xpath.XPathExpressionException;
+
 import org.apache.commons.lang3.BooleanUtils;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ComponentLifecycle;
@@ -53,6 +57,9 @@ import com.adaptris.util.TimeInterval;
 import com.adaptris.util.XmlUtils;
 import com.adaptris.util.text.xml.XPath;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public class StoredProcedureProducerTest extends ExampleProducerCase {
 
   /**
@@ -68,6 +75,10 @@ public class StoredProcedureProducerTest extends ExampleProducerCase {
   private static final String JDBC_VENDOR = "jdbc.storedproc.vendor";
   private static final String XML_PAYLOAD = "<head>" + "<body>" + "<element1>" + "Sold" + "</element1>" + "<element2>"
       + "SomeValue" + "</element2>" + "</body>" + "</head>";
+  
+  @Getter
+  @Setter
+  private boolean runMultiResultSetTest;
 
   public StoredProcedureProducerTest() {
     if (PROPERTIES.getProperty(BASE_DIR_KEY) != null) {
@@ -76,9 +87,9 @@ public class StoredProcedureProducerTest extends ExampleProducerCase {
   }
 
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
   }
 
   private static boolean areTestsEnabled() {
@@ -86,8 +97,14 @@ public class StoredProcedureProducerTest extends ExampleProducerCase {
   }
 
   private StandaloneProducer configureForTests(JdbcStoredProcedureProducer p, boolean addConnection) {
-    if (PROPERTIES.getProperty(JDBC_VENDOR).equals("mysql")) p.setStatementCreator(new MysqlStatementCreator());
-    else if (PROPERTIES.getProperty(JDBC_VENDOR).equals("sqlserver")) p.setStatementCreator(new SqlServerStatementCreator());
+    if (PROPERTIES.getProperty(JDBC_VENDOR).equals("mysql")) {
+      p.setStatementCreator(new MysqlStatementCreator());
+      setRunMultiResultSetTest(true);
+    }
+    else if (PROPERTIES.getProperty(JDBC_VENDOR).equals("sqlserver")) {
+      p.setStatementCreator(new SqlServerStatementCreator());
+      setRunMultiResultSetTest(false);
+    } 
     else
       fail("Vendor for JDBC tests unknown: " + PROPERTIES.getProperty(JDBC_VENDOR));
 
@@ -907,7 +924,11 @@ public class StoredProcedureProducerTest extends ExampleProducerCase {
       try {
         start(producer);
         producer.doService(message);
+        if(getRunMultiResultSetTest()) {
         assertEquals(30, message.getMetadata().size());
+        } else {
+          assertEquals(15, message.getMetadata().size());
+        }
       }
       finally {
         stop(producer);
@@ -951,7 +972,11 @@ public class StoredProcedureProducerTest extends ExampleProducerCase {
       try {
         start(producer);
         producer.doService(message);
-        assertEquals(6, message.getMetadata().size());
+        if(getRunMultiResultSetTest()) {
+          assertEquals(6, message.getMetadata().size());
+          } else {
+            assertEquals(3, message.getMetadata().size());
+          }
       }
       finally {
         stop(producer);
@@ -1010,12 +1035,15 @@ public class StoredProcedureProducerTest extends ExampleProducerCase {
         assertEquals("Michael Owen", resolveXPath(message, "/Results/Row[2]/player"));
         assertEquals("Stan Collymore", resolveXPath(message, "/Results/Row[3]/player"));
         assertEquals("Emile Heskey", resolveXPath(message, "/Results/Row[5]/player"));
-        assertEquals("Djibril Cisse", resolveXPath(message, "/Results/Row[6]/player"));
-        assertEquals("Emile Heskey", resolveXPath(message, "/Results/Row[7]/player"));
-        assertEquals("Xabi Alonso", resolveXPath(message, "/Results/Row[8]/player"));
-        assertEquals("El-Hadji Diouf", resolveXPath(message, "/Results/Row[9]/player"));
-        assertEquals("Stan Collymore", resolveXPath(message, "/Results/Row[10]/player"));
         assertNull(resolveXPath(message, "/Results/Row[11]/player"));
+        
+        if(getRunMultiResultSetTest()) {
+          assertEquals("Djibril Cisse", resolveXPath(message, "/Results/Row[6]/player"));
+          assertEquals("Emile Heskey", resolveXPath(message, "/Results/Row[7]/player"));
+          assertEquals("Xabi Alonso", resolveXPath(message, "/Results/Row[8]/player"));
+          assertEquals("El-Hadji Diouf", resolveXPath(message, "/Results/Row[9]/player"));
+          assertEquals("Stan Collymore", resolveXPath(message, "/Results/Row[10]/player"));
+        }  
       }
       finally {
         stop(producer);

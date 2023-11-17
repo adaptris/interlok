@@ -15,11 +15,14 @@
  */
 
 package com.adaptris.core.services.jdbc.types;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.sql.Types;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.jdbc.JdbcResultRow;
 
 public class DoubleColumnTranslatorTest {
@@ -27,7 +30,7 @@ public class DoubleColumnTranslatorTest {
   private DoubleColumnTranslator translator;
   String expected = "123.000000";
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     translator = new DoubleColumnTranslator();
   }

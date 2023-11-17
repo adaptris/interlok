@@ -75,7 +75,7 @@ public abstract class FileFilterBuilder {
   private static FileFilter build(String filterExpr, Class filterClass) throws Exception {
     FileFilter result = null;
     if (isEmpty(filterExpr)) {
-      result = (FileFilter) filterClass.newInstance();
+      result = (FileFilter) filterClass.getDeclaredConstructor().newInstance();
     } else {
       for (Map.Entry<Class, Function<String, Object>> converter : SUPPORTED_CNST_ARGS.entrySet()) {
         if (hasConstructor(converter.getKey(), filterClass)) {

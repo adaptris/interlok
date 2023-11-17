@@ -17,10 +17,13 @@ package com.adaptris.core.services.splitter;
 
 import static com.adaptris.core.services.splitter.SplitterCase.XML_MESSAGE;
 import static com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase.execute;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.concurrent.TimeUnit;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ServiceException;
@@ -49,7 +52,7 @@ public class PoolingMessageSplitterServiceTest {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
     XpathMessageSplitter splitter = new XpathMessageSplitter("/envelope/document", "UTF-8");
     execute(service, msg);
-    assertEquals("Number of messages", 3, producer.getMessages().size());
+    assertEquals(3, producer.getMessages().size());
   }
 
   @Test
@@ -62,7 +65,7 @@ public class PoolingMessageSplitterServiceTest {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE);
     XpathMessageSplitter splitter = new XpathMessageSplitter("/envelope/document", "UTF-8");
     execute(service, msg);
-    assertEquals("Number of messages", 3, producer.getMessages().size());
+    assertEquals(3, producer.getMessages().size());
   }
 
   @Test

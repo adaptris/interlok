@@ -21,7 +21,9 @@ import java.io.RandomAccessFile;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdapterXStreamMarshallerFactory;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.CoreException;

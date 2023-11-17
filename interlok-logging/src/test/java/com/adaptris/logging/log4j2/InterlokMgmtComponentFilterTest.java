@@ -1,14 +1,14 @@
 package com.adaptris.logging.log4j2;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.apache.logging.log4j.core.Filter.Result;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.impl.Log4jLogEvent;
 import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.util.SortedArrayStringMap;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class InterlokMgmtComponentFilterTest {
 

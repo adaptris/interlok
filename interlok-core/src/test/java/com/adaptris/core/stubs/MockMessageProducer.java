@@ -18,6 +18,7 @@ package com.adaptris.core.stubs;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ClosedState;
 import com.adaptris.core.ComponentState;

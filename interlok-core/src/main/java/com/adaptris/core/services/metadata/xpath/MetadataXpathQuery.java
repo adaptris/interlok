@@ -34,7 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  *
  */
 @Deprecated(since = "4.1.0")
-@Removal(version = "5.0.0",
+@Removal(version = "5.1.0",
     message = "Use ConfiguredXpathQuery with %message{metadata} syntax to extract XPath from metadata.")
 @XStreamAlias("metadata-xpath-query")
 @DisplayOrder(order = {"metadataKey", "xpathMetadataKey"})

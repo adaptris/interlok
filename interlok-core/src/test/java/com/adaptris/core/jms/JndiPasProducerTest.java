@@ -19,26 +19,14 @@ package com.adaptris.core.jms;
 import static com.adaptris.core.jms.JndiPtpProducerTest.DEFAULT_FILE_SUFFIX;
 import static com.adaptris.core.jms.JndiPtpProducerTest.DEFAULT_XML_COMMENT;
 import static com.adaptris.core.jms.JndiPtpProducerTest.createJndiVendorImpExample;
-import org.junit.Before;
+
 import com.adaptris.core.StandaloneProducer;
 
-public class JndiPasProducerTest
-    extends com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase {
-
-  private JmsConnection connection;
-  private PasProducer producer;
-
-
-  @Before
-  public void setUp() throws Exception {
-    connection = new JmsConnection();
-    producer = new PasProducer();
-  }
+public class JndiPasProducerTest extends com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase {
 
   @Override
   protected Object retrieveObjectForSampleConfig() {
-    return new StandaloneProducer(createJndiVendorImpExample(new JmsConnection()),
-        new PasProducer().withTopic("jndiReferenceToTopic"));
+    return new StandaloneProducer(createJndiVendorImpExample(new JmsConnection()), new PasProducer().withTopic("jndiReferenceToTopic"));
   }
 
   @Override
@@ -50,4 +38,5 @@ public class JndiPasProducerTest
   protected String getExampleCommentHeader(Object obj) {
     return super.getExampleCommentHeader(obj) + DEFAULT_XML_COMMENT;
   }
+
 }

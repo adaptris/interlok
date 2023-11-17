@@ -16,8 +16,8 @@
 
 package com.adaptris.core.fs;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +25,7 @@ import java.nio.charset.Charset;
 import java.util.Calendar;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.stubs.TempFileUtils;
 

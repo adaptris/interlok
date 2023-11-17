@@ -1,16 +1,18 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
 ext {
-  componentName='Interlok Core/Base'
+  componentName="Interlok Core/Base"
   componentDesc="The Core Interlok framework component; this is your must have"
-  activeMqVersion='5.17.3'
-  bouncyCastleVersion='1.70'
-  mysqlDriverVersion='8.0.32'
-  slf4jVersion = '2.0.6'
-  mockitoVersion = '4.9.0'
-  jschVersion = '0.2.8'
-  mssqlDriverVersion = '9.2.1.jre8'
-  derbyDriverVersion = '10.15.2.0'
+  activeMqVersion="5.18.3"
+  bouncyCastleVersion="1.76"
+  mysqlDriverVersion="8.0.33"
+  slf4jVersion = "2.0.9"
+  mockitoVersion = "4.9.0"
+  jschVersion = "0.2.12"
+  mssqlDriverVersion = "9.2.1.jre8"
+  derbyDriverVersion = "10.15.2.0"
+  junitVersion = "5.10.1"
+  jettyVersion= "10.0.18"
 
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
   classesToTest = project.hasProperty("junit.test.classes") ? project.getProperty("junit.test.classes") : "**/*Test*"
@@ -55,7 +57,7 @@ dependencies {
   api ("com.thoughtworks.xstream:xstream:1.4.20")
   api ("org.codehaus.jettison:jettison:1.5.4")
   api ("io.github.classgraph:classgraph:4.8.116")
-  api ("net.jodah:expiringmap:0.5.10")
+  api ("net.jodah:expiringmap:0.5.11")
   api ("com.sun.activation:jakarta.activation:1.2.2")
   api ("org.apache.activemq:activemq-client:$activeMqVersion") {
     exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_1.1_spec"
@@ -71,27 +73,57 @@ dependencies {
   // api ("jakarta.transaction:jakarta.transaction-api:1.3.3")
   api ("org.hibernate.validator:hibernate-validator:6.1.7.Final")
   api ("org.glassfish:jakarta.el:3.0.4")
-  api ("commons-io:commons-io:2.11.0")
-  api ("org.apache.commons:commons-lang3:3.12.0")
-  api ("commons-net:commons-net:3.9.0")
-  api ("org.apache.commons:commons-pool2:2.11.1")
+  api ("commons-io:commons-io:2.15.0")
+  api ("org.apache.commons:commons-lang3:3.13.0")
+  api ("commons-net:commons-net:3.10.0")
+  api ("org.apache.commons:commons-pool2:2.12.0")
   api ("org.apache.commons:commons-exec:1.3")
-  api ("org.apache.commons:commons-text:1.10.0")
+  api ("org.apache.commons:commons-text:1.11.0")
   api ("org.apache.commons:commons-collections4:4.4")
-  api ("org.bouncycastle:bcprov-jdk15on:$bouncyCastleVersion")
-  api ("org.bouncycastle:bcpkix-jdk15on:$bouncyCastleVersion")
-  api ("org.bouncycastle:bcmail-jdk15on:$bouncyCastleVersion")
+  api ("org.bouncycastle:bcprov-jdk18on:$bouncyCastleVersion")
+  api ("org.bouncycastle:bcpkix-jdk18on:$bouncyCastleVersion")
+  api ("org.bouncycastle:bcmail-jdk18on:$bouncyCastleVersion")
   api ("com.sun.mail:jakarta.mail:1.6.7")
   api ("org.glassfish.external:opendmk_jmxremote_optional_jar:1.0-b01-ea")
   api ("org.glassfish.external:opendmk_jdmkrt_jar:1.0-b01-ea")
   api ("com.github.mwiede:jsch:$jschVersion")
-  api ("org.eclipse.jetty.aggregate:jetty-all:9.4.49.v20220914")
+
+  api ("org.eclipse.jetty:jetty-alpn-client:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-alpn-java-client:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-alpn-server:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-alpn-java-server:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-annotations:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-client:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-deploy:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-http:$jettyVersion") // implicit dependency
+  api ("org.eclipse.jetty:jetty-io:$jettyVersion") // implicit dependency
+  api ("org.eclipse.jetty:jetty-jaspi:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-jmx:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-jndi:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-plus:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-quickstart:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-rewrite:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-security:$jettyVersion") // implicit dependency
+  api ("org.eclipse.jetty:jetty-server:$jettyVersion") // implicit dependency
+  api ("org.eclipse.jetty:jetty-servlet:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-servlets:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-util-ajax:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-util:$jettyVersion") // implicit dependency
+  api ("org.eclipse.jetty:jetty-webapp:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-xml:$jettyVersion")
+  api ("org.eclipse.jetty.http2:http2-hpack:$jettyVersion") // implicit dependency
+  api ("org.eclipse.jetty.http2:http2-common:$jettyVersion")
+  api ("org.eclipse.jetty.http2:http2-server:$jettyVersion")
+  api ("org.eclipse.jetty.http2:http2-client:$jettyVersion")
+  api ("org.eclipse.jetty.websocket:websocket-javax-server:$jettyVersion")
+  api ("org.eclipse.jetty.websocket:websocket-javax-client:$jettyVersion")
+
   api ("javax.servlet:javax.servlet-api:4.0.1")
   api ("net.sf.joost:joost:0.9.1")
   api ("org.quartz-scheduler:quartz:2.3.2") {
     exclude group: "com.zaxxer", module: "HikariCP-java7"
   }
-  api ("com.zaxxer:HikariCP:5.0.1")
+  api ("com.zaxxer:HikariCP:5.1.0")
   api ("net.sf.saxon:Saxon-HE:11.4")
   api ("xerces:xercesImpl:2.12.2")
   api ("com.mchange:c3p0:0.9.5.5")
@@ -101,9 +133,12 @@ dependencies {
 
   api ("org.apache.derby:derby:$derbyDriverVersion")
   api ("org.apache.derby:derbytools:$derbyDriverVersion")
+  
+  api ("org.flywaydb:flyway-core:8.5.13")
 
-  testImplementation ("junit:junit:4.13.2")
-  testImplementation ("org.apache.activemq:artemis-jms-server:2.28.0")
+  testImplementation ("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+  testImplementation ("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+  testImplementation ("org.apache.activemq:artemis-jms-server:2.31.2")
   testImplementation ("oro:oro:2.0.8")
   testImplementation ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
 
@@ -114,14 +149,14 @@ dependencies {
   testImplementation ("org.apache.activemq:activemq-kahadb-store:$activeMqVersion")
   testImplementation ("org.apache.activemq.protobuf:activemq-protobuf:1.1")
 
-  testImplementation ("org.jruby:jruby-complete:9.4.2.0")
+  testImplementation ("org.jruby:jruby-complete:9.4.5.0")
   testImplementation ("org.mockftpserver:MockFtpServer:3.1.0")
   testImplementation ("org.mockito:mockito-core:$mockitoVersion")
   testImplementation ("org.mockito:mockito-inline:$mockitoVersion")
   testImplementation ("net.sourceforge.jtds:jtds:1.3.1")
   testImplementation ("com.microsoft.sqlserver:mssql-jdbc:$mssqlDriverVersion")
   testImplementation ("mysql:mysql-connector-java:$mysqlDriverVersion")
-
+  
   antSql ("net.sourceforge.jtds:jtds:1.3.1")
   antSql ("com.microsoft.sqlserver:mssql-jdbc:$mssqlDriverVersion")
   antSql ("mysql:mysql-connector-java:$mysqlDriverVersion")
@@ -133,6 +168,21 @@ dependencies {
 
 }
 
+jar {
+  manifest {
+    attributes("Built-By": System.getProperty('user.name'),
+               "Build-Jdk": System.getProperty('java.version'),
+               "Implementation-Title": componentName,
+               "Implementation-Version": project.version,
+               "Implementation-Vendor-Id": project.group,
+               "Implementation-Vendor": organizationName,
+			   "Add-Opens": "java.base/java.lang java.base/java.util",
+               "Main-Class": "com.adaptris.interlok.boot.InterlokLauncher")
+  }
+  from ("$project.buildDir/spring-boot-loader") {
+    exclude 'META-INF/MANIFEST.MF'
+  }
+}
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
   classifier = 'javadoc'
@@ -240,7 +290,6 @@ task prepareForTests(dependsOn: [copySecurityTestProperties, copyUnitTestPropert
   }
 }
 
-
 task deleteGeneratedFiles(type: Delete) {
   delete file(testResourcesDir() + '/unit-tests.properties')
   delete file(testResourcesDir() + '/unit-tests.properties.resolved')
@@ -265,8 +314,7 @@ javadoc {
 
     taglets = ["com.adaptris.taglet.ConfigTaglet", "com.adaptris.taglet.LicenseTaglet"]
     options.addStringOption "tagletpath", configurations.javadoc.asPath
-    options.addBooleanOption "-no-module-directories", true
-    options.addStringOption('Xdoclint:none', '-quiet')
+    options.addStringOption "Xdoclint:none", "-quiet"
     options.tags('apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:','implNote:a:Implementation Note:')
     options.
       group ("Base Adapter Configuration", ["com.adaptris.core.*" , "com.adaptris.core"]).
@@ -290,6 +338,7 @@ test {
   include classesToTest
   maxHeapSize = "1G"
   maxParallelForks = maxThreads
+  jvmArgs '--add-opens', 'java.base/java.lang=ALL-UNNAMED', '--add-opens', 'java.base/java.util=ALL-UNNAMED'
   // listen to events in the test execution lifecycle
   beforeSuite { descriptor ->
      if (verboseTestLogging()) {
@@ -302,6 +351,9 @@ test {
       maxFailures = 20
     }
   }
+  
+  jvmArgs = ['--add-opens', 'java.base/java.lang=ALL-UNNAMED', '--add-opens', 'java.base/java.util=ALL-UNNAMED']
+  useJUnitPlatform()
 }
 
 publishing {
@@ -316,7 +368,7 @@ publishing {
       pom.withXml {
         asNode().appendNode("name", componentName)
         asNode().appendNode("description", componentDesc)
-		asNode().appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
+        asNode().appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
         def properties = asNode().appendNode("properties")
         properties.appendNode("target", "3.8.0+")
         properties.appendNode("license", "false")
@@ -335,7 +387,6 @@ publishing {
     }
   }
 }
-
 
 delombok {
   target = delombokTargetDir

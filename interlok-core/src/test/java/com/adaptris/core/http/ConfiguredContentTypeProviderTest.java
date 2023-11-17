@@ -16,45 +16,44 @@
 
 package com.adaptris.core.http;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 
 public class ConfiguredContentTypeProviderTest {
 
-  @Rule
-  public TestName testName = new TestName();
+  
+  
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {}
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {}
 
   @Test
-  public void testGetContentType() throws Exception {
+  public void testGetContentType(TestInfo info) throws Exception {
     ConfiguredContentTypeProvider provider = new ConfiguredContentTypeProvider("text/complicated");
 
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("");
-    msg.addMetadata(testName.getMethodName(), "text/complicated");
+    msg.addMetadata(info.getDisplayName(), "text/complicated");
 
     String contentType = provider.getContentType(msg);
     assertEquals("text/complicated", contentType);
   }
 
   @Test
-  public void testGetContentType_ConfiguredCharset() throws Exception {
+  public void testGetContentType_ConfiguredCharset(TestInfo info) throws Exception {
     ConfiguredContentTypeProvider provider = new ConfiguredContentTypeProvider("text/complicated; charset=ISO-8859-1");
 
     AdaptrisMessage msg = new DefaultMessageFactory().newMessage("");
-    msg.addMetadata(testName.getMethodName(), "text/complicated");
+    msg.addMetadata(info.getDisplayName(), "text/complicated");
 
     String contentType = provider.getContentType(msg);
     assertEquals("text/complicated; charset=ISO-8859-1", contentType);

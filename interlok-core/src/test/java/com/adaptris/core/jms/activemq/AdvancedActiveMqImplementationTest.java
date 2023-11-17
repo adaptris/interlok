@@ -16,12 +16,14 @@
 
 package com.adaptris.core.jms.activemq;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQPrefetchPolicy;
 import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.blob.BlobTransferPolicy;
+
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
 
@@ -41,35 +43,35 @@ public class AdvancedActiveMqImplementationTest extends BasicActiveMqImplementat
   }
 
   private void doAssertions(BlobTransferPolicy p) throws Exception {
-    assertNotNull("BlobTransferPolicy", p);
-    assertEquals("BlobUploadStrategy", ExampleNoOpBlobUploadStrategy.class,
+    assertNotNull(p);
+    assertEquals(ExampleNoOpBlobUploadStrategy.class,
         p.getUploadStrategy().getClass());
-    assertEquals("setBrokerUploadUrl", "http://localhost:80/activemq",
+    assertEquals("http://localhost:80/activemq",
         p.getBrokerUploadUrl());
-    assertEquals("setDefaultUploadUrl", "ftp://myname:mypassword@localhost:21/activemq",
+    assertEquals("ftp://myname:mypassword@localhost:21/activemq",
         p.getDefaultUploadUrl());
-    assertEquals("setUploadUrl", "https://localhost:443/activemq", p.getUploadUrl());
-    assertEquals("setBufferSize", 256 * 1024, p.getBufferSize());
+    assertEquals("https://localhost:443/activemq", p.getUploadUrl());
+    assertEquals(256 * 1024, p.getBufferSize());
   }
 
   private void doAssertions(ActiveMQPrefetchPolicy p) throws Exception {
-    assertNotNull("ActiveMQPrefetchPolicy", p);
-    assertEquals("setDurableTopicPrefetch", 10, p.getDurableTopicPrefetch());
-    assertEquals("setMaximumPendingMessageLimit", 900, p.getMaximumPendingMessageLimit());
-    assertEquals("setOptimizeAcknowledgePrefetch", 5, p.getOptimizeDurableTopicPrefetch());
-    assertEquals("setQueueBrowserPrefetch", 10, p.getQueueBrowserPrefetch());
-    assertEquals("setQueuePrefetch", 3, p.getQueuePrefetch());
-    assertEquals("setTopicPrefetch", 3, p.getTopicPrefetch());
+    assertNotNull(p);
+    assertEquals(10, p.getDurableTopicPrefetch());
+    assertEquals(900, p.getMaximumPendingMessageLimit());
+    assertEquals(5, p.getOptimizeDurableTopicPrefetch());
+    assertEquals(10, p.getQueueBrowserPrefetch());
+    assertEquals(3, p.getQueuePrefetch());
+    assertEquals(3, p.getTopicPrefetch());
   }
 
   private void doAssertions(RedeliveryPolicy p) throws Exception {
-    assertNotNull("RedeliveryPolicy", p);
-    assertEquals("setBackOffMultiplier", Double.valueOf("10"),
+    assertNotNull(p);
+    assertEquals(Double.valueOf("10"),
         Double.valueOf(p.getBackOffMultiplier()));
-    assertEquals("setCollisionAvoidancePercent", 50, p.getCollisionAvoidancePercent());
-    assertEquals("setInitialRedeliveryDelay", 10000, p.getInitialRedeliveryDelay());
-    assertEquals("setUseCollisionAvoidance", true, p.isUseCollisionAvoidance());
-    assertEquals("setUseExponentialBackOff", false, p.isUseExponentialBackOff());
+    assertEquals(50, p.getCollisionAvoidancePercent());
+    assertEquals(10000, p.getInitialRedeliveryDelay());
+    assertEquals(true, p.isUseCollisionAvoidance());
+    assertEquals(false, p.isUseExponentialBackOff());
   }
 
   @Override

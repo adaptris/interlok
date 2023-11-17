@@ -16,13 +16,17 @@
 
 package com.adaptris.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.UUID;
+
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.jms.MockNoOpConnectionErrorHandler;
 import com.adaptris.core.jms.UrlVendorImplementation;
 import com.adaptris.core.stubs.ConfigCommentHelper;

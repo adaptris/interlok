@@ -15,12 +15,15 @@
 */
 
 package com.adaptris.core.fs;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.util.TimeInterval;
 
 public abstract class ExpiringCacheCase extends ItemCacheCase {
@@ -64,7 +67,7 @@ public abstract class ExpiringCacheCase extends ItemCacheCase {
       assertEquals(0, cache.size());
       for (int i = 0; i < count; i++) {
         assertFalse(cache.contains(CACHE_PREFIX + i));
-        assertNull(CACHE_PREFIX + i, cache.get(CACHE_PREFIX + i));
+        assertNull(cache.get(CACHE_PREFIX + i));
       }
     }
     finally {

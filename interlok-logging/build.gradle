@@ -2,7 +2,7 @@ ext {
   componentName='Interlok Core/Logging'
   componentDesc="Custom JMX Logger for Interlok for use with the UI"
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
-  log4j2Version = "2.20.0"
+  log4j2Version = "2.21.1"
 }
 
 // In this section you declare the dependencies for your production and test code
@@ -14,8 +14,8 @@ dependencies {
 
   javadoc project(':interlok-core-apt')
 
-  testImplementation ("junit:junit:4.13.2")
-
+  testImplementation ("org.junit.jupiter:junit-jupiter-api:5.10.1")
+  testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.10.1")
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -42,7 +42,7 @@ task deleteGeneratedFiles(type: Delete) {
 javadoc {
   configure(options) {
     options.addStringOption "tagletpath", configurations.javadoc.asPath
-    options.addStringOption('Xdoclint:none', '-quiet')
+    options.addStringOption "Xdoclint:none", "-quiet"
     options.tags('apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:','implNote:a:Implementation Note:')
     title= componentName
   }
@@ -62,7 +62,7 @@ publishing {
       pom.withXml {
         asNode().appendNode("name", componentName)
         asNode().appendNode("description", componentDesc)
-		asNode().appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
+        asNode().appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
         def properties = asNode().appendNode("properties")
         properties.appendNode("target", "3.8.0+")
         properties.appendNode("license", "false")

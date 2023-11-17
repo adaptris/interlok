@@ -16,11 +16,11 @@
 
 package com.adaptris.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import javax.mail.URLName;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestURLName {
 

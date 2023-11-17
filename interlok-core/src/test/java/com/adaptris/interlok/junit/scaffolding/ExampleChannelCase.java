@@ -17,6 +17,7 @@
 package com.adaptris.interlok.junit.scaffolding;
 
 import java.util.UUID;
+
 import com.adaptris.core.AdaptrisMessageConsumer;
 import com.adaptris.core.ChannelList;
 import com.adaptris.core.CoreException;

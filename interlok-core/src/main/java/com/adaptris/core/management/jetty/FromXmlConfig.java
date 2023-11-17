@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,26 +17,25 @@ package com.adaptris.core.management.jetty;
 
 import static com.adaptris.core.util.PropertyHelper.asMap;
 import static com.adaptris.core.util.PropertyHelper.getPropertySubset;
-import java.net.URI;
-import java.net.URISyntaxException;
+
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Properties;
+
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.xml.XmlConfiguration;
+
 import com.adaptris.interlok.util.Args;
 import com.adaptris.interlok.util.ResourceLocator;
 
 /**
  * Build a jetty server from xml.
  * <p>
- * The {@link XmlConfiguration} will be configured with a property set that contains all the system properties and local properties
- * (from bootstrap.properties) that are prefixed {@code jetty.}. Properties defined in bootstrap.properties override system
- * properties.
+ * The {@link XmlConfiguration} will be configured with a property set that contains all the system properties and local properties (from
+ * bootstrap.properties) that are prefixed {@code jetty.}. Properties defined in bootstrap.properties override system properties.
  * </p>
- * 
+ *
  */
 class FromXmlConfig extends ServerBuilder {
 

@@ -16,20 +16,19 @@
 
 package com.adaptris.interlok.junit.scaffolding.jms;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.concurrent.TimeUnit;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.JmsConnection;
@@ -52,18 +51,18 @@ public abstract class JndiImplementationCase {
 
   protected abstract StandardJndiImplementation createVendorImplementation();
 
-  @Rule
-  public TestName testName = new TestName();
+  
+  
   
   private static EmbeddedActiveMq activeMqBroker;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpAll() throws Exception {
     activeMqBroker = new EmbeddedActiveMq();
     activeMqBroker.start();
   }
   
-  @AfterClass
+  @AfterAll
   public static void tearDownAll() throws Exception {
     if(activeMqBroker != null)
       activeMqBroker.destroy();
@@ -178,8 +177,8 @@ public abstract class JndiImplementationCase {
   }
 
   @Test
-  public void testInitialiseDefaultArtemisBroker() throws Exception {
-    String topicName = testName.getMethodName() + "_topic";
+  public void testInitialiseDefaultArtemisBroker(TestInfo info) throws Exception {
+    String topicName = info.getDisplayName() + "_topic";
 
     PasProducer producer = new PasProducer().withTopic(topicName);
     JmsConnection c = activeMqBroker.getJmsConnection();
@@ -194,9 +193,9 @@ public abstract class JndiImplementationCase {
   }
 
   @Test
-  public void testInitialiseWithCredentials() throws Exception {
-    String queueName = testName.getMethodName() + "_queue";
-    String topicName = testName.getMethodName() + "_topic";
+  public void testInitialiseWithCredentials(TestInfo info) throws Exception {
+    String queueName = info.getDisplayName() + "_queue";
+    String topicName = info.getDisplayName() + "_topic";
     PasProducer producer = new PasProducer().withTopic(topicName);;
     StandardJndiImplementation jv = createVendorImplementation();
     JmsConnection c = activeMqBroker.getJndiPasConnection(jv, false, queueName, topicName);
@@ -213,11 +212,11 @@ public abstract class JndiImplementationCase {
   }
 
   @Test
-  public void testInitialiseWithEncryptedPassword_viaEncodedPasswordKeys() throws Exception {
+  public void testInitialiseWithEncryptedPassword_viaEncodedPasswordKeys(TestInfo info) throws Exception {
 
     RequiresCredentialsBroker broker = new RequiresCredentialsBroker();
-    String queueName = testName.getMethodName() + "_queue";
-    String topicName = testName.getMethodName() + "_topic";
+    String queueName = info.getDisplayName() + "_queue";
+    String topicName = info.getDisplayName() + "_topic";
     PasProducer producer = new PasProducer().withTopic(queueName);
     StandardJndiImplementation jv = createVendorImplementation();
     JmsConnection c = broker.getJndiPasConnection(jv, false, queueName, topicName);
@@ -238,10 +237,10 @@ public abstract class JndiImplementationCase {
   }
 
   @Test
-  public void testInitialiseWithEncryptedPassword_withEnableEncodedPasswords() throws Exception {
+  public void testInitialiseWithEncryptedPassword_withEnableEncodedPasswords(TestInfo info) throws Exception {
 
-    String queueName = testName.getMethodName() + "_queue";
-    String topicName = testName.getMethodName() + "_topic";
+    String queueName = info.getDisplayName() + "_queue";
+    String topicName = info.getDisplayName() + "_topic";
     RequiresCredentialsBroker broker = new RequiresCredentialsBroker();
     PasProducer producer = new PasProducer().withTopic(queueName);
     StandardJndiImplementation jv = createVendorImplementation();
@@ -264,11 +263,11 @@ public abstract class JndiImplementationCase {
   }
 
   @Test
-  public void testInitialiseWithEncryptedPasswordNotSupported() throws Exception {
+  public void testInitialiseWithEncryptedPasswordNotSupported(TestInfo info) throws Exception {
 
     RequiresCredentialsBroker broker = new RequiresCredentialsBroker();
-    String queueName = testName.getMethodName() + "_queue";
-    String topicName = testName.getMethodName() + "_topic";
+    String queueName = info.getDisplayName() + "_queue";
+    String topicName = info.getDisplayName() + "_topic";
     PasProducer producer = new PasProducer().withTopic(queueName);
     StandardJndiImplementation jv = createVendorImplementation();
     JmsConnection c = broker.getJndiPasConnection(jv, false, queueName, topicName);
@@ -290,9 +289,9 @@ public abstract class JndiImplementationCase {
   }
 
   @Test
-  public void testInitialiseWithTopicConnectionFactoryNotFound() throws Exception {
-    String queueName = testName.getMethodName() + "_queue";
-    String topicName = testName.getMethodName() + "_topic";
+  public void testInitialiseWithTopicConnectionFactoryNotFound(TestInfo info) throws Exception {
+    String queueName = info.getDisplayName() + "_queue";
+    String topicName = info.getDisplayName() + "_topic";
     PasProducer producer = new PasProducer().withTopic(queueName);
     StandardJndiImplementation jv = createVendorImplementation();
     JmsConnection c = activeMqBroker.getJndiPasConnection(jv, false, queueName, topicName);
@@ -310,9 +309,9 @@ public abstract class JndiImplementationCase {
   }
 
   @Test
-  public void testInitialiseWithQueueConnectionFactoryNotFound() throws Exception {
-    String queueName = testName.getMethodName() + "_queue";
-    String topicName = testName.getMethodName() + "_topic";
+  public void testInitialiseWithQueueConnectionFactoryNotFound(TestInfo info) throws Exception {
+    String queueName = info.getDisplayName() + "_queue";
+    String topicName = info.getDisplayName() + "_topic";
     PasProducer producer = new PasProducer().withTopic((topicName));
     StandardJndiImplementation jv = createVendorImplementation();
     JmsConnection c = activeMqBroker.getJndiPtpConnection(jv, false, queueName, topicName);

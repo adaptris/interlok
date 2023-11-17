@@ -1,8 +1,12 @@
 package com.adaptris.core.http.auth;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.net.PasswordAuthentication;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -12,15 +16,18 @@ public class UsernamePasswordTest {
   @Test
   public void testConfigured_GetPasswordAuthentication() throws Exception {
     ConfiguredUsernamePassword pw = new ConfiguredUsernamePassword("username", "password");
-    PasswordAuthentication auth = pw.getPasswordAuthentication(AdaptrisMessageFactory.getDefaultInstance().newMessage());
+    PasswordAuthentication auth = pw
+        .getPasswordAuthentication(AdaptrisMessageFactory.getDefaultInstance().newMessage());
     assertEquals("username", auth.getUserName());
     assertEquals("password", String.copyValueOf(auth.getPassword()));
   }
 
-  @Test(expected=CoreException.class)
+  @Test
   public void testBadPassword() throws Exception {
-    ConfiguredUsernamePassword pw = new ConfiguredUsernamePassword("username", "PW:password");
-    pw.getPasswordAuthentication(AdaptrisMessageFactory.getDefaultInstance().newMessage());
+    Assertions.assertThrows(CoreException.class, () -> {
+      ConfiguredUsernamePassword pw = new ConfiguredUsernamePassword("username", "PW:password");
+      pw.getPasswordAuthentication(AdaptrisMessageFactory.getDefaultInstance().newMessage());
+    });
   }
 
   @Test

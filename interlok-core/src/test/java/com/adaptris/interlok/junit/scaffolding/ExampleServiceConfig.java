@@ -18,6 +18,7 @@ package com.adaptris.interlok.junit.scaffolding;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import com.adaptris.core.Service;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 

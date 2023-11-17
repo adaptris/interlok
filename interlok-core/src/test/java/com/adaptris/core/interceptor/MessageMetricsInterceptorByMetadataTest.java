@@ -16,11 +16,14 @@
 
 package com.adaptris.core.interceptor;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.concurrent.TimeUnit;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.DefaultMessageFactory;
@@ -33,7 +36,7 @@ public class MessageMetricsInterceptorByMetadataTest {
 
   private MessageMetricsInterceptorByMetadata interceptor;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     interceptor = new MessageMetricsInterceptorByMetadata();
     interceptor.setTimesliceDuration(new TimeInterval(1L, TimeUnit.SECONDS));
@@ -41,7 +44,7 @@ public class MessageMetricsInterceptorByMetadataTest {
     interceptor.setMetadataElement(new KeyValuePair("messageType", "ORDER"));
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     LifecycleHelper.stop(interceptor);
     LifecycleHelper.close(interceptor);

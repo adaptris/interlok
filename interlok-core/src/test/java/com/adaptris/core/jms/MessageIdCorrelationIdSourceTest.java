@@ -15,45 +15,47 @@
 */
 package com.adaptris.core.jms;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+
 import javax.jms.Session;
 import javax.jms.TextMessage;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 import com.adaptris.core.util.LifecycleHelper;
 
 public class MessageIdCorrelationIdSourceTest {
-  @Rule
-  public TestName testName = new TestName();
+  
+  
   
   private static EmbeddedActiveMq activeMqBroker;
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpAll() throws Exception {
     activeMqBroker = new EmbeddedActiveMq();
     activeMqBroker.start();
   }
   
-  @AfterClass
+  @AfterAll
   public static void tearDownAll() throws Exception {
     if(activeMqBroker != null)
       activeMqBroker.destroy();
   }
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
   }
 
@@ -75,7 +77,7 @@ public class MessageIdCorrelationIdSourceTest {
   }
 
   @Test
-  public void testCorrelationIdMessage_AdaptrisMessage() throws Exception {
+  public void testCorrelationIdMessage_AdaptrisMessage(TestInfo info) throws Exception {
     JmsConnection conn = activeMqBroker.getJmsConnection();
     try {
       LifecycleHelper.initAndStart(conn, false);
@@ -83,12 +85,12 @@ public class MessageIdCorrelationIdSourceTest {
       AdaptrisMessage adpMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage("hello");
       String originalId = adpMsg.getUniqueId();
       TextMessage jmsMsg = session.createTextMessage();
-      jmsMsg.setJMSCorrelationID(testName.getMethodName());
+      jmsMsg.setJMSCorrelationID(info.getDisplayName());
       MessageIdCorrelationIdSource cs = new MessageIdCorrelationIdSource();
       cs.processCorrelationId(jmsMsg, adpMsg);
       assertNotSame(originalId, adpMsg.getUniqueId());
       assertEquals(adpMsg.getUniqueId(), jmsMsg.getJMSCorrelationID());
-      assertEquals(testName.getMethodName(), adpMsg.getUniqueId());
+      assertEquals(info.getDisplayName(), adpMsg.getUniqueId());
       session.close();
     } finally {
       LifecycleHelper.stopAndClose(conn, false);

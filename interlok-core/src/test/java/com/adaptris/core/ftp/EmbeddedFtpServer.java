@@ -16,7 +16,8 @@
 
 package com.adaptris.core.ftp;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +25,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.ResourceBundle;
+
 import org.mockftpserver.core.command.Command;
 import org.mockftpserver.core.command.ReplyCodes;
 import org.mockftpserver.core.session.Session;
@@ -35,6 +37,7 @@ import org.mockftpserver.fake.filesystem.FileEntry;
 import org.mockftpserver.fake.filesystem.FileSystem;
 import org.mockftpserver.fake.filesystem.FileSystemEntry;
 import org.mockftpserver.fake.filesystem.UnixFakeFileSystem;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 

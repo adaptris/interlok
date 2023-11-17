@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+
 import javax.validation.constraints.NotBlank;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -20,6 +21,7 @@ import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -156,7 +158,7 @@ public class FilesystemRetryStore implements RetryStore {
           IOUtils.copy(in, out);
         }
       }
-      msg.setMessageHeaders(metadata);
+      msg.addMessageHeaders(metadata);
       msg.setUniqueId(msgId);
       return msg;
     } catch (Exception e) {
@@ -196,7 +198,6 @@ public class FilesystemRetryStore implements RetryStore {
   }
 
   @Override
-  @SuppressWarnings({"lgtm [java/path-injection]"})
   public boolean delete(String msgId) throws InterlokException {
     try {
       File target = new File(FsHelper.toFile(getBaseUrl()), msgId);
@@ -227,5 +228,25 @@ public class FilesystemRetryStore implements RetryStore {
   public FilesystemRetryStore withBaseUrl(String s) {
     setBaseUrl(s);
     return this;
+  }
+
+  @Override
+  public void acknowledge(String acknowledgeId) throws InterlokException {
+    // null implementation
+  }
+
+  @Override
+  public void deleteAcknowledged() throws InterlokException {
+    // null implementation
+  }
+
+  @Override
+  public void updateRetryCount(String messageId) throws InterlokException {
+    // null implementation
+  }
+
+  @Override
+  public void makeConnection(AdaptrisConnection connection) {
+    // null implementation 
   }
 }

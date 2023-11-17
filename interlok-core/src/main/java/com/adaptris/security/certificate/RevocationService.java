@@ -29,8 +29,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import org.bouncycastle.asn1.ASN1IA5String;
 import org.bouncycastle.asn1.ASN1InputStream;
-import org.bouncycastle.asn1.DERIA5String;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.x509.CRLDistPoint;
 import org.bouncycastle.asn1.x509.DistributionPoint;
@@ -213,7 +213,7 @@ public abstract class RevocationService {
               if (dpn != null && dpn.getType() == DistributionPointName.FULL_NAME) {
                 for (GeneralName generalName : GeneralNames.getInstance(dpn.getName()).getNames()) {
                   if (generalName.getTagNo() == GeneralName.uniformResourceIdentifier) {
-                    crlUrls.add(DERIA5String.getInstance(generalName.getName()).getString());
+                    crlUrls.add(ASN1IA5String.getInstance(generalName.getName()).getString());
                   }
                 }
               }

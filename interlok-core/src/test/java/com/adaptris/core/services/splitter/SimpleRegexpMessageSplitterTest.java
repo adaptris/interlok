@@ -16,12 +16,15 @@
 
 package com.adaptris.core.services.splitter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -120,7 +123,7 @@ public class SimpleRegexpMessageSplitterTest extends SplitterCase {
     List<AdaptrisMessage> result = splitter.splitMessage(msg);
     assertEquals(4, result.size());
     for (AdaptrisMessage m : result) {
-      assertFalse("Should not contain object metadata", m.getObjectHeaders().containsKey(obj));
+      assertFalse(m.getObjectHeaders().containsKey(obj));
     }
   }
 
@@ -134,7 +137,7 @@ public class SimpleRegexpMessageSplitterTest extends SplitterCase {
     List<AdaptrisMessage> result = splitter.splitMessage(msg);
     assertEquals(4, result.size());
     for (AdaptrisMessage m : result) {
-      assertTrue("Should contain object metadata", m.getObjectHeaders().containsKey(obj));
+      assertTrue(m.getObjectHeaders().containsKey(obj));
       assertEquals(obj, m.getObjectHeaders().get(obj));
     }
   }

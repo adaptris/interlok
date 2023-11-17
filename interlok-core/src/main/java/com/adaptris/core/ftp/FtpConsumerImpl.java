@@ -48,7 +48,7 @@ import static com.adaptris.core.ftp.FtpHelper.FORWARD_SLASH;
 public abstract class FtpConsumerImpl extends AdaptrisPollingConsumer {
   protected static final TimeInterval DEFAULT_OLDER_THAN = new TimeInterval(0L, TimeUnit.MILLISECONDS);
   /**
-   * @deprecated since 3.11.1 {@link FileFilterBuilder#DEFAULT_FILE_FILTER_IMP instead.
+   * @deprecated since 3.11.1 {@link FileFilterBuilder#DEFAULT_FILE_FILTER_IMP} instead.
    *
    */
   @Deprecated

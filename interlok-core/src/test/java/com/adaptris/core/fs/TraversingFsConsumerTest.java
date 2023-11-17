@@ -16,15 +16,8 @@
 
 package com.adaptris.core.fs;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreConstants;
-import com.adaptris.core.FixedIntervalPoller;
-import com.adaptris.core.StandaloneConsumer;
-import com.adaptris.core.stubs.MockMessageListener;
-import com.adaptris.util.GuidGenerator;
-import com.adaptris.util.TimeInterval;
-import org.apache.commons.io.FileUtils;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,8 +26,16 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.Test;
+
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreConstants;
+import com.adaptris.core.FixedIntervalPoller;
+import com.adaptris.core.StandaloneConsumer;
+import com.adaptris.core.stubs.MockMessageListener;
+import com.adaptris.util.GuidGenerator;
+import com.adaptris.util.TimeInterval;
 
 @SuppressWarnings("deprecation")
 public class TraversingFsConsumerTest extends FsConsumerCase {
@@ -103,7 +104,7 @@ public class TraversingFsConsumerTest extends FsConsumerCase {
   }
 
   protected void assertMessages(List<AdaptrisMessage> list, int count) {
-    assertEquals("All files produced", count, list.size());
+    assertEquals(count, list.size());
     for (AdaptrisMessage m : list) {
       assertEquals(0, m.getSize());
       assertTrue(m.containsKey(CoreConstants.ORIGINAL_NAME_KEY));

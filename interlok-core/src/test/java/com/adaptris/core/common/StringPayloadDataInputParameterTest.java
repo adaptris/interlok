@@ -15,11 +15,9 @@
  */
 package com.adaptris.core.common;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -28,8 +26,8 @@ public class StringPayloadDataInputParameterTest {
 
   private static final String TEXT = "Hello World";
 
-  @Rule
-  public TestName testName = new TestName();
+  
+  
 
   @Test
   public void testExtract() throws Exception {

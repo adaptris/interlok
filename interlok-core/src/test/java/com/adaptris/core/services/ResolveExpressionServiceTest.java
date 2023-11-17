@@ -1,11 +1,11 @@
 package com.adaptris.core.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
@@ -20,7 +20,7 @@ public class ResolveExpressionServiceTest {
   
   private AdaptrisMessage message;
   
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     message = DefaultMessageFactory.getDefaultInstance().newMessage();
     service = new ResolveExpressionService();
@@ -31,7 +31,7 @@ public class ResolveExpressionServiceTest {
     LifecycleHelper.initAndStart(service);
   }
   
-  @After
+  @AfterEach
   public void tearDown() {
     LifecycleHelper.stopAndClose(service);
   }
@@ -43,7 +43,7 @@ public class ResolveExpressionServiceTest {
     service.setInput(new ConstantDataInputParameter("%message{key}"));
     service.doService(message);
     
-    assertEquals("Should be value1", "value1", message.getMetadataValue("result"));
+    assertEquals("value1", message.getMetadataValue("result"));
   }
   
   @Test
@@ -53,7 +53,7 @@ public class ResolveExpressionServiceTest {
     service.setInput(new ConstantDataInputParameter("%message{result}C"));
     service.doService(message);
     
-    assertEquals("Should be ABC", "ABC", message.getMetadataValue("result"));
+    assertEquals("ABC", message.getMetadataValue("result"));
   }
   
   @Test
@@ -72,6 +72,6 @@ public class ResolveExpressionServiceTest {
     service.setInput(new ConstantDataInputParameter("NoExpression"));
     service.doService(message);
     
-    assertEquals("Should be NoExpression", "NoExpression", message.getMetadataValue("result"));
+    assertEquals("NoExpression", message.getMetadataValue("result"));
   }
 }

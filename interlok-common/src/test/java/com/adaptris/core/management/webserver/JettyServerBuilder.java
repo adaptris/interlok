@@ -1,4 +1,5 @@
 package com.adaptris.core.management.webserver;
+
 import static org.awaitility.Awaitility.await;
 
 import java.time.Duration;
@@ -15,7 +16,6 @@ import org.eclipse.jetty.server.handler.HandlerCollection;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JettyServerBuilder {
@@ -34,7 +34,7 @@ public class JettyServerBuilder {
     return server;
   }
 
-  public static void destroy(Server server)  {
+  public static void destroy(Server server) {
     if (server.isStarted()) {
       executeQuietly(() -> server.stop());
       executeQuietly(() -> server.join());
@@ -68,8 +68,9 @@ public class JettyServerBuilder {
   }
 
   private static ServerConnector createConnector(Server server) {
-    ServerConnector connector = new ServerConnector(server, -1, -1,
-        new HttpConnectionFactory(configure(new HttpConfiguration()), HttpCompliance.RFC2616));
+    HttpConfiguration httpConfig = configure(new HttpConfiguration());
+    httpConfig.setHttpCompliance(HttpCompliance.RFC2616);
+    ServerConnector connector = new ServerConnector(server, -1, -1, new HttpConnectionFactory(httpConfig));
     connector.setPort(PortManager.nextUnusedPort(8080));
     return connector;
   }
@@ -97,7 +98,6 @@ public class JettyServerBuilder {
     try {
       r.execute();
     } catch (Exception e) {
-
     }
   }
 
@@ -105,4 +105,5 @@ public class JettyServerBuilder {
   public interface Runner {
     void execute() throws Exception;
   }
+  
 }

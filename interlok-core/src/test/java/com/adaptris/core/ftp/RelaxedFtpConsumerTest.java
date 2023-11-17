@@ -16,8 +16,8 @@
 
 package com.adaptris.core.ftp;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -25,20 +25,23 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.ArgumentMatchers.matches;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+
 import java.io.FileFilter;
 import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
+
 import org.apache.oro.io.GlobFilenameFilter;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
 import com.adaptris.core.CoreException;
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.StandaloneConsumer;
@@ -48,6 +51,7 @@ import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FileTransferException;
+import com.adaptris.interlok.util.Closer;
 import com.adaptris.util.TimeInterval;
 
 public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
@@ -68,11 +72,13 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
   private GregorianCalendar calendarNow;
   private GregorianCalendar calendarOneYearAgo;
 
-  @Before
+  private AutoCloseable openMocks = null;
+  
+  @BeforeEach
   public void setUp() throws Exception {
     consumer = new RelaxedFtpConsumer();
 
-    MockitoAnnotations.initMocks(this);
+    openMocks = MockitoAnnotations.openMocks(this);
 
     consumeDestination = "myDestination";
     consumer.setFtpEndpoint(consumeDestination);
@@ -95,10 +101,11 @@ public class RelaxedFtpConsumerTest extends RelaxedFtpConsumerCase {
     calendarOneYearAgo.add(Calendar.DAY_OF_YEAR, -1);
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     LifecycleHelper.stop(consumer);
     LifecycleHelper.close(consumer);
+    Closer.closeQuietly(openMocks);
   }
 
   /***********************************************************************************************

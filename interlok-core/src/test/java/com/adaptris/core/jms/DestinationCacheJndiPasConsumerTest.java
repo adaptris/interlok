@@ -19,6 +19,7 @@ package com.adaptris.core.jms;
 import static com.adaptris.core.jms.DestinationCacheJndiPtpConsumerTest.DEFAULT_FILE_SUFFIX;
 import static com.adaptris.core.jms.DestinationCacheJndiPtpConsumerTest.DEFAULT_XML_COMMENT;
 import static com.adaptris.core.jms.JndiPtpProducerTest.createJndiVendorImpExample;
+
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.jms.jndi.CachedDestinationJndiImplementation;
 

@@ -15,8 +15,10 @@
 */
 
 package com.adaptris.core;
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.interlok.junit.scaffolding.BaseCase;
 public class EmptyFilenameCreatorTest {
 

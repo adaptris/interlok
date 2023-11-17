@@ -16,6 +16,19 @@
 
 package com.adaptris.core.ftp;
 
+import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_PASSWORD;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_USERNAME;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_WORK_DIR_CANONICAL;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_WORK_DIR_NAME;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.DESTINATION_URL;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.PAYLOAD;
+import static com.adaptris.core.ftp.EmbeddedFtpServer.SLASH;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
+import org.mockftpserver.fake.FakeFtpServer;
+import org.mockftpserver.fake.filesystem.FileSystem;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.FormattedFilenameCreator;
@@ -24,18 +37,6 @@ import com.adaptris.core.MimeEncoder;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase;
-import org.junit.Test;
-import org.mockftpserver.fake.FakeFtpServer;
-import org.mockftpserver.fake.filesystem.FileSystem;
-
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_PASSWORD;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_USERNAME;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_WORK_DIR_CANONICAL;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DEFAULT_WORK_DIR_NAME;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.DESTINATION_URL;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.PAYLOAD;
-import static com.adaptris.core.ftp.EmbeddedFtpServer.SLASH;
-import static org.junit.Assert.assertEquals;
 
 public class RelaxedFtpProducerTest extends RelaxedFtpProducerCase {
 

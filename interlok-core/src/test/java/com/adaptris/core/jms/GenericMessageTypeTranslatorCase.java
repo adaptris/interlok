@@ -18,7 +18,7 @@ package com.adaptris.core.jms;
 import javax.jms.Message;
 import javax.jms.Session;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;

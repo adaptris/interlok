@@ -1,21 +1,20 @@
 package com.adaptris.sftp;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.reflect.Field;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 import com.jcraft.jsch.Proxy;
 
 public abstract class ViaProxyCase {
-  @Rule
-  public TestName testName = new TestName();
+  
+  
 
   @Test
   public void testSetProxy() throws Exception {
@@ -70,23 +69,23 @@ public abstract class ViaProxyCase {
   }
 
   @Test
-  public void testCreateProxy_WithCredentials() throws Exception {
+  public void testCreateProxy_WithCredentials(TestInfo info) throws Exception {
     ViaProxy pb = createBuilder();
     pb.setProxy("host:80");
-    pb.setUsername(testName.getMethodName());
-    pb.setPassword(testName.getMethodName());
+    pb.setUsername(info.getDisplayName());
+    pb.setPassword(info.getDisplayName());
     Proxy proxy = pb.buildProxy();
     assertNotNull(proxy);
-    assertValue(proxy, "user", testName.getMethodName());
-    assertValue(proxy, "passwd", testName.getMethodName());
+    assertValue(proxy, "user", info.getDisplayName());
+    assertValue(proxy, "passwd", info.getDisplayName());
   }
 
   @Test
-  public void testCreateProxy_WithCredentials_BadPassword() throws Exception {
+  public void testCreateProxy_WithCredentials_BadPassword(TestInfo info) throws Exception {
     ViaProxy pb = createBuilder();
     pb.setProxy("host:80");
-    pb.setUsername(testName.getMethodName());
-    pb.setPassword("PW:" + testName.getMethodName());
+    pb.setUsername(info.getDisplayName());
+    pb.setPassword("PW:" + info.getDisplayName());
     try {
       Proxy proxy = pb.buildProxy();
       fail();
@@ -96,10 +95,10 @@ public abstract class ViaProxyCase {
   }
 
   @Test
-  public void testCreateProxy_PasswordNoUser() throws Exception {
+  public void testCreateProxy_PasswordNoUser(TestInfo info) throws Exception {
     ViaProxy pb = createBuilder();
     pb.setProxy("host:80");
-    pb.setPassword(testName.getMethodName());
+    pb.setPassword(info.getDisplayName());
     Proxy proxy = pb.buildProxy();
     assertNotNull(proxy);
     assertValue(proxy, "user", null);

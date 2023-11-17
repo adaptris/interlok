@@ -1,9 +1,12 @@
 package com.adaptris.jdbc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.sql.Types;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class JdbcResultRowTest {
 
@@ -20,15 +23,17 @@ public class JdbcResultRowTest {
     assertEquals(ParameterValueType.INTEGER, row.getFieldType(1));
   }
 
-  @Test(expected = IndexOutOfBoundsException.class)
+  @Test
   public void testGetFieldValue_Index() {
-    JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", Integer.valueOf(1), Types.INTEGER);
-    assertEquals(1, row.getFieldCount());
-    assertEquals(1, row.getFieldNames().size());
-    assertEquals(1, row.getFieldTypes().size());
-    assertEquals(1, row.getFieldValue(0));
-    row.getFieldValue(15);
+    Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
+      JdbcResultRow row = new JdbcResultRow();
+      row.setFieldValue("testField", Integer.valueOf(1), Types.INTEGER);
+      assertEquals(1, row.getFieldCount());
+      assertEquals(1, row.getFieldNames().size());
+      assertEquals(1, row.getFieldTypes().size());
+      assertEquals(1, row.getFieldValue(0));
+      row.getFieldValue(15);
+    });
   }
 
   @Test
@@ -42,15 +47,17 @@ public class JdbcResultRowTest {
     assertNull(row.getFieldValue("testField2"));
   }
 
-  @Test(expected = IndexOutOfBoundsException.class)
+  @Test
   public void testGetFieldType_Index() {
-    JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", Integer.valueOf(1), Types.INTEGER);
-    assertEquals(1, row.getFieldCount());
-    assertEquals(1, row.getFieldNames().size());
-    assertEquals(1, row.getFieldTypes().size());
-    assertEquals(ParameterValueType.INTEGER, row.getFieldType(0));
-    row.getFieldType(15);
+    Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
+      JdbcResultRow row = new JdbcResultRow();
+      row.setFieldValue("testField", Integer.valueOf(1), Types.INTEGER);
+      assertEquals(1, row.getFieldCount());
+      assertEquals(1, row.getFieldNames().size());
+      assertEquals(1, row.getFieldTypes().size());
+      assertEquals(ParameterValueType.INTEGER, row.getFieldType(0));
+      row.getFieldType(15);
+    });
   }
 
   @Test

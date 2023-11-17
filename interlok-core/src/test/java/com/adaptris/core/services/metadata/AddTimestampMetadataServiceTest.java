@@ -16,20 +16,23 @@
 
 package com.adaptris.core.services.metadata;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.services.metadata.timestamp.LastMessageTimestampGenerator;
 import com.adaptris.core.services.metadata.timestamp.OffsetTimestampGenerator;
@@ -53,19 +56,22 @@ public class AddTimestampMetadataServiceTest extends MetadataServiceExample {
     initWithException(service);
     service.setMetadataKey(null);
     initWithException(service);
-
+    
+    service = new AddTimestampMetadataService(DEFAULT_TS_FORMAT, KEY1, false, "invalid");
+    initWithException(service);
+    
+    service = new AddTimestampMetadataService(DEFAULT_TS_FORMAT, KEY1, false, "P30D");
+    LifecycleHelper.init(service);
+    service = new AddTimestampMetadataService(DEFAULT_TS_FORMAT, KEY1, false, new LastMessageTimestampGenerator());
+    LifecycleHelper.init(service);
     service = new AddTimestampMetadataService();
     LifecycleHelper.init(service);
   }
 
   private void initWithException(AddTimestampMetadataService s) {
-    try {
+    assertThrows(CoreException.class, ()->{
       LifecycleHelper.init(s);
-      fail("Should not initialise : " + s);
-    }
-    catch (CoreException e) {
-      ;
-    }
+    }, "Failed to initialise service");
   }
 
   @Test
@@ -157,6 +163,31 @@ public class AddTimestampMetadataServiceTest extends MetadataServiceExample {
     } catch (ParseException e) {
     }
   }
+  
+  @Test
+  public void testOffsetInThePast() throws Exception {
+    AdaptrisMessage m = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    Date now = new Date();
+    AddTimestampMetadataService service = new AddTimestampMetadataService(DEFAULT_TS_FORMAT, KEY1, false, "-P30D");
+    execute(service, m);
+    assertTrue(m.headersContainsKey(KEY1));
+    SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_TS_FORMAT);
+    String date1 = m.getMetadataValue(KEY1);
+    try {
+      Date d = sdf.parse(date1);
+      assertTrue(d.before(now));
+    } catch (ParseException e) {
+    }
+  }
+  
+  @Test
+  public void testOffsetWithInvalidPattern() throws Exception {
+    AdaptrisMessage m = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    AddTimestampMetadataService service = new AddTimestampMetadataService(DEFAULT_TS_FORMAT, KEY1, false, "invalid");
+    assertThrows(CoreException.class, ()->{
+      execute(service, m);
+    }, "Failed with an invalid offset pattern");
+  }
 
   @Test
   public void testLastMessage() throws Exception {
@@ -185,20 +216,6 @@ public class AddTimestampMetadataServiceTest extends MetadataServiceExample {
     execute(service, m);
     assertTrue(m.headersContainsKey(DEFAULT_METADATA_KEY));
     assertTrue(m.getMetadataValue(DEFAULT_METADATA_KEY) != null);
-  }
-
-  @Test
-  public void testInvalidOffset() throws Exception {
-    AdaptrisMessage m = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    Date now = new Date();
-    AddTimestampMetadataService service = new AddTimestampMetadataService(DEFAULT_TS_FORMAT, KEY1, false, "BLAHBLAH");
-    try {
-      execute(service, m);
-      fail("Service success with BLAHBLAH as the offset");
-    }
-    catch (ServiceException expected) {
-      ;
-    }
   }
 
   @Test

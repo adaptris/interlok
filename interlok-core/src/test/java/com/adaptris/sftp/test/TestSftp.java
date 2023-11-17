@@ -13,17 +13,20 @@
 
 package com.adaptris.sftp.test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Random;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.oro.io.GlobFilenameFilter;
-import org.junit.Assume;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.stubs.ExternalResourcesHelper;
 import com.adaptris.filetransfer.FileTransferClient;
 import com.adaptris.filetransfer.FtpCase;
@@ -44,7 +47,7 @@ public class TestSftp extends FtpCase {
 
   private static boolean serverAvailable = false;
 
-  @BeforeClass
+  @BeforeAll
   public static void beforeAnyTests() {
     String host = PROPERTIES.getProperty(SFTP_HOST);
     int port = Integer.valueOf(PROPERTIES.getProperty(SFTP_PORT, "22"));
@@ -54,7 +57,7 @@ public class TestSftp extends FtpCase {
 
   @Test
   public void testListBadDirectory() throws Exception {
-    Assume.assumeTrue(areTestsEnabled());
+    Assumptions.assumeTrue(areTestsEnabled());
     String oldName = Thread.currentThread().getName();
     try {
       Thread.currentThread().setName("testListBadDirectory");

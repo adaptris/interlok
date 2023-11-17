@@ -16,10 +16,13 @@
 
 package com.adaptris.core.services;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Collections;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.slf4j.MDC;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreConstants;

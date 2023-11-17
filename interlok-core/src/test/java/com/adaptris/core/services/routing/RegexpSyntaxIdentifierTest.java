@@ -15,10 +15,10 @@
 */
 
 package com.adaptris.core.services.routing;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.ServiceException;
 
@@ -52,8 +52,8 @@ public class RegexpSyntaxIdentifierTest extends SyntaxIdentifierCase {
   public void testSingleMatchingRegexp() throws Exception {
     RegexpSyntaxIdentifier ident = createIdentifier();
     ident.addPattern(MATCHING_1);
-    assertTrue("Matches regexp", ident.isThisSyntax(LINE));
-    assertTrue("Matches regexp", ident.isThisSyntax(LINE));
+    assertTrue(ident.isThisSyntax(LINE));
+    assertTrue(ident.isThisSyntax(LINE));
   }
 
   @Test
@@ -61,7 +61,7 @@ public class RegexpSyntaxIdentifierTest extends SyntaxIdentifierCase {
     RegexpSyntaxIdentifier ident = createIdentifier();
     ident.addPattern(MATCHING_1);
     ident.addPattern(MATCHING_2);
-    assertTrue("Matches regexp", ident.isThisSyntax(LINE));
+    assertTrue(ident.isThisSyntax(LINE));
   }
 
   @Test
@@ -69,14 +69,14 @@ public class RegexpSyntaxIdentifierTest extends SyntaxIdentifierCase {
     RegexpSyntaxIdentifier ident = createIdentifier();
     ident.addPattern(MATCHING_1);
     ident.addPattern(UNMATCHED_1);
-    assertTrue("Does not match regexp", !ident.isThisSyntax(LINE));
+    assertTrue(!ident.isThisSyntax(LINE));
   }
 
   @Test
   public void testSingleUnMatchingRegexp() throws Exception {
     RegexpSyntaxIdentifier ident = createIdentifier();
     ident.addPattern(UNMATCHED_1);
-    assertTrue("Does not match regexp", !ident.isThisSyntax(LINE));
+    assertTrue(!ident.isThisSyntax(LINE));
   }
 
 }

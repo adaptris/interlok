@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.util.Base64;
+
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
@@ -13,7 +15,9 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.ObjectUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
@@ -32,7 +36,6 @@ import com.adaptris.interlok.types.MessageWrapper;
 import com.adaptris.security.password.Password;
 import com.adaptris.security.util.SecurityUtil;
 import com.adaptris.util.stream.StreamUtil;
-import com.adaptris.util.text.Conversion;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
@@ -42,7 +45,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("symmetric-key-cryptography-service")
 @AdapterComponent
 @ComponentProfile(summary = "Encrypts or Decrypts payload using key and initial vector", tag = "service,cryptography")
-@DisplayOrder(order = {"algorithm", "cipherTransformation", "operationMode", "key", "initialVector", "source", "target"})
+@DisplayOrder(order = { "algorithm", "cipherTransformation", "operationMode", "key", "initialVector", "source", "target" })
 public class SymmetricKeyCryptographyService extends ServiceImp {
 
   @NotBlank
@@ -60,7 +63,7 @@ public class SymmetricKeyCryptographyService extends ServiceImp {
   @AutoPopulated
   @InputFieldDefault(value = "DECRYPT")
   private OpMode operationMode;
-  
+
   @NotNull
   @Valid
   private DataInputParameter<String> key;
@@ -102,26 +105,23 @@ public class SymmetricKeyCryptographyService extends ServiceImp {
         }
       }
     };
-    abstract void execute(Cipher cipher, SecretKeySpec secretKeySpec,
-        IvParameterSpec ivParameterSpec, InputStream msgIn, OutputStream msgOut)
-        throws InvalidAlgorithmParameterException, InvalidKeyException, IOException;
-  }
 
+    abstract void execute(Cipher cipher, SecretKeySpec secretKeySpec, IvParameterSpec ivParameterSpec, InputStream msgIn,
+        OutputStream msgOut) throws InvalidAlgorithmParameterException, InvalidKeyException, IOException;
+  }
 
   public SymmetricKeyCryptographyService() {
     SecurityUtil.addProvider();
     setOperationMode(OpMode.DECRYPT);
   }
 
-
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     try {
       String algToUse = msg.resolve(getAlgorithm());
       String cipherToUse = msg.resolve(getCipherTransformation());
-      byte[] keyBytes = Conversion.base64StringToByteArray(
-          Password.decode(ExternalResolver.resolve(getKey().extract(msg))));
-      byte[] initialVectorBytes =  Conversion.base64StringToByteArray(getInitialVector().extract(msg));
+      byte[] keyBytes = Base64.getDecoder().decode(Password.decode(ExternalResolver.resolve(getKey().extract(msg))));
+      byte[] initialVectorBytes = Base64.getDecoder().decode(getInitialVector().extract(msg));
       Cipher cipher = Cipher.getInstance(cipherToUse);
       SecretKeySpec secretKeySpec = new SecretKeySpec(keyBytes, algToUse);
       IvParameterSpec ivParameterSpec = new IvParameterSpec(initialVectorBytes);
@@ -172,7 +172,7 @@ public class SymmetricKeyCryptographyService extends ServiceImp {
     return algorithm;
   }
 
-  public SymmetricKeyCryptographyService withAlgorithm(String algorithm){
+  public SymmetricKeyCryptographyService withAlgorithm(String algorithm) {
     setAlgorithm(algorithm);
     return this;
   }
@@ -195,7 +195,7 @@ public class SymmetricKeyCryptographyService extends ServiceImp {
     return cipherTransformation;
   }
 
-  public SymmetricKeyCryptographyService withCipherTransformation(String cipherTransformation){
+  public SymmetricKeyCryptographyService withCipherTransformation(String cipherTransformation) {
     setCipherTransformation(cipherTransformation);
     return this;
   }
@@ -218,7 +218,7 @@ public class SymmetricKeyCryptographyService extends ServiceImp {
     return initialVector;
   }
 
-  public SymmetricKeyCryptographyService withInitialVector(DataInputParameter<String> initialVector){
+  public SymmetricKeyCryptographyService withInitialVector(DataInputParameter<String> initialVector) {
     setInitialVector(initialVector);
     return this;
   }
@@ -241,7 +241,7 @@ public class SymmetricKeyCryptographyService extends ServiceImp {
     return key;
   }
 
-  public SymmetricKeyCryptographyService withKey(DataInputParameter<String> key){
+  public SymmetricKeyCryptographyService withKey(DataInputParameter<String> key) {
     setKey(key);
     return this;
   }
@@ -251,7 +251,7 @@ public class SymmetricKeyCryptographyService extends ServiceImp {
    * @param mode the operation mode of the cipher: ENCRYPT or DECRYPT (default: DECRYPT)
    */
   public void setOperationMode(OpMode mode) {
-    this.operationMode = mode;
+    operationMode = mode;
   }
 
   public OpMode getOperationMode() {
@@ -307,4 +307,3 @@ public class SymmetricKeyCryptographyService extends ServiceImp {
   }
 
 }
-

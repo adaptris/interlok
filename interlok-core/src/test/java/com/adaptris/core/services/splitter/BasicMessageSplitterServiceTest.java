@@ -20,14 +20,18 @@ import static com.adaptris.core.services.splitter.MessageSplitterServiceImp.KEY_
 import static com.adaptris.core.services.splitter.SplitterCase.XML_MESSAGE;
 import static com.adaptris.core.services.splitter.SplitterCase.createLineCountMessageInput;
 import static com.adaptris.interlok.junit.scaffolding.services.ExampleServiceCase.execute;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -63,10 +67,9 @@ public class BasicMessageSplitterServiceTest {
   public void testInit() throws Exception {
     BasicMessageSplitterService service = new BasicMessageSplitterService();
     try {
-    service.init();
+      service.init();
       fail();
-    }
-    catch (CoreException expected) {
+    } catch (CoreException expected) {
 
     }
     service.setConnection(new NullConnection());
@@ -83,8 +86,7 @@ public class BasicMessageSplitterServiceTest {
     try {
       service.setConnection(null);
       fail("Expected IllegalArgumentException");
-    }
-    catch (IllegalArgumentException e) {
+    } catch (IllegalArgumentException e) {
       ;
     }
     assertEquals(NullConnection.class, service.getConnection().getClass());
@@ -93,8 +95,7 @@ public class BasicMessageSplitterServiceTest {
     try {
       service.setProducer(null);
       fail("Expected IllegalArgumentException");
-    }
-    catch (IllegalArgumentException e) {
+    } catch (IllegalArgumentException e) {
       ;
     }
     assertEquals(NullMessageProducer.class, service.getProducer().getClass());
@@ -103,8 +104,7 @@ public class BasicMessageSplitterServiceTest {
     try {
       service.setSplitter(null);
       fail("Expected IllegalArgumentException");
-    }
-    catch (IllegalArgumentException e) {
+    } catch (IllegalArgumentException e) {
       ;
     }
   }
@@ -112,11 +112,12 @@ public class BasicMessageSplitterServiceTest {
   @Test
   public void testServiceWithXmlSplitter() throws Exception {
     MockMessageProducer producer = new MockMessageProducer();
-    MessageSplitterServiceImp service = createServiceImpl(new XpathMessageSplitter("/envelope/document", "UTF-8"), producer);
+    MessageSplitterServiceImp service = createServiceImpl(new XpathMessageSplitter("/envelope/document", "UTF-8"),
+        producer);
     AdaptrisMessage msg = createMessage(XML_MESSAGE);
     XpathMessageSplitter splitter = new XpathMessageSplitter("/envelope/document", "UTF-8");
     execute(service, msg);
-    assertEquals("Number of messages", 3, producer.getMessages().size());
+    assertEquals(3, producer.getMessages().size());
   }
 
   @Test
@@ -126,8 +127,8 @@ public class BasicMessageSplitterServiceTest {
     AdaptrisMessage msg = createMessage(createLineCountMessageInput());
     msg.addMetadata(METADATA_KEY, METADATA_VALUE);
     execute(service, msg);
-    assertEquals("Number of messages", 10, producer.getMessages().size());
-    assertEquals("splitCount metadata", 10, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
+    assertEquals(10, producer.getMessages().size());
+    assertEquals(10, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
   }
 
   @Test
@@ -138,7 +139,7 @@ public class BasicMessageSplitterServiceTest {
     execute(service, msg);
     List<AdaptrisMessage> producedMessages = producer.getMessages();
     assertEquals(4, producedMessages.size());
-    assertEquals("splitCount metadata", 4, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
+    assertEquals(4, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
   }
 
   @Test
@@ -152,11 +153,11 @@ public class BasicMessageSplitterServiceTest {
     ExampleServiceCase.execute(service, msg);
     List<AdaptrisMessage> producedMessages = producer.getMessages();
     assertEquals(4, producedMessages.size());
-    assertEquals("splitCount metadata", 4, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
+    assertEquals(4, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
 
     int count = 0;
     for (AdaptrisMessage m : producedMessages) {
-      count ++;
+      count++;
       assertEquals(METADATA_VALUE, m.getMetadataValue(METADATA_KEY));
       assertTrue(m.getObjectHeaders().containsKey(obj));
       assertEquals(obj, m.getObjectHeaders().get(obj));
@@ -175,10 +176,10 @@ public class BasicMessageSplitterServiceTest {
     execute(service, msg);
     List<AdaptrisMessage> producedMessages = producer.getMessages();
     assertEquals(4, producedMessages.size());
-    assertEquals("splitCount metadata", 4, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
+    assertEquals(4, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
     int count = 0;
     for (AdaptrisMessage m : producedMessages) {
-      count ++;
+      count++;
       assertEquals(METADATA_VALUE, m.getMetadataValue(METADATA_KEY));
       assertFalse(m.getObjectHeaders().containsKey(obj));
       assertEquals(count, Integer.parseInt(m.getMetadataValue(KEY_CURRENT_SPLIT_MESSAGE_COUNT)));
@@ -193,11 +194,11 @@ public class BasicMessageSplitterServiceTest {
     execute(service, msg);
     List<AdaptrisMessage> producedMessages = producer.getMessages();
     assertTrue(producedMessages.size() == 4);
-    assertEquals("splitCount metadata", 4, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
+    assertEquals(4, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
 
     int count = 0;
     for (AdaptrisMessage m : producedMessages) {
-      count ++;
+      count++;
       assertEquals(METADATA_VALUE, m.getMetadataValue(METADATA_KEY));
       assertEquals(count, Integer.parseInt(m.getMetadataValue(KEY_CURRENT_SPLIT_MESSAGE_COUNT)));
     }
@@ -208,30 +209,30 @@ public class BasicMessageSplitterServiceTest {
     MockMessageProducer producer = new MockMessageProducer();
     MessageSplitterServiceImp service = createServiceImpl(new SimpleRegexpMessageSplitter("\\|"), producer);
     AdaptrisMessage msg = createMessage(REGEXP_DATA);
-    ((SimpleRegexpMessageSplitter) service.getSplitter())
-        .setCopyMetadata(false);
+    ((SimpleRegexpMessageSplitter) service.getSplitter()).setCopyMetadata(false);
     ExampleServiceCase.execute(service, msg);
     List<AdaptrisMessage> producedMessages = producer.getMessages();
     assertTrue(producedMessages.size() == 4);
-    assertEquals("splitCount metadata", 4, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
+    assertEquals(4, Integer.parseInt(msg.getMetadataValue(MessageSplitterServiceImp.KEY_SPLIT_MESSAGE_COUNT)));
 
     int count = 0;
     for (AdaptrisMessage m : producedMessages) {
-      count ++;
+      count++;
       assertTrue(null == m.getMetadataValue(METADATA_KEY));
       assertEquals(count, Integer.parseInt(m.getMetadataValue(KEY_CURRENT_SPLIT_MESSAGE_COUNT)));
     }
   }
 
-
-  @Test(expected = ServiceException.class)
+  @Test
   public void testService_ProduceException() throws Exception {
-    FailingProducer producer = new FailingProducer();
-    MessageSplitterServiceImp service =
-        createServiceImpl(new XpathMessageSplitter("/envelope/document", "UTF-8"), producer);
-    AdaptrisMessage msg = createMessage(XML_MESSAGE);
-    XpathMessageSplitter splitter = new XpathMessageSplitter("/envelope/document", "UTF-8");
-    execute(service, msg);
+    Assertions.assertThrows(ServiceException.class, () -> {
+      FailingProducer producer = new FailingProducer();
+      MessageSplitterServiceImp service = createServiceImpl(new XpathMessageSplitter("/envelope/document", "UTF-8"),
+          producer);
+      AdaptrisMessage msg = createMessage(XML_MESSAGE);
+      XpathMessageSplitter splitter = new XpathMessageSplitter("/envelope/document", "UTF-8");
+      execute(service, msg);
+    });
   }
 
   protected MessageSplitterServiceImp createServiceImpl(MessageSplitter splitter, MockMessageProducer producer) {

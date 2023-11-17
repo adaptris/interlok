@@ -104,7 +104,7 @@ public interface AdapterComponentMBean extends BaseComponentMBean {
   String JMX_MSG_ERR_DIGESTER_TYPE = JMX_DOMAIN_NAME + ":type=MessageErrorDigest";
 
   @Deprecated
-  @Removal(version = "5.0")
+  @Removal(version = "5.1.0")
   String JMX_LOG_HANDLER_TYPE = JMX_DOMAIN_NAME + ":type=LogHandler";
 
   /**

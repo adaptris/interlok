@@ -16,36 +16,38 @@
 
 package com.adaptris.core.http.client.net;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class ConfiguredRequestHeadersTest extends RequestHeadersCase {
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {}
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {}
 
   @Test
-  public void testSetHandlers() throws Exception {
+  public void testSetHandlers(TestInfo info) throws Exception {
     ConfiguredRequestHeaders headers = new ConfiguredRequestHeaders();
     assertNotNull(headers.getHeaders());
     assertEquals(0, headers.getHeaders().size());
-    String name = testName.getMethodName();
+    String name = info.getDisplayName();
     headers.getHeaders().add(new KeyValuePair(name, name));
     assertEquals(1, headers.getHeaders().size());
     headers.setHeaders(new KeyValuePairSet());
@@ -53,7 +55,7 @@ public class ConfiguredRequestHeadersTest extends RequestHeadersCase {
   }
 
   @Test
-  public void testAddHeaders() throws Exception {
+  public void testAddHeaders(TestInfo info) throws Exception {
 
     Channel c = null;
     HttpURLConnection urlC = null;
@@ -61,7 +63,7 @@ public class ConfiguredRequestHeadersTest extends RequestHeadersCase {
       c = HttpHelper.createAndStartChannel();
       URL url = new URL(HttpHelper.createProduceDestination(c));
       urlC = (HttpURLConnection) url.openConnection();
-      String name = testName.getMethodName();
+      String name = info.getDisplayName();
       ConfiguredRequestHeaders headers = new ConfiguredRequestHeaders();
       headers.getHeaders().add(new KeyValuePair(name, name));
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("");

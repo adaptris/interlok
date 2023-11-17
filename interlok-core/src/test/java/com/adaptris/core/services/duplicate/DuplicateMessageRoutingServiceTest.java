@@ -16,12 +16,15 @@
 
 package com.adaptris.core.services.duplicate;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.File;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -38,7 +41,7 @@ public class DuplicateMessageRoutingServiceTest extends SyntaxRoutingServiceExam
 
 
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
 
     File f = FsHelper.toFile(PROPERTIES.getProperty(KEY_DUPLICATE_STORE));
@@ -107,8 +110,7 @@ public class DuplicateMessageRoutingServiceTest extends SyntaxRoutingServiceExam
 
   private void assertConfigStoreExists() throws Exception {
     File f = FsHelper.toFile(PROPERTIES.getProperty(KEY_DUPLICATE_STORE));
-    assertTrue("ConfigLocation [" + f.getCanonicalPath()
-        + "] exists after shutdown", f.exists());
+    assertTrue(f.exists());
   }
 
   private DuplicateMessageRoutingService createService() {

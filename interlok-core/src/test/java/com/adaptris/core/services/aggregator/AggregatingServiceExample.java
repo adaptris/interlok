@@ -18,6 +18,7 @@ package com.adaptris.core.services.aggregator;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import com.adaptris.core.NullService;
 import com.adaptris.core.Service;
 import com.adaptris.core.services.LogMessageService;

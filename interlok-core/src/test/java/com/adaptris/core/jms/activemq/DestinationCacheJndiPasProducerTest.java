@@ -16,15 +16,17 @@
 
 package com.adaptris.core.jms.activemq;
 
+import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
 import static com.adaptris.interlok.junit.scaffolding.BaseCase.start;
 import static com.adaptris.interlok.junit.scaffolding.BaseCase.stop;
 import static com.adaptris.interlok.junit.scaffolding.BaseCase.waitForMessages;
 import static com.adaptris.interlok.junit.scaffolding.jms.JmsProducerCase.assertMessages;
-import static com.adaptris.core.jms.activemq.EmbeddedActiveMq.createMessage;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.jms.PasConsumer;
@@ -35,13 +37,13 @@ import com.adaptris.core.stubs.MockMessageListener;
 
 public class DestinationCacheJndiPasProducerTest extends JndiPasProducerCase {
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpAll() throws Exception {
     activeMqBroker = new EmbeddedActiveMq();
     activeMqBroker.start();
   }
   
-  @AfterClass
+  @AfterAll
   public static void tearDownAll() throws Exception {
     if(activeMqBroker != null)
       activeMqBroker.destroy();
@@ -53,11 +55,11 @@ public class DestinationCacheJndiPasProducerTest extends JndiPasProducerCase {
   }
 
   @Test
-  public void testProduceAndConsumeWithCache() throws Exception {
+  public void testProduceAndConsumeWithCache(TestInfo tInfo) throws Exception {
     StandardJndiImplementation recvVendorImp = createVendorImplementation();
     StandardJndiImplementation sendVendorImp = createVendorImplementation();
-    String queueName = testName.getMethodName() + "_queue";
-    String topicName = testName.getMethodName() + "_topic";
+    String queueName = tInfo.getDisplayName() + "_queue";
+    String topicName = tInfo.getDisplayName() + "_topic";
 
     StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJndiPasConnection(recvVendorImp, false, queueName,
             topicName), new PasConsumer().withTopic(topicName));

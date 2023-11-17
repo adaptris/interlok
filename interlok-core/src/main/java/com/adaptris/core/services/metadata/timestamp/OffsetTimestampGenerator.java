@@ -18,18 +18,25 @@ package com.adaptris.core.services.metadata.timestamp;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.util.Date;
+import java.util.regex.Matcher;
 
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
+import javax.validation.constraints.Pattern;
 
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.metadata.AddTimestampMetadataService;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
- * Timestamp Generator implementation that mimics the default behaviour available in {@link AddTimestampMetadataService}.
+ * Timestamp Generator implementation that mimics the default behaviour
+ * available in {@link AddTimestampMetadataService}.
  * 
  * 
  * @see AddTimestampMetadataService
@@ -38,42 +45,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("offset-timestamp-generator")
 public class OffsetTimestampGenerator implements TimestampGenerator {
 
-  @InputFieldHint(expression = true)
-  private String offset;
-
-  public OffsetTimestampGenerator() {
-
-  }
-
-
-  public OffsetTimestampGenerator(String offset) {
-    this();
-    setOffset(offset);
-  }
-
-
-  @Override
-  public Date generateTimestamp(AdaptrisMessage msg) throws ServiceException {
-    Date timestamp = new Date();
-    try {
-      if (!isBlank(offset)) {
-        Duration duration;
-        duration = DatatypeFactory.newInstance().newDuration(msg.resolve(offset));
-        duration.addTo(timestamp);
-      }
-    } catch (Exception e) {
-      throw new ServiceException("Failed to parse " + offset + " using ISO8601", e);
-    }
-    return timestamp;
-  }
-
-  /**
-   * @return the offset
-   */
-  public String getOffset() {
-    return offset;
-  }
-
+  private static final String OFFSET_VALIDATION_REGEX = "^\\-?P(?=\\w*\\d)(?:\\d+Y|Y)?(?:\\d+M|M)?(?:\\d+D|D)?(?:T(?:\\d+H|H)?(?:\\d+M|M)?(?:\\d+(?:\\­.\\d{1,2})?S|S)?)?$";
+  private static final String OFFSET_VALIDATION_MESSAGE = "Invalid offset pattern '%s', you must use the ISO8601 standard. I.e. 'P30D', '-P30D'";
 
   /**
    * Set the offset for the timestamp.
@@ -129,9 +102,59 @@ public class OffsetTimestampGenerator implements TimestampGenerator {
    *
    * @param offset the offset.
    */
-  public void setOffset(String offset) {
-    this.offset = offset;
+  @Getter
+  @Setter
+  @InputFieldHint(expression = true)
+  @Pattern(regexp = OFFSET_VALIDATION_REGEX, message = OFFSET_VALIDATION_MESSAGE)
+  private String offset;
+
+  public OffsetTimestampGenerator() {
   }
 
+  public OffsetTimestampGenerator(String offset) {
+    this();
+    setOffset(offset);
+  }
+
+  @Override
+  public Date generateTimestamp(AdaptrisMessage msg) throws ServiceException {
+    Date timestamp = new Date();
+    try {
+      if (!isBlank(offset)) {
+        Duration duration = DatatypeFactory.newInstance().newDuration(msg.resolve(offset));
+        duration.addTo(timestamp);
+      }
+    } catch (Exception e) {
+      throw new ServiceException("Failed to parse " + offset + " using ISO8601", e);
+    }
+    return timestamp;
+  }
+  
+  @Override
+  public void init() throws CoreException {
+    validateOffset();
+  }
+  
+  @Override
+  public void start() throws CoreException {
+  }
+  
+  @Override
+  public void stop() {
+  }
+  
+  @Override
+  public void close() {
+  }
+ 
+  private void validateOffset() throws CoreException {
+    if (!isBlank(offset)) {
+      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(OFFSET_VALIDATION_REGEX);
+      Matcher matcher = pattern.matcher(offset);
+      if (!matcher.find()) {
+        throw new CoreException(String.format(OFFSET_VALIDATION_MESSAGE, offset));
+      }
+    }
+  }
 
 }

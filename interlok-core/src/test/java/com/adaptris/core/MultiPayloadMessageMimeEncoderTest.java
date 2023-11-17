@@ -16,18 +16,18 @@
 
 package com.adaptris.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.StringWriter;
 import java.security.MessageDigest;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 public class MultiPayloadMessageMimeEncoderTest {
 
@@ -42,10 +42,10 @@ public class MultiPayloadMessageMimeEncoderTest {
   private MultiPayloadMessageFactory messageFactory;
 
 
-  @Rule
-  public TestName testName = new TestName();
+  
+  
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     messageFactory = new MultiPayloadMessageFactory();
     mimeEncoder = new MultiPayloadMessageMimeEncoder();
@@ -95,11 +95,11 @@ public class MultiPayloadMessageMimeEncoderTest {
   }
 
   @Test
-  public void testRoundTripWithEncoding() throws Exception {
+  public void testRoundTripWithEncoding(TestInfo info) throws Exception {
     MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage)messageFactory.newMessage(PAYLOAD_ID[0], STANDARD_PAYLOAD[0], ENCODING);
     mimeEncoder.setPayloadEncoding("8bit");
     message.addMetadata(METADATA_KEY, METADATA_VALUE);
-    message.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception(testName.getMethodName()));
+    message.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception(info.getDisplayName()));
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     mimeEncoder.writeMessage(message, out);
     AdaptrisMessage result = mimeEncoder.readMessage(new ByteArrayInputStream(out.toByteArray()));
@@ -110,10 +110,10 @@ public class MultiPayloadMessageMimeEncoderTest {
   }
 
   @Test
-  public void testRoundTripWithException() throws Exception {
+  public void testRoundTripWithException(TestInfo info) throws Exception {
     AdaptrisMessage message = messageFactory.newMessage(PAYLOAD_ID[0], STANDARD_PAYLOAD[0], ENCODING);
     message.addMetadata(METADATA_KEY, METADATA_VALUE);
-    message.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception(testName.getMethodName()));
+    message.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception(info.getDisplayName()));
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     mimeEncoder.writeMessage(message, out);
     AdaptrisMessage result = mimeEncoder.readMessage(new ByteArrayInputStream(out.toByteArray()));
@@ -124,11 +124,11 @@ public class MultiPayloadMessageMimeEncoderTest {
   }
 
   @Test
-  public void testRoundTripWithReadException() throws Exception {
+  public void testRoundTripWithReadException(TestInfo info) throws Exception {
     try {
       AdaptrisMessage message = messageFactory.newMessage(PAYLOAD_ID[0], STANDARD_PAYLOAD[0], ENCODING);
       message.addMetadata(METADATA_KEY, METADATA_VALUE);
-      message.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception(testName.getMethodName()));
+      message.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception(info.getDisplayName()));
       ByteArrayOutputStream out = new ByteArrayOutputStream();
       mimeEncoder.writeMessage(message, out);
       byte[] bytes = new byte[out.toByteArray().length];
@@ -140,11 +140,11 @@ public class MultiPayloadMessageMimeEncoderTest {
   }
 
   @Test
-  public void testRoundTripWithNull() throws Exception {
+  public void testRoundTripWithNull(TestInfo info) throws Exception {
     try{
       AdaptrisMessage message = messageFactory.newMessage(PAYLOAD_ID[0], STANDARD_PAYLOAD[0], ENCODING);
       message.addMetadata(METADATA_KEY, METADATA_VALUE);
-      message.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception(testName.getMethodName()));
+      message.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception(info.getDisplayName()));
       mimeEncoder.writeMessage(message, null);
       fail();
     } catch (CoreException e) {

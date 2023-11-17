@@ -33,7 +33,7 @@ public class ConfigurationCheckRunner {
    *             UnifiedBootstrap is ignored.
    */
   @Deprecated
-  @Removal(version = "4.0.0")
+  @Removal(version = "5.1.0")
   public List<ConfigurationCheckReport> runChecks(BootstrapProperties bootProperties,
       UnifiedBootstrap bootstrap) {
     return runChecks(bootProperties);

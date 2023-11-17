@@ -16,23 +16,27 @@
 
 package com.adaptris.core.transform;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -48,6 +52,7 @@ import com.adaptris.util.text.xml.StxTransformerFactory;
 import com.adaptris.util.text.xml.XPath;
 import com.adaptris.util.text.xml.XmlTransformerFactory;
 import com.adaptris.util.text.xml.XsltTransformerFactory;
+
 import net.sf.saxon.serialize.MessageWarner;
 import net.sf.saxon.trans.UncheckedXPathException;
 
@@ -404,8 +409,8 @@ public class XmlTransformServiceTest
       start(service);
       service.doService(m1);
       service.doService(m2);
-      assertEquals("payload " + m1.getContent(), PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getContent());
-      assertEquals("payload " + m2.getContent(), PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m2.getContent());
+      assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getContent());
+      assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m2.getContent());
     }
     finally {
       stop(service);
@@ -449,8 +454,8 @@ public class XmlTransformServiceTest
       start(service);
       service.doService(m1);
       service.doService(m2);
-      assertEquals("payload " + m1.getContent(), PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getContent());
-      assertEquals("payload " + m2.getContent(), PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m2.getContent());
+      assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getContent());
+      assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m2.getContent());
     }
     finally {
       stop(service);
@@ -463,7 +468,7 @@ public class XmlTransformServiceTest
     XmlTransformService service = new XmlTransformService();
     service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
     execute(service, m1);
-    assertEquals("payload " + m1.getContent(), PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getContent());
+    assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getContent());
   }
 
   @Test
@@ -474,7 +479,7 @@ public class XmlTransformServiceTest
     service.setXmlTransformerFactory(fac);
     service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
     execute(service, m1);
-    assertEquals("payload " + m1.getContent(), PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getContent());
+    assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getContent());
   }
 
   @Test
@@ -486,7 +491,7 @@ public class XmlTransformServiceTest
     service.setXmlTransformerFactory(new StxTransformerFactory());
 
     execute(service, m1);
-    assertEquals("payload " + m1.getContent(), PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getContent());
+    assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getContent());
   }
 
   @Test
@@ -549,8 +554,7 @@ public class XmlTransformServiceTest
     service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
     service.setTransformParameter(new StringMetadataParameter());
     execute(service, msg);
-    assertTrue("payload " + msg.getContent(),
-        msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
+    assertTrue(msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
 
   }
 
@@ -563,8 +567,7 @@ public class XmlTransformServiceTest
     service.setUrl(PROPERTIES.getProperty(KEY_XML_NODE_TRANSFORM_URL));
     service.setTransformParameter(new ObjectMetadataParameter(".*my.*"));
     execute(service, msg);
-    assertTrue("payload " + msg.getContent(),
-        msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
+    assertTrue(msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
 
   }
 
@@ -594,8 +597,7 @@ public class XmlTransformServiceTest
     service.setTransformParameter(new XmlTransformParameterBuilder(new IgnoreMetadataParameter(), new StringMetadataParameter()));
     execute(service, msg);
 
-    assertTrue("payload " + msg.getContent(),
-        msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
+    assertTrue(msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
 
   @Test
@@ -608,8 +610,7 @@ public class XmlTransformServiceTest
     service.setTransformParameter(new XmlTransformParameterBuilder(new IgnoreMetadataParameter(), new StringMetadataParameter(),
         new ObjectMetadataParameter(".*")));
     execute(service, msg);
-    assertTrue("payload " + msg.getContent(),
-        msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
+    assertTrue(msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
 
   @Test
@@ -621,8 +622,7 @@ public class XmlTransformServiceTest
     service.setXmlTransformerFactory(new StxTransformerFactory());
     service.setTransformParameter(new StringMetadataParameter());
     execute(service, msg);
-    assertTrue("payload " + msg.getContent(),
-        msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
+    assertTrue(msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
 
   @Test
@@ -638,8 +638,7 @@ public class XmlTransformServiceTest
     service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
     service.setTransformParameter(new StringMetadataParameter());
     execute(service, msg);
-    assertTrue("payload " + msg.getContent(),
-        msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
+    assertTrue(msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
 
   @Test
@@ -655,8 +654,7 @@ public class XmlTransformServiceTest
     service.setXmlTransformerFactory(new StxTransformerFactory());
     service.setTransformParameter(new StringMetadataParameter());
     execute(service, msg);
-    assertTrue("payload " + msg.getContent(),
-        msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
+    assertTrue(msg.getContent().equals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT) + "World"));
   }
 
   @Test
@@ -752,7 +750,7 @@ public class XmlTransformServiceTest
     Throwable t = e.getCause();
     boolean matches =
         validClasses.stream().anyMatch((clazz) -> clazz.isAssignableFrom(t.getClass()));
-    assertTrue("Exception cause is expected", matches);
+    assertTrue(matches);
   }
 
 }

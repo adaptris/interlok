@@ -16,16 +16,18 @@
 
 package com.adaptris.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+
 import com.adaptris.core.stubs.StubSerializableMessage;
 import com.adaptris.interlok.types.SerializableMessage;
 import com.adaptris.util.KeyValuePair;
@@ -44,27 +46,27 @@ public class SerializableAdaptrisMessageTest {
   private static final String KEY3 = "Key3";
   private static final String KEY2 = "Key2";
   private static final String KEY1 = "Key1";
-  @Rule
-  public TestName testName = new TestName();
+  
+  
   @Test
-  public void testConstructors() throws Exception {
-    SerializableAdaptrisMessage message = new SerializableAdaptrisMessage(testName.getMethodName());
-    assertEquals(testName.getMethodName(), message.getUniqueId());
+  public void testConstructors(TestInfo info) throws Exception {
+    SerializableAdaptrisMessage message = new SerializableAdaptrisMessage(info.getDisplayName());
+    assertEquals(info.getDisplayName(), message.getUniqueId());
     assertEquals(0, message.getMetadata().size());
     assertNull(message.getContent());
     assertEquals("", message.getNextServiceId());
 
-    message = new SerializableAdaptrisMessage(testName.getMethodName(), "my payload");
-    assertEquals(testName.getMethodName(), message.getUniqueId());
+    message = new SerializableAdaptrisMessage(info.getDisplayName(), "my payload");
+    assertEquals(info.getDisplayName(), message.getUniqueId());
     assertEquals(0, message.getMetadata().size());
     assertEquals("my payload", message.getContent());
     assertEquals("", message.getNextServiceId());
 
     SerializableMessage stub = new StubSerializableMessage();
-    stub.setUniqueId(testName.getMethodName());
+    stub.setUniqueId(info.getDisplayName());
     stub.setContent("my payload");
     message = new SerializableAdaptrisMessage(stub);
-    assertEquals(testName.getMethodName(), message.getUniqueId());
+    assertEquals(info.getDisplayName(), message.getUniqueId());
     assertEquals(0, message.getMetadata().size());
     assertEquals("my payload", message.getContent());
     assertEquals("", message.getNextServiceId());
@@ -222,13 +224,13 @@ public class SerializableAdaptrisMessageTest {
   }
 
   @Test
-  public void testRemoveMessageHeader() throws Exception {
+  public void testRemoveMessageHeader(TestInfo info) throws Exception {
     SerializableAdaptrisMessage message = new SerializableAdaptrisMessage();
     message.addMessageHeader(KEY1, VALUE1);
     message.addMessageHeader(KEY2, VALUE2);
     message.addMessageHeader(KEY3, VALUE3);
     message.removeMessageHeader(KEY3);
-    message.removeMessageHeader(testName.getMethodName());
+    message.removeMessageHeader(info.getDisplayName());
     assertEquals(2, message.getMessageHeaders().size());
     assertTrue(message.containsKey(KEY1));
     assertTrue(message.containsKey(KEY2));

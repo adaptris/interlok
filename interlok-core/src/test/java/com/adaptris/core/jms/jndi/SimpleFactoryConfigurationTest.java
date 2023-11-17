@@ -15,16 +15,19 @@
 */
 
 package com.adaptris.core.jms.jndi;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import javax.jms.XAConnectionFactory;
+
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import com.adaptris.interlok.junit.scaffolding.BaseCase;
 import com.adaptris.interlok.util.Closer;
 import com.adaptris.util.KeyValuePair;
@@ -61,12 +64,12 @@ public class SimpleFactoryConfigurationTest extends BaseCase {
   @Mock private XAConnectionFactory mockXAConnectionFactory;
   private AutoCloseable openMocks;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     openMocks = MockitoAnnotations.openMocks(this);
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     Closer.closeQuietly(openMocks);
   }

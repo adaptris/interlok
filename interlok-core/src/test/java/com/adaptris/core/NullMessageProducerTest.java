@@ -1,7 +1,9 @@
 package com.adaptris.core;
 
-import static org.junit.Assert.assertNull;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.util.LifecycleHelper;
 
 public class NullMessageProducerTest {

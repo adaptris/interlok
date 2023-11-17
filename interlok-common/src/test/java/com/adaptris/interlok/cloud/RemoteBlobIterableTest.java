@@ -1,5 +1,6 @@
 package com.adaptris.interlok.cloud;
-import static org.junit.Assert.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -7,7 +8,10 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 
 public class RemoteBlobIterableTest {
 
@@ -26,11 +30,12 @@ public class RemoteBlobIterableTest {
     assertEquals(first + second -1 , size);
   }
   
-  @Test(expected=IllegalStateException.class)
   public void testIterator_Double() throws Exception {  
-    MyRemoteBlobIterable itr = new MyRemoteBlobIterable(1, 0);
-    itr.iterator();
-    itr.iterator();
+    Assertions.assertThrows(IllegalStateException.class, () -> {
+      MyRemoteBlobIterable itr = new MyRemoteBlobIterable(1, 0);
+      itr.iterator();
+      itr.iterator();
+    });
   }
   
   

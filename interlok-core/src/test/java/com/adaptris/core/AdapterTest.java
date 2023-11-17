@@ -16,14 +16,17 @@
 
 package com.adaptris.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.concurrent.TimeUnit;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.event.AdapterCloseEvent;
 import com.adaptris.core.event.AdapterInitEvent;
 import com.adaptris.core.event.AdapterStartEvent;
@@ -498,13 +501,13 @@ public class AdapterTest extends com.adaptris.interlok.junit.scaffolding.BaseCas
     Adapter adapter = createAdapter("testBug1267");
     adapter.setEventHandler(eh);
     LifecycleHelper.init(adapter);
-    assertEquals("EH should already be started on adapter init", eh.retrieveComponentState(), StartedState.getInstance());
+    assertEquals(eh.retrieveComponentState(), StartedState.getInstance());
     LifecycleHelper.start(adapter);
-    assertEquals("EH should still be started", eh.retrieveComponentState(), StartedState.getInstance());
+    assertEquals(eh.retrieveComponentState(), StartedState.getInstance());
     LifecycleHelper.stop(adapter);
-    assertEquals("EH should still be started", eh.retrieveComponentState(), StartedState.getInstance());
+    assertEquals(eh.retrieveComponentState(), StartedState.getInstance());
     LifecycleHelper.close(adapter);
-    assertEquals("EH should now be closed", eh.retrieveComponentState(), ClosedState.getInstance());
+    assertEquals(eh.retrieveComponentState(), ClosedState.getInstance());
 
   }
 
@@ -523,8 +526,8 @@ public class AdapterTest extends com.adaptris.interlok.junit.scaffolding.BaseCas
       fail("test init with RuntimeException throw from init()");
     }
     catch (CoreException e) {
-      assertNotNull("CoreException Cause != null)", e.getCause());
-      assertEquals("Wrapped Exception is a " + RuntimeException.class.getSimpleName(), RuntimeException.class, e.getCause()
+      assertNotNull(e.getCause());
+      assertEquals(RuntimeException.class, e.getCause()
           .getClass());
     }
   }
@@ -544,8 +547,8 @@ public class AdapterTest extends com.adaptris.interlok.junit.scaffolding.BaseCas
       fail("test init with RuntimeException throw from start()");
     }
     catch (CoreException e) {
-      assertNotNull("CoreException Cause != null)", e.getCause());
-      assertEquals("Wrapped Exception is a " + RuntimeException.class.getSimpleName(), RuntimeException.class, e.getCause()
+      assertNotNull(e.getCause());
+      assertEquals(RuntimeException.class, e.getCause()
           .getClass());
     }
   }
@@ -769,12 +772,12 @@ public class AdapterTest extends com.adaptris.interlok.junit.scaffolding.BaseCas
 
   private void assertState(ChannelList cl, ComponentState state) {
     for (Channel c : cl.getChannels()) {
-      assertEquals(c.getUniqueId(), state, c.retrieveComponentState());
+      assertEquals(state, c.retrieveComponentState());
       WorkflowList wl = c.getWorkflowList();
       for (int i = 0; i < wl.size(); i++) {
         Workflow w = wl.get(i);
         if (w instanceof StateManagedComponent) {
-          assertEquals(c.getUniqueId() + " wf " + i, state, ((StateManagedComponent) w).retrieveComponentState());
+          assertEquals(state, ((StateManagedComponent) w).retrieveComponentState());
         }
       }
     }

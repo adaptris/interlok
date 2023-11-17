@@ -19,6 +19,7 @@ package com.adaptris.core.ftp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import com.adaptris.core.FixedIntervalPoller;
 import com.adaptris.core.Poller;
 import com.adaptris.core.QuartzCronPoller;

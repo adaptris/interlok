@@ -17,6 +17,7 @@ package com.adaptris.interlok.junit.scaffolding.services;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
 import com.adaptris.core.BranchingServiceCollection;
 import com.adaptris.core.jms.JmsConstants;
 import com.adaptris.core.services.LogMessageService;

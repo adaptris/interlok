@@ -40,6 +40,10 @@ import com.adaptris.core.http.client.RequestHeaderProvider;
 import com.adaptris.core.http.client.RequestMethodProvider.RequestMethod;
 import com.adaptris.core.http.client.ResponseHeaderHandler;
 import com.adaptris.core.util.Args;
+import com.adaptris.util.TimeInterval;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Direct HTTP support as a service rather than wrapped via {@link StandaloneProducer} or {@link StandaloneRequestor}.
@@ -88,6 +92,25 @@ public abstract class HttpRequestServiceImpl extends ServiceImp {
   @NotNull
   @AutoPopulated
   private HttpAuthenticator authenticator = new NoAuthentication();
+  
+  @Valid
+  @AdvancedConfig(rare = true)
+  @Getter
+  @Setter
+  private TimeInterval connectTimeout;
+  /**
+   * Set the read timeout.
+   * <p>
+   * Note that any read timeout will be overridden by the timeout value passed in via the
+   * {{@link #request(AdaptrisMessage, long)} method; if it is not the same as
+   * {@value com.adaptris.core.http.HttpConstants#DEFAULT_SOCKET_TIMEOUT}
+   * </p>
+   */
+  @Valid
+  @AdvancedConfig(rare = true)
+  @Getter
+  @Setter
+  private TimeInterval readTimeout;
 
   public HttpRequestServiceImpl() {
     super();
@@ -124,6 +147,8 @@ public abstract class HttpRequestServiceImpl extends ServiceImp {
     p.setRequestHeaderProvider(getRequestHeaderProvider());
     p.setResponseHeaderHandler(getResponseHeaderHandler());
     p.registerConnection(new NullConnection());
+    p.setConnectTimeout(getConnectTimeout());
+    p.setReadTimeout(getReadTimeout());
     return p;
   }
 

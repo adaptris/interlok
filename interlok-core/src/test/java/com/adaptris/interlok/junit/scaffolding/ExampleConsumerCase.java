@@ -16,11 +16,14 @@
 
 package com.adaptris.interlok.junit.scaffolding;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.util.LifecycleHelper;
 

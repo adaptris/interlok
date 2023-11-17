@@ -16,15 +16,16 @@
 
 package com.adaptris.core.http.client.net;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -50,7 +51,7 @@ public class MetadataRequestHeadersTest extends RequestHeadersCase {
   }
 
   @Test
-  public void testAddHeaders() throws Exception {
+  public void testAddHeaders(TestInfo info) throws Exception {
     Channel c = null;
     HttpURLConnection urlC = null;
     try {
@@ -60,7 +61,7 @@ public class MetadataRequestHeadersTest extends RequestHeadersCase {
       MetadataRequestHeaders headers = new MetadataRequestHeaders();
       headers.setFilter(new RegexMetadataFilter());
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("");
-      String name = testName.getMethodName();
+      String name = info.getDisplayName();
       msg.addMetadata(name, name);
       urlC = headers.addHeaders(msg, urlC);
       assertTrue(contains(urlC, name, name));
@@ -70,7 +71,7 @@ public class MetadataRequestHeadersTest extends RequestHeadersCase {
   }
 
   @Test
-  public void testAddHeaders_Flatten() throws Exception {
+  public void testAddHeaders_Flatten(TestInfo info) throws Exception {
     Channel c = null;
     HttpURLConnection urlC = null;
     try {
@@ -81,7 +82,7 @@ public class MetadataRequestHeadersTest extends RequestHeadersCase {
       headers.setUnfold(true);
       headers.setFilter(new RegexMetadataFilter());
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("");
-      String name = testName.getMethodName();
+      String name = info.getDisplayName();
       msg.addMetadata(name, name + "\r\n     " + name);
       urlC = headers.addHeaders(msg, urlC);
       assertTrue(contains(urlC, name, name + " " + name));

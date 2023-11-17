@@ -1,7 +1,6 @@
 package com.adaptris.core.common;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,9 +8,8 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -39,10 +37,6 @@ public class MultiPartMessageStreamInputParameterTest {
       + "Content-Length: 191\n"
       + MULTI_PART_NO_HEADER;
 
-
-  @Rule
-  public TestName testName = new TestName();
-
   @Test
   public void testExtract() throws Exception {
     MultiPartMessageStreamInputParameter streamInputParameter = new MultiPartMessageStreamInputParameter();
@@ -58,7 +52,7 @@ public class MultiPartMessageStreamInputParameterTest {
     MultiPartMessageStreamInputParameter p = new MultiPartMessageStreamInputParameter();
     AdaptrisMessage msg = new MyDefectiveMessage();
 
-    assertThrows(CoreException.class, () -> { try (InputStream in = p.extract(msg)) {}});
+    Assertions.assertThrows(CoreException.class, () -> { try (InputStream in = p.extract(msg)) {}});
   }
 
   private class MyDefectiveMessage extends DefectiveAdaptrisMessage {

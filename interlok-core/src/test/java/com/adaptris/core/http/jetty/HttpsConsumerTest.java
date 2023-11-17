@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,14 +16,25 @@
 
 package com.adaptris.core.http.jetty;
 
+import static com.adaptris.core.security.JunitSecurityHelper.KEYSTORE_PATH;
+import static com.adaptris.core.security.JunitSecurityHelper.KEYSTORE_TYPE;
+import static com.adaptris.core.security.JunitSecurityHelper.SECURITY_PASSWORD;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.net.InetAddress;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
 import com.adaptris.core.CoreException;
-import com.adaptris.core.PortManager;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.http.jetty.HttpConnection.HttpConfigurationProperty;
 import com.adaptris.core.http.jetty.HttpConnection.ServerConnectorProperty;
+import com.adaptris.core.http.jetty.HttpsConnection.SecureRequestCustomizerProperty;
 import com.adaptris.core.http.jetty.HttpsConnection.SslProperty;
 import com.adaptris.core.management.webserver.SecurityHandlerWrapper;
 import com.adaptris.core.security.ConfiguredPrivateKeyPasswordProvider;
@@ -32,26 +43,15 @@ import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.http.legacy.HttpsProduceConnection;
 import com.adaptris.http.legacy.SimpleHttpProducer;
 import com.adaptris.http.legacy.VersionedHttpsProduceConnection;
+import com.adaptris.interlok.junit.scaffolding.util.PortManager;
 import com.adaptris.util.KeyValuePair;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.net.InetAddress;
-
-import static com.adaptris.core.security.JunitSecurityHelper.KEYSTORE_PATH;
-import static com.adaptris.core.security.JunitSecurityHelper.KEYSTORE_TYPE;
-import static com.adaptris.core.security.JunitSecurityHelper.SECURITY_PASSWORD;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 @SuppressWarnings("deprecation")
 public class HttpsConsumerTest extends HttpConsumerTest {
 
   private static final String JETTY_HTTPS_PORT = "jetty.https.port";
-  private static final String URL_TO_POST_TO = "/url/to/post/to";
-  private static final String XML_PAYLOAD = "<root><document>value</document></root>";
 
-  @Before
+  @BeforeEach
   public void doKeyStore() throws Exception {
     createKeystore();
   }
@@ -72,10 +72,9 @@ public class HttpsConsumerTest extends HttpConsumerTest {
       myHttpProducer.setUrl(createProduceDestinationUrl(connection.getPort()));
       start(myHttpProducer);
       AdaptrisMessage reply = myHttpProducer.request(msg);
-      assertEquals("Reply Payloads", XML_PAYLOAD, reply.getContent());
+      assertEquals(XML_PAYLOAD, reply.getContent());
       doAssertions(mockProducer);
-    }
-    finally {
+    } finally {
       stop(myHttpProducer);
       channel.requestClose();
       PortManager.release(connection.getPort());
@@ -98,14 +97,12 @@ public class HttpsConsumerTest extends HttpConsumerTest {
       msg.addMetadata(CONTENT_TYPE_METADATA_KEY, "text/xml");
       myHttpProducer.setUrl(createProduceDestinationUrl(connection.getPort()));
       start(myHttpProducer);
-      AdaptrisMessage reply = myHttpProducer.request(msg);
+      myHttpProducer.request(msg);
       // SSLv3 context shouldn't be allowed to connect to TLSv1.2 only
       fail();
-    }
-    catch (CoreException expected) {
+    } catch (CoreException expected) {
 
-    }
-    finally {
+    } finally {
       stop(myHttpProducer);
       channel.requestClose();
       PortManager.release(connection.getPort());
@@ -123,8 +120,7 @@ public class HttpsConsumerTest extends HttpConsumerTest {
     connection.getSslProperties().add(new KeyValuePair(HttpsConnection.SslProperty.KeyStoreType.name(), "JCEKS"));
     connection.getSslProperties().add(new KeyValuePair(HttpsConnection.SslProperty.TrustStorePassword.name(), "password"));
     connection.getSslProperties().add(new KeyValuePair(HttpsConnection.SslProperty.TrustStoreType.name(), "JKS"));
-    connection.getSslProperties()
-        .add(new KeyValuePair(HttpsConnection.SslProperty.TrustStorePath.name(), "/path/to/trust/keystore"));
+    connection.getSslProperties().add(new KeyValuePair(HttpsConnection.SslProperty.TrustStorePath.name(), "/path/to/trust/keystore"));
     StandaloneConsumer result = new StandaloneConsumer(connection, JettyHelper.createConsumer(URL_TO_POST_TO));
     return result;
   }
@@ -138,8 +134,8 @@ public class HttpsConsumerTest extends HttpConsumerTest {
     SimpleHttpProducer p = new SimpleHttpProducer();
     https.setKeystore(PROPERTIES.getProperty(JunitSecurityHelper.KEYSTORE_URL));
     https.setAlwaysTrust(true);
-    https.setPrivateKeyPasswordProvider(new ConfiguredPrivateKeyPasswordProvider(PROPERTIES
-        .getProperty(JunitSecurityHelper.SECURITY_PASSWORD)));
+    https.setPrivateKeyPasswordProvider(
+        new ConfiguredPrivateKeyPasswordProvider(PROPERTIES.getProperty(JunitSecurityHelper.SECURITY_PASSWORD)));
     https.setKeystorePassword(PROPERTIES.getProperty(JunitSecurityHelper.SECURITY_PASSWORD));
     p.registerConnection(https);
     p.setContentTypeKey("content.type");
@@ -165,11 +161,9 @@ public class HttpsConsumerTest extends HttpConsumerTest {
     https.getSslProperties().add(new KeyValuePair(SslProperty.KeyStorePassword.name(), PROPERTIES.getProperty(SECURITY_PASSWORD)));
     https.getSslProperties().add(new KeyValuePair(SslProperty.KeyStorePath.name(), PROPERTIES.getProperty(KEYSTORE_PATH)));
     https.getSslProperties().add(new KeyValuePair(SslProperty.KeyStoreType.name(), PROPERTIES.getProperty(KEYSTORE_TYPE)));
-    https.getSslProperties()
-        .add(new KeyValuePair(SslProperty.KeyManagerPassword.name(), PROPERTIES.getProperty(SECURITY_PASSWORD)));
+    https.getSslProperties().add(new KeyValuePair(SslProperty.KeyManagerPassword.name(), PROPERTIES.getProperty(SECURITY_PASSWORD)));
 
-    https.getSslProperties()
-        .add(new KeyValuePair(SslProperty.TrustStorePassword.name(), PROPERTIES.getProperty(SECURITY_PASSWORD)));
+    https.getSslProperties().add(new KeyValuePair(SslProperty.TrustStorePassword.name(), PROPERTIES.getProperty(SECURITY_PASSWORD)));
     https.getSslProperties().add(new KeyValuePair(SslProperty.TrustStoreType.name(), PROPERTIES.getProperty(KEYSTORE_TYPE)));
     https.getSslProperties().add(new KeyValuePair(SslProperty.TrustStorePath.name(), PROPERTIES.getProperty(KEYSTORE_PATH)));
 
@@ -177,6 +171,8 @@ public class HttpsConsumerTest extends HttpConsumerTest {
     https.getHttpConfiguration().add(new KeyValuePair(HttpConfigurationProperty.OutputBufferSize.name(), "8192"));
     https.getHttpConfiguration().add(new KeyValuePair(HttpConfigurationProperty.SendServerVersion.name(), "false"));
     https.getHttpConfiguration().add(new KeyValuePair(HttpConfigurationProperty.SendDateHeader.name(), "false"));
+    https.getSecureRequestCustomizerProperties().add(new KeyValuePair(SecureRequestCustomizerProperty.SniRequired.name(), "false"));
+    https.getSecureRequestCustomizerProperties().add(new KeyValuePair(SecureRequestCustomizerProperty.SniHostCheck.name(), "false"));
 
     if (sh != null) {
       https.setSecurityHandler(sh);

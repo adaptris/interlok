@@ -16,11 +16,13 @@
 
 package com.adaptris.core.services.metadata;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.BranchingServiceCollection;
@@ -44,7 +46,7 @@ public class CheckUniqueMetadataValueServiceTest extends BranchingServiceExample
     storeFileUrl = PROPERTIES.getProperty(STORE_FILE_URL_KEY);
   }
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     if (checkFileExists(storeFileUrl)) {
       throw new Exception("file [" + storeFileUrl + "] should not exist prior to test");
@@ -72,7 +74,7 @@ public class CheckUniqueMetadataValueServiceTest extends BranchingServiceExample
     msg5 = AdaptrisMessageFactory.getDefaultInstance().newMessage();
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     removeFile(storeFileUrl);
   }

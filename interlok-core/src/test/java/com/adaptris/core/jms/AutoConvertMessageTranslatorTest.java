@@ -19,11 +19,11 @@ package com.adaptris.core.jms;
 import static com.adaptris.core.jms.ObjectMessageTranslatorTest.assertException;
 import static com.adaptris.core.jms.ObjectMessageTranslatorTest.readException;
 import static com.adaptris.core.jms.ObjectMessageTranslatorTest.write;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 
@@ -36,9 +36,9 @@ import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
@@ -60,13 +60,13 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
       INTEGER_VALUE, BOOLEAN_VALUE, STRING_VALUE
   };
 
-  @BeforeClass
+  @BeforeAll
   public static void setUpAll() throws Exception {
     activeMqBroker = new EmbeddedActiveMq();
     activeMqBroker.start();
   }
   
-  @AfterClass
+  @AfterAll
   public static void tearDownAll() throws Exception {
     if(activeMqBroker != null)
       activeMqBroker.destroy();
@@ -321,7 +321,7 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
       addMetadata(msg);
       Message jmsMsg = trans.translate(msg);
-      assertTrue("jmsMsg instanceof BytesMessage", jmsMsg instanceof BytesMessage);
+      assertTrue(jmsMsg instanceof BytesMessage);
       ((BytesMessage) jmsMsg).reset();
       assertEquals(TEXT, new String(getBytes((BytesMessage) jmsMsg)));
       assertJmsProperties(jmsMsg);
@@ -341,7 +341,7 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
       addMetadata(msg);
       Message jmsMsg = trans.translate(msg);
-      assertTrue("jmsMsg instanceof TextMessage", jmsMsg instanceof TextMessage);
+      assertTrue(jmsMsg instanceof TextMessage);
       assertEquals(TEXT, ((TextMessage) jmsMsg).getText());
       assertJmsProperties(jmsMsg);
     }
@@ -381,7 +381,7 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
       AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(TEXT);
       addMetadata(msg);
       Message jmsMsg = trans.translate(msg);
-      assertTrue("jmsMsg instanceof TextMessage", jmsMsg instanceof MapMessage);
+      assertTrue(jmsMsg instanceof MapMessage);
       assertJmsProperties(jmsMsg);
       assertTrue(((MapMessage) jmsMsg).getString(STRING_METADATA).equals(STRING_VALUE));
       assertTrue(((MapMessage) jmsMsg).getString(BOOLEAN_METADATA).equals(BOOLEAN_VALUE));
@@ -426,7 +426,7 @@ public class AutoConvertMessageTranslatorTest extends GenericMessageTypeTranslat
       write(e, msg);
       addMetadata(msg);
       Message jmsMsg = trans.translate(msg);
-      assertTrue("jmsMsg instanceof ObjectMessage", jmsMsg instanceof ObjectMessage);
+      assertTrue(jmsMsg instanceof ObjectMessage);
       assertJmsProperties(jmsMsg);
       assertException(e, (Exception) ((ObjectMessage) jmsMsg).getObject());
     }

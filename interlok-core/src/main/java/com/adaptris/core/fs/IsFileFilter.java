@@ -33,7 +33,7 @@ public class IsFileFilter implements FileFilter {
 
   @Override
   public boolean accept(File pathname) {
-    return FileFileFilter.FILE.accept(pathname);
+    return FileFileFilter.INSTANCE.accept(pathname);
   }
 
 }

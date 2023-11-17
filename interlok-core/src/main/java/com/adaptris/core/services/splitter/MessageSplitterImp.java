@@ -59,7 +59,7 @@ public abstract class MessageSplitterImp implements MessageSplitter {
    */
   protected void copyMetadata(AdaptrisMessage parent, AdaptrisMessage child) {
     if (copyMetadata()) {
-      child.setMetadata(parent.getMetadata());
+      child.addMetadata(parent.getMetadata());
     }
     child.addMetadata(CoreConstants.PARENT_UNIQUE_ID_KEY, parent.getUniqueId());
     if (copyObjectMetadata()) {

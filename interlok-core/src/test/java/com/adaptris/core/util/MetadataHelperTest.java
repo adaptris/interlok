@@ -16,9 +16,9 @@
 
 package com.adaptris.core.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,8 +29,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.CoreException;
 import com.adaptris.core.MetadataCollection;
@@ -40,7 +41,7 @@ import com.adaptris.util.KeyValuePairCollection;
 
 public class MetadataHelperTest extends MetadataHelper {
 
-  @Before
+  @BeforeEach
   public void setUp() {
   }
 
@@ -78,17 +79,19 @@ public class MetadataHelperTest extends MetadataHelper {
 
   @Test
   public void testMetadataFromMatchGroups() throws Exception {
-    List<String> keys = Arrays.asList(new String[] {"key1", "key2"});
+    List<String> keys = Arrays.asList(new String[] { "key1", "key2" });
     Matcher matcher = Pattern.compile("/path/(.*)/(.*)").matcher("/path/value1/value2");
     matcher.matches();
     Set<MetadataElement> metadata = metadataFromMatchGroups(matcher, keys);
     assertEquals(2, metadata.size());
   }
 
-  @Test(expected = CoreException.class)
+  @Test
   public void testMetadataFromMatchGroups_Mismatch() throws Exception {
-    Matcher matcher = Pattern.compile("^/path/(.*)/(.*)$").matcher("/path/value1/value2");
-    matcher.matches();
-    Set<MetadataElement> metadata = metadataFromMatchGroups(matcher, Collections.emptyList());
+    Assertions.assertThrows(CoreException.class, () -> {
+      Matcher matcher = Pattern.compile("^/path/(.*)/(.*)$").matcher("/path/value1/value2");
+      matcher.matches();
+      Set<MetadataElement> metadata = metadataFromMatchGroups(matcher, Collections.emptyList());
+    });
   }
 }

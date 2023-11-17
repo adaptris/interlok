@@ -42,7 +42,7 @@ import lombok.Getter;
  *
  */
 @Deprecated(since = "4.1.0")
-@Removal(version = "5.0.0",
+@Removal(version = "5.1.0",
     message = "Use MultiItemConfiguredXpathQuery with %message{metadata} syntax to extract XPath from metadata.")
 @XStreamAlias("multi-item-metadata-xpath-query")
 @DisplayOrder(order = {"metadataKey", "xpathMetadataKey"})

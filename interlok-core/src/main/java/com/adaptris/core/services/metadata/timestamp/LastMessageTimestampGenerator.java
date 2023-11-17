@@ -18,6 +18,7 @@ package com.adaptris.core.services.metadata.timestamp;
 import java.util.Date;
 
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.metadata.AddTimestampMetadataService;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -39,6 +40,34 @@ public class LastMessageTimestampGenerator implements TimestampGenerator {
     Date timestamp = lastMsgDate;
     lastMsgDate = new Date();
     return timestamp;
+  }
+  
+  /**
+   * @see com.adaptris.core.AdaptrisComponent#init()
+   */
+  @Override
+  public void init() throws CoreException {
+  }
+  
+  /**
+   * @see com.adaptris.core.AdaptrisComponent#start()
+   */
+  @Override
+  public void start() throws CoreException {
+  }
+  
+  /**
+   * @see com.adaptris.core.AdaptrisComponent#stop()
+   */
+  @Override
+  public void stop() {
+  }
+  
+  /**
+   * @see com.adaptris.core.AdaptrisComponent#close()
+   */
+  @Override
+  public void close() {
   }
 
 }

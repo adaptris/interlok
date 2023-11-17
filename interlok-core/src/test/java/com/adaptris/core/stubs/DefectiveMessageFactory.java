@@ -17,7 +17,9 @@
 package com.adaptris.core.stubs;
 
 import java.util.EnumSet;
+
 import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 

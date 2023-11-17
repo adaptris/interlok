@@ -69,7 +69,7 @@ public interface AdaptrisMessage extends InterlokMessage {
    *             string; since 2.9.3
    */
   @Deprecated
-  @Removal(version="5.0.0")
+  @Removal(version="5.1.0")
   default void setStringPayload(String payload) {
     setContent(payload, null);
   }
@@ -86,7 +86,7 @@ public interface AdaptrisMessage extends InterlokMessage {
    * @deprecated since 3.0.6 Use {@link #setContent(String, String)}
    */
   @Deprecated
-  @Removal(version="5.0.0")
+  @Removal(version="5.1.0")
   default void setStringPayload(String payload, String charEncoding) {
     setContent(payload, charEncoding);
   }
@@ -104,7 +104,7 @@ public interface AdaptrisMessage extends InterlokMessage {
    * @deprecated since 3.0.6 use {{@link #getContent()} instead.
    */
   @Deprecated
-  @Removal(version="5.0.0")
+  @Removal(version="5.1.0")
   default String getStringPayload() {
     return getContent();
   }
@@ -121,7 +121,7 @@ public interface AdaptrisMessage extends InterlokMessage {
    * @deprecated since 3.0.6 use {{@link #setContentEncoding(String)} instead.
    */
   @Deprecated
-  @Removal(version="5.0.0")
+  @Removal(version="5.1.0")
   default void setCharEncoding(String charEncoding) {
     setContentEncoding(charEncoding);
   }
@@ -137,7 +137,7 @@ public interface AdaptrisMessage extends InterlokMessage {
    * @deprecated since 3.0.6 use {{@link #getContentEncoding()} instead.
    */
   @Deprecated
-  @Removal(version="5.0.0")
+  @Removal(version="5.1.0")
   default String getCharEncoding() {
     return getContentEncoding();
   }
@@ -180,7 +180,7 @@ public interface AdaptrisMessage extends InterlokMessage {
    * @deprecated since 3.0.6 use {@link #headersContainsKey(String)} instead.
    */
   @Deprecated
-  @Removal(version="5.0.0")
+  @Removal(version="5.1.0")
   default boolean containsKey(String key) {
     return headersContainsKey(key);
   }
@@ -238,7 +238,7 @@ public interface AdaptrisMessage extends InterlokMessage {
    * instead.
    */
   @Deprecated
-  @Removal(version="5.0")
+  @Removal(version="5.1.0")
   default void setMetadata(Set<MetadataElement> metadata) {
     addMetadata(metadata);
   }
@@ -350,7 +350,7 @@ public interface AdaptrisMessage extends InterlokMessage {
    * @deprecated since 3.0.6 use {@link #addObjectHeader(Object, Object)} instead.
    */
   @Deprecated
-  @Removal(version="5.0.0")
+  @Removal(version="5.1.0")
   default void addObjectMetadata(String key, Object object) {
     addObjectHeader(key, object);
   }
@@ -364,7 +364,7 @@ public interface AdaptrisMessage extends InterlokMessage {
    * @deprecated since 3.0.6 use {@link #getObjectHeaders()} instead.
    */
   @Deprecated
-  @Removal(version="5.0.0")
+  @Removal(version="5.1.0")
   default Map getObjectMetadata() {
     return getObjectHeaders();
   }

@@ -1,6 +1,6 @@
 package com.adaptris.core.services.conditional;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
@@ -11,8 +11,9 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -28,6 +29,7 @@ import com.adaptris.core.Service;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.StartedState;
 import com.adaptris.core.services.LogMessageService;
+import com.adaptris.interlok.util.Closer;
 import com.adaptris.util.GuidGenerator;
 
 public class ForEachTest extends ConditionalServiceExample
@@ -41,10 +43,12 @@ public class ForEachTest extends ConditionalServiceExample
   @Mock
   private Service mock;
 
-  @Before
+  private AutoCloseable openMocks = null;
+  
+  @BeforeEach
   public void setUp() throws Exception
   {
-    MockitoAnnotations.openMocks(this);
+	openMocks = MockitoAnnotations.openMocks(this);
 
     when(mock.retrieveComponentState())
     .thenReturn(StartedState.getInstance());
@@ -59,6 +63,11 @@ public class ForEachTest extends ConditionalServiceExample
     message.addPayload("cupcake", PAYLOAD_2);
   }
 
+  @AfterEach
+  public void tearDown() throws Exception {
+	  Closer.closeQuietly(openMocks);
+  }
+  
   @Test
   public void testForEach() throws Exception
   {

@@ -16,12 +16,14 @@
 
 package com.adaptris.core.fs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class SizeBasedFilterTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
 
@@ -29,7 +31,7 @@ public class SizeBasedFilterTest extends com.adaptris.interlok.junit.scaffolding
   private File file;
 
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     file = new File(PROPERTIES.getProperty("fs.SizeBasedFilter"));
   }
@@ -37,97 +39,97 @@ public class SizeBasedFilterTest extends com.adaptris.interlok.junit.scaffolding
   @Test
   public void testSizeLessThanFileIsSmaller() throws Exception {
     SizeBasedFileFilter filter = new SizeLessThan(String.valueOf(file.length() + DIFF));
-    assertTrue("filter.accept() should be true", filter.accept(file));
+    assertTrue(filter.accept(file));
     filter = new SizeLessThan(file.length() + DIFF);
-    assertTrue("filter.accept() should be true", filter.accept(file));
+    assertTrue(filter.accept(file));
   }
 
   @Test
   public void testSizeLessThanFileIsLarger() throws Exception {
     SizeBasedFileFilter filter = new SizeLessThan(String.valueOf(file.length() - DIFF));
-    assertFalse("filter.accept() should be false", filter.accept(file));
+    assertFalse(filter.accept(file));
     filter = new SizeLessThan(file.length() - DIFF);
-    assertFalse("filter.accept() should be false", filter.accept(file));
+    assertFalse(filter.accept(file));
   }
 
   @Test
   public void testSizeLessThanFileIsExact() throws Exception {
     SizeBasedFileFilter filter = new SizeLessThan(String.valueOf(file.length()));
-    assertFalse("filter.accept() should be false", filter.accept(file));
+    assertFalse(filter.accept(file));
     filter = new SizeLessThan(file.length());
-    assertFalse("filter.accept() should be false", filter.accept(file));
+    assertFalse(filter.accept(file));
   }
 
   @Test
   public void testSizeLessThanOrEqualFileIsSmaller() throws Exception {
     SizeBasedFileFilter filter = new SizeLessThanOrEqual(String.valueOf(file.length() + DIFF));
-    assertTrue("filter.accept() should be true", filter.accept(file));
+    assertTrue(filter.accept(file));
     filter = new SizeLessThanOrEqual(file.length() + DIFF);
-    assertTrue("filter.accept() should be true", filter.accept(file));
+    assertTrue(filter.accept(file));
   }
 
   @Test
   public void testSizeLessThanOrEqualFileIsLarger() throws Exception {
     SizeBasedFileFilter filter = new SizeLessThanOrEqual(String.valueOf(file.length() - DIFF));
-    assertFalse("filter.accept() should be false", filter.accept(file));
+    assertFalse(filter.accept(file));
     filter = new SizeLessThanOrEqual(file.length() - DIFF);
-    assertFalse("filter.accept() should be false", filter.accept(file));
+    assertFalse(filter.accept(file));
   }
 
   @Test
   public void testSizeLessThanOrEqualFileIsExact() throws Exception {
     SizeBasedFileFilter filter = new SizeLessThanOrEqual(String.valueOf(file.length()));
-    assertTrue("filter.accept() should be true", filter.accept(file));
+    assertTrue(filter.accept(file));
     filter = new SizeLessThanOrEqual(file.length());
-    assertTrue("filter.accept() should be true", filter.accept(file));
+    assertTrue(filter.accept(file));
   }
 
   @Test
   public void testSizeGreaterThanFileIsSmaller() throws Exception {
     SizeBasedFileFilter filter = new SizeGreaterThan(String.valueOf(file.length() + DIFF));
-    assertFalse("filter.accept() should be false", filter.accept(file));
+    assertFalse(filter.accept(file));
     filter = new SizeGreaterThan(file.length() + DIFF);
-    assertFalse("filter.accept() should be false", filter.accept(file));
+    assertFalse(filter.accept(file));
   }
 
   @Test
   public void testSizeGreaterThanFileIsLarger() throws Exception {
     SizeBasedFileFilter filter = new SizeGreaterThan(String.valueOf(file.length() - DIFF));
-    assertTrue("filter.accept() should be true", filter.accept(file));
+    assertTrue(filter.accept(file));
     filter = new SizeGreaterThan(file.length() - DIFF);
-    assertTrue("filter.accept() should be true", filter.accept(file));
+    assertTrue(filter.accept(file));
   }
 
   @Test
   public void testSizeGreaterThanFileIsExact() throws Exception {
     SizeBasedFileFilter filter = new SizeGreaterThan(String.valueOf(file.length()));
-    assertFalse("filter.accept() should be false", filter.accept(file));
+    assertFalse(filter.accept(file));
     filter = new SizeGreaterThan(file.length());
-    assertFalse("filter.accept() should be false", filter.accept(file));
+    assertFalse(filter.accept(file));
   }
 
   @Test
   public void testSizeGreaterThanOrEqualFileIsSmaller() throws Exception {
     SizeBasedFileFilter filter = new SizeGreaterThanOrEqual(String.valueOf(file.length() + DIFF));
-    assertFalse("filter.accept() should be false", filter.accept(file));
+    assertFalse(filter.accept(file));
     filter = new SizeGreaterThanOrEqual(file.length() + DIFF);
-    assertFalse("filter.accept() should be false", filter.accept(file));
+    assertFalse(filter.accept(file));
   }
 
   @Test
   public void testSizeGreaterThanOrEqualFileIsLarger() throws Exception {
     SizeBasedFileFilter filter = new SizeGreaterThanOrEqual(String.valueOf(file.length() - DIFF));
-    assertTrue("filter.accept() should be true", filter.accept(file));
+    assertTrue(filter.accept(file));
     filter = new SizeGreaterThanOrEqual(file.length() - DIFF);
-    assertTrue("filter.accept() should be true", filter.accept(file));
+    assertTrue(filter.accept(file));
   }
 
   @Test
   public void testSizeGreaterThanOrEqualFileIsExact() throws Exception {
     SizeBasedFileFilter filter = new SizeGreaterThanOrEqual(String.valueOf(file.length()));
-    assertTrue("filter.accept() should be true", filter.accept(file));
+    assertTrue(filter.accept(file));
     filter = new SizeGreaterThanOrEqual(file.length());
-    assertTrue("filter.accept() should be true", filter.accept(file));
+    assertTrue(filter.accept(file));
   }
 
   @Test

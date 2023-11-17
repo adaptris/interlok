@@ -18,6 +18,7 @@ package com.adaptris.interlok.junit.scaffolding.jms;
 
 import java.util.Arrays;
 import java.util.List;
+
 import com.adaptris.core.jms.AutoConvertMessageTranslator;
 import com.adaptris.core.jms.BytesMessageTranslator;
 import com.adaptris.core.jms.MapMessageTranslator;

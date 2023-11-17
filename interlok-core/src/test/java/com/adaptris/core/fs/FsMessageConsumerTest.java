@@ -16,11 +16,12 @@
 
 package com.adaptris.core.fs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -29,9 +30,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.oro.io.Perl5FilenameFilter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -260,8 +263,7 @@ public class FsMessageConsumerTest extends FsConsumerCase {
       waitForMessages(stub, count);
       assertMessages(stub.getMessages(), count, baseDir.listFiles((FilenameFilter) new Perl5FilenameFilter(".*\\.xml")));
       for (AdaptrisMessage msg : stub.getMessages()) {
-        assertFalse("original name should not contain '.wip'",
-            msg.getMetadataValue(CoreConstants.ORIGINAL_NAME_KEY).endsWith(".wip"));
+        assertFalse(msg.getMetadataValue(CoreConstants.ORIGINAL_NAME_KEY).endsWith(".wip"));
       }
     }
     finally {
@@ -323,7 +325,7 @@ public class FsMessageConsumerTest extends FsConsumerCase {
       waitForMessages(stub, count);
 
       Perl5FilenameFilter wip = new Perl5FilenameFilter(".*\\.tmp");
-      assertEquals("TMP Files remain", count, baseDir.listFiles((FilenameFilter) wip).length);
+      assertEquals(count, baseDir.listFiles((FilenameFilter) wip).length);
       assertMessages(stub.getMessages(), count, baseDir.listFiles((FilenameFilter) new Perl5FilenameFilter(".*\\.xml")));
     }
     finally {
@@ -377,7 +379,7 @@ public class FsMessageConsumerTest extends FsConsumerCase {
       createFiles(baseDir, ".xml.wip", count);
       LifecycleHelper.init(sc);
       Perl5FilenameFilter p5 = new Perl5FilenameFilter(".*\\.xml");
-      assertTrue("Files renamed in " + baseDir.getCanonicalPath(), baseDir.listFiles((FilenameFilter) p5).length > 0);
+      assertTrue(baseDir.listFiles((FilenameFilter) p5).length > 0);
     }
     finally {
       // sc.stop();
@@ -516,8 +518,8 @@ public class FsMessageConsumerTest extends FsConsumerCase {
 
   @Override
   protected void assertMessages(List<AdaptrisMessage> list, int count, File[] remaining) {
-    assertEquals("All files produced", count, list.size());
-    assertEquals("All files consumed", 0, remaining.length);
+    assertEquals(count, list.size());
+    assertEquals(0, remaining.length);
     for (AdaptrisMessage m : list) {
       assertEquals(0, m.getSize());
       assertTrue(m.containsKey(CoreConstants.ORIGINAL_NAME_KEY));

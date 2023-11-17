@@ -23,12 +23,13 @@ import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_MSG_INITIALI
 import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_MSG_STARTED;
 import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_TYPE_ADAPTER_CONFIG;
 import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_TYPE_ADAPTER_LIFECYCLE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,6 +40,7 @@ import java.util.UUID;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
 import javax.management.JMX;
 import javax.management.MalformedObjectNameException;
 import javax.management.Notification;
@@ -46,8 +48,10 @@ import javax.management.NotificationFilterSupport;
 import javax.management.ObjectName;
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.Adapter;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.Channel;
@@ -87,7 +91,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
   public AdapterManagerTest() {
   }
 
-  @Before
+  @BeforeEach
   public void beforeMyTests() throws Exception {
     env.put(Context.INITIAL_CONTEXT_FACTORY, JndiContextFactory.class.getName());
     initialContext = new InitialContext(env);

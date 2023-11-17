@@ -86,7 +86,7 @@ public class ExtractMetadataService extends MetadataServiceImpl {
       if (matcher.matches()) {
         Set<MetadataElement> extracted = MetadataHelper.metadataFromMatchGroups(matcher, metadataKeys());
         logMetadata("Adding metadata: {}", extracted);
-        msg.setMetadata(extracted);
+        msg.addMetadata(extracted);
       } else {
         log.trace("{} did not match, no metadata set", getRegularExpression());
       }

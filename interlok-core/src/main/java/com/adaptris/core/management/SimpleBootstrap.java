@@ -34,6 +34,7 @@ public class SimpleBootstrap extends CmdLineBootstrap {
   @Override
   public void boot() throws Exception {
     logVersionInformation();
+    argHelp();
     super.standardBoot();
   }
 

@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -95,7 +96,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
       ftp = createFTPClient();
       preConnectSettings(ftp);
       ftp.setConnectTimeout(getTimeout());
-      ftp.setDataTimeout(getTimeout());
+      ftp.setDataTimeout(Duration.ofMillis(getTimeout()));
       try {
         ftp.connect(remoteHost, port);
         logReply(ftp.getReplyStrings());
@@ -592,7 +593,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
   public long getKeepAliveTimeout() throws FileTransferException {
     try {
       acquireLock();
-      return ftpClient().getControlKeepAliveTimeout();
+      return ftpClient().getControlKeepAliveTimeoutDuration().toSeconds();
     } catch (IOException e) {
       throw new FtpException(e);
     } finally {
@@ -604,7 +605,7 @@ public abstract class ApacheFtpClientImpl<T extends FTPClient> extends FileTrans
   public void setKeepAliveTimeout(long seconds) throws FileTransferException {
     try {
       acquireLock();
-      ftpClient().setControlKeepAliveTimeout(seconds);
+      ftpClient().setControlKeepAliveTimeout(Duration.ofSeconds(seconds));
     } catch (IOException e) {
       throw new FileTransferException(e);
     } finally {

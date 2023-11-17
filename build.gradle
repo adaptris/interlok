@@ -1,18 +1,17 @@
 plugins {
   // Manage optional dependencies in maven pom.
-  id 'nebula.optional-base' version '7.0.0' apply false
-  id 'com.github.spotbugs' version '5.0.14' apply false
-  id "org.sonarqube" version '3.4.0.2513' apply false
-  id 'org.owasp.dependencycheck' version '8.2.1' apply false
-  id "io.freefair.lombok" version "6.5.1" apply false
-  // id 'org.kordamp.gradle.jdeps' version '0.12.0' apply false
-  id "org.gradle.test-retry" version "1.5.2" apply false
-  id 'org.barfuin.gradle.taskinfo' version '1.4.0'
+  id "nebula.optional-base" version "7.0.0" apply false
+  id "com.github.spotbugs" version "5.2.1" apply false
+  id "org.sonarqube" version "4.4.1.3373"
+  id "org.owasp.dependencycheck" version "8.4.2" apply false
+  id "io.freefair.lombok" version "8.4" apply false
+  id "org.gradle.test-retry" version "1.5.6" apply false
+  id "org.barfuin.gradle.taskinfo" version "2.1.0"
 }
 
 ext {
-  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '4.8-SNAPSHOT'
-  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '4.8-SNAPSHOT'
+  interlokCoreVersion = project.hasProperty('interlokCoreVersion') ? project.getProperty('interlokCoreVersion') : '5.0-SNAPSHOT'
+  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '5.0-SNAPSHOT'
   nexusBaseUrl = project.hasProperty('nexusBaseUrl') ? project.getProperty('nexusBaseUrl') : 'https://nexus.adaptris.net/nexus'
   mavenPublishUrl = project.hasProperty('mavenPublishUrl') ? project.getProperty('mavenPublishUrl') : nexusBaseUrl + '/content/repositories/snapshots'
   javadocsBaseUrl = nexusBaseUrl + "/content/sites/javadocs/com/adaptris"
@@ -60,6 +59,14 @@ task clean(type: Delete) {
   delete project.buildDir
 }
 
+sonar {
+  properties {
+    property "sonar.projectKey", "adaptris_interlok"
+    property "sonar.organization", "adaptris-org"
+    property "sonar.host.url", "https://sonarcloud.io"
+  }
+}
+
 allprojects {
   tasks.withType(Jar) {
     metaInf {
@@ -75,23 +82,22 @@ allprojects {
 }
 
 subprojects { subproject ->
-  apply plugin: 'java-library'
-  apply plugin: 'maven-publish'
-  apply plugin: 'nebula.optional-base'
-  apply plugin: 'com.github.spotbugs'
-  apply plugin: 'org.sonarqube'
-  apply plugin: 'org.owasp.dependencycheck'
-  apply plugin: 'io.freefair.lombok'
-  // apply plugin: 'org.kordamp.gradle.jdeps'
-  apply plugin: 'org.gradle.test-retry'
+  apply plugin: "java-library"
+  apply plugin: "maven-publish"
+  apply plugin: "nebula.optional-base"
+  apply plugin: "com.github.spotbugs"
+  apply plugin: "org.sonarqube"
+  apply plugin: "org.owasp.dependencycheck"
+  apply plugin: "io.freefair.lombok"
+  apply plugin: "org.gradle.test-retry"
 
   if (buildDetails.jacocoEnabled(subproject)) {
     apply plugin: "jacoco"
   }
 
   java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
   }
 
   group   = 'com.adaptris'
@@ -144,7 +150,6 @@ subprojects { subproject ->
   configurations.all {
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
   }
-
 
   if (buildDetails.jacocoEnabled(subproject)) {
     jacocoTestReport {

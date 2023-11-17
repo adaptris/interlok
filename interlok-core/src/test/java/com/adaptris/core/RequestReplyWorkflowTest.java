@@ -16,6 +16,21 @@
 
 package com.adaptris.core;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.jms.JmsConnection;
 import com.adaptris.core.jms.PtpConsumer;
 import com.adaptris.core.jms.PtpProducer;
@@ -29,20 +44,6 @@ import com.adaptris.core.stubs.MockRequestReplyProducer;
 import com.adaptris.core.stubs.MockSkipProducerService;
 import com.adaptris.core.stubs.MockWorkflowInterceptor;
 import com.adaptris.util.TimeInterval;
-import org.junit.Test;
-
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class RequestReplyWorkflowTest
     extends com.adaptris.interlok.junit.scaffolding.ExampleWorkflowCase {
@@ -120,7 +121,7 @@ public class RequestReplyWorkflowTest
       submitMessages(workflow, 1);
       doDefaultAssertions(requestor, replier);
       AdaptrisMessage replyMsg = replier.getMessages().get(0);
-      assertTrue("Request Metadata", replyMsg.headersContainsKey(REQUEST_METADATA_KEY));
+      assertTrue(replyMsg.headersContainsKey(REQUEST_METADATA_KEY));
     }
     finally {
       stop(channel);
@@ -214,7 +215,7 @@ public class RequestReplyWorkflowTest
       submitMessages(workflow, 1);
       doDefaultAssertions(requestor, replier);
       AdaptrisMessage replyMsg = replier.getMessages().get(0);
-      assertTrue("Request Metadata", replyMsg.headersContainsKey(REQUEST_METADATA_KEY));
+      assertTrue(replyMsg.headersContainsKey(REQUEST_METADATA_KEY));
     }
     finally {
       stop(channel);
@@ -237,7 +238,7 @@ public class RequestReplyWorkflowTest
       submitMessages(workflow, 1);
       doDefaultAssertions(requestor, replier);
       AdaptrisMessage replyMsg = replier.getMessages().get(0);
-      assertTrue("Request Metadata", replyMsg.headersContainsKey(REQUEST_METADATA_KEY));
+      assertTrue(replyMsg.headersContainsKey(REQUEST_METADATA_KEY));
       assertEquals(1, interceptor.messageCount());
     }
     finally {
@@ -261,8 +262,8 @@ public class RequestReplyWorkflowTest
       m.submitMessage(msg);
       doDefaultAssertions(requestor, replier);
       AdaptrisMessage replyMsg = replier.getMessages().get(0);
-      assertTrue("Request Metadata", replyMsg.headersContainsKey(REQUEST_METADATA_KEY));
-      assertTrue("Contains object metadata", replyMsg.getObjectHeaders().containsKey(REQUEST_OBJ_METADATA_KEY));
+      assertTrue(replyMsg.headersContainsKey(REQUEST_METADATA_KEY));
+      assertTrue(replyMsg.getObjectHeaders().containsKey(REQUEST_OBJ_METADATA_KEY));
     }
     finally {
       stop(channel);
@@ -282,8 +283,8 @@ public class RequestReplyWorkflowTest
       submitMessages(workflow, 1);
       doDefaultAssertions(requestor, replier);
       AdaptrisMessage reply = replier.getMessages().get(0);
-      assertTrue("Contains Request Metadata key", reply.headersContainsKey(REQUEST_METADATA_KEY));
-      assertFalse("Reply Metadata key", reply.headersContainsKey(MockRequestReplyProducer.REPLY_METADATA_KEY));
+      assertTrue(reply.headersContainsKey(REQUEST_METADATA_KEY));
+      assertFalse(reply.headersContainsKey(MockRequestReplyProducer.REPLY_METADATA_KEY));
     }
     finally {
       stop(channel);
@@ -303,8 +304,8 @@ public class RequestReplyWorkflowTest
       submitMessages(workflow, 1);
       doDefaultAssertions(requestor, replier);
       AdaptrisMessage reply = replier.getMessages().get(0);
-      assertTrue("Contains Request Metadata key", reply.headersContainsKey(REQUEST_METADATA_KEY));
-      assertTrue("Reply Metadata key", reply.headersContainsKey(MockRequestReplyProducer.REPLY_METADATA_KEY));
+      assertTrue(reply.headersContainsKey(REQUEST_METADATA_KEY));
+      assertTrue(reply.headersContainsKey(MockRequestReplyProducer.REPLY_METADATA_KEY));
     }
     finally {
       stop(channel);
@@ -321,11 +322,11 @@ public class RequestReplyWorkflowTest
   }
 
   private void doDefaultAssertions(MockRequestReplyProducer requestor, MockMessageProducer replier) {
-    assertTrue("Make sure all produced", requestor.getProducedMessages().size() == 1);
-    assertTrue("Make sure all replies produced", replier.getMessages().size() == 1);
+    assertTrue(requestor.getProducedMessages().size() == 1);
+    assertTrue(replier.getMessages().size() == 1);
     AdaptrisMessage request = (AdaptrisMessage) requestor.getProducedMessages().get(0);
     AdaptrisMessage reply = replier.getMessages().get(0);
-    assertEquals("Compare message ids", request.getUniqueId(), reply.getUniqueId());
+    assertEquals(request.getUniqueId(), reply.getUniqueId());
   }
 
   @Override

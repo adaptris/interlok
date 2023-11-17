@@ -1,8 +1,9 @@
 package com.adaptris.core.services.aggregator;
 
 import static com.adaptris.core.services.aggregator.ZipAggregator.DEFAULT_FILENAME_METADATA;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,7 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -23,7 +27,6 @@ import com.adaptris.core.stubs.DefectiveMessageFactory;
 import com.adaptris.core.stubs.DefectiveMessageFactory.WhenToBreak;
 
 public class ZipAggregatorTest extends AggregatingServiceExample {
-
 
   @Test
   public void testJoinMessage() throws Exception {
@@ -83,22 +86,23 @@ public class ZipAggregatorTest extends AggregatingServiceExample {
 
   }
 
-  @Test(expected = CoreException.class)
+  @Test
   public void testAggregate_BrokenOutput() throws Exception {
-    ZipAggregator aggr = new ZipAggregator();
-    AdaptrisMessage original = new DefectiveMessageFactory(WhenToBreak.OUTPUT).newMessage();
-    AdaptrisMessageFactory fac = AdaptrisMessageFactory.getDefaultInstance();
-    AdaptrisMessage splitMsg1 = fac.newMessage("<document>hello</document>");
-    splitMsg1.addMetadata(DEFAULT_FILENAME_METADATA, "xfile1.xml");
-    AdaptrisMessage splitMsg2 = fac.newMessage("<document>world2</document>");
-    splitMsg2.addMetadata(DEFAULT_FILENAME_METADATA, "file2.xml");
-    AdaptrisMessage splitMsg3 = fac.newMessage("<document>world3</document>");
-    splitMsg3.addMetadata(DEFAULT_FILENAME_METADATA, "xfile3.xml");
-    AdaptrisMessage splitMsg4 = fac.newMessage("<document>world4</document>");
-    splitMsg4.addMetadata(DEFAULT_FILENAME_METADATA, "file4.xml");
-    AdaptrisMessage willBeIgnoredMsg = fac.newMessage("<document>world4</document>");
-    aggr.joinMessage(original,
-        Arrays.asList(splitMsg1, splitMsg2, splitMsg3, splitMsg4, willBeIgnoredMsg));
+    Assertions.assertThrows(CoreException.class, () -> {
+      ZipAggregator aggr = new ZipAggregator();
+      AdaptrisMessage original = new DefectiveMessageFactory(WhenToBreak.OUTPUT).newMessage();
+      AdaptrisMessageFactory fac = AdaptrisMessageFactory.getDefaultInstance();
+      AdaptrisMessage splitMsg1 = fac.newMessage("<document>hello</document>");
+      splitMsg1.addMetadata(DEFAULT_FILENAME_METADATA, "xfile1.xml");
+      AdaptrisMessage splitMsg2 = fac.newMessage("<document>world2</document>");
+      splitMsg2.addMetadata(DEFAULT_FILENAME_METADATA, "file2.xml");
+      AdaptrisMessage splitMsg3 = fac.newMessage("<document>world3</document>");
+      splitMsg3.addMetadata(DEFAULT_FILENAME_METADATA, "xfile3.xml");
+      AdaptrisMessage splitMsg4 = fac.newMessage("<document>world4</document>");
+      splitMsg4.addMetadata(DEFAULT_FILENAME_METADATA, "file4.xml");
+      AdaptrisMessage willBeIgnoredMsg = fac.newMessage("<document>world4</document>");
+      aggr.joinMessage(original, Arrays.asList(splitMsg1, splitMsg2, splitMsg3, splitMsg4, willBeIgnoredMsg));
+    });
   }
 
   @Override
@@ -126,16 +130,19 @@ public class ZipAggregatorTest extends AggregatingServiceExample {
   }
 
   /**
-   * Returns a Map<String, String> where filename is key and value is file contents.
-   * @param bytes zip bytes
+   * Returns a Map<String, String> where filename is key and value is file
+   * contents.
+   * 
+   * @param bytes
+   *          zip bytes
    * @return Map where filename is key and value is file contents
    * @throws Exception
    */
 
-  private Map<String, String> zipBytesToResultsMap(byte[] bytes) throws Exception{
+  private Map<String, String> zipBytesToResultsMap(byte[] bytes) throws Exception {
     byte[] buffer = new byte[1024];
 
-    Map<String, String> results  = new HashMap<>();
+    Map<String, String> results = new HashMap<>();
     ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(bytes));
     try {
       ZipEntry ze;

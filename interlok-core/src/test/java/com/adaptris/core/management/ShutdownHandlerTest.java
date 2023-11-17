@@ -2,12 +2,16 @@ package com.adaptris.core.management;
 
 import static com.adaptris.core.runtime.AdapterComponentMBean.ID_PREFIX;
 import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_ADAPTER_TYPE;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Properties;
+
 import javax.management.ObjectName;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.Adapter;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.runtime.AdapterComponentMBean;

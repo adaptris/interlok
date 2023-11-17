@@ -15,9 +15,10 @@
  *******************************************************************************/
 package com.adaptris.core.services.dynamic;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -25,7 +26,10 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.DefaultMarshaller;
@@ -41,24 +45,17 @@ public class ServiceFromDatabaseTest {
   private static final String JDBC_URL = "jdbc:derby:memory:DSL_FROM_DB;create=true";
   private static final String TABLE_NAME = "services";
   private static final String DROP_STMT = String.format("DROP TABLE %s", TABLE_NAME);
-  private static final String CREATE_STMT = String.format(
-      "CREATE TABLE %s (source VARCHAR(128) NOT NULL, "
-      + "destination VARCHAR(128) NOT NULL, "
-          + "dynamicService CLOB NOT NULL)",
-      TABLE_NAME);
-  private static final String INSERT_STMT = String.format(
-      "INSERT INTO %s (source, destination, dynamicService)" + "values (?,?,?)", TABLE_NAME);
-  private static final String SELECT_STMT = String.format(
-      "SELECT dynamicService FROM %s "
-      + "\nWHERE source='%%message{source}' "
-      + "\nAND destination='%%message{destination}'",
-      TABLE_NAME);
+  private static final String CREATE_STMT = String.format("CREATE TABLE %s (source VARCHAR(128) NOT NULL, "
+      + "destination VARCHAR(128) NOT NULL, " + "dynamicService CLOB NOT NULL)", TABLE_NAME);
+  private static final String INSERT_STMT = String
+      .format("INSERT INTO %s (source, destination, dynamicService)" + "values (?,?,?)", TABLE_NAME);
+  private static final String SELECT_STMT = String.format("SELECT dynamicService FROM %s "
+      + "\nWHERE source='%%message{source}' " + "\nAND destination='%%message{destination}'", TABLE_NAME);
 
   @Test
   public void testLifecycle() throws Exception {
     JdbcConnection jdbcConn = configure(new JdbcConnection());
-    ServiceFromDatabase extractor =
-        new ServiceFromDatabase().withQuery(SELECT_STMT);
+    ServiceFromDatabase extractor = new ServiceFromDatabase().withQuery(SELECT_STMT);
     try {
       LifecycleHelper.initAndStart(extractor);
       fail();
@@ -81,9 +78,8 @@ public class ServiceFromDatabaseTest {
     createDatabase(Arrays.asList(entry));
     JdbcConnection jdbcConn = configure(new JdbcConnection());
 
-    ServiceFromDatabase extractor =
-        new ServiceFromDatabase().withQuery(SELECT_STMT).withConnection(jdbcConn);
-    
+    ServiceFromDatabase extractor = new ServiceFromDatabase().withQuery(SELECT_STMT).withConnection(jdbcConn);
+
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     msg.addMetadata("source", "mySourcePartner");
     msg.addMetadata("destination", "myDestinationPartner");
@@ -91,33 +87,32 @@ public class ServiceFromDatabaseTest {
       LifecycleHelper.initAndStart(extractor);
       try (InputStream in = extractor.getInputStream(msg)) {
         assertNotNull(in);
-        assertEquals(ServiceList.class,
-            DefaultMarshaller.getDefaultMarshaller().unmarshal(in).getClass());
+        assertEquals(ServiceList.class, DefaultMarshaller.getDefaultMarshaller().unmarshal(in).getClass());
       }
     } finally {
       LifecycleHelper.stopAndClose(extractor);
     }
   }
 
-  @Test(expected = ServiceException.class)
+  @Test
   public void testNotFound() throws Exception {
-    DatabaseEntry entry = new DatabaseEntry("mySourcePartner", "myDestinationPartner");
-    createDatabase(Arrays.asList(entry));
-    JdbcConnection jdbcConn = configure(new JdbcConnection());
-    ServiceFromDatabase extractor =
-        new ServiceFromDatabase().withQuery(SELECT_STMT).withConnection(jdbcConn);
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    msg.addMetadata("source", "anotherSourcePartner");
-    msg.addMetadata("destination", "anotherDestinationPartner");
-    try {
-      LifecycleHelper.initAndStart(extractor);
-      // Since there's no resultSet.next(), should throw a ServiceException.
-      InputStream in = extractor.getInputStream(msg);
-    } finally {
-      LifecycleHelper.stopAndClose(extractor);
-    }
+    Assertions.assertThrows(ServiceException.class, () -> {
+      DatabaseEntry entry = new DatabaseEntry("mySourcePartner", "myDestinationPartner");
+      createDatabase(Arrays.asList(entry));
+      JdbcConnection jdbcConn = configure(new JdbcConnection());
+      ServiceFromDatabase extractor = new ServiceFromDatabase().withQuery(SELECT_STMT).withConnection(jdbcConn);
+      AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+      msg.addMetadata("source", "anotherSourcePartner");
+      msg.addMetadata("destination", "anotherDestinationPartner");
+      try {
+        LifecycleHelper.initAndStart(extractor);
+        // Since there's no resultSet.next(), should throw a ServiceException.
+        InputStream in = extractor.getInputStream(msg);
+      } finally {
+        LifecycleHelper.stopAndClose(extractor);
+      }
+    });
   }
-
 
   protected static Connection createConnection() throws Exception {
     Class.forName(JDBC_DRIVER);
@@ -135,8 +130,7 @@ public class ServiceFromDatabaseTest {
 
   protected static void createDatabase(List<DatabaseEntry> list) throws Exception {
     createDatabase();
-    try (Connection c = createConnection();
-        PreparedStatement insert = c.prepareStatement(INSERT_STMT);) {
+    try (Connection c = createConnection(); PreparedStatement insert = c.prepareStatement(INSERT_STMT);) {
       for (DatabaseEntry entry : list) {
         insert.clearParameters();
         insert.setString(1, entry.source);
@@ -162,7 +156,6 @@ public class ServiceFromDatabaseTest {
     }
   }
 
-
   private class DatabaseEntry {
     String source;
     String destination;
@@ -171,8 +164,7 @@ public class ServiceFromDatabaseTest {
     public DatabaseEntry(String src, String dest) throws Exception {
       source = src;
       destination = dest;
-      service = DynamicServiceExecutorTest.createMessage(new ServiceList(new LogMessageService()))
-          .getContent();
+      service = DynamicServiceExecutorTest.createMessage(new ServiceList(new LogMessageService())).getContent();
     }
   }
 }

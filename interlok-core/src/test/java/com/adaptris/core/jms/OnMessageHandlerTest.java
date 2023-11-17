@@ -1,20 +1,24 @@
 package com.adaptris.core.jms;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import java.util.Collections;
 import java.util.Enumeration;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessageProducer;
 import com.adaptris.core.Channel;
@@ -25,6 +29,7 @@ import com.adaptris.core.ProduceException;
 import com.adaptris.core.stubs.MockMessageListener;
 import com.adaptris.interlok.junit.scaffolding.jms.MockConsumer;
 import com.adaptris.interlok.junit.scaffolding.jms.MockProducer;
+import com.adaptris.interlok.util.Closer;
 
 public class OnMessageHandlerTest {
 
@@ -50,9 +55,11 @@ public class OnMessageHandlerTest {
 
   @Mock private AdaptrisMessageProducer mockProducer;
 
-  @Before
+  private AutoCloseable openMocks = null;
+  
+  @BeforeEach
   public void setUp() throws Exception {
-    MockitoAnnotations.openMocks(this);
+	openMocks = MockitoAnnotations.openMocks(this);
 
     mockCorrelationSourceId = new MessageIdCorrelationIdSource();
     mockListener = new MockMessageListener();
@@ -84,9 +91,9 @@ public class OnMessageHandlerTest {
 
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
-
+	  Closer.closeQuietly(openMocks);
   }
 
   @Test

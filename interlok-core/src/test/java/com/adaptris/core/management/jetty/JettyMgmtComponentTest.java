@@ -2,8 +2,10 @@ package com.adaptris.core.management.jetty;
 
 import java.time.Duration;
 import java.util.Properties;
+
 import org.awaitility.Awaitility;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.management.Constants;
 import com.adaptris.core.management.webserver.JettyServerManager;
 import com.adaptris.interlok.junit.scaffolding.BaseCase;
@@ -16,6 +18,7 @@ public class JettyMgmtComponentTest {
 
   private static final Duration MAX_STARTUP_WAIT = Duration.ofSeconds(5);
   private static final Duration STARTUP_POLL = Duration.ofMillis(100);
+
   @Test
   public void testFromProperties() throws Exception {
     JettyServerComponent jetty = new JettyServerComponent();
@@ -96,7 +99,6 @@ public class JettyMgmtComponentTest {
   @Test
   public void testFailsafe() throws Exception {
     JettyServerComponent jetty = new JettyServerComponent();
-    String xmlFile = BaseCase.PROPERTIES.getProperty(JETTY_MGMT_XML);
     int portForServer = PortManager.nextUnusedPort(18080);
     try {
       Properties jettyConfig = new Properties();
@@ -117,7 +119,6 @@ public class JettyMgmtComponentTest {
   @Test
   public void testFailsafe_WithOverrideDescriptor() throws Exception {
     JettyServerComponent jetty = new JettyServerComponent();
-    String xmlFile = BaseCase.PROPERTIES.getProperty(JETTY_MGMT_XML);
     int portForServer = PortManager.nextUnusedPort(18080);
     try {
       Properties jettyConfig = new Properties();
@@ -142,7 +143,7 @@ public class JettyMgmtComponentTest {
         c.destroy();
       }
     } catch (Exception e) {
-
     }
   }
+
 }

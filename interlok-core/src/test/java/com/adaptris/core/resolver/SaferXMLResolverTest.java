@@ -1,14 +1,16 @@
 package com.adaptris.core.resolver;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.SaferXMLResolver;
 import com.adaptris.core.UnresolvedMetadataException;
 import com.adaptris.interlok.resolver.UnresolvableException;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class SaferXMLResolverTest
 {
@@ -45,30 +47,38 @@ public class SaferXMLResolverTest
 		assertEquals(XML_RESOLVED, result);
 	}
 
-	@Test(expected = UnresolvedMetadataException.class)
+	@Test
 	public void testResolveNoValue()
 	{
+	  Assertions.assertThrows(UnresolvedMetadataException.class, () -> {
 		AdaptrisMessage message = AdaptrisMessageFactory.getDefaultInstance().newMessage();
 		SaferXMLResolver resolver = new SaferXMLResolver();
 		resolver.resolve(XML_SOURCE, message);
+	  });
 	}
 
-	@Test(expected = UnresolvableException.class)
+	@Test
 	public void testNoMessage()
 	{
+	  Assertions.assertThrows(UnresolvableException.class, () -> {
 		new SaferXMLResolver().resolve(XML_SOURCE);
+	  });
 	}
 
-	@Test(expected = UnresolvableException.class)
+	@Test
 	public void testNullMessage()
 	{
+	  Assertions.assertThrows(UnresolvableException.class, () -> {
 		new SaferXMLResolver().resolve(XML_SOURCE, null);
+	  });
 	}
 
-	@Test(expected = UnresolvableException.class)
+	@Test
 	public void testNullExpression()
 	{
+	  Assertions.assertThrows(UnresolvableException.class, () -> {
 		new SaferXMLResolver().resolve(null, null);
+	  });
 	}
 
 	@Test

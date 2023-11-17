@@ -19,10 +19,13 @@ package com.adaptris.core.interceptor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import org.junit.After;
-import org.junit.Before;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+
 import com.adaptris.core.Adapter;
 import com.adaptris.core.Channel;
 import com.adaptris.core.CoreException;
@@ -39,13 +42,13 @@ public abstract class MessageNotificationCase extends BaseCase {
   protected List<ObjectName> registeredObjects;
 
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     mBeanServer = JmxHelper.findMBeanServer();
     registeredObjects = new ArrayList<ObjectName>();
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     for (ObjectName bean : registeredObjects) {
       if (mBeanServer.isRegistered(bean)) {

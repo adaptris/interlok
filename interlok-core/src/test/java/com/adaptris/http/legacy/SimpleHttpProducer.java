@@ -17,11 +17,13 @@
 package com.adaptris.http.legacy;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.Properties;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.CoreException;
@@ -37,6 +39,7 @@ import com.adaptris.http.HttpMessageFactory;
 import com.adaptris.http.HttpSession;
 import com.adaptris.util.stream.StreamUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -120,7 +123,7 @@ public class SimpleHttpProducer extends HttpProducer {
         out.write(msg.getPayload());
         out.flush();
       }
-      HttpSession httpSession = client.send(m, new Long(timeout).intValue(), handleRedirection());
+      HttpSession httpSession = client.send(m, Long.valueOf(timeout).intValue(), handleRedirection());
       readResponse(httpSession, reply);
       httpSession.close();
     } catch (HttpException e) {

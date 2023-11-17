@@ -92,7 +92,7 @@ public class JettyRouteCondition extends ConditionImpl {
     if (m.matches()) {
       log.trace("[{}][{}], matched by [{}][{}]", method, uri, getMethod(), getUrlPattern());
       if (m.metadata().size() > 0) {
-        msg.setMetadata(m.metadata());
+        msg.addMetadata(m.metadata());
       }
     }
     return m.matches();

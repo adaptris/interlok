@@ -16,11 +16,12 @@
 
 package com.adaptris.security.password;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.interlok.junit.scaffolding.util.Os;
-import org.junit.Assume;
-import org.junit.Test;
 
 public class PasswordTest {
 
@@ -51,7 +52,7 @@ public class PasswordTest {
 
   @Test
   public void testMicrosoftCrypto() throws Exception {
-    Assume.assumeTrue(Os.isFamily(Os.WINDOWS_NT_FAMILY));
+    Assumptions.assumeTrue(Os.isFamily(Os.WINDOWS_NT_FAMILY));
     String encoded = Password.encode(TEXT, Password.MSCAPI_STYLE);
     assertEquals(TEXT, Password.decode(encoded));
   }

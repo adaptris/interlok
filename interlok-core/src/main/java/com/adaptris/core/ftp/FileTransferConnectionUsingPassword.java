@@ -48,8 +48,8 @@ public abstract class FileTransferConnectionUsingPassword extends FileTransferCo
    * 
    * @param s the password.
    * @see Password#MSCAPI_STYLE
-   * @see Password#NON_PORTABLE_PASSWORD
    * @see Password#PORTABLE_PASSWORD
+   * @see Password#PORTABLE_PASSWORD_2
    */
   public void setDefaultPassword(String s) {
     this.defaultPassword = s;

@@ -21,16 +21,19 @@ import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.DEFAULT_TTL;
 import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.HIGHEST_PRIORITY;
 import static com.adaptris.interlok.junit.scaffolding.util.PortManager.nextUnusedPort;
 import static com.adaptris.interlok.junit.scaffolding.util.PortManager.release;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
 import javax.jms.DeliveryMode;
 import javax.jms.JMSException;
 import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.Topic;
 import javax.naming.Context;
+
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQSession;
@@ -41,7 +44,8 @@ import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.activemq.jndi.ActiveMQInitialContextFactory;
 import org.apache.activemq.store.memory.MemoryPersistenceAdapter;
 import org.apache.commons.io.FileUtils;
-import org.junit.Assume;
+import org.junit.jupiter.api.Assumptions;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.jms.FailoverJmsConnection;
@@ -68,7 +72,7 @@ public class EmbeddedActiveMq {
   private static IdGenerator nameGenerator = new GuidGenerator();
 
   public EmbeddedActiveMq() throws Exception {
-    Assume.assumeTrue(JmsConfig.jmsTestsEnabled());
+    Assumptions.assumeTrue(JmsConfig.jmsTestsEnabled());
     brokerName = createSafeUniqueId(this);
     port = nextUnusedPort(61616);
   }

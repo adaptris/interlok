@@ -16,6 +16,20 @@
 
 package com.adaptris.core.http.client.net;
 
+import static com.adaptris.core.http.jetty.JettyHelper.createChannel;
+import static com.adaptris.core.http.jetty.JettyHelper.createConsumer;
+import static com.adaptris.core.http.jetty.JettyHelper.createWorkflow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
@@ -39,20 +53,11 @@ import com.adaptris.core.http.jetty.SecurityConstraint;
 import com.adaptris.core.http.jetty.StandardResponseProducer;
 import com.adaptris.core.http.server.HttpStatusProvider.HttpStatus;
 import com.adaptris.core.metadata.RegexMetadataFilter;
+import com.adaptris.core.services.WaitService;
 import com.adaptris.core.services.metadata.PayloadFromTemplateService;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.util.LifecycleHelper;
-import org.junit.Test;
-
-import java.util.Arrays;
-
-import static com.adaptris.core.http.jetty.JettyHelper.createChannel;
-import static com.adaptris.core.http.jetty.JettyHelper.createConsumer;
-import static com.adaptris.core.http.jetty.JettyHelper.createWorkflow;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import com.adaptris.util.TimeInterval;
 
 public class HttpRequestServiceTest extends HttpServiceExample {
   private static final String TEXT = "ABCDEFG";
@@ -96,6 +101,29 @@ public class HttpRequestServiceTest extends HttpServiceExample {
     AdaptrisMessage m2 = mock.getMessages().get(0);
     assertTrue(m2.headersContainsKey("Content-Type"));
     assertEquals("text/complicated", m2.getMetadataValue("Content-Type"));
+  }
+  
+  @Test
+  public void testService_Fails_WithReadTimeout() throws Exception {
+    MockMessageProducer mock = new MockMessageProducer();
+    HttpConnection jc = HttpHelper.createConnection();
+    JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
+    Channel c = createChannel(jc,
+        createWorkflow(mc, mock, new ServiceList(new Service[] {new WaitService(new TimeInterval(2L, TimeUnit.SECONDS))})));
+    HttpRequestService service =
+        new HttpRequestService(HttpHelper.createProduceDestination(c))
+            .withMethod("GET");
+    service.setReadTimeout(new TimeInterval(1L, TimeUnit.SECONDS));
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage();
+    try {
+      assertThrows(CoreException.class, ()->{
+        start(c);
+        execute(service, msg);
+      }, "Failed with read timeout");
+    }
+    finally {
+      HttpHelper.stopChannelAndRelease(c);
+    }
   }
 
   @Test

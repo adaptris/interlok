@@ -14,35 +14,37 @@
  * limitations under the License.
 */
 package com.adaptris.core.management;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Properties;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+
 import com.adaptris.core.Adapter;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.stubs.TempFileUtils;
 
 @SuppressWarnings("deprecation")
 public class BootstrapPropertiesTest {
-  @Rule
-  public TestName testName = new TestName();
+  
+  
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
   }
 
@@ -57,23 +59,23 @@ public class BootstrapPropertiesTest {
   }
 
   @Test
-  public void testConstructor() throws Exception {
+  public void testConstructor(TestInfo info) throws Exception {
     new BootstrapProperties();
     Object marker = new Object();
-    File filename = TempFileUtils.createTrackedFile(testName.getMethodName(), null, marker);
+    File filename = TempFileUtils.createTrackedFile(info.getDisplayName(), null, marker);
     try (OutputStream o = new FileOutputStream(filename)) {
-      createTestSample().store(o, testName.getMethodName());
+      createTestSample().store(o, info.getDisplayName());
     }
     BootstrapProperties boot = new BootstrapProperties(filename.getCanonicalPath());
     new BootstrapProperties();
   }
 
   @Test
-  public void testCreateAdapter() throws Exception {
-    String adapterName = this.getClass().getSimpleName() + "." + testName.getMethodName();
+  public void testCreateAdapter(TestInfo info) throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + info.getDisplayName();
     Adapter adapter = new Adapter();
-    adapter.setUniqueId(testName.getMethodName());
-    File filename = TempFileUtils.createTrackedFile(testName.getMethodName(), null, adapter);
+    adapter.setUniqueId(info.getDisplayName());
+    File filename = TempFileUtils.createTrackedFile(info.getDisplayName(), null, adapter);
     DefaultMarshaller.getDefaultMarshaller().marshal(adapter, filename);
     BootstrapProperties boot = new BootstrapProperties(createTestSample());
     boot.put("adapterConfigUrl.1", filename.toURI().toURL().toString());
@@ -81,11 +83,11 @@ public class BootstrapPropertiesTest {
   }
 
   @Test
-  public void testIsPrimaryUrlAvailable() throws Exception {
-    String adapterName = this.getClass().getSimpleName() + "." + testName.getMethodName();
+  public void testIsPrimaryUrlAvailable(TestInfo info) throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + info.getDisplayName();
     Adapter adapter = new Adapter();
-    adapter.setUniqueId(testName.getMethodName());
-    File filename = TempFileUtils.createTrackedFile(testName.getMethodName(), null, adapter);
+    adapter.setUniqueId(info.getDisplayName());
+    File filename = TempFileUtils.createTrackedFile(info.getDisplayName(), null, adapter);
     DefaultMarshaller.getDefaultMarshaller().marshal(adapter, filename);
     BootstrapProperties boot = new BootstrapProperties(createTestSample());
     boot.put("adapterConfigUrl.1", filename.toURI().toURL().toString());
@@ -144,8 +146,8 @@ public class BootstrapPropertiesTest {
     return result;
   }
 
-  protected File deleteLater(Object marker) throws IOException {
-    return TempFileUtils.createTrackedFile(testName.getMethodName(), null, marker);
+  protected File deleteLater(Object marker, TestInfo info) throws IOException {
+    return TempFileUtils.createTrackedFile(info.getDisplayName(), null, marker);
   }
 
 }

@@ -16,20 +16,23 @@
 
 package com.adaptris.security;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.Properties;
+
 import org.apache.commons.io.FileUtils;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.adaptris.security.keystore.KeystoreFactory;
 import com.adaptris.security.keystore.KeystoreLocation;
 
@@ -45,7 +48,7 @@ public class TestKeystoreLocation {
   public TestKeystoreLocation() {
   }
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     config = Config.getInstance();
     cfg = config.getProperties();
@@ -65,7 +68,7 @@ public class TestKeystoreLocation {
           "JKS:///c:/fred.ks", "abcde".toCharArray());
       KeystoreLocation ksi2 = KeystoreFactory.getDefault().create(
           "file:///c:/fred.ks?keystoreType=JKS", "abcde".toCharArray());
-      assertEquals("Keystore Equality", ksi, ksi2);
+      assertEquals(ksi, ksi2);
     }
     catch (Exception e) {
       logR.error("testKeystoreFactory failed", e);
@@ -80,7 +83,7 @@ public class TestKeystoreLocation {
           "jks:///c:/fred.ks", "abcde".toCharArray());
       KeystoreLocation ksi2 = KeystoreFactory.getDefault().create(
           "file:///c:/fred.ks?keystoreType=JKS&keystorePassword=abcde");
-      assertEquals("Keystore Equality", ksi, ksi2);
+      assertEquals(ksi, ksi2);
     }
     catch (Exception e) {
       logR.error("testKeystoreFactory failed", e);
@@ -94,7 +97,7 @@ public class TestKeystoreLocation {
       KeystoreLocation k = KeystoreFactory.getDefault().create(
           cfg.getProperty(Config.KEYSTORE_TEST_URL),
           cfg.getProperty(Config.KEYSTORE_COMMON_KEYSTORE_PW).toCharArray());
-      assertTrue("Keystore Location", k.exists());
+      assertTrue(k.exists());
       InputStream in = k.openInput();
       in.close();
     }
@@ -110,7 +113,7 @@ public class TestKeystoreLocation {
       KeystoreLocation k = KeystoreFactory.getDefault().create(
           "file:///c:/fredblahblahblh?keystoreType=JKS",
           cfg.getProperty(Config.KEYSTORE_COMMON_KEYSTORE_PW).toCharArray());
-      assertTrue("Keystore Location", !k.exists());
+      assertTrue(!k.exists());
     }
     catch (Exception e) {
       logR.error("testLocalKeystore failed", e);
@@ -120,7 +123,7 @@ public class TestKeystoreLocation {
 
   @Test
   public void testRemoteKeystore() throws Exception {
-    Assume.assumeTrue(Boolean.parseBoolean(cfg.getProperty(Config.REMOTE_TESTS_ENABLED, "false")));
+    Assumptions.assumeTrue(Boolean.parseBoolean(cfg.getProperty(Config.REMOTE_TESTS_ENABLED, "false")));
     String ks = cfg.getProperty(Config.KEYSTORE_TEST_URL);
     ks = ks.replaceAll("\\\\", "/");
     URI uri = new URI(ks);
@@ -134,7 +137,7 @@ public class TestKeystoreLocation {
     String url = cfg.getProperty(Config.KEYSTORE_REMOTE_ROOT) + filename + "?" + keystoreType;
     KeystoreLocation k =
         KeystoreFactory.getDefault().create(url, cfg.getProperty(Config.KEYSTORE_COMMON_KEYSTORE_PW).toCharArray());
-    assertTrue("Remote Keystore exists", k.exists());
+    assertTrue(k.exists());
     InputStream in = k.openInput();
     in.close();
     assertTrue(!k.isWriteable());
@@ -154,13 +157,13 @@ public class TestKeystoreLocation {
 
   @Test
   public void testNonExistentRemoteKeystore() {
-    Assume.assumeTrue(Boolean.parseBoolean(cfg.getProperty(Config.REMOTE_TESTS_ENABLED, "false")));
+    Assumptions.assumeTrue(Boolean.parseBoolean(cfg.getProperty(Config.REMOTE_TESTS_ENABLED, "false")));
 
     try {
       String url = cfg.getProperty(Config.KEYSTORE_REMOTE_ROOT) + "fred.ks?keystoreType=jks";
       KeystoreLocation k =
           KeystoreFactory.getDefault().create(url, cfg.getProperty(Config.KEYSTORE_COMMON_KEYSTORE_PW).toCharArray());
-      assertTrue("Keystore Location", !k.exists());
+      assertTrue(!k.exists());
     } catch (Exception e) {
       logR.error("testNonExistentRemoteKeystore failed", e);
       fail(e.getMessage());

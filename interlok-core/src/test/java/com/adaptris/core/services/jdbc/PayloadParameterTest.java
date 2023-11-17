@@ -16,7 +16,7 @@
 
 package com.adaptris.core.services.jdbc;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class PayloadParameterTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
 

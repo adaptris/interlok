@@ -19,14 +19,17 @@ import static com.adaptris.core.http.jetty.HttpConsumerTest.JETTY_HTTP_PORT;
 import static com.adaptris.core.http.jetty.HttpConsumerTest.URL_TO_POST_TO;
 import static com.adaptris.core.http.jetty.HttpConsumerTest.XML_PAYLOAD;
 import static com.adaptris.core.http.jetty.JettyHelper.createConnection;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.time.Duration;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+
 import org.awaitility.Awaitility;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.Channel;
 import com.adaptris.core.CoreException;

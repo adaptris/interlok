@@ -16,19 +16,9 @@
 
 package com.adaptris.core.fs;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.CoreConstants;
-import com.adaptris.core.FixedIntervalPoller;
-import com.adaptris.core.PollerImp;
-import com.adaptris.core.StandaloneConsumer;
-import com.adaptris.core.stubs.MockMessageListener;
-import com.adaptris.core.stubs.TempFileUtils;
-import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.util.GuidGenerator;
-import com.adaptris.util.TimeInterval;
-import org.apache.commons.io.FileUtils;
-import org.apache.oro.io.Perl5FilenameFilter;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -41,9 +31,20 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.apache.commons.io.FileUtils;
+import org.apache.oro.io.Perl5FilenameFilter;
+import org.junit.jupiter.api.Test;
+
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreConstants;
+import com.adaptris.core.FixedIntervalPoller;
+import com.adaptris.core.PollerImp;
+import com.adaptris.core.StandaloneConsumer;
+import com.adaptris.core.stubs.MockMessageListener;
+import com.adaptris.core.stubs.TempFileUtils;
+import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.util.GuidGenerator;
+import com.adaptris.util.TimeInterval;
 
 @SuppressWarnings("deprecation")
 public class NonDeletingFsConsumerTest extends FsConsumerCase {
@@ -108,8 +109,7 @@ public class NonDeletingFsConsumerTest extends FsConsumerCase {
       waitForMessages(stub, count);
       assertMessages(stub.getMessages(), count, baseDir.listFiles((FilenameFilter) new Perl5FilenameFilter(".*\\.xml")));
       for (AdaptrisMessage msg : stub.getMessages()) {
-        assertFalse("original name should not contain '.wip'",
-            msg.getMetadataValue(CoreConstants.ORIGINAL_NAME_KEY).endsWith(".wip"));
+        assertFalse(msg.getMetadataValue(CoreConstants.ORIGINAL_NAME_KEY).endsWith(".wip"));
       }
     }
     finally {
@@ -231,7 +231,7 @@ public class NonDeletingFsConsumerTest extends FsConsumerCase {
       waitForMessages(stub, count);
 
       Perl5FilenameFilter wip = new Perl5FilenameFilter(".*\\.tmp");
-      assertEquals("TMP Files remain", count, baseDir.listFiles((FilenameFilter) wip).length);
+      assertEquals(count, baseDir.listFiles((FilenameFilter) wip).length);
       assertMessages(stub.getMessages(), count, baseDir.listFiles((FilenameFilter) new Perl5FilenameFilter(".*\\.xml")));
     }
     finally {
@@ -337,8 +337,8 @@ public class NonDeletingFsConsumerTest extends FsConsumerCase {
 
   @Override
   protected void assertMessages(List<AdaptrisMessage> list, int count, File[] remaining) {
-    assertEquals("All files produced", count, list.size());
-    assertEquals("All files left in dir", count, remaining.length);
+    assertEquals(count, list.size());
+    assertEquals(count, remaining.length);
     for (AdaptrisMessage m : list) {
       assertTrue(m.containsKey(CoreConstants.ORIGINAL_NAME_KEY));
       assertTrue(m.containsKey(CoreConstants.FILE_LAST_MODIFIED_KEY));

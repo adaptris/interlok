@@ -16,15 +16,15 @@
 
 package com.adaptris.core.services.jdbc.types;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.sql.Types;
 
 import org.apache.commons.io.output.WriterOutputStream;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.adaptris.jdbc.JdbcResultRow;
 
@@ -33,7 +33,7 @@ public class StringColumnTranslatorTest {
 
   private StringColumnTranslator translator;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     translator = new StringColumnTranslator();
   }
@@ -41,7 +41,7 @@ public class StringColumnTranslatorTest {
   @Test
   public void testAsIntegerTranslator() throws Exception {
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", new Integer(111), Types.VARCHAR);
+    row.setFieldValue("testField", Integer.valueOf(111), Types.VARCHAR);
 
     {
       String translated = translator.translate(row, 0);
@@ -56,7 +56,7 @@ public class StringColumnTranslatorTest {
   @Test
   public void testAsDoubleTranslator() throws Exception {
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", new Double(111), Types.VARCHAR);
+    row.setFieldValue("testField", Double.valueOf(111), Types.VARCHAR);
 
     {
       String translated = translator.translate(row, 0);
@@ -71,7 +71,7 @@ public class StringColumnTranslatorTest {
   @Test
   public void testAsFloatTranslator() throws Exception {
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", new Float(111), Types.VARCHAR);
+    row.setFieldValue("testField", Float.valueOf(111), Types.VARCHAR);
 
     {
       String translated = translator.translate(row, 0);
@@ -116,7 +116,7 @@ public class StringColumnTranslatorTest {
   public void testAsFormattedDoubleTranslator() throws Exception {
     translator.setFormat("%f");
     JdbcResultRow row = new JdbcResultRow();
-    row.setFieldValue("testField", new Double(111), Types.VARCHAR);
+    row.setFieldValue("testField", Double.valueOf(111), Types.VARCHAR);
     {
       String translated = translator.translate(row, 0);
       assertEquals("111.000000", translated);

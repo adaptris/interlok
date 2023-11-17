@@ -16,21 +16,22 @@
 
 package com.adaptris.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.StringWriter;
 import java.security.MessageDigest;
 import java.util.Properties;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.text.mime.MultiPartOutput;
 
@@ -43,10 +44,10 @@ public class MimeEncoderTest {
 
   private MimeEncoder mimeEncoder;
 
-  @Rule
-  public TestName testName = new TestName();
+  
+  
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     mimeEncoder = new MimeEncoder();
     mimeEncoder.registerMessageFactory(new DefaultMessageFactory());
@@ -121,10 +122,10 @@ public class MimeEncoderTest {
   }
 
   @Test
-  public void testRoundTrip_WithException() throws Exception {
+  public void testRoundTrip_WithException(TestInfo info) throws Exception {
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
     msg.addMetadata(METADATA_KEY, METADATA_VALUE);
-    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception(testName.getMethodName()));
+    msg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception(info.getDisplayName()));
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     mimeEncoder.writeMessage(msg, out);
     ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());

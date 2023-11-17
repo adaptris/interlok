@@ -67,7 +67,7 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
    *
    */
   public static final transient boolean XSTREAM_JDK_STAX_ONLY =
-      BooleanUtils.toBoolean(System.getProperty("interlok.xstream.jdk.stax", "true"));
+      BooleanUtils.toBoolean(System.getProperty("interlok.xstream.jdk.stax", "false"));
 
   private enum XStreamTypes {
     XML {
@@ -204,7 +204,6 @@ public class AdapterXStreamMarshallerFactory extends AdapterMarshallerFactory {
    */
   @SuppressWarnings("rawtypes")
   protected XStream configureXStream(XStream xstream, MarshallingOutput outputMode) {
-    XStream.setupDefaultSecurity(xstream);
     // CVE-2017-7957
     // CVE-2020-26217 - we should be on xstream 1.14 but in case people aren't...
     xstream.denyTypes(new String[] {"javax.imageio.ImageIO$ContainsFilter"});

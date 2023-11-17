@@ -1,11 +1,12 @@
 ext {
-  componentName='Interlok Core/Common'
+  componentName="Interlok Core/Common"
   componentDesc="Common components for Interlok"
 
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
-  slf4jVersion = '2.0.6'
-  log4j2Version = "2.20.0"
-  mockitoVersion = '4.9.0'
+  slf4jVersion = "2.0.9"
+  log4j2Version = "2.21.1"
+  mockitoVersion = "4.9.0"
+  jettyVersion= "10.0.18"
 }
 
 // In this section you declare the dependencies for your production and test code
@@ -13,15 +14,44 @@ dependencies {
 
   api project(':interlok-core-apt')
   api ("com.thoughtworks.xstream:xstream:1.4.20")
-  api ("commons-io:commons-io:2.11.0")
-  api ("commons-net:commons-net:3.9.0")
+  api ("commons-io:commons-io:2.15.0")
+  api ("commons-net:commons-net:3.10.0")
   api ("commons-pool:commons-pool:1.6")
-  api ("org.apache.commons:commons-lang3:3.12.0")
-  api ("org.apache.commons:commons-pool2:2.11.1")
+  api ("org.apache.commons:commons-lang3:3.13.0")
+  api ("org.apache.commons:commons-pool2:2.12.0")
 
   api ("org.slf4j:slf4j-api:$slf4jVersion")
   api ("javax.servlet:javax.servlet-api:4.0.1")
-  api ("org.eclipse.jetty.aggregate:jetty-all:9.4.49.v20220914")
+
+  api ("org.eclipse.jetty:jetty-alpn-client:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-alpn-java-client:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-alpn-server:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-alpn-java-server:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-annotations:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-client:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-deploy:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-http:$jettyVersion") // implicit dependency
+  api ("org.eclipse.jetty:jetty-io:$jettyVersion") // implicit dependency
+  api ("org.eclipse.jetty:jetty-jaspi:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-jmx:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-jndi:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-plus:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-quickstart:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-rewrite:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-security:$jettyVersion") // implicit dependency
+  api ("org.eclipse.jetty:jetty-server:$jettyVersion") // implicit dependency
+  api ("org.eclipse.jetty:jetty-servlet:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-servlets:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-util-ajax:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-util:$jettyVersion") // implicit dependency
+  api ("org.eclipse.jetty:jetty-webapp:$jettyVersion")
+  api ("org.eclipse.jetty:jetty-xml:$jettyVersion")
+  api ("org.eclipse.jetty.http2:http2-hpack:$jettyVersion") // implicit dependency
+  api ("org.eclipse.jetty.http2:http2-common:$jettyVersion")
+  api ("org.eclipse.jetty.http2:http2-server:$jettyVersion")
+  api ("org.eclipse.jetty.http2:http2-client:$jettyVersion")
+  api ("org.eclipse.jetty.websocket:websocket-javax-server:$jettyVersion")
+  api ("org.eclipse.jetty.websocket:websocket-javax-client:$jettyVersion")
 
   implementation "org.apache.logging.log4j:log4j-api:$log4j2Version", optional
   implementation "org.apache.logging.log4j:log4j-core:$log4j2Version", optional
@@ -35,7 +65,8 @@ dependencies {
 
   javadoc project(':interlok-core-apt')
 
-  testImplementation ("junit:junit:4.13.2")
+  testImplementation ("org.junit.jupiter:junit-jupiter-api:5.10.1")
+  testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.10.1")
   testImplementation ("org.mockito:mockito-core:$mockitoVersion")
   testImplementation ("org.mockito:mockito-inline:$mockitoVersion")
   testImplementation ("org.awaitility:awaitility:4.2.0")
@@ -60,8 +91,7 @@ artifacts {
 javadoc {
   configure(options) {
     taglets = ["com.adaptris.taglet.ConfigTaglet", "com.adaptris.taglet.LicenseTaglet"]
-    options.addBooleanOption "-no-module-directories", true
-    options.addStringOption('Xdoclint:none', '-quiet')
+    options.addStringOption "Xdoclint:none", "-quiet"
     options.addStringOption "tagletpath", configurations.javadoc.asPath
     options.tags('apiNote:a:API Note:', 'implSpec:a:Implementation Requirements:','implNote:a:Implementation Note:')
     title= componentName
@@ -87,7 +117,7 @@ publishing {
       pom.withXml {
         asNode().appendNode("name", componentName)
         asNode().appendNode("description", componentDesc)
-		asNode().appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
+        asNode().appendNode("url", "https://interlok.adaptris.net/interlok-docs/#/")
         def properties = asNode().appendNode("properties")
         properties.appendNode("target", "3.8.0+")
         properties.appendNode("license", "false")

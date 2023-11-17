@@ -15,8 +15,9 @@
 */
 
 package com.adaptris.core;
-import static org.junit.Assert.assertNull;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("deprecation")
 public class MessageEventGeneratorTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {

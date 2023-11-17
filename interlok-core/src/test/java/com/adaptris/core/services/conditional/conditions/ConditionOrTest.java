@@ -16,20 +16,23 @@
 
 package com.adaptris.core.services.conditional.conditions;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.services.conditional.Condition;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.util.Closer;
 
 public class ConditionOrTest {
 
@@ -43,10 +46,11 @@ public class ConditionOrTest {
 
   @Mock private Condition mockConditionThree;
 
+  private AutoCloseable openMocks = null;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
-    MockitoAnnotations.initMocks(this);
+	openMocks = MockitoAnnotations.openMocks(this);
 
     conditionOr = new ConditionOr();
     conditionOr.getConditions().add(mockConditionOne);
@@ -57,9 +61,10 @@ public class ConditionOrTest {
     LifecycleHelper.initAndStart(conditionOr);
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     LifecycleHelper.stopAndClose(conditionOr);
+    Closer.closeQuietly(openMocks);
   }
 
   @Test

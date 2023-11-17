@@ -1,50 +1,46 @@
 package com.adaptris.interlok.client;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 import com.adaptris.interlok.InterlokException;
 import com.adaptris.interlok.types.SerializableMessage;
 
 public class InterlokClientImplTest {
 
-  @Rule
-  public TestName testName = new TestName();
-
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {}
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {}
 
   @Test
-  public void testPublish() throws Exception {
+  public void testPublish(TestInfo info) throws Exception {
     MessageTarget target =
-        new MessageTarget().withAdapter(testName.getMethodName()).withChannel(testName.getMethodName())
-            .withWorkflow(testName.getMethodName());
+        new MessageTarget().withAdapter(info.getDisplayName()).withChannel(info.getDisplayName())
+            .withWorkflow(info.getDisplayName());
 
     Map<String, String> hdrs = new HashMap<>();
-    hdrs.put(testName.getMethodName(), testName.getMethodName());
+    hdrs.put(info.getDisplayName(), info.getDisplayName());
 
     InterlokClientStub c = new InterlokClientStub();
-    c.processAsync(target, testName.getMethodName(), hdrs);
+    c.processAsync(target, info.getDisplayName(), hdrs);
     assertNotNull(c.msg);
     assertEquals(target, c.target);
     assertNotNull(c.msg.getUniqueId());
-    assertEquals(testName.getMethodName(), c.msg.getContent());
+    assertEquals(info.getDisplayName(), c.msg.getContent());
     assertNull(c.msg.getContentEncoding());
     assertEquals(1, c.msg.getMessageHeaders().size());
-    assertEquals(testName.getMethodName(), c.msg.getMessageHeaders().get(testName.getMethodName()));
+    assertEquals(info.getDisplayName(), c.msg.getMessageHeaders().get(info.getDisplayName()));
 
   }
 

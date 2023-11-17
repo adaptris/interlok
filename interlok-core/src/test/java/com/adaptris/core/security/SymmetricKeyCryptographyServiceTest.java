@@ -1,15 +1,19 @@
 package com.adaptris.core.security;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.security.SecureRandom;
 import java.util.Arrays;
+
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
@@ -36,7 +40,7 @@ public class SymmetricKeyCryptographyServiceTest extends SecurityServiceExample 
   private byte[] iv;
   private byte[] encryptedPayload;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     key = generateRandomEncodedByteArray(32);
     iv = generateRandomEncodedByteArray(16);

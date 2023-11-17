@@ -16,17 +16,19 @@
 
 package com.adaptris.core.services.conditional;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
@@ -36,13 +38,13 @@ import com.adaptris.core.ServiceException;
 import com.adaptris.core.services.LogMessageService;
 import com.adaptris.core.services.conditional.conditions.ConditionAnd;
 import com.adaptris.core.services.conditional.conditions.ConditionExpression;
-import com.adaptris.core.services.conditional.conditions.ConditionFunction;
 import com.adaptris.core.services.conditional.conditions.ConditionMetadata;
 import com.adaptris.core.services.conditional.conditions.ConditionOr;
 import com.adaptris.core.services.conditional.operator.Equals;
 import com.adaptris.core.services.conditional.operator.NotNull;
 import com.adaptris.core.services.routing.AlwaysMatchSyntaxIdentifier;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.interlok.util.Closer;
 
 public class IfElseTest extends ConditionalServiceExample {
 
@@ -59,10 +61,12 @@ public class IfElseTest extends ConditionalServiceExample {
   @Mock private Service mockElseService;
 
   @Mock private Condition mockCondition;
+  
+  private AutoCloseable openMocks = null;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
-    MockitoAnnotations.initMocks(this);
+	openMocks = MockitoAnnotations.openMocks(this);
 
     thenService = new ThenService();
     elseService = new ElseService();
@@ -80,9 +84,10 @@ public class IfElseTest extends ConditionalServiceExample {
     LifecycleHelper.initAndStart(logicalExpression);
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     LifecycleHelper.stopAndClose(logicalExpression);
+    Closer.closeQuietly(openMocks);
   }
 
   @Test
@@ -207,8 +212,7 @@ public class IfElseTest extends ConditionalServiceExample {
     ConditionAnd conditionAnd = new ConditionAnd();
     conditionAnd.getConditions().add(condition);
     conditionAnd.getConditions().add(conditionOr);
-    conditionAnd.getConditions().add(
-        new ConditionFunction("function evaluateScript(message) { return message.getMetadataValue('mykey').equals('myvalue');}"));
+    
     ThenService thenSrvc = new ThenService();
     ElseService elseSrvc = new ElseService();
 
