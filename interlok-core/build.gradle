@@ -56,7 +56,7 @@ dependencies {
 
   api ("com.thoughtworks.xstream:xstream:1.4.20")
   api ("org.codehaus.jettison:jettison:1.5.4")
-  api ("io.github.classgraph:classgraph:4.8.116")
+  api ("io.github.classgraph:classgraph:4.8.165")
   api ("net.jodah:expiringmap:0.5.11")
   api ("com.sun.activation:jakarta.activation:1.2.2")
   api ("org.apache.activemq:activemq-client:$activeMqVersion") {
