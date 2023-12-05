@@ -28,6 +28,7 @@ public class CheckComponentStateService extends MockStateManagedComponent implem
   private Boolean isTrackingEndpoint;
   private Boolean isConfirmation;
   private String lookupName;
+  private String comments;
 
   public CheckComponentStateService() {
     super();
@@ -65,6 +66,16 @@ public class CheckComponentStateService extends MockStateManagedComponent implem
     return uniqueId;
   }
 
+  @Override
+  public void setComments(String s) {
+    comments = s;
+  }
+
+  @Override
+  public String getComments() {
+    return comments;
+  }
+  
   @Override
   public String createName() {
     return this.getClass().getName();

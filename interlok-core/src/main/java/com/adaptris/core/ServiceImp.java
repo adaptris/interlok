@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.MarshallingCDATA;
 import com.adaptris.core.util.Args;
 import com.adaptris.util.GuidGenerator;
 
@@ -48,7 +49,8 @@ public abstract class ServiceImp implements Service {
   @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean isTrackingEndpoint;
-
+  @MarshallingCDATA
+  private String comments;
 
   /**
    * <p>
@@ -152,6 +154,16 @@ public abstract class ServiceImp implements Service {
   @Override
   public boolean isTrackingEndpoint() {
     return BooleanUtils.toBooleanDefaultIfNull(getIsTrackingEndpoint(), false);
+  }
+
+  @Override
+  public void setComments(String s) {
+    comments = s;
+  }
+
+  @Override
+  public String getComments() {
+    return comments;
   }
 
   /**

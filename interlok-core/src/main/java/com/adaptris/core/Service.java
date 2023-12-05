@@ -26,7 +26,7 @@ package com.adaptris.core;
  * </p>
  */
 public interface Service extends AdaptrisComponent, MessageEventGenerator, StateManagedComponent,
-    ComponentLifecycleExtension {
+    ComponentLifecycleExtension, ConfigComment {
 
   /**
    * <p>
