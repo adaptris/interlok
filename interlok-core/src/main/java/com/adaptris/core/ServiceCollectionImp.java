@@ -32,12 +32,12 @@ import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.MarshallingCDATA;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.FifoMutexLock;
 import com.adaptris.util.GuidGenerator;
+import com.adaptris.annotation.MarshallingCDATA;
 
 /**
  * <p>
@@ -67,6 +67,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   private List<Service> services;
   @MarshallingCDATA
   private String comments;
+
   
   private transient FifoMutexLock lock = new FifoMutexLock();
   protected transient EventHandler eventHandler;
@@ -152,6 +153,16 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
     return BooleanUtils.toBooleanDefaultIfNull(getIsTrackingEndpoint(), false);
   }
 
+  @Override
+  public void setComments(String s) {
+    comments = s;
+  }
+
+  @Override
+  public String getComments() {
+    return comments;
+  }
+  
   /**
    * <p>
    * Adds a <code>Service</code> to the end of the configured <code>List</code>.
@@ -186,15 +197,6 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
     services = (List<Service>) enforceRequirements(Args.notNull(serviceList, "serviceList"));
   }
 
-  @Override
-  public void setComments(String s) {
-    comments = s;
-  }
-
-  @Override
-  public String getComments() {
-    return comments;
-  }
 
   @Override
   public final void doService(AdaptrisMessage msg) throws ServiceException {
