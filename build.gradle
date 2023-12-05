@@ -211,7 +211,7 @@ subprojects { subproject ->
 
   spotbugsMain {
     effort = com.github.spotbugs.snom.Effort.valueOf("MAX")
-    effort = com.github.spotbugs.snom.Confidence.valueOf("HIGH")
+    reportLevel = com.github.spotbugs.snom.Confidence.valueOf("HIGH")
     reports {
       xml {
         required.set(false)
