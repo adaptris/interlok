@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,26 +18,30 @@ package com.adaptris.core;
 
 import static com.adaptris.core.util.LoggingHelper.friendlyName;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.MarshallingCDATA;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.util.FifoMutexLock;
 import com.adaptris.util.GuidGenerator;
-import com.adaptris.annotation.MarshallingCDATA;
 
 /**
  * <p>
@@ -46,9 +50,10 @@ import com.adaptris.annotation.MarshallingCDATA;
  */
 public abstract class ServiceCollectionImp extends AbstractCollection<Service> implements Service, ServiceCollection {
 
-  private static final OutOfStateHandler DEFAULT_STATE_HANDLER = new RaiseExceptionOutOfStateHandler();
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
-  
+
+  private static final OutOfStateHandler DEFAULT_STATE_HANDLER = new RaiseExceptionOutOfStateHandler();
+
   private String uniqueId;
   @InputFieldDefault(value = "false")
   private Boolean restartAffectedServiceOnException;
@@ -68,15 +73,14 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   @MarshallingCDATA
   private String comments;
 
-  
   private transient FifoMutexLock lock = new FifoMutexLock();
   protected transient EventHandler eventHandler;
   private transient boolean isBranching; // defaults to false
-  
+
   private transient ComponentState serviceListState;
 
   public ServiceCollectionImp() {
-    setServices(new ArrayList<Service>());
+    setServices(new ArrayList<>());
     setUniqueId(new GuidGenerator().getUUID());
     changeState(ClosedState.getInstance());
   }
@@ -162,7 +166,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   public String getComments() {
     return comments;
   }
-  
+
   /**
    * <p>
    * Adds a <code>Service</code> to the end of the configured <code>List</code>.
@@ -185,7 +189,6 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   @Override
   public List<Service> getServices() {
     return services;
-    // return new CastorizedList(this);
   }
 
   /**
@@ -197,28 +200,22 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
     services = (List<Service>) enforceRequirements(Args.notNull(serviceList, "serviceList"));
   }
 
-
   @Override
   public final void doService(AdaptrisMessage msg) throws ServiceException {
     try {
       lock.acquire();
       checkServiceStates();
       applyServices(msg);
-    }
-    catch (InterruptedException e) {
+    } catch (InterruptedException | OutOfStateException e) {
       throw new ServiceException(e);
-    }
-    catch (OutOfStateException e) {
-      throw new ServiceException(e);
-    }
-    finally {
+    } finally {
       lock.release();
     }
   }
 
   private void checkServiceStates() throws OutOfStateException {
     OutOfStateHandler handler = outOfStateHandler();
-    for(Service service : getServices()) {
+    for (Service service : getServices()) {
       try {
         if (!handler.isInCorrectState(service)) {
           handler.handleOutOfState(service);
@@ -247,11 +244,9 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
         LifecycleHelper.init(s);
       }
       doInit();
-    }
-    catch (InterruptedException e) {
+    } catch (InterruptedException e) {
       throw new CoreException(e);
-    }
-    finally {
+    } finally {
       lock.release();
     }
   }
@@ -271,12 +266,10 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
         LifecycleHelper.start(s);
       }
       doStart();
-    }
-    catch (InterruptedException e) {
+    } catch (InterruptedException e) {
       throw new CoreException(e);
 
-    }
-    finally {
+    } finally {
       lock.release();
     }
   }
@@ -296,11 +289,9 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
         LifecycleHelper.stop(s);
       }
       doStop();
-    }
-    catch (InterruptedException e) {
+    } catch (InterruptedException e) {
       throw new RuntimeException(e);
-    }
-    finally {
+    } finally {
       lock.release();
     }
   }
@@ -319,11 +310,9 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
         LifecycleHelper.close(s);
       }
       doClose();
-    }
-    catch (InterruptedException e) {
+    } catch (InterruptedException e) {
       throw new RuntimeException(e);
-    }
-    finally {
+    } finally {
       lock.release();
     }
   }
@@ -343,22 +332,24 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   public void changeState(ComponentState newState) {
     serviceListState = newState;
   }
-  
+
   /**
    * <p>
    * Returns the last record <code>ComponentState</code>.
    * </p>
+   *
    * @return the current <code>ComponentState</code>
    */
   @Override
   public ComponentState retrieveComponentState() {
     return serviceListState;
   }
-  
+
   /**
    * <p>
    * Request this component is init'd.
    * </p>
+   *
    * @throws CoreException wrapping any underlying Exceptions
    */
   @Override
@@ -370,6 +361,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
    * <p>
    * Request this component is started.
    * </p>
+   *
    * @throws CoreException wrapping any underlying Exceptions
    */
   @Override
@@ -416,11 +408,10 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
     if (isRestartAffectedServiceOnException()) {
       log.debug("Service restarts on error, restarting [{}]", serviceName);
       restartService(service);
-    } 
+    }
     if (service != null && service.continueOnFailure()) {
       log.debug("continue-on-fail is true, ignoring Exception [{}] from [{}]", e.getMessage(), serviceName);
-    }
-    else {
+    } else {
       throw ExceptionHelper.wrapServiceException(e);
     }
   }
@@ -431,8 +422,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
       LifecycleHelper.close(s);
       LifecycleHelper.init(s);
       LifecycleHelper.start(s);
-    }
-    catch (CoreException e) {
+    } catch (CoreException e) {
       throw new ServiceException(e);
     }
   }
@@ -569,7 +559,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
 
   /**
    * Set the behaviour when internal services are not in the correct state.
-   * 
+   *
    * @param handler if not specified defaults to {@link RaiseExceptionOutOfStateHandler}.
    */
   public void setOutOfStateHandler(OutOfStateHandler handler) {
@@ -586,4 +576,5 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
     }
     return (T) this;
   }
+  
 }
