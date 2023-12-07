@@ -69,7 +69,7 @@ public class XsltTransformerFactory extends XmlTransformerFactoryImpl {
       docBuilder.setEntityResolver(entityResolver);
     }
     Document xmlDoc = docBuilder.parse(new InputSource(new StringReader(xsl)));
-    return configure(newInstance()).newTransformer(new DOMSource(xmlDoc, xsl));
+    return configure(newInstance()).newTransformer(new DOMSource(xmlDoc));
   }
 
   /**
