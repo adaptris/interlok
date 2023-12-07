@@ -16,6 +16,8 @@
 
 package com.adaptris.util.text.xml;
 
+import java.io.StringReader;
+
 import javax.xml.transform.Transformer;
 import javax.xml.transform.stream.StreamSource;
 
@@ -43,14 +45,9 @@ import net.sf.joost.trax.TransformerFactoryImpl;
 public class StxTransformerFactory extends XmlTransformerFactoryImpl {
 
   @Override
-  public Transformer createTransformer(String xsl) throws Exception {
-    StreamSource xslStream = new StreamSource(xsl);
+  public Transformer createTransformerFromRawXsl(String xsl, EntityResolver entityResolver) throws Exception {
+    StreamSource xslStream = new StreamSource(new StringReader(xsl));
     return configure( new TransformerFactoryImpl()).newTransformer(xslStream);
-  }
-
-  @Override
-  public Transformer createTransformer(String url, EntityResolver entityResolver) throws Exception {
-    return this.createTransformer(url);
   }
 
   @Override
