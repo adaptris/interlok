@@ -46,13 +46,13 @@ public class StxTransformerFactory extends XmlTransformerFactoryImpl {
 
   @Override
   public Transformer createTransformerFromRawXsl(String xsl, EntityResolver entityResolver) throws Exception {
-	 StreamSource xslStream = new StreamSource(new StringReader(xsl));
-	 return configure( new TransformerFactoryImpl()).newTransformer(xslStream);
+    StreamSource xslStream = new StreamSource(new StringReader(xsl));
+    return configure( new TransformerFactoryImpl()).newTransformer(xslStream);
   }
 
   @Override
   public XmlTransformer configure(XmlTransformer xmlTransformer) throws Exception {
     return xmlTransformer;
   }
-  
+
 }

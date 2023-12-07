@@ -541,21 +541,21 @@ public class XmlTransformServiceTest
     XsltTransformerFactory fac = new XsltTransformerFactory(net.sf.saxon.TransformerFactoryImpl.class.getCanonicalName());
     service.setXmlTransformerFactory(fac);
     service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
-    
+
     execute(service, msg);
     assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), msg.getContent());
   }
 
   @Test
   public void testSTXMultiPayloadDataInputParameter() throws Exception {
-	MultiPayloadAdaptrisMessage msg = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_DATA, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
-	AdaptrisMessage mappingMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage(loadFilesForTests(PROPERTIES.getProperty(KEY_XML_TEST_STX_TRANSFORM_URL)));
+    MultiPayloadAdaptrisMessage msg = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_DATA, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    AdaptrisMessage mappingMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage(loadFilesForTests(PROPERTIES.getProperty(KEY_XML_TEST_STX_TRANSFORM_URL)));
     msg.addPayload(PAYLOAD_ID_MAPPING, mappingMsg.getPayload());
-	MultiPayloadStringInputParameter mpsip = new MultiPayloadStringInputParameter();
-	mpsip.setPayloadId(PAYLOAD_ID_MAPPING);
-	XmlTransformService service = new XmlTransformService();
-	service.setMappingSource(mpsip);
-	msg.switchPayload(PAYLOAD_ID_DATA);
+    MultiPayloadStringInputParameter mpsip = new MultiPayloadStringInputParameter();
+    mpsip.setPayloadId(PAYLOAD_ID_MAPPING);
+    XmlTransformService service = new XmlTransformService();
+    service.setMappingSource(mpsip);
+    msg.switchPayload(PAYLOAD_ID_DATA);
 
     service.setXmlTransformerFactory(new StxTransformerFactory());
 
@@ -569,9 +569,9 @@ public class XmlTransformServiceTest
     ConstantDataInputParameter cdip = new ConstantDataInputParameter(loadFilesForTests(PROPERTIES.getProperty(KEY_XML_TEST_STX_TRANSFORM_URL)));
     XmlTransformService service = new XmlTransformService();
     service.setMappingSource(cdip);
-    
+
     service.setXmlTransformerFactory(new StxTransformerFactory());
- 
+
     execute(service, msg);
     assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), msg.getContent());
   }
@@ -785,8 +785,8 @@ public class XmlTransformServiceTest
     XmlTransformService service = new XmlTransformService();
 
     assertThrows(ServiceException.class, () -> {
-    	execute(service, msg);
-      });  
+      execute(service, msg);
+    });  
   }
   
   @Test
@@ -886,13 +886,13 @@ public class XmlTransformServiceTest
   }
   
   private String loadFilesForTests(String filePath) throws Exception {
-	  String fileContent;
-	  try (InputStream inputStream = connect(filePath)) {
-		   StringWriter writer = new StringWriter();
-		   IOUtils.copy(inputStream, writer, Charset.defaultCharset());
-		   fileContent= writer.toString();
-		} 
-	  return  fileContent;
+    String fileContent;
+    try (InputStream inputStream = connect(filePath)) {
+      StringWriter writer = new StringWriter();
+      IOUtils.copy(inputStream, writer, Charset.defaultCharset());
+      fileContent= writer.toString();
+    } 
+    return  fileContent;
   }
 
 }
