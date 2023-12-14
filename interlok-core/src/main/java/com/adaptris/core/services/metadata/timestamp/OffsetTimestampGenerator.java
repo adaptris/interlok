@@ -18,11 +18,9 @@ package com.adaptris.core.services.metadata.timestamp;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.util.Date;
-import java.util.regex.Matcher;
 
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
-import javax.validation.constraints.Pattern;
 
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMessage;
@@ -44,9 +42,6 @@ import lombok.Setter;
  */
 @XStreamAlias("offset-timestamp-generator")
 public class OffsetTimestampGenerator implements TimestampGenerator {
-
-  private static final String OFFSET_VALIDATION_REGEX = "^\\-?P(?=\\w*\\d)(?:\\d+Y|Y)?(?:\\d+M|M)?(?:\\d+D|D)?(?:T(?:\\d+H|H)?(?:\\d+M|M)?(?:\\d+(?:\\­.\\d{1,2})?S|S)?)?$";
-  private static final String OFFSET_VALIDATION_MESSAGE = "Invalid offset pattern '%s', you must use the ISO8601 standard. I.e. 'P30D', '-P30D'";
 
   /**
    * Set the offset for the timestamp.
@@ -105,7 +100,6 @@ public class OffsetTimestampGenerator implements TimestampGenerator {
   @Getter
   @Setter
   @InputFieldHint(expression = true)
-  @Pattern(regexp = OFFSET_VALIDATION_REGEX, message = OFFSET_VALIDATION_MESSAGE)
   private String offset;
 
   public OffsetTimestampGenerator() {
@@ -125,14 +119,13 @@ public class OffsetTimestampGenerator implements TimestampGenerator {
         duration.addTo(timestamp);
       }
     } catch (Exception e) {
-      throw new ServiceException("Failed to parse " + offset + " using ISO8601", e);
+      throw new ServiceException("Failed to parse " + msg.resolve(offset) + " using ISO8601", e);
     }
     return timestamp;
   }
   
   @Override
   public void init() throws CoreException {
-    validateOffset();
   }
   
   @Override
@@ -145,16 +138,6 @@ public class OffsetTimestampGenerator implements TimestampGenerator {
   
   @Override
   public void close() {
-  }
- 
-  private void validateOffset() throws CoreException {
-    if (!isBlank(offset)) {
-      java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(OFFSET_VALIDATION_REGEX);
-      Matcher matcher = pattern.matcher(offset);
-      if (!matcher.find()) {
-        throw new CoreException(String.format(OFFSET_VALIDATION_MESSAGE, offset));
-      }
-    }
   }
 
 }

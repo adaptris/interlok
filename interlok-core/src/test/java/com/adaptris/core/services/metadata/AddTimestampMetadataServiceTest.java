@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceList;
 import com.adaptris.core.services.metadata.timestamp.LastMessageTimestampGenerator;
 import com.adaptris.core.services.metadata.timestamp.OffsetTimestampGenerator;
@@ -56,10 +57,7 @@ public class AddTimestampMetadataServiceTest extends MetadataServiceExample {
     initWithException(service);
     service.setMetadataKey(null);
     initWithException(service);
-    
-    service = new AddTimestampMetadataService(DEFAULT_TS_FORMAT, KEY1, false, "invalid");
-    initWithException(service);
-    
+ 
     service = new AddTimestampMetadataService(DEFAULT_TS_FORMAT, KEY1, false, "P30D");
     LifecycleHelper.init(service);
     service = new AddTimestampMetadataService(DEFAULT_TS_FORMAT, KEY1, false, new LastMessageTimestampGenerator());
@@ -184,7 +182,7 @@ public class AddTimestampMetadataServiceTest extends MetadataServiceExample {
   public void testOffsetWithInvalidPattern() throws Exception {
     AdaptrisMessage m = AdaptrisMessageFactory.getDefaultInstance().newMessage();
     AddTimestampMetadataService service = new AddTimestampMetadataService(DEFAULT_TS_FORMAT, KEY1, false, "invalid");
-    assertThrows(CoreException.class, ()->{
+    assertThrows(ServiceException.class, ()->{
       execute(service, m);
     }, "Failed with an invalid offset pattern");
   }
