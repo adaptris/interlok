@@ -49,7 +49,7 @@ jobs:
         distribution: 'temurin'
     - name: Initialize CodeQL
       # Initializes the CodeQL tools for scanning.
-      uses: github/codeql-action/init@v2
+      uses: github/codeql-action/init@v3
       with:
         languages: "java"
         # This should include support for suppressions like
@@ -69,7 +69,7 @@ jobs:
     - name: Perform CodeQL Analysis
       # define an 'id' for the analysis step
       id: analyze
-      uses: github/codeql-action/analyze@v2
+      uses: github/codeql-action/analyze@v3
       with:
         category: "/language:java"
         output: sarif-results
