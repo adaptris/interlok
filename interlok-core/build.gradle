@@ -134,7 +134,7 @@ dependencies {
   api ("org.apache.derby:derby:$derbyDriverVersion")
   api ("org.apache.derby:derbytools:$derbyDriverVersion")
   
-  api ("org.flywaydb:flyway-core:8.5.13")
+  api ("org.flywaydb:flyway-core:10.3.0")
 
   testImplementation ("org.junit.jupiter:junit-jupiter-api:$junitVersion")
   testImplementation ("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
