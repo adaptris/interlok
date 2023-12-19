@@ -19,6 +19,7 @@ package com.adaptris.core.util;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
@@ -39,10 +40,13 @@ import com.adaptris.util.XmlUtils;
 
 @SuppressWarnings("deprecation")
 public class XmlHelperTest extends XmlHelper {
+  
   private static final String EXAMPLE_XML = "<document>\n   <content>text body</content>\n"
       + "   <attachment encoding=\"base64\" filename=\"attachment1.txt\">dp/HSJfonUsSMM7QRBSRfg==</attachment>\n"
       + "   <attachment encoding=\"base64\" filename=\"attachment2.txt\">OdjozpCZB9PbCCLZlKregQ</attachment>\n"
       + "</document>";
+  
+  private static final String XML_DECLARATION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 
   private static final String ILLEGAL_XML_CHAR = new String(new byte[] { (byte) 0x02 });
 
@@ -159,6 +163,14 @@ public class XmlHelperTest extends XmlHelper {
     Node n = XmlHelper.stringToNode(EXAMPLE_XML);
     String s = XmlHelper.nodeToString(n);
     assertEquals(EXAMPLE_XML, s);
+  }
+  
+  @Test
+  public void testStringToNodeWithXmlDeclaration() throws Exception {
+    Node n = XmlHelper.stringToNode(EXAMPLE_XML);
+    String s = XmlHelper.nodeToString(n, false);
+    assertTrue(s.startsWith(EXAMPLE_XML));
+    assertTrue(s.endsWith(XML_DECLARATION));
   }
 
 }
