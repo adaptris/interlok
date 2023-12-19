@@ -39,7 +39,6 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -291,12 +290,10 @@ public class XmlHelper {
 
     try (StringReader in = new StringReader(s)) {
       result = docBuilder.parse(new InputSource(in));
-    }
-    catch (IOException | SAXException e) {
+    } catch (IOException | SAXException e) {
       if (newDocOnFailure) {
         result = docBuilder.newDocument();
-      }
-      else {
+      } else {
         throw e;
       }
     }
@@ -329,12 +326,10 @@ public class XmlHelper {
     Document result = null;
     try (InputStream docIn = in) {
       result = docBuilder.parse(new InputSource(docIn));
-    }
-    catch (IOException | SAXException e) {
+    } catch (IOException | SAXException e) {
       if (newDocOnFailure) {
         result = docBuilder.newDocument();
-      }
-      else {
+      } else {
         throw e;
       }
     }
@@ -436,9 +431,21 @@ public class XmlHelper {
    * @return The XML String representation of the Node.
    */
   public static String nodeToString(Node node) {
+    return nodeToString(node, true);
+  }
+  
+  /**
+   * Convert an XML Node into a String snippet.
+   *
+   * @param node The node to get as an XML String.
+   * @param omitXmlDeclaration whether or not to omit the xml declaration
+   *
+   * @return The XML String representation of the Node.
+   */
+  public static String nodeToString(Node node, boolean omitXmlDeclaration) {
     try (Writer out = new StringWriter()) {
       Transformer tf = TransformerFactory.newInstance().newTransformer();
-      tf.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+      tf.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, omitXmlDeclaration ? "yes" : "no");
       tf.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
       tf.setOutputProperty(OutputKeys.INDENT, "yes");
       tf.transform(new DOMSource(node), new StreamResult(out));
@@ -506,19 +513,16 @@ public class XmlHelper {
       try {
         System.setErr(divert);
         System.setOut(divert);
-      }
-      catch (SecurityException ignored) {
+      } catch (SecurityException ignored) {
         ;
       }
-
     }
 
     void resume() {
       try {
         System.setErr(stderr);
         System.setOut(stdout);
-      }
-      catch (SecurityException ignored) {
+      } catch (SecurityException ignored) {
         ;
       }
       divert.flush();
