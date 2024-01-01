@@ -9,7 +9,7 @@ ext {
 dependencies {
   api project(':interlok-common')
   api project(':interlok-client')
-  api ("org.slf4j:slf4j-api:2.0.9")
+  api ("org.slf4j:slf4j-api:2.0.10")
 
   testImplementation ("org.junit.jupiter:junit-jupiter-api:5.10.1")
   testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.10.1")
