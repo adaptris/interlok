@@ -15,6 +15,7 @@ import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.services.metadata.MetadataTarget;
 import com.adaptris.core.util.MimeHelper;
 import com.adaptris.util.stream.StreamUtil;
 import com.adaptris.util.text.mime.BodyPartIterator;
@@ -34,35 +35,6 @@ import lombok.Setter;
 public class PartSelectorToMetadata {
 
   private transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
-
-  /**
-   * Enumeration of where the two types of metadata.
-   *
-   */
-  public enum MetadataTarget {
-    /**
-     * Standard Metadata.
-     *
-     */
-    Standard {
-      @Override
-      void apply(AdaptrisMessage msg, String key, ByteArrayOutputStream value) {
-        msg.addMetadata(key, value.toString());
-      }
-    },
-    /**
-     * Object Metadata.
-     *
-     */
-    Object {
-      @Override
-      void apply(AdaptrisMessage msg, String key, ByteArrayOutputStream value) {
-        msg.addObjectHeader(key, value.toByteArray());
-      }
-    };
-
-    abstract void apply(AdaptrisMessage msg, String key, ByteArrayOutputStream value);
-  }
 
   /**
    * The selector to select a mime part from the message

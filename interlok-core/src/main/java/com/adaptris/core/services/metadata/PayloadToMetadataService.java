@@ -62,37 +62,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @DisplayOrder(order = {"key", "encoding", "metadataTarget"})
 public class PayloadToMetadataService extends ServiceImp {
 
-  /**
-   * Enumeration of where the two types of metadata.
-   * 
-   */
-  public enum MetadataTarget
- {
-    /**
-     * Standard Metadata.
-     * 
-     */
-    Standard {
-      @Override
-      void apply(AdaptrisMessage msg, String key, ByteArrayOutputStream value) {
-        msg.addMetadata(key, value.toString());
-      }
-    },
-    /**
-     * Object Metadata.
-     * 
-     */
-    Object {
-      @Override
-      void apply(AdaptrisMessage msg, String key, ByteArrayOutputStream value) {
-        msg.addObjectHeader(key, value.toByteArray());
-      }
-    };
-    
-    abstract void apply(AdaptrisMessage msg, String key, ByteArrayOutputStream value);
-  };
-
-
   @NotBlank
   @AffectsMetadata
   private String key;

@@ -34,7 +34,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.ServiceException;
-import com.adaptris.core.services.mime.PartSelectorToMetadata.MetadataTarget;
+import com.adaptris.core.services.metadata.MetadataTarget;
 import com.adaptris.util.text.mime.SelectByContentId;
 import com.adaptris.util.text.mime.SelectByPosition;
 
