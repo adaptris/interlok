@@ -1,12 +1,12 @@
 /*
  * Copyright 2018 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -49,18 +49,19 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Flatten any nested {@code MimeBodyParts} inside the payload.
- * 
+ *
  * <p>
- * Flattens the payload so that any nested {@code Multiparts} have their body parts added directly to the root multipart. This can
- * be useful if you are processing an email message; it can often contain both text and html versions of message body as a nested
- * multipart.
+ * Flattens the payload so that any nested {@code Multiparts} have their body parts added directly to the root multipart. This can be useful
+ * if you are processing an email message; it can often contain both text and html versions of message body as a nested multipart.
  * <p>
- * For example if you have a MIME message that contains 4 body parts; 3 that are plain text, and a 4th that is a multipart which
- * itself contains 3 text parts; then the resulting output will contain 6 parts; the 3 original plain text parts and the 3 nested
- * parts. Note that a {@code Content-Id} header will be generated for each part if it does not already exist. Headers will be
- * generally untouched, but boundary markers will change.
+ * For example if you have a MIME message that contains 4 body parts; 3 that are plain text, and a 4th that is a multipart which itself
+ * contains 3 text parts; then the resulting output will contain 6 parts; the 3 original plain text parts and the 3 nested parts. Note that
+ * a {@code Content-Id} header will be generated for each part if it does not already exist. Headers will be generally untouched, but
+ * boundary markers will change.
  * </p>
- * i.e. <pre> 
+ * i.e.
+ *
+ * <pre>
    {@code
 Mime-Version: 1.0
 Content-Type: multipart/mixed; boundary="----=_Part_3_815648243.1522235646062"
@@ -128,7 +129,7 @@ Content-Id: nested3
 ------=_Part_4_18130400.1522235646074--
    }
  * </pre>
- * 
+ *
  * @config flatten-mime-parts
  */
 @XStreamAlias("flatten-mime-parts")
@@ -138,10 +139,8 @@ public class FlattenMimeParts extends ServiceImp {
 
   private static final GuidGenerator GUID = new GuidGenerator();
 
-  private static final List<String> DISCARD = Arrays.asList(new String[]
-  {
-      MimeConstants.HEADER_CONTENT_LENGTH.toLowerCase(), MimeConstants.HEADER_CONTENT_TYPE.toLowerCase(),
-  });
+  private static final List<String> DISCARD = Arrays.asList(MimeConstants.HEADER_CONTENT_LENGTH.toLowerCase(),
+      MimeConstants.HEADER_CONTENT_TYPE.toLowerCase());
 
   public FlattenMimeParts() {
   }
@@ -166,9 +165,9 @@ public class FlattenMimeParts extends ServiceImp {
   }
 
   private void addHeaders(InternetHeaders hdrs, MultiPartOutput out) {
-    Enumeration e = hdrs.getAllHeaders();
-    while (e.hasMoreElements()) {
-      Header h = (Header) e.nextElement();
+    Enumeration<Header> headers = hdrs.getAllHeaders();
+    while (headers.hasMoreElements()) {
+      Header h = headers.nextElement();
       if (!DISCARD.contains(h.getName().toLowerCase())) {
         out.setHeader(h.getName(), h.getValue());
       }

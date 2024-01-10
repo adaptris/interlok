@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,12 +17,16 @@
 package com.adaptris.core.services.mime;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+
 import java.util.Enumeration;
+
 import javax.mail.Header;
 import javax.mail.internet.MimeBodyPart;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.BooleanUtils;
+
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -43,18 +47,18 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Choose a specific mime part from an existing multipart message to become the payload of the AdaptrisMessage.
- * 
+ *
  * @config mime-part-selector-service
- * 
- * 
+ *
+ *
  * @author lchan
  * @author $Author: lchan $
  */
 @XStreamAlias("mime-part-selector-service")
 @AdapterComponent
 @ComponentProfile(summary = "Select a mime-part from the message and discards the others", tag = "service")
-@DisplayOrder(order = {"selector", "markAsNonMime", "preserveHeadersAsMetadata", "headerPrefix", "preservePartHeadersAsMetadata",
-    "partHeaderPrefix"})
+@DisplayOrder(order = { "selector", "markAsNonMime", "preserveHeadersAsMetadata", "headerPrefix", "preservePartHeadersAsMetadata",
+    "partHeaderPrefix" })
 public class MimePartSelector extends ServiceImp {
 
   @AdvancedConfig
@@ -74,7 +78,6 @@ public class MimePartSelector extends ServiceImp {
   @NotNull
   @Valid
   private PartSelector selector;
-
 
   public MimePartSelector() {
   }
@@ -100,20 +103,17 @@ public class MimePartSelector extends ServiceImp {
             msg.removeMetadata(msg.getMetadata(CoreConstants.MSG_MIME_ENCODED));
           }
         }
-      }
-      else {
+      } else {
         log.warn("Could not select a MimePart for extraction, ignoring");
       }
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       throw new ServiceException(e);
     }
   }
 
-  private void addHeadersAsMetadata(Enumeration e, String prefix,
-                                    AdaptrisMessage msg) throws Exception {
-    while (e.hasMoreElements()) {
-      Header hdr = (Header) e.nextElement();
+  private void addHeadersAsMetadata(Enumeration<Header> headers, String prefix, AdaptrisMessage msg) throws Exception {
+    while (headers.hasMoreElements()) {
+      Header hdr = headers.nextElement();
       msg.addMetadata(prefix + hdr.getName(), hdr.getValue());
     }
   }
@@ -252,6 +252,5 @@ public class MimePartSelector extends ServiceImp {
   @Override
   public void prepare() throws CoreException {
   }
-
 
 }
