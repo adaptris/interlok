@@ -37,9 +37,6 @@ import lombok.Setter;
 /**
  * Choose one or more mime parts from an existing multipart message and add them as metadata of the AdaptrisMessage. The mime payload
  * remains unchanged.
- *
- * @config mime-part-selector-service-to-metadata
- *
  */
 @XStreamAlias("mime-part-selector-service-to-metadata")
 @AdapterComponent

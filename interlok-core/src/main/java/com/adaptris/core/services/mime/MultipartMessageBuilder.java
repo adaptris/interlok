@@ -1,12 +1,12 @@
 /*
  * Copyright 2019 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,11 +19,14 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import javax.mail.internet.MimeBodyPart;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import org.apache.commons.lang3.StringUtils;
+
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.InputFieldDefault;
@@ -44,8 +47,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 /**
  * Constructs a multipart MIME payload from various sources.
- * 
- * @config multipart-message-builder
+ *
  * @since 3.9.0
  */
 @XStreamAlias("multipart-message-builder")
@@ -67,7 +69,7 @@ public class MultipartMessageBuilder extends ServiceImp {
   private MetadataFilter mimeHeaderFilter;
 
   public MultipartMessageBuilder() {
-    setMimeParts(new ArrayList<MimePartBuilder>());
+    setMimeParts(new ArrayList<>());
   }
 
   @Override
@@ -99,8 +101,7 @@ public class MultipartMessageBuilder extends ServiceImp {
   protected void closeService() {
   }
 
-  protected MultiPartOutput createOutputPart(AdaptrisMessage msg)
-      throws Exception {
+  protected MultiPartOutput createOutputPart(AdaptrisMessage msg) throws Exception {
     MultiPartOutput output = new MultiPartOutput(contentId(msg), mimeContentSubType(msg));
     MetadataCollection metadata = mimeHeaderFilter().filter(msg);
     metadata.forEach((e) -> {
@@ -109,18 +110,17 @@ public class MultipartMessageBuilder extends ServiceImp {
     return output;
   }
 
-
   public List<MimePartBuilder> getMimeParts() {
     return mimeParts;
   }
 
   /**
    * Specify what is going to build the mime message.
-   * 
+   *
    * @param parts the parts that will form the mime message.
    */
   public void setMimeParts(List<MimePartBuilder> parts) {
-    this.mimeParts = Args.notNull(parts, "mime-parts");
+    mimeParts = Args.notNull(parts, "mime-parts");
   }
 
   public MetadataFilter getMimeHeaderFilter() {
@@ -129,11 +129,11 @@ public class MultipartMessageBuilder extends ServiceImp {
 
   /**
    * Set any additional headers that need to be set for this Mime Message
-   * 
+   *
    * @param filter the metadata filter.
    */
   public void setMimeHeaderFilter(MetadataFilter filter) {
-    this.mimeHeaderFilter = filter;
+    mimeHeaderFilter = filter;
   }
 
   public String getContentId() {
@@ -142,14 +142,13 @@ public class MultipartMessageBuilder extends ServiceImp {
 
   /**
    * Set the Content-ID for the Multipart,
-   * 
-   * @param s the Content-ID, which supports the {@code %message{}} syntax to resolve metadata;
-   *        defaults to the messages unique id if no value is specified.
+   *
+   * @param s the Content-ID, which supports the {@code %message{}} syntax to resolve metadata; defaults to the messages unique id if no
+   *          value is specified.
    */
   public void setContentId(String s) {
-    this.contentId = s;
+    contentId = s;
   }
-
 
   public String getMimeContentSubType() {
     return mimeContentSubType;
@@ -157,12 +156,11 @@ public class MultipartMessageBuilder extends ServiceImp {
 
   /**
    * Set the sub type for the Multipart
-   * 
-   * @param sub the content subtype, which supports the {@code %message{}} syntax to resolve
-   *        metadata; defaults to 'mixed' if not specified.
+   *
+   * @param sub the content subtype, which supports the {@code %message{}} syntax to resolve metadata; defaults to 'mixed' if not specified.
    */
   public void setMimeContentSubType(String sub) {
-    this.mimeContentSubType = sub;
+    mimeContentSubType = sub;
   }
 
   public MultipartMessageBuilder withMimeHeaderFilter(MetadataFilter filter) {

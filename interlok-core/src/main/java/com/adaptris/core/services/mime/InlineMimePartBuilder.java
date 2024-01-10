@@ -1,12 +1,12 @@
 /*
  * Copyright 2019 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,8 +21,8 @@ import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 import javax.validation.Valid;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
@@ -44,23 +44,22 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * Builds a MIME Body part by rendering a byte array as the content of the part.
- * 
+ *
  * <p>
- * Used as part of a {@link MultipartMessageBuilder} service; this constructs a {@link MimeBodyPart} from the configured
- * {@code body} configuration. Depending on your use case you might opt to use {@link ByteArrayFromPayload} or
- * {@link ByteArrayFromMetadata} to generate the actual contents for the part.
+ * Used as part of a {@link MultipartMessageBuilder} service; this constructs a {@link MimeBodyPart} from the configured {@code body}
+ * configuration. Depending on your use case you might opt to use {@link ByteArrayFromPayload} or {@link ByteArrayFromMetadata} to generate
+ * the actual contents for the part.
  * </p>
  * <p>
  * You can also specify the various headers that will be associated with the {@link MimeBodyPart} such as the {@code Content-ID},
  * {@code Content-Type} or {@code Content-Transfer-Encoding}. Additional non standard headers can be added by configuring a
  * {@link #setPartHeaderFilter(MetadataFilter)} to filter out metadata to include as part of the MimeBodyPart headers.
  * </p>
- * 
- * @config inline-mime-body-part-builder
+ *
  * @since 3.9.0
  */
 @ComponentProfile(summary = "Builds a MIME Body part using a byte array", since = "3.9.0")
-@DisplayOrder(order = {"contentId", "contentType", "contentEncoding", "body", "partHeaderFilter"})
+@DisplayOrder(order = { "contentId", "contentType", "contentEncoding", "body", "partHeaderFilter" })
 @XStreamAlias("inline-mime-body-part-builder")
 public class InlineMimePartBuilder implements MimePartBuilder {
 
@@ -87,7 +86,6 @@ public class InlineMimePartBuilder implements MimePartBuilder {
 
   }
 
-
   @Override
   public MimeBodyPart build(AdaptrisMessage msg) throws Exception {
     InternetHeaders hdrs = new InternetHeaders();
@@ -104,14 +102,13 @@ public class InlineMimePartBuilder implements MimePartBuilder {
     return part;
   }
 
-
   public MessageWrapper<byte[]> getBody() {
     return body;
   }
 
   /**
    * Set where the body of the MimeBodyPart is going to come from.
-   * 
+   *
    * @param body the location of the body for the mime part; the default if not specified is the payload as a byte-array.
    * @see ByteArrayFromMetadata
    * @see ByteArrayFromObjectMetadata
@@ -127,11 +124,11 @@ public class InlineMimePartBuilder implements MimePartBuilder {
 
   /**
    * Set any additional headers that need to be set for this nested part.
-   * 
+   *
    * @param filter the metadata filter.
    */
   public void setPartHeaderFilter(MetadataFilter filter) {
-    this.partHeaderFilter = filter;
+    partHeaderFilter = filter;
   }
 
   public String getContentEncoding() {
@@ -140,19 +137,18 @@ public class InlineMimePartBuilder implements MimePartBuilder {
 
   /**
    * Set the Content-Transfer-Encoding for the part.
-   * 
+   *
    * <p>
-   * Set the encoding of the mime part; if the mime part contains text you probably don't need to
-   * specify this; any RFC2045 value is supported such as
-   * {@code base64,quoted-printable,uuencode,x-uuencode,x-uue,binary,7bit,8bit} and is passed
-   * directly to {@code MimeUtility#encode(java.io.OutputStream, String, String)}.
+   * Set the encoding of the mime part; if the mime part contains text you probably don't need to specify this; any RFC2045 value is
+   * supported such as {@code base64,quoted-printable,uuencode,x-uuencode,x-uue,binary,7bit,8bit} and is passed directly to
+   * {@code MimeUtility#encode(java.io.OutputStream, String, String)}.
    * </p>
-   * 
-   * @param s the Content-Transfer-Encoding, which supports the {@code %message{}} syntax to resolve
-   *        metadata, default is 'null', no encoding.
+   *
+   * @param s the Content-Transfer-Encoding, which supports the {@code %message{}} syntax to resolve metadata, default is 'null', no
+   *          encoding.
    */
   public void setContentEncoding(String s) {
-    this.contentEncoding = s;
+    contentEncoding = s;
   }
 
   public String getContentType() {
@@ -161,12 +157,12 @@ public class InlineMimePartBuilder implements MimePartBuilder {
 
   /**
    * Set the Content-Type for the part.
-   * 
-   * @param s the Content-Type, which supports the {@code %message{}} syntax to resolve metadata; if
-   *        not specified defaults to {@code application/octet-stream}
+   *
+   * @param s the Content-Type, which supports the {@code %message{}} syntax to resolve metadata; if not specified defaults to
+   *          {@code application/octet-stream}
    */
   public void setContentType(String s) {
-    this.contentType = s;
+    contentType = s;
   }
 
   public String getContentId() {
@@ -175,12 +171,12 @@ public class InlineMimePartBuilder implements MimePartBuilder {
 
   /**
    * Set the Content-ID for the part,
-   * 
-   * @param s the Content-ID, which supports the {@code %message{}} syntax to resolve metadata;
-   *        defaults to a new GUID if no value is specified.
+   *
+   * @param s the Content-ID, which supports the {@code %message{}} syntax to resolve metadata; defaults to a new GUID if no value is
+   *          specified.
    */
   public void setContentId(String s) {
-    this.contentId = s;
+    contentId = s;
   }
 
   public InlineMimePartBuilder withBody(MessageWrapper<byte[]> body) {
