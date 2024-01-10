@@ -48,9 +48,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  * Choose a specific mime part from an existing multipart message to become the payload of the AdaptrisMessage.
  *
- * @config mime-part-selector-service
- *
- *
  * @author lchan
  * @author $Author: lchan $
  */
