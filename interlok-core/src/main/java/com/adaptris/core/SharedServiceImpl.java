@@ -11,6 +11,7 @@ import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.GuidGenerator;
+import com.adaptris.annotation.MarshallingCDATA;
 
 public abstract class SharedServiceImpl extends SharedComponent implements Service, EventHandlerAware {
 
@@ -24,6 +25,8 @@ public abstract class SharedServiceImpl extends SharedComponent implements Servi
   @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean isTrackingEndpoint;
+  @MarshallingCDATA
+  private String comments;
 
   protected transient EventHandler eventHandler;
   protected transient Logger log = LoggerFactory.getLogger(this.getClass());
@@ -45,6 +48,16 @@ public abstract class SharedServiceImpl extends SharedComponent implements Servi
     }
   }
 
+  @Override
+  public void setComments(String s) {
+    comments = s;
+  }
+
+  @Override
+  public String getComments() {
+    return comments;
+  }
+  
   protected Service deepClone(Service lookedUpService) throws CoreException {
     AdaptrisMarshaller marshaller = DefaultMarshaller.getDefaultMarshaller();
     return (Service) marshaller.unmarshal(marshaller.marshal(lookedUpService));

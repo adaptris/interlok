@@ -257,4 +257,12 @@
     <packageUrl regex="true">^pkg:maven/org\.json/json@.*$</packageUrl>
     <cve>CVE-2023-5072</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+      file name: derby-10.15.2.0.jar, derbyshared-10.15.2.0.jar and derbytools-10.15.2.0.jar
+      Suppress because this occurs in LDAP-authenticated Derby installations which is not the case for Interlok.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.derby/derby.*@.*$</packageUrl>
+    <cve>CVE-2022-46337</cve>
+  </suppress>
 </suppressions>

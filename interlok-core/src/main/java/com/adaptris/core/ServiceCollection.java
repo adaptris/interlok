@@ -26,7 +26,7 @@ import java.util.List;
  * provide branching, etc.
  * </p>
  */
-public interface ServiceCollection extends Service, EventHandlerAware, List<Service>, ConfigComment {
+public interface ServiceCollection extends Service, EventHandlerAware, List<Service> {
 
   /**
    * <p>
