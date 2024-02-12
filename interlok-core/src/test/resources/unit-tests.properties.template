@@ -233,3 +233,5 @@ junit.urlhelper.classpath=xstream-standard.xml
 
 junit.retry.baseUrl=file://localhost/@BUILD_DIR@/tmp/retry-store
 junit.jdbc.RetryStore.properties.file.destination=file:///@BUILD_DIR@/src/test/resources/retry-store.properties
+
+junit.example.payload.file=@BUILD_DIR@/resources/test/example-payload.txt
