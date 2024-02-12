@@ -1,12 +1,13 @@
 package com.adaptris.core;
 
-import java.util.Arrays;
 import java.util.Properties;
+
 import javax.naming.CompositeName;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.InvalidNameException;
 import javax.naming.NamingException;
+
 import com.adaptris.core.util.ExceptionHelper;
 
 public class SharedComponent {

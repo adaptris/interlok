@@ -86,21 +86,23 @@ public class ServiceList extends ServiceListBase {
     ListIterator<Service> itr = this.listIterator();
     while (itr.hasNext()) {
       Service service = itr.next();
-      String serviceName = friendlyName(service);
-      if (haltProcessing(msg)) {
-        break;
-      }
-      msg.setNextServiceId("");
-      log.debug("Executing doService on [{}]", serviceName);
-      try {
-        service.doService(msg);
-        msg.addEvent(service, true);
-        // Should we resolveNext *regardless of exception?*
-        itr = resolveNext(itr, msg.getNextServiceId());
-      } catch (Exception e) {
-        // add fail event
-        msg.addEvent(service, false);
-        handleException(service, msg, e);
+      if(service.enabled()) {
+        String serviceName = friendlyName(service);
+        if (haltProcessing(msg)) {
+          break;
+        }
+        msg.setNextServiceId("");
+        log.debug("Executing doService on [{}]", serviceName);
+        try {
+          service.doService(msg);
+          msg.addEvent(service, true);
+          // Should we resolveNext *regardless of exception?*
+          itr = resolveNext(itr, msg.getNextServiceId());
+        } catch (Exception e) {
+          // add fail event
+          msg.addEvent(service, false);
+          handleException(service, msg, e);
+        }
       }
     }
   }

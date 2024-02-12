@@ -60,6 +60,8 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean continueOnFail;
+  @InputFieldDefault(value = "true")
+  private Boolean enabled;
   @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean isTrackingEndpoint;
@@ -131,6 +133,18 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
    */
   public Boolean getContinueOnFail() {
     return continueOnFail;
+  }
+
+  public Boolean isEnabled() {
+    return enabled;
+  }
+
+  public void setEnabled(Boolean enabled) {
+    this.enabled = enabled;
+  }
+  
+  public boolean enabled() {
+    return BooleanUtils.toBooleanDefaultIfNull(isEnabled(), true);
   }
 
   /**
@@ -216,13 +230,15 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   private void checkServiceStates() throws OutOfStateException {
     OutOfStateHandler handler = outOfStateHandler();
     for (Service service : getServices()) {
-      try {
-        if (!handler.isInCorrectState(service)) {
-          handler.handleOutOfState(service);
+      if(service.enabled()) {
+        try {
+          if (!handler.isInCorrectState(service)) {
+            handler.handleOutOfState(service);
+          }
+        } catch (OutOfStateException ex) {
+          throw new OutOfStateException("Service (" + friendlyName(service) + ") cannot be run, it is not in the correct state - "
+              + service.retrieveComponentState().getClass().getSimpleName());
         }
-      } catch (OutOfStateException ex) {
-        throw new OutOfStateException("Service (" + friendlyName(service) + ") cannot be run, it is not in the correct state - "
-            + service.retrieveComponentState().getClass().getSimpleName());
       }
     }
   }
@@ -240,8 +256,10 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
     try {
       lock.acquire();
       for (Service s : this) {
-        LifecycleHelper.registerEventHandler(s, eventHandler);
-        LifecycleHelper.init(s);
+        if(s.enabled()) {
+          LifecycleHelper.registerEventHandler(s, eventHandler);
+          LifecycleHelper.init(s);
+        }
       }
       doInit();
     } catch (InterruptedException e) {
@@ -263,7 +281,9 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
     try {
       lock.acquire();
       for (Service s : this) {
-        LifecycleHelper.start(s);
+        if(s.enabled()) {
+          LifecycleHelper.start(s);
+        }
       }
       doStart();
     } catch (InterruptedException e) {
@@ -286,7 +306,9 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
     try {
       lock.acquire();
       for (Service s : this) {
-        LifecycleHelper.stop(s);
+        if(s.enabled()) {
+          LifecycleHelper.stop(s);
+        }
       }
       doStop();
     } catch (InterruptedException e) {
@@ -307,7 +329,9 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
     try {
       lock.acquire();
       for (Service s : this) {
-        LifecycleHelper.close(s);
+        if(s.enabled()) {
+          LifecycleHelper.close(s);
+        }
       }
       doClose();
     } catch (InterruptedException e) {
@@ -392,7 +416,9 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   @Override
   public void prepare() throws CoreException {
     for (Service s : getServices()) {
-      LifecycleHelper.prepare(s);
+      if(s.enabled()) {
+        LifecycleHelper.prepare(s);
+      } 
     }
   }
 

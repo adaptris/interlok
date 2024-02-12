@@ -51,6 +51,8 @@ public abstract class ServiceImp implements Service {
   private Boolean isTrackingEndpoint;
   @MarshallingCDATA
   private String comments;
+  @InputFieldDefault(value = "true")
+  private Boolean enabled;
 
   /**
    * <p>
@@ -98,6 +100,18 @@ public abstract class ServiceImp implements Service {
   @Override
   public String createQualifier() {
     return defaultIfEmpty(getUniqueId(), "");
+  }
+
+  public Boolean isEnabled() {
+    return enabled;
+  }
+
+  public void setEnabled(Boolean enabled) {
+    this.enabled = enabled;
+  }
+  
+  public boolean enabled() {
+    return BooleanUtils.toBooleanDefaultIfNull(isEnabled(), true);
   }
 
   @Override
