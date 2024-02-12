@@ -103,7 +103,7 @@ dependencies {
   api ("org.apache.derby:derbytools:$derbyDriverVersion")
   
   // INTERLOK-4302 Only used by the UI and interlok-flyway
-  api ("org.flywaydb:flyway-core:8.5.13")
+  api ("org.flywaydb:flyway-core:10.7.2")
 
   testImplementation ("junit:junit:4.13.2")
   testImplementation ("org.apache.activemq:artemis-jms-server:2.32.0")
