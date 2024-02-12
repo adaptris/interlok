@@ -102,7 +102,7 @@ public abstract class ServiceImp implements Service {
     return defaultIfEmpty(getUniqueId(), "");
   }
 
-  public Boolean isEnabled() {
+  public Boolean getEnabled() {
     return enabled;
   }
 
@@ -111,7 +111,7 @@ public abstract class ServiceImp implements Service {
   }
   
   public boolean enabled() {
-    return BooleanUtils.toBooleanDefaultIfNull(isEnabled(), true);
+    return BooleanUtils.toBooleanDefaultIfNull(getEnabled(), true);
   }
 
   @Override

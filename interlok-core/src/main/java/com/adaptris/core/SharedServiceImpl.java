@@ -124,7 +124,7 @@ public abstract class SharedServiceImpl extends SharedComponent implements Servi
     return continueOnFail;
   }
 
-  public Boolean isEnabled() {
+  public Boolean getEnabled() {
     return enabled;
   }
 
@@ -133,7 +133,7 @@ public abstract class SharedServiceImpl extends SharedComponent implements Servi
   }
   
   public boolean enabled() {
-    return BooleanUtils.toBooleanDefaultIfNull(isEnabled(), true);
+    return BooleanUtils.toBooleanDefaultIfNull(getEnabled(), true);
   }
 
   public void setContinueOnFail(Boolean b) {
