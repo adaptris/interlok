@@ -17,6 +17,7 @@
 package com.adaptris.core;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -103,6 +104,19 @@ public class BranchingServiceCollectionTest
     assertEquals(eh, s.retrieveEventHandler());
   }
 
+  @Test
+  public void testEnabledDefault() {
+    BranchingServiceCollection sc = createServiceCollection();
+    assertTrue(sc.enabled());
+  }
+  
+  @Test
+  public void testDisabled() {
+    BranchingServiceCollection sc = createServiceCollection();
+    sc.setEnabled(false);
+    assertFalse(sc.enabled());
+  }
+  
   @Test
   public void testSetFirstServiceId() throws Exception {
     BranchingServiceCollection services = createServiceCollection();
@@ -341,6 +355,7 @@ public class BranchingServiceCollectionTest
     doThrow(new ServiceException("Expected")).when(mockFailingService).doService(any(AdaptrisMessage.class));
     when(mockFailingService.getUniqueId()).thenReturn(FIRST_SERVICE_ID);
     when(mockFailingService.createName()).thenReturn(Service.class.getName());
+    when(mockFailingService.enabled()).thenReturn(true);
 
     when(mockOutOfStateHandler.isInCorrectState(mockFailingService)).thenReturn(true);
 
@@ -369,6 +384,7 @@ public class BranchingServiceCollectionTest
     doThrow(new ServiceException("Expected")).when(mockFailingService).doService(any(AdaptrisMessage.class));
     when(mockFailingService.getUniqueId()).thenReturn(FIRST_SERVICE_ID);
     when(mockFailingService.createName()).thenReturn(Service.class.getName());
+    when(mockFailingService.enabled()).thenReturn(true);
 
     when(mockOutOfStateHandler.isInCorrectState(mockFailingService)).thenReturn(true);
 

@@ -68,6 +68,19 @@ public class SharedServiceTest
     sharedService.setContinueOnFail(Boolean.TRUE);
     assertTrue(sharedService.continueOnFailure());
   }
+  
+  @Test
+  public void testEnabledDefault() {
+    SharedService sharedService = new SharedService(getName());
+    assertTrue(sharedService.enabled());
+  }
+  
+  @Test
+  public void testDisabled() {
+    SharedService sharedService = new SharedService(getName());
+    sharedService.setEnabled(false);
+    assertFalse(sharedService.enabled());
+  }
 
   @Test
   public void testIsTrackingEndpoint() {
