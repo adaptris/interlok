@@ -622,13 +622,11 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 
   private class ByteFilterStream extends FilterOutputStream {
     private final String payloadId;
-    private Payload pl;
 
     ByteFilterStream(@NotNull String payloadId, ByteArrayOutputStream out) {
       super(out);
       this.payloadId = payloadId;
-      this.pl = new Payload(out);
-      payloads.put(payloadId, pl);
+      payloads.put(payloadId, new Payload(out));
     }
 
     @Override
