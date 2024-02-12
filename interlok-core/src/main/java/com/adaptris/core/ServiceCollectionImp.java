@@ -135,7 +135,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
     return continueOnFail;
   }
 
-  public Boolean isEnabled() {
+  public Boolean getEnabled() {
     return enabled;
   }
 
@@ -144,7 +144,7 @@ public abstract class ServiceCollectionImp extends AbstractCollection<Service> i
   }
   
   public boolean enabled() {
-    return BooleanUtils.toBooleanDefaultIfNull(isEnabled(), true);
+    return BooleanUtils.toBooleanDefaultIfNull(getEnabled(), true);
   }
 
   /**
