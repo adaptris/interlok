@@ -103,6 +103,8 @@ public class ServiceList extends ServiceListBase {
           msg.addEvent(service, false);
           handleException(service, msg, e);
         }
+      } else {
+        log.trace("Service [{}] skipped, not enabled", friendlyName(service));
       }
     }
   }
