@@ -626,7 +626,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
     ByteFilterStream(@NotNull String payloadId, ByteArrayOutputStream out) {
       super(out);
       this.payloadId = payloadId;
-      payloads.put(payloadId, new Payload(out));
+      addPayload(payloadId, ((ByteArrayOutputStream) super.out).toByteArray());
     }
 
     @Override
@@ -647,10 +647,6 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
 
     Payload(@NotNull byte[] data) {
       this.data = data;
-    }
-
-    Payload(@NotNull ByteArrayOutputStream stream) {
-      this.data = stream.toByteArray();
     }
 
     byte[] payload() {
