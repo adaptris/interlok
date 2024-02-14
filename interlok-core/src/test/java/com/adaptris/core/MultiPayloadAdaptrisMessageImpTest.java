@@ -71,18 +71,11 @@ public class MultiPayloadAdaptrisMessageImpTest extends BaseCase {
   //Unit test added to test bug INTERLOK-4325 
   @Test
   public void testUpdatingOriginalPayloadFromInputStream() throws IOException {
-	System.out.println(PROPERTIES.getProperty(EXAMPLE_PAYLOAD_FILE));
 	MultiPayloadAdaptrisMessage multiPayloadAdaptrisMessage = MessageHelper.createMultiPayloadMessage("default-payload", PROPERTIES.getProperty(EXAMPLE_PAYLOAD_FILE));
-    System.out.println(multiPayloadAdaptrisMessage.getContent("default-payload"));
     multiPayloadAdaptrisMessage.setContent("new payload", multiPayloadAdaptrisMessage.getContentEncoding());
-    
-
     assertEquals("new payload", multiPayloadAdaptrisMessage.getContent());
     
     multiPayloadAdaptrisMessage.addContent("default-payload", "another payload", multiPayloadAdaptrisMessage.getContentEncoding());
-
     assertEquals("another payload", multiPayloadAdaptrisMessage.getContent());
-
   }
-
 }
