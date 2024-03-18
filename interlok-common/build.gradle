@@ -69,7 +69,7 @@ dependencies {
   testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.10.2")
   testImplementation ("org.mockito:mockito-core:$mockitoVersion")
   testImplementation ("org.mockito:mockito-inline:$mockitoVersion")
-  testImplementation ("org.awaitility:awaitility:4.2.0")
+  testImplementation ("org.awaitility:awaitility:4.2.1")
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
