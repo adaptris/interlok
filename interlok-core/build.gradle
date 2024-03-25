@@ -106,7 +106,7 @@ dependencies {
   api ("org.flywaydb:flyway-core:8.5.13")
 
   testImplementation ("junit:junit:4.13.2")
-  testImplementation ("org.apache.activemq:artemis-jms-server:2.32.0")
+  testImplementation ("org.apache.activemq:artemis-jms-server:2.33.0")
   testImplementation ("oro:oro:2.0.8")
   testImplementation ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
 
