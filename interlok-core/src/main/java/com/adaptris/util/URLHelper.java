@@ -49,6 +49,10 @@ public abstract class URLHelper {
     }
     URL url = new URL(loc.toString());
     URLConnection conn = url.openConnection();
+    
+    conn.setReadTimeout(30000); // set the timeout.
+    conn.setConnectTimeout(30000); // 30 seconds.
+    
     return conn.getInputStream();
   }
 
