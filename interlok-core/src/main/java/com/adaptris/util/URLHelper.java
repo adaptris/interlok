@@ -51,7 +51,7 @@ public abstract class URLHelper {
     URLConnection conn = url.openConnection();
     
     conn.setReadTimeout(30000); // set the timeout.
-    conn.setConnectTimeout(30000); // 10 seconds.
+    conn.setConnectTimeout(30000); // 30 seconds.
     
     return conn.getInputStream();
   }
