@@ -3,7 +3,7 @@ plugins {
   id "nebula.optional-base" version "7.0.0" apply false
   id "com.github.spotbugs" version "6.0.9" apply false
   id "org.sonarqube" version "4.4.1.3373"
-  id "org.owasp.dependencycheck" version "9.0.10" apply false
+  id "org.owasp.dependencycheck" version "9.1.0" apply false
   id "io.freefair.lombok" version "8.6" apply false
   id "org.gradle.test-retry" version "1.5.8" apply false
   id "org.barfuin.gradle.taskinfo" version "2.2.0"
