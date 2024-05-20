@@ -6,7 +6,7 @@ ext {
   slf4jVersion = "2.0.13"
   log4j2Version = "2.23.1"
   mockitoVersion = "4.9.0"
-  jettyVersion= "10.0.20"
+  jettyVersion= "10.0.21"
 }
 
 // In this section you declare the dependencies for your production and test code
