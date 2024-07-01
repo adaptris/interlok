@@ -11,7 +11,7 @@ ext {
   jschVersion = "0.2.18"
   mssqlDriverVersion = "9.2.1.jre8"
   derbyDriverVersion = "10.15.2.0"
-  junitVersion = "5.10.2"
+  junitVersion = "5.10.3"
   jettyVersion= "10.0.21"
 
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
