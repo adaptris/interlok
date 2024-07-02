@@ -4,13 +4,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-public class MultiPayloadAdaptrisMessageImpTest {
+import com.adaptris.core.stubs.MessageHelper;
+import com.adaptris.interlok.junit.scaffolding.BaseCase;
+
+public class MultiPayloadAdaptrisMessageImpTest extends BaseCase {
 
   private static String PAYLOAD = "Some payload";
+  private static String EXAMPLE_PAYLOAD_FILE = "example.payload.file";
 
   @Test
   public void testAddPayloadMessageHeader() {
@@ -62,5 +67,15 @@ public class MultiPayloadAdaptrisMessageImpTest {
     assertFalse(multiPayloadAdaptrisMessage.payloadHeadersContainsKey("key"));
     assertFalse(multiPayloadAdaptrisMessage.payloadHeadersContainsKey("another-payload", "key"));
   }
-
+  
+  //Unit test added to test bug INTERLOK-4325 
+  @Test
+  public void testUpdatingOriginalPayloadFromInputStream() throws IOException {
+    MultiPayloadAdaptrisMessage multiPayloadAdaptrisMessage = MessageHelper.createMultiPayloadMessage("default-payload", PROPERTIES.getProperty(EXAMPLE_PAYLOAD_FILE));
+    multiPayloadAdaptrisMessage.setContent("new payload", multiPayloadAdaptrisMessage.getContentEncoding());
+    assertEquals("new payload", multiPayloadAdaptrisMessage.getContent());
+    
+    multiPayloadAdaptrisMessage.addContent("default-payload", "another payload", multiPayloadAdaptrisMessage.getContentEncoding());
+    assertEquals("another payload", multiPayloadAdaptrisMessage.getContent());
+  }
 }

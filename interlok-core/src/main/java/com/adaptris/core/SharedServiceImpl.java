@@ -22,6 +22,8 @@ public abstract class SharedServiceImpl extends SharedComponent implements Servi
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean continueOnFail;
+  @InputFieldDefault(value = "true")
+  private Boolean enabled;
   @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean isTrackingEndpoint;
@@ -120,6 +122,18 @@ public abstract class SharedServiceImpl extends SharedComponent implements Servi
 
   public Boolean getContinueOnFail() {
     return continueOnFail;
+  }
+
+  public Boolean getEnabled() {
+    return enabled;
+  }
+
+  public void setEnabled(Boolean enabled) {
+    this.enabled = enabled;
+  }
+  
+  public boolean enabled() {
+    return BooleanUtils.toBooleanDefaultIfNull(getEnabled(), true);
   }
 
   public void setContinueOnFail(Boolean b) {

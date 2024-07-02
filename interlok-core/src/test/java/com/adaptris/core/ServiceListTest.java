@@ -23,11 +23,18 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import com.adaptris.core.services.WaitService;
 import com.adaptris.core.services.exception.ConfiguredException;
@@ -49,6 +56,23 @@ public class ServiceListTest extends com.adaptris.interlok.junit.scaffolding.ser
   private static final String KEY2 = "key2";
   private static final String VAL1 = "val1";
   private static final String KEY1 = "key1";
+  
+  @Mock private Service mockService, mockService2, mockService3;
+  
+  @BeforeEach
+  public void setUp() throws Exception {
+    MockitoAnnotations.openMocks(this);
+    
+    when(mockService.enabled()).thenReturn(true);
+    when(mockService.getUniqueId()).thenReturn("mockService");
+    when(mockService.createName()).thenReturn("mockService");
+    
+    when(mockService2.getUniqueId()).thenReturn("mockService");
+    when(mockService2.createName()).thenReturn("mockService");
+    
+    when(mockService3.getUniqueId()).thenReturn("mockService");
+    when(mockService3.createName()).thenReturn("mockService");
+  }
 
   @Override
   public ServiceList createServiceCollection() {
@@ -70,9 +94,85 @@ public class ServiceListTest extends com.adaptris.interlok.junit.scaffolding.ser
     }
     }
     return services;
-
   }
 
+  @Test
+  public void testEnabledService() throws CoreException {
+    ServiceList serviceList = new ServiceList();
+    serviceList.setOutOfStateHandler(new NullOutOfStateHandler());
+    serviceList.add(mockService);
+    
+    AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage("");
+    serviceList.doService(message);
+    
+    verify(mockService, times(1)).doService(message);
+  }
+  
+  @Test
+  public void testDisabledService() throws CoreException {
+    when(mockService.enabled()).thenReturn(false);
+    
+    ServiceList serviceList = new ServiceList();
+    serviceList.add(mockService);
+    
+    AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage("");
+    serviceList.doService(message);
+    
+    verify(mockService, times(0)).doService(message);
+  }
+  
+  @Test
+  public void testMultipleEnabledServices() throws Exception {
+    when(mockService.enabled()).thenReturn(true);
+    when(mockService2.enabled()).thenReturn(false);
+    when(mockService3.enabled()).thenReturn(true);
+    
+    ServiceList serviceList = new ServiceList();
+    serviceList.setOutOfStateHandler(new NullOutOfStateHandler());
+    serviceList.add(mockService);
+    serviceList.add(mockService2);
+    serviceList.add(mockService3);
+    
+    AdaptrisMessage message = DefaultMessageFactory.getDefaultInstance().newMessage("");
+    serviceList.doService(message);
+    
+    verify(mockService, times(1)).doService(message);
+    verify(mockService2, times(0)).doService(message);
+    verify(mockService3, times(1)).doService(message);
+  }
+  
+  @Test
+  public void testEnabledServiceLifecycle() throws CoreException {
+    ServiceList serviceList = new ServiceList();
+    serviceList.add(mockService);
+    
+    LifecycleHelper.initAndStart(serviceList);
+    LifecycleHelper.stopAndClose(serviceList);
+    
+    verify(mockService, times(1)).prepare();
+    verify(mockService, times(1)).requestInit();
+    verify(mockService, times(1)).requestStart();
+    verify(mockService, times(1)).requestStop();
+    verify(mockService, times(1)).requestClose();
+  }
+  
+  @Test
+  public void testDisabledServiceLifecycle() throws CoreException {
+    when(mockService.enabled()).thenReturn(false);
+    
+    ServiceList serviceList = new ServiceList();
+    serviceList.add(mockService);
+    
+    LifecycleHelper.initAndStart(serviceList);
+    LifecycleHelper.stopAndClose(serviceList);
+    
+    verify(mockService, times(0)).prepare();
+    verify(mockService, times(0)).requestInit();
+    verify(mockService, times(0)).requestStart();
+    verify(mockService, times(0)).requestStop();
+    verify(mockService, times(0)).requestClose();
+  }
+  
   @Override
   public void testAddService() {
     ServiceList services = createServiceList(false);

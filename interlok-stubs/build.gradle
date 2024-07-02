@@ -10,7 +10,7 @@ ext {
                          '**/core/services/cache/*Example*', '**/core/services/mime/MimeJunitHelper*', '**/core/jdbc/JdbcServiceCase*',
                          '**/core/jdbc/DatabaseConnectionCase*', '**/stubs/**', '**/scaffolding/**', '**/util/system/*', '**/META-INF/**']
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
-  slf4jVersion = '2.0.11'
+  slf4jVersion = '2.0.13'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -41,8 +41,8 @@ artifacts {
 
 dependencies {
   api project (":interlok-core")
-  api ("org.junit.jupiter:junit-jupiter-api:5.10.1")
-  api ("org.junit.jupiter:junit-jupiter-engine:5.10.1")
+  api ("org.junit.jupiter:junit-jupiter-api:5.10.2")
+  api ("org.junit.jupiter:junit-jupiter-engine:5.10.2")
   api ("org.slf4j:slf4j-api:$slf4jVersion")
   api ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
 }

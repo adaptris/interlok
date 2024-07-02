@@ -89,10 +89,14 @@ public class BranchingServiceCollection extends ServiceCollectionImp {
       log.debug("next service id [{}]", nextServiceId);
       try {
         service = this.getService(nextServiceId);
-        service.doService(msg);
-
-        msg.addEvent(service, true);
-        log.debug("service [{}] applied", friendlyName(service));
+        if(service.enabled()) {
+          service.doService(msg);
+  
+          msg.addEvent(service, true);
+          log.debug("service [{}] applied", friendlyName(service));
+        } else {
+          log.trace("service [{}] skipped, not enabled", friendlyName(service));
+        }
       }
       catch (ServiceException e) {
         msg.addEvent(service, false);

@@ -16,7 +16,6 @@
 
 package com.adaptris.core;
 
-
 /**
  * <p>
  * Implementations of <code>Service</code> apply aribtrary functionality to
@@ -27,7 +26,7 @@ package com.adaptris.core;
  */
 public interface Service extends AdaptrisComponent, MessageEventGenerator, StateManagedComponent,
     ComponentLifecycleExtension, ConfigComment {
-
+  
   /**
    * <p>
    * Apply the service to the message.
@@ -69,5 +68,18 @@ public interface Service extends AdaptrisComponent, MessageEventGenerator, State
    * @return continueOnFail
    */
   boolean continueOnFailure();
+  
+  /**
+   * <p>
+   * If true this service will run the <code>LifecycleHelper</code> methods and be executed in the 
+   * workflow for each message.  If false, this service will not run the <code>LifecycleHelper</code> 
+   * or execute during the workflow's processing.
+   * </p>
+   *
+   * @return continueOnFail
+   */
+  default boolean enabled() {
+    return true;
+  }
 
 }

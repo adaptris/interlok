@@ -1,7 +1,7 @@
 ext {
   componentName='Interlok Core/Bootstrap'
   componentDesc="Wrapper around spring-boot-loader using PropertyLauncher to bootrap Interlok"
-  springBootLoaderVersion='2.7.12'
+  springBootLoaderVersion='2.7.18'
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 }
 
@@ -14,8 +14,8 @@ dependencies {
   compileOnly "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
   annotationProcessor project(':interlok-core-apt')
   javadoc project(':interlok-core-apt')
-  testImplementation "org.junit.jupiter:junit-jupiter-api:5.10.1"
-  testImplementation "org.junit.jupiter:junit-jupiter-engine:5.10.1"
+  testImplementation "org.junit.jupiter:junit-jupiter-api:5.10.2"
+  testImplementation "org.junit.jupiter:junit-jupiter-engine:5.10.2"
   testRuntimeOnly "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
   testCompileOnly "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
 }

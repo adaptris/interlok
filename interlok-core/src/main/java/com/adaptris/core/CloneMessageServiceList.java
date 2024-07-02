@@ -77,20 +77,22 @@ public class CloneMessageServiceList extends ServiceListBase {
   @Override
   protected void applyServices(AdaptrisMessage msg) throws ServiceException {
     for (Service service : getServices()) {
-      try {
-        AdaptrisMessage clonedMessage = (AdaptrisMessage) msg.clone();
-        if (haltProcessing(clonedMessage)) {
-          break;
+      if(service.enabled()) {
+        try {
+          AdaptrisMessage clonedMessage = (AdaptrisMessage) msg.clone();
+          if (haltProcessing(clonedMessage)) {
+            break;
+          }
+          service.doService(clonedMessage);
+          log.debug("service [{}] applied", friendlyName(service));
+          captureMetadata(msg, clonedMessage, selectFilter());
         }
-        service.doService(clonedMessage);
-        log.debug("service [{}] applied", friendlyName(service));
-        captureMetadata(msg, clonedMessage, selectFilter());
-      }
-      catch (CloneNotSupportedException e) {
-        throw new ServiceException(e);
-      }
-      catch (Exception e) {
-        handleException(service, msg, e);
+        catch (CloneNotSupportedException e) {
+          throw new ServiceException(e);
+        }
+        catch (Exception e) {
+          handleException(service, msg, e);
+        }
       }
     }
   }
