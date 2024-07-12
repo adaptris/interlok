@@ -12,7 +12,7 @@ ext {
   mssqlDriverVersion = "9.2.1.jre8"
   derbyDriverVersion = "10.15.2.0"
   junitVersion = "5.10.3"
-  jettyVersion= "10.0.21"
+  jettyVersion= "10.0.22"
 
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
   classesToTest = project.hasProperty("junit.test.classes") ? project.getProperty("junit.test.classes") : "**/*Test*"
@@ -150,7 +150,7 @@ dependencies {
   testImplementation ("org.apache.activemq:activemq-kahadb-store:$activeMqVersion")
   testImplementation ("org.apache.activemq.protobuf:activemq-protobuf:1.1")
 
-  testImplementation ("org.jruby:jruby-complete:9.4.7.0")
+  testImplementation ("org.jruby:jruby-complete:9.4.8.0")
   testImplementation ("org.mockftpserver:MockFtpServer:3.2.0")
   testImplementation ("org.mockito:mockito-core:$mockitoVersion")
   testImplementation ("org.mockito:mockito-inline:$mockitoVersion")
