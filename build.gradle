@@ -241,6 +241,7 @@ subprojects { subproject ->
     }
     nvd {
       apiKey = System.getenv("NVD_API_KEY")
+      delay=project.findProperty('dependencyCheckNvdDelay')
     }
   }
 
