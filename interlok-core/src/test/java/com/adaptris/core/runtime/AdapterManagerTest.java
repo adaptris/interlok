@@ -2266,6 +2266,11 @@ public class AdapterManagerTest extends ComponentManagerCase {
       return Channel.class.getCanonicalName();
     }
 
+    @Override
+    public boolean getAutoStart() {
+      return true;
+    }
+
   }
 
   private class AdapterChild extends StubBaseComponentMBean implements ChildRuntimeInfoComponent {

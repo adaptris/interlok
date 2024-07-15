@@ -159,6 +159,37 @@ public class ChannelManagerTest extends ComponentManagerCase {
       adapter.requestClose();
     }
   }
+  
+  @Test
+  public void testGetAutoStart() throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + getName();
+    Adapter adapter = createAdapter(adapterName);
+    Channel channel = createChannel(getName(), 0);
+    channel.setAutoStart(false);
+    try {
+      AdapterManager adapterManager = new AdapterManager(adapter);
+      ChannelManager channelManager = new ChannelManager(channel, adapterManager);
+      assertFalse(channelManager.getAutoStart());
+    }
+    finally {
+      adapter.requestClose();
+    }
+  }
+  
+  @Test
+  public void testGetDefaultAutoStart() throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + getName();
+    Adapter adapter = createAdapter(adapterName);
+    Channel channel = createChannel(getName(), 0);
+    try {
+      AdapterManager adapterManager = new AdapterManager(adapter);
+      ChannelManager channelManager = new ChannelManager(channel, adapterManager);
+      assertTrue(channelManager.getAutoStart());
+    }
+    finally {
+      adapter.requestClose();
+    }
+  }
 
   @Test
   public void testProxyEquality() throws Exception {
