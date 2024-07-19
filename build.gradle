@@ -3,7 +3,7 @@ plugins {
   id "nebula.optional-base" version "7.0.0" apply false
   id "com.github.spotbugs" version "6.0.19" apply false
   id "org.sonarqube" version "4.4.1.3373"
-  id "org.owasp.dependencycheck" version "9.0.10" apply false
+  id "org.owasp.dependencycheck" version "10.0.3" apply false
   id "io.freefair.lombok" version "8.6" apply false
   id "org.gradle.test-retry" version "1.5.9" apply false
   id "org.barfuin.gradle.taskinfo" version "2.2.0"
@@ -241,7 +241,8 @@ subprojects { subproject ->
     }
     nvd {
       apiKey = System.getenv("NVD_API_KEY")
-      delay=project.findProperty('dependencyCheckNvdDelay')
+      delay=project.findProperty("dependencyCheckNvdDelay")
+      datafeedUrl=project.findProperty("dependencyCheckNvdDatafeedUrl")
     }
   }
 
