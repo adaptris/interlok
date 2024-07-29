@@ -169,7 +169,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     try {
       AdapterManager adapterManager = new AdapterManager(adapter);
       ChannelManager channelManager = new ChannelManager(channel, adapterManager);
-      assertFalse(channelManager.getAutoStart());
+      assertFalse(Boolean.parseBoolean(channelManager.getAutoStart()));
     }
     finally {
       adapter.requestClose();
@@ -184,7 +184,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
     try {
       AdapterManager adapterManager = new AdapterManager(adapter);
       ChannelManager channelManager = new ChannelManager(channel, adapterManager);
-      assertTrue(channelManager.getAutoStart());
+      assertTrue(Boolean.parseBoolean(channelManager.getAutoStart()));
     }
     finally {
       adapter.requestClose();

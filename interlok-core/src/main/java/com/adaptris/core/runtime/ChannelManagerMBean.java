@@ -56,11 +56,11 @@ public interface ChannelManagerMBean extends AdapterComponentMBean, ParentRuntim
   boolean removeWorkflow(String id) throws CoreException, IllegalStateException, MalformedObjectNameException;
   
   /**
-   * Will return the configured auto-start boolean.  
+   * Will return the configured auto-start boolean in string form.  
    * Auto-start determines if this channel should be started when the Adapter starts.
    * 
-   * @return true if the channel is set to start with the Adapter
+   * @return "true" if the channel is set to start with the Adapter
    */
-  boolean getAutoStart();
+  String getAutoStart();
 
 }
