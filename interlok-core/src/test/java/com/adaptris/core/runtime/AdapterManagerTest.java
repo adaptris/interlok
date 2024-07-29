@@ -2267,8 +2267,8 @@ public class AdapterManagerTest extends ComponentManagerCase {
     }
 
     @Override
-    public boolean getAutoStart() {
-      return true;
+    public String getAutoStart() {
+      return "true";
     }
 
   }
