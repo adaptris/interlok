@@ -49,7 +49,7 @@ public class ChannelManager extends ComponentManagerImpl<Channel> implements Cha
   private transient Set<WorkflowRuntimeManager> workflowManagers;
   private transient ObjectName myObjectName = null;
   private transient Set<ChildRuntimeInfoComponent> childRuntimeInfoComponents;
-  private transient boolean autoStart;
+  private transient String autoStart;
 
   private ChannelManager() {
     super();
@@ -65,7 +65,7 @@ public class ChannelManager extends ComponentManagerImpl<Channel> implements Cha
     this();
     channel = c;
     parent = owner;
-    autoStart = BooleanUtils.toBooleanDefaultIfNull(c.getAutoStart(), true);
+    autoStart = Boolean.toString(BooleanUtils.toBooleanDefaultIfNull(c.getAutoStart(), true));
     initMembers();
     if (!skipBackRef) {
       parent.addChild(this);
@@ -246,7 +246,7 @@ public class ChannelManager extends ComponentManagerImpl<Channel> implements Cha
   }
   
   @Override
-  public boolean getAutoStart() {
+  public String getAutoStart() {
     return autoStart;
   }
 
