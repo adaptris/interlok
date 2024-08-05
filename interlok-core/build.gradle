@@ -139,7 +139,7 @@ dependencies {
 
   testImplementation ("org.junit.jupiter:junit-jupiter-api:$junitVersion")
   testImplementation ("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
-  testImplementation ("org.apache.activemq:artemis-jms-server:2.35.0")
+  testImplementation ("org.apache.activemq:artemis-jms-server:2.36.0")
   testImplementation ("oro:oro:2.0.8")
   testImplementation ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
 
