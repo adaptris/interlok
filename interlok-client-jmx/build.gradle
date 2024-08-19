@@ -11,8 +11,8 @@ dependencies {
   api project(':interlok-client')
   api ("org.slf4j:slf4j-api:2.0.16")
 
-  testImplementation ("org.junit.jupiter:junit-jupiter-api:5.10.3")
-  testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.10.3")
+  testImplementation ("org.junit.jupiter:junit-jupiter-api:5.11.0")
+  testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.11.0")
   testImplementation ("org.apache.logging.log4j:log4j-core:$log4j2Version")
   testImplementation ("org.apache.logging.log4j:log4j-1.2-api:$log4j2Version")
   testImplementation ("org.apache.logging.log4j:log4j-api:$log4j2Version")
