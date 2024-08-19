@@ -14,8 +14,8 @@ dependencies {
   compileOnly "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
   annotationProcessor project(':interlok-core-apt')
   javadoc project(':interlok-core-apt')
-  testImplementation "org.junit.jupiter:junit-jupiter-api:5.10.3"
-  testImplementation "org.junit.jupiter:junit-jupiter-engine:5.10.3"
+  testImplementation "org.junit.jupiter:junit-jupiter-api:5.11.0"
+  testImplementation "org.junit.jupiter:junit-jupiter-engine:5.11.0"
   testRuntimeOnly "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
   testCompileOnly "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
 }
