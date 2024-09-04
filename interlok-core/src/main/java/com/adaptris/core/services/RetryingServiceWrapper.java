@@ -101,7 +101,7 @@ public class RetryingServiceWrapper extends ServiceImp implements EventHandlerAw
     int currentRetries = 0;
     int maxRetries = numRetries();
     // Also test the "started" state of this service, in case we are trying to shutdown the Adapter, we then need to break this loop. 
-    while ((this.getNumRetries() == 0 || currentRetries <= maxRetries)
+    while ((maxRetries == 0 || currentRetries <= maxRetries)
         && this.retrieveComponentState().equals(StartedState.getInstance())) {
       try {
         this.getService().doService(msg);
