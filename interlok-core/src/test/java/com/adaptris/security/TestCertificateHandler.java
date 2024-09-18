@@ -28,6 +28,7 @@ import java.util.Calendar;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Ignore;
 
 import com.adaptris.security.certificate.CertificateHandler;
 import com.adaptris.security.certificate.CertificateHandlerFactory;
@@ -103,6 +104,7 @@ public class TestCertificateHandler {
 
   }
 
+  @Ignore("http://crl.verisign.com/class1.crl return a 500 error")
   @Test
   public void testExpiredCertificateRevocation() throws Exception {
     try {
@@ -122,6 +124,7 @@ public class TestCertificateHandler {
 
   }
 
+  @Ignore("http://crl.verisign.com/class1.crl return a 500 error")
   @Test
   public void testExpiredCertificateRevocationCache() throws Exception {
     try {
