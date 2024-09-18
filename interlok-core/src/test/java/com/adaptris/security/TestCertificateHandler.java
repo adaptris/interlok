@@ -27,6 +27,7 @@ import java.net.UnknownHostException;
 import java.util.Calendar;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.adaptris.security.certificate.CertificateHandler;
@@ -103,6 +104,7 @@ public class TestCertificateHandler {
 
   }
 
+  @Disabled("http://crl.verisign.com/class1.crl return a 500 error")
   @Test
   public void testExpiredCertificateRevocation() throws Exception {
     try {
@@ -122,6 +124,7 @@ public class TestCertificateHandler {
 
   }
 
+  @Disabled("http://crl.verisign.com/class1.crl return a 500 error")
   @Test
   public void testExpiredCertificateRevocationCache() throws Exception {
     try {
