@@ -13,4 +13,6 @@ jobs:
     uses: interlok-tooling/reusable-workflows/.github/workflows/gradle-check.yml@main
     secrets:
       NEXUS_REPO_PASSWORD: ${{ secrets.NEXUS_REPO_PASSWORD }}
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

@@ -15,5 +15,7 @@ jobs:
     uses: interlok-tooling/reusable-workflows/.github/workflows/gradle-publish.yml@main
     secrets:
       NEXUS_REPO_PASSWORD: ${{ secrets.NEXUS_REPO_PASSWORD }}
+      NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
       TEAMS_IDN_WH_URL: ${{ secrets.TEAMS_IDN_WH_URL }}
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

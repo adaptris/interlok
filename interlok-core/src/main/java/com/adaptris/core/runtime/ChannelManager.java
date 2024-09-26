@@ -26,6 +26,8 @@ import javax.management.MBeanNotificationInfo;
 import javax.management.MalformedObjectNameException;
 import javax.management.Notification;
 import javax.management.ObjectName;
+
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import com.adaptris.core.Channel;
@@ -47,6 +49,7 @@ public class ChannelManager extends ComponentManagerImpl<Channel> implements Cha
   private transient Set<WorkflowRuntimeManager> workflowManagers;
   private transient ObjectName myObjectName = null;
   private transient Set<ChildRuntimeInfoComponent> childRuntimeInfoComponents;
+  private transient String autoStart;
 
   private ChannelManager() {
     super();
@@ -62,6 +65,7 @@ public class ChannelManager extends ComponentManagerImpl<Channel> implements Cha
     this();
     channel = c;
     parent = owner;
+    autoStart = Boolean.toString(BooleanUtils.toBooleanDefaultIfNull(c.getAutoStart(), true));
     initMembers();
     if (!skipBackRef) {
       parent.addChild(this);
@@ -240,6 +244,11 @@ public class ChannelManager extends ComponentManagerImpl<Channel> implements Cha
   public String getParentId() {
     return parent.getUniqueId();
   }
+  
+  @Override
+  public String getAutoStart() {
+    return autoStart;
+  }
 
   @Override
   public ObjectName getParentObjectName() throws MalformedObjectNameException {
@@ -372,4 +381,5 @@ public class ChannelManager extends ComponentManagerImpl<Channel> implements Cha
     }
     return result;
   }
+
 }
