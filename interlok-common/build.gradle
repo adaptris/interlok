@@ -65,8 +65,8 @@ dependencies {
 
   javadoc project(':interlok-core-apt')
 
-  testImplementation ("org.junit.jupiter:junit-jupiter-api:5.11.0")
-  testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.11.0")
+  testImplementation ("org.junit.jupiter:junit-jupiter-api:5.11.1")
+  testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.11.1")
   testImplementation ("org.mockito:mockito-core:$mockitoVersion")
   testImplementation ("org.mockito:mockito-inline:$mockitoVersion")
   testImplementation ("org.awaitility:awaitility:4.2.2")
