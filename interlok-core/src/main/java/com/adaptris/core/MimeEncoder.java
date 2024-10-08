@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.text.mime.BodyPartIterator;
@@ -70,6 +72,7 @@ public class MimeEncoder extends MimeEncoderImpl<OutputStream, InputStream> {
         output.addPart(asMimePart((Exception) msg.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION)),
             EXCEPTION_CONTENT_ID);
       }
+      writeNextServiceId(output, msg);
       output.writeTo(target);
       target.flush();
     } catch (Exception e) {
