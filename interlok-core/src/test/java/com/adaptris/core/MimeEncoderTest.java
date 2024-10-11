@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -44,9 +44,6 @@ public class MimeEncoderTest {
 
   private MimeEncoder mimeEncoder;
 
-  
-  
-
   @BeforeEach
   public void setUp() throws Exception {
     mimeEncoder = new MimeEncoder();
@@ -73,16 +70,18 @@ public class MimeEncoderTest {
 
   @Test
   public void testRoundTrip() throws Exception {
-
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
     msg.addMetadata(METADATA_KEY, METADATA_VALUE);
+    msg.setNextServiceId("nextServiceId");
     ByteArrayOutputStream out = new ByteArrayOutputStream();
+    mimeEncoder.setRetainNextServiceId(true);
     mimeEncoder.writeMessage(msg, out);
     ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
     AdaptrisMessage result = mimeEncoder.readMessage(in);
     assertEquals(METADATA_VALUE, result.getMetadataValue(METADATA_KEY));
     assertEquals(STANDARD_PAYLOAD, result.getContent());
     assertTrue(MessageDigest.isEqual(STANDARD_PAYLOAD.getBytes(), result.getPayload()));
+    assertEquals(msg.getNextServiceId(), result.getNextServiceId());
   }
 
   @Test
@@ -92,24 +91,21 @@ public class MimeEncoderTest {
     try {
       mimeEncoder.writeMessage(msg, null);
       fail();
+    } catch (CoreException e) {
     }
-    catch (CoreException e) {
-    }
- }
+  }
 
   @Test
   public void testDecode_Exception() {
     try {
       mimeEncoder.decode(null);
       fail();
-    }
-    catch (CoreException e) {
+    } catch (CoreException e) {
     }
   }
 
   @Test
   public void testRoundTrip_WithOddChars() throws Exception {
-
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD_NON_JUST_ALPHA);
     msg.addMetadata(METADATA_KEY, METADATA_VALUE);
     ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -138,7 +134,6 @@ public class MimeEncoderTest {
 
   @Test
   public void testRoundTrip_Encoded() throws Exception {
-
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
     msg.addMetadata(METADATA_KEY, METADATA_VALUE);
     ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -154,7 +149,6 @@ public class MimeEncoderTest {
 
   @Test
   public void testRoundTrip_EncodedEncodePlainDecoder() throws Exception {
-
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
     msg.addMetadata(METADATA_KEY, METADATA_VALUE);
     ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -171,7 +165,6 @@ public class MimeEncoderTest {
 
   @Test
   public void testRoundTrip_EncodeMetadataWithBackslash() throws Exception {
-
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
     msg.addMetadata(METADATA_KEY, "blah\\blah");
     ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -184,7 +177,6 @@ public class MimeEncoderTest {
 
   @Test
   public void testRoundTrip_PreserveUniqueId() throws Exception {
-
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
     msg.addMetadata(METADATA_KEY, METADATA_VALUE);
     ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -208,7 +200,6 @@ public class MimeEncoderTest {
 
   @Test
   public void testRoundTrip_UseConvenienceMethods() throws Exception {
-
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(STANDARD_PAYLOAD);
     msg.addMetadata(METADATA_KEY, METADATA_VALUE);
     AdaptrisMessage result = mimeEncoder.decode(mimeEncoder.encode(msg));
@@ -227,23 +218,19 @@ public class MimeEncoderTest {
 
   @Test
   public void testDecode_NoPayloadPart() throws Exception {
-
     try {
       mimeEncoder.decode(createMimeOutput(false, true));
       fail();
-    }
-    catch (CoreException e) {
+    } catch (CoreException e) {
     }
   }
 
   @Test
   public void testDecode_NoMetadataPart() throws Exception {
-
     try {
       mimeEncoder.decode(createMimeOutput(true, false));
       fail();
-    }
-    catch (CoreException e) {
+    } catch (CoreException e) {
     }
   }
 
