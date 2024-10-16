@@ -68,12 +68,12 @@ public class MultiPayloadMessageMimeEncoder extends MimeEncoderImpl<OutputStream
     try {
       MultiPartOutput output = new MultiPartOutput(msg.getUniqueId());
       if (msg instanceof MultiPayloadAdaptrisMessage message) {
+        if (StringUtils.isNotEmpty(message.getCurrentPayloadId())) {
+          output.setHeader(CURRENT_PAYLOAD_ID, message.getCurrentPayloadId());
+        }
         for (String id : message.getPayloadIDs()) {
           message.switchPayload(id);
           output.addPart(payloadAsMimePart(message), PAYLOAD_CONTENT_ID + "/" + id);
-        }
-        if (StringUtils.isNotEmpty(message.getCurrentPayloadId())) {
-          output.setHeader(CURRENT_PAYLOAD_ID, message.getCurrentPayloadId());
         }
       } else {
         output.addPart(payloadAsMimePart(msg), PAYLOAD_CONTENT_ID);
@@ -102,19 +102,16 @@ public class MultiPayloadMessageMimeEncoder extends MimeEncoderImpl<OutputStream
   public AdaptrisMessage readMessage(InputStream source) throws CoreException {
     try {
       MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage) currentMessageFactory().newMessage();
+      message.deletePayload(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID); // Delete the default payload
       BodyPartIterator input = new BodyPartIterator(source);
-      boolean deleteDefault = addPartsToMessage(input, message);
-      if (deleteDefault) {
-        message.deletePayload(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID); // delete the unused default
-      }
+      addPartsToMessage(input, message);
       return message;
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
-  protected boolean addPartsToMessage(BodyPartIterator input, MultiPayloadAdaptrisMessage message) throws IOException, MessagingException {
-    boolean deleteDefault = false;
+  protected void addPartsToMessage(BodyPartIterator input, MultiPayloadAdaptrisMessage message) throws IOException, MessagingException {
     for (int i = 0; i < input.size(); i++) {
       MimeBodyPart payloadPart = Args.notNull(input.getBodyPart(i), "payload");
       String id = payloadPart.getContentID();
@@ -124,7 +121,6 @@ public class MultiPayloadMessageMimeEncoder extends MimeEncoderImpl<OutputStream
       if (id.length() > PAYLOAD_CONTENT_ID.length() + 1) {
         id = id.substring(PAYLOAD_CONTENT_ID.length() + 1);
         message.switchPayload(id);
-        deleteDefault = true;
       }
       try (InputStream payloadIn = payloadPart.getInputStream(); OutputStream out = message.getOutputStream()) {
         IOUtils.copy(payloadIn, out);
@@ -144,7 +140,6 @@ public class MultiPayloadMessageMimeEncoder extends MimeEncoderImpl<OutputStream
     if (retainNextServiceId()) {
       message.setNextServiceId(StringUtils.trimToEmpty(input.getHeaders().getHeader(NEXT_SERVICE_ID, null)));
     }
-    return deleteDefault;
   }
 
   private static class MessageDataSource implements DataSource {

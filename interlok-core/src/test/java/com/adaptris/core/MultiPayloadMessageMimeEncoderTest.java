@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,13 +36,12 @@ public class MultiPayloadMessageMimeEncoderTest {
   private static final String ENCODING = "UTF-8";
   private static final String METADATA_VALUE = "value";
   private static final String METADATA_KEY = "key";
-  private static final String PAYLOAD_ID[] = { "payload-1", "payload-2" };
+  private static final String PAYLOAD_ID[] = { "payload-1", "payload-2", "default-payload" };
   private static final String STANDARD_PAYLOAD[] = { "Cupcake ipsum dolor sit amet bonbon cotton candy ice cream. Pudding chocolate sweet lemon drops carrot cake pastry sweet roll. Wafer cheesecake lemon drops. Fruitcake tiramisu chocolate cake dessert gummies fruitcake bear claw brownie. Bear claw dessert marshmallow chocolate bar. Gummies bonbon oat cake tootsie roll. Tiramisu topping jelly beans powder souffle carrot cake. Gummi bears gingerbread tart pie. Oat cake danish gummies fruitcake. Cake icing sweet roll. Sweet roll cake cheesecake gingerbread. Cake brownie pastry. Lemon drops apple pie caramels sweet jelly beans oat cake jujubes dessert wafer. Oat cake sweet roll fruitcake croissant gummies sweet halvah croissant dessert.",
-                                                     "Bacon ipsum dolor amet tri-tip bacon kielbasa flank rump pork belly. Pastrami pork t-bone ground round tenderloin, capicola bresaola ham turducken. Rump turkey boudin biltong, doner short loin swine t-bone buffalo pastrami capicola pork loin alcatra beef ribs jerky. Landjaeger chicken cupim corned beef venison. Jerky turducken pork chop burgdoggen. Landjaeger shankle chislic alcatra flank ribeye, short loin swine corned beef drumstick ham hock tri-tip filet mignon. Pastrami boudin turkey, tongue landjaeger ham hock ball tip cupim ground round ribeye pork loin pig sirloin shoulder." };
+      "Bacon ipsum dolor amet tri-tip bacon kielbasa flank rump pork belly. Pastrami pork t-bone ground round tenderloin, capicola bresaola ham turducken. Rump turkey boudin biltong, doner short loin swine t-bone buffalo pastrami capicola pork loin alcatra beef ribs jerky. Landjaeger chicken cupim corned beef venison. Jerky turducken pork chop burgdoggen. Landjaeger shankle chislic alcatra flank ribeye, short loin swine corned beef drumstick ham hock tri-tip filet mignon. Pastrami boudin turkey, tongue landjaeger ham hock ball tip cupim ground round ribeye pork loin pig sirloin shoulder." };
 
   private MimeEncoderImpl<OutputStream, InputStream> mimeEncoder;
   private MultiPayloadMessageFactory messageFactory;
-  
 
   @BeforeEach
   public void setUp() throws Exception {
@@ -53,10 +52,10 @@ public class MultiPayloadMessageMimeEncoderTest {
 
   @Test
   public void testMultiPayloadRoundTrip() throws Exception {
-    MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage)messageFactory.newMessage(PAYLOAD_ID[0], STANDARD_PAYLOAD[0], ENCODING);
+    MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage) messageFactory.newMessage(PAYLOAD_ID[0], STANDARD_PAYLOAD[0], ENCODING);
     message.addContent(PAYLOAD_ID[1], STANDARD_PAYLOAD[1]);
     message.addMetadata(METADATA_KEY, METADATA_VALUE);
-    
+    message.switchPayload(PAYLOAD_ID[0]);
     message.setNextServiceId("nextServiceId");
 
     MultiPayloadMessageMimeEncoder mimeEncoder = new MultiPayloadMessageMimeEncoder();
@@ -67,7 +66,7 @@ public class MultiPayloadMessageMimeEncoderTest {
     mimeEncoder.writeMessage(message, bo);
 
     ByteArrayInputStream bi = new ByteArrayInputStream(bo.toByteArray());
-    MultiPayloadAdaptrisMessage result = (MultiPayloadAdaptrisMessage)mimeEncoder.readMessage(bi);
+    MultiPayloadAdaptrisMessage result = (MultiPayloadAdaptrisMessage) mimeEncoder.readMessage(bi);
 
     assertEquals(STANDARD_PAYLOAD.length, result.getPayloadCount());
     assertEquals(message.getUniqueId(), result.getUniqueId());
@@ -75,7 +74,65 @@ public class MultiPayloadMessageMimeEncoderTest {
     assertEquals(METADATA_VALUE, result.getMetadataValue(METADATA_KEY));
     assertEquals(STANDARD_PAYLOAD[0], result.getContent(PAYLOAD_ID[0]));
     assertEquals(STANDARD_PAYLOAD[1], result.getContent(PAYLOAD_ID[1]));
-    assertEquals(message.getCurrentPayloadId(), result.getCurrentPayloadId());
+    assertEquals(PAYLOAD_ID[0], result.getCurrentPayloadId());
+  }
+
+  @Test
+  public void testMultiPayloadRoundTripWithDefaultPayload() throws Exception {
+    MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage) messageFactory.newMessage(PAYLOAD_ID[2], STANDARD_PAYLOAD[0], ENCODING);
+    message.addContent(PAYLOAD_ID[1], STANDARD_PAYLOAD[1]);
+    message.addMetadata(METADATA_KEY, METADATA_VALUE);
+    message.switchPayload(PAYLOAD_ID[2]);
+    message.setNextServiceId("nextServiceId");
+
+    MultiPayloadMessageMimeEncoder mimeEncoder = new MultiPayloadMessageMimeEncoder();
+    mimeEncoder.setRetainUniqueId(true);
+    mimeEncoder.setRetainNextServiceId(true);
+
+    ByteArrayOutputStream bo = new ByteArrayOutputStream();
+    mimeEncoder.writeMessage(message, bo);
+
+    ByteArrayInputStream bi = new ByteArrayInputStream(bo.toByteArray());
+    MultiPayloadAdaptrisMessage result = (MultiPayloadAdaptrisMessage) mimeEncoder.readMessage(bi);
+
+    assertEquals(STANDARD_PAYLOAD.length, result.getPayloadCount());
+    assertEquals(message.getUniqueId(), result.getUniqueId());
+    assertEquals(message.getNextServiceId(), result.getNextServiceId());
+    assertEquals(METADATA_VALUE, result.getMetadataValue(METADATA_KEY));
+    assertEquals(STANDARD_PAYLOAD[0], result.getContent(PAYLOAD_ID[2]));
+    assertEquals(STANDARD_PAYLOAD[1], result.getContent(PAYLOAD_ID[1]));
+    assertEquals(PAYLOAD_ID[2], result.getCurrentPayloadId());
+  }
+
+  @Test
+  public void testMimeToMultipayloadWithDefaultPayload() throws Exception {
+    String mime = "Message-ID: mesage-id\n"
+        + "Mime-Version: 1.0\n"
+        + "Content-Type: multipart/mixed; \n"
+        + "    boundary=\"----=_Part_43_688598885.1729067201704\"\n"
+        + "\n"
+        + "------=_Part_43_688598885.1729067201704\n"
+        + "Content-Id: AdaptrisMessage/payload\n"
+        + "\n"
+        + "Cupcake ipsum dolor sit amet bonbon cotton candy ice cream. Pudding chocolate sweet lemon drops carrot cake pastry sweet roll. Wafer cheesecake lemon drops. Fruitcake tiramisu chocolate cake dessert gummies fruitcake bear claw brownie. Bear claw dessert marshmallow chocolate bar. Gummies bonbon oat cake tootsie roll. Tiramisu topping jelly beans powder souffle carrot cake. Gummi bears gingerbread tart pie. Oat cake danish gummies fruitcake. Cake icing sweet roll. Sweet roll cake cheesecake gingerbread. Cake brownie pastry. Lemon drops apple pie caramels sweet jelly beans oat cake jujubes dessert wafer. Oat cake sweet roll fruitcake croissant gummies sweet halvah croissant dessert.\n"
+        + "------=_Part_43_688598885.1729067201704\n"
+        + "Content-Id: AdaptrisMessage/metadata\n"
+        + "\n"
+        + "#\n"
+        + "#Wed Oct 16 17:26:41 JST 2024\n"
+        + "key=value\n"
+        + "\n"
+        + "------=_Part_43_688598885.1729067201704--\n";
+    
+    MultiPayloadMessageMimeEncoder mimeEncoder = new MultiPayloadMessageMimeEncoder();
+    mimeEncoder.setRetainUniqueId(true);
+    mimeEncoder.setRetainNextServiceId(true);
+    ByteArrayInputStream bi = new ByteArrayInputStream(mime.getBytes());
+    AdaptrisMessage result = mimeEncoder.readMessage(bi);
+
+    assertEquals("mesage-id", result.getUniqueId());
+    assertEquals(METADATA_VALUE, result.getMetadataValue(METADATA_KEY));
+    assertEquals(STANDARD_PAYLOAD[0], result.getContent());
   }
 
   @Test
@@ -83,7 +140,7 @@ public class MultiPayloadMessageMimeEncoderTest {
     AdaptrisMessageFactory messageFactory = DefaultMessageFactory.getDefaultInstance();
     AdaptrisMessage message = messageFactory.newMessage(STANDARD_PAYLOAD[0]);
     message.addMetadata(METADATA_KEY, METADATA_VALUE);
-    
+
     message.setNextServiceId("nextServiceId");
 
     MultiPayloadMessageMimeEncoder mimeEncoder = new MultiPayloadMessageMimeEncoder();
@@ -101,25 +158,25 @@ public class MultiPayloadMessageMimeEncoderTest {
     assertEquals(STANDARD_PAYLOAD[0], result.getContent());
     assertEquals(message.getNextServiceId(), result.getNextServiceId());
   }
-  
+
   @Test
   public void testNonMultiPayloadMessageEmptyNextServiceId() throws Exception {
     AdaptrisMessageFactory messageFactory = DefaultMessageFactory.getDefaultInstance();
     AdaptrisMessage message = messageFactory.newMessage(STANDARD_PAYLOAD[0]);
     message.addMetadata(METADATA_KEY, METADATA_VALUE);
-    
+
     message.setNextServiceId("");
-    
+
     MultiPayloadMessageMimeEncoder mimeEncoder = new MultiPayloadMessageMimeEncoder();
     mimeEncoder.setRetainUniqueId(true);
     mimeEncoder.setRetainNextServiceId(true);
-    
+
     ByteArrayOutputStream bo = new ByteArrayOutputStream();
     mimeEncoder.writeMessage(message, bo);
-    
+
     ByteArrayInputStream bi = new ByteArrayInputStream(bo.toByteArray());
     AdaptrisMessage result = mimeEncoder.readMessage(bi);
-    
+
     assertEquals(message.getUniqueId(), result.getUniqueId());
     assertEquals(METADATA_VALUE, result.getMetadataValue(METADATA_KEY));
     assertEquals(STANDARD_PAYLOAD[0], result.getContent());
@@ -128,7 +185,7 @@ public class MultiPayloadMessageMimeEncoderTest {
 
   @Test
   public void testRoundTripWithEncoding(TestInfo info) throws Exception {
-    MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage)messageFactory.newMessage(PAYLOAD_ID[0], STANDARD_PAYLOAD[0], ENCODING);
+    MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage) messageFactory.newMessage(PAYLOAD_ID[0], STANDARD_PAYLOAD[0], ENCODING);
     mimeEncoder.setPayloadEncoding("8bit");
     message.addMetadata(METADATA_KEY, METADATA_VALUE);
     message.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception(info.getDisplayName()));
@@ -173,7 +230,7 @@ public class MultiPayloadMessageMimeEncoderTest {
 
   @Test
   public void testRoundTripWithNull(TestInfo info) throws Exception {
-    try{
+    try {
       AdaptrisMessage message = messageFactory.newMessage(PAYLOAD_ID[0], STANDARD_PAYLOAD[0], ENCODING);
       message.addMetadata(METADATA_KEY, METADATA_VALUE);
       message.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, new Exception(info.getDisplayName()));
