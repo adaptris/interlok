@@ -41,30 +41,36 @@ public class FsHelperTest extends FsHelper {
 
   @Test
   public void testUnixStyleFullURI() throws Exception {
-    assertNotNull(FsHelper.createUrlFromString("file:////home/fred"));
+    assertNotNull(FsHelper.createUrlFromString("file:////home/fred", true));
   }
 
   @Test
-  public void testUnixStyleURI() throws Exception {
-    URL url = FsHelper.createUrlFromString("/home/fred");
+  public void testUnixStyleAbsoluteURI() throws Exception {
+    URL url = FsHelper.createUrlFromString("/home/fred", true);
+    assertEquals("fred", new File(url.toURI()).getName());
+  }
+  
+  @Test
+  public void testUnixStyleRelativeURI() throws Exception {
+    URL url = FsHelper.createUrlFromString("./home/fred", true);
     assertEquals("fred", new File(url.toURI()).getName());
   }
 
   @Test
   public void testWindowsFullURI() throws Exception {
-    URL url = FsHelper.createUrlFromString("file:///c:/home/fred");
+    URL url = FsHelper.createUrlFromString("file:///c:/home/fred", true);
     assertEquals("fred", new File(url.toURI()).getName());
   }
 
   @Test
   public void testFullURIWithColons() throws Exception {
-    URL url = FsHelper.createUrlFromString("file:///c:/home/fred/d:/home/fred");
+    URL url = FsHelper.createUrlFromString("file:///c:/home/fred/d:/home/fred", true);
     assertEquals("fred", new File(url.toURI()).getName());
   }
 
   @Test
   public void testCreateFileRef() throws Exception {
-    URL url = FsHelper.createUrlFromString("file:///home/fred");
+    URL url = FsHelper.createUrlFromString("file:///home/fred", true);
     assertEquals(new File("/home/fred"), FsHelper.createFileReference(url));
     assertEquals(new File("/home/fred"), FsHelper.createFileReference(url, "UTF-8"));
   }
@@ -72,7 +78,7 @@ public class FsHelperTest extends FsHelper {
   @Test
   public void testCreateFileRefWithSpaces() throws Exception {
     URL url = FsHelper
-        .createUrlFromString("file:///home/directory%20with/some/spaces");
+        .createUrlFromString("file:///home/directory%20with/some/spaces", true);
     File f = FsHelper.createFileReference(url);
     assertEquals(new File("/home/directory with/some/spaces"), f);
   }
@@ -85,13 +91,8 @@ public class FsHelperTest extends FsHelper {
 
   @Test
   public void testWindowsURI() throws Exception {
-    try {
-      FsHelper.createUrlFromString("c:/home/fred");
-    }
-    catch (IllegalArgumentException e) {
-      // This is expected. as c:/home/fred is in fact wrong.
-      // Other exceptions are not falid though.
-    }
+    URL url = FsHelper.createUrlFromString("c:/home/fred", true);
+    assertEquals("fred", new File(url.toURI()).getName());
   }
 
   @Test
@@ -148,18 +149,37 @@ public class FsHelperTest extends FsHelper {
     String urlString3 = "../dir/";
     URL url3 = FsHelper.createUrlFromString(urlString3, true);
     assertTrue("file".equals(url3.getProtocol()));
+    assertTrue("/../dir/".equals(url3.getPath()));
+    
+    String urlString4 = "..\\dir\\";
+    URL url4 = FsHelper.createUrlFromString(urlString4, true);
+    assertTrue("file".equals(url4.getProtocol()));
+    assertTrue("/../dir/".equals(url4.getPath()));
+    
+    String urlString5 = "c:\\dir\\";
+    URL url5 = FsHelper.createUrlFromString(urlString5, true);
+    assertTrue("file".equals(url5.getProtocol()));
+    assertTrue("/c:/dir/".equals(url5.getPath()));
+    
+    String urlString6 = "D:\\dir\\";
+    URL url6 = FsHelper.createUrlFromString(urlString6, true);
+    assertTrue("file".equals(url6.getProtocol()));
+    assertTrue("/D:/dir/".equals(url6.getPath()));
 
     tryExpectingException(() -> {
-      FsHelper.createUrlFromString("..\\dir\\");
+      FsHelper.createUrlFromString("..\\dir\\", false);
     });
     tryExpectingException(() -> {
-      FsHelper.createUrlFromString("c:\\dir\\");
+      FsHelper.createUrlFromString("c:\\dir\\", false);
     });
     tryExpectingException(() -> {
-      FsHelper.createUrlFromString("http://file/");
+      FsHelper.createUrlFromString("http://file/", true);
     });
     tryExpectingException(() -> {
-      FsHelper.createUrlFromString("file:\\\file\\");
+      FsHelper.createUrlFromString("5://file/", true);
+    });
+    tryExpectingException(() -> {
+      FsHelper.createUrlFromString("file:\\\file\\", true);
     });
     tryExpectingException(() -> {
       FsHelper.createUrlFromString(null, true);
