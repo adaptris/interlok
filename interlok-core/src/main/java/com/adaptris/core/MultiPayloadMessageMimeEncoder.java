@@ -1,12 +1,12 @@
 /*
  * Copyright 2015 Adaptris Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,27 +16,29 @@
 
 package com.adaptris.core;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeBodyPart;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.text.mime.BodyPartIterator;
 import com.adaptris.util.text.mime.MimeConstants;
 import com.adaptris.util.text.mime.MultiPartOutput;
-import org.apache.commons.io.IOUtils;
-
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeBodyPart;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 /**
- * Multi-payload message MIME encoder. Encode a multi-payload message
- * with each payload as a separate MIME block.
+ * Multi-payload message MIME encoder. Encode a multi-payload message with each payload as a separate MIME block.
  *
  * <pre>{@code
  * <encoder class="com.adaptris.core.MultiPayloadMessageMimeEncoder">
@@ -51,8 +53,10 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
  * @since 3.9.3
  */
 
-@ComponentProfile(summary = "A multi-payload message MIME encoder/decoder", tag = "multi-payload,MIME,encode,decode", since="3.9.3")
+@ComponentProfile(summary = "A multi-payload message MIME encoder/decoder", tag = "multi-payload,MIME,encode,decode", since = "3.9.3")
 public class MultiPayloadMessageMimeEncoder extends MimeEncoderImpl<OutputStream, InputStream> {
+
+  protected static final String CURRENT_PAYLOAD_ID = "AdaptrisMessage/current-payload-id";
 
   public MultiPayloadMessageMimeEncoder() {
     super();
@@ -63,8 +67,10 @@ public class MultiPayloadMessageMimeEncoder extends MimeEncoderImpl<OutputStream
   public void writeMessage(AdaptrisMessage msg, OutputStream target) throws CoreException {
     try {
       MultiPartOutput output = new MultiPartOutput(msg.getUniqueId());
-      if (msg instanceof MultiPayloadAdaptrisMessage) {
-        MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage)msg;
+      if (msg instanceof MultiPayloadAdaptrisMessage message) {
+        if (StringUtils.isNotEmpty(message.getCurrentPayloadId())) {
+          output.setHeader(CURRENT_PAYLOAD_ID, message.getCurrentPayloadId());
+        }
         for (String id : message.getPayloadIDs()) {
           message.switchPayload(id);
           output.addPart(payloadAsMimePart(message), PAYLOAD_CONTENT_ID + "/" + id);
@@ -76,13 +82,14 @@ public class MultiPayloadMessageMimeEncoder extends MimeEncoderImpl<OutputStream
       if (msg.getObjectHeaders().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION)) {
         output.addPart(asMimePart((Exception) msg.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION)), EXCEPTION_CONTENT_ID);
       }
+      writeNextServiceId(output, msg);
       output.writeTo(target);
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
-  protected MimeBodyPart payloadAsMimePart(MultiPayloadAdaptrisMessage m) throws Exception {
+  private MimeBodyPart payloadAsMimePart(MultiPayloadAdaptrisMessage m) throws Exception {
     MimeBodyPart p = new MimeBodyPart();
     p.setDataHandler(new DataHandler(new MessageDataSource(m)));
     if (!isEmpty(getPayloadEncoding())) {
@@ -94,35 +101,34 @@ public class MultiPayloadMessageMimeEncoder extends MimeEncoderImpl<OutputStream
   @Override
   public AdaptrisMessage readMessage(InputStream source) throws CoreException {
     try {
-      MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage)currentMessageFactory().newMessage();
+      MultiPayloadAdaptrisMessage message = (MultiPayloadAdaptrisMessage) currentMessageFactory().newMessage();
+      message.deletePayload(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID); // Delete the default payload
       BodyPartIterator input = new BodyPartIterator(source);
-      boolean deleteDefault = addPartsToMessage(input, message);
-      if (deleteDefault) {
-        message.deletePayload(MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID); // delete the unused default
-      }
+      addPartsToMessage(input, message);
       return message;
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
   }
 
-  protected boolean addPartsToMessage(BodyPartIterator input, MultiPayloadAdaptrisMessage message) throws IOException, MessagingException {
-    boolean deleteDefault = false;
+  protected void addPartsToMessage(BodyPartIterator input, MultiPayloadAdaptrisMessage message) throws IOException, MessagingException {
     for (int i = 0; i < input.size(); i++) {
       MimeBodyPart payloadPart = Args.notNull(input.getBodyPart(i), "payload");
       String id = payloadPart.getContentID();
       if (!id.startsWith(PAYLOAD_CONTENT_ID)) {
         continue;
       }
-      if (id.length() > PAYLOAD_CONTENT_ID.length() + 1 ) {
+      if (id.length() > PAYLOAD_CONTENT_ID.length() + 1) {
         id = id.substring(PAYLOAD_CONTENT_ID.length() + 1);
         message.switchPayload(id);
-        deleteDefault = true;
       }
-      try (InputStream payloadIn = payloadPart.getInputStream();
-           OutputStream out = message.getOutputStream()) {
+      try (InputStream payloadIn = payloadPart.getInputStream(); OutputStream out = message.getOutputStream()) {
         IOUtils.copy(payloadIn, out);
       }
+    }
+    String currentPayloadId = input.getHeaders().getHeader(CURRENT_PAYLOAD_ID, null);
+    if (StringUtils.isNotEmpty(currentPayloadId)) {
+      message.switchPayload(currentPayloadId);
     }
     MimeBodyPart metadataPart = Args.notNull(input.getBodyPart(METADATA_CONTENT_ID), "metadata");
     try (InputStream metadata = metadataPart.getInputStream()) {
@@ -131,7 +137,9 @@ public class MultiPayloadMessageMimeEncoder extends MimeEncoderImpl<OutputStream
     if (retainUniqueId()) {
       message.setUniqueId(input.getMessageID());
     }
-    return deleteDefault;
+    if (retainNextServiceId()) {
+      message.setNextServiceId(StringUtils.trimToEmpty(input.getHeaders().getHeader(NEXT_SERVICE_ID, null)));
+    }
   }
 
   private static class MessageDataSource implements DataSource {

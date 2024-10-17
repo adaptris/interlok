@@ -36,6 +36,7 @@ import javax.validation.constraints.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
@@ -44,12 +45,17 @@ import com.adaptris.core.util.PropertyHelper;
 import com.adaptris.util.text.mime.BodyPartIterator;
 import com.adaptris.util.text.mime.ByteArrayDataSource;
 import com.adaptris.util.text.mime.MimeConstants;
+import com.adaptris.util.text.mime.MultiPartOutput;
+
+import lombok.Getter;
+import lombok.Setter;
 
 public abstract class MimeEncoderImpl<T, S> extends AdaptrisMessageEncoderImp<T, S> {
 
   protected static final String PAYLOAD_CONTENT_ID = "AdaptrisMessage/payload";
   protected static final String METADATA_CONTENT_ID = "AdaptrisMessage/metadata";
   protected static final String EXCEPTION_CONTENT_ID = "AdaptrisMessage/exception";
+  protected static final String NEXT_SERVICE_ID = "AdaptrisMessage/next-service-id";
 
   @Pattern(regexp = "base64|quoted-printable|uuencode|x-uuencode|x-uue|binary|7bit|8bit")
   @AdvancedConfig
@@ -57,9 +63,34 @@ public abstract class MimeEncoderImpl<T, S> extends AdaptrisMessageEncoderImp<T,
   @Pattern(regexp = "base64|quoted-printable|uuencode|x-uuencode|x-uue|binary|7bit|8bit")
   @AdvancedConfig
   private String payloadEncoding;
+  /**
+   * <p>
+   * Whether the original ID of a decoded message should be retained for the new message.
+   * </p>
+   * 
+   * @param retainUniqueId true if the original ID should be retained
+   * 
+   * @return true if the original ID of a decoded message should be retained for the new message
+   */
+  @Getter
+  @Setter
   @AdvancedConfig
   @InputFieldDefault(value = "false")
   private Boolean retainUniqueId;
+  /**
+   * <p>
+   * Whether or not the original next service ID of a decoded message should be retained for the new message.
+   * </p>
+   * 
+   * @param retainNextServiceId true if the original ID should be retained
+   * 
+   * @return true if the original ID of a decoded message should be retained for the new message
+   */
+  @Getter
+  @Setter
+  @AdvancedConfig
+  @InputFieldDefault(value = "false")
+  private Boolean retainNextServiceId;
 
   public MimeEncoderImpl() {
     super();
@@ -94,6 +125,15 @@ public abstract class MimeEncoderImpl<T, S> extends AdaptrisMessageEncoderImp<T,
     }
     if (retainUniqueId()) {
       msg.setUniqueId(input.getMessageID());
+    }
+    if (retainNextServiceId()) {
+      msg.setNextServiceId(StringUtils.trimToEmpty(input.getHeaders().getHeader(NEXT_SERVICE_ID, null)));
+    }
+  }
+  
+  protected void writeNextServiceId(MultiPartOutput output, AdaptrisMessage msg) {
+    if (retainNextServiceId() && StringUtils.isNotEmpty(msg.getNextServiceId())) {
+      output.setHeader(NEXT_SERVICE_ID, msg.getNextServiceId());
     }
   }
 
@@ -141,32 +181,13 @@ public abstract class MimeEncoderImpl<T, S> extends AdaptrisMessageEncoderImp<T,
     metadataEncoding = encoding;
   }
 
-  /**
-   * <p>
-   * Returns true if the original ID of a decoded message should be retained for the new message.
-   * </p>
-   * 
-   * @return true if the original ID of a decoded message should be retained for the new message
-   */
-  public Boolean getRetainUniqueId() {
-    return retainUniqueId;
-  }
-
-  /**
-   * <p>
-   * Sets whether the original ID of a decoded message should be retained for the new message.
-   * </p>
-   * 
-   * @param b true if the original ID should be retained
-   */
-  public void setRetainUniqueId(Boolean b) {
-    retainUniqueId = b;
-  }
-
   public boolean retainUniqueId() {
     return BooleanUtils.toBooleanDefaultIfNull(getRetainUniqueId(), false);
   }
-
+  
+  public boolean retainNextServiceId() {
+    return BooleanUtils.toBooleanDefaultIfNull(getRetainNextServiceId(), false);
+  }
 
   protected static byte[] getMetadata(AdaptrisMessage msg) throws IOException {
     try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {

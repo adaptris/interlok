@@ -2,7 +2,7 @@ ext {
   componentName='Interlok Core/Logging'
   componentDesc="Custom JMX Logger for Interlok for use with the UI"
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
-  log4j2Version = "2.23.1"
+  log4j2Version = "2.24.1"
 }
 
 // In this section you declare the dependencies for your production and test code
@@ -14,8 +14,8 @@ dependencies {
 
   javadoc project(':interlok-core-apt')
 
-  testImplementation ("org.junit.jupiter:junit-jupiter-api:5.11.0")
-  testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.11.0")
+  testImplementation ("org.junit.jupiter:junit-jupiter-api:5.11.2")
+  testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.11.2")
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
