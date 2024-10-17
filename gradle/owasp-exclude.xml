@@ -217,4 +217,12 @@
     <packageUrl regex="true">^pkg:maven/org\.apache\.derby/derby.*@.*$</packageUrl>
     <cve>CVE-2022-46337</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+      file name: spring-boot-loader-2.7.18.jar
+	  Suppress because we are not impacted as not checking nested jar signature and also there is no 2.x fix verions
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring-boot-loader@.*$</packageUrl>
+    <vulnerabilityName>CVE-2024-38807</vulnerabilityName>
+  </suppress>
 </suppressions>
