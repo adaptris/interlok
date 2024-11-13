@@ -17,7 +17,6 @@ updates:
     allow:
       - dependency-type: "all"
     reviewers:
-      - aaron-mcgrath-adp
       - sebastien-belin-adp
       - higgyfella
   - package-ecosystem: "github-actions"
@@ -28,6 +27,5 @@ updates:
     allow:
       - dependency-type: "all"
     reviewers:
-      - aaron-mcgrath-adp
       - sebastien-belin-adp
       - higgyfella
