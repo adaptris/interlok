@@ -14,7 +14,7 @@ dependencies {
 
   api project(':interlok-core-apt')
   api ("com.thoughtworks.xstream:xstream:1.4.21")
-  api ("commons-io:commons-io:2.17.0")
+  api ("commons-io:commons-io:2.18.0")
   api ("commons-net:commons-net:3.11.1")
   api ("commons-pool:commons-pool:1.6")
   api ("org.apache.commons:commons-lang3:3.17.0")
