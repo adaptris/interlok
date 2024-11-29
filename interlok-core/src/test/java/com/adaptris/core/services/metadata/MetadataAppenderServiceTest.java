@@ -124,6 +124,28 @@ public class MetadataAppenderServiceTest extends MetadataServiceExample {
     }
   }
 
+  @Test
+  public void testtestTwoKeysWithNotEmptySeparator() throws CoreException {
+    service.addAppendKey("key1");
+    service.addAppendKey("key3");
+    service.setSeparator(",");
+    execute(service, msg);
+    assertTrue("val1,val3".equals(msg.getMetadataValue(resultKey)));
+  }
+
+  @Test
+  public void testTwoReferencedKeysWithNotEmptySeparator() throws CoreException {
+    msg.addMessageHeader("RefKey1", "key1");
+    msg.addMessageHeader("RefKey3", "key3");
+
+    service.addAppendKey("$$RefKey1");
+    service.addAppendKey("$$RefKey3");
+    service.setSeparator(",");
+
+    execute(service, msg);
+    assertTrue("val1,val3".equals(msg.getMetadataValue(resultKey)));
+  }
+
   @Override
   protected Object retrieveObjectForSampleConfig() {
     service.addAppendKey("key1");

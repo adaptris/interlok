@@ -20,16 +20,16 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import com.adaptris.annotation.AdapterComponent;
-import com.adaptris.annotation.AffectsMetadata;
-import com.adaptris.annotation.AutoPopulated;
-import com.adaptris.annotation.ComponentProfile;
-import com.adaptris.annotation.DisplayOrder;
+
+import com.adaptris.annotation.*;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.MetadataElement;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Service to append multiple metadata keys together to form a new key.
@@ -55,6 +55,10 @@ public class MetadataAppenderService extends MetadataServiceImpl {
   @AutoPopulated
   @AffectsMetadata
   private String resultKey;
+  @Getter
+  @Setter
+  @AutoPopulated
+  private String separator = StringUtils.EMPTY;
 
   /**
    * <p>
@@ -69,13 +73,15 @@ public class MetadataAppenderService extends MetadataServiceImpl {
 
   @Override
   public void doService(AdaptrisMessage msg) {
-    StringBuffer result = new StringBuffer();
+    String result;
+    List<String> resultList = new ArrayList<>();
     for (String key : appendKeys) {
       if (msg.getMetadataValue(key) != null) {
-        result.append(msg.getMetadataValue(key));
+        resultList.add(msg.getMetadataValue(key));
       }
     }
-    MetadataElement e = new MetadataElement(resultKey, result.toString());
+    result = String.join(separator, resultList);
+    MetadataElement e = new MetadataElement(resultKey, result);
     logMetadata("Added {}", e);
     msg.addMetadata(e);
   }
@@ -138,5 +144,4 @@ public class MetadataAppenderService extends MetadataServiceImpl {
   public void setResultKey(String string) {
     resultKey = Args.notBlank(string, "resultKey");
   }
-
 }
