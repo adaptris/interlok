@@ -42,6 +42,7 @@ import com.adaptris.interlok.util.FileFilterBuilder;
 public abstract class FsHelper {
 
   private static transient Logger log = LoggerFactory.getLogger(FsHelper.class);
+  private static final String WIN_DRIVE_REGEX = "^[a-zA-Z]{1}$"; //matches an alphabetic character exactly 1 time in the string.
 
   /**
    * Go straight to a {@link File} from a url style string.
@@ -88,32 +89,16 @@ public abstract class FsHelper {
   /**
    * Creates a {@link URL} based on the passed destination.
    * <p>
-   * If a {@code scheme} is present and is equal to {@code file} then the URL is deemed to be <strong>absolute</strong> and is used
-   * as is. If the {@code scheme} is null then the URL is considered a {@code "file"} URL, and <strong>relative</strong> to the
-   * current working directory.
+   * Supports URLs with both the {@code file scheme} and without. If you define a directory without any leading slash or 
+   * if it starts with a slash is deemed to be an <strong>absolute</strong> path. If "./" or "../" is used at the start of your definition then
+   * the path is deemed to be <strong>relative</strong> . This is true when using the {@code file scheme} or not.
    * </p>
    * <p>
-   * Note that this method will not convert backslashes into forward slashes, so passing in a string like {@code ..\dir\} will fail
-   * with a URISyntaxException; use {@link #createUrlFromString(String, boolean)} to convert backslashes into forward slashes prior
-   * to processing.
+   * With Windows systems the above is above is true, plus if you simply define the <strong>absolute</strong> path including the drive letter
+   * e.g. 'c://my/path' this is also valid.
    * </p>
-   *
-   * @param s the String to convert to a URL.
-   * @return a new URL
-   * @see #createUrlFromString(String, boolean)
-   * @deprecated use {@link #createUrlFromString(String, boolean)} since 3.0.3
-   */
-  @Deprecated
-  public static URL createUrlFromString(String s) throws IOException, URISyntaxException {
-    return createUrlFromString(s, false);
-  }
-
-  /**
-   * Creates a {@link URL} based on the passed destination.
    * <p>
-   * If a {@code scheme} is present and is equal to {@code file} then the URL is deemed to be <strong>absolute</strong> and is used
-   * as is. If the {@code scheme} is null then the URL is considered a {@code "file"} URL, and <strong>relative</strong> to the
-   * current working directory.
+   * Both / and \ slashes are supported.
    * </p>
    *
    * @param s the string to convert to a URL.
@@ -143,9 +128,11 @@ public abstract class FsHelper {
       // nb for some reason, configuredUri.toUrl() doesn't work...
       // return configuredUri.toURL();
       return new URL(configuredUri.toString());
-    }
+    } 
     else {
       if (scheme == null) {
+        return new URL("file:///" + configuredUri.toString());
+      } else if (scheme.matches(WIN_DRIVE_REGEX)) {
         return new URL("file:///" + configuredUri.toString());
       }
       else {
@@ -183,23 +170,6 @@ public abstract class FsHelper {
     }
     return newFile;
   }
-
-  // /**
-  // *
-  // * @param uri the relative <code>URI</code> to process
-  // * @return a <code>file:/// URL</code> based on the current working directory (obtained by
-  // calling
-  // * <code>System.getProperty("user.dir")</code>) plus the passed relative <code>uri</code>
-  // * @throws Exception wrapping any underlying <code>Exception</code>
-  // */
-  // private static URL relativeConfig(URI uri) throws IOException {
-  // String pwd = System.getProperty("user.dir");
-  //
-  // String path = pwd + "/" + uri; // ok even if uri starts with a /
-  // URL result = new URL("file:///" + path);
-  //
-  // return result;
-  // }
 
   private static String backslashToSlash(String url) {
     if (!isEmpty(url)) {
