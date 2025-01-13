@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import javax.jms.CompletionListener;
-import javax.jms.JMSException;
-import javax.jms.Message;
+import jakarta.jms.CompletionListener;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

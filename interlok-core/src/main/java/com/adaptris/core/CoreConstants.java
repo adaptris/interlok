@@ -254,7 +254,7 @@ public abstract class CoreConstants {
    * Metadata key that stores the location where the message was consumed from if available.
    * <p>
    * This will have different meanings based on the consumer; for JMS consumers it might be
-   * {@link javax.jms.Message#getJMSDestination()}; for a file system consumer, it will be the
+   * {@link jakarta.jms.Message#getJMSDestination()}; for a file system consumer, it will be the
    * directory from which it was consumed from.
    * </p>
    * <p>

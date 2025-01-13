@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import javax.jms.XAConnectionFactory;
+import jakarta.jms.XAConnectionFactory;
 import javax.transaction.xa.XAResource;
 
 import org.junit.jupiter.api.Test;

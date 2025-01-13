@@ -77,7 +77,7 @@ public class RawStatusProvider implements HttpStatusProvider {
    * 
    * <p>
    * Note that for {@link com.adaptris.core.http.jetty.StandardResponseProducer} any values configured here will be ignored as that
-   * will use {@link javax.servlet.http.HttpServletResponse#setStatus(int)} method only. This field is included only for
+   * will use {@link jakarta.servlet.http.HttpServletResponse#setStatus(int)} method only. This field is included only for
    * completeness, a sensible default will be made available based on the {@link HttpStatusProvider.HttpStatus} selected.
    * </p>
    * 

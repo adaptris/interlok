@@ -17,7 +17,7 @@
 package com.adaptris.core.services.aggregator;
 
 import java.io.IOException;
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;

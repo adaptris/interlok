@@ -33,7 +33,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.ObjectUtils;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Date;

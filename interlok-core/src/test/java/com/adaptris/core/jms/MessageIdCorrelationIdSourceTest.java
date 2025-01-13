@@ -18,8 +18,8 @@ package com.adaptris.core.jms;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 
-import javax.jms.Session;
-import javax.jms.TextMessage;
+import jakarta.jms.Session;
+import jakarta.jms.TextMessage;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;

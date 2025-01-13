@@ -17,7 +17,7 @@ package com.adaptris.core.http.jetty;
 
 import static com.adaptris.core.http.jetty.JettyConstants.JETTY_WRAPPER;
 import java.util.concurrent.TimeUnit;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -184,7 +184,7 @@ public class JettyAsyncWorkflowInterceptor extends JettyWorkflowInterceptorImpl 
    * {@link AdaptrisMessage#resolve(String)}) will be used.
    * </p>
    * <p>
-   * Generally speaking JMS providers will assign a message-id for you when you create a {@code javax.jms.Message}; this becomes the
+   * Generally speaking JMS providers will assign a message-id for you when you create a {@code jakarta.jms.Message}; this becomes the
    * {@link AdaptrisMessage#getUniqueId()} in most cases. If Interlok is in use at all stages, then this can be left blank, as we
    * will try as much to preserve our message unique-id across JMS providers; if there is an external application integrated with
    * JMS, then you might need to specify a value here so that the {@code JMSCorrelationID} (via

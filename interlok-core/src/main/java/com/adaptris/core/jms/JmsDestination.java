@@ -16,13 +16,13 @@
 
 package com.adaptris.core.jms;
 
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Queue;
-import javax.jms.Session;
-import javax.jms.TemporaryQueue;
-import javax.jms.TemporaryTopic;
-import javax.jms.Topic;
+import jakarta.jms.Destination;
+import jakarta.jms.JMSException;
+import jakarta.jms.Queue;
+import jakarta.jms.Session;
+import jakarta.jms.TemporaryQueue;
+import jakarta.jms.TemporaryTopic;
+import jakarta.jms.Topic;
 
 /**
  * A JMS Destination as specified by a limited parse of an RFC6167 style string.
@@ -126,7 +126,7 @@ public interface JmsDestination {
 
   /**
    * Custom parameter that matches the {@code nolocal} setting for
-   * {@link javax.jms.Session#createConsumer(Destination, String, boolean)}.
+   * {@link jakarta.jms.Session#createConsumer(Destination, String, boolean)}.
    * 
    * @return the noLocal setting (which only has defined behaviour for topics); defaults to false.
    */

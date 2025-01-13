@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import org.eclipse.jetty.util.security.Credential;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;

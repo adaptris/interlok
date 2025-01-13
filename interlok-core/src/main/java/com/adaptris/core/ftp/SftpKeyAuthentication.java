@@ -17,7 +17,7 @@ package com.adaptris.core.ftp;
 
 import java.io.File;
 import java.io.IOException;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import org.apache.commons.io.FileUtils;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;

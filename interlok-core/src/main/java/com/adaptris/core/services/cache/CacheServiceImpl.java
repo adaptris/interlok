@@ -1,7 +1,7 @@
 package com.adaptris.core.services.cache;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.ConnectedService;
 import com.adaptris.core.CoreException;

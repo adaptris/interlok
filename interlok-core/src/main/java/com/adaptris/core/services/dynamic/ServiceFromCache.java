@@ -16,7 +16,7 @@
 package com.adaptris.core.services.dynamic;
 
 import java.io.InputStream;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import org.apache.commons.io.IOUtils;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;

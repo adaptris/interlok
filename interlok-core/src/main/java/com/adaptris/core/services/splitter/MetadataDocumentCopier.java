@@ -17,8 +17,8 @@
 package com.adaptris.core.services.splitter;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;

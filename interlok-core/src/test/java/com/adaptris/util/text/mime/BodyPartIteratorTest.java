@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.ByteArrayInputStream;
 
-import javax.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeBodyPart;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;

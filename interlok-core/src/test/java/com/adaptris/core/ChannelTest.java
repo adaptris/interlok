@@ -22,8 +22,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.UUID;
 
-import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.JMSException;
 
 import org.junit.jupiter.api.Test;
 

@@ -15,7 +15,7 @@
 */
 package com.adaptris.core.services.jmx;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.util.Args;
 

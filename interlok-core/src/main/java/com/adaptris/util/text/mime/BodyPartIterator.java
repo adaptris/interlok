@@ -21,10 +21,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import javax.activation.DataSource;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMultipart;
+import jakarta.activation.DataSource;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMultipart;
 
 /**
  * Allows you to iterate over a multipart returning each part as a {@code MimeBodyPart}.
@@ -43,7 +43,7 @@ public class BodyPartIterator extends MultipartIterator implements Iterator<Mime
    * @throws MessagingException if the bytes did not contain a valid
    *           MimeMultiPart
    * @throws IOException if there was an IOException
-   * @throws MessagingException if an underlying javax.mail exception occurred
+   * @throws MessagingException if an underlying jakarta.mail exception occurred
    */
   public BodyPartIterator(InputStream in) throws IOException, MessagingException {
     super(in);

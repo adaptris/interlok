@@ -23,8 +23,8 @@ import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairList;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 

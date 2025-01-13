@@ -3,7 +3,7 @@ package com.adaptris.core.common;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.nio.charset.Charset;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.commons.lang3.StringUtils;
 import com.adaptris.annotation.AdvancedConfig;

@@ -29,7 +29,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.management.MalformedObjectNameException;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.core.AdaptrisComponent;

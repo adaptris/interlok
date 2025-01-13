@@ -20,10 +20,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.jms.BytesMessage;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageEOFException;
+import jakarta.jms.BytesMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.MessageEOFException;
 
 import org.apache.commons.io.IOUtils;
 
@@ -34,7 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Translates between <code>AdaptrisMessage</code> and <code>javax.jms.BytesMessages</code>.
+ * Translates between <code>AdaptrisMessage</code> and <code>jakarta.jms.BytesMessages</code>.
  * </p>
  * 
  * @config bytes-message-translator

@@ -20,8 +20,8 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import javax.validation.Constraint;
-import javax.validation.Payload;
+import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
 
 /**
  * Annotation that specifies when a deprecated field/type will be removed. It should be used with the Deprecated.class group to be used with

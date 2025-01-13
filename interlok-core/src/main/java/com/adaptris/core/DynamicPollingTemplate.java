@@ -15,7 +15,7 @@
 */
 package com.adaptris.core;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import com.adaptris.core.PollingTrigger.MessageProvider;
 import com.adaptris.core.http.client.net.HttpRequestService;
 import com.adaptris.core.services.jdbc.JdbcDataQueryService;

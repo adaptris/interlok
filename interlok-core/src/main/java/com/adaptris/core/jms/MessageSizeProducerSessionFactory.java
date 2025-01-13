@@ -16,7 +16,7 @@
 
 package com.adaptris.core.jms;
 
-import javax.jms.JMSException;
+import jakarta.jms.JMSException;
 
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;

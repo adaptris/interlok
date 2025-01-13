@@ -27,8 +27,8 @@ import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.jms.Message;
-import javax.jms.Session;
+import jakarta.jms.Message;
+import jakarta.jms.Session;
 
 import org.apache.activemq.ActiveMQSession;
 import org.junit.jupiter.api.AfterAll;

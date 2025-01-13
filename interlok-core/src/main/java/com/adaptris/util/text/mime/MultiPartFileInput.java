@@ -19,7 +19,7 @@ package com.adaptris.util.text.mime;
 import java.io.File;
 import java.io.IOException;
 
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 
 public class MultiPartFileInput extends BodyPartIterator {
 

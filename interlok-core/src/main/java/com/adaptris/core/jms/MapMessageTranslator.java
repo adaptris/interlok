@@ -20,11 +20,11 @@ import static com.adaptris.core.jms.MetadataHandler.isReserved;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Set;
-import javax.jms.JMSException;
-import javax.jms.MapMessage;
-import javax.jms.Message;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.jms.JMSException;
+import jakarta.jms.MapMessage;
+import jakarta.jms.Message;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
@@ -38,7 +38,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Translates between <code>AdaptrisMessage</code> and <code>javax.jms.MapMessage</code>.
+ * Translates between <code>AdaptrisMessage</code> and <code>jakarta.jms.MapMessage</code>.
  * </p>
  * 
  * @config map-message-translator

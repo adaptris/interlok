@@ -18,8 +18,8 @@ package com.adaptris.validation.constraints;
 
 import java.lang.annotation.Annotation;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public abstract class ExpressionValidator<A extends Annotation> implements ConstraintValidator<A, String> {
 

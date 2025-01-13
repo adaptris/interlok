@@ -16,7 +16,7 @@
 
 package com.adaptris.core.jms;
 
-import javax.jms.Session;
+import jakarta.jms.Session;
 
 import org.slf4j.Logger;
 
@@ -61,7 +61,7 @@ public interface JmsActorConfig {
   /**
    * Return the current jms session.
    *
-   * @return the current javax.jms.Session
+   * @return the current jakarta.jms.Session
    */
   Session currentSession();
 

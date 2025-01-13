@@ -15,13 +15,13 @@
 package com.adaptris.core.management.webserver;
 
 import java.util.HashMap;
-import javax.servlet.Servlet;
+import jakarta.servlet.Servlet;
 
 /**
  * Interface for webserver deployment management.
  *
  * @deprecated since 4.3.0, use {@link JettyServerManager} directly, this is a redundant interface; there are no other
- * instances other than {@link JettyServerManager} and assumption of the {@code javax.servlet} API isn't always appropriate (e.g.
+ * instances other than {@link JettyServerManager} and assumption of the {@code jakarta.servlet} API isn't always appropriate (e.g.
  * Undertow / Quarkus).
  */
 @Deprecated(since = "4.3.0", forRemoval=true)

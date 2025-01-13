@@ -23,7 +23,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
-import javax.mail.URLName;
+import jakarta.mail.URLName;
 
 /**
  * A Simple URL parser, that can parse any given URL into it's constituent parts.
@@ -38,7 +38,7 @@ import javax.mail.URLName;
  * </p>
  * 
  * <p>
- * Does almost the same thing as {@link javax.mail.URLName} but is serializable so it can be used
+ * Does almost the same thing as {@link jakarta.mail.URLName} but is serializable so it can be used
  * over JMX. The only difference is within the {@link #getURL()} method where a / prefix will be
  * added to the file name for non file url.
  * </p>

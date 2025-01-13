@@ -16,7 +16,7 @@
 
 package com.adaptris.core.services.findreplace;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import com.adaptris.annotation.InputFieldHint;
 

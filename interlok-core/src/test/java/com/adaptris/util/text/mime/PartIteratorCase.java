@@ -22,8 +22,8 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMultipart;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMultipart;
 
 import org.apache.commons.io.IOUtils;
 

@@ -26,7 +26,7 @@ import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.PollerImp;

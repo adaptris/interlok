@@ -17,7 +17,7 @@
 package com.adaptris.core.interceptor;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.MDC;
 import com.adaptris.annotation.AdapterComponent;

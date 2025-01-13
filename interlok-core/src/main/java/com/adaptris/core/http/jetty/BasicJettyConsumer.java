@@ -41,12 +41,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotBlank;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotBlank;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -152,7 +152,7 @@ public abstract class BasicJettyConsumer extends AdaptrisMessageConsumerImp {
    * @return an AdaptrisMessage instance.
    * @throws IOException
    * @throws ServletException
-   * @see HttpServlet#service(javax.servlet.ServletRequest, javax.servlet.ServletResponse)
+   * @see HttpServlet#service(jakarta.servlet.ServletRequest, jakarta.servlet.ServletResponse)
    */
   public abstract AdaptrisMessage createMessage(HttpServletRequest request, HttpServletResponse response)
       throws IOException, ServletException;

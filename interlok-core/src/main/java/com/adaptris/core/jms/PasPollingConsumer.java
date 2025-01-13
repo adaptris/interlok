@@ -16,10 +16,10 @@
 
 package com.adaptris.core.jms;
 
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.jms.JMSException;
+import jakarta.jms.MessageConsumer;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;

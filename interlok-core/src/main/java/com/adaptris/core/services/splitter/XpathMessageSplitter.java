@@ -18,7 +18,7 @@ package com.adaptris.core.services.splitter;
 
 import static com.adaptris.core.util.XmlHelper.createDocument;
 import java.io.IOException;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;

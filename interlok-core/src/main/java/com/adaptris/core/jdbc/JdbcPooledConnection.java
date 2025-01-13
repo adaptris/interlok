@@ -18,7 +18,7 @@ package com.adaptris.core.jdbc;
 
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;

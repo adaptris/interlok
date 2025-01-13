@@ -16,7 +16,7 @@
 
 package com.adaptris.core.http.jetty;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.http.server.ResponseHeaderProvider;

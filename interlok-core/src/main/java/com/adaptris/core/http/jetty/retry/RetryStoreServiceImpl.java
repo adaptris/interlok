@@ -1,6 +1,6 @@
 package com.adaptris.core.http.jetty.retry;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceImp;
 import com.adaptris.core.util.LifecycleHelper;

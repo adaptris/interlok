@@ -15,7 +15,7 @@
  */
 package com.adaptris.core.services.jdbc;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;
 
 import org.apache.commons.lang3.BooleanUtils;

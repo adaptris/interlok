@@ -16,8 +16,8 @@
 
 package com.adaptris.core.jms.activemq;
 
-import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.JMSException;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 

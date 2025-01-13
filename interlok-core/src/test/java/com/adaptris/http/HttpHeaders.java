@@ -22,8 +22,8 @@ import java.io.PrintStream;
 import java.util.Base64;
 import java.util.Enumeration;
 
-import javax.mail.Header;
-import javax.mail.internet.InternetHeaders;
+import jakarta.mail.Header;
+import jakarta.mail.internet.InternetHeaders;
 
 /** Fields used during an HTTP Conversation.
  *  <p>This class allows the manipulation of an HTTP conversation.
@@ -70,8 +70,8 @@ public class HttpHeaders implements DataTransfer {
   }
 
   /** Get an enumeration on the existing keys in this set of headers.
-   * @return an enumeration containing javax.mail.Header objects.
-   * @see javax.mail.Header
+   * @return an enumeration containing jakarta.mail.Header objects.
+   * @see jakarta.mail.Header
    */
   public Enumeration<Header> getAllHeaders() {
     return headers.getAllHeaders();

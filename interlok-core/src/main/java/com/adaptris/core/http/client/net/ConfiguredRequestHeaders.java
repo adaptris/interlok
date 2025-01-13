@@ -18,7 +18,7 @@ package com.adaptris.core.http.client.net;
 
 import java.net.HttpURLConnection;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

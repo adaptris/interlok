@@ -35,9 +35,9 @@ import lombok.NonNull;
 import lombok.Setter;
 import org.apache.commons.lang3.BooleanUtils;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * @author lchan

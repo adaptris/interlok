@@ -18,8 +18,8 @@ package com.adaptris.core.http.jetty;
 
 import java.util.Arrays;
 import java.util.List;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.util.security.Constraint;
