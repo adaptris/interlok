@@ -12,7 +12,7 @@ ext {
   mssqlDriverVersion = "9.2.1.jre8"
   derbyDriverVersion = "10.15.2.0"
   junitVersion = "5.11.4"
-  jettyVersion= "10.0.24"
+  jettyVersion= "11.0.24"
 
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
   classesToTest = project.hasProperty("junit.test.classes") ? project.getProperty("junit.test.classes") : "**/*Test*"
@@ -118,7 +118,7 @@ dependencies {
   api ("org.eclipse.jetty.websocket:websocket-javax-server:$jettyVersion")
   api ("org.eclipse.jetty.websocket:websocket-javax-client:$jettyVersion")
 
-  api ("jakarta.servlet:jakarta.servlet-api:6.1.0")
+  api ("javax.servlet:javax.servlet-api:4.0.1")
   api ("net.sf.joost:joost:0.9.1")
   api ("org.quartz-scheduler:quartz:2.5.0") {
     exclude group: "com.zaxxer", module: "HikariCP-java7"
