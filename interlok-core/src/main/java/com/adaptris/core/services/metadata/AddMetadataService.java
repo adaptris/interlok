@@ -132,6 +132,11 @@ public class AddMetadataService extends MetadataServiceImpl {
     this(new LinkedHashSet<MetadataElement>(Arrays.asList(elements)));
   }
 
+  // allow subclasses to do something to the metadata element before adding
+  protected void beforeAdd(MetadataElement element, AdaptrisMessage msg) {
+    // do nothing
+  }
+
   /**
    * <p>
    * Adds the configured metadata to the message.
@@ -145,6 +150,7 @@ public class AddMetadataService extends MetadataServiceImpl {
     for (MetadataElement e : metadataElements) {
       MetadataElement addMe = build(e, msg);
       if (overwrite(msg, addMe.getKey())) {
+        beforeAdd(addMe, msg);
         msg.addMetadata(addMe);
         addedMetadata.add(addMe);
       }

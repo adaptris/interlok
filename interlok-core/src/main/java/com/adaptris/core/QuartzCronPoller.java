@@ -26,6 +26,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+
+import com.adaptris.core.fs.FsHelper;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.Job;
@@ -486,7 +488,7 @@ public class QuartzCronPoller extends PollerImp {
   private InputStream openQuartzProperties() throws IOException {
     String requestedFile = System.getProperty(StdSchedulerFactory.PROPERTIES_FILE);
     String propFileName = requestedFile != null ? requestedFile : "quartz.properties";
-    File propFile = new File(propFileName);
+    File propFile = FsHelper.toFile(propFileName, new File(propFileName));
     if (propFile.exists()) {
       log.trace("Using quartz properties from file : {}", propFile.getCanonicalPath());
       return new FileInputStream(propFile);

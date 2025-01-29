@@ -41,17 +41,30 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * changes.
  * </p>
  * <p>
- * The configured <code>Destination</code> may return a string in one of two formats
+ * The configured <code>Base Directory URL</code> may return a string in one of two formats
  * </p>
  * <ul>
- * <li>If a <code>file</code> based url is used. e.g. file:///c:/path/to/my/directory or file:////path/to/my/directory then the
- * patch is considered to be fully qualified</li>
- * <li>If just a path is returned, then it is considered to be relative to the current working directory. e.g. if /opt/fred is used,
- * and the adapter is installed to /opt/adapter, then the fully qualified name is /opt/adapter/opt/fred.</li>
+ * <li>
+ * Supports URLs with both the {@code file scheme} and without.
+ * </li>
+ * <li>
+ * If you define a directory without any leading slash or
+ * if it starts with a slash is deemed to be an <strong>absolute</strong> path.
+ * </li>
+ * <li>
+ * If "./" or "../" is used at the start of your definition then
+ * the path is deemed to be <strong>relative</strong>.</li>
+ * <li>
+ * This is true whether using the {@code file scheme} or not.
+ * </li>
+ * <li>
+ * With Windows systems the above is above is true, plus if you simply define the <strong>absolute</strong> path including the drive letter
+ * e.g. 'c://my/path' this is also valid.
+ * </li>
+ * <li>
+ * Both / and \ slashes are supported.
+ * </li>
  * </ul>
- * <p>
- * On windows based platforms, you should always use a file based url.
- * </p>
  *
  * @config non-deleting-fs-consumer
  *

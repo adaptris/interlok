@@ -48,7 +48,7 @@ public @interface ComponentProfile {
    * @return an array of classes
    * @since 3.2.0
    */
-  Class[]recommended() default {};
+  Class[] recommended() default {};
 
   /**
    * Returns an array of strings that contains metadata keys that may be created or have an effect on the behaviour of this

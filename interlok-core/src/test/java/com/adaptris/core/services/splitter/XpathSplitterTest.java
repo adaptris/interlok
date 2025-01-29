@@ -30,6 +30,7 @@ import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import com.adaptris.util.XmlUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
@@ -154,15 +155,42 @@ public class XpathSplitterTest extends SplitterCase {
     String obj = "ABCDEFG";
     msg.addObjectHeader(obj, obj);
     XpathMessageSplitter splitter = new XpathMessageSplitter(ENVELOPE_DOCUMENT);
+    XmlUtils xml = new XmlUtils();
     int count = 0;
     try (CloseableIterable<AdaptrisMessage> closeable = splitter.splitMessage(msg)) {
       for (AdaptrisMessage m : closeable) {
         assertFalse(m.getObjectHeaders().containsKey(obj));
+        xml.setSource(new ByteArrayInputStream(m.getPayload()));
+        assertNotNull(xml.getSingleNode("/document"));
+        xml.reset();
         count++;
       }
     }
     assertEquals(3, count);
+  }
 
+  @Test
+  public void testSplitRetainBranchNodes() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(XML_MESSAGE_WITH_SIBLINGS);
+    String obj = "ABCDEFG";
+    msg.addObjectHeader(obj, obj);
+    XpathMessageSplitter splitter = new XpathMessageSplitter("/envelope/body/document");
+    splitter.setRetainBranchNodes(true);
+    XmlUtils xml = new XmlUtils();
+    int count = 0;
+    try (CloseableIterable<AdaptrisMessage> closeable = splitter.splitMessage(msg)) {
+      for (AdaptrisMessage m : closeable) {
+        assertFalse(m.getObjectHeaders().containsKey(obj));
+        xml.setSource(new ByteArrayInputStream(m.getPayload()));
+        assertEquals(xml.getNodeList("/envelope/body/document").getLength(), 1);
+        assertEquals(xml.getSingleNode("/envelope/body/document/text()").getNodeValue(), String.valueOf(count+1));
+        assertNotNull(xml.getSingleNode("/envelope/header/po"));
+        assertNotNull(xml.getSingleNode("/envelope/trailer/x"));
+        xml.reset();
+        count++;
+      }
+    }
+    assertEquals(3, count);
   }
 
   @Test

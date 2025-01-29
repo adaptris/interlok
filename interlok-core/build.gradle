@@ -11,7 +11,7 @@ ext {
   jschVersion = "0.2.21"
   mssqlDriverVersion = "9.2.1.jre8"
   derbyDriverVersion = "10.15.2.0"
-  junitVersion = "5.11.3"
+  junitVersion = "5.11.4"
   jettyVersion= "10.0.24"
 
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
@@ -66,9 +66,8 @@ dependencies {
   // api ("org.apache.geronimo.specs:geronimo-jms_2.0_spec:1.0-alpha-2")
   // Note that jakarta.jms-api is now @3.x but that changes the package from javax.jms -> jakarta.jms
   api ("jakarta.jms:jakarta.jms-api:3.1.0")
-  api ("org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final")
   // api ("jakarta.persistence:jakarta.persistence-api:2.2.3")
-  api ("jakarta.validation:jakarta.validation-api:2.0.2")
+  api ("jakarta.validation:jakarta.validation-api:3.1.0")
   // Transitive from jetty.
   // api ("jakarta.transaction:jakarta.transaction-api:1.3.3")
   api ("org.hibernate.validator:hibernate-validator:8.0.2.Final")
@@ -119,9 +118,9 @@ dependencies {
   api ("org.eclipse.jetty.websocket:websocket-javax-server:$jettyVersion")
   api ("org.eclipse.jetty.websocket:websocket-javax-client:$jettyVersion")
 
-  api ("javax.servlet:javax.servlet-api:4.0.1")
+  api ("jakarta.servlet:jakarta.servlet-api:6.1.0")
   api ("net.sf.joost:joost:0.9.1")
-  api ("org.quartz-scheduler:quartz:2.3.2") {
+  api ("org.quartz-scheduler:quartz:2.5.0") {
     exclude group: "com.zaxxer", module: "HikariCP-java7"
   }
   api ("com.zaxxer:HikariCP:6.2.1")

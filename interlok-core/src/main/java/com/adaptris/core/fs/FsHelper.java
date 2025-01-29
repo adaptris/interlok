@@ -27,6 +27,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -42,6 +43,7 @@ import com.adaptris.interlok.util.FileFilterBuilder;
 public abstract class FsHelper {
 
   private static transient Logger log = LoggerFactory.getLogger(FsHelper.class);
+  private static final String WIN_DRIVE_REGEX = "^[a-zA-Z]{1}$"; //matches an alphabetic character exactly 1 time in the string.
 
   /**
    * Go straight to a {@link File} from a url style string.
@@ -52,8 +54,21 @@ public abstract class FsHelper {
     try {
       return createFileReference(createUrlFromString(s, true));
     } catch (IllegalArgumentException e) {
-      // Catch it from createUrlFromString(), since it's probably c:/file.
       return new File(s);
+    }
+  }
+
+    /**
+     * Attempts to convert the String to a File, and if an exception is encountered, fallback to the provided File.
+     * @param s
+     * @param fallback
+     * @return
+     */
+  public static File toFile(String s, File fallback) {
+    try {
+      return toFile(s);
+    } catch (Exception e) {
+      return fallback;
     }
   }
 
@@ -76,7 +91,11 @@ public abstract class FsHelper {
    */
   public static File createFileReference(URL url, String charset) throws UnsupportedEncodingException {
     String charSetToUse = StringUtils.defaultIfBlank(charset, System.getProperty("file.encoding"));
-    String filename = URLDecoder.decode(url.getPath(), charSetToUse);
+    StringBuilder sb = new StringBuilder();
+    // include any relative parts captured in the authority part of the URL
+    if (url.getAuthority() != null && url.getAuthority().startsWith(".")) sb.append(url.getAuthority());
+    if (url.getPath() != null) sb.append(url.getPath());
+    String filename = URLDecoder.decode(sb.toString(), charSetToUse);
     // Cope with file://localhost/./config/blah -> /./config/blah is the result of getPath()
     // Munge that properly.
     if (filename.startsWith("/.")) {
@@ -85,42 +104,7 @@ public abstract class FsHelper {
     return new File(filename);
   }
 
-  /**
-   * Creates a {@link URL} based on the passed destination.
-   * <p>
-   * If a {@code scheme} is present and is equal to {@code file} then the URL is deemed to be <strong>absolute</strong> and is used
-   * as is. If the {@code scheme} is null then the URL is considered a {@code "file"} URL, and <strong>relative</strong> to the
-   * current working directory.
-   * </p>
-   * <p>
-   * Note that this method will not convert backslashes into forward slashes, so passing in a string like {@code ..\dir\} will fail
-   * with a URISyntaxException; use {@link #createUrlFromString(String, boolean)} to convert backslashes into forward slashes prior
-   * to processing.
-   * </p>
-   *
-   * @param s the String to convert to a URL.
-   * @return a new URL
-   * @see #createUrlFromString(String, boolean)
-   * @deprecated use {@link #createUrlFromString(String, boolean)} since 3.0.3
-   */
-  @Deprecated
-  public static URL createUrlFromString(String s) throws IOException, URISyntaxException {
-    return createUrlFromString(s, false);
-  }
-
-  /**
-   * Creates a {@link URL} based on the passed destination.
-   * <p>
-   * If a {@code scheme} is present and is equal to {@code file} then the URL is deemed to be <strong>absolute</strong> and is used
-   * as is. If the {@code scheme} is null then the URL is considered a {@code "file"} URL, and <strong>relative</strong> to the
-   * current working directory.
-   * </p>
-   *
-   * @param s the string to convert to a URL.
-   * @param backslashConvert whether or not to convert backslashes into forward slashes.
-   *
-   */
-  public static URL createUrlFromString(String s, boolean backslashConvert) throws IOException, URISyntaxException {
+  public static URI createUriFromString(String s, boolean backslashConvert) throws URISyntaxException {
     String destToConvert = backslashConvert ? backslashToSlash(s) : s;
     URI configuredUri = null;
     try {
@@ -131,12 +115,41 @@ public abstract class FsHelper {
       // technically illegal according to RFC2396 but we need
       // to support it
       if (destToConvert.split(":").length >= 3) {
-        configuredUri = new URI(URLEncoder.encode(destToConvert, "UTF-8"));
+        try {
+          configuredUri = new URI(URLEncoder.encode(destToConvert, "UTF-8"));
+        } catch (UnsupportedEncodingException ex) {
+          configuredUri = new URI(URLEncoder.encode(destToConvert, Charset.defaultCharset()));
+        }
+
       }
       else {
         throw e;
       }
     }
+    return configuredUri;
+  }
+
+  /**
+   * Creates a {@link URL} based on the passed destination.
+   * <p>
+   * Supports URLs with both the {@code file scheme} and without. If you define a directory without any leading slash or
+   * if it starts with a slash is deemed to be an <strong>absolute</strong> path. If "./" or "../" is used at the start of your definition then
+   * the path is deemed to be <strong>relative</strong> . This is true when using the {@code file scheme} or not.
+   * </p>
+   * <p>
+   * With Windows systems the above is above is true, plus if you simply define the <strong>absolute</strong> path including the drive letter
+   * e.g. 'c://my/path' this is also valid.
+   * </p>
+   * <p>
+   * Both / and \ slashes are supported.
+   * </p>
+   *
+   * @param s the string to convert to a URL.
+   * @param backslashConvert whether or not to convert backslashes into forward slashes.
+   *
+   */
+  public static URL createUrlFromString(String s, boolean backslashConvert) throws IOException, URISyntaxException {
+    URI configuredUri = createUriFromString(s, backslashConvert);
     String scheme = configuredUri.getScheme();
 
     if ("file".equals(scheme)) {
@@ -145,8 +158,12 @@ public abstract class FsHelper {
       return new URL(configuredUri.toString());
     }
     else {
-      if (scheme == null) {
-        return new URL("file:///" + configuredUri.toString());
+      boolean isWinDrive = scheme != null && scheme.matches(WIN_DRIVE_REGEX);
+      if (scheme == null || isWinDrive) {
+        if (!isWinDrive && !s.startsWith(File.separator)) {
+          if (!s.startsWith(".")) return new URL("file:///./" + configuredUri);
+        }
+        return new URL("file:///" + configuredUri);
       }
       else {
         throw new IllegalArgumentException("Illegal URL [" + s + "]");

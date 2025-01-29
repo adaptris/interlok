@@ -41,8 +41,8 @@ artifacts {
 
 dependencies {
   api project (":interlok-core")
-  api ("org.junit.jupiter:junit-jupiter-api:5.11.3")
-  api ("org.junit.jupiter:junit-jupiter-engine:5.11.3")
+  api ("org.junit.jupiter:junit-jupiter-api:5.11.4")
+  api ("org.junit.jupiter:junit-jupiter-engine:5.11.4")
   api ("org.slf4j:slf4j-api:$slf4jVersion")
   api ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
 }
