@@ -61,5 +61,16 @@ public interface AdapterComponentCheckerMBean extends BaseComponentMBean {
    * @throws CoreException wrapping any other exception
    */
   SerializableMessage applyService(String xml, SerializableMessage msg, boolean rewriteConnections) throws CoreException;
+  
+  /**
+   * Apply the configured services to the MIME encoded msg. This also support multi payload mime encoded message.
+   * 
+   * @param xml String XML representation of the service (or service-list)
+   * @param mimeEncodedMsg the MIME encoded message.
+   * @param rewriteConnections use {@link AdaptrisConnection#cloneForTesting()} to generate a new connection.
+   * @return the result of applying these services as MIME encoded message.
+   * @throws CoreException wrapping any other exception
+   */
+  String applyService(String xml, String mimeEncodedMsg, boolean rewriteConnections) throws CoreException;
 
 }

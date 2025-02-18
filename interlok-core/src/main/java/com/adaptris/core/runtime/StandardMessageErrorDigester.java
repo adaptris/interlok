@@ -23,6 +23,7 @@ import java.io.File;
 
 import javax.management.MalformedObjectNameException;
 
+import com.adaptris.core.fs.FsHelper;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,7 +145,7 @@ public class StandardMessageErrorDigester extends MessageErrorDigesterImp {
   }
 
   private File toFile(String s) {
-    return isEmpty(s) ? null : new File(s);
+    return isEmpty(s) ? null : FsHelper.toFile(s, new File(s));
   }
 
   private static class JmxFactory extends RuntimeInfoComponentFactory {

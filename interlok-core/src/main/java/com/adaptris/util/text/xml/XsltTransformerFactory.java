@@ -62,6 +62,21 @@ public class XsltTransformerFactory extends XmlTransformerFactoryImpl {
     setTransformerFactoryImpl(impl);
   }
 
+  /**
+   * Override {@link XmlTransformerFactoryImpl#createTransformerFromUrl(String, EntityResolver)} so when using a URL we build the XML
+   * document directly from the URL instead of the InputSream of the URL file content. Doing this allows the transformer to have the file
+   * location context and therefore the import statement in the XSL can use relative path.
+   */
+  @Override
+  public Transformer createTransformerFromUrl(String url, EntityResolver entityResolver) throws Exception {
+    DocumentBuilder docBuilder = documentFactoryBuilder().newDocumentBuilder(DocumentBuilderFactory.newInstance());
+    if (entityResolver != null) {
+      docBuilder.setEntityResolver(entityResolver);
+    }
+    Document xmlDoc = docBuilder.parse(new InputSource(url));
+    return configure(newInstance()).newTransformer(new DOMSource(xmlDoc, url));
+  }
+
   @Override
   public Transformer createTransformerFromRawXsl(String xsl, EntityResolver entityResolver) throws Exception {
     DocumentBuilder docBuilder = documentFactoryBuilder().newDocumentBuilder(DocumentBuilderFactory.newInstance());
@@ -87,7 +102,8 @@ public class XsltTransformerFactory extends XmlTransformerFactoryImpl {
    * {@code net.sf.saxon.TransformerFactoryImpl} to force it to use Saxon.
    * <p>
    *
-   * @param s he transformerFactoryImpl to set, if not specified the JVM default is used {@link TransformerFactory#newInstance()}.
+   * @param s
+   *          he transformerFactoryImpl to set, if not specified the JVM default is used {@link TransformerFactory#newInstance()}.
    */
   public void setTransformerFactoryImpl(String s) {
     transformerFactoryImpl = s;

@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+
+import com.adaptris.core.fs.FsHelper;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.Executor;
 import org.apache.commons.lang3.BooleanUtils;
@@ -102,7 +104,7 @@ public class DefaultCommandBuilder implements CommandBuilder {
   @Override
   public Executor configure(Executor exe) {
     if (!isEmpty(getWorkingDirectory())) {
-      File wd = new File(getWorkingDirectory());
+      File wd = FsHelper.toFile(getWorkingDirectory(), new File(getWorkingDirectory()));
       exe.setWorkingDirectory(wd);
     }
     exe.setExitValue(successExitValue());

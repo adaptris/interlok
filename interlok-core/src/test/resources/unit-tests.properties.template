@@ -93,6 +93,7 @@ junit.XmlValidationServiceTest.input.xml=@BASE_DIR@/src/test/resources/transform
 
 junit.XmlTransformService.outputNodeTransform=file:///@BASE_DIR@/src/test/resources/transform/simple-node-transform.xsl
 junit.XmlTransformService.outputTestTransform=file:///@BASE_DIR@/src/test/resources/transform/simple-transform.xsl
+junit.XmlTransformService.outputTestTransformWithImport=file:///@BASE_DIR@/src/test/resources/transform/simple-transform-xsl-import.xsl
 junit.XmlTransformService.outputTestTransformWithXslMessage=file:///@BASE_DIR@/src/test/resources/transform/simple-transform-xsl-message.xsl
 junit.XmlTransformService.outputTestInvalidTransform=file:///@BASE_DIR@/src/test/resources/transform/simple-invalid-transform.xsl
 junit.XmlTransformService.outputTestFatalTransform=file:///@BASE_DIR@/src/test/resources/transform/simple-fatal-transform.xsl

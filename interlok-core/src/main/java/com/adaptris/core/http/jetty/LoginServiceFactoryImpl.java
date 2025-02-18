@@ -1,11 +1,13 @@
 package com.adaptris.core.http.jetty;
 
-import java.io.File;
 import javax.validation.constraints.NotBlank;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.util.Args;
 import com.adaptris.fs.FsWorker;
+
+import java.io.File;
 
 /**
  * Abstract configuration for bundled {@code org.eclipse.jetty.security.LoginService} implementations.
@@ -47,7 +49,7 @@ public abstract class LoginServiceFactoryImpl implements JettyLoginServiceFactor
   }
 
   public String validateFilename() throws Exception {
-    return FsWorker.checkReadable(new File(getFilename())).getCanonicalPath();
+    return FsWorker.checkReadable(FsHelper.toFile(getFilename(), new File(getFilename()))).getCanonicalPath();
   }
 
   /**

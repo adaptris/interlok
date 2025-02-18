@@ -23,7 +23,9 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.ServiceImp;
+import com.adaptris.core.util.InputFieldExpression;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Changes the character encoding associated with a message.
@@ -32,6 +34,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * {@link com.adaptris.core.AdaptrisMessage#setContentEncoding(String)}. If this service is used, and there is no configured
  * character encoding then the
  * character encoding associated with the message is set to null (which forces the platform default encoding).
+ * Character encoding parameters in this service can also use the {@link AdaptrisMessage#resolve(String)} which allows you to specify expression
+ * values as part of a constant string e.g. {@code addMetadata("key", "value")} will use the metadata value associated with the key
  * </p>
  * 
  * @config change-char-encoding-service
@@ -62,7 +66,12 @@ public class ChangeCharEncodingService extends ServiceImp {
    */
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
-    msg.setContentEncoding(getCharEncoding());
+    String charEncoding = getCharEncoding();
+    //Check and evaluate if character encoding is an expression
+    if(StringUtils.isNotBlank(charEncoding) && InputFieldExpression.isExpression(charEncoding)) {
+      charEncoding = msg.resolve(charEncoding);
+    }
+    msg.setContentEncoding(charEncoding);
   }
 
   @Override

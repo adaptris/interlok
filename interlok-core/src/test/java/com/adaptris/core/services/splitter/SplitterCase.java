@@ -50,6 +50,23 @@ public abstract class SplitterCase extends SplitterServiceExample {
       + System.lineSeparator() + "</envelope>";
   public static final String LINE = "The quick brown fox jumps over the lazy dog";
 
+  public static final String XML_MESSAGE_WITH_SIBLINGS = """
+          <?xml version ="1.0" encoding="UTF-8"?>
+            <envelope>
+              <header>
+                <po>123123</po>
+              </header>
+              <body>
+                <document>1</document>
+                <document>2</document>
+                <document>3</document>
+              </body>
+              <trailer>
+                <x>123</x>
+              </trailer>
+            </envelope>
+          """;
+
 
   public static final String XML_WITH_DOCTYPE = "<?xml version=\"1.0\"?>\n" + "<!DOCTYPE document [\n"
       + "<!ENTITY LOCAL_ENTITY 'entity'>\n" + "<!ENTITY % StandardInfo SYSTEM \"../StandardInfo.dtd\">\n" + "%StandardInfo;\n"

@@ -16,19 +16,18 @@
 
 package com.adaptris.core;
 
-import java.io.UnsupportedEncodingException;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
-
-import javax.validation.Valid;
-
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.util.GuidGenerator;
 import com.adaptris.util.IdGenerator;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+
+import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * <p>
@@ -242,7 +241,7 @@ public abstract class AdaptrisMessageFactory {
     this.uniqueIdGenerator = s;
   }
 
-  protected IdGenerator uniqueIdGenerator() {
+  public IdGenerator uniqueIdGenerator() {
     return Optional.ofNullable(getUniqueIdGenerator()).orElse(DEFAULT_GENERATOR);
   }
 

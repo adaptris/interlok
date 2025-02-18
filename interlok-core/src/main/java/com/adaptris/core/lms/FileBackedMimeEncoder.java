@@ -27,6 +27,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Implementation of {@code AdaptrisMessageEncoder} that stores payload and metadata as a mime-encoded multipart message.
  * <p>
@@ -58,6 +60,7 @@ public class FileBackedMimeEncoder extends MimeEncoderImpl<File, File> {
         output.addPart(asMimePart((Exception) msg.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION)),
             EXCEPTION_CONTENT_ID);
       }
+      writeNextServiceId(output, msg);
       try (OutputStream out = new FileOutputStream(target)) {
         // If we are file backed, then lets assume we're large, and we stream to disk first...
         if (factory instanceof FileBackedMessageFactory) {

@@ -17,17 +17,21 @@ package com.adaptris.util.text;
 
 import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_INPUT;
 import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_TRANSFORM_URL;
+import static com.adaptris.core.transform.XmlTransformServiceTest.KEY_XML_TEST_TRANSFORM_WITH_IMPORT_URL;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -67,6 +71,31 @@ public class XmlTransformerTest extends com.adaptris.interlok.junit.scaffolding.
       StreamResult output = new StreamResult(out);
       StreamSource input = new StreamSource(in);
       transform.transform(factory.createTransformerFromUrl(xsl), input, output, xsl);
+    }
+  }
+
+  @Test
+  public void testTransform_WithImport() throws Exception {
+    XmlTransformerFactory factory = new XsltTransformerFactory();
+    XmlTransformer transform = factory.configure(new XmlTransformer());
+    transform.registerBuilder(DocumentBuilderFactoryBuilder.newInstance());
+    String xsl = backslashToSlash(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_WITH_IMPORT_URL));
+    AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    try (InputStream in = m1.getInputStream(); OutputStream out = m1.getOutputStream()) {
+      transform.transform(factory.createTransformerFromUrl(xsl), in, out, xsl);
+    }
+  }
+
+  @Test
+  public void testTransform_FromRawXsl() throws Exception {
+    XmlTransformerFactory factory = new XsltTransformerFactory();
+    XmlTransformer transform = factory.configure(new XmlTransformer());
+    transform.registerBuilder(DocumentBuilderFactoryBuilder.newInstance());
+    String xsl = backslashToSlash(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
+    String xslContent = IOUtils.toString(new URI(xsl), StandardCharsets.UTF_8);
+    AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
+    try (InputStream in = m1.getInputStream(); OutputStream out = m1.getOutputStream()) {
+      transform.transform(factory.createTransformerFromRawXsl(xslContent), in, out, xsl);
     }
   }
 

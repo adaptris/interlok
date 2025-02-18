@@ -26,6 +26,7 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.CoreException;
+import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.filetransfer.FileTransferClient;
@@ -147,7 +148,7 @@ public class StandardSftpConnection extends FileTransferConnection {
   }
 
   private File knownHosts() {
-    return knownHostsFile != null ? new File(knownHostsFile) : null;
+    return knownHostsFile != null ? FsHelper.toFile(knownHostsFile, new File(knownHostsFile)) : null;
   }
 
   @Override

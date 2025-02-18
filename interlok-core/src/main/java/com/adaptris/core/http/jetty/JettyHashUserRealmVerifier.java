@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import javax.validation.constraints.NotBlank;
+
+import com.adaptris.core.fs.FsHelper;
 import org.eclipse.jetty.util.security.Credential;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
@@ -117,7 +119,7 @@ public class JettyHashUserRealmVerifier extends IdentityVerifierImpl {
   }
 
   private Map<String, AccessCredentials> loadUsers() throws IOException {
-    File file = new File(filename);
+    File file = FsHelper.toFile(filename, new File(filename));
     if (fileLastModified < file.lastModified()) {
       users = loadUsers(PropertyHelper.loadQuietly(file));
       fileLastModified = file.lastModified();

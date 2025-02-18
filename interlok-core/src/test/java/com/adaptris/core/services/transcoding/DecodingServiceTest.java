@@ -13,6 +13,8 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.MimeEncoder;
+import com.adaptris.core.MultiPayloadMessageFactory;
+import com.adaptris.core.MultiPayloadMessageMimeEncoder;
 import com.adaptris.core.stubs.MockEncoder;
 import com.adaptris.core.stubs.StubMessageFactory;
 import com.adaptris.core.util.LifecycleHelper;
@@ -20,7 +22,6 @@ import com.adaptris.core.util.LifecycleHelper;
 public class DecodingServiceTest extends TranscodingServiceCase {
 
   private static final String OVERRIDE_HEADER_VALUE = "value";
-
 
   @Test
   public void testInit() throws Exception {
@@ -106,6 +107,44 @@ public class DecodingServiceTest extends TranscodingServiceCase {
   }
 
   @Test
+  public void testMimeEncoder_MultiPayload() throws Exception {
+    DecodingService service = new DecodingService(new MultiPayloadMessageMimeEncoder());
+    service.setMessageFactory(new MultiPayloadMessageFactory());
+
+    String multiPayloadMime = "Message-ID: mesage-id\n"
+        + "Mime-Version: 1.0\n"
+        + "Content-Type: multipart/mixed; \n"
+        + "    boundary=\"----=_Part_43_688598885.1729067201704\"\n"
+        + "AdaptrisMessage/current-payload-id: default-payload\n"
+        + "\n"
+        + "------=_Part_43_688598885.1729067201704\n"
+        + "Content-Id: AdaptrisMessage/payload/default-payload\n"
+        + "\n"
+        + "The quick brown fox jumped over the lazy dog.\n"
+        + "------=_Part_43_688598885.1729067201704\n"
+        + "Content-Id: AdaptrisMessage/payload/second-payload\n"
+        + "\n"
+        + "The quick brown fox jumped over the lazy dog 2.\n"
+        + "------=_Part_43_688598885.1729067201704\n"
+        + "Content-Id: AdaptrisMessage/metadata\n"
+        + "\n"
+        + "#\n"
+        + "#Wed Oct 16 17:26:41 JST 2024\n"
+        + "helloMetadataKey=Hello\n"
+        + "worldMetadataKey=World\n"
+        + "\n"
+        + "------=_Part_43_688598885.1729067201704--\n";
+
+    AdaptrisMessage msg = new MultiPayloadMessageFactory().newMessage(multiPayloadMime);
+    execute(service, msg);
+    assertTrue(msg.headersContainsKey(TEST_METADATA_KEY));
+    assertTrue(msg.headersContainsKey(TEST_METADATA_KEY_2));
+    assertEquals(TEST_METADATA_VALUE, msg.getMetadataValue(TEST_METADATA_KEY));
+    assertEquals(TEST_METADATA_VALUE_2, msg.getMetadataValue(TEST_METADATA_KEY_2));
+    assertEquals(TEST_PAYLOAD, new String(msg.getPayload()));
+  }
+
+  @Test
   public void testMimeEncoder_OverrideHeader() throws Exception {
     DecodingService service = new DecodingService(new MimeEncoder());
     service.setOverrideMetadata(true);
@@ -136,7 +175,6 @@ public class DecodingServiceTest extends TranscodingServiceCase {
     assertEquals(TEST_METADATA_VALUE_2, msg.getMetadataValue(TEST_METADATA_KEY_2));
     assertEquals(TEST_PAYLOAD, new String(msg.getPayload()));
   }
-
 
   @Override
   protected Object retrieveObjectForSampleConfig() {

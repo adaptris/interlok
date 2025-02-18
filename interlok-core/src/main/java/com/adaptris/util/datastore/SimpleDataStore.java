@@ -27,6 +27,7 @@ import java.util.Properties;
 import javax.validation.constraints.NotBlank;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -227,7 +228,7 @@ public class SimpleDataStore extends DataStore {
     if (haveLock) {
       return;
     }
-    File lock = new File(getLockFile());
+    File lock = FsHelper.toFile(getLockFile(), new File(getLockFile()));
     int attempts = 1;
 
     while (lock.exists() && attempts++ < maxAttempts) {
@@ -255,8 +256,7 @@ public class SimpleDataStore extends DataStore {
       return;
     }
 
-    File lock = new File(getLockFile());
-
+    File lock = FsHelper.toFile(getLockFile(), new File(getLockFile()));
     if (lock.exists()) {
       lock.delete();
     }
@@ -281,7 +281,7 @@ public class SimpleDataStore extends DataStore {
   private HashMap readData() throws IOException, ClassNotFoundException {
 
     HashMap data = new HashMap();
-    File file = new File(getDataFile());
+    File file = FsHelper.toFile(getDataFile(), new File(getDataFile()));
     if (file.exists()) {
       try (FileInputStream in = new FileInputStream(file);
           ObjectInputStream oi = new ObjectInputStream(in)) { // lgtm
@@ -292,7 +292,7 @@ public class SimpleDataStore extends DataStore {
   }
 
   private void writeData(HashMap data) throws IOException {
-    try (FileOutputStream out = new FileOutputStream(getDataFile());
+    try (FileOutputStream out = new FileOutputStream(FsHelper.toFile(getDataFile(), new File(getDataFile())));
         ObjectOutputStream objOut = new ObjectOutputStream(out)) { // lgtm
       objOut.writeObject(data);      
     }

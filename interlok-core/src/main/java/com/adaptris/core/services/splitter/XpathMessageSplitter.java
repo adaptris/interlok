@@ -18,6 +18,9 @@ package com.adaptris.core.services.splitter;
 
 import static com.adaptris.core.util.XmlHelper.createDocument;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import javax.validation.constraints.NotBlank;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
@@ -74,7 +77,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  * @author sellidge
  */
 @XStreamAlias("xpath-message-splitter")
-@DisplayOrder(order = {"xpath", "encoding", "copyMetadata", "copyObjectMetadata", "namespaceContext", "xmlDocumentFactoryConfig"})
+@DisplayOrder(order = {"xpath", "encoding", "copyMetadata", "copyObjectMetadata", "retainBranchNodes", "namespaceContext", "xmlDocumentFactoryConfig"})
 public class XpathMessageSplitter extends MessageSplitterImp {
 
   @NotBlank
@@ -85,6 +88,8 @@ public class XpathMessageSplitter extends MessageSplitterImp {
   private KeyValuePairSet namespaceContext;
   @AdvancedConfig(rare = true)
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
+  @AdvancedConfig(rare = true)
+  private Boolean retainBranchNodes = null;
 
   public XpathMessageSplitter() {
     this(null, null);
@@ -186,6 +191,18 @@ public class XpathMessageSplitter extends MessageSplitterImp {
     this.xmlDocumentFactoryConfig = xml;
   }
 
+  public boolean getRetainBranchNodes() {
+    return Boolean.TRUE.equals(retainBranchNodes);
+  }
+
+  /**
+   * Sets whether to retain the branch nodes
+   * @param retainBranchNodes
+   */
+  public void setRetainBranchNodes(Boolean retainBranchNodes) {
+    this.retainBranchNodes = retainBranchNodes;
+  }
+
   DocumentBuilderFactoryBuilder documentFactoryBuilder() {
     return DocumentBuilderFactoryBuilder.newInstanceIfNull(getXmlDocumentFactoryConfig());
   }
@@ -217,13 +234,65 @@ public class XpathMessageSplitter extends MessageSplitterImp {
       nodeListIndex = 0;
     }
 
+    /**
+     * Depending on the value of retainBranchNodes, it will return the imported root node
+     * without any parent nodes included, or with parent nodes and their siblings included.
+     * @param document
+     * @param node
+     * @return
+     */
+    private Node buildRootNode(Document document, Node node) {
+      Node root = null;
+      if (getRetainBranchNodes()) {
+        Node ptr = node;
+        List<Node> l = new LinkedList<>();
+        while (ptr != null && ptr.getNodeType() == Node.ELEMENT_NODE) {
+          l.add(ptr);
+          ptr = ptr.getParentNode();
+        }
+        Collections.reverse(l);
+        Node prev = null;
+        for (Node curr : l) {
+          Node created;
+          if (curr.equals(node)) {
+            created = document.importNode(curr, true);
+          } else {
+            created = document.createElement(curr.getNodeName());
+          }
+          if (prev != null) {
+            if (!curr.equals(node)) {
+              for (Node prevSibling = curr.getPreviousSibling(); prevSibling != null; prevSibling = prevSibling.getPreviousSibling()) {
+                if (prevSibling.getNodeType() == Node.ELEMENT_NODE) {
+                  prev.appendChild(document.importNode(prevSibling, true));
+                }
+              }
+            }
+            prev.appendChild(created);
+            if (!curr.equals(node)) {
+              for (Node nextSibling = curr.getNextSibling(); nextSibling != null; nextSibling = nextSibling.getNextSibling()) {
+                if (nextSibling.getNodeType() == Node.ELEMENT_NODE) {
+                  prev.appendChild(document.importNode(nextSibling, true));
+                }
+              }
+            }
+          } else {
+            root = created;
+          }
+          prev = created;
+        }
+      } else {
+        root = document.importNode(node, true);
+      }
+      return root;
+    }
+
     @Override
     protected AdaptrisMessage constructAdaptrisMessage() throws Exception {
       if (nodeListIndex < nodeList.getLength()) {
         Node e = nodeList.item(nodeListIndex);
         Document splitXmlDoc = docBuilder.newDocument();
-        Node dup = splitXmlDoc.importNode(e, true);
-        splitXmlDoc.appendChild(dup);
+        Node root = buildRootNode(splitXmlDoc, e);
+        splitXmlDoc.appendChild(root);
         AdaptrisMessage splitMsg = factory.newMessage("", encoding);
         XmlHelper.writeXmlDocument(splitXmlDoc, splitMsg, encoding);
         copyMetadata(msg, splitMsg);

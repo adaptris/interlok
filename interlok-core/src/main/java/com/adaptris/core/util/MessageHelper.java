@@ -1,6 +1,15 @@
 package com.adaptris.core.util;
 
-import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION;
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.lms.FileBackedMessage;
+import com.adaptris.util.IdGenerator;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -8,18 +17,22 @@ import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Map;
 import java.util.Optional;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.lms.FileBackedMessage;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
+import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public class MessageHelper {
+
+  /**
+   * Generate a new message unique id from the src message's factory's id generator
+   * @param src
+   * @return a new message unique id
+   */
+  public static String generateNewMessageUniqueId(AdaptrisMessage src) {
+    IdGenerator generator = src.getFactory().uniqueIdGenerator();
+    return generator.create(src);
+  }
 
   /**
    * Copy the payload from the src to the destination message.

@@ -33,6 +33,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.BranchingServiceImp;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
+import com.adaptris.core.fs.FsHelper;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -113,7 +114,7 @@ public class CheckUniqueMetadataValueService extends BranchingServiceImp {
     try {
       Args.notBlank(getMetadataKeyToCheck(), "metadataKeyToCheck");
       Args.notBlank(getStoreFileUrl(), "storeFileUrl");
-      this.store = new File(new URL(getStoreFileUrl()).getFile());
+      this.store = FsHelper.toFile(getStoreFileUrl(), new File(new URL(getStoreFileUrl()).getFile()));
       this.loadPreviouslyReceivedValues();
 
       if (previousValuesStore == null) {

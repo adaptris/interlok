@@ -75,6 +75,7 @@ public class XmlTransformServiceTest
 
   public static final String KEY_XML_TEST_INPUT = "XmlTransformService.outputTestMessage";
   public static final String KEY_XML_TEST_TRANSFORM_URL = "XmlTransformService.outputTestTransform";
+  public static final String KEY_XML_TEST_TRANSFORM_WITH_IMPORT_URL = "XmlTransformService.outputTestTransformWithImport";
   public static final String KEY_XML_TEST_TRANSFORM_URL_XSL_MESSAGE = "XmlTransformService.outputTestTransformWithXslMessage";
   public static final String KEY_XML_TEST_INVALID_TRANSFORM_URL = "XmlTransformService.outputTestInvalidTransform";
   public static final String KEY_XML_TEST_FATAL_TRANSFORM_URL = "XmlTransformService.outputTestFatalTransform";
@@ -863,7 +864,6 @@ public class XmlTransformServiceTest
     }
   }
 
-
   private static DocumentBuilder newDocumentBuilder() throws ParserConfigurationException {
     DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
     DocumentBuilder builder = domFactory.newDocumentBuilder();
@@ -876,9 +876,9 @@ public class XmlTransformServiceTest
   }
 
   // INTERLOK-3101, Saxon-9.9.1-4 onwards throws a different Exception.
-  private void assertExceptionCause(Exception e, Class...classes) {
+  private void assertExceptionCause(Exception e, Class<?>...classes) {
     assertNotNull(e.getCause());
-    List<Class> validClasses = Arrays.asList(classes);
+    List<Class<?>> validClasses = Arrays.asList(classes);
     Throwable t = e.getCause();
     boolean matches =
         validClasses.stream().anyMatch((clazz) -> clazz.isAssignableFrom(t.getClass()));

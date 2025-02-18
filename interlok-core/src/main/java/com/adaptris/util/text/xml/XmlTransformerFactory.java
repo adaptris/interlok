@@ -23,7 +23,7 @@ import org.xml.sax.EntityResolver;
 public interface XmlTransformerFactory {
 
   /**
-   * @deprecated You shoul use {@link XmlTransformerFactory#createTransformerFromUrl(String)} instead
+   * @deprecated You should use {@link XmlTransformerFactory#createTransformerFromUrl(String)} instead
    */
   @Deprecated
   default Transformer createTransformer(String transformUrl) throws Exception {
@@ -31,7 +31,7 @@ public interface XmlTransformerFactory {
   }
 
   /**
-   * @deprecated You shoul use {@link XmlTransformerFactory#createTransformerFromUrl(String, EntityResolver)} instead
+   * @deprecated You should use {@link XmlTransformerFactory#createTransformerFromUrl(String, EntityResolver)} instead
    */
   @Deprecated
   default Transformer createTransformer(String transformUrl, EntityResolver entityResolver) throws Exception {

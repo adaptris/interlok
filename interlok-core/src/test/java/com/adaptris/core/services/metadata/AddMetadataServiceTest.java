@@ -16,28 +16,31 @@
 
 package com.adaptris.core.services.metadata;
 
+import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.MetadataElement;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.MetadataElement;
-
 public class AddMetadataServiceTest extends MetadataServiceExample {
 
-  private AddMetadataService service;
-  private MetadataElement m1;
-  private MetadataElement m2;
+  protected AddMetadataService service;
+  protected MetadataElement m1;
+  protected MetadataElement m2;
+
+  AddMetadataService buildService() {
+    return new AddMetadataService();
+  }
 
 
   @BeforeEach
@@ -45,7 +48,7 @@ public class AddMetadataServiceTest extends MetadataServiceExample {
     m1 = new MetadataElement("key1", "val1");
     m2 = new MetadataElement("key2", "val2");
 
-    service = new AddMetadataService();
+    service = buildService();
     service.addMetadataElement(m1);
     service.addMetadataElement(m2);
   }

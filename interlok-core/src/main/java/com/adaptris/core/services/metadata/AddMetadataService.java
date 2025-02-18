@@ -16,17 +16,6 @@
 
 package com.adaptris.core.services.metadata;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.AutoPopulated;
@@ -38,6 +27,18 @@ import com.adaptris.core.MetadataElement;
 import com.adaptris.core.ServiceException;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
+import org.apache.commons.lang3.BooleanUtils;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * <p>
@@ -132,6 +133,11 @@ public class AddMetadataService extends MetadataServiceImpl {
     this(new LinkedHashSet<MetadataElement>(Arrays.asList(elements)));
   }
 
+  // allow subclasses to do something to the metadata element before adding
+  protected void beforeAdd(MetadataElement element, AdaptrisMessage msg) {
+    // do nothing
+  }
+
   /**
    * <p>
    * Adds the configured metadata to the message.
@@ -145,6 +151,7 @@ public class AddMetadataService extends MetadataServiceImpl {
     for (MetadataElement e : metadataElements) {
       MetadataElement addMe = build(e, msg);
       if (overwrite(msg, addMe.getKey())) {
+        beforeAdd(addMe, msg);
         msg.addMetadata(addMe);
         addedMetadata.add(addMe);
       }

@@ -5,12 +5,12 @@ ext {
 }
 
 dependencies {
-  api ("com.thoughtworks.xstream:xstream:1.4.20") {  transitive= false }
+  api ("com.thoughtworks.xstream:xstream:1.4.21") {  transitive= false }
   api ("jakarta.validation:jakarta.validation-api:2.0.2")
   // compile files("${System.getProperty('java.home')}/../lib/tools.jar")
 
-  testImplementation ("org.junit.jupiter:junit-jupiter-api:5.11.0")
-  testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.11.0")
+  testImplementation ("org.junit.jupiter:junit-jupiter-api:5.11.4")
+  testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.11.4")
   testImplementation("org.hibernate.validator:hibernate-validator:6.1.7.Final")
   testImplementation("org.glassfish:jakarta.el:3.0.4")
 }

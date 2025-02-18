@@ -16,8 +16,8 @@
 
 package com.adaptris.core.services.transcoding;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 import org.apache.commons.lang3.BooleanUtils;
 
@@ -45,7 +45,7 @@ public class DecodingService extends TranscodingService {
   @InputFieldDefault(value = "false")
   private Boolean overrideMetadata;
 
-  public DecodingService(){
+  public DecodingService() {
   }
 
   public DecodingService(AdaptrisMessageEncoder encoder) {
@@ -54,17 +54,22 @@ public class DecodingService extends TranscodingService {
 
   @Override
   public void transcodeMessage(AdaptrisMessage msg) throws ServiceException {
-    try (InputStream msgIn = msg.getInputStream(); OutputStream msgOut = msg.getOutputStream()) {
+    try (InputStream msgIn = msg.getInputStream(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+      // INTERLOK-4445 When using a multipayload message there is an issue with
+      // MultiPayloadAdaptrisMessageImp#ByteFilterStream
+      // that resets the default payload when doing msg.getOutpuStream so we need to use a
+      // ByteArrayOutputStream first
+      // and then set the byte payload
       AdaptrisMessage decodedMsg = getEncoder().readMessage(msgIn);
       for (MetadataElement me : decodedMsg.getMetadata()) {
-        if (!isOverrideMetadata() && msg.headersContainsKey(me.getKey())){
+        if (!isOverrideMetadata() && msg.headersContainsKey(me.getKey())) {
           continue;
         }
         msg.addMetadata(me);
       }
-      StreamUtil.copyAndClose(decodedMsg.getInputStream(), msgOut);
-    }
-    catch (Exception e) {
+      StreamUtil.copyAndClose(decodedMsg.getInputStream(), out);
+      msg.setPayload(out.toByteArray());
+    } catch (Exception e) {
       throw new ServiceException(e);
     }
   }
@@ -73,16 +78,20 @@ public class DecodingService extends TranscodingService {
     return BooleanUtils.toBooleanDefaultIfNull(getOverrideMetadata(), false);
   }
 
-  public Boolean getOverrideMetadata(){
-    return this.overrideMetadata;
+  public Boolean getOverrideMetadata() {
+    return overrideMetadata;
   }
 
   /**
    * Set boolean value to control the overriding of metadata.
    *
-   * <p>If true metadata when a metadata key from the decoded message has the same key as metadata in the in flight message it will be replaced with the value of the decoded one.</p>
+   * <p>
+   * If true metadata when a metadata key from the decoded message has the same key as metadata in the in flight message it will be replaced
+   * with the value of the decoded one.
+   * </p>
    *
-   * @param overrideMetadata Boolean value to control overriding of metadata.
+   * @param overrideMetadata
+   *          Boolean value to control overriding of metadata.
    */
   public void setOverrideMetadata(Boolean overrideMetadata) {
     this.overrideMetadata = overrideMetadata;

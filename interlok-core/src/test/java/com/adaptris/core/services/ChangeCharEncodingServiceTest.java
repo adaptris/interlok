@@ -22,6 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+import com.adaptris.core.DefaultMessageFactory;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMessage;
@@ -30,6 +32,15 @@ import com.adaptris.core.GeneralServiceExample;
 
 public class ChangeCharEncodingServiceTest extends GeneralServiceExample {
 
+  private ChangeCharEncodingService srv;
+  private AdaptrisMessage msg;
+
+  @BeforeEach
+  public void setUp() throws Exception {
+    srv = new ChangeCharEncodingService();
+    msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello");
+  }
+
   @Override
   protected Object retrieveObjectForSampleConfig() {
     return new ChangeCharEncodingService(StandardCharsets.ISO_8859_1.name());
@@ -37,7 +48,7 @@ public class ChangeCharEncodingServiceTest extends GeneralServiceExample {
 
   @Test
   public void testSetCharEncoding() {
-    ChangeCharEncodingService srv = new ChangeCharEncodingService();
+    srv.setCharEncoding(null);
     assertNull(srv.getCharEncoding());
     srv.setCharEncoding("UTF-8");
     assertEquals("UTF-8", srv.getCharEncoding());
@@ -47,12 +58,31 @@ public class ChangeCharEncodingServiceTest extends GeneralServiceExample {
 
   @Test
   public void testChangeCharset() throws Exception {
-    ChangeCharEncodingService srv = new ChangeCharEncodingService();
     srv.setCharEncoding("iso-8859-1");
-    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage("Hello");
     assertNull(msg.getContentEncoding());
     execute(srv, msg);
     assertEquals(Charset.forName("iso-8859-1"), Charset.forName(msg.getContentEncoding()));
   }
 
+  @Test
+  public void testSetCharEncodingIsNull() throws Exception {
+    assertNull(srv.getCharEncoding());
+    execute(srv, msg);
+    assertNull(msg.getCharEncoding());
+  }
+
+  @Test
+  public void testSetCharEncodingExpression() throws Exception {
+    msg.addMetadata("pn.processing.worker.transform.encoding-target", "UTF-8");
+
+    //Set to expression value
+    srv.setCharEncoding("%message{pn.processing.worker.transform.encoding-target}");
+    execute(srv, msg);
+    assertEquals("UTF-8", msg.getCharEncoding());
+
+    //Change to non-expression value
+    srv.setCharEncoding("iso-8859-1");
+    execute(srv, msg);
+    assertEquals(Charset.forName("iso-8859-1"), Charset.forName(msg.getContentEncoding()));
+  }
 }

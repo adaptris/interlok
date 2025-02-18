@@ -68,8 +68,11 @@ import net.jodah.expiringmap.ExpiringMap;
  * Cache transforms functionality only works if <code>url</code> is used. Caching is not supported with <code>mappingSource</code>.
  * </p>
  * <p>
+ * File path context when using XSL import functionality only works if <code>url</code> is used. Caching is not supported with <code>mappingSource</code>.
+ * </p>
+ * <p>
  * If you wish to call an external mapping source when using <code>mappingSource</code> such as via http you can use
- * <strong>FileDataInputParameter</strong>.
+ * <strong>FileDataInputParameter</strong>. However that will not keep the file path context when using XSL import.
  * </p>
  *
  * @config xml-transform-service
@@ -84,15 +87,14 @@ public class XmlTransformService extends ServiceImp {
   private static final int DEFAULT_MAX_CACHE_SIZE = 16;
   private static final TimeInterval DEFAULT_EXPIRATION = new TimeInterval(1L, TimeUnit.HOURS);
 
-  /**
-   * @deprecated since 5.0.0 use {@link #DataInputParameter} instead.
-   */
-  @Deprecated(since = "5.0.0")
   private String url;
 
   @AdvancedConfig
   private String metadataKey;
 
+  /**
+   * Use mapping-source to use an inline mapping instead of a URL
+   */
   @Getter
   @Setter
   @AutoPopulated
@@ -254,6 +256,7 @@ public class XmlTransformService extends ServiceImp {
   /**
    * <p>
    * Sets the URL of the XSLT to use. May not be empty.
+   * Using a URL will keep file path context when using XSL import. 
    * </p>
    *
    * @param s the URL of the XSLT to use

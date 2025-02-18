@@ -85,7 +85,7 @@ public abstract class MarshallingItemCache extends InlineItemCache {
 
   private void writePersistentStore() {
     try {
-      File store = new File(getPersistentStore());
+      File store = FsHelper.toFile(getPersistentStore(), new File(getPersistentStore()));
       File parent = store.getParentFile();
       if (parent != null) {
         parent.mkdirs();

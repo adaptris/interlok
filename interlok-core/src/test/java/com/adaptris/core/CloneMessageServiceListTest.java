@@ -16,22 +16,24 @@
 
 package com.adaptris.core;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
-import java.util.Arrays;
-import java.util.Collection;
-
-import org.junit.jupiter.api.Test;
-
 import com.adaptris.core.metadata.RegexMetadataFilter;
 import com.adaptris.core.services.exception.ConfiguredException;
 import com.adaptris.core.services.exception.ThrowExceptionService;
 import com.adaptris.core.services.metadata.AddMetadataService;
 import com.adaptris.core.util.LifecycleHelper;
+import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.function.Function;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class CloneMessageServiceListTest
     extends com.adaptris.interlok.junit.scaffolding.services.ServiceCollectionCase {
@@ -86,6 +88,46 @@ public class CloneMessageServiceListTest
       LifecycleHelper.stopAndClose(service);
     }
   }
+
+  @Test
+  public void testNewUniqueIdPerMessage() throws Exception {
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+
+    Set<String> messageUniqueIds = new LinkedHashSet<>();
+    CloneMessageServiceList service1 = createServiceList();
+    service1.setNewUniqueIdPerMessage(false);
+    FunctionService functionService = new FunctionService((m) -> {
+        messageUniqueIds.add(m.getUniqueId());
+        return null;
+    });
+    service1.getServices().add(functionService);
+    service1.getServices().add(functionService);
+
+    CloneMessageServiceList service2 = createServiceList();
+    service2.setNewUniqueIdPerMessage(true);
+    service2.getServices().add(functionService);
+    service2.getServices().add(functionService);
+
+    try {
+      LifecycleHelper.initAndStart(service1);
+      service1.doService(msg);
+      assertEquals(1, messageUniqueIds.size());
+      assertTrue(messageUniqueIds.contains(msg.getUniqueId()));
+
+      messageUniqueIds.clear();
+
+      LifecycleHelper.initAndStart(service2);
+      service2.doService(msg);
+      assertEquals(2, messageUniqueIds.size());
+      assertFalse(messageUniqueIds.contains(msg.getUniqueId()));
+
+    }
+    finally {
+      LifecycleHelper.stopAndClose(service1);
+      LifecycleHelper.stopAndClose(service2);
+    }
+  }
+
 
   @Test
   public void testHaltProcessing() throws Exception {
@@ -201,6 +243,39 @@ public class CloneMessageServiceListTest
     int getInitCount() {
       return initCount;
     }
+  }
+
+  private class FunctionService extends ServiceImp {
+
+    private transient Function<AdaptrisMessage, Void> function;
+
+    public FunctionService(Function<AdaptrisMessage, Void> function) {
+      this.function = function;
+    }
+
+    public FunctionService(Function<AdaptrisMessage, Void> function, String s) {
+      this(function);
+      setUniqueId(s);
+    }
+
+    @Override
+    public void doService(AdaptrisMessage msg) throws ServiceException {
+      function.apply(msg);
+    }
+
+    @Override
+    protected void initService() throws CoreException {
+    }
+
+    @Override
+    protected void closeService() {
+      function = null;
+    }
+
+    @Override
+    public void prepare() throws CoreException {
+    }
+
   }
 
   private class MarkerService extends ServiceImp {

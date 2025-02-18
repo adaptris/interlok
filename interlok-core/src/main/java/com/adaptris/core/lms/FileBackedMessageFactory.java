@@ -22,6 +22,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+
+import com.adaptris.core.fs.FsHelper;
 import org.apache.commons.io.FileCleaningTracker;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.lang3.BooleanUtils;
@@ -156,7 +158,7 @@ public class FileBackedMessageFactory extends DefaultMessageFactory {
   }
 
   protected File tempDirectory() {
-    return check(getTempDirectory() != null ? new File(getTempDirectory()) : new File(System.getProperty("java.io.tmpdir")));
+    return check(getTempDirectory() != null ? FsHelper.toFile(getTempDirectory(), new File(getTempDirectory())) : FsHelper.toFile(System.getProperty("java.io.tmpdir"), new File(System.getProperty("java.io.tmpdir"))));
   }
 
   private File check(File f) {

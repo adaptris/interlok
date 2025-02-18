@@ -16,6 +16,7 @@
 
 package com.adaptris.core.services.metadata;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -25,6 +26,13 @@ import org.junit.jupiter.api.Test;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class MetadataAppenderServiceTest extends MetadataServiceExample {
 
@@ -70,6 +78,15 @@ public class MetadataAppenderServiceTest extends MetadataServiceExample {
 
     }
 
+  }
+
+  @Test
+  public void testZeroKeys() throws CoreException {
+    service.getAppendKeys().clear();
+    service.setSeparator("|");
+
+    execute(service, msg);
+    assertEquals("", msg.getMetadataValue(resultKey));
   }
 
   @Test
@@ -123,6 +140,34 @@ public class MetadataAppenderServiceTest extends MetadataServiceExample {
       // okay
     }
   }
+
+  @ParameterizedTest
+  @MethodSource("testSeparatorProvider")
+  public void testSeparator(String... args) throws CoreException {
+    service.setSeparator("|");
+    List<String> argsList = Arrays.stream(args).toList();
+    List<String> keys = argsList.subList(0, argsList.size() - 1);
+    String expected = argsList.get(argsList.size() - 1);
+    keys.stream().forEach(key -> service.addAppendKey(key));
+    execute(service, msg);
+    assertEquals(expected, msg.getMetadataValue(resultKey));
+  }
+
+  @Test
+  public void testNullSeparator() throws CoreException {
+    service.setSeparator(null);
+    assertEquals(MetadataAppenderService.DEFAULT_SEPARATOR, service.getSeparator());
+  }
+
+  static Stream<Arguments> testSeparatorProvider() {
+    return Stream.of(
+            Arguments.of((Object) new String[]{"key1", "val1"}),
+            Arguments.of((Object) new String[]{"key1", "key2", "val1|val2"}),
+            Arguments.of((Object) new String[]{"key1", "key2", "key3", "val1|val2|val3"}),
+            Arguments.of((Object) new String[]{"key1", "key2", "key3", "key4", "val1|val2|val3"})
+    );
+  }
+
 
   @Override
   protected Object retrieveObjectForSampleConfig() {

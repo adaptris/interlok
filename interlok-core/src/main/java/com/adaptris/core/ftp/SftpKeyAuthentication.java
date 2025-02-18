@@ -17,7 +17,10 @@ package com.adaptris.core.ftp;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import javax.validation.constraints.NotBlank;
+
+import com.adaptris.core.fs.FsHelper;
 import org.apache.commons.io.FileUtils;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
@@ -68,7 +71,7 @@ public class SftpKeyAuthentication implements SftpAuthenticationProvider {
 
   @Override
   public SftpClient connect(SftpClient sftp, UserInfo ui) throws FileTransferException, IOException, PasswordException {
-    byte[] privateKey = FileUtils.readFileToByteArray(new File(getPrivateKeyFilename()));
+    byte[] privateKey = FileUtils.readFileToByteArray(FsHelper.toFile(getPrivateKeyFilename(), new File(getPrivateKeyFilename())));
     String pw = ExternalResolver.resolve(getPrivateKeyPassword());
     sftp.connect(ui.getUser(), privateKey, pw != null ? Password.decode(pw).getBytes() : null);
     return sftp;

@@ -61,7 +61,7 @@ public class MovingNonDeletingFsConsumer extends NonDeletingFsConsumer
     log.info("Processing file : " + file.getAbsolutePath());
     final int x = super.processFile(file);
 
-    final File dir = new File(processedPath);
+    final File dir = FsHelper.toFile(processedPath, new File(processedPath));
     if (dir.exists() && !dir.isDirectory()) {
       throw new CoreException("Processed directory expected; but it wasn't!");
     }

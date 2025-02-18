@@ -73,7 +73,7 @@ public abstract class EventHandlerBase implements EventHandler {
 
   public abstract AdaptrisMessageSender retrieveProducer() throws CoreException;
 
-  private AdaptrisMessage createMessage(Event evt, Map<String, String> metadata) throws CoreException {
+  protected AdaptrisMessage createMessage(Event evt, Map<String, String> metadata) throws CoreException {
     evt.setSourceId(retrieveSourceId());
     Map<String, String> metadataToUse = metadata == null ? new HashMap<>() : metadata;
     AdaptrisMessage result = currentMessageFactory().newMessage(currentMarshaller().marshal(evt), new MetadataCollection(metadataToUse).toSet());

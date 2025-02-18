@@ -47,7 +47,34 @@ import lombok.NonNull;
 import lombok.Setter;
 
 /**
+ * <p>
  * {@link com.adaptris.core.AdaptrisMessageProducer} implementation that writes to the file system.
+ * </p>
+ * <p>
+ * The configured <code>Base Directory URL</code> may return a string in one of two formats
+ * </p>
+ * <ul>
+ * <li>
+ * Supports URLs with both the {@code file scheme} and without.
+ * </li>
+ * <li>
+ * If you define a directory without any leading slash or
+ * if it starts with a slash is deemed to be an <strong>absolute</strong> path.
+ * </li>
+ * <li>
+ * If "./" or "../" is used at the start of your definition then
+ * the path is deemed to be <strong>relative</strong>.</li>
+ * <li>
+ * This is true whether using the {@code file scheme} or not.
+ * </li>
+ * <li>
+ * With Windows systems The above is above is true plus if you simply define the <strong>absolute</strong> path including the drive letter
+ * e.g. 'c://my/path' this is also valid.
+ * </li>
+ * <li>
+ * Both / and \ slashes are supported.
+ * </li>
+ * </ul>
  *
  * @config fs-producer
  *
