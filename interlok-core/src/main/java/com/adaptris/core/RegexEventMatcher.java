@@ -40,8 +40,6 @@ public class RegexEventMatcher implements EventMatcher {
     @XStreamImplicit(itemFieldName = "match-type")
     private Set<String> matchTypes;
 
-    private transient Set<EventMatchType> matchTypeEnumSet;
-
     private transient Pattern compiledRegex;
 
     public RegexEventMatcher() {
@@ -56,7 +54,6 @@ public class RegexEventMatcher implements EventMatcher {
 
     public void setRegex(String regex) {
         this.regex = regex;
-        this.compiledRegex = Pattern.compile(regex);
     }
 
     public String getRegex() {
@@ -68,12 +65,19 @@ public class RegexEventMatcher implements EventMatcher {
     }
 
     public void setMatchTypes(Set<String> matchTypes) {
-        this.matchTypeEnumSet = matchTypes.stream().map(EventMatchType::valueOf).collect(Collectors.toSet());
         this.matchTypes = matchTypes;
+    }
+
+    private void compileRegexIfRequired() {
+        if (compiledRegex == null || !compiledRegex.pattern().equals(regex)) {
+            this.compiledRegex = Pattern.compile(regex);
+        }
     }
 
     @Override
     public boolean matches(Event event) {
+        Set<EventMatchType> matchTypeEnumSet = matchTypes.stream().map(EventMatchType::valueOf).collect(Collectors.toSet());
+        compileRegexIfRequired();
         for (EventMatchType matchType : matchTypeEnumSet) {
             if (compiledRegex.matcher((String) matchType.getProperty(event)).matches()) return true;
         }
