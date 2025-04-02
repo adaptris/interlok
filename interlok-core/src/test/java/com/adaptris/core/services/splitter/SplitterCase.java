@@ -141,6 +141,11 @@ public abstract class SplitterCase extends SplitterServiceExample {
         out.toByteArray());
   }
 
+  public static AdaptrisMessage createBytesMessageInput(byte[] bytes) {
+    return AdaptrisMessageFactory.getDefaultInstance().newMessage(
+            bytes);
+  }
+
   @Test
   public void testSetMessageFactory() throws Exception {
     MessageSplitterImp splitter = createSplitterForTests();
