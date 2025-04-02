@@ -53,7 +53,7 @@ public class BytesSplitter extends MessageSplitterImp {
 
   @InputFieldDefault(value = "1")
   private Integer retainedSplits = DEFAULT_RETAINED_SPLITS;
-  @InputFieldDefault(value = "10")
+  @InputFieldDefault(value = "10485760")
   private Integer splitSize = DEFAULT_SPLIT;
   @InputFieldDefault(value = "BYTE")
   private String splitUnit;
