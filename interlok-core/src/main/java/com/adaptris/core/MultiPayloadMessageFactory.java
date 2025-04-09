@@ -53,7 +53,7 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory {
   private static final Logger log = LoggerFactory.getLogger(MultiPayloadMessageFactory.class);
 
   @AdvancedConfig(rare = true)
-  private String defaultCharEncoding = "UTF-8";
+  private String defaultCharEncoding;
 
   private String defaultPayloadId = MultiPayloadAdaptrisMessage.DEFAULT_PAYLOAD_ID;
 
@@ -228,10 +228,6 @@ public class MultiPayloadMessageFactory extends AdaptrisMessageFactory {
   /**
    * Set the default character encoding to be applied to the message upon
    * creation.
-   * <p>
-   * If not explicitly configured, then the platform default character encoding
-   * will be used.
-   * </p>
    *
    * @param s
    *          the defaultCharEncoding to set
