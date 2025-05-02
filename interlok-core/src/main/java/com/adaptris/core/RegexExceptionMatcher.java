@@ -1,0 +1,56 @@
+package com.adaptris.core;
+
+import com.adaptris.annotation.AdapterComponent;
+import com.adaptris.annotation.AdvancedConfig;
+import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.annotation.InputFieldHint;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.Arrays;
+import java.util.regex.Pattern;
+
+@NoArgsConstructor
+@Getter
+@Setter
+@XStreamAlias("regex-exception-matcher")
+@AdapterComponent
+@ComponentProfile(summary = "A matcher that uses regex to match an exception", tag = "error-handling")
+public class RegexExceptionMatcher {
+
+    public enum MatchAgainstField {
+        EXCEPTION,
+        EXCEPTION_MESSAGE,
+        EXCEPTION_CAUSE,
+        STACKTRACE;
+
+        public static String[] getValues() {
+            return Arrays.stream(MatchAgainstField.values())
+                    .map(Enum::name)
+                    .toArray(String[]::new);
+        }
+    }
+
+    private String regex;
+    private transient Pattern compiledRegex;
+
+    @InputFieldHint(style = "MatchAgainstField#getValues")
+    private MatchAgainstField matchAgainstField;
+
+    public boolean matches(String exceptionString) {
+        if (exceptionString == null) {
+            return false;
+        }
+
+        compileRegexIfRequired();
+        return compiledRegex.matcher(exceptionString).matches();
+    }
+
+    private void compileRegexIfRequired() {
+        if (compiledRegex == null || !compiledRegex.pattern().equals(regex)) {
+            this.compiledRegex = Pattern.compile(regex);
+        }
+    }
+}
