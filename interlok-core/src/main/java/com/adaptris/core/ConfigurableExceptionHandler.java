@@ -33,7 +33,9 @@ public class ConfigurableExceptionHandler extends RootProcessingExceptionHandler
     @Getter
     @Setter
     private List<Rule> rules;
+    @Getter
     private transient Map<String, Workflow> workflows;
+    @Getter
     private transient EventHandler eventHandler;
 
     public ConfigurableExceptionHandler() {
