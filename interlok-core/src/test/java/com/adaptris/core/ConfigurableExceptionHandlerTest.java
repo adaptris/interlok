@@ -13,6 +13,8 @@ class ConfigurableExceptionHandlerTest {
     private ConfigurableExceptionHandler.Rule mockRule;
     private RegexExceptionMatcher mockMatcher;
     private Service mockService;
+    private Workflow mockWorkflow;
+    private EventHandler mockEventHandler;
 
     @BeforeEach
     void setUp() {
@@ -21,6 +23,9 @@ class ConfigurableExceptionHandlerTest {
         mockRule = mock(ConfigurableExceptionHandler.Rule.class);
         mockMatcher = mock(RegexExceptionMatcher.class);
         mockService = mock(Service.class);
+        exceptionHandler.setProcessingExceptionService(mockService);
+        mockWorkflow = mock(Workflow.class);
+        mockEventHandler = mock(EventHandler.class);
     }
 
     @Test
@@ -116,6 +121,7 @@ class ConfigurableExceptionHandlerTest {
 
     @Test
     void handleProcessingExceptionDoesNothingWhenNoRulesAndNoDefaultService() {
+        exceptionHandler.setProcessingExceptionService(null);
         exceptionHandler.handleProcessingException(mockMessage);
 
         verifyNoInteractions(mockService);
@@ -132,5 +138,71 @@ class ConfigurableExceptionHandlerTest {
 
         assertFalse(result);
         verifyNoInteractions(mockService);
+    }
+
+    @Test
+    void startService() throws CoreException {
+        exceptionHandler.start();
+
+        verify(mockService).requestStart();
+    }
+
+    @Test
+    void stopService() {
+        exceptionHandler.stop();
+
+        verify(mockService).requestStop();
+    }
+
+    @Test
+    void closeService() {
+        exceptionHandler.close();
+
+        verify(mockService).requestClose();
+    }
+
+    @Test
+    void prepareService() throws CoreException {
+        exceptionHandler.prepare();
+
+        verify(mockService).prepare();
+    }
+
+    @Test
+    void registerWorkflowAddsWorkflowToMap() {
+        when(mockWorkflow.obtainWorkflowId()).thenReturn("workflow-id");
+
+        exceptionHandler.registerWorkflow(mockWorkflow);
+
+        assertTrue(exceptionHandler.getWorkflows().containsKey("workflow-id"));
+        assertEquals(mockWorkflow, exceptionHandler.getWorkflows().get("workflow-id"));
+    }
+
+    @Test
+    void registerEventHandlerSetsEventHandler() {
+        exceptionHandler.registerEventHandler(mockEventHandler);
+
+        assertEquals(mockEventHandler, exceptionHandler.getEventHandler());
+    }
+
+    @Test
+    void hasConfiguredBehaviourReturnsTrueWhenServiceIsConfigured() {
+        assertTrue(exceptionHandler.hasConfiguredBehaviour());
+    }
+
+    @Test
+    void hasConfiguredBehaviourReturnsFalseWhenServiceIsNotConfigured() {
+        exceptionHandler.setProcessingExceptionService(null);
+
+        assertFalse(exceptionHandler.hasConfiguredBehaviour());
+    }
+
+    @Test
+    void initRegistersAndInitializesService() throws CoreException {
+        exceptionHandler.registerEventHandler(mockEventHandler);
+
+        exceptionHandler.init();
+
+        verify(mockService).requestInit();
     }
 }
