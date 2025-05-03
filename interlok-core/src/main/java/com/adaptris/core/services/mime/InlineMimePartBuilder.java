@@ -17,9 +17,9 @@ package com.adaptris.core.services.mime;
 
 import static com.adaptris.util.text.mime.MimeConstants.HEADER_CONTENT_TYPE;
 
-import javax.mail.internet.InternetHeaders;
-import javax.mail.internet.MimeBodyPart;
-import javax.validation.Valid;
+import jakarta.mail.internet.InternetHeaders;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.validation.Valid;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;

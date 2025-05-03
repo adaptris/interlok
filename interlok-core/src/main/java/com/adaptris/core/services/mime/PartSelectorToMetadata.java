@@ -2,9 +2,9 @@ package com.adaptris.core.services.mime;
 
 import java.io.ByteArrayOutputStream;
 
-import javax.mail.internet.MimeBodyPart;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

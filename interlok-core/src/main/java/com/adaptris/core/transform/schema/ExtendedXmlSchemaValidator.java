@@ -18,7 +18,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.StreamSupport;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.validation.Validator;
 import org.apache.commons.collections4.IterableUtils;

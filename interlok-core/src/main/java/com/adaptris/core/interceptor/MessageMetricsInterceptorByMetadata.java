@@ -19,8 +19,8 @@ package com.adaptris.core.interceptor;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import javax.management.MalformedObjectNameException;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;

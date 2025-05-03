@@ -24,12 +24,12 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 
-import javax.mail.BodyPart;
-import javax.mail.Header;
-import javax.mail.Multipart;
-import javax.mail.internet.InternetHeaders;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMultipart;
+import jakarta.mail.BodyPart;
+import jakarta.mail.Header;
+import jakarta.mail.Multipart;
+import jakarta.mail.internet.InternetHeaders;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMultipart;
 
 import org.apache.commons.lang3.StringUtils;
 

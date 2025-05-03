@@ -27,11 +27,11 @@ import static org.mockito.Mockito.when;
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 
-import javax.jms.BytesMessage;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageEOFException;
-import javax.jms.Session;
+import jakarta.jms.BytesMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.MessageEOFException;
+import jakarta.jms.Session;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -376,7 +376,7 @@ public class BytesMessageTranslatorTest extends GenericMessageTypeTranslatorCase
   }
 
   /**
-   * @see com.adaptris.core.jms.MessageTypeTranslatorCase#createMessage(javax.jms.Session)
+   * @see com.adaptris.core.jms.MessageTypeTranslatorCase#createMessage(jakarta.jms.Session)
    */
   @Override
   protected BytesMessage createMessage(Session session) throws Exception {

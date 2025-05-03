@@ -20,7 +20,7 @@ import java.util.Calendar;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.util.TimeInterval;

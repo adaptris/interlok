@@ -18,7 +18,7 @@ package com.adaptris.core.http.jetty;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

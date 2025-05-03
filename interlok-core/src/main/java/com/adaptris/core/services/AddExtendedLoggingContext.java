@@ -27,7 +27,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.MDC;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Add a mapped diagnostic context via {@link MDC#put(String, String)}.

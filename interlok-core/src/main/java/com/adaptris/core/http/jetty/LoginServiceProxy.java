@@ -2,7 +2,7 @@ package com.adaptris.core.http.jetty;
 
 import java.util.stream.Collectors;
 
-import javax.servlet.ServletRequest;
+import jakarta.servlet.ServletRequest;
 
 import org.eclipse.jetty.security.RolePrincipal;
 import org.eclipse.jetty.security.HashLoginService;

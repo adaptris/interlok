@@ -16,16 +16,16 @@
 
 package com.adaptris.core.jms;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.TextMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.TextMessage;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Translates between <code>AdaptrisMessage</code> and <code>javax.jms.TextMessages</code>. Assumes default platform encoding.
+ * Translates between <code>AdaptrisMessage</code> and <code>jakarta.jms.TextMessages</code>. Assumes default platform encoding.
  * </p>
  * <p>
  * In the adapter configuration file this class is aliased as <b>text-message-translator</b> which is the preferred alternative to

@@ -16,7 +16,7 @@
 package com.adaptris.sftp;
 
 import java.io.IOException;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.util.Args;
 import com.jcraft.jsch.ConfigRepository;

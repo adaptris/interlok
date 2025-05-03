@@ -16,7 +16,7 @@
 
 package com.adaptris.core.services.routing;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import javax.xml.namespace.NamespaceContext;
 import org.w3c.dom.Document;
 import com.adaptris.annotation.AdvancedConfig;

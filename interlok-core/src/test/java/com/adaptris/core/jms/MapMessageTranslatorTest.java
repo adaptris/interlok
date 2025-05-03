@@ -18,9 +18,9 @@ package com.adaptris.core.jms;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import javax.jms.MapMessage;
-import javax.jms.Message;
-import javax.jms.Session;
+import jakarta.jms.MapMessage;
+import jakarta.jms.Message;
+import jakarta.jms.Session;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -48,7 +48,7 @@ public class MapMessageTranslatorTest extends GenericMessageTypeTranslatorCase {
   }
   
   /**
-   * @see com.adaptris.core.jms.MessageTypeTranslatorCase#createMessage(javax.jms.Session)
+   * @see com.adaptris.core.jms.MessageTypeTranslatorCase#createMessage(jakarta.jms.Session)
    */
   @Override
   protected Message createMessage(Session session) throws Exception {

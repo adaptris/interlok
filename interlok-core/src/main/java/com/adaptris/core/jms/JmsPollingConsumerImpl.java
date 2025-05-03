@@ -18,13 +18,13 @@ package com.adaptris.core.jms;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-import javax.jms.Session;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.jms.Connection;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.JMSException;
+import jakarta.jms.MessageConsumer;
+import jakarta.jms.Session;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
@@ -51,9 +51,9 @@ import lombok.Setter;
  * implementations. This consumer has the following steps.
  * <ul>
  * <li>Connects to broker.</li>
- * <li>Attempts to obtain a {@link javax.jms.Message} within the given {@link #getReceiveTimeout()}.
+ * <li>Attempts to obtain a {@link jakarta.jms.Message} within the given {@link #getReceiveTimeout()}.
  * </li>
- * <li>If successful, processes the {@code javax.jms.Message} and repeats until no more messages.</li>
+ * <li>If successful, processes the {@code jakarta.jms.Message} and repeats until no more messages.</li>
  * <li>Closes the connection.</li>
  * </p>
  * <p>

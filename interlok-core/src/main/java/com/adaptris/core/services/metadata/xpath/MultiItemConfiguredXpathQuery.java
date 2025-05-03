@@ -16,7 +16,7 @@
 
 package com.adaptris.core.services.metadata.xpath;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;

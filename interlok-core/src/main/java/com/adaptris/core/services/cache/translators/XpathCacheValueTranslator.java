@@ -1,7 +1,7 @@
 package com.adaptris.core.services.cache.translators;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import javax.xml.namespace.NamespaceContext;
 import org.w3c.dom.Document;
 import com.adaptris.annotation.AdvancedConfig;

@@ -20,8 +20,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import javax.jms.JMSException;
-import javax.validation.Valid;
+import jakarta.jms.JMSException;
+import jakarta.validation.Valid;
 
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.AdaptrisMessage;

@@ -21,9 +21,9 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.util.concurrent.CountDownLatch;
 
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Session;
+import jakarta.jms.Destination;
+import jakarta.jms.JMSException;
+import jakarta.jms.Session;
 
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.CoreException;

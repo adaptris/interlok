@@ -9,7 +9,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.adaptris.core.services.conditional.Operator;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 

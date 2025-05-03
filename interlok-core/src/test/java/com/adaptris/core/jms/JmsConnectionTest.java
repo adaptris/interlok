@@ -18,7 +18,7 @@ package com.adaptris.core.jms;
 
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 
-import javax.jms.Session;
+import jakarta.jms.Session;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;

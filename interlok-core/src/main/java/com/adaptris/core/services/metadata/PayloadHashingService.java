@@ -18,8 +18,8 @@ package com.adaptris.core.services.metadata;
 
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.ComponentProfile;

@@ -18,8 +18,8 @@ package com.adaptris.core.http.server;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNumeric;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -105,7 +105,7 @@ public class MetadataStatusProvider implements HttpStatusProvider {
    * 
    * <p>
    * Note that for {@link com.adaptris.core.http.jetty.StandardResponseProducer} any values associated with the key will be ignored
-   * as that will use {@link javax.servlet.http.HttpServletResponse#setStatus(int)} method only. This is only included for
+   * as that will use {@link jakarta.servlet.http.HttpServletResponse#setStatus(int)} method only. This is only included for
    * completeness.
    * </p>
    * 

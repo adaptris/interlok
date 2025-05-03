@@ -16,7 +16,7 @@
 package com.adaptris.core.jdbc;
 
 import java.sql.SQLException;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import com.adaptris.annotation.AdapterComponent;

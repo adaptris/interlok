@@ -18,8 +18,8 @@ package com.adaptris.core.services;
 
 import static com.adaptris.core.util.ServiceUtil.discardNulls;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;

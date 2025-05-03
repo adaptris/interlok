@@ -3,9 +3,9 @@ package com.adaptris.core.jms;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.Session;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -73,7 +73,7 @@ public class SizeLimitedTextMessageTranslatorTest {
 //  }
 
   /**
-   * @see com.adaptris.core.jms.MessageTypeTranslatorCase#createMessage(javax.jms.Session)
+   * @see com.adaptris.core.jms.MessageTypeTranslatorCase#createMessage(jakarta.jms.Session)
    */
   
   protected Message createMessage(Session session) throws Exception {

@@ -16,7 +16,7 @@
 
 package com.adaptris.core.services.routing;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import com.adaptris.core.util.Args;
 
 public abstract class SyntaxIdentifierBase implements SyntaxIdentifier {

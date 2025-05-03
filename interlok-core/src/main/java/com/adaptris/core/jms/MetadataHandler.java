@@ -33,8 +33,8 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,11 +98,11 @@ public class MetadataHandler {
       String getValue(Message in) throws JMSException {
         String result = "";
         if (in.getJMSReplyTo() != null) {
-          if (in.getJMSReplyTo() instanceof javax.jms.Queue) {
-            result = ((javax.jms.Queue) in.getJMSReplyTo()).getQueueName();
+          if (in.getJMSReplyTo() instanceof jakarta.jms.Queue) {
+            result = ((jakarta.jms.Queue) in.getJMSReplyTo()).getQueueName();
           }
-          else if (in.getJMSReplyTo() instanceof javax.jms.Topic) {
-            result = ((javax.jms.Topic) in.getJMSReplyTo()).getTopicName();
+          else if (in.getJMSReplyTo() instanceof jakarta.jms.Topic) {
+            result = ((jakarta.jms.Topic) in.getJMSReplyTo()).getTopicName();
           }
         }
         return result;
@@ -142,11 +142,11 @@ public class MetadataHandler {
       @Override
       String getValue(Message msg) throws JMSException {
         String result = "";
-        if (msg.getJMSDestination() instanceof javax.jms.Queue) {
-          result = ((javax.jms.Queue) msg.getJMSDestination()).getQueueName();
+        if (msg.getJMSDestination() instanceof jakarta.jms.Queue) {
+          result = ((jakarta.jms.Queue) msg.getJMSDestination()).getQueueName();
         }
-        else if (msg.getJMSDestination() instanceof javax.jms.Topic) {
-          result = ((javax.jms.Topic) msg.getJMSDestination()).getTopicName();
+        else if (msg.getJMSDestination() instanceof jakarta.jms.Topic) {
+          result = ((jakarta.jms.Topic) msg.getJMSDestination()).getTopicName();
         }
         return result;
       }
@@ -192,7 +192,7 @@ public class MetadataHandler {
 
   /**
    * <p>
-   * Moves metadata from a <code>javax.jms.Message</code> to a <code>AdaptrisMessage</code> if <code>moveMetadata</code> is
+   * Moves metadata from a <code>jakarta.jms.Message</code> to a <code>AdaptrisMessage</code> if <code>moveMetadata</code> is
    * <code>true</code>.
    * </p>
    *
@@ -251,7 +251,7 @@ public class MetadataHandler {
 
   /**
    * <p>
-   * Moves metadata from an <code>AdaptrisMessage</code> to a <code>javax.jms.Message</code> if <code>moveMetadata</code> is
+   * Moves metadata from an <code>AdaptrisMessage</code> to a <code>jakarta.jms.Message</code> if <code>moveMetadata</code> is
    * <code>true</code>.
    * </p>
    *

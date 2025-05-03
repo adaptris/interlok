@@ -16,8 +16,8 @@
 
 package com.adaptris.core.jms.jndi;
 
-import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.JMSException;
 
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.jms.VendorImplementation;

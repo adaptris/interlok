@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import javax.jms.JMSException;
-import javax.jms.Queue;
+import jakarta.jms.JMSException;
+import jakarta.jms.Queue;
 
 import org.junit.jupiter.api.Test;
 
@@ -49,7 +49,7 @@ public class JmsReplyToCacheValueTranslatorTest extends CacheValueTranslatorBase
     CacheValueTranslator translator = new JmsReplyToCacheValueTranslator();
     try {
       translator.addValueToMessage(message, new Object());
-      fail("Successfully added an object that isn't a javax.jms.Destination");
+      fail("Successfully added an object that isn't a jakarta.jms.Destination");
     }
     catch (ClassCastException expected) {
       ;

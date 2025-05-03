@@ -26,8 +26,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;

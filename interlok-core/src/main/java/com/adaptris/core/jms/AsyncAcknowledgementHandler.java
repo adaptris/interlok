@@ -1,8 +1,8 @@
 package com.adaptris.core.jms;
 
-import javax.jms.CompletionListener;
-import javax.jms.JMSException;
-import javax.jms.Message;
+import jakarta.jms.CompletionListener;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
 
 public class AsyncAcknowledgementHandler implements AcknowledgementHandler, CompletionListener {
 

@@ -18,7 +18,7 @@ package com.adaptris.core.services.routing;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.core.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;

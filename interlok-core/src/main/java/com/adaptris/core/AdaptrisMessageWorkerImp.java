@@ -20,7 +20,7 @@ import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

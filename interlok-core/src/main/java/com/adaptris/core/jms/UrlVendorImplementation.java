@@ -16,7 +16,7 @@
 
 package com.adaptris.core.jms;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
 

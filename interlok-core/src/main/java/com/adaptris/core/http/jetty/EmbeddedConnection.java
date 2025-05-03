@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.eclipse.jetty.security.SecurityHandler;
 import org.eclipse.jetty.webapp.WebAppContext;

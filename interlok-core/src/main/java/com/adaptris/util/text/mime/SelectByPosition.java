@@ -19,10 +19,10 @@ package com.adaptris.util.text.mime;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMultipart;
-import javax.validation.constraints.Min;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMultipart;
+import jakarta.validation.constraints.Min;
 
 import com.adaptris.annotation.AutoPopulated;
 import com.thoughtworks.xstream.annotations.XStreamAlias;

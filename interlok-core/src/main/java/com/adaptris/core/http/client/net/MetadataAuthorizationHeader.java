@@ -16,7 +16,7 @@
 package com.adaptris.core.http.client.net;
 
 import java.net.HttpURLConnection;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import org.apache.commons.lang3.StringUtils;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;

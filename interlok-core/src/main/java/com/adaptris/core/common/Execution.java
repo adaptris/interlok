@@ -16,8 +16,8 @@
 
 package com.adaptris.core.common;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import com.adaptris.core.util.Args;
 import com.adaptris.interlok.config.DataInputParameter;

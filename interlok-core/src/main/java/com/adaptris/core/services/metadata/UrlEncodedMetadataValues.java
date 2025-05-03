@@ -18,7 +18,7 @@ package com.adaptris.core.services.metadata;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.apache.commons.lang3.ObjectUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;

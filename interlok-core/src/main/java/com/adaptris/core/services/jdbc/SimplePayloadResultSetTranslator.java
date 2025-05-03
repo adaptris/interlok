@@ -24,7 +24,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Iterator;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;

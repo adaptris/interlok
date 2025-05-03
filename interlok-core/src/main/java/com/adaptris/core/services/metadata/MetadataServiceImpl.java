@@ -16,7 +16,7 @@
 package com.adaptris.core.services.metadata;
 
 import java.util.Collection;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import com.adaptris.annotation.AdvancedConfig;
