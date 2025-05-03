@@ -18,7 +18,7 @@ package com.adaptris.core.services.metadata;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import java.util.Iterator;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;

@@ -15,7 +15,7 @@
 */
 package com.adaptris.util.text.mime;
 
-import javax.mail.internet.InternetHeaders;
+import jakarta.mail.internet.InternetHeaders;
 
 public interface MimeHeaders {
 

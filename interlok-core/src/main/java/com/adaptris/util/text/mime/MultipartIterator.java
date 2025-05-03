@@ -20,9 +20,9 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.activation.DataSource;
-import javax.mail.MessagingException;
-import javax.mail.internet.InternetHeaders;
+import jakarta.activation.DataSource;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetHeaders;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -43,7 +43,7 @@ public abstract class MultipartIterator implements Closeable {
    * @param in the Inputstream from which to parse the mime multi-part
    * @throws MessagingException if the bytes did not contain a valid MimeMultiPart
    * @throws IOException if there was an IOException
-   * @throws MessagingException if an underlying javax.mail exception occurred
+   * @throws MessagingException if an underlying jakarta.mail exception occurred
    */
   public MultipartIterator(InputStream in) throws IOException, MessagingException {
     this(new InputStreamDataSource(in));

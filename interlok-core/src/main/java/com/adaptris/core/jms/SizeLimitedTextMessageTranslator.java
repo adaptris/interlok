@@ -4,11 +4,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.TextMessage;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.TextMessage;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -23,7 +23,7 @@ import lombok.Setter;
 /**
  * <p>
  * Translates between <code>AdaptrisMessage</code> and
- * <code>javax.jms.TextMessages</code>. Assumes default platform encoding.
+ * <code>jakarta.jms.TextMessages</code>. Assumes default platform encoding.
  * </p>
  * <p>
  * In the adapter configuration file this class is aliased as

@@ -16,9 +16,9 @@
 
 package com.adaptris.core.jms;
 
-import javax.jms.Session;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.jms.Session;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -162,7 +162,7 @@ public final class JmsTransactedWorkflow extends StandardWorkflow {
   }
 
   /**
-   * set the amount of time to wait after issue a {@link javax.jms.Session#rollback()} before continuing processing.
+   * set the amount of time to wait after issue a {@link jakarta.jms.Session#rollback()} before continuing processing.
    *
    * @param interval the interval, default if not set is 30 seconds.
    */

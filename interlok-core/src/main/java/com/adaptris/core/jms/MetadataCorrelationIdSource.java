@@ -17,10 +17,10 @@
 package com.adaptris.core.jms;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.DisplayOrder;
@@ -63,7 +63,7 @@ public class MetadataCorrelationIdSource implements CorrelationIdSource {
    * </p>
    *
    * @see com.adaptris.core.jms.CorrelationIdSource#processCorrelationId
-   *      (com.adaptris.core.AdaptrisMessage, javax.jms.Message)
+   *      (com.adaptris.core.AdaptrisMessage, jakarta.jms.Message)
    */
   @Override
   public void processCorrelationId(AdaptrisMessage src, Message dest) throws JMSException {

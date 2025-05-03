@@ -1,10 +1,10 @@
 package com.adaptris.core.jms;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-import javax.jms.Session;
-import javax.validation.constraints.NotBlank;
+import jakarta.jms.JMSException;
+import jakarta.jms.MessageConsumer;
+import jakarta.jms.Session;
+import jakarta.validation.constraints.NotBlank;
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import com.adaptris.annotation.AdapterComponent;

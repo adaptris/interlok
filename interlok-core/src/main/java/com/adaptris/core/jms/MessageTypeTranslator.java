@@ -16,9 +16,9 @@
 
 package com.adaptris.core.jms;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.Session;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageTranslator;
 import com.adaptris.core.ComponentLifecycle;
@@ -28,7 +28,7 @@ import com.adaptris.core.ComponentLifecycle;
 /**
  * <p>
  * Interface that translate <code>AdaptrisMessage</code>s to the various type of
- * <code>javax.jms.Message</code>s, and vice versa.
+ * <code>jakarta.jms.Message</code>s, and vice versa.
  * </p>
  */
 public interface MessageTypeTranslator extends ComponentLifecycle,
@@ -37,22 +37,22 @@ public interface MessageTypeTranslator extends ComponentLifecycle,
   /**
    * <p>
    * Translates the passed <code>AdaptrisMessage</code> into an instance of a
-   * subclass of <code>javax.jms.Message</code>.
+   * subclass of <code>jakarta.jms.Message</code>.
    * </p>
    * 
    * @param msg the <code>AdaptrisMessage</code> to translate
-   * @return a <code>javax.jms.Message</code>
+   * @return a <code>jakarta.jms.Message</code>
    * @throws JMSException
    */
   Message translate(AdaptrisMessage msg) throws JMSException;
 
   /**
    * <p>
-   * Translates the passed <code>javax.jms.Message</code> into an instance of
+   * Translates the passed <code>jakarta.jms.Message</code> into an instance of
    * <code>AdaptrisMessage</code>.
    * </p>
    * 
-   * @param msg the <code>javax.jms.Message</code> to translate
+   * @param msg the <code>jakarta.jms.Message</code> to translate
    * @return a <code>AdaptrisMessage</code>
    * @throws JMSException
    */

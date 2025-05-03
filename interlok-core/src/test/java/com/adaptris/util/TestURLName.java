@@ -18,7 +18,7 @@ package com.adaptris.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import javax.mail.URLName;
+import jakarta.mail.URLName;
 
 import org.junit.jupiter.api.Test;
 

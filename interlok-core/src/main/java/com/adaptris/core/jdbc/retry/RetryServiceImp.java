@@ -2,7 +2,7 @@ package com.adaptris.core.jdbc.retry;
 
 import java.sql.SQLException;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.BooleanUtils;
 

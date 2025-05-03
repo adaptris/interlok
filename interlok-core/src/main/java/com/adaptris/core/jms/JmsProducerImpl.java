@@ -29,15 +29,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
-import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import jakarta.jms.Destination;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.Session;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -306,7 +306,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
    * </p>
    * <p>
    * The value may be either "PERSISENT", "NON_PERSISTENT", or the int corresponding to the
-   * javax.jms.DeliveryMode constant.
+   * jakarta.jms.DeliveryMode constant.
    *
    * @param i the JMS delivery mode
    */
@@ -593,8 +593,8 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
    * Some JMS providers may not make information such as {@link Message#getJMSMessageID()} available
    * until the message is accepted for delivery by the provider. Set this to be true, if you need to
    * make use of that information later on in the workflow. All information captured is stored
-   * against the object metadata key "javax.jms.Message.{propertyName}" e.g.
-   * "javax.jms.Message.JMSMessageID" where JMSMessageID is derived from the associated
+   * against the object metadata key "jakarta.jms.Message.{propertyName}" e.g.
+   * "jakarta.jms.Message.JMSMessageID" where JMSMessageID is derived from the associated
    * {@link JmsConstants} constant.
    * </p>
    *

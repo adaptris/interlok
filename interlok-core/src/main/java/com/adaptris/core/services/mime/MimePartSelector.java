@@ -20,10 +20,10 @@ import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
 import java.util.Enumeration;
 
-import javax.mail.Header;
-import javax.mail.internet.MimeBodyPart;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.mail.Header;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.BooleanUtils;
 

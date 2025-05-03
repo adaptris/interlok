@@ -16,8 +16,8 @@
 
 package com.adaptris.core.http.jetty;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import org.eclipse.jetty.http.HttpCompliance;
 import org.eclipse.jetty.security.SecurityHandler;

@@ -18,8 +18,8 @@ package com.adaptris.core.http;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-import javax.mail.internet.ContentType;
-import javax.mail.internet.ParseException;
+import jakarta.mail.internet.ContentType;
+import jakarta.mail.internet.ParseException;
 
 public abstract class ContentTypeProviderImpl implements ContentTypeProvider {
 

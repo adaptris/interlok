@@ -18,9 +18,9 @@ package com.adaptris.core.jms;
 
 import java.util.function.Consumer;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.Session;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +34,7 @@ import com.adaptris.core.util.ExceptionHelper;
 
 /**
  * <p>
- * Behaviour for <code>javax.jms.MessageListener.onMessage</code> is identical for polling and listening implementations. It can't
+ * Behaviour for <code>jakarta.jms.MessageListener.onMessage</code> is identical for polling and listening implementations. It can't
  * easily be shared using inheritance because polling consumers must extend <code>AdaptrisPollingConsumer</code>. Hence this utility
  * class to be used by both polling and listening imps. This class is not marshalled or configurable.
  * </p>
@@ -136,9 +136,9 @@ public class OnMessageHandler {
   /**
    * <p>
    * Uses <code>translator</code> to create an <code>AdaptrisMessage</code> from
-   * the <code>javax.jms.Message</code>. Adds the <code>JMSReplyTo</code> as
+   * the <code>jakarta.jms.Message</code>. Adds the <code>JMSReplyTo</code> as
    * transient 'Object' metadata. Passes the <code>AdaptrisMessage</code> to
-   * <code>listener</code>. Acknowledges <code>javax.jms.Message</code>.
+   * <code>listener</code>. Acknowledges <code>jakarta.jms.Message</code>.
    * </p>
    * <p>
    * NB if, as is almost always the case, <code>listener</code> is a

@@ -18,7 +18,7 @@ package com.adaptris.core;
 
 
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import com.adaptris.core.util.MetadataHelper;
 import com.adaptris.util.KeyValuePairBag;

@@ -22,7 +22,7 @@ import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;
 import lombok.Getter;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 

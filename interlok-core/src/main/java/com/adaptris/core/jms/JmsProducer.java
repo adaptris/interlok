@@ -22,11 +22,11 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.util.Optional;
 
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageConsumer;
-import javax.validation.constraints.NotBlank;
+import jakarta.jms.Destination;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.MessageConsumer;
+import jakarta.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.BooleanUtils;
 
@@ -201,7 +201,7 @@ public class JmsProducer extends JmsProducerImpl {
    * @param msg the message (which will be checked for {@code JMS_ASYNC_STATIC_REPLY_TO}.
    * @param createTmpDest - create a temporary destination if {@code JMS_ASYNC_STATIC_REPLY_TO}
    *        isn't available.
-   * @return a javax.jms.Destination
+   * @return a jakarta.jms.Destination
    */
   protected Destination createReplyTo(AdaptrisMessage msg, JmsDestination target, boolean createTmpDest)
           throws JMSException {

@@ -23,7 +23,7 @@ import java.io.IOException;
  * Simple Data Conversion methods.
  * <p>
  * Only small amounts of data should be converted using this class, to write a large number of bytes as a Base64 String, an
- * alternative method such as IAIK's Base64OutputStream should be used, or javax.mail.internet.MimeUtility.
+ * alternative method such as IAIK's Base64OutputStream should be used, or jakarta.mail.internet.MimeUtility.
  * </p>
  *
  */

@@ -53,26 +53,26 @@ abstract class MessageImp implements HttpMessage {
     }
   }
 
-  /** @see javax.activation.DataSource#getInputStream() */
+  /** @see jakarta.activation.DataSource#getInputStream() */
   @Override
   public InputStream getInputStream() throws java.io.IOException {
     return input;
   }
 
-  /** @see javax.activation.DataSource#getOutputStream() */
+  /** @see jakarta.activation.DataSource#getOutputStream() */
   @Override
   public OutputStream getOutputStream() throws java.io.IOException {
     return output;
   }
 
-  /** @see javax.activation.DataSource#getName()
+  /** @see jakarta.activation.DataSource#getName()
    */
   @Override
   public String getName() {
     return getHeaders().get(Http.HEADER_MESSAGE_ID);
   }
 
-  /** @see javax.activation.DataSource#getContentType()
+  /** @see jakarta.activation.DataSource#getContentType()
    */
   @Override
   public String getContentType() {

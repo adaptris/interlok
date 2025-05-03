@@ -20,9 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import javax.jms.Message;
-import javax.jms.Session;
-import javax.jms.TextMessage;
+import jakarta.jms.Message;
+import jakarta.jms.Session;
+import jakarta.jms.TextMessage;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -112,7 +112,7 @@ public class TextMessageTranslatorTest extends GenericMessageTypeTranslatorCase 
   }
 
   /**
-   * @see com.adaptris.core.jms.MessageTypeTranslatorCase#createMessage(javax.jms.Session)
+   * @see com.adaptris.core.jms.MessageTypeTranslatorCase#createMessage(jakarta.jms.Session)
    */
   @Override
   protected Message createMessage(Session session) throws Exception {

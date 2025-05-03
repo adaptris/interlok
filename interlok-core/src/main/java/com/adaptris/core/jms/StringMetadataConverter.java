@@ -5,7 +5,7 @@ import com.adaptris.core.metadata.MetadataFilter;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * <code>MetadataElement</code> key and value set as property of <code>javax.jms.Message</code>
+ * <code>MetadataElement</code> key and value set as property of <code>jakarta.jms.Message</code>
  * using <code>setStringProperty(String key, String value)</code>.
  *
  * @config jms-string-metadata-converter

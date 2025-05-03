@@ -1,7 +1,7 @@
 package com.adaptris.core;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

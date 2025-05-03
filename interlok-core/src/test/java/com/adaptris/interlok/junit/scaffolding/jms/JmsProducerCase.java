@@ -32,8 +32,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import javax.jms.DeliveryMode;
-import javax.jms.JMSException;
+import jakarta.jms.DeliveryMode;
+import jakarta.jms.JMSException;
 
 import org.junit.jupiter.api.Test;
 

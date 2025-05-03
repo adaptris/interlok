@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
-import javax.jms.JMSException;
-import javax.jms.Queue;
-import javax.jms.Topic;
+import jakarta.jms.JMSException;
+import jakarta.jms.Queue;
+import jakarta.jms.Topic;
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AutoPopulated;
@@ -297,7 +297,7 @@ public abstract class BaseJndiImplementation extends VendorImplementationImp {
   }
 
   /**
-   * Configure any additional settings that need to be applied to the {@link javax.jms.ConnectionFactory} after it has been read
+   * Configure any additional settings that need to be applied to the {@link jakarta.jms.ConnectionFactory} after it has been read
    * from the JNDI store.
    * <p>
    * Generally speaking, this is not encouraged, as you are now keeping configuration in 2 separate locations (both JNDI and adapter

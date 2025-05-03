@@ -1,9 +1,9 @@
 package com.adaptris.core.jms;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,11 +51,11 @@ public abstract class MetadataConverter {
 
   /**
    * <code>MetadataCollection</code> filtered using {@link #getMetadataFilter()} and iterated passing
-   * <code>MetadataElement</code> and <code>javax.jms.Message</code> on to
+   * <code>MetadataElement</code> and <code>jakarta.jms.Message</code> on to
    * {@link #setProperty(MetadataElement element, Message out) setProperty}.
    *
    * @param metadataCollection the <code>MetadataCollection</code> to use.
-   * @param out the <code>javax.jms.Message</code> to set the properties on.
+   * @param out the <code>jakarta.jms.Message</code> to set the properties on.
    * @throws JMSException
    */
   public void moveMetadata(MetadataCollection metadataCollection, Message out) throws JMSException {
@@ -67,11 +67,11 @@ public abstract class MetadataConverter {
   }
 
   /**
-   * <code>MetadataElement</code> key and value set as property of <code>javax.jms.Message</code> using
+   * <code>MetadataElement</code> key and value set as property of <code>jakarta.jms.Message</code> using
    * <code>setStringProperty(String key, String value)</code>.
    *
    * @param element the <code>MetadataElement</code> to use.
-   * @param out the <code>javax.jms.Message</code> to set the property on.
+   * @param out the <code>jakarta.jms.Message</code> to set the property on.
    * @throws JMSException
    */
   public void setProperty(MetadataElement element, Message out) throws JMSException {

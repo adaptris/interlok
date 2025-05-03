@@ -16,7 +16,7 @@
 
 package com.adaptris.core.services.metadata;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import javax.xml.namespace.NamespaceContext;
 
 import com.adaptris.annotation.AdapterComponent;

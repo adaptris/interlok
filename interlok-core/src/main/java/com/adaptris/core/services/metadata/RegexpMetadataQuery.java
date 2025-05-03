@@ -19,7 +19,7 @@ package com.adaptris.core.services.metadata;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.BooleanUtils;
 

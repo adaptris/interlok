@@ -1,6 +1,7 @@
 package com.adaptris.core.http.jetty;
 
-import javax.validation.constraints.NotBlank;
+import java.io.File;
+import jakarta.validation.constraints.NotBlank;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.fs.FsHelper;

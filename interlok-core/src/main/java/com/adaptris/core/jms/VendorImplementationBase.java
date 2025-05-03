@@ -1,11 +1,11 @@
 package com.adaptris.core.jms;
 
-import javax.jms.Connection;
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-import javax.jms.Queue;
-import javax.jms.Session;
-import javax.jms.Topic;
+import jakarta.jms.Connection;
+import jakarta.jms.JMSException;
+import jakarta.jms.MessageConsumer;
+import jakarta.jms.Queue;
+import jakarta.jms.Session;
+import jakarta.jms.Topic;
 
 import com.adaptris.core.ComponentLifecycleExtension;
 
@@ -69,7 +69,7 @@ public interface VendorImplementationBase
    * attaching a subscriber to a topic; {@code jms:topic:MyTopicName?subscriptionId=myId} would
    * return a {@link JmsDestination#subscriptionId()} of {@code myId}</li>
    * <li>{@code noLocal} - which corresponds to the
-   * {@link javax.jms.Session#createConsumer(javax.jms.Destination, String, boolean)} noLocal
+   * {@link jakarta.jms.Session#createConsumer(jakarta.jms.Destination, String, boolean)} noLocal
    * setting. This defaults to false, if not specified.</li>
    * <ul>
    * </p>
@@ -89,7 +89,7 @@ public interface VendorImplementationBase
    * If the {@link JmsDestination#destinationType()} is a
    * {@link JmsDestination.DestinationType#TOPIC}, and {@link JmsDestination#subscriptionId()} is
    * not blank, then a durable subscriber is created otherwise a standard consumer is created. Also
-   * {@link JmsDestination#noLocal()} is passed through to the appropriate {@link javax.jms.Session}
+   * {@link JmsDestination#noLocal()} is passed through to the appropriate {@link jakarta.jms.Session}
    * methods.
    * </p>
    *

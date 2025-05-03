@@ -20,10 +20,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
-import javax.validation.Valid;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.Session;
+import jakarta.validation.Valid;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
@@ -47,7 +47,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 /**
  * <p>
  * Super class of classes that translate <code>AdaptrisMessage</code>s to the
- * various type of <code>javax.jms.Message</code>s, and vice versa. Set a
+ * various type of <code>jakarta.jms.Message</code>s, and vice versa. Set a
  * <code>metadataFilter</code> to move metadata when the message is translated.
  * If the moveJmsHeaders flag is true, JMS  headers will be moved as well.
  * </p>
@@ -260,7 +260,7 @@ public abstract class MessageTypeTranslatorImp implements MessageTypeTranslator,
    * </p>
    *
    * @param translator the translator to use.
-   * @param msg the javax.jms.Message
+   * @param msg the jakarta.jms.Message
    * @return an AdaptrisMessage instance
    * @throws JMSException if the message could not be translated.
    */

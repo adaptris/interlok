@@ -16,7 +16,7 @@
 
 package com.adaptris.core.jms;
 
-import javax.jms.JMSException;
+import jakarta.jms.JMSException;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;

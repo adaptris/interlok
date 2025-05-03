@@ -1,7 +1,7 @@
 package com.adaptris.core.http.oauth;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.AffectsMetadata;
 import com.adaptris.annotation.ComponentProfile;

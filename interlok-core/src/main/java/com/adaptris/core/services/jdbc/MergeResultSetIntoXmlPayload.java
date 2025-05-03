@@ -18,8 +18,8 @@ package com.adaptris.core.services.jdbc;
 
 import java.sql.SQLException;
 import java.util.List;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import com.adaptris.annotation.DisplayOrder;

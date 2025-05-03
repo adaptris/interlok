@@ -17,8 +17,8 @@ package com.adaptris.core.cache;
 
 import java.util.HashSet;
 import java.util.Set;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.ComponentProfile;

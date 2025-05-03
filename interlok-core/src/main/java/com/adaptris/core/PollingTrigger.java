@@ -25,7 +25,7 @@ import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.apache.commons.lang3.ObjectUtils;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 

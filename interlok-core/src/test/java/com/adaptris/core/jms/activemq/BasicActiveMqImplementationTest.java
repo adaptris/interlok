@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import javax.jms.JMSException;
+import jakarta.jms.JMSException;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.junit.jupiter.api.AfterAll;
@@ -88,7 +88,7 @@ public class BasicActiveMqImplementationTest {
       producer.doService(AdaptrisMessageFactory.getDefaultInstance().newMessage("abcde"));
       JmsDestination jmsDest = vendorImp.createDestination("jms:queue:myQueueName", ptp);
       assertNotNull(jmsDest.getDestination());
-      assertTrue(javax.jms.Queue.class.isAssignableFrom(jmsDest.getDestination().getClass()));
+      assertTrue(jakarta.jms.Queue.class.isAssignableFrom(jmsDest.getDestination().getClass()));
       assertNull(jmsDest.deliveryMode());
       assertNull(jmsDest.getReplyToDestination());
       assertNull(jmsDest.priority());
@@ -117,9 +117,9 @@ public class BasicActiveMqImplementationTest {
                   "jms:queue:MyQueueName?replyToName=StaticReplyTo&priority=1&deliveryMode=NON_PERSISTENT&timeToLive=1000",
                   ptp);
       assertNotNull(jmsDest.getDestination());
-      assertTrue(javax.jms.Queue.class.isAssignableFrom(jmsDest.getDestination().getClass()));
+      assertTrue(jakarta.jms.Queue.class.isAssignableFrom(jmsDest.getDestination().getClass()));
       assertNotNull(jmsDest.getReplyToDestination());
-      assertTrue(javax.jms.Queue.class.isAssignableFrom(jmsDest.getReplyToDestination().getClass()));
+      assertTrue(jakarta.jms.Queue.class.isAssignableFrom(jmsDest.getReplyToDestination().getClass()));
 
       assertNotNull(jmsDest.deliveryMode());
       assertEquals("NON_PERSISTENT", jmsDest.deliveryMode());

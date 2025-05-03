@@ -16,8 +16,8 @@
 
 package com.adaptris.core.jms;
 
-import javax.jms.MessageProducer;
-import javax.jms.Session;
+import jakarta.jms.MessageProducer;
+import jakarta.jms.Session;
 
 /**
  * Wrapper around a {@link MessageProducer} and {@link Session}.

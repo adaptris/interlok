@@ -16,7 +16,7 @@
 
 package com.adaptris.http;
 
-import javax.activation.DataSource;
+import jakarta.activation.DataSource;
 
 /** A HTTP message.
  *  <p>A Http message unit is considerd to contain 2 parts, the header and the 

@@ -30,11 +30,11 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import javax.mail.MessagingException;
-import javax.mail.internet.InternetHeaders;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMultipart;
-import javax.mail.internet.MimeUtility;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetHeaders;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMultipart;
+import jakarta.mail.internet.MimeUtility;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -301,7 +301,7 @@ public class MultiPartOutput implements MimeConstants {
    * 
    * @param key the key
    * @param value the value.
-   * @see javax.mail.internet.InternetHeaders
+   * @see jakarta.mail.internet.InternetHeaders
    */
   public void setHeader(String key, String value) {
     mimeHeader.setHeader(key, value);

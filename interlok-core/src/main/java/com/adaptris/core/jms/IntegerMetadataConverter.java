@@ -1,7 +1,7 @@
 package com.adaptris.core.jms;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
 import org.apache.commons.lang3.math.NumberUtils;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.MetadataElement;
@@ -11,7 +11,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 /**
  *
  * <p>
- * <code>MetadataElement</code> key and value set as property of <code>javax.jms.Message</code>
+ * <code>MetadataElement</code> key and value set as property of <code>jakarta.jms.Message</code>
  * using <code>setIntProperty(String key, int value)</code>.
  * </p>
  *
@@ -32,11 +32,11 @@ public class IntegerMetadataConverter extends MetadataConverter {
   }
 
   /**
-   * <code>MetadataElement</code> key and value set as property of <code>javax.jms.Message</code>
+   * <code>MetadataElement</code> key and value set as property of <code>jakarta.jms.Message</code>
    * using <code>setIntProperty(String key, int value)</code>.
    *
    * @param element the <code>MetadataElement</code> to use.
-   * @param out the <code>javax.jms.Message</code> to set the property on.
+   * @param out the <code>jakarta.jms.Message</code> to set the property on.
    * @throws JMSException
    */
   @Override

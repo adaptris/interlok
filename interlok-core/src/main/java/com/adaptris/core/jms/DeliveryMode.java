@@ -18,7 +18,7 @@ package com.adaptris.core.jms;
 
 
 /**
- * Utility class to convert a meaningful string into a javax.jms.DeliveryMode
+ * Utility class to convert a meaningful string into a jakarta.jms.DeliveryMode
  * constant.
  *
  * @author lchan
@@ -28,23 +28,23 @@ public class DeliveryMode {
 
   public enum Mode {
     /**
-     * Maps to {@link javax.jms.DeliveryMode#PERSISTENT}
+     * Maps to {@link jakarta.jms.DeliveryMode#PERSISTENT}
      *
      */
     PERSISTENT {
       @Override
       int deliveryMode() {
-        return javax.jms.DeliveryMode.PERSISTENT;
+        return jakarta.jms.DeliveryMode.PERSISTENT;
       }
     },
     /**
-     * Maps to {@link javax.jms.DeliveryMode#NON_PERSISTENT}
+     * Maps to {@link jakarta.jms.DeliveryMode#NON_PERSISTENT}
      *
      */
     NON_PERSISTENT {
       @Override
       int deliveryMode() {
-        return javax.jms.DeliveryMode.NON_PERSISTENT;
+        return jakarta.jms.DeliveryMode.NON_PERSISTENT;
       }
     };
     abstract int deliveryMode();
