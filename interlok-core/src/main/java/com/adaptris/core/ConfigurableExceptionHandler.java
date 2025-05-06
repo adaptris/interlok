@@ -42,7 +42,7 @@ public class ConfigurableExceptionHandler extends RootProcessingExceptionHandler
     @Getter
     @Setter
     @Valid
-    private Service processingExceptionService;
+    private Service defaultExceptionProcessingService;
     @Valid
     @AutoPopulated
     @XStreamImplicit
@@ -82,8 +82,8 @@ public class ConfigurableExceptionHandler extends RootProcessingExceptionHandler
                 }
             }
 
-            if (!matchedRule && getProcessingExceptionService() != null) {
-                getProcessingExceptionService().doService(msg);
+            if (!matchedRule && getDefaultExceptionProcessingService() != null) {
+                getDefaultExceptionProcessingService().doService(msg);
             }
         } catch (Exception ex) {
             log.error("Exception handling error msg [{}]",
@@ -95,28 +95,28 @@ public class ConfigurableExceptionHandler extends RootProcessingExceptionHandler
 
     @Override
     public void init() throws CoreException {
-        LifecycleHelper.registerEventHandler(getProcessingExceptionService(), eventHandler);
-        LifecycleHelper.init(getProcessingExceptionService());
+        LifecycleHelper.registerEventHandler(getDefaultExceptionProcessingService(), eventHandler);
+        LifecycleHelper.init(getDefaultExceptionProcessingService());
     }
 
     @Override
     public void start() throws CoreException {
-        LifecycleHelper.start(getProcessingExceptionService());
+        LifecycleHelper.start(getDefaultExceptionProcessingService());
     }
 
     @Override
     public void stop() {
-        LifecycleHelper.stop(getProcessingExceptionService());
+        LifecycleHelper.stop(getDefaultExceptionProcessingService());
     }
 
     @Override
     public void close() {
-        LifecycleHelper.close(getProcessingExceptionService());
+        LifecycleHelper.close(getDefaultExceptionProcessingService());
     }
 
     @Override
     public void prepare() throws CoreException {
-        LifecycleHelper.prepare(getProcessingExceptionService());
+        LifecycleHelper.prepare(getDefaultExceptionProcessingService());
     }
 
     @Override
@@ -131,7 +131,7 @@ public class ConfigurableExceptionHandler extends RootProcessingExceptionHandler
 
     @Override
     public boolean hasConfiguredBehaviour() {
-        return getProcessingExceptionService() != null;
+        return getDefaultExceptionProcessingService() != null;
     }
 
     /**
@@ -149,7 +149,7 @@ public class ConfigurableExceptionHandler extends RootProcessingExceptionHandler
             return false;
         }
 
-        final Service ruleProcessingExceptionService = rule.getProcessingExceptionService();
+        final Service ruleProcessingExceptionService = rule.getExceptionProcessingService();
         final RegexExceptionMatcher matcher = rule.getMatcher();
 
         if (ruleProcessingExceptionService == null) {
@@ -214,10 +214,10 @@ public class ConfigurableExceptionHandler extends RootProcessingExceptionHandler
     @AdapterComponent
     @XStreamAlias("exception-rule")
     @ComponentProfile(summary = "A rule for handling a specific error", tag = "error-handling")
-    @DisplayOrder(order = {"matcher", "processingExceptionService"})
+    @DisplayOrder(order = {"matcher", "exceptionProcessingService"})
     public static class Rule {
         private RegexExceptionMatcher matcher;
-        private Service processingExceptionService;
+        private Service exceptionProcessingService;
     }
 
     record ExceptionDetails(

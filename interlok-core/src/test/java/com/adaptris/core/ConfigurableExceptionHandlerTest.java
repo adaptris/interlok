@@ -23,7 +23,7 @@ class ConfigurableExceptionHandlerTest {
         mockRule = mock(ConfigurableExceptionHandler.Rule.class);
         mockMatcher = mock(RegexExceptionMatcher.class);
         mockService = mock(Service.class);
-        exceptionHandler.setProcessingExceptionService(mockService);
+        exceptionHandler.setDefaultExceptionProcessingService(mockService);
         mockWorkflow = mock(Workflow.class);
         mockEventHandler = mock(EventHandler.class);
     }
@@ -31,7 +31,7 @@ class ConfigurableExceptionHandlerTest {
     @Test
     void applyRuleIfMatchedHandlesExceptionField() throws CoreException {
         when(mockRule.getMatcher()).thenReturn(mockMatcher);
-        when(mockRule.getProcessingExceptionService()).thenReturn(mockService);
+        when(mockRule.getExceptionProcessingService()).thenReturn(mockService);
         when(mockMatcher.getMatchAgainstField()).thenReturn(RegexExceptionMatcher.MatchAgainstField.EXCEPTION);
         when(mockMatcher.matches("Exception")).thenReturn(true);
 
@@ -47,7 +47,7 @@ class ConfigurableExceptionHandlerTest {
     @Test
     void applyRuleIfMatchedHandlesExceptionMessageField() throws CoreException {
         when(mockRule.getMatcher()).thenReturn(mockMatcher);
-        when(mockRule.getProcessingExceptionService()).thenReturn(mockService);
+        when(mockRule.getExceptionProcessingService()).thenReturn(mockService);
         when(mockMatcher.getMatchAgainstField()).thenReturn(RegexExceptionMatcher.MatchAgainstField.EXCEPTION_MESSAGE);
         when(mockMatcher.matches("Message")).thenReturn(true);
 
@@ -63,7 +63,7 @@ class ConfigurableExceptionHandlerTest {
     @Test
     void applyRuleIfMatchedHandlesExceptionCauseField() throws CoreException {
         when(mockRule.getMatcher()).thenReturn(mockMatcher);
-        when(mockRule.getProcessingExceptionService()).thenReturn(mockService);
+        when(mockRule.getExceptionProcessingService()).thenReturn(mockService);
         when(mockMatcher.getMatchAgainstField()).thenReturn(RegexExceptionMatcher.MatchAgainstField.EXCEPTION_CAUSE);
         when(mockMatcher.matches("Cause")).thenReturn(true);
 
@@ -79,7 +79,7 @@ class ConfigurableExceptionHandlerTest {
     @Test
     void applyRuleIfMatchedHandlesStacktraceField() throws CoreException {
         when(mockRule.getMatcher()).thenReturn(mockMatcher);
-        when(mockRule.getProcessingExceptionService()).thenReturn(mockService);
+        when(mockRule.getExceptionProcessingService()).thenReturn(mockService);
         when(mockMatcher.getMatchAgainstField()).thenReturn(RegexExceptionMatcher.MatchAgainstField.STACKTRACE);
         when(mockMatcher.matches("Stacktrace")).thenReturn(true);
 
@@ -94,7 +94,7 @@ class ConfigurableExceptionHandlerTest {
 
     @Test
     void handleProcessingExceptionExecutesDefaultServiceWhenNoRuleMatches() throws ServiceException {
-        exceptionHandler.setProcessingExceptionService(mockService);
+        exceptionHandler.setDefaultExceptionProcessingService(mockService);
 
         exceptionHandler.handleProcessingException(mockMessage);
 
@@ -103,11 +103,11 @@ class ConfigurableExceptionHandlerTest {
 
     @Test
     void handleProcessingExceptionSkipsDefaultServiceWhenRuleMatches() throws ServiceException {
-        exceptionHandler.setProcessingExceptionService(mockService);
+        exceptionHandler.setDefaultExceptionProcessingService(mockService);
         exceptionHandler.getRules().add(mockRule);
 
         when(mockRule.getMatcher()).thenReturn(mockMatcher);
-        when(mockRule.getProcessingExceptionService()).thenReturn(mockService);
+        when(mockRule.getExceptionProcessingService()).thenReturn(mockService);
         when(mockMatcher.getMatchAgainstField()).thenReturn(RegexExceptionMatcher.MatchAgainstField.EXCEPTION);
         when(mockMatcher.matches(anyString())).thenReturn(true);
 
@@ -121,7 +121,7 @@ class ConfigurableExceptionHandlerTest {
 
     @Test
     void handleProcessingExceptionDoesNothingWhenNoRulesAndNoDefaultService() {
-        exceptionHandler.setProcessingExceptionService(null);
+        exceptionHandler.setDefaultExceptionProcessingService(null);
         exceptionHandler.handleProcessingException(mockMessage);
 
         verifyNoInteractions(mockService);
@@ -143,7 +143,7 @@ class ConfigurableExceptionHandlerTest {
     @Test
     void applyRuleIfMatchedReturnsFalseWhenServiceIsNull() throws CoreException {
         when(mockRule.getMatcher()).thenReturn(mockMatcher);
-        when(mockRule.getProcessingExceptionService()).thenReturn(null);
+        when(mockRule.getExceptionProcessingService()).thenReturn(null);
 
         ConfigurableExceptionHandler.ExceptionDetails details = new ConfigurableExceptionHandler.ExceptionDetails(
                 "Exception", "Message", "Cause", "Stacktrace");
@@ -157,7 +157,7 @@ class ConfigurableExceptionHandlerTest {
     @Test
     void applyRuleIfMatchedReturnsFalseWhenMatcherIsNull() throws CoreException {
         when(mockRule.getMatcher()).thenReturn(null);
-        when(mockRule.getProcessingExceptionService()).thenReturn(mockService);
+        when(mockRule.getExceptionProcessingService()).thenReturn(mockService);
 
         ConfigurableExceptionHandler.ExceptionDetails details = new ConfigurableExceptionHandler.ExceptionDetails(
                 "Exception", "Message", "Cause", "Stacktrace");
@@ -220,7 +220,7 @@ class ConfigurableExceptionHandlerTest {
 
     @Test
     void hasConfiguredBehaviourReturnsFalseWhenServiceIsNotConfigured() {
-        exceptionHandler.setProcessingExceptionService(null);
+        exceptionHandler.setDefaultExceptionProcessingService(null);
 
         assertFalse(exceptionHandler.hasConfiguredBehaviour());
     }
