@@ -12,6 +12,24 @@ import lombok.Setter;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
+/**
+ * A matcher that uses regular expressions to match exception details.
+ *
+ * <p>This class provides functionality to match exception-related strings
+ * (e.g., exception type, message, cause, or stack trace) against a configured
+ * regular expression. The matching field is specified using the {@link MatchAgainstField}
+ * enum.</p>
+ *
+ * <p>Key features:</p>
+ * <ul>
+ *   <li>Supports matching against different exception fields such as exception type,
+ *       message, cause, or stack trace.</li>
+ *   <li>Returns {@code false} if the input string is {@code null} or does not match
+ *       the regex.</li>
+ * </ul>
+ *
+ * @see MatchAgainstField
+ */
 @NoArgsConstructor
 @Getter
 @Setter
