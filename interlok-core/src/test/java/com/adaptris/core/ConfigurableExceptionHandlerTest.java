@@ -29,11 +29,11 @@ class ConfigurableExceptionHandlerTest {
     }
 
     @Test
-    void applyRuleIfMatchedHandlesExceptionField() throws ServiceException {
+    void applyRuleIfMatchedHandlesExceptionField() throws CoreException {
         when(mockRule.getMatcher()).thenReturn(mockMatcher);
         when(mockRule.getProcessingExceptionService()).thenReturn(mockService);
         when(mockMatcher.getMatchAgainstField()).thenReturn(RegexExceptionMatcher.MatchAgainstField.EXCEPTION);
-        when(mockMatcher.matches(anyString())).thenReturn(true);
+        when(mockMatcher.matches("Exception")).thenReturn(true);
 
         ConfigurableExceptionHandler.ExceptionDetails details = new ConfigurableExceptionHandler.ExceptionDetails(
                 "Exception", "Message", "Cause", "Stacktrace");
@@ -45,11 +45,11 @@ class ConfigurableExceptionHandlerTest {
     }
 
     @Test
-    void applyRuleIfMatchedHandlesExceptionMessageField() throws ServiceException {
+    void applyRuleIfMatchedHandlesExceptionMessageField() throws CoreException {
         when(mockRule.getMatcher()).thenReturn(mockMatcher);
         when(mockRule.getProcessingExceptionService()).thenReturn(mockService);
         when(mockMatcher.getMatchAgainstField()).thenReturn(RegexExceptionMatcher.MatchAgainstField.EXCEPTION_MESSAGE);
-        when(mockMatcher.matches(anyString())).thenReturn(true);
+        when(mockMatcher.matches("Message")).thenReturn(true);
 
         ConfigurableExceptionHandler.ExceptionDetails details = new ConfigurableExceptionHandler.ExceptionDetails(
                 "Exception", "Message", "Cause", "Stacktrace");
@@ -61,11 +61,11 @@ class ConfigurableExceptionHandlerTest {
     }
 
     @Test
-    void applyRuleIfMatchedHandlesExceptionCauseField() throws ServiceException {
+    void applyRuleIfMatchedHandlesExceptionCauseField() throws CoreException {
         when(mockRule.getMatcher()).thenReturn(mockMatcher);
         when(mockRule.getProcessingExceptionService()).thenReturn(mockService);
         when(mockMatcher.getMatchAgainstField()).thenReturn(RegexExceptionMatcher.MatchAgainstField.EXCEPTION_CAUSE);
-        when(mockMatcher.matches(anyString())).thenReturn(true);
+        when(mockMatcher.matches("Cause")).thenReturn(true);
 
         ConfigurableExceptionHandler.ExceptionDetails details = new ConfigurableExceptionHandler.ExceptionDetails(
                 "Exception", "Message", "Cause", "Stacktrace");
@@ -77,11 +77,11 @@ class ConfigurableExceptionHandlerTest {
     }
 
     @Test
-    void applyRuleIfMatchedHandlesStacktraceField() throws ServiceException {
+    void applyRuleIfMatchedHandlesStacktraceField() throws CoreException {
         when(mockRule.getMatcher()).thenReturn(mockMatcher);
         when(mockRule.getProcessingExceptionService()).thenReturn(mockService);
         when(mockMatcher.getMatchAgainstField()).thenReturn(RegexExceptionMatcher.MatchAgainstField.STACKTRACE);
-        when(mockMatcher.matches(anyString())).thenReturn(true);
+        when(mockMatcher.matches("Stacktrace")).thenReturn(true);
 
         ConfigurableExceptionHandler.ExceptionDetails details = new ConfigurableExceptionHandler.ExceptionDetails(
                 "Exception", "Message", "Cause", "Stacktrace");
@@ -128,8 +128,36 @@ class ConfigurableExceptionHandlerTest {
     }
 
     @Test
-    void applyRuleIfMatchesHandlesWhenNoMatcher() throws ServiceException {
+    void applyRuleIfMatchesHandlesWhenNoMatcher() throws CoreException {
         when(mockRule.getMatcher()).thenReturn(null);
+
+        ConfigurableExceptionHandler.ExceptionDetails details = new ConfigurableExceptionHandler.ExceptionDetails(
+                "Exception", "Message", "Cause", "Stacktrace");
+
+        boolean result = exceptionHandler.applyRuleIfMatched(mockMessage, mockRule, details);
+
+        assertFalse(result);
+        verifyNoInteractions(mockService);
+    }
+
+    @Test
+    void applyRuleIfMatchedReturnsFalseWhenServiceIsNull() throws CoreException {
+        when(mockRule.getMatcher()).thenReturn(mockMatcher);
+        when(mockRule.getProcessingExceptionService()).thenReturn(null);
+
+        ConfigurableExceptionHandler.ExceptionDetails details = new ConfigurableExceptionHandler.ExceptionDetails(
+                "Exception", "Message", "Cause", "Stacktrace");
+
+        boolean result = exceptionHandler.applyRuleIfMatched(mockMessage, mockRule, details);
+
+        assertFalse(result);
+        verifyNoInteractions(mockService);
+    }
+
+    @Test
+    void applyRuleIfMatchedReturnsFalseWhenMatcherIsNull() throws CoreException {
+        when(mockRule.getMatcher()).thenReturn(null);
+        when(mockRule.getProcessingExceptionService()).thenReturn(mockService);
 
         ConfigurableExceptionHandler.ExceptionDetails details = new ConfigurableExceptionHandler.ExceptionDetails(
                 "Exception", "Message", "Cause", "Stacktrace");

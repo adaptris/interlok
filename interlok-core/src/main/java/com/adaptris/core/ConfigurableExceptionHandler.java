@@ -18,6 +18,22 @@ import java.util.*;
 import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION;
 import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION_CAUSE;
 
+/**
+ * <p>ConfigurableExceptionHandler is an exception handling component that allows
+ * for configurable behavior based on specific error conditions. It supports
+ * matching exceptions against rules using regular expressions and executing
+ * corresponding services for handling those exceptions.</p>
+ *
+ * <p>Key features include:</p>
+ * <ul>
+ *   <li>Configurable rules for matching exceptions using {@link RegexExceptionMatcher}.</li>
+ *   <li>Support for handling exceptions based on fields like exception type,
+ *       message, cause, or stack trace.</li>
+ *   <li>Fallback to a default exception processing service if no rules match.</li>
+ * </ul>
+ *
+ * @see RegexExceptionMatcher
+ */
 @XStreamAlias("configurable-exception-handler")
 @AdapterComponent
 @ComponentProfile(summary = "An exception handling component configurable for specific errors", tag = "error-handling,base")
@@ -44,12 +60,13 @@ public class ConfigurableExceptionHandler extends RootProcessingExceptionHandler
         rules = new LinkedList<>();
     }
 
-//    public ConfigurableExceptionHandler(ServiceList serviceList) {
-//        this();
-//        setProcessingExceptionService(serviceList);
-//        rules = new LinkedList<>();
-//    }
-
+    /**
+     * Handles an exception by applying configured rules to determine
+     * the appropriate action. If no rules match, the default processing exception
+     * service is invoked if configured.
+     *
+     * @param msg the {@link AdaptrisMessage} containing the exception details
+     */
     @Override
     public void handleProcessingException(AdaptrisMessage msg) {
         msg.getObjectHeaders().put(CoreConstants.OBJ_METADATA_MESSAGE_FAILED, true);
@@ -60,7 +77,9 @@ public class ConfigurableExceptionHandler extends RootProcessingExceptionHandler
             boolean matchedRule = false;
 
             for (Rule rule : rules) {
-                matchedRule = applyRuleIfMatched(msg, rule, exceptionDetails);
+                if (!matchedRule) {
+                    matchedRule = applyRuleIfMatched(msg, rule, exceptionDetails);
+                }
             }
 
             if (!matchedRule && getProcessingExceptionService() != null) {
@@ -115,6 +134,79 @@ public class ConfigurableExceptionHandler extends RootProcessingExceptionHandler
         return getProcessingExceptionService() != null;
     }
 
+    /**
+     * Applies a rule to the given message and exception details to determine if the rule matches.
+     * If the rule matches, the associated service is executed.
+     *
+     * @param msg the {@link AdaptrisMessage} containing the message to process
+     * @param rule the {@link Rule} to apply
+     * @param exceptionDetails the {@link ExceptionDetails} extracted from the message
+     * @return {@code true} if the rule matches and the service is executed, {@code false} otherwise
+     * @throws CoreException if an error occurs while preparing or executing the service
+     */
+    boolean applyRuleIfMatched(AdaptrisMessage msg, Rule rule, ExceptionDetails exceptionDetails) throws CoreException {
+        if (rule.getMatcher() == null) {
+            return false;
+        }
+
+        final Service ruleProcessingExceptionService = rule.getProcessingExceptionService();
+        final RegexExceptionMatcher matcher = rule.getMatcher();
+
+        if (ruleProcessingExceptionService == null) {
+            return false;
+        }
+
+        ruleProcessingExceptionService.prepare();
+
+        switch (matcher.getMatchAgainstField()) {
+            case EXCEPTION -> {
+                if (matcher.matches(exceptionDetails.exception)) {
+                    ruleProcessingExceptionService.doService(msg);
+                    return true;
+                }
+            }
+            case EXCEPTION_MESSAGE -> {
+                if (matcher.matches(exceptionDetails.message)) {
+                    ruleProcessingExceptionService.doService(msg);
+                    return true;
+                }
+            }
+            case EXCEPTION_CAUSE -> {
+                if (matcher.matches(exceptionDetails.cause)) {
+                    ruleProcessingExceptionService.doService(msg);
+                    return true;
+                }
+            }
+            case STACKTRACE -> {
+                if (matcher.matches(exceptionDetails.stacktrace)) {
+                    ruleProcessingExceptionService.doService(msg);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private ExceptionDetails extractExceptionDetailsFromObjectMetadata(AdaptrisMessage msg) {
+        final Exception exception = (Exception) msg.getObjectHeaders().getOrDefault(OBJ_METADATA_EXCEPTION, null);
+        final String cause = (String) msg.getObjectHeaders().getOrDefault(OBJ_METADATA_EXCEPTION_CAUSE, null);
+
+        return new ExceptionDetails(
+                (exception != null ? exception.toString() : null),
+                (exception != null ? exception.getMessage() : null),
+                (cause),
+                (exception != null ? Arrays.toString(exception.getStackTrace()) : null)
+        );
+    }
+
+    /**
+     * Represents a rule for handling specific exceptions. Each rule consists of a
+     * {@link RegexExceptionMatcher} to match exception details and a
+     * {@link Service} to process the exception if the rule matches.
+     *
+     * @see RegexExceptionMatcher
+     * @see Service
+     */
     @AllArgsConstructor
     @NoArgsConstructor
     @Getter
@@ -133,58 +225,5 @@ public class ConfigurableExceptionHandler extends RootProcessingExceptionHandler
             String message,
             String cause,
             String stacktrace) {
-    }
-
-    private ExceptionDetails extractExceptionDetailsFromObjectMetadata(AdaptrisMessage msg) {
-        final Exception exception = (Exception) msg.getObjectHeaders().getOrDefault(OBJ_METADATA_EXCEPTION, null);
-        final Throwable cause = (Throwable) msg.getObjectHeaders().getOrDefault(OBJ_METADATA_EXCEPTION_CAUSE, null);
-
-        return new ExceptionDetails(
-                (exception != null ? exception.toString() : null),
-                (exception != null ? exception.getMessage() : null),
-                (cause != null ? cause.toString() : null),
-                (exception != null ? Arrays.toString(exception.getStackTrace()) : null)
-        );
-    }
-
-    boolean applyRuleIfMatched(AdaptrisMessage msg, Rule rule, ExceptionDetails exceptionDetails) throws ServiceException {
-        if (rule.getMatcher() == null) {
-            return false;
-        }
-
-        final Service ruleProcessingExceptionService = rule.getProcessingExceptionService();
-        final RegexExceptionMatcher matcher = rule.getMatcher();
-
-        switch (matcher.getMatchAgainstField()) {
-            case EXCEPTION -> {
-                log.debug("Matching rule {} against Exception {}", rule, exceptionDetails.exception);
-                if (matcher.matches(exceptionDetails.exception)) {
-                    ruleProcessingExceptionService.doService(msg);
-                    return true;
-                }
-            }
-            case EXCEPTION_MESSAGE -> {
-                log.debug("Matching rule {} against Exception Message {}", rule, exceptionDetails.message);
-                if (matcher.matches(exceptionDetails.message)) {
-                    ruleProcessingExceptionService.doService(msg);
-                    return true;
-                }
-            }
-            case EXCEPTION_CAUSE -> {
-                log.debug("Matching rule {} against Exception Cause {}", rule, exceptionDetails.cause);
-                if (matcher.matches(exceptionDetails.cause)) {
-                    ruleProcessingExceptionService.doService(msg);
-                    return true;
-                }
-            }
-            case STACKTRACE -> {
-                log.debug("Matching rule {} against Stacktrace {}", rule, exceptionDetails.stacktrace);
-                if (matcher.matches(exceptionDetails.stacktrace)) {
-                    ruleProcessingExceptionService.doService(msg);
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 }
