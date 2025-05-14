@@ -6,7 +6,7 @@ ext {
   slf4jVersion = "2.0.17"
   log4j2Version = "2.24.3"
   mockitoVersion = "4.9.0"
-  jettyVersion= "10.0.24"
+  jettyVersion= "10.0.25"
 }
 
 // In this section you declare the dependencies for your production and test code
@@ -14,7 +14,7 @@ dependencies {
 
   api project(':interlok-core-apt')
   api ("com.thoughtworks.xstream:xstream:1.4.21")
-  api ("commons-io:commons-io:2.18.0")
+  api ("commons-io:commons-io:2.19.0")
   api ("commons-net:commons-net:3.11.1")
   api ("commons-pool:commons-pool:1.6")
   api ("org.apache.commons:commons-lang3:3.17.0")
@@ -66,10 +66,11 @@ dependencies {
   javadoc project(':interlok-core-apt')
 
   testImplementation ("org.junit.jupiter:junit-jupiter-api:5.11.4")
-  testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.11.4")
+  testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.12.2")
+    testImplementation ("org.junit.platform:junit-platform-launcher:1.12.1")
   testImplementation ("org.mockito:mockito-core:$mockitoVersion")
   testImplementation ("org.mockito:mockito-inline:$mockitoVersion")
-  testImplementation ("org.awaitility:awaitility:4.2.2")
+  testImplementation ("org.awaitility:awaitility:4.3.0")
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {

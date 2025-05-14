@@ -273,4 +273,10 @@
     <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring-boot-loader@.*$</packageUrl>
     <vulnerabilityName>CVE-2024-38807</vulnerabilityName>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+    False positive for Jetty 10.0.24. CVE-2025-1948 only affects Jetty versions 12.0.0 to 12.0.16.
+    ]]></notes>
+    <cve>CVE-2025-1948</cve>
+  </suppress>
 </suppressions>
