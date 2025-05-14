@@ -9,6 +9,7 @@ import com.adaptris.fs.FsException;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 
 import javax.validation.Valid;
@@ -23,7 +24,10 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.w3c.dom.*;
 
 import static com.adaptris.fs.FsWorker.checkReadable;
@@ -59,7 +63,7 @@ public class EncodePasswordService extends ServiceImp {
   @InputFieldDefault(value = "Files.probeContentType(Path)")
   private ContentTypeProbe contentTypeProbe;
 
-  private String[] keys = { "password", "passphrase", "secret" ,"roleexternaiId"};
+  private String[] keys = {};
   @Override
   public void doService(final AdaptrisMessage message) throws ServiceException {
 
@@ -67,8 +71,6 @@ public class EncodePasswordService extends ServiceImp {
 
     try {
       for(MetadataElement me: message.getMetadata()) {
-        log.info("Processing MetadataElement {}", me.getKey(), me.getValue());
-      }
       final File file = convertToFile(message.resolve(getFilePath()));
       StringBuilder sb = new StringBuilder();
 
@@ -133,7 +135,7 @@ public class EncodePasswordService extends ServiceImp {
     boolean result = false;
 
     for(String k : keys) {
-      if(key.startsWith(k) || key.endsWith(k)) {
+      if(StringUtils.isNotEmpty(k) && (key.toLowerCase().trim().startsWith(k.toLowerCase().trim()) || key.toLowerCase().endsWith(k.toLowerCase().trim()))) {
         result = true;
       }
     }
@@ -154,7 +156,7 @@ public class EncodePasswordService extends ServiceImp {
       // Check if the node name matches the pattern
       if (nodeName.contains(pattern)) {
         // For elements that match, set text content to the new value
-        if (isPasswordKey(nodeName.toLowerCase())) {
+        if (isPasswordKey(nodeName)) {
           try {
             if (nodeValue.startsWith("PW:")) {
               nodeValue = Password.encode(Password.decode(nodeValue), Password.PORTABLE_PASSWORD_2);
