@@ -237,7 +237,6 @@ subprojects { subproject ->
     failBuildOnCVSS = 7.0
     analyzers {
       assemblyEnabled=false
-      knownExploitedURL=project.findProperty('dependencyCheckKnownExploitedURL')
     }
     nvd {
       apiKey = System.getenv("NVD_API_KEY")
