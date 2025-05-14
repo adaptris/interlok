@@ -68,9 +68,9 @@ public class EncodePasswordService extends ServiceImp {
   public void doService(final AdaptrisMessage message) throws ServiceException {
 
     log.info("Encoding file service - :");
+    keys = message.getMetadata().stream().filter(e -> e.getKey().equals("passwordtokens")).collect(Collectors.toList()).get(0).getValue().split(",");
 
     try {
-      for(MetadataElement me: message.getMetadata()) {
       final File file = convertToFile(message.resolve(getFilePath()));
       StringBuilder sb = new StringBuilder();
 
