@@ -3,6 +3,7 @@ package com.adaptris.core;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -125,6 +126,16 @@ class ConfigurableExceptionHandlerTest {
         exceptionHandler.handleProcessingException(mockMessage);
 
         verifyNoInteractions(mockService);
+    }
+
+    @Test
+    void handleProcessingExceptionLogsErrorOnException() throws ServiceException {
+        exceptionHandler.setDefaultExceptionProcessingService(mockService);
+        doThrow(new RuntimeException("Simulated exception")).when(mockService).doService(mockMessage);
+
+        exceptionHandler.handleProcessingException(mockMessage);
+
+        verify(mockService).doService(mockMessage);
     }
 
     @Test
