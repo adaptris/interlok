@@ -167,6 +167,9 @@ public abstract class AdaptrisMessageFactoryImplCase {
 
       public void setIsTrackingEndpoint(Boolean b) {
       }
+
+      @Override
+      public boolean successOnFailure() { return false; }
     }, true);
 
     List keysToKeep = Arrays.asList(new String[]
@@ -214,6 +217,9 @@ public abstract class AdaptrisMessageFactoryImplCase {
         return false;
       }
       public void setIsTrackingEndpoint(Boolean b) {}
+
+      @Override
+      public boolean successOnFailure() { return false; }
     }, true);
 
     AdaptrisMessage dest = getMessageFactory().newMessage(orig, null);

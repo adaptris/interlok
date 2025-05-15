@@ -16,20 +16,14 @@
 
 package com.adaptris.core.stubs;
 
-import com.adaptris.core.ClosedState;
-import com.adaptris.core.ComponentState;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.InitialisedState;
-import com.adaptris.core.StartedState;
-import com.adaptris.core.StateManagedComponent;
-import com.adaptris.core.StoppedState;
+import com.adaptris.core.*;
 
 /**
  * <p>
  * Mock implementation for testing.
  * </p>
  */
-public class MockStateManagedComponent implements StateManagedComponent {
+public abstract class MockStateManagedComponent extends AbstractMessageEventGenerator implements StateManagedComponent {
   private ComponentState state = ClosedState.getInstance();
 
   public MockStateManagedComponent() {
