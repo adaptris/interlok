@@ -3,9 +3,13 @@ package com.adaptris.core;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 class ConfigurableExceptionHandlerTest {
 
@@ -118,6 +122,21 @@ class ConfigurableExceptionHandlerTest {
         exceptionHandler.handleProcessingException(mockMessage);
 
         verify(mockService, times(1)).doService(mockMessage);
+    }
+
+    @Test
+    void handleProcessingExceptionExtractsExceptionDetails() {
+        Exception mockException = new RuntimeException("Test Exception");
+        String mockCause = "Test Cause";
+        Map<Object, Object> objectHeaders = new HashMap<>();
+        objectHeaders.put(CoreConstants.OBJ_METADATA_EXCEPTION, mockException);
+        objectHeaders.put(CoreConstants.OBJ_METADATA_EXCEPTION_CAUSE, mockCause);
+
+        when(mockMessage.getObjectHeaders()).thenReturn(objectHeaders);
+
+        exceptionHandler.handleProcessingException(mockMessage);
+
+        verify(mockMessage, atLeastOnce()).getObjectHeaders();
     }
 
     @Test
