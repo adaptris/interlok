@@ -9,6 +9,8 @@ import com.adaptris.fs.FsException;
 import com.adaptris.security.exc.PasswordException;
 import com.adaptris.security.password.Password;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 
@@ -23,6 +25,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,16 +49,31 @@ public class EncodePasswordService extends ServiceImp {
    * The parameter for the path to the file to read.
    */
   @NotBlank
-  @InputFieldHint(expression = true)
+  @Getter
+  @InputFieldHint(expression = false)
   private String filePath;
 
-
+  @NotBlank
+  @Getter
+  @Setter
   private String[] keys = {};
+
+  @Override
+  protected void initService() throws CoreException {
+    try {
+      Args.notBlank(getFilePath(), "filePath");
+      Args.notBlank(Arrays.toString(getKeys()), "keys");
+    } catch (Exception e) {
+      throw ExceptionHelper.wrapCoreException(e);
+    }
+  }
+
+
   @Override
   public void doService(final AdaptrisMessage message) throws ServiceException {
 
     log.info("Encoding file service - :");
-    keys = message.getMetadata().stream().filter(e -> e.getKey().equals("passwordtokens")).collect(Collectors.toList()).get(0).getValue().split(",");
+    setKeys(message.getMetadata().stream().filter(e -> e.getKey().equals("passwordtokens")).collect(Collectors.toList()).get(0).getValue().split(","));
 
     try {
       final File file = convertToFile(message.resolve(getFilePath()));
@@ -115,10 +133,20 @@ public class EncodePasswordService extends ServiceImp {
     }
   }
 
+  @Override
+  public void prepare() throws CoreException {
+    /* empty method */
+  }
+
+  @Override
+  protected void closeService() {
+    /* empty method */
+  }
+
   private boolean isPasswordKey(String key) {
     boolean result = false;
 
-    for(String k : keys) {
+    for(String k : getKeys()) {
       if(StringUtils.isNotEmpty(k) && (key.toLowerCase().trim().startsWith(k.toLowerCase().trim()) || key.toLowerCase().endsWith(k.toLowerCase().trim()))) {
         result = true;
       }
@@ -170,33 +198,4 @@ public class EncodePasswordService extends ServiceImp {
       return isFile(checkReadable(new File(filepath)));
     }
   }
-
-  @Override
-  public void prepare() throws CoreException {
-    /* empty method */
-  }
-
-  @Override
-  protected void closeService() {
-    /* empty method */
-  }
-
-  @Override
-  protected void initService() throws CoreException {
-    try {
-      Args.notBlank(getFilePath(), "filePath");
-    } catch (Exception e) {
-      throw ExceptionHelper.wrapCoreException(e);
-    }
-  }
-
-  /**
-   * Get the file path parameter.
-   *
-   * @return The file path parameter.
-   */
-  public String getFilePath() {
-    return filePath;
-  }
-
 }
