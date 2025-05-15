@@ -12,7 +12,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -24,7 +23,6 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,16 +30,14 @@ import org.w3c.dom.*;
 
 import static com.adaptris.fs.FsWorker.checkReadable;
 import static com.adaptris.fs.FsWorker.isFile;
-import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
- * Encode a file from a specific path into the message payload.
+ * Encodes password based on configurations into the message payload.
  *
  * @config encode-password-service
  */
 @AdapterComponent
-@ComponentProfile(summary = "Encode a file from a specific path into the message payload",
+@ComponentProfile(summary = "Encodes a file from a specific path into the message payload",
     tag = "service,file")
 @XStreamAlias("encode-password-service")
 public class EncodePasswordService extends ServiceImp {
@@ -53,15 +49,6 @@ public class EncodePasswordService extends ServiceImp {
   @InputFieldHint(expression = true)
   private String filePath;
 
-  @AffectsMetadata
-  @AdvancedConfig
-  @InputFieldDefault(value = "null")
-  private String contentTypeMetadataKey;
-
-  @AdvancedConfig(rare = true)
-  @Valid
-  @InputFieldDefault(value = "Files.probeContentType(Path)")
-  private ContentTypeProbe contentTypeProbe;
 
   private String[] keys = {};
   @Override
@@ -123,9 +110,6 @@ public class EncodePasswordService extends ServiceImp {
         transformer.transform(source, result);
       }
 
-      if (isNotBlank(getContentTypeMetadataKey())) {
-        message.addMetadata(getContentTypeMetadataKey(), probeContentType(file));
-      }
     } catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);
     }
@@ -187,10 +171,6 @@ public class EncodePasswordService extends ServiceImp {
     }
   }
 
-  private String probeContentType(File file) throws IOException {
-    return defaultIfBlank(contentTypeProbe().probeContentType(file), "");
-  }
-
   @Override
   public void prepare() throws CoreException {
     /* empty method */
@@ -219,22 +199,4 @@ public class EncodePasswordService extends ServiceImp {
     return filePath;
   }
 
-  public String getContentTypeMetadataKey() {
-    return contentTypeMetadataKey;
-  }
-
-  public ContentTypeProbe getContentTypeProbe() {
-    return contentTypeProbe;
-  }
-
-  protected ContentTypeProbe contentTypeProbe() {
-    return getContentTypeProbe() != null ? getContentTypeProbe() : e -> {
-      return Files.probeContentType(e.toPath());
-    };
-  }
-
-  @FunctionalInterface
-  public interface ContentTypeProbe {
-    String probeContentType(File f) throws IOException;
-  }
 }
