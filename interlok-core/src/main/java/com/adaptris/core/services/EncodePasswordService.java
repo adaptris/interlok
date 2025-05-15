@@ -92,9 +92,9 @@ public class EncodePasswordService extends ServiceImp {
       final File file = convertToFile(message.resolve(getFilePath()));
       log.trace("File in process : {}", file.getName());
       if(file.getName().endsWith(EXTN_PROPERTIES)) {
-        replaceValuesInPropertiesFile(message);
+        encodeValuesInPropertiesFile(message);
       } else if(file.getName().endsWith(EXTN_XML)) {
-        replaceValuesInXmlFile(file);
+        encodeValuesInXmlFile(file);
       }
     } catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);
@@ -111,7 +111,13 @@ public class EncodePasswordService extends ServiceImp {
     /* empty method */
   }
 
-  private void replaceValuesInPropertiesFile(AdaptrisMessage message) throws IOException {
+  /**
+   * Finds and encodes values in the properties contained in Adaptris Message
+   *
+   * @param message
+   * @throws IOException
+   */
+  private void encodeValuesInPropertiesFile(AdaptrisMessage message) throws IOException {
     StringBuilder sb = new StringBuilder();
     List<String> lines = Files.readAllLines(Paths.get(message.resolve(getFilePath())));
     lines.forEach(line -> {
@@ -138,7 +144,16 @@ public class EncodePasswordService extends ServiceImp {
     Files.write(Paths.get(message.resolve(getFilePath())), sb.toString().getBytes());
   }
 
-  private void replaceValuesInXmlFile(File file) throws ParserConfigurationException, SAXException, IOException, TransformerException {
+  /**
+   *  Finds and encodes value contained in an XML file
+   *
+   * @param file
+   * @throws ParserConfigurationException
+   * @throws SAXException
+   * @throws IOException
+   * @throws TransformerException
+   */
+  private void encodeValuesInXmlFile(File file) throws ParserConfigurationException, SAXException, IOException, TransformerException {
     DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
     DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
     Document doc = dBuilder.parse(file);
@@ -158,7 +173,12 @@ public class EncodePasswordService extends ServiceImp {
     transformer.transform(source, result);
   }
 
-  // Recursive method to replace values in nodes that match the pattern
+
+  /**
+   * Recursive method to replace values in nodes that match the pattern
+   *
+   * @param node
+   */
   private void replaceNodeValues(Node node) {
 
     log.trace("Inside replaceNodeValues method - node: {}", node.getNodeName());
@@ -190,6 +210,13 @@ public class EncodePasswordService extends ServiceImp {
     }
   }
 
+  /**
+   * Converts file path to File object
+   *
+   * @param filepath
+   * @return
+   * @throws FsException
+   */
   @SuppressWarnings({"lgtm [java/path-injection]"})
   private static File convertToFile(String filepath) throws FsException {
     try {
@@ -199,6 +226,12 @@ public class EncodePasswordService extends ServiceImp {
     }
   }
 
+  /**
+   * Checks if the input is a password passphrase
+   *
+   * @param name
+   * @return
+   */
   private boolean isPasswordKey(String name) {
     boolean result = false;
 
