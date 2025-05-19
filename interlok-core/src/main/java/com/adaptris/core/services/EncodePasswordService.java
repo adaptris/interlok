@@ -14,7 +14,6 @@ import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 
-import javax.validation.constraints.NotBlank;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -51,14 +50,14 @@ public class EncodePasswordService extends ServiceImp {
   /**
    * The parameter for the path to the file to read.
    */
-  @NotBlank
   @Getter
+  @Setter
   @InputFieldHint(expression = false)
   private String filePath;
 
-  @NotBlank
   @Getter
   @Setter
+  @InputFieldHint(expression = false)
   private String[] keys = {};
 
   private static final String PARAMS_FILE_PATH = "filePath";
@@ -90,7 +89,7 @@ public class EncodePasswordService extends ServiceImp {
 
     try {
       final File file = convertToFile(message.resolve(getFilePath()));
-      log.trace("File in process : {}", file.getName());
+      log.info("File in process : {}", file.getName());
       if(file.getName().endsWith(EXTN_PROPERTIES)) {
         encodeValuesInPropertiesFile(message);
       } else if(file.getName().endsWith(EXTN_XML)) {
@@ -199,7 +198,7 @@ public class EncodePasswordService extends ServiceImp {
         try {
           if (nodeValue.startsWith(PREFIX_PORTABLE_PASSWORD)) {
             nodeValue = Password.encode(Password.decode(nodeValue), Password.PORTABLE_PASSWORD_2);
-          } else if (!nodeValue.startsWith(PREFIX_PORTBALE_PASSWORD_2)) { //Plain text
+          } else if (!nodeValue.startsWith(PREFIX_PORTBALE_PASSWORD_2) && !(nodeValue.startsWith("${") && nodeValue.endsWith("}"))) { //Plain text
             nodeValue = Password.encode(nodeValue, Password.PORTABLE_PASSWORD_2);
           }
         } catch (PasswordException e) {
@@ -218,7 +217,7 @@ public class EncodePasswordService extends ServiceImp {
    * @throws FsException
    */
   @SuppressWarnings({"lgtm [java/path-injection]"})
-  private static File convertToFile(String filepath) throws FsException {
+  private File convertToFile(String filepath) throws FsException {
     try {
       return isFile(checkReadable(FsHelper.toFile(filepath)));
     } catch (Exception e) {

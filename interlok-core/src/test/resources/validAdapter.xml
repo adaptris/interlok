@@ -1,0 +1,106 @@
+<adapter>
+    <unique-id>valid-adapter-config</unique-id>
+    <start-up-event-imp>com.adaptris.core.event.StandardAdapterStartUpEvent</start-up-event-imp>
+    <heartbeat-event-imp>com.adaptris.core.HeartbeatEvent</heartbeat-event-imp>
+    <shared-components>
+        <connections>
+            <jms-connection>
+                <connection-error-handler class="jms-connection-error-handler"/>
+                <unique-id>cirrus-sonic-10-jms-connection</unique-id>
+                <user-name>${cirrus.broker.username}</user-name>
+                <password>PW:AAAAELCL3FIBGukCEb/Kbx5Qn8oAAAAQP8XrlJCGnX+GYuXrkM8mUQAAACBXIhXx+UxpAMT984aYr7WCYLh4jAr5am0duHNARfbEdg==</password>
+                <client-id>${sonic.client.id}-${env}</client-id>
+                <vendor-implementation class="advanced-sonic-mq-implementation">
+                    <broker-url>${cirrus.primary.broker.url}</broker-url>
+                    <connection-urls>${cirrus.backup.broker.url},${cirrus.primary.broker.url}</connection-urls>
+                    <connect-id>${sonic.client.id}-${env}</connect-id>
+                    <connection-factory-properties>
+                        <key-value-pair>
+                            <key>PingInterval</key>
+                            <value>30</value>
+                        </key-value-pair>
+                        <key-value-pair>
+                            <key>SocketConnectTimeout</key>
+                            <value>60000</value>
+                        </key-value-pair>
+                    </connection-factory-properties>
+                    <session-properties/>
+                </vendor-implementation>
+            </jms-connection>
+            <jdbc-pooled-connection>
+                <unique-id>mysql-connection-demat-fiscale</unique-id>
+                <driver-imp>${jdbc.driver}</driver-imp>
+                <username>${jdbc.user}</username>
+                <password>${jdbc.password}</password>
+                <connect-url>${jdbc.connection.url}</connect-url>
+            </jdbc-pooled-connection>
+            <standard-sftp-connection>
+                <unique-id>sftp-connection-esker</unique-id>
+                <default-user-name>${sftp.esker.connection.default.user}</default-user-name>
+                <authentication class="sftp-password-authentication">
+                    <default-password>${sftp.esker.connection.default.password}</default-password>
+                </authentication>
+                <configuration class="sftp-inline-config">
+                    <proxy class="sftp-via-http-proxy">
+                        <proxy>${PROXY_HOST}${PROXY_DELIMITER}${PROXY_PORT}</proxy>
+                    </proxy>
+                    <config/>
+                </configuration>
+            </standard-sftp-connection>
+        </connections>
+        <services/>
+    </shared-components>
+    <event-handler class="default-event-handler">
+        <unique-id>DefaultEventHandler</unique-id>
+        <connection class="null-connection">
+            <unique-id>mad-knuth</unique-id>
+        </connection>
+        <producer class="null-message-producer">
+            <unique-id>evil-wozniak</unique-id>
+        </producer>
+    </event-handler>
+    <message-error-handler class="null-processing-exception-handler">
+        <unique-id>zen-meitner</unique-id>
+    </message-error-handler>
+    <failed-message-retrier class="no-retries">
+        <unique-id>furious-swirles</unique-id>
+    </failed-message-retrier>
+    <channel-list>
+        <channel>
+            <consume-connection class="null-connection">
+                <unique-id>stoic-curran</unique-id>
+            </consume-connection>
+            <produce-connection class="null-connection">
+                <unique-id>trusting-morse</unique-id>
+            </produce-connection>
+            <workflow-list>
+                <standard-workflow>
+                    <consumer class="null-message-consumer">
+                        <unique-id>sleepy-bhabha</unique-id>
+                    </consumer>
+                    <service-collection class="service-list">
+                        <unique-id>mad-bell</unique-id>
+                        <services>
+                            <add-metadata-service>
+                                <unique-id>add-metadata</unique-id>
+                                <metadata-element>
+                                    <key>key</key>
+                                    <value>value</value>
+                                </metadata-element>
+                            </add-metadata-service>
+                        </services>
+                    </service-collection>
+                    <producer class="null-message-producer">
+                        <unique-id>pensive-dijkstra</unique-id>
+                    </producer>
+                    <unique-id>hopeful-lamport</unique-id>
+                </standard-workflow>
+            </workflow-list>
+            <unique-id>ecstatic-dubinsky</unique-id>
+        </channel>
+    </channel-list>
+    <message-error-digester class="standard-message-error-digester">
+        <unique-id>ErrorDigest</unique-id>
+        <digest-max-size>100</digest-max-size>
+    </message-error-digester>
+</adapter>
