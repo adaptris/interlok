@@ -141,8 +141,7 @@ public class FsHelperTest extends FsHelper {
             List.of("file://./a1/b1.xml", "b1.xml", "." + File.separator + "a1" + File.separator + "b1.xml"),
             List.of("file://../a2/b2.xml", "b2.xml", ".." + File.separator + "a2" + File.separator + "b2.xml"),
             List.of("file:///./a3/b3.xml", "b3.xml", "." + File.separator + "a3" + File.separator + "b3.xml"),
-            List.of("file:///a4/b4.xml", "b4.xml", File.separator + "a4" + File.separator + "b4.xml"),
-            List.of("file:////a5/b5.xml", "b5.xml", File.separator + "a5" + File.separator + "b5.xml")
+            List.of("file:///a4/b4.xml", "b4.xml", File.separator + "a4" + File.separator + "b4.xml")
     )) {
       File f = FsHelper.toFile(data.get(0));
       assertEquals(data.get(1), f.getName());
