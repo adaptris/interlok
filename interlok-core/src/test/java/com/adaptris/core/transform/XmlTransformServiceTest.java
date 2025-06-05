@@ -81,6 +81,8 @@ public class XmlTransformServiceTest
   public static final String KEY_XML_TEST_FATAL_TRANSFORM_URL = "XmlTransformService.outputTestFatalTransform";
   public static final String KEY_XML_TEST_STX_TRANSFORM_URL = "XmlTransformService.outputTestStxTransform";
   public static final String KEY_XML_TEST_OUTPUT = "XmlTransformService.outputTestResult";
+  public static final String KEY_XML_TEST_XALAN_ENCODING_INPUT = "XmlTransformService.inputTestXalanEncoding";
+  public static final String KEY_XML_TEST_XALAN_ENCODING_URL_XSL_MESSAGE = "XmlTransformService.inputTestXalanEncodingXslMessage";
 
   static final String KEY_ISSUE2641_INPUT = "XmlTransformService.issue2641.input";
   static final String KEY_ISSUE2641_TRANSFORM_URL = "XmlTransformService.issue2641.transform";
@@ -862,6 +864,21 @@ public class XmlTransformServiceTest
     } catch (ServiceException expected) {
       assertExceptionCause(expected, TransformerException.class, UncheckedXPathException.class);
     }
+  }
+
+  @Test
+  public void testXalanEncoding() throws Exception {
+    AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_XALAN_ENCODING_INPUT));
+    XmlTransformService service = new XmlTransformService();
+    XsltTransformerFactory fac = new XsltTransformerFactory();
+    fac.setTransformerFactoryImpl("org.apache.xalan.processor.TransformerFactoryImpl");
+    service.setCacheTransforms(false);
+    service.setAllowOverride(true);
+    service.setXmlTransformerFactory(fac);
+    service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_XALAN_ENCODING_URL_XSL_MESSAGE));
+    service.setOutputMessageEncoding("ISO-8859-1");
+    execute(service, m1);
+    assertEquals("NK0100460   LLEARL TRAMIGUEN                          MR GEFFROY ALEXANDRE                              TRAMIGUEN                                         GEVEZE                                  358500662448295     0299690040                                                                         4 voie direction Rennes- prendre direction Romillé-à Romillé.  prendre Geveze- environ 1km avant Geveze élevage sur gauche. brique blanche monolite- bâtiment aussi en brique rouge à. côté- c est de toute facon le dernier élevage à gauche a ant.  le b                                                  M  *".trim(), m1.getContent().trim());
   }
 
   private static DocumentBuilder newDocumentBuilder() throws ParserConfigurationException {
