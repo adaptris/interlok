@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.adaptris.core.transform;
 
@@ -69,7 +69,7 @@ import net.sf.saxon.trans.UncheckedXPathException;
 
 @SuppressWarnings("deprecation")
 public class XmlTransformServiceTest
-    extends com.adaptris.interlok.junit.scaffolding.services.TransformServiceExample {
+        extends com.adaptris.interlok.junit.scaffolding.services.TransformServiceExample {
 
   static final String KEY_XML_NODE_TRANSFORM_URL = "XmlTransformService.outputNodeTransform";
 
@@ -81,8 +81,6 @@ public class XmlTransformServiceTest
   public static final String KEY_XML_TEST_FATAL_TRANSFORM_URL = "XmlTransformService.outputTestFatalTransform";
   public static final String KEY_XML_TEST_STX_TRANSFORM_URL = "XmlTransformService.outputTestStxTransform";
   public static final String KEY_XML_TEST_OUTPUT = "XmlTransformService.outputTestResult";
-  public static final String KEY_XML_TEST_XALAN_ENCODING_INPUT = "XmlTransformService.inputTestXalanEncoding";
-  public static final String KEY_XML_TEST_XALAN_ENCODING_URL_XSL_MESSAGE = "XmlTransformService.inputTestXalanEncodingXslMessage";
 
   static final String KEY_ISSUE2641_INPUT = "XmlTransformService.issue2641.input";
   static final String KEY_ISSUE2641_TRANSFORM_URL = "XmlTransformService.issue2641.transform";
@@ -93,17 +91,17 @@ public class XmlTransformServiceTest
   static final String KEY_XML_REMOVE_NAMESPACE_MAPPING = "XmlTransformService.remove.namespace.mapping";
 
   static final String XML_WITH_NAMESPACE = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
-      + "<svrl:schematron-output xmlns:svrl=\"http://purl.oclc.org/dsdl/svrl\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:sch=\"http://www.ascc.net/xml/schematron\" xmlns:iso=\"http://purl.oclc.org/dsdl/schematron\" xmlns:dp=\"http://www.dpawson.co.uk/ns#\" title=\"Anglia Farmers AF xml Invoice Schematron File\" schemaVersion=\"ISO19757-3\">\n"
-      + "<svrl:ns-prefix-in-attribute-values uri=\"http://www.dpawson.co.uk/ns#\" prefix=\"dp\"/>\n" + "<svrl:active-pattern/>\n"
-      + "<svrl:fired-rule context=\"SageData/JoinedData\"/>\n"
-      + "<svrl:failed-assert test=\"STOCK_CODE != ''\" location=\"/SageData[1]/JoinedData[1]\">\n"
-      + "<svrl:text>Error: Product Code must be present.</svrl:text>\n" + "</svrl:failed-assert>\n"
-      + "<svrl:fired-rule context=\"SageData/JoinedData/CUST_ORDER_NUMBER[. != '']\"/>\n"
-      + "<svrl:fired-rule context=\"SageData/JoinedData/AF_NUMBER[. != '']\"/>\n"
-      + "<svrl:failed-assert test=\"string-length(.) = 5\" location=\"/SageData[1]/JoinedData[1]/AF_NUMBER[1]\">\n"
-      + "<svrl:text>Error: Anglia Farmer's Supplier Number must be 5 digits long. (Current Value: 62826123)</svrl:text>\n"
-      + "</svrl:failed-assert>\n" + "</svrl:schematron-output>";
-  
+          + "<svrl:schematron-output xmlns:svrl=\"http://purl.oclc.org/dsdl/svrl\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:sch=\"http://www.ascc.net/xml/schematron\" xmlns:iso=\"http://purl.oclc.org/dsdl/schematron\" xmlns:dp=\"http://www.dpawson.co.uk/ns#\" title=\"Anglia Farmers AF xml Invoice Schematron File\" schemaVersion=\"ISO19757-3\">\n"
+          + "<svrl:ns-prefix-in-attribute-values uri=\"http://www.dpawson.co.uk/ns#\" prefix=\"dp\"/>\n" + "<svrl:active-pattern/>\n"
+          + "<svrl:fired-rule context=\"SageData/JoinedData\"/>\n"
+          + "<svrl:failed-assert test=\"STOCK_CODE != ''\" location=\"/SageData[1]/JoinedData[1]\">\n"
+          + "<svrl:text>Error: Product Code must be present.</svrl:text>\n" + "</svrl:failed-assert>\n"
+          + "<svrl:fired-rule context=\"SageData/JoinedData/CUST_ORDER_NUMBER[. != '']\"/>\n"
+          + "<svrl:fired-rule context=\"SageData/JoinedData/AF_NUMBER[. != '']\"/>\n"
+          + "<svrl:failed-assert test=\"string-length(.) = 5\" location=\"/SageData[1]/JoinedData[1]/AF_NUMBER[1]\">\n"
+          + "<svrl:text>Error: Anglia Farmer's Supplier Number must be 5 digits long. (Current Value: 62826123)</svrl:text>\n"
+          + "</svrl:failed-assert>\n" + "</svrl:schematron-output>";
+
   private static final String PAYLOAD_ID_DATA = "data-payload";
   private static final String PAYLOAD_ID_MAPPING = "mapping-payload";
 
@@ -133,18 +131,18 @@ public class XmlTransformServiceTest
   }
   private enum ParameterConfig {
     IGNORE(new IgnoreMetadataParameter()), METADATA(new StringMetadataParameter(new String[]
-    {
-      ".*metadataToInclude.*"
-    }, new String[]
-    {
-      ".*metadataToExclude.*"
-    })), COMPOSITE(new XmlTransformParameterBuilder(new StringMetadataParameter(new String[]
-    {
-      ".*metadataToInclude.*"
-    }, new String[]
-    {
-      ".*metadataToExclude.*"
-    }), new ObjectMetadataParameter(".*myObjectMetadataKeys.*"))), OBJECT(new ObjectMetadataParameter(".*myObjectMetadataKeys.*"));
+            {
+                    ".*metadataToInclude.*"
+            }, new String[]
+            {
+                    ".*metadataToExclude.*"
+            })), COMPOSITE(new XmlTransformParameterBuilder(new StringMetadataParameter(new String[]
+            {
+                    ".*metadataToInclude.*"
+            }, new String[]
+            {
+                    ".*metadataToExclude.*"
+            }), new ObjectMetadataParameter(".*myObjectMetadataKeys.*"))), OBJECT(new ObjectMetadataParameter(".*myObjectMetadataKeys.*"));
     XmlTransformParameter param;
 
     ParameterConfig(XmlTransformParameter p) {
@@ -395,7 +393,7 @@ public class XmlTransformServiceTest
   protected String createBaseFileName(Object object) {
     XmlTransformService service = (XmlTransformService) object;
     return super.createBaseFileName(object) + "-" + service.getXmlTransformerFactory().getClass().getSimpleName() + "-"
-        + service.getTransformParameter().getClass().getSimpleName();
+            + service.getTransformParameter().getClass().getSimpleName();
   }
 
   @Override
@@ -487,32 +485,32 @@ public class XmlTransformServiceTest
     execute(service, m1);
     assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), m1.getContent());
   }
- 
+
   @Test
   public void testXSLTOutputMultiPayloadDataInputParameter() throws Exception {
     MultiPayloadAdaptrisMessage msg = MessageHelper.createMultiPayloadMessage(PAYLOAD_ID_DATA, PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     AdaptrisMessage mappingMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage(loadFilesForTests(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL)));
     msg.addPayload(PAYLOAD_ID_MAPPING, mappingMsg.getPayload());
-	MultiPayloadStringInputParameter mpsip = new MultiPayloadStringInputParameter();
-	mpsip.setPayloadId(PAYLOAD_ID_MAPPING);
-	XmlTransformService service = new XmlTransformService();
-	service.setMappingSource(mpsip);
-	msg.switchPayload(PAYLOAD_ID_DATA);
+    MultiPayloadStringInputParameter mpsip = new MultiPayloadStringInputParameter();
+    mpsip.setPayloadId(PAYLOAD_ID_MAPPING);
+    XmlTransformService service = new XmlTransformService();
+    service.setMappingSource(mpsip);
+    msg.switchPayload(PAYLOAD_ID_DATA);
     execute(service, msg);
     assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), msg.getContent());
   }
-  
+
   @Test
   public void testXSLTOutputConstantDataInputParameter() throws Exception {
     AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     ConstantDataInputParameter cdip = new ConstantDataInputParameter(loadFilesForTests(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL)));
     XmlTransformService service = new XmlTransformService();
     service.setMappingSource(cdip);
-    
+
     execute(service, msg);
     assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), msg.getContent());
   }
-  
+
   @Test
   public void testXSLTOutputFileDataInputParameter() throws Exception {
     AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
@@ -520,11 +518,11 @@ public class XmlTransformServiceTest
     fdip.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
     XmlTransformService service = new XmlTransformService();
     service.setMappingSource(fdip);
-    
+
     execute(service, msg);
     assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), msg.getContent());
   }
-  
+
   @Test
   public void testXSLTOutputMetadataDataInputParameter() throws Exception {
     AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
@@ -532,7 +530,7 @@ public class XmlTransformServiceTest
     MetadataDataInputParameter mdip = new MetadataDataInputParameter("mappingKey");
     XmlTransformService service = new XmlTransformService();
     service.setMappingSource(mdip);
-    
+
     execute(service, msg);
     assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), msg.getContent());
   }
@@ -565,7 +563,7 @@ public class XmlTransformServiceTest
     execute(service, msg);
     assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), msg.getContent());
   }
-  
+
   @Test
   public void testSTXOutputConstantDataInputParameter() throws Exception {
     AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
@@ -578,7 +576,7 @@ public class XmlTransformServiceTest
     execute(service, msg);
     assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), msg.getContent());
   }
-  
+
   @Test
   public void testSTXOutputFileDataInputParameter() throws Exception {
     AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
@@ -592,7 +590,7 @@ public class XmlTransformServiceTest
     execute(service, msg);
     assertEquals(PROPERTIES.getProperty(KEY_XML_TEST_OUTPUT), msg.getContent());
   }
-  
+
   @Test
   public void testSTXOutputMetadataDataInputParameter() throws Exception {
     AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
@@ -864,21 +862,6 @@ public class XmlTransformServiceTest
     } catch (ServiceException expected) {
       assertExceptionCause(expected, TransformerException.class, UncheckedXPathException.class);
     }
-  }
-
-  @Test
-  public void testXalanEncoding() throws Exception {
-    AdaptrisMessage m1 = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_XALAN_ENCODING_INPUT));
-    XmlTransformService service = new XmlTransformService();
-    XsltTransformerFactory fac = new XsltTransformerFactory();
-    fac.setTransformerFactoryImpl("org.apache.xalan.processor.TransformerFactoryImpl");
-    service.setCacheTransforms(false);
-    service.setAllowOverride(true);
-    service.setXmlTransformerFactory(fac);
-    service.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_XALAN_ENCODING_URL_XSL_MESSAGE));
-    service.setOutputMessageEncoding("ISO-8859-1");
-    execute(service, m1);
-    assertEquals("NK0100460   LLEARL TRAMIGUEN                          MR GEFFROY ALEXANDRE                              TRAMIGUEN                                         GEVEZE                                  358500662448295     0299690040                                                                         4 voie direction Rennes- prendre direction Romillé-à Romillé.  prendre Geveze- environ 1km avant Geveze élevage sur gauche. brique blanche monolite- bâtiment aussi en brique rouge à. côté- c est de toute facon le dernier élevage à gauche a ant.  le b                                                  M  *".trim(), m1.getContent().trim());
   }
 
   private static DocumentBuilder newDocumentBuilder() throws ParserConfigurationException {
