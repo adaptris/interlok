@@ -14,9 +14,11 @@ import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -68,12 +70,18 @@ public class EncodePasswordService extends ServiceImp {
   private static final String EXTN_PROPERTIES = ".properties";
   private static final String METADATA_KEY_PASSWORD_TOKENS = "passwordtokens";
 
+  private transient DocumentBuilderFactory dbFactory;
+
 
   @Override
   protected void initService() throws CoreException {
     try {
       Args.notBlank(getFilePath(), PARAMS_FILE_PATH);
       Args.notBlank(Arrays.toString(getKeys()), PARAMS_KEYS);
+
+      dbFactory = DocumentBuilderFactory.newInstance();
+      dbFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
     }
@@ -153,7 +161,6 @@ public class EncodePasswordService extends ServiceImp {
    * @throws TransformerException
    */
   private void encodeValuesInXmlFile(File file) throws ParserConfigurationException, SAXException, IOException, TransformerException {
-    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
     DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
     Document doc = dBuilder.parse(file);
     doc.getDocumentElement().normalize();
