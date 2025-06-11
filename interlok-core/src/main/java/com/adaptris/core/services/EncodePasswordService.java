@@ -71,7 +71,7 @@ public class EncodePasswordService extends ServiceImp {
   private static final String METADATA_KEY_PASSWORD_TOKENS = "passwordtokens";
 
   private transient DocumentBuilderFactory dbFactory;
-
+  private transient TransformerFactory transformerFactory;
 
   @Override
   protected void initService() throws CoreException {
@@ -81,6 +81,9 @@ public class EncodePasswordService extends ServiceImp {
 
       dbFactory = DocumentBuilderFactory.newInstance();
       dbFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+
+      transformerFactory = TransformerFactory.newInstance();
+      transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
@@ -169,7 +172,6 @@ public class EncodePasswordService extends ServiceImp {
     replaceNodeValues(doc.getDocumentElement());
 
     // Write the updated XML to a new file
-    TransformerFactory transformerFactory = TransformerFactory.newInstance();
     Transformer transformer = transformerFactory.newTransformer();
     transformer.setOutputProperty(OutputKeys.INDENT, "yes");
     transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
