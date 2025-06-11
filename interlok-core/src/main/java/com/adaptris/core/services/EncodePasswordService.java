@@ -127,7 +127,7 @@ public class EncodePasswordService extends ServiceImp {
    * @param message
    * @throws IOException
    */
-  private void encodeValuesInPropertiesFile(AdaptrisMessage message) throws IOException {
+  protected void encodeValuesInPropertiesFile(AdaptrisMessage message) throws IOException {
     StringBuilder sb = new StringBuilder();
     List<String> lines = Files.readAllLines(Paths.get(message.resolve(getFilePath())));
     lines.forEach(line -> {
@@ -163,7 +163,7 @@ public class EncodePasswordService extends ServiceImp {
    * @throws IOException
    * @throws TransformerException
    */
-  private void encodeValuesInXmlFile(File file) throws ParserConfigurationException, SAXException, IOException, TransformerException {
+  protected void encodeValuesInXmlFile(File file) throws ParserConfigurationException, SAXException, IOException, TransformerException {
     DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
     Document doc = dBuilder.parse(file);
     doc.getDocumentElement().normalize();
@@ -187,7 +187,7 @@ public class EncodePasswordService extends ServiceImp {
    *
    * @param node
    */
-  private void replaceNodeValues(Node node) {
+  protected void replaceNodeValues(Node node) {
 
     log.trace("Inside replaceNodeValues method - node: {}", node.getNodeName());
 
@@ -205,17 +205,21 @@ public class EncodePasswordService extends ServiceImp {
       // Check if the node name matches the set of password passphrases
       if (isPasswordKey(nodeName)) {
         try {
-          if (nodeValue.startsWith(PREFIX_PORTABLE_PASSWORD)) {
-            nodeValue = Password.encode(Password.decode(nodeValue), Password.PORTABLE_PASSWORD_2);
-          } else if (!nodeValue.startsWith(PREFIX_PORTBALE_PASSWORD_2) && !(nodeValue.startsWith("${") && nodeValue.endsWith("}"))) { //Plain text
-            nodeValue = Password.encode(nodeValue, Password.PORTABLE_PASSWORD_2);
-          }
+          nodeValue = doEncodePassword(nodeValue);
         } catch (PasswordException e) {
           log.debug("Password could not be decoded", e);
         }
         node.setTextContent(nodeValue);
       }
     }
+  }
+
+  protected String doEncodePassword(String nodeValue) throws PasswordException {
+    if (nodeValue.startsWith(PREFIX_PORTABLE_PASSWORD)) {
+      return Password.encode(Password.decode(nodeValue), Password.PORTABLE_PASSWORD_2);
+    } else if (!nodeValue.startsWith(PREFIX_PORTBALE_PASSWORD_2) && !(nodeValue.startsWith("${") && nodeValue.endsWith("}"))) { //Plain text
+      return Password.encode(nodeValue, Password.PORTABLE_PASSWORD_2);
+    } else throw new PasswordException("Invalid password prefix");
   }
 
   /**
@@ -226,7 +230,7 @@ public class EncodePasswordService extends ServiceImp {
    * @throws FsException
    */
   @SuppressWarnings({"lgtm [java/path-injection]"})
-  private File convertToFile(String filepath) throws FsException {
+  protected File convertToFile(String filepath) throws FsException {
     try {
       return isFile(checkReadable(FsHelper.toFile(filepath)));
     } catch (Exception e) {

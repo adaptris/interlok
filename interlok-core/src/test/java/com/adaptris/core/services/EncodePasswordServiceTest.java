@@ -18,7 +18,9 @@ package com.adaptris.core.services;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
+import com.adaptris.core.CoreException;
 import com.adaptris.core.GeneralServiceExample;
+import com.adaptris.security.exc.PasswordException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
@@ -31,6 +33,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import java.io.File;
+import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -38,6 +41,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
 
 public class EncodePasswordServiceTest extends GeneralServiceExample {
 
@@ -88,5 +94,23 @@ public class EncodePasswordServiceTest extends GeneralServiceExample {
     List<String> lines = Files.readAllLines(Paths.get(service.getFilePath()));
     String pwdLine = lines.stream().filter(line -> line.startsWith("cirrus.broker.password")).collect(Collectors.toList()).get(0);
     assertTrue(pwdLine.substring(pwdLine.indexOf('=')+1).startsWith(PREFIX_PORTBALE_PASSWORD_2));
+  }
+
+  @Test
+  public void testDoServiceException() throws Exception{
+    EncodePasswordService service = spy(new EncodePasswordService());
+    doThrow(new IOException()).when(service).encodeValuesInPropertiesFile(any());
+    assertThrows(CoreException.class, () -> {
+      service.doService(msg);
+    });
+  }
+
+  @Test
+  public void testDoEncodePasswordException() throws Exception {
+    EncodePasswordService service = spy(new EncodePasswordService());
+    doThrow(new PasswordException()).when(service).doEncodePassword(any());
+    assertThrows(CoreException.class, () -> {
+      service.doService(msg);
+    });
   }
 }
