@@ -17,6 +17,14 @@
   </suppress>
   <suppress>
     <notes><![CDATA[
+      Suppressing CVE-2025-27533 for ActiveMQ Client 5.18.3
+      Usage is limited to client-side message production/consumption, no broker or JMX exposure.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.activemq/activemq-client@.*$</packageUrl>
+    <vulnerabilityName>CVE-2025-27533</vulnerabilityName>
+  </suppress>  
+  <suppress>
+    <notes><![CDATA[
     file name: javax.security.auth.message-1.0.0.v201108011116.jar, isn't geronimo!
     ]]>    </notes>
     <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty\.orbit/javax\.security\.auth\.message@.*$</packageUrl>
@@ -75,6 +83,7 @@
     <cve>CVE-2021-21349</cve>
     <cve>CVE-2021-21350</cve>
     <cve>CVE-2021-21351</cve>
+	<vulnerabilityName regex="true">^CVE-(2021-29505|2021-39139|2021-39140|2021-39141|2021-39144|2021-39145|2021-39146|2021-39147|2021-39148|2021-39149|2021-39150|2021-39151|2021-39152|2021-39153|2021-39154|2021-43859|2022-40151|2022-40152|2022-41966)$</vulnerabilityName>
   </suppress>
   <suppress>
     <notes><![CDATA[
@@ -225,4 +234,38 @@
     <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring-boot-loader@.*$</packageUrl>
     <vulnerabilityName>CVE-2024-38807</vulnerabilityName>
   </suppress>
+  <!-- Suppress Jetty CVEs in version 9.4.57.v20241219 -->
+  <suppress>
+    <notes><![CDATA[
+  	Suppressing CVE-2024-6763 for Jetty 9.4.57.v20241219
+  	Suppressed because we are aware of the issue, but interlok v4 is tied to jetty 9, upgrade to interlok v5 for jetty+
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty.*@.*$</packageUrl>
+    <vulnerabilityName>CVE-2024-6763</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+  	Suppressing CVE-2025-1948 for Jetty HTTP2 Common 9.4.57.v20241219
+  	Suppressed after review;  interlok v4 is tied to jetty 9, upgrade to interlok v5 for jetty+
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty\.http2/http2-common@.*$</packageUrl>
+    <vulnerabilityName>CVE-2025-1948</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+  	Suppressing CVE-2023-36479 for Jetty Servlets 9.4.57.v20241219
+  	 interlok v4 is tied to jetty 9, upgrade to interlok v5 for jetty+
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty/jetty-servlets@.*$</packageUrl>
+    <vulnerabilityName>CVE-2023-36479</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+  	Suppressing CVE-2025-35036 and CVE-2023-1932 for Hibernate Validator 6.1.7.Final.
+  	Usage is limited to local bean validation with no EL interpolation or user-provided constraints.
+  	Context confirmed not vulnerable.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.hibernate\.validator/hibernate-validator@.*$</packageUrl>
+    <vulnerabilityName regex="true">^CVE-(2025-35036|2023-1932)$</vulnerabilityName>
+  </suppress>  
 </suppressions>
