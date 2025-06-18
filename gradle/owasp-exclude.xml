@@ -273,4 +273,43 @@
     <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring-boot-loader@.*$</packageUrl>
     <vulnerabilityName>CVE-2024-38807</vulnerabilityName>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+    CVE-2025-1948: False positive for Jetty 10.0.24. CVE-2025-1948 only affects Jetty versions 12.0.0 to 12.0.16.
+	CVE-2024-6763: Jetty 10.0.24 is the highest version 10 we can go to.
+    ]]></notes>
+    <cve>CVE-2025-1948</cve>
+	<cve>CVE-2024-6763</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    CVE-2023-36479: False positive, This issue was patched in version 10.0.16
+    ]]></notes>
+	<packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty/jetty-servlets@.*$</packageUrl>
+    <cve>CVE-2023-36479</cve>
+  </suppress>  
+  <suppress>
+    <notes><![CDATA[
+    We are on latest xstream; I think these are false positives as the vulnerabilities were patched in version 1.4.17.
+    ]]></notes>
+	<cve>CVE-2021-29505</cve>
+	<cve>CVE-2021-39139</cve>
+	<cve>CVE-2021-39141</cve>
+	<cve>CVE-2021-39144</cve>
+	<cve>CVE-2021-39145</cve>
+	<cve>CVE-2021-39146</cve>
+	<cve>CVE-2021-39147</cve>
+	<cve>CVE-2021-39148</cve>
+	<cve>CVE-2021-39149</cve>
+	<cve>CVE-2021-39150</cve>
+	<cve>CVE-2021-39151</cve>
+	<cve>CVE-2021-39152</cve>
+	<cve>CVE-2021-39153</cve>
+	<cve>CVE-2021-39154</cve>
+	<cve>CVE-2021-43859</cve>
+	<cve>CVE-2022-40151</cve>
+	<cve>CVE-2022-40152</cve>
+	<cve>CVE-2022-41966</cve>
+	<cve>CVE-2021-39140</cve>
+  </suppress>   
 </suppressions>

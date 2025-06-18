@@ -140,10 +140,8 @@ public class BytesSplitter extends MessageSplitterImp {
       AdaptrisMessage tmpMessage = factory.newMessage();
       try (OutputStream os = tmpMessage.getOutputStream()) {
         logR.trace("Working on split {}", numberOfMessages);
-        byte[] chunk = new byte[chunkSize];
-        int read = IOUtils.read(is, chunk);
+        int read = truncate(is, chunkSize, os);
         if (read == 0) return null;
-        os.write(chunk, 0, read);
       }
 
       numberOfMessages++;
@@ -156,6 +154,13 @@ public class BytesSplitter extends MessageSplitterImp {
       logR.trace("Split gave {} messages", numberOfMessages);
     }
 
-  };
+  }
+  public static int truncate(InputStream is, int chunkSize, OutputStream os) throws IOException {
+    byte[] chunk = new byte[chunkSize];
+    int read = IOUtils.read(is, chunk);
+    os.write(chunk, 0, read);
+    return read;
+  }
+
 
 }
