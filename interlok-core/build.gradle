@@ -9,7 +9,7 @@ ext {
   slf4jVersion = "2.0.17"
   mockitoVersion = "4.9.0"
   jschVersion = "0.2.26"
-  mssqlDriverVersion = "9.2.1.jre8"
+  mssqlDriverVersion = "13.1.1.jre8-preview"
   derbyDriverVersion = "10.15.2.0"
   junitVersion = "5.11.4"
   jettyVersion= "10.0.25"
