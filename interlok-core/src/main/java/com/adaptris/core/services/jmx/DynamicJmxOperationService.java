@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.remote.JMXServiceURL;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AdvancedConfig;

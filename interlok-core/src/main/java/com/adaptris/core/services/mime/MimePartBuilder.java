@@ -15,7 +15,7 @@
  */
 package com.adaptris.core.services.mime;
 
-import javax.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeBodyPart;
 import com.adaptris.core.AdaptrisMessage;
 
 @FunctionalInterface

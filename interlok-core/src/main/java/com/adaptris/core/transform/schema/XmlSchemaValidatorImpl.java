@@ -16,8 +16,8 @@ package com.adaptris.core.transform.schema;
 
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;

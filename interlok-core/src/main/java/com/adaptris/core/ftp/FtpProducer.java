@@ -17,8 +17,8 @@
 package com.adaptris.core.ftp;
 
 import java.io.InputStream;
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.apache.commons.lang3.ObjectUtils;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;

@@ -2,7 +2,7 @@ package com.adaptris.interlok.cloud;
 
 
 import java.io.FileFilter;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import org.apache.commons.lang3.ObjectUtils;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.InputFieldHint;

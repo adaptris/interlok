@@ -2,7 +2,7 @@ package com.adaptris.core.util;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import javax.mail.internet.MimeUtility;
+import jakarta.mail.internet.MimeUtility;
 import com.adaptris.util.text.mime.MimeConstants;
 
 public class EncodingHelper {

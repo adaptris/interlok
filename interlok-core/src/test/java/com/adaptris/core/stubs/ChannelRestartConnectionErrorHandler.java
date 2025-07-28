@@ -16,7 +16,7 @@
 
 package com.adaptris.core.stubs;
 
-import javax.jms.JMSException;
+import jakarta.jms.JMSException;
 
 import com.adaptris.core.AdaptrisComponent;
 import com.adaptris.core.Channel;
@@ -48,7 +48,7 @@ public class ChannelRestartConnectionErrorHandler extends
   public void close() {
   }
 
-  /** @see javax.jms.ExceptionListener#onException(javax.jms.JMSException) */
+  /** @see jakarta.jms.ExceptionListener#onException(jakarta.jms.JMSException) */
   public void onException(JMSException e) {
     try {
       handleConnectionException();

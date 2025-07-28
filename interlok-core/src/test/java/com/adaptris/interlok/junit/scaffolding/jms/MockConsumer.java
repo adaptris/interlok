@@ -1,8 +1,8 @@
 package com.adaptris.interlok.junit.scaffolding.jms;
 
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-import javax.jms.Session;
+import jakarta.jms.JMSException;
+import jakarta.jms.MessageConsumer;
+import jakarta.jms.Session;
 
 import com.adaptris.core.CoreException;
 import com.adaptris.core.jms.JmsConsumerImpl;

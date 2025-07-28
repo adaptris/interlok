@@ -17,8 +17,8 @@
 package com.adaptris.core.jms;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-import javax.jms.JMSException;
-import javax.validation.constraints.NotBlank;
+import jakarta.jms.JMSException;
+import jakarta.validation.constraints.NotBlank;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.util.Args;

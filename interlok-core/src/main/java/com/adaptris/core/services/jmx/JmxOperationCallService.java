@@ -17,7 +17,7 @@
 package com.adaptris.core.services.jmx;
 
 import javax.management.MBeanServerConnection;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;

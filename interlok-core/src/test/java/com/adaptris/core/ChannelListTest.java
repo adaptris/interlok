@@ -27,7 +27,7 @@ import java.util.Arrays;
 import java.util.ListIterator;
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolation;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

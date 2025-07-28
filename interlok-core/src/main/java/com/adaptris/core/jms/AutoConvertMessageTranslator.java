@@ -22,12 +22,12 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.jms.BytesMessage;
-import javax.jms.JMSException;
-import javax.jms.MapMessage;
-import javax.jms.Message;
-import javax.jms.ObjectMessage;
-import javax.jms.TextMessage;
+import jakarta.jms.BytesMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.MapMessage;
+import jakarta.jms.Message;
+import jakarta.jms.ObjectMessage;
+import jakarta.jms.TextMessage;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -79,12 +79,12 @@ public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
   private static final boolean DEFAULT_CONVERT_BACK_TO_ORIGINAL_TYPE = false;
 
   /**
-   * javax.jms.Message types that are supported by this translator.
+   * jakarta.jms.Message types that are supported by this translator.
    *
    *
    */
   public static enum SupportedMessageType {
-    /** Represents {@linkplain javax.jms.TextMessage} */
+    /** Represents {@linkplain jakarta.jms.TextMessage} */
     Text {
       @Override
       MessageTypeTranslatorImp create(MessageTypeTranslatorImp parent) throws JMSException {
@@ -96,7 +96,7 @@ public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
         return m instanceof TextMessage;
       }
     },
-    /** Represents {@linkplain javax.jms.BytesMessage} */
+    /** Represents {@linkplain jakarta.jms.BytesMessage} */
     Bytes {
       @Override
       MessageTypeTranslatorImp create(MessageTypeTranslatorImp parent) throws JMSException {
@@ -108,7 +108,7 @@ public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
         return m instanceof BytesMessage;
       }
     },
-    /** Represents {@linkplain javax.jms.ObjectMessage} */
+    /** Represents {@linkplain jakarta.jms.ObjectMessage} */
     Object {
       @Override
       MessageTypeTranslatorImp create(MessageTypeTranslatorImp parent) throws JMSException {
@@ -120,7 +120,7 @@ public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
         return m instanceof ObjectMessage;
       }
     },
-    /** Represents {@linkplain javax.jms.MapMessage} */
+    /** Represents {@linkplain jakarta.jms.MapMessage} */
     Map {
       @Override
       MessageTypeTranslatorImp create(MessageTypeTranslatorImp parent) throws JMSException {
@@ -246,7 +246,7 @@ public class AutoConvertMessageTranslator extends MessageTypeTranslatorImp {
   }
 
   /**
-   * Set the javax.jms.Message implementation that this MessageTranslator
+   * Set the jakarta.jms.Message implementation that this MessageTranslator
    * creates when converting from AdaptrisMessage.
    *
    * @param outputType the output type, one of Object, Text, Bytes, Map

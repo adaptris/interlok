@@ -12,7 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.*;
 
 import static com.adaptris.core.CoreConstants.OBJ_METADATA_EXCEPTION;

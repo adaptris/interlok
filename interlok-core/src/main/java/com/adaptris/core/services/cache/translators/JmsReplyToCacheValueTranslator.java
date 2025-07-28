@@ -2,7 +2,7 @@ package com.adaptris.core.services.cache.translators;
 
 import java.io.Serializable;
 
-import javax.jms.Destination;
+import jakarta.jms.Destination;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;

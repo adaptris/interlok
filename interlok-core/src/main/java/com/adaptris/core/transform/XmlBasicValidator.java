@@ -16,7 +16,7 @@
 
 package com.adaptris.core.transform;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;

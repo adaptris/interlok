@@ -23,9 +23,9 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.ObjectMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.ObjectMessage;
 
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
@@ -33,7 +33,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
  * <p>
- * Translates between <code>javax.jms.ObjectMessage</code>s and <code>AdaptrisMessage</code>s and vice versa.
+ * Translates between <code>jakarta.jms.ObjectMessage</code>s and <code>AdaptrisMessage</code>s and vice versa.
  * </p>
  * 
  * @config object-message-translator

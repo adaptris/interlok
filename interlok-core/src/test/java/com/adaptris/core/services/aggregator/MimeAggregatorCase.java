@@ -28,7 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeBodyPart;
 
 import org.junit.jupiter.api.Test;
 

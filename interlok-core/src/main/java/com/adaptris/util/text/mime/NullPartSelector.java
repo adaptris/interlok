@@ -19,9 +19,9 @@ package com.adaptris.util.text.mime;
 import java.util.List;
 import java.util.Vector;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMultipart;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMultipart;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 

@@ -1,8 +1,8 @@
 package com.adaptris.core.jms;
 
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-import javax.jms.Session;
+import jakarta.jms.JMSException;
+import jakarta.jms.MessageConsumer;
+import jakarta.jms.Session;
 
 @FunctionalInterface
 public interface ConsumerCreator {

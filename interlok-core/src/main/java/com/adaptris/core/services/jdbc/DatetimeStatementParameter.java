@@ -17,7 +17,7 @@ package com.adaptris.core.services.jdbc;
 
 import com.adaptris.util.text.DateFormatUtil;
 import java.text.SimpleDateFormat;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 public abstract class DatetimeStatementParameter<T> extends TypedStatementParameter {
 

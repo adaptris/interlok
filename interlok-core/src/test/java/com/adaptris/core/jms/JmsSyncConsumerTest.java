@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.jms.MessageConsumer;
+import jakarta.jms.MessageConsumer;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.junit.jupiter.api.AfterEach;

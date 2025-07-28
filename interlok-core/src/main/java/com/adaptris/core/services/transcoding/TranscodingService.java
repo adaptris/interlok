@@ -18,8 +18,8 @@ package com.adaptris.core.services.transcoding;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.core.AdaptrisMessage;

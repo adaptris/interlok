@@ -16,7 +16,7 @@
 package com.adaptris.sftp;
 
 import java.util.Arrays;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import com.adaptris.core.util.Args;
 import com.adaptris.util.KeyValuePair;
 import com.adaptris.util.KeyValuePairSet;

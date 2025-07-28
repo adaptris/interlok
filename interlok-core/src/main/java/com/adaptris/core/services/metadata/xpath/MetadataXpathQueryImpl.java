@@ -17,7 +17,7 @@
 package com.adaptris.core.services.metadata.xpath;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;

@@ -1,8 +1,8 @@
 package com.adaptris.core.transaction;
 
-import javax.jms.XAConnectionFactory;
+import jakarta.jms.XAConnectionFactory;
 import javax.transaction.xa.XAResource;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.AdapterComponent;

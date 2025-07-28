@@ -20,9 +20,9 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.Enumeration;
 
-import javax.mail.Header;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.Header;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;

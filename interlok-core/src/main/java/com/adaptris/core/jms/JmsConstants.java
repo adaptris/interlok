@@ -32,7 +32,7 @@ public final class JmsConstants {
 
   /**
    * <p>
-   * Key used to store JMS reply to <code>javax.jms.Destination</code> against
+   * Key used to store JMS reply to <code>jakarta.jms.Destination</code> against
    * as AdaptrisMessage <code>Object</code> metadata.
    * </p>
    */

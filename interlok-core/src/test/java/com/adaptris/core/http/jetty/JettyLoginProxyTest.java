@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.security.auth.Subject;
-import javax.servlet.ServletRequest;
+import jakarta.servlet.ServletRequest;
 
 import org.eclipse.jetty.security.AbstractLoginService;
 import org.eclipse.jetty.security.DefaultIdentityService;

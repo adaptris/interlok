@@ -9,8 +9,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import java.security.Principal;
 
 import javax.security.auth.Subject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.security.UserAuthentication;
 import org.eclipse.jetty.security.UserPrincipal;

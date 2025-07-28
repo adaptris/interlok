@@ -1,6 +1,6 @@
 package com.adaptris.core.services.cache;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.Args;

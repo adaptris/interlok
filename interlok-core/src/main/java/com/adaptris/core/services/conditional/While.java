@@ -18,8 +18,8 @@ package com.adaptris.core.services.conditional;
 
 import static com.adaptris.core.CoreConstants.shouldStopProcessing;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;

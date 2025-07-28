@@ -1,6 +1,6 @@
 package com.adaptris.core.transaction;
 
-import javax.jms.XAConnectionFactory;
+import jakarta.jms.XAConnectionFactory;
 import javax.transaction.xa.XAResource;
 
 import com.adaptris.core.CoreException;

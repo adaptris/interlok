@@ -16,7 +16,7 @@
 
 package com.adaptris.core.jms.jndi;
 
-import javax.jms.JMSException;
+import jakarta.jms.JMSException;
 
 /**
  * Interface that allows you to configure the ConnectionFactory that is returned from a {@link StandardJndiImplementation}.

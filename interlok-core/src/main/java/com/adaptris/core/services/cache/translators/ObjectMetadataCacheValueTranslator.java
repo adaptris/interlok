@@ -1,7 +1,7 @@
 package com.adaptris.core.services.cache.translators;
 
 import java.io.Serializable;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.services.cache.CacheValueTranslator;

@@ -17,10 +17,10 @@
 package com.adaptris.core.jms;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-import javax.jms.Topic;
-import javax.validation.constraints.NotBlank;
+import jakarta.jms.JMSException;
+import jakarta.jms.MessageConsumer;
+import jakarta.jms.Topic;
+import jakarta.validation.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
@@ -49,7 +49,7 @@ import lombok.Setter;
  * attaching a subscriber to a topic; {@code jms:topic:MyTopicName?subscriptionId=myId} would return
  * a {@link JmsDestination#subscriptionId()} of {@code myId}. This must be specified.</li>
  * <li>{@code noLocal} - which corresponds to the
- * {@link javax.jms.Session#createConsumer(javax.jms.Destination, String, boolean)} noLocal setting.
+ * {@link jakarta.jms.Session#createConsumer(jakarta.jms.Destination, String, boolean)} noLocal setting.
  * This defaults to false, if not specified.</li>
  * <ul>
  * </p>

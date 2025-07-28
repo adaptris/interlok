@@ -16,10 +16,10 @@
 
 package com.adaptris.core.jms;
 
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Topic;
-import javax.validation.constraints.NotBlank;
+import jakarta.jms.Destination;
+import jakarta.jms.JMSException;
+import jakarta.jms.Topic;
+import jakarta.validation.constraints.NotBlank;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
@@ -42,17 +42,17 @@ import lombok.Setter;
  * for standard JMS Headers can be controlled in a number of ways.
  * </p>
  * <p>
- * When converting from an {@link com.adaptris.core.AdaptrisMessage} into a standard {@link javax.jms.Message}; you
+ * When converting from an {@link com.adaptris.core.AdaptrisMessage} into a standard {@link jakarta.jms.Message}; you
  * should choose an implementation of {@link MessageTypeTranslator}. The more common types are
  * {@link BytesMessageTranslator}, {@link TextMessageTranslator}, {@link ObjectMessageTranslator}
- * and {@link MapMessageTranslator} which correspond to {@link javax.jms.BytesMessage},
- * {@link javax.jms.TextMessage}, {@link javax.jms.ObjectMessage} and {@link javax.jms.MapMessage}
+ * and {@link MapMessageTranslator} which correspond to {@link jakarta.jms.BytesMessage},
+ * {@link jakarta.jms.TextMessage}, {@link jakarta.jms.ObjectMessage} and {@link jakarta.jms.MapMessage}
  * respectively. Each {@link MessageTypeTranslator} will allow you to move some or all metadata from
  * the AdaptrisMessage to the JMS Message. Of course, there are other vendor specific JMS message
  * types can be used.
  * </p>
  * <p>
- * The {@link javax.jms.Message#getJMSCorrelationID()} field is generally used for linking one
+ * The {@link jakarta.jms.Message#getJMSCorrelationID()} field is generally used for linking one
  * message to with another. It typically links a reply message with the originating request message.
  * If you need to handle the correlation id in some fashion then typically you would choose an
  * implementation of {@link CorrelationIdSource} that explicitly handles the correlation ID; for
@@ -60,7 +60,7 @@ import lombok.Setter;
  * </p>
  * <p>
  * Synchronous request/reply messaging behaviour is available for this producer and relies heavily
- * on the {@link javax.jms.Message#getJMSReplyTo()} field. Normally if the adapter is initiating the
+ * on the {@link jakarta.jms.Message#getJMSReplyTo()} field. Normally if the adapter is initiating the
  * request then a temporary destination is created and this is used as the JMSReplyTo field.
  * Sometimes you may wish to specify your own JMSReplyTo field (where the JMS Vendor doesn't play
  * nice with temporary topics). To do this, then you need to ensure that the metadata key
@@ -72,8 +72,8 @@ import lombok.Setter;
  * JMSReplyTo Field.
  * </p>
  * <p>
- * By convention, the {@link javax.jms.Message#getJMSPriority()},
- * {@link javax.jms.Message#getJMSDeliveryMode()}, and {@link javax.jms.Message#getJMSExpiration()}
+ * By convention, the {@link jakarta.jms.Message#getJMSPriority()},
+ * {@link jakarta.jms.Message#getJMSDeliveryMode()}, and {@link jakarta.jms.Message#getJMSExpiration()}
  * are configured directly (expiration here is semantically equivalent to the element
  * {@link #setTtl(Long)} on the producer. It is possible to control it dynamically on a per message
  * basis using the element {@link #setPerMessageProperties(Boolean)}. If you opt to control these

@@ -20,7 +20,7 @@ import static org.apache.commons.io.IOUtils.copy;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;

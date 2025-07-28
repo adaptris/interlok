@@ -20,7 +20,7 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.adaptris.annotation.DisplayOrder;

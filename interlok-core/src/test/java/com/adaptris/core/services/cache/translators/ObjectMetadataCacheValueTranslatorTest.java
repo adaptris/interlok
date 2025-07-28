@@ -3,8 +3,8 @@ package com.adaptris.core.services.cache.translators;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import javax.jms.JMSException;
-import javax.jms.Queue;
+import jakarta.jms.JMSException;
+import jakarta.jms.Queue;
 
 import org.junit.jupiter.api.Test;
 

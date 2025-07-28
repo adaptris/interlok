@@ -19,14 +19,14 @@ package com.adaptris.core.jms;
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import static com.adaptris.core.jms.NullCorrelationIdSource.defaultIfNull;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageListener;
-import javax.jms.Session;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.MessageConsumer;
+import jakarta.jms.MessageListener;
+import jakarta.jms.Session;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
@@ -104,7 +104,7 @@ public abstract class JmsConsumerImpl extends AdaptrisMessageConsumerImp impleme
    * Called by the JMS <code>Session</code> to deliver messages.
    * </p>
    *
-   * @param msg a <code>javax.jms.Message</code>
+   * @param msg a <code>jakarta.jms.Message</code>
    */
   @Override
   public void onMessage(Message msg) {

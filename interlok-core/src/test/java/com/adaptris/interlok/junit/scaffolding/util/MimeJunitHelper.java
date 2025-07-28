@@ -22,9 +22,9 @@ import static com.adaptris.util.text.mime.MimeConstants.ENCODING_BASE64;
 import static com.adaptris.util.text.mime.MimeConstants.HEADER_CONTENT_ID;
 import static com.adaptris.util.text.mime.MimeConstants.HEADER_CONTENT_TYPE;
 
-import javax.mail.internet.InternetHeaders;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMultipart;
+import jakarta.mail.internet.InternetHeaders;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMultipart;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;

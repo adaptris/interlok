@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.core.http.server.HttpStatusProvider;
@@ -69,7 +69,7 @@ public class TimeoutAction {
    * Set the max wait time for an individual worker in a workflow to finish.
    * <p>
    * This setting only has an impact if the consumer is the entry point for a {@link com.adaptris.core.PoolingWorkflow} instance. In
-   * the event that the wait time is exceeded, then the internal {@link javax.servlet.http.HttpServlet} instance commits the
+   * the event that the wait time is exceeded, then the internal {@link jakarta.servlet.http.HttpServlet} instance commits the
    * response in its current state and returns control back to the Jetty engine.
    * </p>
    * 

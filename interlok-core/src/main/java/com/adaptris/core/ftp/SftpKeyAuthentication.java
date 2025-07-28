@@ -18,7 +18,7 @@ package com.adaptris.core.ftp;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 import com.adaptris.core.fs.FsHelper;
 import org.apache.commons.io.FileUtils;

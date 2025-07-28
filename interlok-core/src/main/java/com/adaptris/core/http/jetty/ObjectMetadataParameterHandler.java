@@ -20,7 +20,7 @@ import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
 import java.util.Enumeration;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.thoughtworks.xstream.annotations.XStreamAlias;

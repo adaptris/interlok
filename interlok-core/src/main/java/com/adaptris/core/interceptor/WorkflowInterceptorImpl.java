@@ -18,7 +18,7 @@ package com.adaptris.core.interceptor;
 
 import static com.adaptris.core.CoreConstants.UNIQUE_ID_JMX_PATTERN;
 
-import javax.validation.constraints.Pattern;
+import jakarta.validation.constraints.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

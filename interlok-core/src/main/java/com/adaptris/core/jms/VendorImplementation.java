@@ -17,9 +17,9 @@
 package com.adaptris.core.jms;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
+import jakarta.jms.Connection;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.JMSException;
 import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.security.password.Password;
 
@@ -52,7 +52,7 @@ public interface VendorImplementation extends VendorImplementationBase {
    *           or not; this should be appropriate for all JMS 1.1 specifications.
    * @param factory the jms connection factory.
    * @param cfg the connection configuration (i.e. username/password)
-   * @return a {@code javax.jms.Connection} instance
+   * @return a {@code jakarta.jms.Connection} instance
    * @throws Exception on exception
    */
   default Connection createConnection(ConnectionFactory factory, JmsConnectionConfig cfg) throws Exception {

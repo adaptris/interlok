@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.Charset;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

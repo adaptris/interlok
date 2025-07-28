@@ -21,7 +21,7 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.Properties;
 import javax.sql.DataSource;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.apache.commons.lang3.BooleanUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;

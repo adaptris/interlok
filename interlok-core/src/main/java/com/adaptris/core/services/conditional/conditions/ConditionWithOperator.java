@@ -1,7 +1,7 @@
 package com.adaptris.core.services.conditional.conditions;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import com.adaptris.core.services.conditional.Operator;
 import com.adaptris.core.util.Args;
 

@@ -16,10 +16,10 @@
 
 package com.adaptris.core.jms;
 
-import javax.jms.Session;
+import jakarta.jms.Session;
 
 /**
- * Utility class to convert a meaningful string into a javax.jms.Session
+ * Utility class to convert a meaningful string into a jakarta.jms.Session
  * constant.
  *
  * @author lchan
@@ -29,7 +29,7 @@ public class AcknowledgeMode {
 
   public enum Mode {
     /**
-     * Maps to {@link javax.jms.Session#AUTO_ACKNOWLEDGE}
+     * Maps to {@link jakarta.jms.Session#AUTO_ACKNOWLEDGE}
      *
      */
     AUTO_ACKNOWLEDGE {
@@ -39,7 +39,7 @@ public class AcknowledgeMode {
       }
     },
     /**
-     * Maps to {@link javax.jms.Session#CLIENT_ACKNOWLEDGE}
+     * Maps to {@link jakarta.jms.Session#CLIENT_ACKNOWLEDGE}
      *
      */
     CLIENT_ACKNOWLEDGE {
@@ -49,7 +49,7 @@ public class AcknowledgeMode {
       }
     },
     /**
-     * Maps to {@link javax.jms.Session#DUPS_OK_ACKNOWLEDGE}
+     * Maps to {@link jakarta.jms.Session#DUPS_OK_ACKNOWLEDGE}
      *
      */
     DUPS_OK_ACKNOWLEDGE {

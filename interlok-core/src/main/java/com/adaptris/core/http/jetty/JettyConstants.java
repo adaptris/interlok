@@ -15,7 +15,7 @@
 */
 package com.adaptris.core.http.jetty;
 
-import javax.servlet.ServletRequest;
+import jakarta.servlet.ServletRequest;
 
 import org.eclipse.jetty.security.LoginService;
 
@@ -28,21 +28,21 @@ public class JettyConstants {
   /**
    * Metadata key that contains the URL that was used to post data to a Jetty instance : {@value #JETTY_URL}
    *
-   * @see javax.servlet.http.HttpServletRequest#getRequestURL()
+   * @see jakarta.servlet.http.HttpServletRequest#getRequestURL()
    */
   public static final String JETTY_URL = "jettyURL";
 
   /**
    * Metadata key that contains the URI that was used to post data to a Jetty instance : {@value #JETTY_URI}
    *
-   * @see javax.servlet.http.HttpServletRequest#getRequestURI()
+   * @see jakarta.servlet.http.HttpServletRequest#getRequestURI()
    */
   public static final String JETTY_URI = "jettyURI";
 
   /**
    * Metadata key that contains the query string that was used to post data to a Jetty instance : {@value #JETTY_QUERY_STRING}
    *
-   * @see javax.servlet.http.HttpServletRequest#getQueryString()
+   * @see jakarta.servlet.http.HttpServletRequest#getQueryString()
    */
   public static final String JETTY_QUERY_STRING = "jettyQueryString";
 

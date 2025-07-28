@@ -21,9 +21,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMultipart;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMultipart;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 
@@ -45,7 +45,7 @@ public class ByteArrayIterator extends MultipartIterator implements Iterator<byt
    * @throws MessagingException if the bytes did not contain a valid
    *           MimeMultiPart
    * @throws IOException if there was an IOException
-   * @throws MessagingException if an underlying javax.mail exception occurred
+   * @throws MessagingException if an underlying jakarta.mail exception occurred
    */
   public ByteArrayIterator(InputStream in) throws IOException, MessagingException {
     super(in);

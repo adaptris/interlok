@@ -17,8 +17,8 @@ package com.adaptris.core.http.jetty;
 
 import static com.adaptris.core.http.jetty.JettyConstants.JETTY_WRAPPER;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.util.FifoMutexLock;

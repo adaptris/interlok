@@ -16,7 +16,7 @@
 
 package com.adaptris.core.http.jetty;
 
-import javax.servlet.Servlet;
+import jakarta.servlet.Servlet;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;

@@ -17,8 +17,8 @@
 package com.adaptris.core.jdbc;
 import static com.adaptris.util.text.xml.XPath.newXPathInstance;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import javax.xml.namespace.NamespaceContext;
 import org.w3c.dom.Document;
 import com.adaptris.annotation.AdvancedConfig;

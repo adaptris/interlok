@@ -2,7 +2,7 @@ package com.adaptris.core;
 
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.util.TimeInterval;
 import com.thoughtworks.xstream.annotations.XStreamAlias;

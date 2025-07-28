@@ -24,9 +24,8 @@ import com.adaptris.security.exc.AdaptrisSecurityException;
 import com.adaptris.security.util.Constants;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import java.util.Properties;
-import javax.annotation.RegEx;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 
