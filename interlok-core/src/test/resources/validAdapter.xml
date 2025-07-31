@@ -8,7 +8,7 @@
                 <connection-error-handler class="jms-connection-error-handler"/>
                 <unique-id>cirrus-sonic-10-jms-connection</unique-id>
                 <user-name>${cirrus.broker.username}</user-name>
-                <password>PW:AAAAELCL3FIBGukCEb/Kbx5Qn8oAAAAQP8XrlJCGnX+GYuXrkM8mUQAAACBXIhXx+UxpAMT984aYr7WCYLh4jAr5am0duHNARfbEdg==</password>
+                <password>MyPlainPassword</password>
                 <client-id>${sonic.client.id}-${env}</client-id>
                 <vendor-implementation class="advanced-sonic-mq-implementation">
                     <broker-url>${cirrus.primary.broker.url}</broker-url>
@@ -35,10 +35,10 @@
                 <connect-url>${jdbc.connection.url}</connect-url>
             </jdbc-pooled-connection>
             <standard-sftp-connection>
-                <unique-id>sftp-connection-esker</unique-id>
-                <default-user-name>${sftp.esker.connection.default.user}</default-user-name>
+                <unique-id>sftp-connection</unique-id>
+                <default-user-name>${sftp.connection.default.user}</default-user-name>
                 <authentication class="sftp-password-authentication">
-                    <default-password>${sftp.esker.connection.default.password}</default-password>
+                    <default-password>${sftp.connection.default.password}</default-password>
                 </authentication>
                 <configuration class="sftp-inline-config">
                     <proxy class="sftp-via-http-proxy">
