@@ -273,8 +273,8 @@ public class EncodePasswordService extends ServiceImp {
    */
   private void encapsulateReferencedEntities(File file) throws IOException {
       String fileContent = Files.readString(file.toPath());
-      //letters, numbers, hyphens, underscores only
-      String updatedContent = fileContent.replaceAll("&([a-zA-Z][a-zA-Z0-9\\-_]*);", "\\${$1}");
+      //letters, numbers, hyphens, underscores, dot only
+      String updatedContent = fileContent.replaceAll("&([a-zA-Z][a-zA-Z0-9\\-_.]*);", "\\${$1}");
       Files.writeString(file.toPath(), updatedContent);
   }
 

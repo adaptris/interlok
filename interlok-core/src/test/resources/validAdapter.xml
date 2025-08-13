@@ -29,10 +29,10 @@
             </jms-connection>
             <jdbc-pooled-connection>
                 <unique-id>mysql-connection-demat-fiscale</unique-id>
-                <driver-imp>${jdbc.driver}</driver-imp>
-                <username>${jdbc.user}</username>
-                <password>${jdbc.password}</password>
-                <connect-url>${jdbc.connection.url}</connect-url>
+                <driver-imp>&jdbc.driver;</driver-imp>
+                <username>&jdbc.user;</username>
+                <password>&jdbc.password;</password>
+                <connect-url>&jdbc.connection.url;</connect-url>
             </jdbc-pooled-connection>
             <standard-sftp-connection>
                 <unique-id>sftp-connection</unique-id>
