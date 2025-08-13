@@ -287,9 +287,7 @@ public class EncodePasswordService extends ServiceImp {
    */
   private Document readXMLDocument(File file) throws IOException, ParserConfigurationException {
     Document doc = null;
-
     DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-
     try {
         doc = dBuilder.parse(file);
     } catch (SAXParseException e) {
@@ -300,12 +298,10 @@ public class EncodePasswordService extends ServiceImp {
         } catch (SAXException e1) {
             //Handle malformed XMLs by logging the error
             log.info("Error encountered while encoding file - {} : {}", file.getName(), e.getMessage());
-            return null;
         }
     } catch (Exception e) {
         //Handle malformed XMLs by logging the error
         log.info("Error encountered while encoding file - {} : {}", file.getName(), e.getMessage());
-        return null;
     }
     return doc;
   }
