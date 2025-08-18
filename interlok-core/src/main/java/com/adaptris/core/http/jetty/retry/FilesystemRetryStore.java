@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -249,4 +250,17 @@ public class FilesystemRetryStore implements RetryStore {
   public void makeConnection(AdaptrisConnection connection) {
     // null implementation 
   }
+
+    @Override
+    public String getStackTrace(String msgId) throws InterlokException {
+        try {
+            File dir = validateMsgId(msgId, true);
+            File stackTraceFile = new File(dir, STACKTRACE_FILENAME);
+            FsWorker.checkReadable(FsWorker.isFile(stackTraceFile));
+
+            return FileUtils.readFileToString(stackTraceFile, StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            throw ExceptionHelper.wrapInterlokException(e);
+        }
+    }
 }

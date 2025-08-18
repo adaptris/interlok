@@ -439,4 +439,27 @@ public class JdbcRetryStore implements RetryStore {
   public void makeConnection(AdaptrisConnection connection) {
     setConnection(connection);
   }
+
+  @Override
+  public String getStackTrace(String msgId) throws InterlokException {
+      PreparedStatement ps = null;
+      ResultSet rs = null;
+      try {
+          ps = prepareStatementWithParameters(sqlConnection, sqlStatements.getProperty("select.sql"), new Object[] { msgId });
+          log.trace("Executing select statement for JDBCRetryStore getStacktrace");
+          rs = ps.executeQuery();
+          if (rs.next()) {
+              // Assuming the stack trace is stored in a column named "stacktrace"
+              //TODO - I think the table may not be storing the stacktrace, this needs updating
+              return rs.getString("stacktrace");
+          } else {
+              throw new InterlokException("No stack trace found for message ID: " + msgId);
+          }
+      } catch (SQLException e) {
+          throw ExceptionHelper.wrapInterlokException(e);
+      } finally {
+          JdbcUtil.closeQuietly(rs);
+          JdbcUtil.closeQuietly(ps);
+      }
+  }
 }

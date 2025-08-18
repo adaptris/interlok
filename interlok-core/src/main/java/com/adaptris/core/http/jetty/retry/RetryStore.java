@@ -164,4 +164,12 @@ public interface RetryStore extends ComponentLifecycle, ComponentLifecycleExtens
    */
   void makeConnection(AdaptrisConnection connection);
 
+  /**
+   * Retrieve the stack trace for a given message ID.
+   *
+   * @param msgId the message ID
+   * @return the stack trace as a String
+   * @throws InterlokException if the stack trace cannot be retrieved
+   */
+  String getStackTrace(String msgId) throws InterlokException;
 }

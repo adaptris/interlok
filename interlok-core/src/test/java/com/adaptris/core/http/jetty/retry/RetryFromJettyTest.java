@@ -431,6 +431,11 @@ public class RetryFromJettyTest extends FailedMessageRetrierCase {
     public void makeConnection(AdaptrisConnection connection) {
     // null implementation
     }
+
+    @Override
+    public String getStackTrace(String msgId) throws InterlokException {
+      throw new UnsupportedOperationException();
+    }
   }
 
 }

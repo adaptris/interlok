@@ -2,6 +2,7 @@ package com.adaptris.core.http.jetty.retry;
 
 import static com.adaptris.core.CoreConstants.HTTP_METHOD;
 import static com.adaptris.core.http.jetty.JettyConstants.JETTY_URI;
+
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -10,6 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import com.adaptris.annotation.AdvancedConfig;
@@ -75,415 +77,520 @@ import lombok.extern.slf4j.Slf4j;
  * delete. If you ask for a message to be deleted from the store, then that is what happens.
  * </p>
  *
- * @since 3.11.1
  * @config retry-via-jetty
+ * @since 3.11.1
  */
 @NoArgsConstructor
 @Slf4j
 @ComponentProfile(summary = "Listen for HTTP traffic on the specified URI and retry messages",
-    recommended = {EmbeddedConnection.class, JettyConnection.class}, since = "3.11.1")
+        recommended = {EmbeddedConnection.class, JettyConnection.class}, since = "3.11.1")
 @DisplayOrder(order = {"retryEndpointPrefix", "reportingEndpoint", "deleteEndpointPrefix",
-    "retryHttpMethod", "deleteHttpMethod", "connection", "retryStore", "reportBuilder"})
+        "retryHttpMethod", "deleteHttpMethod", "connection", "retryStore", "reportBuilder"})
 @XStreamAlias("retry-via-jetty")
 public class RetryFromJetty extends FailedMessageRetrierImp {
 
-  public static final String DEFAULT_ENDPOINT_PREFIX = "/api/retry/";
-  public static final String DEFAULT_REPORTING_ENDPOINT = "/api/failed/list";
-  public static final String DEFAULT_DELETE_PREFIX = "/api/failed/delete/";
+    public static final String DEFAULT_ENDPOINT_PREFIX = "/api/retry/";
+    public static final String DEFAULT_REPORTING_ENDPOINT = "/api/failed/list";
+    public static final String DEFAULT_DELETE_PREFIX = "/api/failed/delete/";
+    public static final String DEFAULT_STACKTRACE_ENDPOINT = "/api/failed/stacktrace/";
+    public static final String DEFAULT_STACKTRACE_FIRST_LINE_ENDPOINT = "/api/failed/stacktrace/first-line/";
 
-  private static final String HTTP_RETRY_METHOD = "POST";
-  private static final String HTTP_DELETE_METHOD = "DELETE";
+    private static final String HTTP_RETRY_METHOD = "POST";
+    private static final String HTTP_DELETE_METHOD = "DELETE";
 
-  private static final TimeInterval DEFAULT_SHUTDOWN_WAIT = new TimeInterval(30L, TimeUnit.SECONDS.name());
+    private static final TimeInterval DEFAULT_SHUTDOWN_WAIT = new TimeInterval(30L, TimeUnit.SECONDS.name());
 
-  public static final String CONTENT_TYPE_METADATA_KEY = "__Content-Type";
-  public static final String CONTENT_TYPE_EXPR = "%message{__Content-Type}";
+    public static final String CONTENT_TYPE_METADATA_KEY = "__Content-Type";
+    public static final String CONTENT_TYPE_EXPR = "%message{__Content-Type}";
 
-  private static final String HTTP_STATUS_KEY = "__httpResponseCode";
-  private static final String HTTP_STATUS_EXPR = "%message{__httpResponseCode}";
-  private static final String MSG_ID_KEY = "__MsgId";
+    private static final String HTTP_STATUS_KEY = "__httpResponseCode";
+    private static final String HTTP_STATUS_EXPR = "%message{__httpResponseCode}";
+    private static final String MSG_ID_KEY = "__MsgId";
 
-  protected static final String HTTP_OK = "" + HttpURLConnection.HTTP_OK;
-  protected static final String HTTP_ACCEPTED = "" + HttpURLConnection.HTTP_ACCEPTED;
-  protected static final String HTTP_ERROR = "" + HttpURLConnection.HTTP_INTERNAL_ERROR;
-  protected static final String HTTP_BAD = "" + HttpURLConnection.HTTP_BAD_REQUEST;
-  protected static final String HTTP_NOT_FOUND = "" + HttpURLConnection.HTTP_NOT_FOUND;
-
-
-  /**
-   * The retry endpoint.
-   * <p>
-   * The default if not explicitly specified is {@value DEFAULT_ENDPOINT_PREFIX}, note the trailing
-   * {@code "/"}. The expectation is that when clients interact with the endpoint it will be in the
-   * form {@code /prefix/'msgId'}
-   * </p>
-   */
-  @Getter
-  @Setter
-  @InputFieldDefault(value = DEFAULT_ENDPOINT_PREFIX)
-  private String retryEndpointPrefix;
-  /**
-   * The endpoint that allows reporting on what has failed.
-   * <p>
-   * The default if not explicitly specified is {@value DEFAULT_REPORTING_ENDPOINT}.
-   * </p>
-   */
-  @Getter
-  @Setter
-  @InputFieldDefault(value = DEFAULT_REPORTING_ENDPOINT)
-  private String reportingEndpoint;
-
-  /**
-   * The delete endpoint.
-   * <p>
-   * The default if not explicitly specified is {@value DEFAULT_DELETE_PREFIX}, note the trailing
-   * {@code "/"}. The expectation is that when clients interact with the endpoint it will be in the
-   * form {@code /prefix/'msgId'}
-   * </p>
-   */
-  @Getter
-  @Setter
-  @InputFieldDefault(value = DEFAULT_DELETE_PREFIX)
-  private String deleteEndpointPrefix;
-
-  /**
-   * The underlying Jetty connection.
-   *
-   */
-  @Getter
-  @Setter
-  @NotNull
-  private AdaptrisConnection connection = new EmbeddedConnection();
+    protected static final String HTTP_OK = "" + HttpURLConnection.HTTP_OK;
+    protected static final String HTTP_ACCEPTED = "" + HttpURLConnection.HTTP_ACCEPTED;
+    protected static final String HTTP_ERROR = "" + HttpURLConnection.HTTP_INTERNAL_ERROR;
+    protected static final String HTTP_BAD = "" + HttpURLConnection.HTTP_BAD_REQUEST;
+    protected static final String HTTP_NOT_FOUND = "" + HttpURLConnection.HTTP_NOT_FOUND;
 
 
-  /**
-   * How to build reports.
-   *
-   */
-  @Getter
-  @Setter
-  @NotNull
-  @NonNull
-  private ReportBuilder reportBuilder = new ReportBuilder();
+    /**
+     * The retry endpoint.
+     * <p>
+     * The default if not explicitly specified is {@value DEFAULT_ENDPOINT_PREFIX}, note the trailing
+     * {@code "/"}. The expectation is that when clients interact with the endpoint it will be in the
+     * form {@code /prefix/'msgId'}
+     * </p>
+     */
+    @Getter
+    @Setter
+    @InputFieldDefault(value = DEFAULT_ENDPOINT_PREFIX)
+    private String retryEndpointPrefix;
+    /**
+     * The endpoint that allows reporting on what has failed.
+     * <p>
+     * The default if not explicitly specified is {@value DEFAULT_REPORTING_ENDPOINT}.
+     * </p>
+     */
+    @Getter
+    @Setter
+    @InputFieldDefault(value = DEFAULT_REPORTING_ENDPOINT)
+    private String reportingEndpoint;
 
-  /**
-   * Where messages are stored for retries.
-   *
-   */
-  @Getter
-  @Setter
-  @NotNull
-  @NonNull
-  private RetryStore retryStore;
+    /**
+     * The delete endpoint.
+     * <p>
+     * The default if not explicitly specified is {@value DEFAULT_DELETE_PREFIX}, note the trailing
+     * {@code "/"}. The expectation is that when clients interact with the endpoint it will be in the
+     * form {@code /prefix/'msgId'}
+     * </p>
+     */
+    @Getter
+    @Setter
+    @InputFieldDefault(value = DEFAULT_DELETE_PREFIX)
+    private String deleteEndpointPrefix;
 
-  /**
-   * The HTTP method which is required for retries; the default is POST.
-   */
-  @AdvancedConfig(rare=true)
-  @Getter
-  @Setter
-  @InputFieldDefault(value = HTTP_RETRY_METHOD)
-  private String retryHttpMethod;
-
-
-  /**
-   * The HTTP method which is required for deleting messages from the retry store; the default is
-   * DELETE.
-   */
-  @AdvancedConfig(rare = true)
-  @Getter
-  @Setter
-  @InputFieldDefault(value = HTTP_DELETE_METHOD)
-  private String deleteHttpMethod;
-
-  private transient StandaloneConsumer reporting;
-  private transient StandaloneConsumer retrying;
-  private transient StandaloneConsumer deleting;
-
-  private transient ReportListener reporter;
-  private transient RetryListener retrier;
-  private transient DeleteListener deleter;
-
-  private transient ExecutorService workflowSubmitter;
-  private transient JettyRouteCondition retryRouting;
-  private transient JettyRouteCondition deleteRouting;
-  private transient boolean prepared = false;
-
-  @Override
-  public void prepare() throws CoreException {
-    if (!prepared) {
-      Args.notNull(getReportBuilder(), "report-builder");
-      Args.notNull(getRetryStore(), "retry-store");
-
-      String retryServletPath = retryEndpointPrefix() + "*";
-      String retryServletRegexp = "^" + retryEndpointPrefix() + "(.*)";
-
-      String deleteServletPath = deleteEndpointPrefix() + "*";
-      String deleteServletRegexp = "^" + deleteEndpointPrefix() + "(.*)";
-
-      retryRouting = new JettyRouteCondition().withUrlPattern(retryServletRegexp)
-          .withMetadataKeys(MSG_ID_KEY).withMethod(retryHttpMethod());
-      deleteRouting = new JettyRouteCondition().withUrlPattern(deleteServletRegexp)
-          .withMetadataKeys(MSG_ID_KEY).withMethod(deleteHttpMethod());
-
-      reporter = new ReportListener();
-      retrier = new RetryListener();
-      deleter = new DeleteListener();
-
-      // By not dictating the method in the consumer; we accept all methods in jetty, but we use the
-      // jetty route filter to filter it out.
-      retrying = new StandaloneConsumer(getConnection(),
-          new JettyMessageConsumer().withPath(retryServletPath));
-      deleting = new StandaloneConsumer(getConnection(),
-          new JettyMessageConsumer().withPath(deleteServletPath));
-      reporting = new StandaloneConsumer(getConnection(),
-          new JettyMessageConsumer().withPath(reportingEndpoint()));
-
-      retrying.registerAdaptrisMessageListener(retrier);
-      reporting.registerAdaptrisMessageListener(reporter);
-      deleting.registerAdaptrisMessageListener(deleter);
-
-      LifecycleHelper.prepare(getRetryStore(), getReportBuilder());
-      LifecycleHelper.prepare(deleteRouting, deleter, deleting);
-      LifecycleHelper.prepare(retryRouting, retrier, retrying);
-      LifecycleHelper.prepare(reporter, reporting);
-      prepared = true;
-    }
-  }
-
-  @Override
-  public void init() throws CoreException {
-    prepare();
-    LifecycleHelper.init(getRetryStore(), getReportBuilder());
-    LifecycleHelper.init(deleteRouting, deleter, deleting);
-    LifecycleHelper.init(retryRouting, retrier, retrying);
-    LifecycleHelper.init(reporter, reporting);
-
-    workflowSubmitter = Executors.newSingleThreadExecutor();
-  }
-
-  @Override
-  public void start() throws CoreException {
-    LifecycleHelper.start(getRetryStore(), getReportBuilder());
-    LifecycleHelper.start(deleteRouting, deleter, deleting);
-    LifecycleHelper.start(retryRouting, retrier, retrying);
-    LifecycleHelper.start(reporter, reporting);
-  }
-
-  @Override
-  public void stop() {
-    LifecycleHelper.stop(deleteRouting, deleter, deleting);
-    LifecycleHelper.stop(retryRouting, retrier, retrying);
-    LifecycleHelper.stop(reporter, reporting);
-    LifecycleHelper.stop(getRetryStore(), getReportBuilder());
-  }
-
-  @Override
-  public void close() {
-    LifecycleHelper.close(deleteRouting, deleter, deleting);
-    LifecycleHelper.close(retryRouting, retrier, retrying);
-    LifecycleHelper.close(reporter, reporting);
-    LifecycleHelper.close(getRetryStore(), getReportBuilder());
-
-    ManagedThreadFactory.shutdownQuietly(workflowSubmitter, DEFAULT_SHUTDOWN_WAIT);
-  }
-
-  public RetryFromJetty withRetryStore(RetryStore rs) {
-    setRetryStore(rs);
-    return this;
-  }
-
-  public RetryFromJetty withReportBuilder(ReportBuilder b) {
-    setReportBuilder(b);
-    return this;
-  }
-
-  String retryEndpointPrefix() {
-    return StringUtils.defaultIfBlank(getRetryEndpointPrefix(), DEFAULT_ENDPOINT_PREFIX);
-  }
-
-  String reportingEndpoint() {
-    return StringUtils.defaultIfBlank(getReportingEndpoint(), DEFAULT_REPORTING_ENDPOINT);
-  }
-
-  String deleteEndpointPrefix() {
-    return StringUtils.defaultIfBlank(getDeleteEndpointPrefix(), DEFAULT_DELETE_PREFIX);
-  }
-
-  String retryHttpMethod() {
-    return StringUtils.defaultIfBlank(getRetryHttpMethod(), HTTP_RETRY_METHOD);
-  }
-
-  String deleteHttpMethod() {
-    return StringUtils.defaultIfBlank(getDeleteHttpMethod(), HTTP_DELETE_METHOD);
-  }
+    /**
+     * The underlying Jetty connection.
+     *
+     */
+    @Getter
+    @Setter
+    @NotNull
+    private AdaptrisConnection connection = new EmbeddedConnection();
 
 
-  protected static void executeQuietly(Service service, AdaptrisMessage msg) {
-    try {
-      service.doService(msg);
-    } catch (Exception e) {
+    /**
+     * How to build reports.
+     *
+     */
+    @Getter
+    @Setter
+    @NotNull
+    @NonNull
+    private ReportBuilder reportBuilder = new ReportBuilder();
 
-    }
-  }
+    /**
+     * Where messages are stored for retries.
+     *
+     */
+    @Getter
+    @Setter
+    @NotNull
+    @NonNull
+    private RetryStore retryStore;
 
-  private abstract class ListenerImpl
-      implements AdaptrisMessageListener, ComponentLifecycle, ComponentLifecycleExtension {
+    /**
+     * The HTTP method which is required for retries; the default is POST.
+     */
+    @AdvancedConfig(rare = true)
+    @Getter
+    @Setter
+    @InputFieldDefault(value = HTTP_RETRY_METHOD)
+    private String retryHttpMethod;
 
-    private JettyResponseService service;
 
-    public ListenerImpl() {
-      service = new JettyResponseService().withHttpStatus(HTTP_STATUS_EXPR)
-          .withContentType(CONTENT_TYPE_EXPR);
-    }
+    /**
+     * The HTTP method which is required for deleting messages from the retry store; the default is
+     * DELETE.
+     */
+    @AdvancedConfig(rare = true)
+    @Getter
+    @Setter
+    @InputFieldDefault(value = HTTP_DELETE_METHOD)
+    private String deleteHttpMethod;
 
-    protected void sendResponse(String httpResponseCode, AdaptrisMessage msg) {
-      msg.addMessageHeader(HTTP_STATUS_KEY, httpResponseCode);
-      // Default a Content-Type if not available
-      msg.addMessageHeader(CONTENT_TYPE_METADATA_KEY, StringUtils.defaultIfBlank(
-          msg.getMetadataValue(CONTENT_TYPE_METADATA_KEY), MimeConstants.CONTENT_TYPE_TEXT_PLAIN));
-      executeQuietly(service, msg);
-    }
+    private transient StandaloneConsumer reporting;
+    private transient StandaloneConsumer retrying;
+    private transient StandaloneConsumer deleting;
+    private transient StandaloneConsumer gettingStacktrace;
+    private transient StandaloneConsumer gettingStacktraceFirstLine;
+
+    private transient ReportListener reporter;
+    private transient RetryListener retrier;
+    private transient DeleteListener deleter;
+    private transient StackTraceListener stacktraceGetter;
+    private transient StackTraceFirstLineListener stacktraceFirstLineGetter;
+
+    private transient ExecutorService workflowSubmitter;
+    private transient JettyRouteCondition retryRouting;
+    private transient JettyRouteCondition deleteRouting;
+    private transient JettyRouteCondition stacktraceRouting;
+    private transient JettyRouteCondition stacktraceFirstLineRouting;
+    private transient boolean prepared = false;
 
     @Override
     public void prepare() throws CoreException {
-      LifecycleHelper.prepare(service);
+        if (!prepared) {
+            Args.notNull(getReportBuilder(), "report-builder");
+            Args.notNull(getRetryStore(), "retry-store");
+
+            String retryServletPath = retryEndpointPrefix() + "*";
+            String retryServletRegexp = "^" + retryEndpointPrefix() + "(.*)";
+
+            String deleteServletPath = deleteEndpointPrefix() + "*";
+            String deleteServletRegexp = "^" + deleteEndpointPrefix() + "(.*)";
+
+            String stackTraceServletPath = DEFAULT_STACKTRACE_ENDPOINT + "*";
+            String stackTraceServletRegexp = "^" + DEFAULT_STACKTRACE_ENDPOINT + "(.*)";
+
+            String stackTraceFirstLineServletPath = DEFAULT_STACKTRACE_FIRST_LINE_ENDPOINT + "*";
+            String stackTraceFirstLineServletRegexp = "^" + DEFAULT_STACKTRACE_FIRST_LINE_ENDPOINT + "(.*)";
+
+            retryRouting = new JettyRouteCondition().withUrlPattern(retryServletRegexp)
+                    .withMetadataKeys(MSG_ID_KEY).withMethod(retryHttpMethod());
+            deleteRouting = new JettyRouteCondition().withUrlPattern(deleteServletRegexp)
+                    .withMetadataKeys(MSG_ID_KEY).withMethod(deleteHttpMethod());
+            stacktraceRouting = new JettyRouteCondition()
+                    .withUrlPattern(stackTraceServletRegexp)
+                    .withMetadataKeys(MSG_ID_KEY);
+            stacktraceFirstLineRouting = new JettyRouteCondition()
+                    .withUrlPattern(stackTraceFirstLineServletRegexp)
+                    .withMetadataKeys(MSG_ID_KEY);
+
+            reporter = new ReportListener();
+            retrier = new RetryListener();
+            deleter = new DeleteListener();
+            stacktraceGetter = new StackTraceListener();
+            stacktraceFirstLineGetter = new StackTraceFirstLineListener();
+
+            // By not dictating the method in the consumer; we accept all methods in jetty, but we use the
+            // jetty route filter to filter it out.
+            retrying = new StandaloneConsumer(getConnection(),
+                    new JettyMessageConsumer().withPath(retryServletPath));
+            deleting = new StandaloneConsumer(getConnection(),
+                    new JettyMessageConsumer().withPath(deleteServletPath));
+            reporting = new StandaloneConsumer(getConnection(),
+                    new JettyMessageConsumer().withPath(reportingEndpoint()));
+            gettingStacktrace = new StandaloneConsumer(getConnection(),
+                    new JettyMessageConsumer().withPath(stackTraceServletPath));
+            gettingStacktraceFirstLine = new StandaloneConsumer(getConnection(),
+                    new JettyMessageConsumer().withPath(stackTraceFirstLineServletPath));
+
+            retrying.registerAdaptrisMessageListener(retrier);
+            reporting.registerAdaptrisMessageListener(reporter);
+            deleting.registerAdaptrisMessageListener(deleter);
+            gettingStacktrace.registerAdaptrisMessageListener(stacktraceGetter);
+            gettingStacktraceFirstLine.registerAdaptrisMessageListener(stacktraceFirstLineGetter);
+
+            LifecycleHelper.prepare(getRetryStore(), getReportBuilder());
+            LifecycleHelper.prepare(deleteRouting, deleter, deleting);
+            LifecycleHelper.prepare(retryRouting, retrier, retrying);
+            LifecycleHelper.prepare(reporter, reporting);
+            LifecycleHelper.prepare(stacktraceRouting, stacktraceGetter, gettingStacktrace);
+            LifecycleHelper.prepare(stacktraceFirstLineRouting, stacktraceFirstLineGetter, gettingStacktraceFirstLine);
+            prepared = true;
+        }
     }
 
     @Override
     public void init() throws CoreException {
-      LifecycleHelper.init(service);
+        prepare();
+        LifecycleHelper.init(getRetryStore(), getReportBuilder());
+        LifecycleHelper.init(deleteRouting, deleter, deleting);
+        LifecycleHelper.init(retryRouting, retrier, retrying);
+        LifecycleHelper.init(reporter, reporting);
+
+        workflowSubmitter = Executors.newSingleThreadExecutor();
     }
 
     @Override
     public void start() throws CoreException {
-      LifecycleHelper.start(service);
+        LifecycleHelper.start(getRetryStore(), getReportBuilder());
+        LifecycleHelper.start(deleteRouting, deleter, deleting);
+        LifecycleHelper.start(retryRouting, retrier, retrying);
+        LifecycleHelper.start(reporter, reporting);
     }
 
     @Override
     public void stop() {
-      LifecycleHelper.stop(service);
-
+        LifecycleHelper.stop(deleteRouting, deleter, deleting);
+        LifecycleHelper.stop(retryRouting, retrier, retrying);
+        LifecycleHelper.stop(reporter, reporting);
+        LifecycleHelper.stop(getRetryStore(), getReportBuilder());
     }
 
     @Override
     public void close() {
-      LifecycleHelper.close(service);
-    }
-  }
+        LifecycleHelper.close(deleteRouting, deleter, deleting);
+        LifecycleHelper.close(retryRouting, retrier, retrying);
+        LifecycleHelper.close(reporter, reporting);
+        LifecycleHelper.close(getRetryStore(), getReportBuilder());
 
-
-  @NoArgsConstructor
-  private class ReportListener extends ListenerImpl {
-    @Override
-    public void onAdaptrisMessage(AdaptrisMessage jettyMsg, Consumer<AdaptrisMessage> success,
-        Consumer<AdaptrisMessage> failure) {
-      String httpCode = HTTP_ERROR;
-      try {
-        getReportBuilder().build(getRetryStore().report(), jettyMsg);
-        httpCode = HTTP_OK;
-      } catch (Exception e) {
-        jettyMsg.setContent(ExceptionUtils.getRootCauseMessage(e), StandardCharsets.UTF_8.name());
-      } finally {
-        sendResponse(httpCode, jettyMsg);
-      }
+        ManagedThreadFactory.shutdownQuietly(workflowSubmitter, DEFAULT_SHUTDOWN_WAIT);
     }
 
-    @Override
-    public String friendlyName() {
-      return "RetryFromJetty::Report";
+    public RetryFromJetty withRetryStore(RetryStore rs) {
+        setRetryStore(rs);
+        return this;
     }
-  }
+
+    public RetryFromJetty withReportBuilder(ReportBuilder b) {
+        setReportBuilder(b);
+        return this;
+    }
+
+    String retryEndpointPrefix() {
+        return StringUtils.defaultIfBlank(getRetryEndpointPrefix(), DEFAULT_ENDPOINT_PREFIX);
+    }
+
+    String reportingEndpoint() {
+        return StringUtils.defaultIfBlank(getReportingEndpoint(), DEFAULT_REPORTING_ENDPOINT);
+    }
+
+    String deleteEndpointPrefix() {
+        return StringUtils.defaultIfBlank(getDeleteEndpointPrefix(), DEFAULT_DELETE_PREFIX);
+    }
+
+    String retryHttpMethod() {
+        return StringUtils.defaultIfBlank(getRetryHttpMethod(), HTTP_RETRY_METHOD);
+    }
+
+    String deleteHttpMethod() {
+        return StringUtils.defaultIfBlank(getDeleteHttpMethod(), HTTP_DELETE_METHOD);
+    }
 
 
-  @NoArgsConstructor
-  private class DeleteListener extends ListenerImpl {
-    private transient Object locker = new Object();
+    protected static void executeQuietly(Service service, AdaptrisMessage msg) {
+        try {
+            service.doService(msg);
+        } catch (Exception e) {
 
-    @Override
-    @Synchronized(value = "locker")
-    public void onAdaptrisMessage(AdaptrisMessage jettyMsg, Consumer<AdaptrisMessage> success,
-        Consumer<AdaptrisMessage> failure) {
-      try {
-        JettyRoute route = deleteRouting.build(jettyMsg.getMetadataValue(HTTP_METHOD),
-            jettyMsg.getMetadataValue(JETTY_URI));
-        if (route.matches()) {
-          String msgId =
-              route.metadata().stream().filter((e) -> e.getKey().equalsIgnoreCase(MSG_ID_KEY))
-                  .findFirst().get().getValue();
-          // If metadata exists, then we can delete...
-          // met
-          Map<String, String> metadata = retryStore.getMetadata(msgId);
-          log.trace("Attempting to delete {}", msgId);
-          getRetryStore().delete(msgId);
-          sendResponse(HTTP_OK, jettyMsg);
-        } else {
-          sendResponse(HTTP_BAD, jettyMsg);
         }
-      } catch (Exception e) {
-        jettyMsg.setContent(ExceptionUtils.getRootCauseMessage(e), StandardCharsets.UTF_8.name());
-        sendResponse(HTTP_NOT_FOUND, jettyMsg);
-      }
     }
 
-    @Override
-    public String friendlyName() {
-      return "RetryFromJetty::Delete";
+    private abstract class ListenerImpl
+            implements AdaptrisMessageListener, ComponentLifecycle, ComponentLifecycleExtension {
+
+        private JettyResponseService service;
+
+        public ListenerImpl() {
+            service = new JettyResponseService().withHttpStatus(HTTP_STATUS_EXPR)
+                    .withContentType(CONTENT_TYPE_EXPR);
+        }
+
+        protected void sendResponse(String httpResponseCode, AdaptrisMessage msg) {
+            msg.addMessageHeader(HTTP_STATUS_KEY, httpResponseCode);
+            // Default a Content-Type if not available
+            msg.addMessageHeader(CONTENT_TYPE_METADATA_KEY, StringUtils.defaultIfBlank(
+                    msg.getMetadataValue(CONTENT_TYPE_METADATA_KEY), MimeConstants.CONTENT_TYPE_TEXT_PLAIN));
+            executeQuietly(service, msg);
+        }
+
+        @Override
+        public void prepare() throws CoreException {
+            LifecycleHelper.prepare(service);
+        }
+
+        @Override
+        public void init() throws CoreException {
+            LifecycleHelper.init(service);
+        }
+
+        @Override
+        public void start() throws CoreException {
+            LifecycleHelper.start(service);
+        }
+
+        @Override
+        public void stop() {
+            LifecycleHelper.stop(service);
+
+        }
+
+        @Override
+        public void close() {
+            LifecycleHelper.close(service);
+        }
     }
-  }
 
-  private class RetryListener extends ListenerImpl {
-    private transient Object locker = new Object();
 
-    @Override
-    @Synchronized(value = "locker")
-    public void onAdaptrisMessage(AdaptrisMessage jettyMsg, Consumer<AdaptrisMessage> success,
-        Consumer<AdaptrisMessage> failure) {
-      try {
-        JettyRoute route = retryRouting.build(jettyMsg.getMetadataValue(HTTP_METHOD),
-            jettyMsg.getMetadataValue(JETTY_URI));
-        if (route.matches()) {
-          String msgId =
-              route.metadata().stream().filter((e) -> e.getKey().equalsIgnoreCase(MSG_ID_KEY))
-                  .findFirst().get().getValue();
-          // There's a decision point here because we need to decide between
-          // large or small message factory.
-          // Do we want people to configure it?
-          // Therefore we look up the metadata from the store;
-          // Figure out the workflow, and then get the consumer.getMessageFactory()
-
-          Map<String, String> metadata = retryStore.getMetadata(msgId);
-          Workflow workflow = getWorkflow(metadata.get(Workflow.WORKFLOW_ID_KEY));
-          AdaptrisMessage msgForRetry =
-              retryStore.buildForRetry(msgId, metadata, workflow.getConsumer().getMessageFactory());
-          // We know at this point we have something to retry.
-          // So, we can fire a 202 before submission.
-          sendResponse(HTTP_ACCEPTED, jettyMsg);
-          updateRetryCountMetadata(msgForRetry);
-          log.trace("Attempting to retry {}; resubmitting to [{}]", msgForRetry.getUniqueId(),
-              workflow.obtainWorkflowId());
-          // pooling workflow returns immediately, standard workflow does not.
-          // so submit to an Executor Service.
-          workflowSubmitter.execute(new Thread() {
-            @Override
-            public void run() {
-              Thread.currentThread().setName("Retry Failed Message");
-              workflow.onAdaptrisMessage(msgForRetry, success, failure);
+    @NoArgsConstructor
+    private class ReportListener extends ListenerImpl {
+        @Override
+        public void onAdaptrisMessage(AdaptrisMessage jettyMsg, Consumer<AdaptrisMessage> success,
+                                      Consumer<AdaptrisMessage> failure) {
+            String httpCode = HTTP_ERROR;
+            try {
+                getReportBuilder().build(getRetryStore().report(), jettyMsg);
+                httpCode = HTTP_OK;
+            } catch (Exception e) {
+                jettyMsg.setContent(ExceptionUtils.getRootCauseMessage(e), StandardCharsets.UTF_8.name());
+            } finally {
+                sendResponse(httpCode, jettyMsg);
             }
-          });
-        } else {
-          sendResponse(HTTP_BAD, jettyMsg);
         }
-      } catch (Exception e) {
-        jettyMsg.setContent(ExceptionUtils.getRootCauseMessage(e), StandardCharsets.UTF_8.name());
-        sendResponse(HTTP_ERROR, jettyMsg);
-      }
+
+        @Override
+        public String friendlyName() {
+            return "RetryFromJetty::Report";
+        }
     }
 
 
-    @Override
-    public String friendlyName() {
-      return "RetryFromJetty::Retry";
+    @NoArgsConstructor
+    private class DeleteListener extends ListenerImpl {
+        private transient Object locker = new Object();
+
+        @Override
+        @Synchronized(value = "locker")
+        public void onAdaptrisMessage(AdaptrisMessage jettyMsg, Consumer<AdaptrisMessage> success,
+                                      Consumer<AdaptrisMessage> failure) {
+            try {
+                JettyRoute route = deleteRouting.build(jettyMsg.getMetadataValue(HTTP_METHOD),
+                        jettyMsg.getMetadataValue(JETTY_URI));
+                if (route.matches()) {
+                    String msgId =
+                            route.metadata().stream().filter((e) -> e.getKey().equalsIgnoreCase(MSG_ID_KEY))
+                                    .findFirst().get().getValue();
+                    // If metadata exists, then we can delete...
+                    // met
+                    Map<String, String> metadata = retryStore.getMetadata(msgId);
+                    log.trace("Attempting to delete {}", msgId);
+                    getRetryStore().delete(msgId);
+                    sendResponse(HTTP_OK, jettyMsg);
+                } else {
+                    sendResponse(HTTP_BAD, jettyMsg);
+                }
+            } catch (Exception e) {
+                jettyMsg.setContent(ExceptionUtils.getRootCauseMessage(e), StandardCharsets.UTF_8.name());
+                sendResponse(HTTP_NOT_FOUND, jettyMsg);
+            }
+        }
+
+        @Override
+        public String friendlyName() {
+            return "RetryFromJetty::Delete";
+        }
     }
-  }
+
+    private class RetryListener extends ListenerImpl {
+        private transient Object locker = new Object();
+
+        @Override
+        @Synchronized(value = "locker")
+        public void onAdaptrisMessage(AdaptrisMessage jettyMsg, Consumer<AdaptrisMessage> success,
+                                      Consumer<AdaptrisMessage> failure) {
+            try {
+                JettyRoute route = retryRouting.build(jettyMsg.getMetadataValue(HTTP_METHOD),
+                        jettyMsg.getMetadataValue(JETTY_URI));
+                if (route.matches()) {
+                    String msgId =
+                            route.metadata().stream().filter((e) -> e.getKey().equalsIgnoreCase(MSG_ID_KEY))
+                                    .findFirst().get().getValue();
+                    // There's a decision point here because we need to decide between
+                    // large or small message factory.
+                    // Do we want people to configure it?
+                    // Therefore we look up the metadata from the store;
+                    // Figure out the workflow, and then get the consumer.getMessageFactory()
+
+                    Map<String, String> metadata = retryStore.getMetadata(msgId);
+                    Workflow workflow = getWorkflow(metadata.get(Workflow.WORKFLOW_ID_KEY));
+                    AdaptrisMessage msgForRetry =
+                            retryStore.buildForRetry(msgId, metadata, workflow.getConsumer().getMessageFactory());
+                    // We know at this point we have something to retry.
+                    // So, we can fire a 202 before submission.
+                    sendResponse(HTTP_ACCEPTED, jettyMsg);
+                    updateRetryCountMetadata(msgForRetry);
+                    log.trace("Attempting to retry {}; resubmitting to [{}]", msgForRetry.getUniqueId(),
+                            workflow.obtainWorkflowId());
+                    // pooling workflow returns immediately, standard workflow does not.
+                    // so submit to an Executor Service.
+                    workflowSubmitter.execute(new Thread() {
+                        @Override
+                        public void run() {
+                            Thread.currentThread().setName("Retry Failed Message");
+                            workflow.onAdaptrisMessage(msgForRetry, success, failure);
+                        }
+                    });
+                } else {
+                    sendResponse(HTTP_BAD, jettyMsg);
+                }
+            } catch (Exception e) {
+                jettyMsg.setContent(ExceptionUtils.getRootCauseMessage(e), StandardCharsets.UTF_8.name());
+                sendResponse(HTTP_ERROR, jettyMsg);
+            }
+        }
+
+
+        @Override
+        public String friendlyName() {
+            return "RetryFromJetty::Retry";
+        }
+    }
+
+    @NoArgsConstructor
+    private class StackTraceListener extends ListenerImpl {
+        private transient Object locker = new Object();
+
+        @Override
+        @Synchronized(value = "locker")
+        public void onAdaptrisMessage(AdaptrisMessage jettyMsg, Consumer<AdaptrisMessage> success,
+                                      Consumer<AdaptrisMessage> failure) {
+            String httpCode = HTTP_ERROR;
+            try {
+                JettyRoute route = new JettyRouteCondition()
+                        .withUrlPattern("^" + DEFAULT_STACKTRACE_ENDPOINT + "(.*)")
+                        .withMetadataKeys(MSG_ID_KEY)
+                        .build(jettyMsg.getMetadataValue(HTTP_METHOD), jettyMsg.getMetadataValue(JETTY_URI));
+                if (route.matches()) {
+                    String msgId = route.metadata().stream()
+                            .filter(e -> e.getKey().equalsIgnoreCase(MSG_ID_KEY))
+                            .findFirst().get().getValue();
+                    String stackTrace = retryStore.getStackTrace(msgId);
+                    jettyMsg.setContent(stackTrace, StandardCharsets.UTF_8.name());
+                    httpCode = HTTP_OK;
+                } else {
+                    httpCode = HTTP_BAD;
+                }
+            } catch (Exception e) {
+                jettyMsg.setContent(ExceptionUtils.getRootCauseMessage(e), StandardCharsets.UTF_8.name());
+            } finally {
+                sendResponse(httpCode, jettyMsg);
+            }
+        }
+
+        @Override
+        public String friendlyName() {
+            return "RetryFromJetty::StackTrace";
+        }
+    }
+
+    @NoArgsConstructor
+    private class StackTraceFirstLineListener extends ListenerImpl {
+        private transient Object locker = new Object();
+
+        @Override
+        @Synchronized(value = "locker")
+        public void onAdaptrisMessage(AdaptrisMessage jettyMsg, Consumer<AdaptrisMessage> success,
+                                      Consumer<AdaptrisMessage> failure) {
+            String httpCode = HTTP_ERROR;
+            try {
+                JettyRoute route = new JettyRouteCondition()
+                        .withUrlPattern("^" + DEFAULT_STACKTRACE_FIRST_LINE_ENDPOINT + "(.*)")
+                        .withMetadataKeys(MSG_ID_KEY)
+                        .build(jettyMsg.getMetadataValue(HTTP_METHOD), jettyMsg.getMetadataValue(JETTY_URI));
+                if (route.matches()) {
+                    String msgId = route.metadata().stream()
+                            .filter(e -> e.getKey().equalsIgnoreCase(MSG_ID_KEY))
+                            .findFirst().get().getValue();
+                    String stackTrace = retryStore.getStackTrace(msgId);
+                    String firstLine = stackTrace.split("\n")[0];
+                    jettyMsg.setContent(firstLine, StandardCharsets.UTF_8.name());
+                    httpCode = HTTP_OK;
+                } else {
+                    httpCode = HTTP_BAD;
+                }
+            } catch (Exception e) {
+                jettyMsg.setContent(ExceptionUtils.getRootCauseMessage(e), StandardCharsets.UTF_8.name());
+            } finally {
+                sendResponse(httpCode, jettyMsg);
+            }
+        }
+
+        @Override
+        public String friendlyName() {
+            return "RetryFromJetty::StackTraceFirstLine";
+        }
+    }
 }
