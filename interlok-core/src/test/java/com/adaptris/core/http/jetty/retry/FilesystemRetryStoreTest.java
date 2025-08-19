@@ -1,13 +1,9 @@
 package com.adaptris.core.http.jetty.retry;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.File;
 import java.io.FileFilter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
 
@@ -27,6 +23,11 @@ import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.interlok.InterlokException;
 import com.adaptris.interlok.cloud.RemoteBlob;
 import com.adaptris.interlok.junit.scaffolding.BaseCase;
+import org.junit.jupiter.api.io.TempDir;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
 
 public class FilesystemRetryStoreTest {
 
@@ -36,6 +37,9 @@ public class FilesystemRetryStoreTest {
   // sure that we never have a drive letter.
   public static final String INVALID_URL = "file://localhost/./ spaces / not / valid / in / url";
   public static final String TEST_BASE_URL = "retry.baseUrl";
+
+  @TempDir
+  Path tempDir;
 
   @AfterAll
   public static void afterAll() throws Exception {
@@ -254,6 +258,106 @@ public class FilesystemRetryStoreTest {
     } finally {
       LifecycleHelper.stopAndClose(store);
     }
+  }
 
+  @Test
+  void testGetStackTrace_ValidFile() throws Exception {
+    FilesystemRetryStore store = spy(new FilesystemRetryStore());
+    store.setBaseUrl(tempDir.toUri().toString());
+
+    String msgId = "validMessageId";
+    Path msgDir = tempDir.resolve(msgId);
+    Files.createDirectory(msgDir);
+    Path stackTraceFile = msgDir.resolve("stacktrace.txt");
+    Files.writeString(stackTraceFile, "Stack trace content");
+
+    String stackTrace = store.getStackTrace(msgId);
+    assertEquals("Stack trace content", stackTrace);
+  }
+
+  @Test
+  void testGetStackTrace_FileNotFound() {
+    FilesystemRetryStore store = spy(new FilesystemRetryStore());
+    store.setBaseUrl(tempDir.toUri().toString());
+
+    String msgId = "missingMessageId";
+
+    InterlokException exception = assertThrows(InterlokException.class, () -> store.getStackTrace(msgId));
+    assertTrue(exception.getMessage().contains("Does not exist ["));
+  }
+
+  @Test
+  void testGetStackTrace_UnreadableFile() throws Exception {
+    FilesystemRetryStore store = spy(new FilesystemRetryStore());
+    String msgId = "unreadableMessageId";
+
+    doThrow(new InterlokException("Permission denied")).when(store).getStackTrace(msgId);
+
+    InterlokException exception = assertThrows(InterlokException.class, () -> store.getStackTrace(msgId));
+    assertTrue(exception.getMessage().contains("Permission denied"));
+  }
+
+  @Test
+  void testValidatePathComponent_ValidComponent() {
+    assertDoesNotThrow(() -> FilesystemRetryStore.validatePathComponent("validMessageId"));
+  }
+
+  @Test
+  void testValidatePathComponent_NullComponent() {
+    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+          () -> FilesystemRetryStore.validatePathComponent(null));
+    assertEquals("Message ID may not be null or empty", exception.getMessage());
+  }
+
+  @Test
+  void testValidatePathComponent_EmptyComponent() {
+    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+          () -> FilesystemRetryStore.validatePathComponent(""));
+    assertEquals("Message ID may not be null or empty", exception.getMessage());
+  }
+
+  @Test
+  void testValidatePathComponent_PathTraversalDetected() {
+    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+          () -> FilesystemRetryStore.validatePathComponent("../invalidMessageId"));
+    assertEquals("Invalid message ID: path traversal or separator detected", exception.getMessage());
+  }
+
+  @Test
+  void testValidatePathComponent_SeparatorDetected() {
+    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+          () -> FilesystemRetryStore.validatePathComponent("invalid/messageId"));
+    assertEquals("Invalid message ID: path traversal or separator detected", exception.getMessage());
+  }
+
+  @Test
+  void testValidatePathComponent_AbsolutePathDetected() {
+    IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+          () -> FilesystemRetryStore.validatePathComponent("C:\\absolutePath"));
+    assertEquals("Invalid message ID: path traversal or separator detected", exception.getMessage());
+  }
+
+  @Test
+  void testAcknowledge_NullImplementation() {
+    FilesystemRetryStore store = new FilesystemRetryStore();
+    assertDoesNotThrow(() -> store.acknowledge("testAcknowledgeId"));
+  }
+
+  @Test
+  void testDeleteAcknowledged_NullImplementation() {
+    FilesystemRetryStore store = new FilesystemRetryStore();
+    assertDoesNotThrow(() -> store.deleteAcknowledged());
+  }
+
+  @Test
+  void testUpdateRetryCount_NullImplementation() {
+    FilesystemRetryStore store = new FilesystemRetryStore();
+    assertDoesNotThrow(() -> store.updateRetryCount("testMessageId"));
+  }
+
+  @Test
+  void testMakeConnection_NullImplementation() {
+    FilesystemRetryStore store = new FilesystemRetryStore();
+    assertDoesNotThrow(() -> store.makeConnection(null));
   }
 }

@@ -136,10 +136,7 @@ public class FilesystemRetryStore implements RetryStore {
     return validateDir(target, mustAlreadyExist);
   }
 
-  /**
-   * Validate that the given string is a safe path component (no separators, no "..", not absolute).
-   */
-  private static void validatePathComponent(String component) {
+  static void validatePathComponent(String component) {
     if (component == null || component.isEmpty()) {
       throw new IllegalArgumentException("Message ID may not be null or empty");
     }

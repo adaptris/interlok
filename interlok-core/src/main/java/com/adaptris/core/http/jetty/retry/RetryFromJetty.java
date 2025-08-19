@@ -72,8 +72,8 @@ import lombok.extern.slf4j.Slf4j;
  * </p>
  * <p>
  * While DELETE is available, this implementation doesn't make any checks that the messages that you
- * have retried have been retried successfuly. It is expected that you have separate tooling that
- * allows you to verify that retried-messages are ultimately sucessfully before triggering the
+ * have retried have been retried successfully. It is expected that you have separate tooling that
+ * allows you to verify that retried-messages are ultimately successfully before triggering the
  * delete. If you ask for a message to be deleted from the store, then that is what happens.
  * </p>
  *
