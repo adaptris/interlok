@@ -131,8 +131,21 @@ public class FilesystemRetryStore implements RetryStore {
   }
 
   private File validateMsgId(String msgId, boolean mustAlreadyExist) throws Exception {
+    validatePathComponent(msgId);
     File target = new File(FsHelper.toFile(getBaseUrl()), msgId);
     return validateDir(target, mustAlreadyExist);
+  }
+
+  /**
+   * Validate that the given string is a safe path component (no separators, no "..", not absolute).
+   */
+  private static void validatePathComponent(String component) {
+    if (component == null || component.isEmpty()) {
+      throw new IllegalArgumentException("Message ID may not be null or empty");
+    }
+    if (component.contains("..") || component.contains("/") || component.contains("\\") || new File(component).isAbsolute()) {
+      throw new IllegalArgumentException("Invalid message ID: path traversal or separator detected");
+    }
   }
 
   private File validateDir(File target, boolean mustAlreadyExist) throws Exception {
