@@ -51,7 +51,9 @@ public class EncodePasswordServiceTest extends GeneralServiceExample {
   private AdaptrisMessage msg;
 
   private static final String ADAPTER_CONFIG_FILE = "build/resources/test/validAdapter.xml";
+  private static final String MESSAGE_HANDLER_FILE = "build/resources/test/message-handler.xml";
   private static final String ADAPTER_PROPERTIES_FILE = "build/resources/test/valid-local-vars.properties";
+  private static final String XML_WITHOUT_ROOT_FILE = "build/resources/test/services.xml";
   private static final String PASSWORD_PARAPHRASE = "PASSWORD, PASSPHRASE, SECRET, ROLEEXTERNALID";
   private static final String METADATA_KEY_PASSWORD_TOKENS = "passwordtokens";
   private static final String PREFIX_PORTBALE_PASSWORD_2 = "AES_GCM:";
@@ -113,4 +115,22 @@ public class EncodePasswordServiceTest extends GeneralServiceExample {
       service.doService(msg);
     });
   }
+
+    @Test
+    public void testEncodePasswordInWithoutRootXML() throws Exception {
+        service.setFilePath(XML_WITHOUT_ROOT_FILE);
+        execute(service, msg);
+        List<String> lines = Files.readAllLines(Paths.get(service.getFilePath()));
+        List<String> pwdLines = lines.stream().filter(line -> line.trim().startsWith("<service")).collect(Collectors.toList());
+        assertEquals(pwdLines.size(),9);
+    }
+
+    @Test
+    public void testEncodePasswordParseErrorXML() throws Exception {
+        service.setFilePath(MESSAGE_HANDLER_FILE);
+        execute(service, msg);
+        List<String> lines = Files.readAllLines(Paths.get(service.getFilePath()));
+        List<String> pwdLines = lines.stream().filter(line -> line.trim().startsWith("<service")).collect(Collectors.toList());
+        assertEquals(pwdLines.size(),1);
+    }
 }
