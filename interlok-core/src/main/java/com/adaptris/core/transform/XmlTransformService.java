@@ -27,6 +27,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.xml.transform.Transformer;
 
+import com.adaptris.core.common.FileParameter;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -211,7 +212,13 @@ public class XmlTransformService extends ServiceImp {
           transformer = getXmlTransformerFactory().createTransformerFromUrl(xslSourceToUse);
         }
       } else {
-        transformer = getXmlTransformerFactory().createTransformerFromRawXsl(xslSourceToUse);
+          if (getMappingSource() instanceof FileParameter fileParameter) {
+              // for URL based sources, we need to pass the base URI into the InputSource so that resolution of
+              // paths occurs correctly
+              transformer = getXmlTransformerFactory().createTransformerFromRawXsl(xslSourceToUse, fileParameter.getUrl(), null);
+          } else {
+              transformer = getXmlTransformerFactory().createTransformerFromRawXsl(xslSourceToUse);
+          }
       }
 
       getXmlTransformerFactory().configure(xmlTransformerImpl);

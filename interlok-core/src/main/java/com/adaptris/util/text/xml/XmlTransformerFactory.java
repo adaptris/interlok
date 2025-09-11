@@ -46,5 +46,7 @@ public interface XmlTransformerFactory {
 
   Transformer createTransformerFromRawXsl(String xsl, EntityResolver entityResolver) throws Exception;
 
+  Transformer createTransformerFromRawXsl(String xsl, String baseUri, EntityResolver entityResolver) throws Exception;
+
   XmlTransformer configure(XmlTransformer xmlTransformer) throws Exception;
 }
