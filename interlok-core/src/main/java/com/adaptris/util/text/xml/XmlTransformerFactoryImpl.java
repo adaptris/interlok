@@ -18,17 +18,21 @@ package com.adaptris.util.text.xml;
 import static com.adaptris.util.URLHelper.connect;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -103,6 +107,23 @@ public abstract class XmlTransformerFactoryImpl implements XmlTransformerFactory
   public Transformer createTransformerFromRawXsl(String xsl) throws Exception {
     return createTransformerFromRawXsl(xsl, null);
   }
+
+    @Override
+    public Transformer createTransformerFromRawXsl(String xsl, EntityResolver entityResolver) throws Exception {
+        return createTransformerFromRawXsl(xsl, null, entityResolver);
+    }
+
+    @Override
+    public Transformer createTransformerFromRawXsl(String xsl, String baseUri, EntityResolver entityResolver) throws Exception {
+        DocumentBuilder docBuilder = documentFactoryBuilder().newDocumentBuilder(DocumentBuilderFactory.newInstance());
+        if (entityResolver != null) {
+            docBuilder.setEntityResolver(entityResolver);
+        }
+        StreamSource source = new StreamSource(new ByteArrayInputStream(xsl.getBytes()), baseUri);
+        return configure(newInstance()).newTransformer(source);
+    }
+
+    protected abstract TransformerFactory newInstance();
 
   @Override
   public XmlTransformer configure(XmlTransformer xmlTransformer) throws Exception {

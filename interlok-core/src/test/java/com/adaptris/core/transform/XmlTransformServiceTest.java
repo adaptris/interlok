@@ -515,7 +515,7 @@ public class XmlTransformServiceTest
   public void testXSLTOutputFileDataInputParameter() throws Exception {
     AdaptrisMessage msg = MessageHelper.createMessage(PROPERTIES.getProperty(KEY_XML_TEST_INPUT));
     FileDataInputParameter fdip = new FileDataInputParameter();
-    fdip.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_URL));
+    fdip.setUrl(PROPERTIES.getProperty(KEY_XML_TEST_TRANSFORM_WITH_IMPORT_URL));
     XmlTransformService service = new XmlTransformService();
     service.setMappingSource(fdip);
 

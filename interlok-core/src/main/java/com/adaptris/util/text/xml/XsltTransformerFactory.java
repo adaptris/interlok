@@ -16,8 +16,6 @@
 
 package com.adaptris.util.text.xml;
 
-import java.io.StringReader;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
@@ -77,17 +75,7 @@ public class XsltTransformerFactory extends XmlTransformerFactoryImpl {
     return configure(newInstance()).newTransformer(new DOMSource(xmlDoc, url));
   }
 
-  @Override
-  public Transformer createTransformerFromRawXsl(String xsl, EntityResolver entityResolver) throws Exception {
-    DocumentBuilder docBuilder = documentFactoryBuilder().newDocumentBuilder(DocumentBuilderFactory.newInstance());
-    if (entityResolver != null) {
-      docBuilder.setEntityResolver(entityResolver);
-    }
-    Document xmlDoc = docBuilder.parse(new InputSource(new StringReader(xsl)));
-    return configure(newInstance()).newTransformer(new DOMSource(xmlDoc));
-  }
-
-  /**
+    /**
    * @return the transformerFactoryImpl
    */
   public String getTransformerFactoryImpl() {
@@ -109,7 +97,7 @@ public class XsltTransformerFactory extends XmlTransformerFactoryImpl {
     transformerFactoryImpl = s;
   }
 
-  private TransformerFactory newInstance() {
+  protected TransformerFactory newInstance() {
     return StringUtils.isEmpty(getTransformerFactoryImpl()) ? TransformerFactory.newInstance()
         : TransformerFactory.newInstance(getTransformerFactoryImpl(), null);
   }
