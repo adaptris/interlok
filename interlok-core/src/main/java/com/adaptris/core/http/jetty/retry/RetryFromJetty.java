@@ -454,6 +454,14 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
             sendResponse(HTTP_ERROR, msg);
         }
 
+        protected void handleStackTraceResponse(String msgId, AdaptrisMessage jettyMsg, String stackTrace) {
+            String httpCode = (msgId != null) ? HTTP_OK : HTTP_BAD;
+            if (msgId != null) {
+                jettyMsg.setContent(stackTrace, StandardCharsets.UTF_8.name());
+            }
+            sendResponse(httpCode, jettyMsg);
+        }
+
         @Override
         public void prepare() throws CoreException {
             LifecycleHelper.prepare(service);
@@ -599,21 +607,13 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
         @Synchronized(value = "locker")
         public void onAdaptrisMessage(AdaptrisMessage jettyMsg, Consumer<AdaptrisMessage> success,
                                       Consumer<AdaptrisMessage> failure) {
-            String httpCode;
             try {
                 String msgId = extractMsgId(stackTraceRouting, jettyMsg);
-                if (msgId != null) {
-                    String stackTrace = retryStore.getStackTrace(msgId);
-                    jettyMsg.setContent(stackTrace, StandardCharsets.UTF_8.name());
-                    httpCode = HTTP_OK;
-                } else {
-                    httpCode = HTTP_BAD;
-                }
+                String stackTrace = retryStore.getStackTrace(msgId);
+                handleStackTraceResponse(msgId, jettyMsg, stackTrace);
             } catch (Exception e) {
                 handleException(e, jettyMsg);
-                return;
             }
-            sendResponse(httpCode, jettyMsg);
         }
 
         @Override
@@ -630,22 +630,14 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
         @Synchronized(value = "locker")
         public void onAdaptrisMessage(AdaptrisMessage jettyMsg, Consumer<AdaptrisMessage> success,
                                       Consumer<AdaptrisMessage> failure) {
-            String httpCode;
             try {
                 String msgId = extractMsgId(stackTraceFirstLineRouting, jettyMsg);
-                    if (msgId != null) {
-                        String stackTrace = retryStore.getStackTrace(msgId);
-                        String firstLine = stackTrace.split("\n")[0];
-                        jettyMsg.setContent(firstLine, StandardCharsets.UTF_8.name());
-                        httpCode = HTTP_OK;
-                    } else {
-                        httpCode = HTTP_BAD;
-                    }
+                String stackTrace = retryStore.getStackTrace(msgId);
+                String firstLine = stackTrace.split("\n")[0];
+                handleStackTraceResponse(msgId, jettyMsg, firstLine);
             } catch (Exception e) {
                 handleException(e, jettyMsg);
-                return;
             }
-            sendResponse(httpCode, jettyMsg);
         }
 
         @Override

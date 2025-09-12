@@ -449,8 +449,6 @@ public class JdbcRetryStore implements RetryStore {
           log.trace("Executing select statement for JDBCRetryStore getStacktrace");
           rs = ps.executeQuery();
           if (rs.next()) {
-              // Assuming the stack trace is stored in a column named "stacktrace"
-              //TODO - I think the table may not be storing the stacktrace, this needs updating
               return rs.getString("stacktrace");
           } else {
               throw new InterlokException("No stack trace found for message ID: " + msgId);
