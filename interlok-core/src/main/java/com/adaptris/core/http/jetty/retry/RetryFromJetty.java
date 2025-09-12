@@ -6,29 +6,20 @@ import static com.adaptris.core.http.jetty.JettyConstants.JETTY_URI;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.core.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.core.AdaptrisConnection;
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageListener;
-import com.adaptris.core.ComponentLifecycle;
-import com.adaptris.core.ComponentLifecycleExtension;
-import com.adaptris.core.CoreException;
-import com.adaptris.core.FailedMessageRetrier;
-import com.adaptris.core.FailedMessageRetrierImp;
-import com.adaptris.core.Service;
-import com.adaptris.core.StandaloneConsumer;
-import com.adaptris.core.Workflow;
 import com.adaptris.core.http.jetty.EmbeddedConnection;
 import com.adaptris.core.http.jetty.JettyConnection;
 import com.adaptris.core.http.jetty.JettyMessageConsumer;
@@ -442,9 +433,13 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
         protected String extractMsgId(JettyRouteCondition routing, AdaptrisMessage jettyMsg) throws CoreException {
             JettyRoute route = routing.build(jettyMsg.getMetadataValue(HTTP_METHOD), jettyMsg.getMetadataValue(JETTY_URI));
             if (route.matches()) {
-                return route.metadata().stream()
-                        .filter(e -> e.getKey().equalsIgnoreCase(MSG_ID_KEY))
-                        .findFirst().get().getValue();
+                Optional<MetadataElement> msgIdEntry = route.metadata().stream()
+                    .filter(e -> e.getKey().equalsIgnoreCase(MSG_ID_KEY))
+                    .findFirst();
+
+                if (msgIdEntry.isPresent()) {
+                    return msgIdEntry.get().getValue();
+                }
             }
             return null;
         }
