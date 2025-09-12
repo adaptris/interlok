@@ -92,8 +92,8 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
     public static final String DEFAULT_ENDPOINT_PREFIX = "/api/retry/";
     public static final String DEFAULT_REPORTING_ENDPOINT = "/api/failed/list";
     public static final String DEFAULT_DELETE_PREFIX = "/api/failed/delete/";
-    public static final String DEFAULT_STACKTRACE_ENDPOINT = "/api/failed/stacktrace/";
-    public static final String DEFAULT_STACKTRACE_FIRST_LINE_ENDPOINT = "/api/failed/stacktrace/first-line/";
+    public static final String DEFAULT_STACKTRACE_PREFIX = "/api/failed/stacktrace/";
+    public static final String DEFAULT_STACKTRACE_FIRST_LINE_PREFIX = "/api/failed/stacktrace/first-line/";
 
     private static final String HTTP_RETRY_METHOD = "POST";
     private static final String HTTP_DELETE_METHOD = "DELETE";
@@ -151,15 +151,31 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
     @InputFieldDefault(value = DEFAULT_DELETE_PREFIX)
     private String deleteEndpointPrefix;
 
+    /**
+     * The get stacktrace endpoint.
+     * <p>
+     * The default if not explicitly specified is {@value DEFAULT_STACKTRACE_PREFIX}, note the trailing
+     * {@code "/"}. The expectation is that when clients interact with the endpoint it will be in the
+     * form {@code /prefix/'msgId'}
+     * </p>
+     */
     @Getter
     @Setter
-    @InputFieldDefault(value = DEFAULT_STACKTRACE_ENDPOINT)
-    private String stackTraceEndpoint;
+    @InputFieldDefault(value = DEFAULT_STACKTRACE_PREFIX)
+    private String stackTraceEndpointPrefix;
 
+    /**
+     * The get stacktrace first line endpoint.
+     * <p>
+     * The default if not explicitly specified is {@value DEFAULT_STACKTRACE_FIRST_LINE_PREFIX}, note the trailing
+     * {@code "/"}. The expectation is that when clients interact with the endpoint it will be in the
+     * form {@code /prefix/'msgId'}
+     * </p>
+     */
     @Getter
     @Setter
-    @InputFieldDefault(value = DEFAULT_STACKTRACE_FIRST_LINE_ENDPOINT)
-    private String stackTraceFirstLineEndpoint;
+    @InputFieldDefault(value = DEFAULT_STACKTRACE_FIRST_LINE_PREFIX)
+    private String stackTraceFirstLineEndpointPrefix;
 
     /**
      * The underlying Jetty connection.
@@ -251,11 +267,11 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
             String deleteServletPath = deleteEndpointPrefix() + "*";
             String deleteServletRegexp = "^" + deleteEndpointPrefix() + "(.*)";
 
-            String stackTraceServletPath = stackTraceEndpoint() + "*";
-            String stackTraceServletRegexp = "^" + stackTraceEndpoint() + "(.*)";
+            String stackTraceServletPath = stackTraceEndpointPrefix() + "*";
+            String stackTraceServletRegexp = "^" + stackTraceEndpointPrefix() + "(.*)";
 
-            String stackTraceFirstLineServletPath = stackTraceEndpoint() + "*";
-            String stackTraceFirstLineServletRegexp = "^" + stackTraceEndpoint() + "(.*)";
+            String stackTraceFirstLineServletPath = stackTraceFirstLineEndpointPrefix() + "*";
+            String stackTraceFirstLineServletRegexp = "^" + stackTraceFirstLineEndpointPrefix() + "(.*)";
 
             retryRouting = new JettyRouteCondition()
                     .withUrlPattern(retryServletRegexp)
@@ -372,12 +388,12 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
         return StringUtils.defaultIfBlank(getReportingEndpoint(), DEFAULT_REPORTING_ENDPOINT);
     }
 
-    String stackTraceEndpoint() {
-        return StringUtils.defaultIfBlank(getStackTraceEndpoint(), DEFAULT_STACKTRACE_ENDPOINT);
+    String stackTraceEndpointPrefix() {
+        return StringUtils.defaultIfBlank(getStackTraceEndpointPrefix(), DEFAULT_STACKTRACE_PREFIX);
     }
 
-    String stackTraceFirstLineEndpoint() {
-        return StringUtils.defaultIfBlank(getStackTraceFirstLineEndpoint(), DEFAULT_STACKTRACE_FIRST_LINE_ENDPOINT);
+    String stackTraceFirstLineEndpointPrefix() {
+        return StringUtils.defaultIfBlank(getStackTraceFirstLineEndpointPrefix(), DEFAULT_STACKTRACE_FIRST_LINE_PREFIX);
     }
 
     String deleteEndpointPrefix() {
@@ -576,19 +592,25 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
             try {
                 JettyRoute route = stackTraceRouting.build(jettyMsg.getMetadataValue(HTTP_METHOD),
                         jettyMsg.getMetadataValue(JETTY_URI));
+
                 if (route.matches()) {
                     String msgId = route.metadata().stream()
                             .filter(e -> e.getKey().equalsIgnoreCase(MSG_ID_KEY))
                             .findFirst().get().getValue();
-                    String stackTrace = retryStore.getStackTrace(msgId);
-                    jettyMsg.setContent(stackTrace, StandardCharsets.UTF_8.name());
-                    sendResponse(HTTP_OK, jettyMsg);
+
+                    if (msgId != null) {
+                        String stackTrace = retryStore.getStackTrace(msgId);
+                        jettyMsg.setContent(stackTrace, StandardCharsets.UTF_8.name());
+                        sendResponse(HTTP_OK, jettyMsg);
+                    } else {
+                        sendResponse(HTTP_BAD, jettyMsg);
+                    }
                 } else {
                     sendResponse(HTTP_BAD, jettyMsg);
                 }
             } catch (Exception e) {
                 jettyMsg.setContent(ExceptionUtils.getRootCauseMessage(e), StandardCharsets.UTF_8.name());
-                sendResponse(HTTP_NOT_FOUND, jettyMsg);
+                sendResponse(HTTP_ERROR, jettyMsg);
             }
         }
 
@@ -606,28 +628,29 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
         @Synchronized(value = "locker")
         public void onAdaptrisMessage(AdaptrisMessage jettyMsg, Consumer<AdaptrisMessage> success,
                                       Consumer<AdaptrisMessage> failure) {
-            String httpCode = HTTP_ERROR;
             try {
-                JettyRoute route = new JettyRouteCondition()
-                        .withUrlPattern("^" + stackTraceFirstLineEndpoint() + "(.*)")
-                        .withMetadataKeys(MSG_ID_KEY)
-                        .withMethod("GET")
-                        .build(jettyMsg.getMetadataValue(HTTP_METHOD), jettyMsg.getMetadataValue(JETTY_URI));
+                JettyRoute route = stackTraceFirstLineRouting.build(jettyMsg.getMetadataValue(HTTP_METHOD),
+                        jettyMsg.getMetadataValue(JETTY_URI));
+
                 if (route.matches()) {
                     String msgId = route.metadata().stream()
                             .filter(e -> e.getKey().equalsIgnoreCase(MSG_ID_KEY))
                             .findFirst().get().getValue();
-                    String stackTrace = retryStore.getStackTrace(msgId);
-                    String firstLine = stackTrace.split("\n")[0];
-                    jettyMsg.setContent(firstLine, StandardCharsets.UTF_8.name());
-                    httpCode = HTTP_OK;
+
+                    if (msgId != null) {
+                        String stackTrace = retryStore.getStackTrace(msgId);
+                        String firstLine = stackTrace.split("\n")[0];
+                        jettyMsg.setContent(firstLine, StandardCharsets.UTF_8.name());
+                        sendResponse(HTTP_OK, jettyMsg);
+                    } else {
+                        sendResponse(HTTP_BAD, jettyMsg);
+                    }
                 } else {
-                    httpCode = HTTP_BAD;
+                    sendResponse(HTTP_BAD, jettyMsg);
                 }
             } catch (Exception e) {
                 jettyMsg.setContent(ExceptionUtils.getRootCauseMessage(e), StandardCharsets.UTF_8.name());
-            } finally {
-                sendResponse(httpCode, jettyMsg);
+                sendResponse(HTTP_ERROR, jettyMsg);
             }
         }
 
