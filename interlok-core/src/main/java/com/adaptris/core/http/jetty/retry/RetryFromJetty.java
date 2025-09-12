@@ -439,6 +439,21 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
             executeQuietly(service, msg);
         }
 
+        protected String extractMsgId(JettyRouteCondition routing, AdaptrisMessage jettyMsg) throws CoreException {
+            JettyRoute route = routing.build(jettyMsg.getMetadataValue(HTTP_METHOD), jettyMsg.getMetadataValue(JETTY_URI));
+            if (route.matches()) {
+                return route.metadata().stream()
+                        .filter(e -> e.getKey().equalsIgnoreCase(MSG_ID_KEY))
+                        .findFirst().get().getValue();
+            }
+            return null;
+        }
+
+        protected void handleException(Exception e, AdaptrisMessage msg) {
+            msg.setContent(ExceptionUtils.getRootCauseMessage(e), StandardCharsets.UTF_8.name());
+            sendResponse(HTTP_ERROR, msg);
+        }
+
         @Override
         public void prepare() throws CoreException {
             LifecycleHelper.prepare(service);
@@ -498,26 +513,25 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
         @Synchronized(value = "locker")
         public void onAdaptrisMessage(AdaptrisMessage jettyMsg, Consumer<AdaptrisMessage> success,
                                       Consumer<AdaptrisMessage> failure) {
+            String httpCode = HTTP_ERROR;
             try {
-                JettyRoute route = deleteRouting.build(jettyMsg.getMetadataValue(HTTP_METHOD),
-                        jettyMsg.getMetadataValue(JETTY_URI));
-                if (route.matches()) {
-                    String msgId =
-                            route.metadata().stream().filter((e) -> e.getKey().equalsIgnoreCase(MSG_ID_KEY))
-                                    .findFirst().get().getValue();
-                    // If metadata exists, then we can delete...
-                    // met
-                    Map<String, String> metadata = retryStore.getMetadata(msgId);
+                String msgId = extractMsgId(deleteRouting, jettyMsg);
+
+                if (msgId != null) {
                     log.trace("Attempting to delete {}", msgId);
-                    getRetryStore().delete(msgId);
-                    sendResponse(HTTP_OK, jettyMsg);
+                    boolean deleted = getRetryStore().delete(msgId);
+                    if (deleted) {
+                        httpCode = HTTP_OK;
+                    } else {
+                        httpCode = HTTP_NOT_FOUND;
+                    }
                 } else {
-                    sendResponse(HTTP_BAD, jettyMsg);
+                    httpCode = HTTP_BAD;
                 }
             } catch (Exception e) {
-                jettyMsg.setContent(ExceptionUtils.getRootCauseMessage(e), StandardCharsets.UTF_8.name());
-                sendResponse(HTTP_NOT_FOUND, jettyMsg);
+                handleException(e, jettyMsg);
             }
+            sendResponse(httpCode, jettyMsg);
         }
 
         @Override
@@ -533,26 +547,22 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
         @Synchronized(value = "locker")
         public void onAdaptrisMessage(AdaptrisMessage jettyMsg, Consumer<AdaptrisMessage> success,
                                       Consumer<AdaptrisMessage> failure) {
+            String httpCode = HTTP_ERROR;
             try {
-                JettyRoute route = retryRouting.build(jettyMsg.getMetadataValue(HTTP_METHOD),
-                        jettyMsg.getMetadataValue(JETTY_URI));
-                if (route.matches()) {
-                    String msgId =
-                            route.metadata().stream().filter((e) -> e.getKey().equalsIgnoreCase(MSG_ID_KEY))
-                                    .findFirst().get().getValue();
+                String msgId = extractMsgId(retryRouting, jettyMsg);
+                if  (msgId != null) {
                     // There's a decision point here because we need to decide between
                     // large or small message factory.
                     // Do we want people to configure it?
                     // Therefore we look up the metadata from the store;
                     // Figure out the workflow, and then get the consumer.getMessageFactory()
-
                     Map<String, String> metadata = retryStore.getMetadata(msgId);
                     Workflow workflow = getWorkflow(metadata.get(Workflow.WORKFLOW_ID_KEY));
                     AdaptrisMessage msgForRetry =
                             retryStore.buildForRetry(msgId, metadata, workflow.getConsumer().getMessageFactory());
                     // We know at this point we have something to retry.
                     // So, we can fire a 202 before submission.
-                    sendResponse(HTTP_ACCEPTED, jettyMsg);
+                    httpCode = HTTP_ACCEPTED;
                     updateRetryCountMetadata(msgForRetry);
                     log.trace("Attempting to retry {}; resubmitting to [{}]", msgForRetry.getUniqueId(),
                             workflow.obtainWorkflowId());
@@ -566,12 +576,12 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
                         }
                     });
                 } else {
-                    sendResponse(HTTP_BAD, jettyMsg);
+                    httpCode = HTTP_BAD;
                 }
             } catch (Exception e) {
-                jettyMsg.setContent(ExceptionUtils.getRootCauseMessage(e), StandardCharsets.UTF_8.name());
-                sendResponse(HTTP_ERROR, jettyMsg);
+                handleException(e, jettyMsg);
             }
+            sendResponse(httpCode, jettyMsg);
         }
 
 
@@ -589,29 +599,21 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
         @Synchronized(value = "locker")
         public void onAdaptrisMessage(AdaptrisMessage jettyMsg, Consumer<AdaptrisMessage> success,
                                       Consumer<AdaptrisMessage> failure) {
+            String httpCode;
             try {
-                JettyRoute route = stackTraceRouting.build(jettyMsg.getMetadataValue(HTTP_METHOD),
-                        jettyMsg.getMetadataValue(JETTY_URI));
-
-                if (route.matches()) {
-                    String msgId = route.metadata().stream()
-                            .filter(e -> e.getKey().equalsIgnoreCase(MSG_ID_KEY))
-                            .findFirst().get().getValue();
-
-                    if (msgId != null) {
-                        String stackTrace = retryStore.getStackTrace(msgId);
-                        jettyMsg.setContent(stackTrace, StandardCharsets.UTF_8.name());
-                        sendResponse(HTTP_OK, jettyMsg);
-                    } else {
-                        sendResponse(HTTP_BAD, jettyMsg);
-                    }
+                String msgId = extractMsgId(stackTraceRouting, jettyMsg);
+                if (msgId != null) {
+                    String stackTrace = retryStore.getStackTrace(msgId);
+                    jettyMsg.setContent(stackTrace, StandardCharsets.UTF_8.name());
+                    httpCode = HTTP_OK;
                 } else {
-                    sendResponse(HTTP_BAD, jettyMsg);
+                    httpCode = HTTP_BAD;
                 }
             } catch (Exception e) {
-                jettyMsg.setContent(ExceptionUtils.getRootCauseMessage(e), StandardCharsets.UTF_8.name());
-                sendResponse(HTTP_ERROR, jettyMsg);
+                handleException(e, jettyMsg);
+                return;
             }
+            sendResponse(httpCode, jettyMsg);
         }
 
         @Override
@@ -628,30 +630,22 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
         @Synchronized(value = "locker")
         public void onAdaptrisMessage(AdaptrisMessage jettyMsg, Consumer<AdaptrisMessage> success,
                                       Consumer<AdaptrisMessage> failure) {
+            String httpCode;
             try {
-                JettyRoute route = stackTraceFirstLineRouting.build(jettyMsg.getMetadataValue(HTTP_METHOD),
-                        jettyMsg.getMetadataValue(JETTY_URI));
-
-                if (route.matches()) {
-                    String msgId = route.metadata().stream()
-                            .filter(e -> e.getKey().equalsIgnoreCase(MSG_ID_KEY))
-                            .findFirst().get().getValue();
-
+                String msgId = extractMsgId(stackTraceFirstLineRouting, jettyMsg);
                     if (msgId != null) {
                         String stackTrace = retryStore.getStackTrace(msgId);
                         String firstLine = stackTrace.split("\n")[0];
                         jettyMsg.setContent(firstLine, StandardCharsets.UTF_8.name());
-                        sendResponse(HTTP_OK, jettyMsg);
+                        httpCode = HTTP_OK;
                     } else {
-                        sendResponse(HTTP_BAD, jettyMsg);
+                        httpCode = HTTP_BAD;
                     }
-                } else {
-                    sendResponse(HTTP_BAD, jettyMsg);
-                }
             } catch (Exception e) {
-                jettyMsg.setContent(ExceptionUtils.getRootCauseMessage(e), StandardCharsets.UTF_8.name());
-                sendResponse(HTTP_ERROR, jettyMsg);
+                handleException(e, jettyMsg);
+                return;
             }
+            sendResponse(httpCode, jettyMsg);
         }
 
         @Override
