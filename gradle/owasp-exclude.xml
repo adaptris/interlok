@@ -44,6 +44,12 @@
   </suppress>
   <suppress>
     <notes><![CDATA[
+    CPE parsing issue with invalid whitespace in product name
+    ]]>    </notes>
+    <cve>CVE-2019-7401</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
     This CVE is a NPM Node/CVE... https://nvd.nist.gov/vuln/detail/CVE-2020-7712
     ]]>    </notes>
     <cve>CVE-2020-7712</cve>
