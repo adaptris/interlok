@@ -50,8 +50,9 @@ import lombok.extern.slf4j.Slf4j;
  * into a simpler configuration chain.
  * </p>
  * <p>
- * This jetty implementation allows two modes of operation. Listing the failed messages, retrying a
- * message, deleting messages from the store.
+ * This jetty implementation allows listing of the failed messages, retrying a
+ * message, deleting messages and retrieving the stacktrace or first line of the stacktrace
+ * from the store.
  * <ul>
  * <li>{@code curl -XGET http://localhost:8080/api/failed/list} gives you a list of message ids that
  * are listed in the store</li>
@@ -59,6 +60,10 @@ import lombok.extern.slf4j.Slf4j;
  * message to the appropriate workflow; returning a 202 upon success</li>
  * <li>{@code curl -XDELETE http://localhost:8080/api/failed/delete/[msgId]} will attempt to delete
  * the message from the store</li>
+ * <li>{@code curl -XGET http://localhost:8080/api/failed/stacktrace/{msgId}} will retrieve the entire stacktrace
+ * from the store.</li>
+ * <li>{@code curl -XGET http://localhost:8080/api/failed/stacktrace/first-line/{msgId}} will retrieve only the
+ * first line of the stacktrace from the store.</li>
  * <ul>
  * </p>
  * <p>
@@ -506,7 +511,6 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
             return "RetryFromJetty::Report";
         }
     }
-
 
     @NoArgsConstructor
     private class DeleteListener extends ListenerImpl {

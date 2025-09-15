@@ -442,22 +442,7 @@ public class JdbcRetryStore implements RetryStore {
 
   @Override
   public String getStackTrace(String msgId) throws InterlokException {
-      PreparedStatement ps = null;
-      ResultSet rs = null;
-      try {
-          ps = prepareStatementWithParameters(sqlConnection, sqlStatements.getProperty("select.sql"), new Object[] { msgId });
-          log.trace("Executing select statement for JDBCRetryStore getStacktrace");
-          rs = ps.executeQuery();
-          if (rs.next()) {
-              return rs.getString("stacktrace");
-          } else {
-              throw new InterlokException("No stack trace found for message ID: " + msgId);
-          }
-      } catch (SQLException e) {
-          throw ExceptionHelper.wrapInterlokException(e);
-      } finally {
-          JdbcUtil.closeQuietly(rs);
-          JdbcUtil.closeQuietly(ps);
-      }
+      throw new UnsupportedOperationException("Not supported yet. Retrieving stacktrace information is currently only " +
+              "supported by the AWS retry store.");
   }
 }
