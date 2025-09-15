@@ -50,12 +50,6 @@
   </suppress>
   <suppress>
     <notes><![CDATA[
-    CVE-2025-5115 - Temporary suppression while upgrading
-    ]]>    </notes>
-    <cve>CVE-2025-5115</cve>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
     This CVE is a NPM Node/CVE... https://nvd.nist.gov/vuln/detail/CVE-2020-7712
     ]]>    </notes>
     <cve>CVE-2020-7712</cve>
