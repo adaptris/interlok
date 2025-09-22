@@ -106,7 +106,7 @@ public class EncodePasswordServiceTest extends GeneralServiceExample {
     List<String> lines = Files.readAllLines(Paths.get(service.getFilePath()));
     String pwdLine = lines.stream().filter(line -> line.startsWith("<!ENTITY BROKER_PASSWORD")).collect(Collectors.toList()).get(0);
     assertTrue(pwdLine.substring(("<!ENTITY BROKER_PASSWORD").length()+19).startsWith(PREFIX_PORTBALE_PASSWORD_2));
-    assertFalse(pwdLine.substring(("<!ENTITY HUB_PASSWORD").length()+19).startsWith(PREFIX_PORTBALE_PASSWORD_2));
+    assertTrue(pwdLine.substring(("<!ENTITY HUB_PASSWORD").length()+22).startsWith(PREFIX_PORTBALE_PASSWORD_2));
   }
 
   @Test
