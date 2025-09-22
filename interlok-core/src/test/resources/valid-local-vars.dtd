@@ -19,7 +19,8 @@
 <!ENTITY PRIMARY_BROKER_URL               'tcp://example1.adaptris.net:2506'>
 <!ENTITY BACKUP_BROKER_URLS               'tcp://example1.adaptris.net:2506'>
 <!ENTITY BROKER_USERNAME                  'user'>
-<!ENTITY BROKER_PASSWORD                  'example-password'>
+<!ENTITY BROKER_PASSWORD                  'PASSWORD1'>
+<!ENTITY HUB_PASSWORD                     '$\{PASSWORD}'>
 <!ENTITY HUB_INQUEUE                      'example::v2inbound'>
 <!ENTITY EVENT_QUEUE                      'example::v2eventqueue'>
 <!ENTITY DIR_ENV                          'example-test'>
