@@ -143,4 +143,14 @@ public class EncodePasswordServiceTest extends GeneralServiceExample {
         List<String> pwdLines = lines.stream().filter(line -> line.trim().startsWith("<service")).collect(Collectors.toList());
         assertEquals(pwdLines.size(),1);
     }
+
+    @Test
+    public void testXIncludesInXML() throws Exception {
+        service.setFilePath(ADAPTER_CONFIG_FILE);
+        execute(service, msg);
+        List<String> lines = Files.readAllLines(Paths.get(service.getFilePath()));
+        List<String> eventHandlerLines = lines.stream().filter(line -> line.trim().contains("xinclude.event-handler")).collect(Collectors.toList());
+        assertEquals(eventHandlerLines.size(),1);
+        assertEquals(eventHandlerLines.get(0).trim(),"<xi:include href=\"${xinclude.event-handler}\"/>");
+    }
 }
