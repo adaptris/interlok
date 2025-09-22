@@ -221,26 +221,7 @@ public class EncodePasswordService extends ServiceImp {
                   }
 
                   if (tokens.size() >= 3) {
-                      String key = tokens.get(1).trim();
-                      String origValue = tokens.get(2).trim();
-                      String value = origValue;
-
-                      if (StringUtils.isNotBlank(key) && isPasswordKey(key.toLowerCase())) {
-                          //Sanitize the value
-                          if (value.endsWith(">"))
-                              value = value.substring(0, value.length() - 1);
-                          value = value.trim();
-                          if (value.startsWith("'") && value.endsWith("'")) {
-                              value = value.substring(1, value.length() - 1);
-                          }
-                          try {
-                              value = doEncodePassword(value);
-                          } catch (PasswordException e) {
-                              log.debug("Password could not be decoded", e);
-                          }
-                          value = "'" + value + "'>";
-                      }
-                      line = line.replaceAll(origValue, value);
+                      line = getEncryptedString(line, tokens.get(1).trim(), tokens.get(2).trim());
                   }
               }
               sb.append(line);
@@ -250,7 +231,7 @@ public class EncodePasswordService extends ServiceImp {
       Files.write(Paths.get(message.resolve(getFilePath())), sb.toString().getBytes());
   }
 
-  /**
+    /**
    * Recursive method to replace values in nodes that match the pattern
    *
    * @param node
@@ -338,8 +319,9 @@ public class EncodePasswordService extends ServiceImp {
    */
   private void encapsulateReferencedEntities(File file) throws IOException {
       String fileContent = Files.readString(file.toPath());
-      //letters, numbers, hyphens, underscores, dot only
+      //update content starting with space, > or comma to transform &string; to ${string}
       String updatedContent = fileContent.replaceAll("([>,\\s])&([a-zA-Z][a-zA-Z0-9\\-_.]*);", "$1\\${$2}");
+      //update strings to append xinclude for only strings starting space and format ${string}
       updatedContent = updatedContent.replaceAll("\\s\\$\\{([^}]*)\\}\\s", "<xi:include href=\"\\${xinclude.$1}\"/>");
       Files.writeString(file.toPath(), updatedContent);
   }
@@ -365,4 +347,37 @@ public class EncodePasswordService extends ServiceImp {
     }
     return doc;
   }
+
+  /**
+   * Encrypts the passed in password string value in a line.
+   * Eg. of a password string - 'password1'>
+   */
+  private String getEncryptedString(String line, String key, String passwordString) {
+      String value = passwordString;
+
+      if (StringUtils.isNotBlank(line) && StringUtils.isNotBlank(key) && StringUtils.isNotBlank(value)) {
+          if (isPasswordKey(key.toLowerCase())) {
+              //Sanitize the value
+              if (value.endsWith(">"))
+                  value = value.substring(0, value.length() - 1);
+              value = value.trim();
+              if (value.startsWith("'") && value.endsWith("'")) {
+                  value = value.substring(1, value.length() - 1);
+              }
+
+              //Encrypt the sanitized password value
+              try {
+                  value = doEncodePassword(value);
+              } catch (PasswordException e) {
+                  log.info("Password could not be decoded for line - {} ,exc - {}", line, e.getMessage());
+              }
+
+              //
+              value = "'" + value + "'>";
+          }
+          line = line.replaceAll(passwordString, value);
+      }
+      return line;
+  }
+
 }

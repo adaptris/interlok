@@ -99,6 +99,8 @@
             <unique-id>ecstatic-dubinsky</unique-id>
         </channel>
     </channel-list>
+    &event-handler;
+    &message-handler;
     <message-error-digester class="standard-message-error-digester">
         <unique-id>ErrorDigest</unique-id>
         <digest-max-size>100</digest-max-size>
