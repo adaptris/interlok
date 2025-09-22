@@ -27,11 +27,15 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
 import org.w3c.dom.*;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
@@ -67,9 +71,10 @@ public class EncodePasswordService extends ServiceImp {
   private static final String PREFIX_PORTABLE_PASSWORD = "PW:";
   private static final String PREFIX_PORTBALE_PASSWORD_2 = "AES_GCM:";
   private static final String EXTN_XML = ".xml";
+  private static final String EXTN_DTD = ".dtd";
   private static final String EXTN_PROPERTIES = ".properties";
   private static final String METADATA_KEY_PASSWORD_TOKENS = "passwordtokens";
-  private static final String XML_ELEMENT_ROOT = "root";
+  private static final String PREFIX_ENTITY = "<!ENTITY";
 
   private transient DocumentBuilderFactory dbFactory;
   private transient TransformerFactory transformerFactory;
@@ -106,6 +111,8 @@ public class EncodePasswordService extends ServiceImp {
         encodeValuesInPropertiesFile(message);
       } else if(file.getName().endsWith(EXTN_XML)) {
         encodeValuesInXmlFile(file);
+      } else if(file.getName().endsWith(EXTN_DTD)) {
+        encodeValuesInDtdFile(message);
       }
     } catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);
@@ -135,7 +142,7 @@ public class EncodePasswordService extends ServiceImp {
       if (line.contains("=")) {
         String key = line.substring(0, line.indexOf("=")).trim();
         String value = line.substring(line.indexOf("=") + 1).trim();
-        if (isPasswordKey(key.toLowerCase())) {
+        if (StringUtils.isNotBlank(key) && isPasswordKey(key.toLowerCase())) {
           try {
             if (value.startsWith(PREFIX_PORTABLE_PASSWORD)) {
               value = Password.encode(Password.decode(value), Password.PORTABLE_PASSWORD_2);
@@ -162,27 +169,85 @@ public class EncodePasswordService extends ServiceImp {
    * @throws IOException
    * @throws TransformerException
    */
-  protected void encodeValuesInXmlFile(File file) throws IOException, TransformerException, ParserConfigurationException {
+  protected void encodeValuesInXmlFile(File file) throws IOException, TransformerException, ParserConfigurationException, SAXException {
 
-    //Encapsulate the XML file for any entities referred
-    encapsulateReferencedEntities(file);
+      //Encapsulate the XML file for any entities referred
+      encapsulateReferencedEntities(file);
 
-    //Read XML document
-    Document doc = readXMLDocument(file);
-    if (doc == null) return;
+      dbFactory.setValidating(false);
+      dbFactory.setNamespaceAware(false);
+      // DON'T expand entity references - keep them as &entityName;
+      dbFactory.setExpandEntityReferences(false);
 
-    doc.getDocumentElement().normalize();
-    // Process the root element
-    replaceNodeValues(doc.getDocumentElement());
+      // Disable external entity loading
+      dbFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+      dbFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+      dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 
-    // Write the updated XML to a new file
-    Transformer transformer = transformerFactory.newTransformer();
-    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-    transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+      //Read XML document
+      Document doc = readXMLDocument(file);
+      if (doc == null) return;
+      doc.getDocumentElement().normalize();
 
-    DOMSource source = new DOMSource(doc);
-    StreamResult result = new StreamResult(file);
-    transformer.transform(source, result);
+      // Process the root element
+      replaceNodeValues(doc.getDocumentElement());
+
+      // Write the updated XML to a new file
+      Transformer transformer = transformerFactory.newTransformer();
+      transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+      transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+
+      DOMSource source = new DOMSource(doc);
+      StreamResult result = new StreamResult(file);
+      transformer.transform(source, result);
+  }
+
+    /**
+     * Finds and encodes values in the Dtd contained in Adaptris Message
+     *
+     * @param message
+     * @throws IOException
+     */
+    protected void encodeValuesInDtdFile(AdaptrisMessage message) throws IOException {
+      StringBuilder sb = new StringBuilder();
+      List<String> lines = Files.readAllLines(Paths.get(message.resolve(getFilePath())));
+      lines.forEach(line -> {
+          if(StringUtils.isNotEmpty(line)) {
+              if (line.startsWith(PREFIX_ENTITY)) {
+                  StringTokenizer tokenizer = new StringTokenizer(line);
+                  List<String> tokens = new ArrayList<>();
+                  while (tokenizer.hasMoreTokens()) {
+                      tokens.add(tokenizer.nextToken());
+                  }
+
+                  if (tokens.size() >= 3) {
+                      String key = tokens.get(1).trim();
+                      String origValue = tokens.get(2).trim();
+                      String value = origValue;
+
+                      if (StringUtils.isNotBlank(key) && isPasswordKey(key.toLowerCase())) {
+                          //Sanitize the value
+                          if (value.endsWith(">"))
+                              value = value.substring(0, value.length() - 1);
+                          value = value.trim();
+                          if (value.startsWith("'") && value.endsWith("'")) {
+                              value = value.substring(1, value.length() - 1);
+                          }
+                          try {
+                              value = doEncodePassword(value);
+                          } catch (PasswordException e) {
+                              log.debug("Password could not be decoded", e);
+                          }
+                          value = "'" + value + "'>";
+                      }
+                      line = line.replaceAll(origValue, value);
+                  }
+              }
+              sb.append(line);
+              sb.append(System.lineSeparator());
+          }
+      });
+      Files.write(Paths.get(message.resolve(getFilePath())), sb.toString().getBytes());
   }
 
   /**
@@ -274,7 +339,8 @@ public class EncodePasswordService extends ServiceImp {
   private void encapsulateReferencedEntities(File file) throws IOException {
       String fileContent = Files.readString(file.toPath());
       //letters, numbers, hyphens, underscores, dot only
-      String updatedContent = fileContent.replaceAll("&([a-zA-Z][a-zA-Z0-9\\-_.]*);", "\\${$1}");
+      String updatedContent = fileContent.replaceAll("([>,\\s])&([a-zA-Z][a-zA-Z0-9\\-_.]*);", "$1\\${$2}");
+      updatedContent = updatedContent.replaceAll("\\s\\$\\{([^}]*)\\}\\s", "<xi:include href=\"\\${xinclude.$1}\"/>");
       Files.writeString(file.toPath(), updatedContent);
   }
 
@@ -292,16 +358,10 @@ public class EncodePasswordService extends ServiceImp {
         doc = dBuilder.parse(file);
     } catch (SAXParseException e) {
         // Reattempt in case of XML snippets file without a root
-        Files.writeString(file.toPath(), "<"+XML_ELEMENT_ROOT+">" + Files.readString(file.toPath()) + "</"+XML_ELEMENT_ROOT+">");
-        try {
-            doc = dBuilder.parse(file);
-        } catch (SAXException e1) {
-            //Handle malformed XMLs by logging the error
-            log.info("Error encountered while encoding file - {} : {}", file.getName(), e.getMessage());
-        }
+        log.info("SAX Parse Exception encountered while encoding file - {} : {}", file.getName(), e.getMessage());
     } catch (Exception e) {
         //Handle malformed XMLs by logging the error
-        log.info("Error encountered while encoding file - {} : {}", file.getName(), e.getMessage());
+        log.info("Exception encountered while encoding file - {} : {}", file.getName(), e.getMessage());
     }
     return doc;
   }
