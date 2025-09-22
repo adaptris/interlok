@@ -1,0 +1,27 @@
+<!--  Adapter Framework Handling -->
+<!ENTITY event-handler                    SYSTEM './example-config-includes/example-handler.xml'>
+<!ENTITY message-handler                  SYSTEM './example-config-includes/example-handler.xml'>
+<!ENTITY ehub-producer                    SYSTEM './example-config-includes/example-producer.xml'>
+
+<!-- Connections -->
+<!ENTITY connect-http-consume             SYSTEM './example-config-includes/example-http-consume.xml'>
+<!ENTITY connect-null-consume             SYSTEM './example-config-includes/example-null-consume.xml'>
+<!ENTITY connect-ptp-produce              SYSTEM './example-config-includes/example-ptp-produce.xml'>
+
+<!--  Adapter Framework Protocol Includes -->
+<!ENTITY fs-ptp                           SYSTEM './example-config-includes/fs/fs-ptp.xml'>
+<!ENTITY http-ptp                         SYSTEM './example-config-includes/http/http-ptp.xml'>
+<!ENTITY inbound-services                 SYSTEM './example-config-includes/example-inbound-services.xml'>
+
+<!-- GLOBAL PARAMETERS -->
+<!ENTITY ADAPTER_ID                       'adapter1'>
+
+<!ENTITY PRIMARY_BROKER_URL               'tcp://example1.adaptris.net:2506'>
+<!ENTITY BACKUP_BROKER_URLS               'tcp://example1.adaptris.net:2506'>
+<!ENTITY BROKER_USERNAME                  'user'>
+<!ENTITY BROKER_PASSWORD                  'example-password'>
+<!ENTITY HUB_INQUEUE                      'example::v2inbound'>
+<!ENTITY EVENT_QUEUE                      'example::v2eventqueue'>
+<!ENTITY DIR_ENV                          'example-test'>
+<!ENTITY ENV                              'tst'>
+<!ENTITY EXCEPTIONS_BASE                  'file:////opt/exceptions/example'>

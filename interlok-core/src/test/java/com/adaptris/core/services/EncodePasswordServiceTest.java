@@ -53,6 +53,7 @@ public class EncodePasswordServiceTest extends GeneralServiceExample {
   private static final String ADAPTER_CONFIG_FILE = "build/resources/test/validAdapter.xml";
   private static final String MESSAGE_HANDLER_FILE = "build/resources/test/message-handler.xml";
   private static final String ADAPTER_PROPERTIES_FILE = "build/resources/test/valid-local-vars.properties";
+  private static final String ADAPTER_DTD_FILE = "build/resources/test/valid-local-vars.dtd";
   private static final String XML_WITHOUT_ROOT_FILE = "build/resources/test/services.xml";
   private static final String PASSWORD_PARAPHRASE = "PASSWORD, PASSPHRASE, SECRET, ROLEEXTERNALID";
   private static final String METADATA_KEY_PASSWORD_TOKENS = "passwordtokens";
@@ -96,6 +97,15 @@ public class EncodePasswordServiceTest extends GeneralServiceExample {
     List<String> lines = Files.readAllLines(Paths.get(service.getFilePath()));
     String pwdLine = lines.stream().filter(line -> line.startsWith("cirrus.broker.password")).collect(Collectors.toList()).get(0);
     assertTrue(pwdLine.substring(pwdLine.indexOf('=')+1).startsWith(PREFIX_PORTBALE_PASSWORD_2));
+  }
+
+  @Test
+  public void testEncodePasswordInDtd() throws Exception {
+    service.setFilePath(ADAPTER_DTD_FILE);
+    execute(service, msg);
+    List<String> lines = Files.readAllLines(Paths.get(service.getFilePath()));
+    String pwdLine = lines.stream().filter(line -> line.startsWith("<!ENTITY BROKER_PASSWORD")).collect(Collectors.toList()).get(0);
+    assertTrue(pwdLine.substring(("<!ENTITY BROKER_PASSWORD").length()+19).startsWith(PREFIX_PORTBALE_PASSWORD_2));
   }
 
   @Test
