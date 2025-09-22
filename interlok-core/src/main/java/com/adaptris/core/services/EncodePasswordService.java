@@ -371,8 +371,7 @@ public class EncodePasswordService extends ServiceImp {
               } catch (PasswordException e) {
                   log.info("Password could not be decoded for line - {} ,exc - {}", line, e.getMessage());
               }
-
-              //
+              
               value = "'" + value + "'>";
           }
           line = line.replaceAll(passwordString, value);
