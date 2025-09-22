@@ -331,19 +331,16 @@ public class EncodePasswordService extends ServiceImp {
    *
    * @param file
    * @return
-   * @throws IOException
+   * @throws ParserConfigurationException
    */
-  private Document readXMLDocument(File file) throws IOException, ParserConfigurationException {
+  private Document readXMLDocument(File file) throws ParserConfigurationException {
     Document doc = null;
     DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
     try {
         doc = dBuilder.parse(file);
-    } catch (SAXParseException e) {
+    } catch (SAXException | IOException e) {
         // Reattempt in case of XML snippets file without a root
         log.info("SAX Parse Exception encountered while encoding file - {} : {}", file.getName(), e.getMessage());
-    } catch (Exception e) {
-        //Handle malformed XMLs by logging the error
-        log.info("Exception encountered while encoding file - {} : {}", file.getName(), e.getMessage());
     }
     return doc;
   }
