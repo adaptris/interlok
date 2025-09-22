@@ -570,6 +570,7 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
                     // We know at this point we have something to retry.
                     // So, we can fire a 202 before submission.
                     httpCode = HTTP_ACCEPTED;
+                    sendResponse(httpCode, jettyMsg);
                     updateRetryCountMetadata(msgForRetry);
                     log.trace("Attempting to retry {}; resubmitting to [{}]", msgForRetry.getUniqueId(),
                             workflow.obtainWorkflowId());
