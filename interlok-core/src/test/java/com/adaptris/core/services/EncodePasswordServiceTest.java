@@ -51,6 +51,7 @@ public class EncodePasswordServiceTest extends GeneralServiceExample {
   private AdaptrisMessage msg;
 
   private static final String ADAPTER_CONFIG_FILE = "build/resources/test/validAdapter.xml";
+  private static final String INVALID_ADAPTER_CONFIG_FILE = "build/resources/test/invalidAdapter.xml";
   private static final String MESSAGE_HANDLER_FILE = "build/resources/test/message-handler.xml";
   private static final String ADAPTER_PROPERTIES_FILE = "build/resources/test/valid-local-vars.properties";
   private static final String ADAPTER_DTD_FILE = "build/resources/test/valid-local-vars.dtd";
@@ -88,6 +89,12 @@ public class EncodePasswordServiceTest extends GeneralServiceExample {
     assertFalse(jdbcPassword.startsWith(PREFIX_PORTBALE_PASSWORD_2));
     String sftpPassword = (String) xPath.evaluate("/adapter/shared-components/connections/standard-sftp-connection/authentication/default-password/text()", document, XPathConstants.STRING);
     assertFalse(sftpPassword.startsWith(PREFIX_PORTBALE_PASSWORD_2));
+
+      service.setFilePath(INVALID_ADAPTER_CONFIG_FILE);
+      execute(service, msg);
+      xmlString = Files.readString(new File(service.getFilePath()).toPath());
+      //Check till here , there should be no exception for an invalid xml file
+      assertTrue(true);
   }
 
   @Test

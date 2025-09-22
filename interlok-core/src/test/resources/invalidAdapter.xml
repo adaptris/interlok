@@ -1,0 +1,30 @@
+<!-- An incomplete adapter for negative testing -->
+<adapter>
+    <unique-id>v${ADAPTER_ID}</unique-id>
+    <start-up-event-imp>com.adaptris.core.event.StandardAdapterStartUpEvent</start-up-event-imp>
+    <heartbeat-event-imp>com.adaptris.core.HeartbeatEvent</heartbeat-event-imp>
+    <shared-components>
+        <connections>
+            <jms-connection>
+                <connection-error-handler class="jms-connection-error-handler"/>
+                <unique-id>cirrus-sonic-10-jms-connection</unique-id>
+                <user-name>${cirrus.broker.username}</user-name>
+                <password>MyPlainPassword</password>
+                <client-id>${sonic.client.id}-${env}</client-id>
+                <vendor-implementation class="advanced-sonic-mq-implementation">
+                    <broker-url>${cirrus.primary.broker.url}</broker-url>
+                    <connection-urls>${cirrus.backup.broker.url},${cirrus.primary.broker.url}</connection-urls>
+                    <connect-id>${sonic.client.id}-${env}</connect-id>
+                    <connection-factory-properties>
+                        <key-value-pair>
+                            <key>PingInterval</key>
+                            <value>30</value>
+                        </key-value-pair>
+                        <key-value-pair>
+                            <key>SocketConnectTimeout</key>
+                            <value>60000</value>
+                        </key-value-pair>
+                    </connection-factory-properties>
+                    <session-properties/>
+                </vendor-implementation>
+            </jms-connection>
