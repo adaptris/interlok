@@ -346,6 +346,157 @@ public class RetryFromJettyTest extends FailedMessageRetrierCase {
     }
   }
 
+    @Test
+    public void testStackTrace() throws Exception {
+        RetryFromJetty retrier = create();
+        try {
+            start(retrier);
+            AdaptrisMessage baseMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+            try {
+                throw new Exception("Test Exception");
+            } catch (Exception e) {
+                baseMsg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, e);
+            }
+            retryStore.write(baseMsg);
+            assertNotNull(retryStore.getMetadata(baseMsg.getUniqueId()));
+
+            AdaptrisMessage triggerMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+            String url = jettyHelper.buildUrl(RetryFromJetty.DEFAULT_STACKTRACE_PREFIX + baseMsg.getUniqueId());
+            StandardHttpProducer http = buildProducer(url);
+            http.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethod.GET));
+            http.setIgnoreServerResponseCode(true);
+            triggerMsg.addMetadata(RetryFromJetty.MSG_ID_KEY, baseMsg.getUniqueId());
+
+            ExampleServiceCase.execute(new StandaloneRequestor(http), triggerMsg);
+
+            assertEquals(RetryFromJetty.HTTP_OK,
+                    triggerMsg.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
+            assertNotNull(triggerMsg.getContent());
+        } finally {
+            stop(retrier);
+        }
+    }
+
+    @Test
+    public void testStackTrace_BadRequest() throws Exception {
+        RetryFromJetty retrier = create();
+        try {
+            start(retrier);
+            AdaptrisMessage baseMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+            retryStore.write(baseMsg);
+            assertNotNull(retryStore.getMetadata(baseMsg.getUniqueId()));
+
+            // Test with invalid URL
+            AdaptrisMessage triggerMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+            String url = jettyHelper.buildUrl("/invalid/path/" + baseMsg.getUniqueId());
+            StandardHttpProducer http = buildProducer(url);
+            http.setIgnoreServerResponseCode(true);
+            http.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethod.GET));
+
+            ExampleServiceCase.execute(new StandaloneRequestor(http), triggerMsg);
+
+            assertEquals(RetryFromJetty.HTTP_NOT_FOUND,
+                    triggerMsg.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
+        } finally {
+            stop(retrier);
+        }
+    }
+
+    @Test
+    public void testStackTrace_Error() throws Exception {
+        RetryFromJetty retrier = create();
+        try {
+            retrier.setRetryStore(new BrokenRetryStore());
+            start(retrier);
+
+            AdaptrisMessage triggerMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+            String url = jettyHelper.buildUrl(RetryFromJetty.DEFAULT_STACKTRACE_PREFIX + triggerMsg.getUniqueId());
+            StandardHttpProducer http = buildProducer(url);
+            http.setIgnoreServerResponseCode(true);
+            http.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethod.GET));
+
+            ExampleServiceCase.execute(new StandaloneRequestor(http), triggerMsg);
+            assertEquals(RetryFromJetty.HTTP_ERROR,
+                    triggerMsg.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
+        } finally {
+            stop(retrier);
+        }
+    }
+
+    @Test
+    public void testStackTraceFirstLine() throws Exception {
+        RetryFromJetty retrier = create();
+        try {
+            start(retrier);
+            AdaptrisMessage baseMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+            retryStore.write(baseMsg);
+            assertNotNull(retryStore.getMetadata(baseMsg.getUniqueId()));
+
+            AdaptrisMessage triggerMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+            String url = jettyHelper.buildUrl(RetryFromJetty.DEFAULT_STACKTRACE_FIRST_LINE_PREFIX + baseMsg.getUniqueId());
+            StandardHttpProducer http = buildProducer(url);
+            http.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethod.GET));
+            http.setIgnoreServerResponseCode(true);
+            triggerMsg.addMetadata(RetryFromJetty.MSG_ID_KEY, baseMsg.getUniqueId());
+
+            ExampleServiceCase.execute(new StandaloneRequestor(http), triggerMsg);
+
+            assertEquals(RetryFromJetty.HTTP_OK,
+                    triggerMsg.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
+            assertNotNull(triggerMsg.getContent());
+            assertEquals(1, triggerMsg.getContent().split("\n").length);
+        } finally {
+            stop(retrier);
+        }
+    }
+
+    @Test
+    public void testStackTraceFirstLine_BadRequest() throws Exception {
+        RetryFromJetty retrier = create();
+        try {
+            start(retrier);
+            AdaptrisMessage baseMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+            retryStore.write(baseMsg);
+            assertNotNull(retryStore.getMetadata(baseMsg.getUniqueId()));
+
+            // Test with invalid URL
+            AdaptrisMessage triggerMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+            String url = jettyHelper.buildUrl("/invalid/path/" + baseMsg.getUniqueId());
+            StandardHttpProducer http = buildProducer(url);
+            http.setIgnoreServerResponseCode(true);
+            http.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethod.GET));
+
+            ExampleServiceCase.execute(new StandaloneRequestor(http), triggerMsg);
+
+            assertEquals(RetryFromJetty.HTTP_NOT_FOUND,
+                    triggerMsg.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
+        } finally {
+            stop(retrier);
+        }
+    }
+
+    @Test
+    public void testStackTraceFirstLine_Error() throws Exception {
+        RetryFromJetty retrier = create();
+        try {
+            retrier.setRetryStore(new BrokenRetryStore());
+            start(retrier);
+
+            AdaptrisMessage triggerMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+            String url = jettyHelper.buildUrl(RetryFromJetty.DEFAULT_STACKTRACE_FIRST_LINE_PREFIX + triggerMsg.getUniqueId());
+            StandardHttpProducer http = buildProducer(url);
+            http.setIgnoreServerResponseCode(true);
+            http.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethod.GET));
+
+            ExampleServiceCase.execute(new StandaloneRequestor(http), triggerMsg);
+            assertEquals(RetryFromJetty.HTTP_ERROR,
+                    triggerMsg.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
+        } finally {
+            stop(retrier);
+        }
+    }
+
+
   private StandardHttpProducer buildProducer(String url) {
     StandardHttpProducer producer = new StandardHttpProducer().withURL(url);
     return producer;
@@ -430,6 +581,11 @@ public class RetryFromJettyTest extends FailedMessageRetrierCase {
     @Override
     public void makeConnection(AdaptrisConnection connection) {
     // null implementation
+    }
+
+    @Override
+    public String getStackTrace(String msgId) throws InterlokException {
+      throw new UnsupportedOperationException();
     }
   }
 

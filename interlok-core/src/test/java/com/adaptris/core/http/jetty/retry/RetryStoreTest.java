@@ -97,4 +97,8 @@ public class RetryStoreTest implements RetryStore {
     // null implementation
   }
 
+  @Override
+  public String getStackTrace(String msgId) throws InterlokException {
+    throw new UnsupportedOperationException();
+  }
 }

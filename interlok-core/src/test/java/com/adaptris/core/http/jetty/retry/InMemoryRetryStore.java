@@ -78,4 +78,13 @@ public class InMemoryRetryStore implements RetryStore {
   public void makeConnection(AdaptrisConnection connection) {
    // null implementation 
   }
+
+    @Override
+    public String getStackTrace(String msgId) throws InterlokException {
+        if (STORE.containsKey(msgId)) {
+            AdaptrisMessage message = STORE.get(msgId);
+            return message.getContent();
+        }
+        throw new InterlokException("Stack trace not found for message ID: " + msgId);
+    }
 }

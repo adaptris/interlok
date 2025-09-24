@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -130,8 +131,18 @@ public class FilesystemRetryStore implements RetryStore {
   }
 
   private File validateMsgId(String msgId, boolean mustAlreadyExist) throws Exception {
+    validatePathComponent(msgId);
     File target = new File(FsHelper.toFile(getBaseUrl()), msgId);
     return validateDir(target, mustAlreadyExist);
+  }
+
+  static void validatePathComponent(String component) {
+    if (component == null || component.isEmpty()) {
+      throw new IllegalArgumentException("Message ID may not be null or empty");
+    }
+    if (component.contains("..") || component.contains("/") || component.contains("\\") || new File(component).isAbsolute()) {
+      throw new IllegalArgumentException("Invalid message ID: path traversal or separator detected");
+    }
   }
 
   private File validateDir(File target, boolean mustAlreadyExist) throws Exception {
@@ -249,4 +260,17 @@ public class FilesystemRetryStore implements RetryStore {
   public void makeConnection(AdaptrisConnection connection) {
     // null implementation 
   }
+
+    @Override
+    public String getStackTrace(String msgId) throws InterlokException {
+        try {
+            File dir = validateMsgId(msgId, true);
+            File stackTraceFile = new File(dir, STACKTRACE_FILENAME);
+            FsWorker.checkReadable(FsWorker.isFile(stackTraceFile));
+
+            return FileUtils.readFileToString(stackTraceFile, StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            throw ExceptionHelper.wrapInterlokException(e);
+        }
+    }
 }

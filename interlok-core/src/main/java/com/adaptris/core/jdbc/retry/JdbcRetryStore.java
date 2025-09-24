@@ -439,4 +439,10 @@ public class JdbcRetryStore implements RetryStore {
   public void makeConnection(AdaptrisConnection connection) {
     setConnection(connection);
   }
+
+  @Override
+  public String getStackTrace(String msgId) throws InterlokException {
+      throw new UnsupportedOperationException("Not supported yet. Retrieving stacktrace information is currently only " +
+              "supported by the AWS retry store.");
+  }
 }
