@@ -67,6 +67,7 @@ public class FilesystemRetryStore implements RetryStore {
   private static final String PAYLOAD_FILE_NAME = "payload.blob";
   private static final String METADATA_FILE_NAME = "metadata.properties";
   private static final String STACKTRACE_FILENAME = "stacktrace.txt";
+  public static final String NAME_ERROR_LINE_SEPERATOR = " - ";
 
   /**
    * The base URL {@code file:///...} where we can discover files.
@@ -194,13 +195,20 @@ public class FilesystemRetryStore implements RetryStore {
   }
 
   @Override
-  public Iterable<RemoteBlob> report() throws InterlokException {
+  public Iterable<RemoteBlob> report(boolean includeErrorMessage) throws InterlokException {
     List<RemoteBlob> result = new ArrayList<>();
     try {
       File target = validateDir(FsHelper.toFile(getBaseUrl()), false);
       File[] files = fsWorker.listFiles(target, DirectoryFileFilter.DIRECTORY);
       for (File msgId : files) {
-        Optional.ofNullable(createForReport(msgId)).ifPresent((blob) -> result.add(blob));
+        String errorMessageLine = null;
+        if (includeErrorMessage) {
+          try {
+              errorMessageLine = getStacktraceFirstLine(msgId.getName());
+          } catch (Exception ignored) {
+          }
+        }
+        Optional.ofNullable(createForReport(msgId, errorMessageLine)).ifPresent(result::add);
       }
     } catch (Exception e) {
       throw ExceptionHelper.wrapInterlokException(e);
@@ -218,7 +226,7 @@ public class FilesystemRetryStore implements RetryStore {
     }
   }
 
-  protected static RemoteBlob createForReport(File baseDir) {
+  protected static RemoteBlob createForReport(File baseDir, String errorMessageLine) {
     // assert that both metadata & payload files exist.
     try {
       File payload = new File(baseDir, PAYLOAD_FILE_NAME);
@@ -227,11 +235,18 @@ public class FilesystemRetryStore implements RetryStore {
           FileUtils.directoryContains(baseDir, metadata)})) {
         // Return the size of the payload file, but other things like
         // last modified can be derived from the directory.
+        String name = baseDir.getName();
+        if (errorMessageLine != null) {
+            name += NAME_ERROR_LINE_SEPERATOR + errorMessageLine;
+        }
+
         return new RemoteBlob.Builder()
-            .setLastModified(baseDir.lastModified()).setName(baseDir.getName())
-            .setSize(payload.length()).build();
+            .setLastModified(baseDir.lastModified())
+            .setName(name)
+            .setSize(payload.length())
+            .build();
       }
-    } catch (Exception e) {
+    } catch (Exception ignored) {
     }
     return null;
   }
