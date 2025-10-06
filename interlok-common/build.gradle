@@ -67,7 +67,7 @@ dependencies {
 
   testImplementation ("org.junit.jupiter:junit-jupiter-api:5.11.4")
   testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.12.2")
-    testImplementation ("org.junit.platform:junit-platform-launcher:1.13.3")
+    testImplementation ("org.junit.platform:junit-platform-launcher:6.0.0")
   testImplementation ("org.mockito:mockito-core:$mockitoVersion")
   testImplementation ("org.mockito:mockito-inline:$mockitoVersion")
   testImplementation ("org.awaitility:awaitility:4.3.0")
