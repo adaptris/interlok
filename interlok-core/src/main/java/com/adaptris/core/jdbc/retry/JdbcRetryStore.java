@@ -216,7 +216,7 @@ public class JdbcRetryStore implements RetryStore {
   }
 
   @Override
-  public Iterable<RemoteBlob> report() throws InterlokException {
+  public Iterable<RemoteBlob> report(boolean includeErrorMessage) throws InterlokException {
     return Collections.EMPTY_LIST;
   }
 
