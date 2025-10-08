@@ -14,17 +14,13 @@ import java.util.function.Consumer;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.core.*;
+import com.adaptris.core.http.jetty.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.core.http.jetty.EmbeddedConnection;
-import com.adaptris.core.http.jetty.JettyConnection;
-import com.adaptris.core.http.jetty.JettyMessageConsumer;
-import com.adaptris.core.http.jetty.JettyResponseService;
-import com.adaptris.core.http.jetty.JettyRouteCondition;
 import com.adaptris.core.http.jetty.JettyRouteCondition.JettyRoute;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
@@ -90,6 +86,8 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
     public static final String DEFAULT_REPORTING_ENDPOINT = "/api/failed/list";
     public static final String DEFAULT_DELETE_PREFIX = "/api/failed/delete/";
     public static final String DEFAULT_STACKTRACE_PREFIX = "/api/failed/stacktrace/";
+
+    public static final String DEFAULT_INCLUDE_ERROR_MESSAGE_FLAG_METADATA_KEY = "includeErrorMessageFlag";
 
     private static final String HTTP_RETRY_METHOD = "POST";
     private static final String HTTP_DELETE_METHOD = "DELETE";
@@ -193,7 +191,8 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
     @AdvancedConfig(rare = true)
     @Getter
     @Setter
-    private String includeErrorMessageFlagMetadataKey = "includeErrorMessage";
+    @InputFieldDefault(value = DEFAULT_INCLUDE_ERROR_MESSAGE_FLAG_METADATA_KEY)
+    private String includeErrorMessageFlagMetadataKey;
 
     /**
      * The HTTP method which is required for retries; the default is POST.
@@ -273,6 +272,10 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
             deleter = new DeleteListener();
             stacktraceGetter = new StackTraceListener();
 
+            JettyMessageConsumer reportingConsumer = new JettyMessageConsumer()
+                .withPath(reportingEndpoint());
+            reportingConsumer.setParameterHandler(new MetadataParameterHandler());
+
             // By not dictating the method in the consumer; we accept all methods in jetty, but we use the
             // jetty route filter to filter it out.
             retrying = new StandaloneConsumer(getConnection(),
@@ -280,7 +283,7 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
             deleting = new StandaloneConsumer(getConnection(),
                     new JettyMessageConsumer().withPath(deleteServletPath));
             reporting = new StandaloneConsumer(getConnection(),
-                    new JettyMessageConsumer().withPath(reportingEndpoint()));
+                    reportingConsumer);
             gettingStacktrace = new StandaloneConsumer(getConnection(),
                     new JettyMessageConsumer().withPath(stackTraceServletPath));
 
@@ -377,6 +380,11 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
         return StringUtils.defaultIfBlank(getStackTraceHttpMethod(), HTTP_STACKTRACE_METHOD);
     }
 
+    String includeErrorMessageFlagMetadataKey() {
+        return StringUtils.defaultIfBlank(getIncludeErrorMessageFlagMetadataKey(),
+            DEFAULT_INCLUDE_ERROR_MESSAGE_FLAG_METADATA_KEY);
+    }
+
     protected static void executeQuietly(Service service, AdaptrisMessage msg) {
         try {
             service.doService(msg);
@@ -466,11 +474,11 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
             String httpCode = HTTP_ERROR;
             boolean includeErrorMessage = true;
 
-            if (jettyMsg.getMetadata(includeErrorMessageFlagMetadataKey) != null && jettyMsg.getMetadataValue(includeErrorMessageFlagMetadataKey) != null) {
-                includeErrorMessage = Boolean.parseBoolean(jettyMsg.getMetadataValue(includeErrorMessageFlagMetadataKey));
-            }
-
             try {
+                if (jettyMsg.getMetadata(includeErrorMessageFlagMetadataKey()) != null && jettyMsg.getMetadataValue(includeErrorMessageFlagMetadataKey()) != null) {
+                    includeErrorMessage = Boolean.parseBoolean(jettyMsg.getMetadataValue(includeErrorMessageFlagMetadataKey()));
+                }
+
                 getReportBuilder().build(getRetryStore().report(includeErrorMessage), jettyMsg);
                 httpCode = HTTP_OK;
             } catch (Exception e) {

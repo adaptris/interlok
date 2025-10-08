@@ -2,9 +2,7 @@ package com.adaptris.core.http.jetty.retry;
 
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -173,16 +171,17 @@ public class RetryFromJettyTest extends FailedMessageRetrierCase {
   }
 
   @Test
-  public void testReportListener_IncludeErrorMessageFalse() {
+  public void testReportListener_DoNotIncludeErrorMessage() {
     RetryFromJetty retrier = new RetryFromJetty();
       retrier.setRetryStore(new InMemoryRetryStore());
     RetryFromJetty.ReportListener listener = retrier.new ReportListener();
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
-    msg.addMetadata(retrier.getIncludeErrorMessageFlagMetadataKey(), "false");
+    msg.addMetadata(retrier.includeErrorMessageFlagMetadataKey(), "false");
 
     listener.onAdaptrisMessage(msg, m -> {}, m -> {});
 
     assertEquals(RetryFromJetty.HTTP_OK, msg.getMetadataValue(RetryFromJetty.HTTP_STATUS_KEY));
+    assertFalse(Boolean.parseBoolean(msg.getMetadataValue(retrier.includeErrorMessageFlagMetadataKey())));
   }
 
   @Test
