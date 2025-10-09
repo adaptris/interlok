@@ -134,7 +134,7 @@ public abstract class ConnectionErrorHandlerImp implements ConnectionErrorHandle
     }
   }
 
-  private Set<StateManagedComponent> filter(Set<StateManagedComponent> list) {
+  protected Set<StateManagedComponent> filter(Set<StateManagedComponent> list) {
     Set<StateManagedComponent> result = new LinkedHashSet<>();
     for (StateManagedComponent c : list) {
       String loggingId = friendlyName(c);

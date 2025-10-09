@@ -396,7 +396,10 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
    */
   @Override
   public ComponentState retrieveComponentState() {
-    return state;
+    // if the channel is unavailable, we should return StoppedState
+    if (isAvailable()) {
+        return state;
+    } else return StoppedState.getInstance();
   }
 
   /**
