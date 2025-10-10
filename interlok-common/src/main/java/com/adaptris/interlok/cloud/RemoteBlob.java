@@ -12,7 +12,7 @@ public class RemoteBlob {
   private long size;
   private String bucket;
 
-  private RemoteBlob() {
+  public RemoteBlob() {
 
   }
 
