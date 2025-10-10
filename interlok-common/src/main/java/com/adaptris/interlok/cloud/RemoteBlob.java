@@ -12,10 +12,6 @@ public class RemoteBlob {
   private long size;
   private String bucket;
 
-  public RemoteBlob() {
-
-  }
-
   /**
    * The name of the remote blob.
    * 
