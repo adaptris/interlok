@@ -125,7 +125,7 @@ public class JmsAsyncProducerTest
       .when(mockMessageProducer).send(any(), eq(mockMessage), any(CompletionListener.class));
 
     try {
-      producer.produce(adaptrisMessage, mockJmsDestination);
+      producer.doProduce(adaptrisMessage, mockJmsDestination);
       fail("Jms producer should have throw an exception on send()");
     } catch (Throwable t) {
       // expected;
@@ -134,7 +134,7 @@ public class JmsAsyncProducerTest
 
   @Test
   public void testSendPerMessageProperties() throws Exception {
-    producer.produce(adaptrisMessage, mockJmsDestination);
+    producer.doProduce(adaptrisMessage, mockJmsDestination);
 
     verify(mockMessageProducer).send(any(), eq(mockMessage), any(int.class), any(int.class), any(long.class), any(CompletionListener.class));
   }
@@ -142,7 +142,7 @@ public class JmsAsyncProducerTest
   @Test
   public void testSendNotPerMessageProperties() throws Exception {
     producer.setPerMessageProperties(false);
-    producer.produce(adaptrisMessage, mockJmsDestination);
+    producer.doProduce(adaptrisMessage, mockJmsDestination);
 
     verify(mockMessageProducer).send(any(), eq(mockMessage), any(JmsAsyncProducerEventHandler.class));
   }
@@ -150,7 +150,7 @@ public class JmsAsyncProducerTest
   @Test
   public void testCaptureOutgoingMessageProperties() throws Exception {
     producer.setCaptureOutgoingMessageDetails(true);
-    producer.produce(adaptrisMessage, mockJmsDestination);
+    producer.doProduce(adaptrisMessage, mockJmsDestination);
 
     verify(mockMessage).getJMSMessageID();
     verify(mockMessage).getJMSType();
@@ -161,7 +161,7 @@ public class JmsAsyncProducerTest
   @Test
   public void testNotCaptureOutgoingMessageProperties() throws Exception {
     producer.setCaptureOutgoingMessageDetails(false);
-    producer.produce(adaptrisMessage, mockJmsDestination);
+    producer.doProduce(adaptrisMessage, mockJmsDestination);
 
     verify(mockMessage, times(0)).getJMSMessageID();
     verify(mockMessage, times(0)).getJMSType();
@@ -206,7 +206,7 @@ public class JmsAsyncProducerTest
         .when(mockMessageProducer).send(any(), any(), any());
     try {
       producer.setPerMessageProperties(false);
-      producer.produce(adaptrisMessage, mockJmsDestination);
+      producer.doProduce(adaptrisMessage, mockJmsDestination);
       fail("Should throw produce exception");
     } catch (ProduceException ex) {
       // expected

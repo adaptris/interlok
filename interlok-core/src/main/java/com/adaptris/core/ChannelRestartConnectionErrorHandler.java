@@ -16,12 +16,10 @@
 
 package com.adaptris.core;
 
-import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 
 import static com.adaptris.core.util.LoggingHelper.friendlyName;
@@ -32,32 +30,43 @@ import static com.adaptris.core.util.LoggingHelper.friendlyName;
  * @config channel-restart-error-handler
  */
 @XStreamAlias("channel-restart-error-handler")
-public class ChannelRestartErrorHandler extends ConnectionErrorHandlerImp {
+public class ChannelRestartConnectionErrorHandler extends ConnectionErrorHandlerImp {
 
   protected transient LocalDateTime lastConnectionExceptionDateTime;
-  Duration durationBetweenRestarts = Duration.ofMinutes(60);
+  protected transient Duration _durationBetweenRestarts = Duration.ofSeconds(60);
+  private String durationBetweenRestarts;
+
+
+
   @Override
   public void handleConnectionException() {
-
+    toggleChannelAvailability(false);
     LocalDateTime now = LocalDateTime.now();
-    if (lastConnectionExceptionDateTime == null || now.isAfter(lastConnectionExceptionDateTime.plus(durationBetweenRestarts))) {
+    if (lastConnectionExceptionDateTime == null || now.isAfter(lastConnectionExceptionDateTime.plus(durationBetweenRestarts()))) {
       log.info("{}:: Restarting affected channels", getClass().getSimpleName());
       lastConnectionExceptionDateTime = now;
       restartAffectedComponents();
-    } else {
-        toggleChannelAvailability(false);
     }
   }
 
-  public Duration getDurationBetweenRestarts() {
+  public String getDurationBetweenRestarts() {
       return durationBetweenRestarts;
   }
 
-  public void setDurationBetweenRestarts(Duration durationBetweenRestarts) {
-      this.durationBetweenRestarts = durationBetweenRestarts;
+  public void setDurationBetweenRestarts(String durationBetweenRestarts) {
+      setDurationBetweenRestarts(Duration.parse(durationBetweenRestarts));
   }
 
-    @Override
+  protected void setDurationBetweenRestarts(Duration durationBetweenRestarts) {
+      this._durationBetweenRestarts = durationBetweenRestarts;
+  }
+
+  public Duration durationBetweenRestarts() {
+      if (durationBetweenRestarts != null && _durationBetweenRestarts == null) setDurationBetweenRestarts(durationBetweenRestarts);
+      return _durationBetweenRestarts;
+  }
+
+  @Override
   public void init() throws CoreException {
   }
 
@@ -71,13 +80,16 @@ public class ChannelRestartErrorHandler extends ConnectionErrorHandlerImp {
 
   @Override
   public void close() {
+      reset();
+  }
+
+  public void reset() {
       lastConnectionExceptionDateTime = null;
   }
 
   protected void toggleChannelAvailability(boolean available) {
       AdaptrisConnection connection = retrieveConnection(AdaptrisConnection.class);
-      Set<StateManagedComponent> listeners = connection.retrieveExceptionListeners();
-      Set<StateManagedComponent> list = filter(listeners);
+      Set<StateManagedComponent> list = connection.retrieveExceptionListeners();
       for (StateManagedComponent c : list) {
           if (c instanceof Channel) {
               ((Channel) c).toggleAvailability(available);

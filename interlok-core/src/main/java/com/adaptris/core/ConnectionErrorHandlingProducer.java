@@ -14,6 +14,7 @@
 
 package com.adaptris.core;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,15 +27,24 @@ import org.slf4j.LoggerFactory;
  * </p>
  */
 @NoArgsConstructor
+@XStreamAlias("connection-error-handling-producer")
 public class ConnectionErrorHandlingProducer implements AdaptrisMessageProducer {
     protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
-    protected AdaptrisMessageProducer producer;
+    protected AdaptrisMessageProducer delegate;
+
+    public AdaptrisMessageProducer getDelegate() {
+        return delegate;
+    }
+
+    public void setDelegate(AdaptrisMessageProducer delegate) {
+        this.delegate = delegate;
+    }
 
     @Override
     public AdaptrisMessage request(AdaptrisMessage msg) throws ProduceException {
         try {
-            return producer.request(msg);
+            return delegate.request(msg);
         } catch (ProduceException e) {
             maybeHandleException(e);
             throw e;
@@ -44,7 +54,7 @@ public class ConnectionErrorHandlingProducer implements AdaptrisMessageProducer 
     @Override
     public AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException {
         try {
-            return producer.request(msg, timeout);
+            return delegate.request(msg, timeout);
         } catch (ProduceException e) {
             maybeHandleException(e);
             throw e;
@@ -54,7 +64,7 @@ public class ConnectionErrorHandlingProducer implements AdaptrisMessageProducer 
     @Override
     public void produce(AdaptrisMessage msg) throws ProduceException {
         try {
-            producer.produce(msg);
+            delegate.produce(msg);
         } catch (ProduceException e) {
             maybeHandleException(e);
             throw e;
@@ -80,71 +90,71 @@ public class ConnectionErrorHandlingProducer implements AdaptrisMessageProducer 
 
     @Override
     public void registerConnection(AdaptrisConnection connection) {
-        producer.registerConnection(connection);
+        delegate.registerConnection(connection);
     }
 
     @Override
     public <T> T retrieveConnection(Class<T> type) {
-        return producer.retrieveConnection(type);
+        return delegate.retrieveConnection(type);
     }
 
     @Override
     public AdaptrisMessageEncoder getEncoder() {
-        return producer.getEncoder();
+        return delegate.getEncoder();
     }
 
     @Override
     public void setEncoder(AdaptrisMessageEncoder encoder) {
-        producer.setEncoder(encoder);
+        delegate.setEncoder(encoder);
     }
 
     @Override
     public void handleConnectionException() throws CoreException {
-        producer.handleConnectionException();
+        delegate.handleConnectionException();
     }
 
     @Override
     public byte[] encode(AdaptrisMessage msg) throws CoreException {
-        return producer.encode(msg);
+        return delegate.encode(msg);
     }
 
     @Override
     public AdaptrisMessage decode(byte[] bytes) throws CoreException {
-        return producer.decode(bytes);
+        return delegate.decode(bytes);
     }
 
     @Override
     public AdaptrisMessageFactory getMessageFactory() {
-        return producer.getMessageFactory();
+        return delegate.getMessageFactory();
     }
 
     @Override
     public void setMessageFactory(AdaptrisMessageFactory f) {
-        producer.setMessageFactory(f);
+        delegate.setMessageFactory(f);
     }
 
     @Override
     public String getUniqueId() {
-        return producer.getUniqueId();
+        return delegate.getUniqueId();
     }
 
     @Override
     public void prepare() throws CoreException {
-        producer.prepare();
+        delegate.prepare();
     }
 
     @Override
     public String createName() {
-        return producer.createName();
+        return delegate.createName();
     }
 
     @Override
     public String createQualifier() {
-        return producer.createQualifier();
+        return delegate.createQualifier();
     }
 
     @Override
     public boolean isTrackingEndpoint() {
-        return producer.isTrackingEndpoint();
+        return delegate.isTrackingEndpoint();
     }
 }

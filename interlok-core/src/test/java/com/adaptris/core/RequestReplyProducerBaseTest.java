@@ -112,26 +112,21 @@ public class RequestReplyProducerBaseTest extends RequestReplyProducerBase {
     assertTrue(msg.getObjectHeaders().containsKey(reply.getUniqueId()));
   }
 
-
-  @Override
-  public AdaptrisMessage request(AdaptrisMessage msg) throws ProduceException {
-    return null;
-  }
-
-  @Override
-  public AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException {
-    return request(msg);
-  }
-
   @Override
   public void prepare() throws CoreException {
   }
 
-  @Override
-  public void produce(AdaptrisMessage msg) throws ProduceException {
-  }
+    @Override
+    protected void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException {
 
-  @Override
+    }
+
+    @Override
+    protected AdaptrisMessage doRequest(AdaptrisMessage msg, String endpoint, long timeout) throws ProduceException {
+        return null;
+    }
+
+    @Override
   public String endpoint(AdaptrisMessage msg) throws ProduceException {
     return null;
   }

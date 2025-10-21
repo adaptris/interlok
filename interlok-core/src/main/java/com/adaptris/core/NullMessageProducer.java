@@ -36,16 +36,6 @@ public class NullMessageProducer extends AdaptrisMessageProducerImp {
   }
 
   @Override
-  public AdaptrisMessage request(AdaptrisMessage msg) throws ProduceException {
-    return null;
-  }
-
-  @Override
-  public AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException {
-    return null;
-  }
-
-  @Override
   public void prepare() throws CoreException {
   }
 
@@ -54,8 +44,13 @@ public class NullMessageProducer extends AdaptrisMessageProducerImp {
     return null;
   }
 
-  @Override
-  public void produce(AdaptrisMessage msg) throws ProduceException {
-  }
+    @Override
+    protected void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException {
 
+    }
+
+    @Override
+    protected AdaptrisMessage doRequest(AdaptrisMessage msg, String endpoint, long timeout) throws ProduceException {
+        return null;
+    }
 }

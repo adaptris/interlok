@@ -83,30 +83,24 @@ public class MockNonStandardRequestReplyProducer extends
   }
 
   // nothing to see below here...
+    @Override
+    protected void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException {
+        request(msg);
+    }
 
-  @Override
-  public void produce(AdaptrisMessage msg) throws ProduceException {
-    request(msg);
-  }
-
-  @Override
-  public AdaptrisMessage request(AdaptrisMessage msg) throws ProduceException {
-    Args.notNull(msg, "message");
-    AdaptrisMessage reply = defaultIfNull(getMessageFactory()).newMessage();
-    reply.setUniqueId(msg.getUniqueId());
-    log.trace("Produced [" + msg.getUniqueId() + "]");
-    producedMessages.add(msg);
-    reply.setPayload(msg.getPayload());
-    reply.addMetadata(new MetadataElement(REPLY_METADATA_KEY, REPLY_METADATA_VALUE));
-    reply.getMessageLifecycleEvent().addMleMarker(
-        new MleMarker("DummyMarker", true, 99, uniqueIdGenerator.create(new Object())));
-    return reply;
-  }
-
-  @Override
-  public AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException {
-    return request(msg);
-  }
+    @Override
+    protected AdaptrisMessage doRequest(AdaptrisMessage msg, String endpoint, long timeout) throws ProduceException {
+        Args.notNull(msg, "message");
+        AdaptrisMessage reply = defaultIfNull(getMessageFactory()).newMessage();
+        reply.setUniqueId(msg.getUniqueId());
+        log.trace("Produced [" + msg.getUniqueId() + "]");
+        producedMessages.add(msg);
+        reply.setPayload(msg.getPayload());
+        reply.addMetadata(new MetadataElement(REPLY_METADATA_KEY, REPLY_METADATA_VALUE));
+        reply.getMessageLifecycleEvent().addMleMarker(
+                new MleMarker("DummyMarker", true, 99, uniqueIdGenerator.create(new Object())));
+        return reply;
+    }
 
   protected long defaultTimeout() {
     return 0;

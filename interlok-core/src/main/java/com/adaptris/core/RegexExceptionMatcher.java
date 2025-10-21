@@ -1,7 +1,6 @@
 package com.adaptris.core;
 
 import com.adaptris.annotation.AdapterComponent;
-import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.InputFieldHint;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -10,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Arrays;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 /**
@@ -36,13 +36,23 @@ import java.util.regex.Pattern;
 @XStreamAlias("regex-exception-matcher")
 @AdapterComponent
 @ComponentProfile(summary = "A matcher that uses regex to match an exception", tag = "error-handling")
-public class RegexExceptionMatcher {
+public class RegexExceptionMatcher implements ExceptionMatcher {
 
     public enum MatchAgainstField {
-        EXCEPTION,
-        EXCEPTION_MESSAGE,
-        EXCEPTION_CAUSE,
-        STACKTRACE;
+        EXCEPTION((ExceptionDetails::exception)),
+        EXCEPTION_MESSAGE(ExceptionDetails::message),
+        EXCEPTION_CAUSE(ExceptionDetails::cause),
+        STACKTRACE(ExceptionDetails::stacktrace);
+
+        private Function<ExceptionDetails, String> getterFn;
+
+        MatchAgainstField(Function<ExceptionDetails, String> getterFn) {
+            this.getterFn = getterFn;
+        }
+
+        public String getSource(ExceptionDetails details) {
+            return this.getterFn.apply(details);
+        }
 
         public static String[] getValues() {
             return Arrays.stream(MatchAgainstField.values())
@@ -53,6 +63,11 @@ public class RegexExceptionMatcher {
 
     private String regex;
     private transient Pattern compiledRegex;
+
+    public void setRegex(String regex) {
+        this.compiledRegex = null;
+        this.regex = regex;
+    }
 
     @InputFieldHint(style = "MatchAgainstField#getValues")
     private MatchAgainstField matchAgainstField;
@@ -70,5 +85,11 @@ public class RegexExceptionMatcher {
         if (compiledRegex == null || !compiledRegex.pattern().equals(regex)) {
             this.compiledRegex = Pattern.compile(regex);
         }
+    }
+
+    @Override
+    public boolean matches(Exception exception) {
+        ExceptionDetails details = ExceptionDetails.from(exception);
+        return matches(matchAgainstField.getSource(details));
     }
 }

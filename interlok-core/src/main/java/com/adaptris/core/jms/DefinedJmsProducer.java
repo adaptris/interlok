@@ -47,7 +47,7 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
     super();
   }
 
-  public void produce(AdaptrisMessage msg, String destination) throws ProduceException {
+  public void doProduce(AdaptrisMessage msg, String destination) throws ProduceException {
     try {
       setupSession(msg);
       Destination replyTo = null;
@@ -99,7 +99,7 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
     log.info("msg produced to destination [{}]", destination);
   }
 
-  public AdaptrisMessage request(AdaptrisMessage msg, String dest, long timeout) throws ProduceException {
+  public AdaptrisMessage doRequest(AdaptrisMessage msg, String dest, long timeout) throws ProduceException {
 
     AdaptrisMessage translatedReply = defaultIfNull(getMessageFactory()).newMessage();
     Destination replyTo = null;
