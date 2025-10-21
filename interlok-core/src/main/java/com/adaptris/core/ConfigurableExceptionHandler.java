@@ -158,31 +158,9 @@ public class ConfigurableExceptionHandler extends RootProcessingExceptionHandler
 
         ruleProcessingExceptionService.prepare();
 
-        switch (matcher.getMatchAgainstField()) {
-            case EXCEPTION -> {
-                if (matcher.matches(exceptionDetails.exception)) {
-                    ruleProcessingExceptionService.doService(msg);
-                    return true;
-                }
-            }
-            case EXCEPTION_MESSAGE -> {
-                if (matcher.matches(exceptionDetails.message)) {
-                    ruleProcessingExceptionService.doService(msg);
-                    return true;
-                }
-            }
-            case EXCEPTION_CAUSE -> {
-                if (matcher.matches(exceptionDetails.cause)) {
-                    ruleProcessingExceptionService.doService(msg);
-                    return true;
-                }
-            }
-            case STACKTRACE -> {
-                if (matcher.matches(exceptionDetails.stacktrace)) {
-                    ruleProcessingExceptionService.doService(msg);
-                    return true;
-                }
-            }
+        if (matcher.matches(matcher.getMatchAgainstField().getSource(exceptionDetails))) {
+            ruleProcessingExceptionService.doService(msg);
+            return true;
         }
         return false;
     }
@@ -191,12 +169,7 @@ public class ConfigurableExceptionHandler extends RootProcessingExceptionHandler
         final Exception exception = (Exception) msg.getObjectHeaders().getOrDefault(OBJ_METADATA_EXCEPTION, null);
         final String cause = (String) msg.getObjectHeaders().getOrDefault(OBJ_METADATA_EXCEPTION_CAUSE, null);
 
-        return new ExceptionDetails(
-                (exception != null ? exception.toString() : null),
-                (exception != null ? exception.getMessage() : null),
-                (cause),
-                (exception != null ? Arrays.toString(exception.getStackTrace()) : null)
-        );
+        return ExceptionDetails.from(exception, cause);
     }
 
     /**
@@ -220,10 +193,4 @@ public class ConfigurableExceptionHandler extends RootProcessingExceptionHandler
         private Service exceptionProcessingService;
     }
 
-    record ExceptionDetails(
-            String exception,
-            String message,
-            String cause,
-            String stacktrace) {
-    }
 }

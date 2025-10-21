@@ -28,15 +28,6 @@ public class MockProducer extends DefinedJmsProducer {
     throw new JMSException("NO!");
   }
 
-  @Override
-  public AdaptrisMessage request(AdaptrisMessage msg) throws ProduceException {
-    throw new ProduceException();
-  }
-
-  @Override
-  public void produce(AdaptrisMessage msg) throws ProduceException {
-    throw new ProduceException();
-  }
 
   @Override
   public String endpoint(AdaptrisMessage msg) throws ProduceException {

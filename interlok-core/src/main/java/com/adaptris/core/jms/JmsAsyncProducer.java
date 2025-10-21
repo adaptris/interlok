@@ -50,7 +50,7 @@ public class JmsAsyncProducer extends JmsProducer {
   }
   
   @Override
-  protected void produce(AdaptrisMessage msg, JmsDestination jmsDest) throws JMSException, CoreException {
+  protected void doProduce(AdaptrisMessage msg, JmsDestination jmsDest) throws JMSException, CoreException {
     try {
       setupSession(msg);
       Message jmsMsg = translate(msg, jmsDest.getReplyToDestination());

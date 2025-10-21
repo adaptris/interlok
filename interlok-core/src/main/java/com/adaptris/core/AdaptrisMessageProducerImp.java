@@ -43,4 +43,41 @@ public abstract class AdaptrisMessageProducerImp extends AdaptrisMessageWorkerIm
    */
   public abstract String endpoint(AdaptrisMessage msg) throws ProduceException;
 
+    protected abstract void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException;
+    protected abstract AdaptrisMessage doRequest(AdaptrisMessage msg, String endpoint, long timeout) throws ProduceException;
+
+    protected final AdaptrisMessage doRequest(AdaptrisMessage msg, long timeout) throws ProduceException {
+        return doRequest(msg, endpoint(msg), timeout);
+    }
+
+    @Override
+    public AdaptrisMessage request(AdaptrisMessage msg) throws ProduceException {
+        return request(msg, 0);
+    }
+
+    @Override
+    public AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException {
+        try {
+            return doRequest(msg, timeout);
+        } catch (ProduceException e) {
+            maybeHandleProduceException(e);
+            throw e;
+        }
+    }
+
+    public final void produce(AdaptrisMessage msg) throws ProduceException {
+        try {
+            doProduce(msg, endpoint(msg));
+        } catch (ProduceException e) {
+            maybeHandleProduceException(e);
+            throw e;
+        }
+    }
+
+    public void maybeHandleProduceException(ProduceException e) {
+        AdaptrisConnection conn = retrieveConnection(AdaptrisConnection.class);
+        if (conn != null && conn.connectionErrorHandler() != null && conn.connectionErrorHandler().canHandleException(e)) {
+            conn.connectionErrorHandler().handleConnectionException();
+        }
+    }
 }

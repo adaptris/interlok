@@ -16,10 +16,6 @@
 
 package com.adaptris.core;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.util.UUID;
 
 import javax.jms.ConnectionFactory;
@@ -31,6 +27,8 @@ import com.adaptris.core.jms.MockNoOpConnectionErrorHandler;
 import com.adaptris.core.jms.UrlVendorImplementation;
 import com.adaptris.core.stubs.ConfigCommentHelper;
 import com.adaptris.interlok.junit.scaffolding.jms.MockJmsConnection;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class ChannelTest extends com.adaptris.interlok.junit.scaffolding.ExampleChannelCase {
@@ -411,6 +409,20 @@ public class ChannelTest extends com.adaptris.interlok.junit.scaffolding.Example
     assertEquals(false, c.hasUniqueId());
     c.setUniqueId("unique-id");
     assertEquals(true, c.hasUniqueId());
+  }
+
+  @Test
+  public void testToggleUnavailable() throws CoreException {
+      Channel c = new Channel();
+      c.changeState(StartedState.getInstance());
+      assertEquals(StartedState.getInstance(), c.retrieveComponentState());
+      c.toggleAvailability(true);
+      assertEquals(StartedState.getInstance(), c.retrieveComponentState());
+      c.toggleAvailability(false);
+      assertEquals(StartedState.getInstance(), c.retrieveComponentState());
+      c.setUnavailableState("StoppedState");
+      assertEquals(StoppedState.getInstance(), c.retrieveComponentState());
+      assertThrows(IllegalArgumentException.class, () -> c.setUnavailableState("UnavailableState"));
   }
 
 

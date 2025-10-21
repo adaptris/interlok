@@ -107,6 +107,8 @@ public abstract class StandardWorkflowImpl extends WorkflowImp {
       getServiceCollection().doService(wip);
       doProduce(wip);
       logSuccess(wip, start);
+      // if successfully sent, toggle availability to true
+      obtainChannel().toggleAvailability(true);
       ListenerCallbackHelper.handleSuccessCallback(wip);
     } catch (ServiceException e) {
       handleBadMessage("Exception from ServiceCollection", e, copyExceptionHeaders(wip, msg));

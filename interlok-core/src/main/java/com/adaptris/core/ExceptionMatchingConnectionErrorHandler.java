@@ -18,6 +18,7 @@ package com.adaptris.core;
 
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
+import com.thoughtworks.xstream.annotations.XStreamAlias;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,43 +33,75 @@ import static com.adaptris.core.util.LoggingHelper.friendlyName;
  * an Exception matches based on <code>ExceptionMatcher</code>s.
  * </p>
  */
-public class ExceptionMatchingConnectionErrorHandler extends ConnectionErrorHandlerImp {
+@XStreamAlias("exception-matching-connection-error-handler")
+public class ExceptionMatchingConnectionErrorHandler implements ConnectionErrorHandler {
 
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
   protected ConnectionErrorHandler delegate;
   protected ExceptionMatcher exceptionMatcher;
 
+    public ConnectionErrorHandler getDelegate() {
+        return delegate;
+    }
+
+    public void setDelegate(ConnectionErrorHandler delegate) {
+        this.delegate = delegate;
+    }
+
+    public ExceptionMatcher getExceptionMatcher() {
+        return exceptionMatcher;
+    }
+
+    public void setExceptionMatcher(ExceptionMatcher exceptionMatcher) {
+        this.exceptionMatcher = exceptionMatcher;
+    }
 
     @Override
     public void handleConnectionException() {
-        delegate.handleConnectionException();
+        if (delegate != null) delegate.handleConnectionException();
     }
 
     @Override
     public boolean canHandleException(Exception exception) {
-        if (exceptionMatcher == null || !exceptionMatcher.matches(exception)) {
-            return super.canHandleException(exception);
-        } else return true;
+        log.debug("Matching exception: {}", exception.toString());
+        boolean matches = exceptionMatcher != null && exceptionMatcher.matches(exception) && exceptionMatcher.matches(exception);
+        log.debug("Matches: {}", matches);
+        return matches;
     }
 
     @Override
     public void init() throws CoreException {
-        delegate.init();
+        if (delegate != null) delegate.init();
     }
 
     @Override
     public void start() throws CoreException {
-        delegate.start();
+        if (delegate != null) delegate.start();
     }
 
     @Override
     public void stop() {
-        delegate.stop();
+        if (delegate != null) delegate.stop();
     }
 
     @Override
     public void close() {
-        delegate.close();
+        if (delegate != null) delegate.close();
+    }
+
+    @Override
+    public void registerConnection(AdaptrisConnection connection) {
+        if (delegate != null) delegate.registerConnection(connection);
+    }
+
+    @Override
+    public <T> T retrieveConnection(Class<T> type) {
+        return delegate != null ? delegate.retrieveConnection(type) : null;
+    }
+
+    @Override
+    public boolean allowedInConjunctionWith(ConnectionErrorHandler ceh) {
+        return true;
     }
 }

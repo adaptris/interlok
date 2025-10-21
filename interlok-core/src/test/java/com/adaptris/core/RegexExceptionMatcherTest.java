@@ -35,7 +35,7 @@ class RegexExceptionMatcherTest {
         matcher.setRegex(".*Exception.*");
         matcher.setMatchAgainstField(RegexExceptionMatcher.MatchAgainstField.EXCEPTION);
 
-        assertFalse(matcher.matches(null));
+        assertFalse(matcher.matches((String) null));
     }
 
     @Test

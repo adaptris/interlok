@@ -34,7 +34,7 @@ public abstract class ProduceOnlyProducerImp extends AdaptrisMessageProducerImp 
   @Override
   public final AdaptrisMessage request(AdaptrisMessage msg)
       throws ProduceException {
-    throw new UnsupportedOperationException("Request Reply is not supported");
+    return super.request(msg);
   }
 
   /**
@@ -45,14 +45,12 @@ public abstract class ProduceOnlyProducerImp extends AdaptrisMessageProducerImp 
   @Override
   public final AdaptrisMessage request(AdaptrisMessage msg, long timeout)
       throws ProduceException {
-    throw new UnsupportedOperationException("Request Reply is not supported");
+        return super.request(msg, timeout);
   }
 
-  @Override
-  public final void produce(AdaptrisMessage msg) throws ProduceException {
-    doProduce(msg, endpoint(msg));
-  }
-
-  protected abstract void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException;
+    @Override
+    protected AdaptrisMessage doRequest(AdaptrisMessage msg, String endpoint, long timeout) throws ProduceException {
+        throw new UnsupportedOperationException("Request Reply is not supported");
+    }
 }
 

@@ -6,10 +6,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 class ConfigurableExceptionHandlerTest {
 
@@ -20,6 +18,11 @@ class ConfigurableExceptionHandlerTest {
     private Service mockService;
     private Workflow mockWorkflow;
     private EventHandler mockEventHandler;
+
+    private ExceptionDetails buildDefaultExceptionDetails() {
+        return new ExceptionDetails(
+                "Exception", "Message", "Cause", "Stacktrace", Exception.class);
+    }
 
     @BeforeEach
     void setUp() {
@@ -40,8 +43,7 @@ class ConfigurableExceptionHandlerTest {
         when(mockMatcher.getMatchAgainstField()).thenReturn(RegexExceptionMatcher.MatchAgainstField.EXCEPTION);
         when(mockMatcher.matches("Exception")).thenReturn(true);
 
-        ConfigurableExceptionHandler.ExceptionDetails details = new ConfigurableExceptionHandler.ExceptionDetails(
-                "Exception", "Message", "Cause", "Stacktrace");
+        ExceptionDetails details = buildDefaultExceptionDetails();
 
         boolean result = exceptionHandler.applyRuleIfMatched(mockMessage, mockRule, details);
 
@@ -56,8 +58,7 @@ class ConfigurableExceptionHandlerTest {
         when(mockMatcher.getMatchAgainstField()).thenReturn(RegexExceptionMatcher.MatchAgainstField.EXCEPTION_MESSAGE);
         when(mockMatcher.matches("Message")).thenReturn(true);
 
-        ConfigurableExceptionHandler.ExceptionDetails details = new ConfigurableExceptionHandler.ExceptionDetails(
-                "Exception", "Message", "Cause", "Stacktrace");
+        ExceptionDetails details = buildDefaultExceptionDetails();
 
         boolean result = exceptionHandler.applyRuleIfMatched(mockMessage, mockRule, details);
 
@@ -72,8 +73,7 @@ class ConfigurableExceptionHandlerTest {
         when(mockMatcher.getMatchAgainstField()).thenReturn(RegexExceptionMatcher.MatchAgainstField.EXCEPTION_CAUSE);
         when(mockMatcher.matches("Cause")).thenReturn(true);
 
-        ConfigurableExceptionHandler.ExceptionDetails details = new ConfigurableExceptionHandler.ExceptionDetails(
-                "Exception", "Message", "Cause", "Stacktrace");
+        ExceptionDetails details = buildDefaultExceptionDetails();
 
         boolean result = exceptionHandler.applyRuleIfMatched(mockMessage, mockRule, details);
 
@@ -88,8 +88,7 @@ class ConfigurableExceptionHandlerTest {
         when(mockMatcher.getMatchAgainstField()).thenReturn(RegexExceptionMatcher.MatchAgainstField.STACKTRACE);
         when(mockMatcher.matches("Stacktrace")).thenReturn(true);
 
-        ConfigurableExceptionHandler.ExceptionDetails details = new ConfigurableExceptionHandler.ExceptionDetails(
-                "Exception", "Message", "Cause", "Stacktrace");
+        ExceptionDetails details = buildDefaultExceptionDetails();
 
         boolean result = exceptionHandler.applyRuleIfMatched(mockMessage, mockRule, details);
 
@@ -115,9 +114,6 @@ class ConfigurableExceptionHandlerTest {
         when(mockRule.getExceptionProcessingService()).thenReturn(mockService);
         when(mockMatcher.getMatchAgainstField()).thenReturn(RegexExceptionMatcher.MatchAgainstField.EXCEPTION);
         when(mockMatcher.matches(anyString())).thenReturn(true);
-
-        ConfigurableExceptionHandler.ExceptionDetails details = new ConfigurableExceptionHandler.ExceptionDetails(
-                "Exception", "Message", "Cause", "Stacktrace");
 
         exceptionHandler.handleProcessingException(mockMessage);
 
@@ -161,8 +157,7 @@ class ConfigurableExceptionHandlerTest {
     void applyRuleIfMatchesHandlesWhenNoMatcher() throws CoreException {
         when(mockRule.getMatcher()).thenReturn(null);
 
-        ConfigurableExceptionHandler.ExceptionDetails details = new ConfigurableExceptionHandler.ExceptionDetails(
-                "Exception", "Message", "Cause", "Stacktrace");
+        ExceptionDetails details = buildDefaultExceptionDetails();
 
         boolean result = exceptionHandler.applyRuleIfMatched(mockMessage, mockRule, details);
 
@@ -175,8 +170,7 @@ class ConfigurableExceptionHandlerTest {
         when(mockRule.getMatcher()).thenReturn(mockMatcher);
         when(mockRule.getExceptionProcessingService()).thenReturn(null);
 
-        ConfigurableExceptionHandler.ExceptionDetails details = new ConfigurableExceptionHandler.ExceptionDetails(
-                "Exception", "Message", "Cause", "Stacktrace");
+        ExceptionDetails details = buildDefaultExceptionDetails();
 
         boolean result = exceptionHandler.applyRuleIfMatched(mockMessage, mockRule, details);
 
@@ -189,8 +183,7 @@ class ConfigurableExceptionHandlerTest {
         when(mockRule.getMatcher()).thenReturn(null);
         when(mockRule.getExceptionProcessingService()).thenReturn(mockService);
 
-        ConfigurableExceptionHandler.ExceptionDetails details = new ConfigurableExceptionHandler.ExceptionDetails(
-                "Exception", "Message", "Cause", "Stacktrace");
+        ExceptionDetails details = buildDefaultExceptionDetails();
 
         boolean result = exceptionHandler.applyRuleIfMatched(mockMessage, mockRule, details);
 

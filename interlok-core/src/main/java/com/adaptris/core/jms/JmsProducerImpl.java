@@ -198,10 +198,6 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
     return 0L;
   }
 
-  @Override
-  public AdaptrisMessage request(AdaptrisMessage msg) throws ProduceException {
-    return request(msg, defaultTimeout());
-  }
 
   protected ProducerSession setupSession(AdaptrisMessage msg) throws JMSException {
     if (!msg.getUniqueId().equals(CURRENT_MESSAGE_ID) || producerSession == null) {

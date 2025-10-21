@@ -26,16 +26,12 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import com.adaptris.annotation.*;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.adaptris.annotation.AdapterComponent;
-import com.adaptris.annotation.AutoPopulated;
-import com.adaptris.annotation.ComponentProfile;
-import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.annotation.MarshallingCDATA;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -76,10 +72,17 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
   @MarshallingCDATA
   private String comments;
 
+  @AdvancedConfig
+  /* if this is configured, when the channel is unavailable, the
+    configured <code>ComponentState</code> state will be returned
+   */
+  private String unavailableState;
+
   private transient boolean available;
   private transient ComponentState state;
   private transient ProcessingExceptionHandler activeErrorHandler;
   private transient boolean prepared = false;
+  private transient ComponentState unavailableComponentState;
   protected transient EventHandler eventHandler;
   protected transient Date startTime;
   protected transient Date stopTime;
@@ -118,6 +121,7 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
       w.registerChannel(this);
       w.registerEventHandler(ehToUse);
     }
+    setUnavailableState(unavailableState);
     LifecycleHelper.prepare(consumeConnection);
     LifecycleHelper.prepare(produceConnection);
     LifecycleHelper.prepare(workflowList);
@@ -167,10 +171,27 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
   public void start() throws CoreException {
     synchronized (lock) {
       LifecycleHelper.start(messageErrorHandler);
-      LifecycleHelper.start(produceConnection);
       LifecycleHelper.start(workflowList);
-      LifecycleHelper.start(consumeConnection);
       toggleAvailability(true);
+      // if we encounter any connection exceptions, set availability to false and run any handlers
+      try {
+          LifecycleHelper.start(produceConnection);
+      } catch (CoreException ex) {
+          toggleAvailability(false);
+          if (produceConnection.connectionErrorHandler() != null && produceConnection.connectionErrorHandler().canHandleException(ex)) {
+              produceConnection.connectionErrorHandler().handleConnectionException();
+          }
+          throw ex;
+      }
+      // if we encounter any connection exceptions, set availability to false and run any handlers
+      try {
+          LifecycleHelper.start(consumeConnection);
+      } catch (CoreException ex) {
+          if (produceConnection.connectionErrorHandler() != null && produceConnection.connectionErrorHandler().canHandleException(ex)) {
+              produceConnection.connectionErrorHandler().handleConnectionException();
+          }
+          throw ex;
+      }
     }
     startTime = new Date();
   }
@@ -198,7 +219,18 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
     }
   }
 
-  /**
+    public String getUnavailableState() {
+        return unavailableState;
+    }
+
+    public void setUnavailableState(String unavailableState) {
+      if (unavailableState != null) {
+          this.unavailableComponentState = ComponentState.forName(unavailableState);
+      }
+      this.unavailableState = unavailableState;
+    }
+
+    /**
    * <p>
    * Sets the <code>AdaptrisConnection</code> to use for consuming.
    * </p>
@@ -390,6 +422,9 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
   /**
    * <p>
    * This method is not <code>synchronized</code> and returns the 'last recorded' state of this object.
+   * If the channel is unavailable, and <code>unavailableState</code> has been set to a valid value, then
+   * the <code>ComponentState</code> representing that state is returned if the state is <code>StartedState</code> or
+   * <code>InitialisedState</code>.
    * </p>
    *
    * @see com.adaptris.core.StateManagedComponent#retrieveComponentState()
@@ -399,7 +434,12 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
     // if the channel is unavailable, we should return StoppedState
     if (isAvailable()) {
         return state;
-    } else return StoppedState.getInstance();
+    } else {
+        if (unavailableComponentState != null &&
+                (StartedState.getInstance().equals(state) || InitialisedState.getInstance().equals(state))) {
+            return unavailableComponentState;
+        } else return state;
+    }
   }
 
   /**
