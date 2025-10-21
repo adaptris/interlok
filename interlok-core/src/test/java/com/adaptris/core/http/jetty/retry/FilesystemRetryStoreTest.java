@@ -187,7 +187,7 @@ public class FilesystemRetryStoreTest {
       LifecycleHelper.initAndStart(store);
       AdaptrisMessage msg = new DefaultMessageFactory().newMessage("hello");
       store.write(msg);
-      assertTrue(store.report().iterator().hasNext());
+      assertTrue(store.report(false).iterator().hasNext());
     } finally {
       LifecycleHelper.stopAndClose(store);
     }
@@ -201,12 +201,58 @@ public class FilesystemRetryStoreTest {
       try {
         LifecycleHelper.initAndStart(store);
         new DefaultMessageFactory().newMessage("hello");
-        store.report();
+        store.report(false);
       } finally {
         LifecycleHelper.stopAndClose(store);
       }
     });
   }
+
+  @Test
+  public void testReport_IncludesErrorMessageLine() throws Exception {
+    FilesystemRetryStore store = new FilesystemRetryStore().withBaseUrl(BaseCase.getConfiguration(FilesystemRetryStoreTest.TEST_BASE_URL));
+    try {
+      LifecycleHelper.initAndStart(store);
+      AdaptrisMessage msg = new DefaultMessageFactory().newMessage("payload");
+      msg.addObjectHeader(Exception.class.getName(), new Exception("Test error line"));
+      store.write(msg);
+
+      Iterable<RemoteBlob> blobs = store.report(true);
+      boolean found = false;
+      for (RemoteBlob blob : blobs) {
+        if (blob.getName().contains(FilesystemRetryStore.NAME_ERROR_LINE_SEPERATOR)) {
+          found = true;
+          break;
+        }
+      }
+      assertTrue(found, "Blob name should include error message line");
+    } finally {
+      LifecycleHelper.stopAndClose(store);
+    }
+  }
+
+    @Test
+    public void testReport_DoesNotIncludesErrorMessageLine() throws Exception {
+        FilesystemRetryStore store = new FilesystemRetryStore().withBaseUrl(BaseCase.getConfiguration(FilesystemRetryStoreTest.TEST_BASE_URL));
+        try {
+            LifecycleHelper.initAndStart(store);
+            AdaptrisMessage msg = new DefaultMessageFactory().newMessage("payload");
+            msg.addObjectHeader(Exception.class.getName(), new Exception("Test error line"));
+            store.write(msg);
+
+            Iterable<RemoteBlob> blobs = store.report(false);
+            boolean found = false;
+            for (RemoteBlob blob : blobs) {
+                if (blob.getName().contains(FilesystemRetryStore.NAME_ERROR_LINE_SEPERATOR)) {
+                    found = true;
+                    break;
+                }
+            }
+            assertFalse(found, "Blob name should not include error message line");
+        } finally {
+            LifecycleHelper.stopAndClose(store);
+        }
+    }
 
   @Test
   public void testDelete() throws Exception {
@@ -248,13 +294,13 @@ public class FilesystemRetryStoreTest {
       File retryStoreDir = FsHelper.toFile(BaseCase.getConfiguration(TEST_BASE_URL));
       File storedMsgDir = new File(retryStoreDir, msg.getUniqueId());
 
-      RemoteBlob blob = FilesystemRetryStore.createForReport(storedMsgDir);
+      RemoteBlob blob = FilesystemRetryStore.createForReport(storedMsgDir, null);
       assertNotNull(blob);
       assertEquals("hello".length(), blob.getSize());
 
       File randomDir = TempFileUtils.createTrackedDir(store);
-      assertNull(FilesystemRetryStore.createForReport(randomDir));
-      assertNull(FilesystemRetryStore.createForReport(null));
+      assertNull(FilesystemRetryStore.createForReport(randomDir, null));
+      assertNull(FilesystemRetryStore.createForReport(null, null));
     } finally {
       LifecycleHelper.stopAndClose(store);
     }
