@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class ExceptionMatcherTest {
 
     @Test
@@ -72,6 +74,7 @@ public class ExceptionMatcherTest {
 
         InstanceOfExceptionMatcher matcher = new InstanceOfExceptionMatcher();
         matcher.setClazz(IllegalArgumentException.class);
+        assertEquals(IllegalArgumentException.class, matcher.getClazz());
 
         RegexExceptionMatcher matcher1 = new RegexExceptionMatcher();
         matcher1.setRegex("__produce__ exception");
