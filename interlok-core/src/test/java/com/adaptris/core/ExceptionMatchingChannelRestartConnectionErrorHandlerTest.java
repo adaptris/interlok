@@ -16,18 +16,11 @@
 
 package com.adaptris.core;
 
-import com.adaptris.core.jms.DefinedJmsProducer;
 import com.adaptris.core.jms.JmsConnection;
-import com.adaptris.core.jms.ProducerSession;
 import com.adaptris.util.TimeInterval;
 import org.junit.jupiter.api.Test;
 
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Message;
-
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
@@ -319,105 +312,6 @@ public class ExceptionMatchingChannelRestartConnectionErrorHandlerTest extends c
 
       public ProduceConnectionException(String description, Throwable cause) {
           super(description, cause);
-      }
-  }
-
-  static class CustomisableProducer extends DefinedJmsProducer {
-      TriConsumerThrowsException<AdaptrisMessage, Destination, Destination> doProduceFn;
-      TriFunctionThrowsException<AdaptrisMessage, String, Long, AdaptrisMessage> doRequestFn;
-      public CustomisableProducer(TriConsumerThrowsException<AdaptrisMessage, Destination, Destination> doProduceFn,
-                                  TriFunctionThrowsException<AdaptrisMessage, String, Long, AdaptrisMessage> doRequestFn) {
-          this.doProduceFn = doProduceFn;
-          this.doRequestFn = doRequestFn;
-      }
-
-      public TriConsumerThrowsException<AdaptrisMessage, Destination, Destination> getDoProduceFn() {
-          return doProduceFn;
-      }
-
-      public void setDoProduceFn(TriConsumerThrowsException<AdaptrisMessage, Destination, Destination> doProduceFn) {
-          this.doProduceFn = doProduceFn;
-      }
-
-      public TriFunctionThrowsException<AdaptrisMessage, String, Long, AdaptrisMessage> getDoRequestFn() {
-          return doRequestFn;
-      }
-
-      public void setDoRequestFn(TriFunctionThrowsException<AdaptrisMessage, String, Long, AdaptrisMessage> doRequestFn) {
-          this.doRequestFn = doRequestFn;
-      }
-
-      @Override
-      public Destination createDestination(String name) throws JMSException {
-          return mock(Destination.class);
-      }
-
-      @Override
-      public void doProduce(AdaptrisMessage msg, Destination dest, Destination replyTo)
-              throws JMSException, CoreException {
-          doProduceFn.accept(msg, replyTo, dest);
-      }
-
-      @Override
-      public Destination createTemporaryDestination() throws JMSException {
-          return mock(Destination.class);
-      }
-
-      @Override
-      public void rollback() {
-          // do nothing
-      }
-
-      @Override
-      public void commit() throws JMSException {
-          // do nothing
-      }
-
-      @Override
-      public String endpoint(AdaptrisMessage msg) throws ProduceException {
-          return "endpoint";
-      }
-
-      @Override
-      public AdaptrisMessage doRequest(AdaptrisMessage msg, String dest, long timeout) throws ProduceException {
-          return doRequestFn.apply(msg, dest, timeout);
-      }
-
-      @Override
-      public ProducerSession setupSession(AdaptrisMessage msg) throws JMSException {
-          return null;
-      }
-
-      @Override
-      public void logLinkedException(String prefix, Exception e) {
-          super.logLinkedException(prefix, e);
-      }
-
-      @Override
-      public int calculateDeliveryMode(AdaptrisMessage msg, String defaultDeliveryMode) {
-          return super.calculateDeliveryMode(msg, defaultDeliveryMode);
-      }
-
-
-      @Override
-      public long calculateTimeToLive(AdaptrisMessage msg, Long defaultTTL) throws JMSException {
-          return super.calculateTimeToLive(msg, defaultTTL);
-      }
-
-
-      @Override
-      public Message translate(AdaptrisMessage msg, Destination replyTo) throws JMSException {
-          return super.translate(msg, replyTo);
-      }
-
-      @Override
-      public int calculatePriority(AdaptrisMessage msg, Integer defaultPriority) {
-          return super.calculatePriority(msg, defaultPriority);
-      }
-
-      @Override
-      public boolean captureOutgoingMessageDetails() {
-          return super.captureOutgoingMessageDetails();
       }
   }
 
