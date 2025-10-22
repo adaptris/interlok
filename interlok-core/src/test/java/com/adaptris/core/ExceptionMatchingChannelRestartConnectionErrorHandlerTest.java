@@ -27,6 +27,8 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,7 +44,11 @@ public class ExceptionMatchingChannelRestartConnectionErrorHandlerTest extends c
   public void testChannelUnavailableConnectionErrorHandlingProducer() throws Exception {
       Channel channel = new Channel();
       ExceptionMatchingConnectionErrorHandler handler = spy(new ExceptionMatchingConnectionErrorHandler());
+
       ChannelRestartConnectionErrorHandler delegate = spy(new ChannelRestartConnectionErrorHandler());
+      // set the last connection time in the future, so it doesn't try to restart the channel
+      delegate.setLastConnectionExceptionDateTime(LocalDateTime.now()
+              .plus(Duration.ofDays(1)));
       handler.setDelegate(delegate);
       delegate.setDurationBetweenRestarts(Duration.ofSeconds(10));
 
@@ -52,13 +58,25 @@ public class ExceptionMatchingChannelRestartConnectionErrorHandlerTest extends c
       handler.setExceptionMatcher(matcher);
 
       NullConnection connection = new NullConnection();
-      connection.setConnectionErrorHandler(handler);
+      ExceptionMatchingConnectionErrorHandler handler1 = spy(new ExceptionMatchingConnectionErrorHandler());
+      handler1.setExceptionMatcher(matcher);
+      connection.setConnectionErrorHandler(handler1);
       channel.setProduceConnection(connection);
 
       ChannelUnavailableConnectionErrorHandlingProducer producer = new ChannelUnavailableConnectionErrorHandlingProducer();
-      NullMessageProducer producerDelegate = new NullMessageProducer();
-      producerDelegate.registerConnection(connection);
-      producer.setDelegate(producerDelegate);
+      producer.setConnectionErrorWaitDuration("PT10S");
+      CustomisableProducer producerDelegateSuccess = new CustomisableProducer(
+              (msg, dest1, dest2) -> {},
+              (msg, dest1, dest2) -> { return msg; }
+              );
+      CustomisableProducer producerDelegateFailure = new CustomisableProducer(
+              (msg, dest1, dest2) -> { throw new ProduceException(); },
+              (msg, dest1, dest2) -> { throw new ProduceException(); }
+      );
+      producerDelegateSuccess.registerConnection(connection);
+      producerDelegateFailure.registerConnection(connection);
+
+      producer.setDelegate(producerDelegateFailure);
       producer.setConnectionErrorThreshold(5);
       producer.setConnectionErrorWaitDuration(Duration.ofSeconds(10));
 
@@ -67,38 +85,42 @@ public class ExceptionMatchingChannelRestartConnectionErrorHandlerTest extends c
       workflow.setChannelUnavailableWaitInterval(new TimeInterval(0L, TimeUnit.SECONDS));
       channel.setWorkflowList(workflowList);
       workflowList.add(workflow);
+      workflow.setProducer(producer);
+
+      AdaptrisMessage msg = mock(AdaptrisMessage.class);
 
       start(channel);
 
       // after encountering the threshold of connection errors, the channel becomes unavailable
       assertEquals(0, producer.getConnectionErrors());
       assertTrue(channel.isAvailable());
-      assertThrows(ProduceException.class, () -> producer.maybeHandleException(new ProduceException()));
+      assertThrows(ProduceException.class, () -> producer.produce(msg));
 
       assertEquals(1, producer.getConnectionErrors());
       assertTrue(channel.isAvailable());
-      assertThrows(ProduceException.class, () -> producer.maybeHandleException(new ProduceException()));
+      assertThrows(ProduceException.class, () -> producer.request(msg));
       assertTrue(channel.isAvailable());
-      assertThrows(ProduceException.class, () -> producer.maybeHandleException(new ProduceException()));
+      assertThrows(ProduceException.class, () -> producer.produce(msg));
       assertTrue(channel.isAvailable());
-      assertThrows(ProduceException.class, () -> producer.maybeHandleException(new ProduceException()));
+      assertThrows(ProduceException.class, () -> producer.produce(msg));
       assertTrue(channel.isAvailable());
-      assertThrows(ProduceException.class, () -> producer.maybeHandleException(new ProduceException()));
+      assertThrows(ProduceException.class, () -> producer.produce(msg));
       assertEquals(5, producer.getConnectionErrors());
       assertFalse(channel.isAvailable());
 
       // after the connection error wait duration, the channel is available
-      Thread.sleep(11*1000);
+      Thread.sleep((producer.connectionErrorWaitDuration().getSeconds()+1)*1000);
       assertTrue(channel.isAvailable());
       assertEquals(5, producer.getConnectionErrors());
 
-      assertThrows(ProduceException.class, () -> producer.maybeHandleException(new ProduceException()));
+      assertThrows(ProduceException.class, () -> producer.produce(msg));
       assertFalse(channel.isAvailable());
       assertEquals(6, producer.getConnectionErrors());
 
       // after a successful produce, the channel is available and error count is reset
       DefaultMessageFactory factory = new DefaultMessageFactory();
       AdaptrisMessage message = factory.newMessage();
+      producer.setDelegate(producerDelegateSuccess);
 
       assertDoesNotThrow(() -> producer.produce(message));
       assertTrue(channel.isAvailable());

@@ -64,4 +64,28 @@ public class ExceptionMatcherTest {
         Assertions.assertTrue(matcher.matches(illegalException));
 
     }
+
+    @Test
+    public void testCompositeExceptionMatcher() throws Exception {
+        UnsupportedOperationException unsupportedException = new UnsupportedOperationException("__unsupported__ exception");
+        IllegalArgumentException illegalException = new IllegalArgumentException("__illegal argument__ exception");
+
+        InstanceOfExceptionMatcher matcher = new InstanceOfExceptionMatcher();
+        matcher.setClazz(IllegalArgumentException.class);
+
+        RegexExceptionMatcher matcher1 = new RegexExceptionMatcher();
+        matcher1.setRegex("__produce__ exception");
+        matcher1.setMatchAgainstField(RegexExceptionMatcher.MatchAgainstField.EXCEPTION_MESSAGE);
+
+        CompositeExceptionMatcher composite = new CompositeExceptionMatcher();
+        composite.setMatchers(List.of(matcher1, matcher));
+
+        Assertions.assertFalse(composite.matches(unsupportedException));
+        Assertions.assertTrue(composite.matches(illegalException));
+        Assertions.assertFalse(composite.matches(new ProduceException("no match")));
+        Assertions.assertTrue(composite.matches(new ProduceException("__produce__ exception")));
+
+    }
+
+
 }
