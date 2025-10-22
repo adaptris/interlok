@@ -187,8 +187,9 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
       try {
           LifecycleHelper.start(consumeConnection);
       } catch (CoreException ex) {
-          if (produceConnection.connectionErrorHandler() != null && produceConnection.connectionErrorHandler().canHandleException(ex)) {
-              produceConnection.connectionErrorHandler().handleConnectionException();
+          toggleAvailability(false);
+          if (consumeConnection.connectionErrorHandler() != null && consumeConnection.connectionErrorHandler().canHandleException(ex)) {
+              consumeConnection.connectionErrorHandler().handleConnectionException();
           }
           throw ex;
       }

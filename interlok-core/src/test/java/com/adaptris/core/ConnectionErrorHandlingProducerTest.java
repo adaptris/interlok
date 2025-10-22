@@ -20,7 +20,7 @@ import com.adaptris.core.stubs.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class ConnectionErrorHandlingProducerTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
@@ -36,11 +36,10 @@ public class ConnectionErrorHandlingProducerTest extends com.adaptris.interlok.j
     a.setDelegate(p);
     assertEquals(p, a.getDelegate());
 
-    p.setEncoder(mock(AdaptrisMessageEncoder.class));
-    p.setMessageFactory(mock(AdaptrisMessageFactory.class));
+    a.setEncoder(mock(AdaptrisMessageEncoder.class));
+    a.setMessageFactory(mock(AdaptrisMessageFactory.class));
     p.setUniqueId("id");
     p.setIsTrackingEndpoint(true);
-
 
     assertEquals(p.getEncoder(), a.getEncoder());
     assertEquals(p.getMessageFactory(), a.getMessageFactory());
@@ -66,5 +65,45 @@ public class ConnectionErrorHandlingProducerTest extends com.adaptris.interlok.j
 
     a.produce(msg);
     verify(p).produce(ArgumentMatchers.eq(msg));
+
+    CustomisableProducer exceptionProducer = new CustomisableProducer(
+      (msg1, dest1, dest) -> { throw new ProduceException(); },
+      (msg1, dest1, timeout) -> { throw new ProduceException(); });
+
+    a.setDelegate(exceptionProducer);
+
+    assertThrows(ProduceException.class, () -> a.request(msg));
+    assertThrows(ProduceException.class, () -> a.produce(msg));
   }
+
+    @Test
+    public void testMaybeHandleException() throws Exception {
+      ConnectionErrorHandlingProducer a = new ConnectionErrorHandlingProducer();
+      NullMessageProducer p = spy(new NullMessageProducer());
+      a.setDelegate(p);
+      AdaptrisConnection con = new NullConnection();
+      ConnectionErrorHandler eh = mock(ConnectionErrorHandler.class);
+      con.setConnectionErrorHandler(eh);
+
+      ProduceException ex = new ProduceException();
+      a.maybeHandleException(ex);
+      verify(p, times(0)).handleConnectionException();
+
+      when(eh.canHandleException(any())).thenReturn(false);
+      a.maybeHandleException(ex);
+      verify(p, times(0)).handleConnectionException();
+
+      when(eh.canHandleException(any())).thenReturn(true);
+      a.maybeHandleException(ex);
+      verify(p, times(0)).handleConnectionException();
+
+      a.registerConnection(con);
+      assertThrows(ProduceException.class, () -> a.maybeHandleException(ex));
+      verify(p, times(1)).handleConnectionException();
+
+      when(eh.canHandleException(any())).thenReturn(false);
+      assertThrows(ProduceException.class, () -> a.maybeHandleException(ex));
+      verify(p, times(1)).handleConnectionException();
+
+    }
 }

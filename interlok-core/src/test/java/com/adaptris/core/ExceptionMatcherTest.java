@@ -81,7 +81,9 @@ public class ExceptionMatcherTest {
         matcher1.setMatchAgainstField(RegexExceptionMatcher.MatchAgainstField.EXCEPTION_MESSAGE);
 
         CompositeExceptionMatcher composite = new CompositeExceptionMatcher();
-        composite.setMatchers(List.of(matcher1, matcher));
+        var matchers = List.of(matcher1, matcher);
+        composite.setMatchers(matchers);
+        assertEquals(matchers, composite.getMatchers());
 
         Assertions.assertFalse(composite.matches(unsupportedException));
         Assertions.assertTrue(composite.matches(illegalException));
