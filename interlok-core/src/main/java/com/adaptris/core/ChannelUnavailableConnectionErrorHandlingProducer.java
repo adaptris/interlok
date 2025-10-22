@@ -93,7 +93,7 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
             throw ex;
         } finally {
             if (failed == null) {
-                connectionErrors = 0;
+                setConnectionErrors(0);
                 toggleChannelAvailability(true);
             }
         }
@@ -109,7 +109,7 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
             throw ex;
         } finally {
             if (failed == null) {
-                connectionErrors = 0;
+                setConnectionErrors(0);
                 toggleChannelAvailability(true);
             }
         }
@@ -125,7 +125,7 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
             throw ex;
         } finally {
             if (failed == null) {
-                connectionErrors = 0;
+                setConnectionErrors(0);
                 toggleChannelAvailability(true);
             }
         }
@@ -133,10 +133,10 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
 
     @Override
     public void handleConnectionException() throws CoreException {
-        if (connectionErrors == null) connectionErrors = 0;
-        connectionErrors++;
-        log.debug("Consecutive connection errors encountered: {} threshold: {}", connectionErrors, connectionErrorThreshold);
-        if (connectionErrors >= connectionErrorThreshold) {
+        if (connectionErrors == null) setConnectionErrors(0);
+        setConnectionErrors(connectionErrors + 1);
+        log.debug("Consecutive connection errors encountered: {} threshold: {}", getConnectionErrors(), getConnectionErrorThreshold());
+        if (getConnectionErrors() >= getConnectionErrorThreshold()) {
             toggleChannelAvailability(false);
             new Timer().schedule(new TimerTask() {
                 @Override

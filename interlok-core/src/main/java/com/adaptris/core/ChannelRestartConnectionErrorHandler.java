@@ -49,7 +49,15 @@ public class ChannelRestartConnectionErrorHandler extends ConnectionErrorHandler
     }
   }
 
-  public String getDurationBetweenRestarts() {
+    public LocalDateTime getLastConnectionExceptionDateTime() {
+        return lastConnectionExceptionDateTime;
+    }
+
+    public void setLastConnectionExceptionDateTime(LocalDateTime lastConnectionExceptionDateTime) {
+        this.lastConnectionExceptionDateTime = lastConnectionExceptionDateTime;
+    }
+
+    public String getDurationBetweenRestarts() {
       return durationBetweenRestarts;
   }
 
