@@ -25,29 +25,6 @@ package com.adaptris.core;
  *
  */
 public abstract class ProduceOnlyProducerImp extends AdaptrisMessageProducerImp {
-
-  /**
-   * UnsupportedOperationException is thrown
-   *
-   * @see com.adaptris.core.AdaptrisMessageProducerImp#request(AdaptrisMessage)
-   */
-  @Override
-  public final AdaptrisMessage request(AdaptrisMessage msg)
-      throws ProduceException {
-    return super.request(msg);
-  }
-
-  /**
-   * UnsupportedOperationException is thrown
-   *
-   * @see com.adaptris.core.AdaptrisMessageProducerImp#request(AdaptrisMessage, long)
-   */
-  @Override
-  public final AdaptrisMessage request(AdaptrisMessage msg, long timeout)
-      throws ProduceException {
-        return super.request(msg, timeout);
-  }
-
     @Override
     protected AdaptrisMessage doRequest(AdaptrisMessage msg, String endpoint, long timeout) throws ProduceException {
         throw new UnsupportedOperationException("Request Reply is not supported");
