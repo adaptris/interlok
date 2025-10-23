@@ -37,6 +37,7 @@ public class ExceptionMatchingChannelRestartConnectionErrorHandlerTest extends c
   public void testChannelUnavailableConnectionErrorHandlingProducer() throws Exception {
       Channel channel = new Channel();
       ExceptionMatchingConnectionErrorHandler handler = spy(new ExceptionMatchingConnectionErrorHandler());
+      assertNull(handler.retrieveConnection(AdaptrisConnection.class));
 
       ChannelRestartConnectionErrorHandler delegate = spy(new ChannelRestartConnectionErrorHandler());
       // set the last connection time in the future, so it doesn't try to restart the channel
@@ -44,6 +45,7 @@ public class ExceptionMatchingChannelRestartConnectionErrorHandlerTest extends c
               .plus(Duration.ofDays(1)));
       assertNotNull(delegate.getLastConnectionExceptionDateTime());
       handler.setDelegate(delegate);
+      assertNull(handler.retrieveConnection(AdaptrisConnection.class));
       assertEquals(delegate, handler.getDelegate());
       delegate.setDurationBetweenRestarts("PT10S");
       assertEquals("PT10S", delegate.getDurationBetweenRestarts());
@@ -116,8 +118,10 @@ public class ExceptionMatchingChannelRestartConnectionErrorHandlerTest extends c
       assertEquals(5, producer.getConnectionErrors());
 
       assertThrows(ProduceException.class, () -> producer.produce(msg));
+      assertThrows(ProduceException.class, () -> producer.request(msg));
+      assertThrows(ProduceException.class, () -> producer.request(msg, 1000));
       assertFalse(channel.isAvailable());
-      assertEquals(6, producer.getConnectionErrors());
+      assertEquals(8, producer.getConnectionErrors());
 
       // after a successful produce, the channel is available and error count is reset
       DefaultMessageFactory factory = new DefaultMessageFactory();
@@ -125,9 +129,15 @@ public class ExceptionMatchingChannelRestartConnectionErrorHandlerTest extends c
       producer.setDelegate(producerDelegateSuccess);
 
       assertDoesNotThrow(() -> producer.produce(message));
+      assertDoesNotThrow(() -> producer.request(message));
+      assertDoesNotThrow(() -> producer.request(message, 1000));
       assertTrue(channel.isAvailable());
       assertEquals(0, producer.getConnectionErrors());
 
+      handler.stop();
+      verify(delegate).stop();
+      handler.close();
+      verify(delegate).close();
 
   }
 
