@@ -42,13 +42,17 @@ public class ExceptionMatchingChannelRestartConnectionErrorHandlerTest extends c
       // set the last connection time in the future, so it doesn't try to restart the channel
       delegate.setLastConnectionExceptionDateTime(LocalDateTime.now()
               .plus(Duration.ofDays(1)));
+      assertNotNull(delegate.getLastConnectionExceptionDateTime());
       handler.setDelegate(delegate);
-      delegate.setDurationBetweenRestarts(Duration.ofSeconds(10));
+      assertEquals(delegate, handler.getDelegate());
+      delegate.setDurationBetweenRestarts("PT10S");
+      assertEquals(Duration.ofSeconds(10), delegate.getDurationBetweenRestarts());
 
       InstanceOfExceptionMatcher matcher = new InstanceOfExceptionMatcher();
       matcher.setClazz(ProduceException.class);
 
       handler.setExceptionMatcher(matcher);
+      assertEquals(matcher, handler.getExceptionMatcher());
 
       NullConnection connection = new NullConnection();
       ExceptionMatchingConnectionErrorHandler handler1 = spy(new ExceptionMatchingConnectionErrorHandler());
@@ -71,7 +75,7 @@ public class ExceptionMatchingChannelRestartConnectionErrorHandlerTest extends c
 
       producer.setDelegate(producerDelegateFailure);
       producer.setConnectionErrorThreshold(5);
-      producer.setConnectionErrorWaitDuration(Duration.ofSeconds(10));
+//      producer.setConnectionErrorWaitDuration(Duration.ofSeconds(10));
 
       WorkflowList workflowList = new WorkflowList();
       StandardWorkflow workflow = new StandardWorkflow();
@@ -84,8 +88,11 @@ public class ExceptionMatchingChannelRestartConnectionErrorHandlerTest extends c
 
       start(channel);
 
-      // after encountering the threshold of connection errors, the channel becomes unavailable
+      assertEquals(handler.retrieveConnection(AdaptrisConnection.class), delegate.retrieveConnection(AdaptrisConnection.class));
+      assertTrue(handler.allowedInConjunctionWith(delegate));
+
       assertEquals(0, producer.getConnectionErrors());
+      assertEquals(Duration.ofSeconds(10), producer.getConnectionErrorWaitDuration());
       assertTrue(channel.isAvailable());
       assertThrows(ProduceException.class, () -> producer.produce(msg));
 
@@ -98,6 +105,7 @@ public class ExceptionMatchingChannelRestartConnectionErrorHandlerTest extends c
       assertThrows(ProduceException.class, () -> producer.produce(msg));
       assertTrue(channel.isAvailable());
       assertThrows(ProduceException.class, () -> producer.produce(msg));
+      // after encountering the threshold of connection errors, the channel becomes unavailable
       assertEquals(5, producer.getConnectionErrors());
       assertFalse(channel.isAvailable());
 
@@ -212,6 +220,8 @@ public class ExceptionMatchingChannelRestartConnectionErrorHandlerTest extends c
 
       verify(delegate, times(4)).restartAffectedComponents();
       verify(handler, times(6)).canHandleException(any(ProduceException.class));
+
+
   }
 
   private class TriggeredFailingConnection extends JmsConnection {

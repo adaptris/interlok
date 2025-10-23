@@ -73,6 +73,7 @@ public class ConnectionErrorHandlingProducerTest extends com.adaptris.interlok.j
     a.setDelegate(exceptionProducer);
 
     assertThrows(ProduceException.class, () -> a.request(msg));
+    assertThrows(ProduceException.class, () -> a.request(msg, 1000));
     assertThrows(ProduceException.class, () -> a.produce(msg));
   }
 
