@@ -22,7 +22,7 @@ public class InstanceOfExceptionMatcher extends AbstractExceptionMatcher {
 
     @Override
     public boolean matches(Exception exception) {
-        if (exception != null) return clazz.isAssignableFrom(exception.getClass());
+        if (exception != null && clazz != null) return clazz.isAssignableFrom(exception.getClass());
         else return false;
     }
 }

@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class ExceptionMatcherTest {
 
@@ -73,6 +74,7 @@ public class ExceptionMatcherTest {
         IllegalArgumentException illegalException = new IllegalArgumentException("__illegal argument__ exception");
 
         InstanceOfExceptionMatcher matcher = new InstanceOfExceptionMatcher();
+        assertFalse(matcher.matches(unsupportedException));
         matcher.setClazz(IllegalArgumentException.class);
         assertEquals(IllegalArgumentException.class, matcher.getClazz());
 
