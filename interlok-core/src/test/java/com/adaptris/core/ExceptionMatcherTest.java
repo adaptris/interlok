@@ -1,6 +1,5 @@
 package com.adaptris.core;
 
-import com.adaptris.core.event.AdapterCloseEvent;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
