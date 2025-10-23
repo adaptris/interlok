@@ -46,7 +46,8 @@ public class ExceptionMatchingChannelRestartConnectionErrorHandlerTest extends c
       handler.setDelegate(delegate);
       assertEquals(delegate, handler.getDelegate());
       delegate.setDurationBetweenRestarts("PT10S");
-      assertEquals(Duration.ofSeconds(10), delegate.getDurationBetweenRestarts());
+      assertEquals("PT10S", delegate.getDurationBetweenRestarts());
+      assertEquals(Duration.ofSeconds(10), delegate.durationBetweenRestarts());
 
       InstanceOfExceptionMatcher matcher = new InstanceOfExceptionMatcher();
       matcher.setClazz(ProduceException.class);
@@ -92,7 +93,7 @@ public class ExceptionMatchingChannelRestartConnectionErrorHandlerTest extends c
       assertTrue(handler.allowedInConjunctionWith(delegate));
 
       assertEquals(0, producer.getConnectionErrors());
-      assertEquals(Duration.ofSeconds(10), producer.getConnectionErrorWaitDuration());
+      assertEquals("PT10S", producer.getConnectionErrorWaitDuration());
       assertTrue(channel.isAvailable());
       assertThrows(ProduceException.class, () -> producer.produce(msg));
 

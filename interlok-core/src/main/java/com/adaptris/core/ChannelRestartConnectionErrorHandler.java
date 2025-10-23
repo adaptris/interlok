@@ -63,6 +63,7 @@ public class ChannelRestartConnectionErrorHandler extends ConnectionErrorHandler
 
   public void setDurationBetweenRestarts(String durationBetweenRestarts) {
       setDurationBetweenRestarts(Duration.parse(durationBetweenRestarts));
+      this.durationBetweenRestarts = durationBetweenRestarts;
   }
 
   protected void setDurationBetweenRestarts(Duration durationBetweenRestarts) {
