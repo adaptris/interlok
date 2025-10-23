@@ -46,7 +46,7 @@ public abstract class AdaptrisMessageProducerImp extends AdaptrisMessageWorkerIm
     protected abstract void doProduce(AdaptrisMessage msg, String endpoint) throws ProduceException;
     protected abstract AdaptrisMessage doRequest(AdaptrisMessage msg, String endpoint, long timeout) throws ProduceException;
 
-    protected final AdaptrisMessage doRequest(AdaptrisMessage msg, long timeout) throws ProduceException {
+    protected AdaptrisMessage doRequest(AdaptrisMessage msg, long timeout) throws ProduceException {
         return doRequest(msg, endpoint(msg), timeout);
     }
 
@@ -65,7 +65,7 @@ public abstract class AdaptrisMessageProducerImp extends AdaptrisMessageWorkerIm
         }
     }
 
-    public final void produce(AdaptrisMessage msg) throws ProduceException {
+    public void produce(AdaptrisMessage msg) throws ProduceException {
         try {
             doProduce(msg, endpoint(msg));
         } catch (ProduceException e) {
