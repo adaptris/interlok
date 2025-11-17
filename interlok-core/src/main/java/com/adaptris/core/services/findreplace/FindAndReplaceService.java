@@ -18,6 +18,7 @@ package com.adaptris.core.services.findreplace;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 
 import javax.validation.Valid;
 
@@ -76,7 +77,9 @@ public class FindAndReplaceService extends ServiceImp {
       String find = unit.getFind().obtainValue(msg);
       String replace = unit.getReplace().obtainValue(msg);
       log.trace("replacing [" + find + "] with [" + replace + "]");
-      doReplace(msg, find, replace);
+      String findModified = unit.getFind().getMode().modify(find);
+      String replaceModified = unit.getReplace().getMode().modify(replace);
+      doReplace(msg, findModified, replaceModified);
     }
   }
 

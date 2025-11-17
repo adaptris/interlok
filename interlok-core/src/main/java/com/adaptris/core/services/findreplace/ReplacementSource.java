@@ -19,6 +19,9 @@ package com.adaptris.core.services.findreplace;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ServiceException;
 
+import java.util.function.Function;
+import java.util.regex.Matcher;
+
 /**
  * Interface for handling how find and replace operations occur for {@link FindAndReplaceService}.
  */
@@ -33,4 +36,22 @@ public interface ReplacementSource {
    * @return the String to be used as the replacement.
    */
   String obtainValue(AdaptrisMessage msg) throws ServiceException;
+
+  Mode getMode();
+
+  enum Mode {
+    LITERAL(Matcher::quoteReplacement),
+    FULL_REGEX(val -> val)
+    ;
+
+    private final Function<String, String> modifier;
+    
+    Mode(Function<String, String> modifier) {
+        this.modifier = modifier;
+    }
+
+    public String modify(String value) {
+        return modifier.apply(value);
+    }
+  }
 }

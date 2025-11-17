@@ -26,12 +26,29 @@ public abstract class AbstractReplacementSource implements ReplacementSource {
   @NotNull
   private String value;
 
+  @NotNull
+  private Mode mode = Mode.LITERAL;
+
+  @Override
+  public Mode getMode() {
+    return mode;
+  }
+
+  public void setMode(Mode mode) {
+    this.mode = mode;
+  }
+
   public String getValue() {
     return value;
   }
 
   public void setValue(String value) {
     this.value = value;
+  }
+
+  public AbstractReplacementSource mode(Mode mode) {
+      setMode(mode);
+      return this;
   }
 
 }
