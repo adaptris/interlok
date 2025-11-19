@@ -37,7 +37,7 @@ public interface ReplacementSource {
    */
   String obtainValue(AdaptrisMessage msg) throws ServiceException;
 
-  Mode getMode();
+  String getMode();
 
   enum Mode {
     LITERAL(Matcher::quoteReplacement),
@@ -45,7 +45,7 @@ public interface ReplacementSource {
     ;
 
     private final Function<String, String> modifier;
-    
+
     Mode(Function<String, String> modifier) {
         this.modifier = modifier;
     }
