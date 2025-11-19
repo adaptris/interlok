@@ -18,6 +18,7 @@ package com.adaptris.core.services.findreplace;
 
 import javax.validation.constraints.NotNull;
 
+import com.adaptris.annotation.InputFieldDefault;
 import com.adaptris.annotation.InputFieldHint;
 
 public abstract class AbstractReplacementSource implements ReplacementSource {
@@ -26,7 +27,9 @@ public abstract class AbstractReplacementSource implements ReplacementSource {
   @NotNull
   private String value;
 
+  @InputFieldDefault("LITERAL")
   @NotNull
+  @InputFieldHint(expression=true)
   private String mode = Mode.LITERAL.name();
 
   public AbstractReplacementSource mode(Mode mode) {
