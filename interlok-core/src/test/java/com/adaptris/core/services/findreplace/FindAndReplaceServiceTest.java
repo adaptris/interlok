@@ -21,12 +21,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.GeneralServiceExample;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class FindAndReplaceServiceTest extends GeneralServiceExample {
 
@@ -160,8 +164,8 @@ public class FindAndReplaceServiceTest extends GeneralServiceExample {
     FindAndReplaceService service = new FindAndReplaceService();
     service.setReplaceFirstOnly(true);
     service.getFindAndReplaceUnits().add(
-        new FindAndReplaceUnit(new ConfiguredReplacementSource(REGEXP_FIND_WITH_MATCHGROUP), new ConfiguredReplacementSource(
-            REGEXP_REPLACE_USE_MATCHGROUP)));
+        new FindAndReplaceUnit(new ConfiguredReplacementSource(REGEXP_FIND_WITH_MATCHGROUP).mode(ReplacementSource.Mode.FULL_REGEX), new ConfiguredReplacementSource(
+            REGEXP_REPLACE_USE_MATCHGROUP).mode(ReplacementSource.Mode.FULL_REGEX)));
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(REGEXP_PAYLOAD);
     execute(service, msg);
     assertEquals(REGEXP_PAYLOAD_EXPECTED, msg.getContent());
@@ -180,8 +184,8 @@ public class FindAndReplaceServiceTest extends GeneralServiceExample {
     FindAndReplaceService service = new FindAndReplaceService();
     service.setReplaceFirstOnly(false);
     service.getFindAndReplaceUnits().add(
-        new FindAndReplaceUnit(new ConfiguredReplacementSource(REGEXP_FIND_WITH_MATCHGROUP), new ConfiguredReplacementSource(
-            REGEXP_REPLACE_USE_MATCHGROUP)));
+        new FindAndReplaceUnit(new ConfiguredReplacementSource(REGEXP_FIND_WITH_MATCHGROUP).mode(ReplacementSource.Mode.FULL_REGEX), new ConfiguredReplacementSource(
+            REGEXP_REPLACE_USE_MATCHGROUP).mode(ReplacementSource.Mode.FULL_REGEX)));
     AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(REGEXP_PAYLOAD);
     execute(service, msg);
     assertEquals(REGEXP_PAYLOAD_EXPECTED, msg.getContent());
@@ -222,6 +226,28 @@ public class FindAndReplaceServiceTest extends GeneralServiceExample {
     execute(service, msg);
     assertTrue(msg.getContent().equals(PAYLOAD_REPLACED_ALL_HEX));
   }
+
+    @ParameterizedTest
+    @MethodSource("specialCharactersFindReplace")
+    public void testReplaceAll_ConfiguredSpecialCharacters(String find, String replace, String before, String after) throws Exception {
+        FindAndReplaceService service = new FindAndReplaceService();
+        service.setReplaceFirstOnly(false);
+        service.getFindAndReplaceUnits().add(
+                new FindAndReplaceUnit(new ConfiguredReplacementSource(find), new ConfiguredReplacementSource(
+                        replace)));
+        AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage(before);
+        execute(service, msg);
+        assertEquals(after, msg.getContent());
+    }
+
+    private static Stream<Arguments> specialCharactersFindReplace() {
+        return Stream.of(
+                Arguments.of("\n", "\n\n", "some text before\nthen after\n", "some text before\n\nthen after\n\n"),
+                Arguments.of("\r", "\r\r", "some text before\rthen after\r", "some text before\r\rthen after\r\r"),
+                Arguments.of("\t", "\t\t", "some text before\tthen after\t", "some text before\t\tthen after\t\t"),
+                Arguments.of("\\", "\\\\", "some text before\\then after\\", "some text before\\\\then after\\\\")
+        );
+    }
 
   private FindAndReplaceService createServiceForTests(ReplacementSourceImpl impl, boolean replaceFirst) {
     FindAndReplaceService service = new FindAndReplaceService();
