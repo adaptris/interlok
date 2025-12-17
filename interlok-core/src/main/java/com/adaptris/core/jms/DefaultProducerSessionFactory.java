@@ -49,4 +49,10 @@ public class DefaultProducerSessionFactory extends ProducerSessionFactoryImpl {
     return session;
   }
 
+
+  @Override
+  public void close() {
+    super.close();
+    session = null;
+  }
 }
