@@ -18,26 +18,18 @@ package com.adaptris.core.jms;
 
 import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.DEFAULT_PAYLOAD;
 import static com.adaptris.interlok.junit.scaffolding.jms.JmsConfig.MESSAGE_TRANSLATOR_LIST;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Queue;
-import javax.jms.Session;
+import javax.jms.*;
 
+import com.adaptris.core.*;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -47,13 +39,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.adaptris.core.AdaptrisMessage;
-import com.adaptris.core.AdaptrisMessageFactory;
-import com.adaptris.core.ServiceException;
-import com.adaptris.core.ServiceList;
-import com.adaptris.core.StandaloneConsumer;
-import com.adaptris.core.StandaloneProducer;
-import com.adaptris.core.StandaloneRequestor;
 import com.adaptris.core.jms.BasicJmsProducerCase.Loopback;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
@@ -566,6 +551,72 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     } finally {
       stop(standaloneProducer, standaloneConsumer);
     }
+  }
+
+  @Test
+  public void testRefreshSessionIfException() throws Exception {
+    String rfc6167 = "jms:queue:" + getName() + "";
+    JmsConsumerImpl consumer = createConsumer(getName());
+    consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+    StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
+    MockMessageListener jms = new MockMessageListener();
+    JmsProducer producer = spy(createProducer(rfc6167));
+    ProducerSessionFactory psf = spy(new DefaultProducerSessionFactory());
+    producer.setSessionFactory(psf);
+    standaloneConsumer.registerAdaptrisMessageListener(jms);
+    MessageProducer throwsExceptionProducer = mock(MessageProducer.class);
+    doAnswer(args -> {
+      throw new JMSException("The Session is closed");
+    }).when(throwsExceptionProducer).send(isA(Destination.class), any(), anyInt(), anyInt(), anyLong());
+
+    doReturn(new ProducerSession() {
+      @Override
+      public Session getSession() {
+        ProducerSession existingProducerSession = producer.producerSession();
+        return existingProducerSession.getSession();
+      }
+
+      @Override
+      public MessageProducer getProducer() {
+        return throwsExceptionProducer;
+      }
+    }).when(producer).producerSession();
+
+    StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
+    assertThrows(ServiceException.class, () -> {
+      try {
+        start(standaloneConsumer, standaloneProducer);
+
+        standaloneProducer.doService(createMessage());
+
+      } finally {
+        stop(standaloneProducer, standaloneConsumer);
+      }
+    });
+
+    verify(producer, times(2)).setupSession(any(), eq(false));
+    verify(producer).setupSession(any(), eq(true));
+  }
+
+  @Test
+  public void testSetupSession() throws Exception {
+    String rfc6167 = "jms:queue:" + getName() + "";
+    JmsProducer producer = createProducer(rfc6167);
+    StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
+    ProducerSessionFactory psf = new DefaultProducerSessionFactory();
+    producer.setSessionFactory(psf);
+    try {
+      start(standaloneProducer);
+      ProducerSession session1 = producer.setupSession(createMessage(), false);
+      ProducerSession session2 = producer.setupSession(createMessage(), false);
+      assertEquals(session1, session2);
+      ProducerSession session3 = producer.setupSession(createMessage(), true);
+      assertNotEquals(session1, session3);
+      assertNotEquals(session2, session3);
+    } finally {
+      stop(standaloneProducer);
+    }
+
   }
 
   @Test

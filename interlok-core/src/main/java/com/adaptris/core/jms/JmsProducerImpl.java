@@ -200,6 +200,16 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
 
 
   protected ProducerSession setupSession(AdaptrisMessage msg) throws JMSException {
+    return setupSession(msg, false);
+  }
+
+  protected ProducerSession setupSession(AdaptrisMessage msg, boolean forceRecreate) throws JMSException {
+    if (forceRecreate && producerSession != null) {
+      getSessionFactory().close();
+
+      producerSession = null;
+    }
+
     if (!msg.getUniqueId().equals(CURRENT_MESSAGE_ID) || producerSession == null) {
       producerSession = getSessionFactory().createProducerSession(this, msg);
       configuredMessageTranslator().registerSession(producerSession.getSession());

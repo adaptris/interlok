@@ -109,17 +109,32 @@ public class JmsProducer extends JmsProducerImpl {
     }
   }
 
-    protected void doProduce(AdaptrisMessage msg, JmsDestination jmsDest)
+  protected void doProduce(AdaptrisMessage msg, JmsDestination jmsDest)
+     throws JMSException, CoreException {
+    doProduce(msg, jmsDest, true);
+  }
+
+  protected void doProduce(AdaptrisMessage msg, JmsDestination jmsDest, boolean refreshSessionIfProduceException)
       throws JMSException, CoreException {
-    setupSession(msg);
+    setupSession(msg, !refreshSessionIfProduceException);
     Message jmsMsg = translate(msg, jmsDest.getReplyToDestination());
-    if (!perMessageProperties()) {
-      producerSession().getProducer().send(jmsDest.getDestination(), jmsMsg);
-    } else {
-      producerSession().getProducer().send(jmsDest.getDestination(), jmsMsg,
-          calculateDeliveryMode(msg, jmsDest.deliveryMode()),
-          calculatePriority(msg, jmsDest.priority()),
-          calculateTimeToLive(msg, jmsDest.timeToLive()));
+    try {
+      if (!perMessageProperties()) {
+        producerSession().getProducer().send(jmsDest.getDestination(), jmsMsg);
+      } else {
+        producerSession().getProducer().send(jmsDest.getDestination(), jmsMsg,
+                calculateDeliveryMode(msg, jmsDest.deliveryMode()),
+                calculatePriority(msg, jmsDest.priority()),
+                calculateTimeToLive(msg, jmsDest.timeToLive()));
+      }
+    } catch (JMSException ex) {
+      currentLogger().debug("Caught exception while producing", ex);
+      if (refreshSessionIfProduceException) {
+        currentLogger().info("Handling exception by retrying with new session. Exception: {}", ex.getMessage());
+        // don't refresh session on this call, instead throw
+        doProduce(msg, jmsDest, false);
+        return;
+      } else throw ex;
     }
     captureOutgoingMessageDetails(jmsMsg, msg);
     log.info("msg produced to destination [{}]", jmsDest);
