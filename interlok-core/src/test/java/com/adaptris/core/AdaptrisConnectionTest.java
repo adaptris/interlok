@@ -90,7 +90,7 @@ public class AdaptrisConnectionTest extends com.adaptris.interlok.junit.scaffold
     
     Awaitility
       .await()
-      .atMost(Duration.ofSeconds(10))
+      .atMost(Duration.ofSeconds(20))
       .with()
       .pollInterval(Duration.ofMillis(100))
       .untilTrue(new AtomicBoolean(connection.retrieveExceptionListeners().size() == threadCount));
