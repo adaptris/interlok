@@ -606,13 +606,18 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     ProducerSessionFactory psf = new DefaultProducerSessionFactory();
     producer.setSessionFactory(psf);
     try {
+      producer.setRefreshSessionOnException(false);
       start(standaloneProducer);
       ProducerSession session1 = producer.setupSession(createMessage(), false);
       ProducerSession session2 = producer.setupSession(createMessage(), false);
       assertEquals(session1, session2);
       ProducerSession session3 = producer.setupSession(createMessage(), true);
-      assertNotEquals(session1, session3);
-      assertNotEquals(session2, session3);
+      assertEquals(session1, session3);
+
+      producer.setRefreshSessionOnException(true);
+      ProducerSession session4 = producer.setupSession(createMessage(), true);
+      assertNotEquals(session1, session4);
+      assertNotEquals(session2, session4);
     } finally {
       stop(standaloneProducer);
     }

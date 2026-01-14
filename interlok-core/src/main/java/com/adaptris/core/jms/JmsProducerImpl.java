@@ -110,6 +110,9 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
   @AdvancedConfig
   private ProducerSessionFactory sessionFactory;
 
+  @AdvancedConfig(rare = true)
+  @InputFieldDefault(value = "false")
+  private Boolean refreshSessionOnException = false;
 
   private transient ProducerSession producerSession;
 
@@ -178,7 +181,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
     LifecycleHelper.stop(getMessageTranslator());
     LifecycleHelper.stop(getSessionFactory());
     CURRENT_MESSAGE_ID = "";
-    producerSession = null;
+    if (refreshSessionOnException) producerSession = null;
   }
 
   @Override
@@ -204,7 +207,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
   }
 
   protected ProducerSession setupSession(AdaptrisMessage msg, boolean forceRecreate) throws JMSException {
-    if (forceRecreate && producerSession != null) {
+    if (refreshSessionOnException && forceRecreate && producerSession != null) {
       getSessionFactory().close();
 
       producerSession = null;
@@ -641,4 +644,11 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
     sessionFactory = Args.notNull(s, "sessionFactory");
   }
 
+  public Boolean getRefreshSessionOnException() {
+    return refreshSessionOnException;
+  }
+
+  public void setRefreshSessionOnException(Boolean refreshSessionOnException) {
+    this.refreshSessionOnException = refreshSessionOnException;
+  }
 }
