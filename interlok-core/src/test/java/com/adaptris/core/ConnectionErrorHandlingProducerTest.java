@@ -87,19 +87,19 @@ public class ConnectionErrorHandlingProducerTest extends com.adaptris.interlok.j
       con.setConnectionErrorHandler(eh);
 
       ProduceException ex = new ProduceException();
-      a.maybeHandleException(ex);
+      assertThrows(ProduceException.class, () -> a.maybeHandleException(ex));
       verify(p, times(0)).handleConnectionException();
 
       when(eh.canHandleException(any())).thenReturn(false);
-      a.maybeHandleException(ex);
+      assertThrows(ProduceException.class, () -> a.maybeHandleException(ex));
       verify(p, times(0)).handleConnectionException();
 
       when(eh.canHandleException(any())).thenReturn(true);
-      a.maybeHandleException(ex);
+      assertThrows(ProduceException.class, () -> a.maybeHandleException(ex));
       verify(p, times(0)).handleConnectionException();
 
       a.registerConnection(con);
-      assertThrows(ProduceException.class, () -> a.maybeHandleException(ex));
+      assertDoesNotThrow(() -> a.maybeHandleException(ex));
       verify(p, times(1)).handleConnectionException();
 
       when(eh.canHandleException(any())).thenReturn(false);

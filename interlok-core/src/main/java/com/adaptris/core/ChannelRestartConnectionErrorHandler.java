@@ -21,6 +21,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.adaptris.core.util.LoggingHelper.friendlyName;
 
@@ -32,29 +34,47 @@ import static com.adaptris.core.util.LoggingHelper.friendlyName;
 @XStreamAlias("channel-restart-error-handler")
 public class ChannelRestartConnectionErrorHandler extends ConnectionErrorHandlerImp {
 
-  protected transient LocalDateTime lastConnectionExceptionDateTime;
+  protected transient LocalDateTime lastRestartDateTime;
   protected transient Duration _durationBetweenRestarts = Duration.ofSeconds(60);
-  private String durationBetweenRestarts;
+  protected final Timer channelAvailableTimer = new Timer();
+  protected transient TimerTask channelAvailableTimerTask;
+  private String durationBetweenRestarts = _durationBetweenRestarts.toString();
 
+  protected ConnectionErrorHandler delegate;
 
+  public ConnectionErrorHandler getDelegate() {
+        return delegate;
+    }
+
+  public void setDelegate(ConnectionErrorHandler delegate) {
+        this.delegate = delegate;
+    }
 
   @Override
   public void handleConnectionException() {
     toggleChannelAvailability(false);
-    LocalDateTime now = LocalDateTime.now();
-    if (lastConnectionExceptionDateTime == null || now.isAfter(lastConnectionExceptionDateTime.plus(durationBetweenRestarts()))) {
-      log.info("{}:: Restarting affected channels", getClass().getSimpleName());
-      lastConnectionExceptionDateTime = now;
-      restartAffectedComponents();
+    try {
+        if (delegate != null) {
+            delegate.handleConnectionException();
+        }
+    } finally {
+        log.info("{}:: Restarting affected channels", getClass().getSimpleName());
+        restartAffectedComponents();
     }
   }
 
-    public LocalDateTime getLastConnectionExceptionDateTime() {
-        return lastConnectionExceptionDateTime;
+    @Override
+    protected Set<StateManagedComponent> filter(Set<StateManagedComponent> list) {
+      // we should always try to restart components regardless of
+      return list;
     }
 
-    public void setLastConnectionExceptionDateTime(LocalDateTime lastConnectionExceptionDateTime) {
-        this.lastConnectionExceptionDateTime = lastConnectionExceptionDateTime;
+    public LocalDateTime getLastRestartDateTime() {
+        return lastRestartDateTime;
+    }
+
+    public void setLastRestartDateTime(LocalDateTime lastRestartDateTime) {
+        this.lastRestartDateTime = lastRestartDateTime;
     }
 
     public String getDurationBetweenRestarts() {
@@ -75,25 +95,28 @@ public class ChannelRestartConnectionErrorHandler extends ConnectionErrorHandler
       return _durationBetweenRestarts;
   }
 
-  @Override
-  public void init() throws CoreException {
-  }
+    @Override
+    public void init() throws CoreException {
+        if (delegate != null) delegate.init();
+    }
 
-  @Override
-  public void start() throws CoreException {
-  }
+    @Override
+    public void start() throws CoreException {
+        if (delegate != null) delegate.start();
+    }
 
-  @Override
-  public void stop() {
-  }
+    @Override
+    public void stop() {
+        if (delegate != null) delegate.stop();
+    }
 
-  @Override
-  public void close() {
-      reset();
-  }
+    @Override
+    public void close() {
+      if (delegate != null) delegate.close();
+    }
 
   public void reset() {
-      lastConnectionExceptionDateTime = null;
+      lastRestartDateTime = null;
   }
 
   protected void toggleChannelAvailability(boolean available) {

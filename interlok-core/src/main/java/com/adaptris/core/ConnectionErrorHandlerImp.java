@@ -142,7 +142,8 @@ public abstract class ConnectionErrorHandlerImp implements ConnectionErrorHandle
     Set<StateManagedComponent> result = new LinkedHashSet<>();
     for (StateManagedComponent c : list) {
       String loggingId = friendlyName(c);
-      if (c.retrieveComponentState() == StartedState.getInstance()) {
+      if ((c instanceof Channel _c && _c.getComponentState() == StartedState.getInstance()) ||
+              (!(c instanceof Channel) && c.retrieveComponentState() == StartedState.getInstance())) {
         log.trace("Component : [{}] will be restarted after recovery", loggingId);
         result.add(c);
       }

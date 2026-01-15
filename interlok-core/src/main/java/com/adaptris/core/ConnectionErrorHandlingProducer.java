@@ -71,21 +71,25 @@ public class ConnectionErrorHandlingProducer implements AdaptrisMessageProducer 
         }
     }
 
-    protected void maybeHandleException(ProduceException e) throws ProduceException {
+    protected boolean canHandleException(ProduceException e) {
         AdaptrisConnection connection = retrieveConnection(AdaptrisConnection.class);
         if (connection != null) {
             ConnectionErrorHandler errorHandler = connection.connectionErrorHandler();
             if (errorHandler != null) {
-                if (errorHandler.canHandleException(e)) {
-                    try {
-                        handleConnectionException();
-                    } catch (Exception ex) {
-                        log.warn(ex.getMessage(), e);
-                    }
-                }
-                throw e;
+                return errorHandler.canHandleException(e);
             }
         }
+        return false;
+    }
+
+    protected void maybeHandleException(ProduceException e) throws ProduceException {
+        if (canHandleException(e)) {
+            try {
+                handleConnectionException();
+            } catch (Exception ex) {
+                log.warn(ex.getMessage(), e);
+            }
+        } else throw e;
     }
 
     @Override

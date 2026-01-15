@@ -181,7 +181,7 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
     LifecycleHelper.stop(getMessageTranslator());
     LifecycleHelper.stop(getSessionFactory());
     CURRENT_MESSAGE_ID = "";
-    if (refreshSessionOnException) producerSession = null;
+    producerSession = null;
   }
 
   @Override

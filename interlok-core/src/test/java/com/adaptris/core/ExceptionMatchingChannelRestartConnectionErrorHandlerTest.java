@@ -41,9 +41,9 @@ public class ExceptionMatchingChannelRestartConnectionErrorHandlerTest extends c
 
       ChannelRestartConnectionErrorHandler delegate = spy(new ChannelRestartConnectionErrorHandler());
       // set the last connection time in the future, so it doesn't try to restart the channel
-      delegate.setLastConnectionExceptionDateTime(LocalDateTime.now()
+      delegate.setLastRestartDateTime(LocalDateTime.now()
               .plus(Duration.ofDays(1)));
-      assertNotNull(delegate.getLastConnectionExceptionDateTime());
+      assertNotNull(delegate.getLastRestartDateTime());
       handler.setDelegate(delegate);
       assertNull(handler.retrieveConnection(AdaptrisConnection.class));
       assertEquals(delegate, handler.getDelegate());
@@ -217,6 +217,7 @@ public class ExceptionMatchingChannelRestartConnectionErrorHandlerTest extends c
       workflow.onAdaptrisMessage(message);
 
       assertFalse(channel.isAvailable());
+      Thread.sleep((delegate.durationBetweenRestarts().getSeconds()/2+1)*1000);
 
       // set producer to succeed
       channel.toggleAvailability(true);
@@ -229,8 +230,8 @@ public class ExceptionMatchingChannelRestartConnectionErrorHandlerTest extends c
 
       stop(channel);
 
-      verify(delegate, times(4)).restartAffectedComponents();
-      verify(handler, times(6)).canHandleException(any(ProduceException.class));
+      verify(delegate, times(3)).restartAffectedComponents();
+      verify(handler, times(3)).canHandleException(any(ProduceException.class));
 
 
   }

@@ -16,9 +16,6 @@
 
 package com.adaptris.core;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import java.lang.reflect.Method;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -30,6 +27,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 
@@ -38,6 +36,8 @@ import com.adaptris.core.stubs.MockMessageConsumer;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.interlok.junit.scaffolding.jms.MockConsumer;
 import com.adaptris.interlok.junit.scaffolding.jms.MockProducer;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AdaptrisConnectionTest extends com.adaptris.interlok.junit.scaffolding.BaseCase {
 
@@ -186,6 +186,33 @@ public class AdaptrisConnectionTest extends com.adaptris.interlok.junit.scaffold
   public void testCloneForTesting() throws Exception {
     MockConnection mc = new MockConnection();
     assertEquals(MockConnection.class, mc.cloneForTesting().getClass());
+  }
+
+  @Test
+  public void testConfigureForChannelRestart() throws Exception {
+    MockConnection mc = new MockConnection();
+    assertFalse(mc.getConfigureForChannelRestart());
+    List<MockMessageConsumer> consumers = createConsumers();
+    List<MockMessageProducer> producers = createProducers();
+    mc.addMessageConsumer(null);
+    for (MockMessageConsumer c : consumers) {
+      mc.addMessageConsumer(c);
+    }
+    for (MockMessageProducer c : producers) {
+      mc.addMessageProducer(c);
+    }
+    mc.prepare();
+    assertTrue(mc.retrieveMessageConsumers().containsAll(consumers));
+    assertEquals(consumers.size(), mc.retrieveMessageConsumers().size());
+    assertTrue(mc.retrieveMessageProducers().containsAll(producers));
+    assertEquals(producers.size(), mc.retrieveMessageProducers().size());
+
+    mc.setConfigureForChannelRestart(true);
+    mc.prepare();
+    assertTrue(mc.retrieveMessageConsumers().containsAll(consumers));
+    assertEquals(consumers.size(), mc.retrieveMessageConsumers().size());
+    assertTrue(CollectionUtils.intersection(mc.retrieveMessageProducers(), producers).isEmpty());
+    assertTrue(mc.retrieveMessageProducers().stream().map(producer -> producer instanceof ChannelUnavailableConnectionErrorHandlingProducer).allMatch(a -> a.equals(true)));
   }
 
   private void assertState(List list, ComponentState state) {

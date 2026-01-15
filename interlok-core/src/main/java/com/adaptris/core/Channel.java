@@ -444,6 +444,15 @@ public class Channel implements ComponentLifecycleExtension, StateManagedCompone
   }
 
   /**
+   * This method is added here to allow logic where the unavailableComponentState is set and available == false
+   * but we need to know the actual state (not the return value of retrieveComponentState())
+   * @return
+   */
+  protected ComponentState getComponentState() {
+    return state;
+  }
+
+  /**
    * @see StateManagedComponentContainer#requestChildInit()
    */
   @Override

@@ -39,7 +39,7 @@ public abstract class RequestReplyProducerImp extends RequestReplyProducerBase {
         AdaptrisMessage reply = doRequest(msg, endpoint, timeout);
         return mergeReply(reply, msg);
       } catch (ProduceException e) {
-          maybeHandleProduceException(e);
+          //maybeHandleProduceException(e);
           throw e;
       }
   }

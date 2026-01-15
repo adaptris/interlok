@@ -60,7 +60,6 @@ public abstract class AdaptrisMessageProducerImp extends AdaptrisMessageWorkerIm
         try {
             return doRequest(msg, timeout);
         } catch (ProduceException e) {
-            maybeHandleProduceException(e);
             throw e;
         }
     }
@@ -69,15 +68,7 @@ public abstract class AdaptrisMessageProducerImp extends AdaptrisMessageWorkerIm
         try {
             doProduce(msg, endpoint(msg));
         } catch (ProduceException e) {
-            maybeHandleProduceException(e);
             throw e;
-        }
-    }
-
-    public void maybeHandleProduceException(ProduceException e) {
-        AdaptrisConnection conn = retrieveConnection(AdaptrisConnection.class);
-        if (conn != null && conn.connectionErrorHandler() != null && conn.connectionErrorHandler().canHandleException(e)) {
-            conn.connectionErrorHandler().handleConnectionException();
         }
     }
 }

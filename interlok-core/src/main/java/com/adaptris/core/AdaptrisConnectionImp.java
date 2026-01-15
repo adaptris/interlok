@@ -17,8 +17,10 @@
 package com.adaptris.core;
 
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -48,6 +50,10 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
   private Boolean workersFirstOnShutdown;
   private String uniqueId;
 
+  @AdvancedConfig(rare = true)
+  @InputFieldDefault(value = "false")
+  private Boolean configureForChannelRestart = false;
+
   private transient Object lock = new Object();
   private transient Set<StateManagedComponent> listeners; // back ref to parent Channel
   private transient Set<AdaptrisMessageConsumer> consumers;
@@ -69,6 +75,43 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
     state = ClosedState.getInstance();
   }
 
+  private void doConfigureForChannelRestart() throws CoreException {
+    // configure connection error handler and producers to use channel restart components
+    ChannelRestartConnectionErrorHandler restartErrorHandler = new ChannelRestartConnectionErrorHandler();
+    ConnectionErrorHandler existingErrorHandler = connectionErrorHandler;
+    if (existingErrorHandler != null) {
+      restartErrorHandler.setDelegate(existingErrorHandler);
+    }
+    setConnectionErrorHandler(restartErrorHandler);
+
+    if (producers != null) {
+      var restartProducers = producers.stream().map(producer -> {
+        ChannelUnavailableConnectionErrorHandlingProducer channelUnavailableConnectionErrorHandlingProducer
+                = new ChannelUnavailableConnectionErrorHandlingProducer();
+        if (producer != null) {
+          channelUnavailableConnectionErrorHandlingProducer.setDelegate(producer);
+          return channelUnavailableConnectionErrorHandlingProducer;
+        } else return null;
+      }).collect(Collectors.toSet());
+      producers.clear();
+      for (AdaptrisMessageProducer producer : restartProducers) {
+        addMessageProducer(producer);
+      }
+      retrieveExceptionListeners().stream().forEach(l -> {
+        if (l instanceof Channel channel) {
+          channel.setUnavailableState(StoppedState.getInstance().toString());
+          channel.getWorkflowList().stream().forEach(workflow -> {
+            if (workflow instanceof WorkflowImp w) {
+              Optional<ChannelUnavailableConnectionErrorHandlingProducer> optP = restartProducers.stream().filter(p -> p.getDelegate().equals(w.getProducer())).findFirst();
+                optP.ifPresent(w::setProducer);
+            }
+          });
+        }
+      });
+
+    }
+  }
+
   /** @see com.adaptris.core.AdaptrisComponent#init() */
   @Override
   public final void init() throws CoreException {
@@ -85,6 +128,10 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
 
   @Override
   public final void prepare() throws CoreException {
+    if (configureForChannelRestart) {
+      doConfigureForChannelRestart();
+    }
+
     if (connectionErrorHandler() != null) {
       connectionErrorHandler().registerConnection(this);
     }
@@ -240,6 +287,14 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
   @Override
   public ConnectionErrorHandler connectionErrorHandler() {
     return connectionErrorHandler;
+  }
+
+  public Boolean getConfigureForChannelRestart() {
+    return configureForChannelRestart;
+  }
+
+  public void setConfigureForChannelRestart(Boolean configureForChannelRestart) {
+    this.configureForChannelRestart = configureForChannelRestart;
   }
 
   /**

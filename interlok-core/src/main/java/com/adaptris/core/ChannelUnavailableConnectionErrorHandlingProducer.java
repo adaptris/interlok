@@ -36,9 +36,9 @@ import java.util.TimerTask;
 public class ChannelUnavailableConnectionErrorHandlingProducer extends ConnectionErrorHandlingProducer {
     protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
-    protected Integer connectionErrorThreshold;
-    protected String connectionErrorWaitDuration;
-    protected Duration _connectionErrorWaitDuration;
+    protected Integer connectionErrorThreshold = 3;
+    protected Duration _connectionErrorWaitDuration = Duration.ofSeconds(60);
+    protected String connectionErrorWaitDuration = _connectionErrorWaitDuration.toString();
     protected Integer connectionErrors = 0;
 
     @Override
@@ -132,24 +132,27 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
     }
 
     @Override
-    public void handleConnectionException() throws CoreException {
+    protected boolean canHandleException(ProduceException e) {
         if (connectionErrors == null) setConnectionErrors(0);
         setConnectionErrors(connectionErrors + 1);
         log.debug("Consecutive connection errors encountered: {} threshold: {}", getConnectionErrors(), getConnectionErrorThreshold());
-        if (getConnectionErrors() >= getConnectionErrorThreshold()) {
-            toggleChannelAvailability(false);
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    try {
-                        toggleChannelAvailability(true);
-                        ChannelUnavailableConnectionErrorHandlingProducer.super.handleConnectionException();
-                    } catch (CoreException e) {
-                        log.warn(e.getMessage(), e);
-                    }
+        return getConnectionErrors() >= getConnectionErrorThreshold();
+    }
+
+    @Override
+    public void handleConnectionException() throws CoreException {
+        toggleChannelAvailability(false);
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    toggleChannelAvailability(true);
+                    ChannelUnavailableConnectionErrorHandlingProducer.super.handleConnectionException();
+                } catch (CoreException e) {
+                    log.warn(e.getMessage(), e);
                 }
-            }, connectionErrorWaitDuration().toMillis());
-        }
+            }
+        }, connectionErrorWaitDuration().toMillis());
     }
 
 
