@@ -24,6 +24,8 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.apache.commons.lang3.BooleanUtils;
+
 /**
  * <p>
  * A decorator for <code>AdaptrisMessageProducer</code> which will handle connection errors
@@ -102,6 +104,7 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
     @Override
     public AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException {
         ProduceException failed = null;
+        String autoConfigureConnection = msg.getMetadataValue(CoreConstants.AUTO_CONFIGURATION_KEY);
         try {
             return super.request(msg, timeout);
         } catch (ProduceException ex) {
@@ -110,7 +113,7 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
         } finally {
             if (failed == null) {
                 setConnectionErrors(0);
-                toggleChannelAvailability(true);
+                toggleChannelAvailability(BooleanUtils.toBooleanDefaultIfNull(autoConfigureConnection));
             }
         }
     }
@@ -118,6 +121,7 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
     @Override
     public void produce(AdaptrisMessage msg) throws ProduceException {
         ProduceException failed = null;
+        String autoConfigureConnection = msg.getMetadataValue(CoreConstants.AUTO_CONFIGURATION_KEY);
         try {
             super.produce(msg);
         } catch (ProduceException ex) {
@@ -126,7 +130,7 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
         } finally {
             if (failed == null) {
                 setConnectionErrors(0);
-                toggleChannelAvailability(true);
+                toggleChannelAvailability(BooleanUtils.toBooleanDefaultIfNull(autoConfigureConnection));
             }
         }
     }

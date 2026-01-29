@@ -18,6 +18,7 @@ package com.adaptris.core.jms;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import static com.adaptris.core.jms.JmsConstants.JMS_ASYNC_STATIC_REPLY_TO;
+import static com.adaptris.core.jms.JmsConstants.JMS_AUTO_REFRESH_SESSION_ON_EXCEPTION;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.util.Optional;
@@ -111,7 +112,8 @@ public class JmsProducer extends JmsProducerImpl {
 
   protected void doProduce(AdaptrisMessage msg, JmsDestination jmsDest)
      throws JMSException, CoreException {
-    doProduce(msg, jmsDest, true);
+    String refreshSessionIfProduceException = msg.getMetadataValue(JMS_AUTO_REFRESH_SESSION_ON_EXCEPTION);
+    doProduce(msg, jmsDest, BooleanUtils.toBooleanDefaultIfNull(refreshSessionIfProduceException));
   }
 
   protected void doProduce(AdaptrisMessage msg, JmsDestination jmsDest, boolean refreshSessionIfProduceException)
