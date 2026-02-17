@@ -113,7 +113,7 @@ public class JmsProducer extends JmsProducerImpl {
   protected void doProduce(AdaptrisMessage msg, JmsDestination jmsDest)
      throws JMSException, CoreException {
     String refreshSessionIfProduceException = msg.getMetadataValue(JMS_AUTO_REFRESH_SESSION_ON_EXCEPTION);
-    doProduce(msg, jmsDest, BooleanUtils.toBooleanDefaultIfNull(refreshSessionIfProduceException));
+    doProduce(msg, jmsDest, BooleanUtils.toBooleanDefaultIfNull(Boolean.valueOf(refreshSessionIfProduceException), true));
   }
 
   protected void doProduce(AdaptrisMessage msg, JmsDestination jmsDest, boolean refreshSessionIfProduceException)

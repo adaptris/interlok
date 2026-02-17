@@ -113,7 +113,7 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
         } finally {
             if (failed == null) {
                 setConnectionErrors(0);
-                toggleChannelAvailability(BooleanUtils.toBooleanDefaultIfNull(autoConfigureConnection));
+                toggleChannelAvailability(BooleanUtils.toBooleanDefaultIfNull(Boolean.valueOf(autoConfigureConnection), false));
             }
         }
     }
@@ -130,7 +130,7 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
         } finally {
             if (failed == null) {
                 setConnectionErrors(0);
-                toggleChannelAvailability(BooleanUtils.toBooleanDefaultIfNull(autoConfigureConnection));
+                toggleChannelAvailability(BooleanUtils.toBooleanDefaultIfNull(Boolean.valueOf(autoConfigureConnection), false));
             }
         }
     }
