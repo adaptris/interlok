@@ -45,6 +45,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * JMS Producer implementation that can target queues or topics via an RFC6167 style destination.
@@ -113,7 +114,8 @@ public class JmsProducer extends JmsProducerImpl {
   protected void doProduce(AdaptrisMessage msg, JmsDestination jmsDest)
      throws JMSException, CoreException {
     String refreshSessionIfProduceException = msg.getMetadataValue(JMS_AUTO_REFRESH_SESSION_ON_EXCEPTION);
-    doProduce(msg, jmsDest, BooleanUtils.toBooleanDefaultIfNull(Boolean.valueOf(refreshSessionIfProduceException), true));
+    Boolean isRefreshSessionIfProduceException = StringUtils.isNotEmpty(refreshSessionIfProduceException)? Boolean.valueOf(refreshSessionIfProduceException):Boolean.TRUE;
+    doProduce(msg, jmsDest, isRefreshSessionIfProduceException);
   }
 
   protected void doProduce(AdaptrisMessage msg, JmsDestination jmsDest, boolean refreshSessionIfProduceException)
