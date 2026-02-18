@@ -553,6 +553,55 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     }
   }
 
+
+  @Test
+  public void testRefreshSessionIfException_MetadataTrue() throws Exception {
+      String rfc6167 = "jms:queue:" + getName();
+      JmsConsumerImpl consumer = createConsumer(getName());
+      consumer.setAcknowledgeMode("AUTO_ACKNOWLEDGE");
+      StandaloneConsumer standaloneConsumer = new StandaloneConsumer(activeMqBroker.getJmsConnection(), consumer);
+      MockMessageListener jms = new MockMessageListener();
+      JmsProducer producer = spy(createProducer(rfc6167));
+      ProducerSessionFactory psf = spy(new DefaultProducerSessionFactory());
+      producer.setSessionFactory(psf);
+      standaloneConsumer.registerAdaptrisMessageListener(jms);
+
+      MessageProducer throwsExceptionProducer = mock(MessageProducer.class);
+      doAnswer(args -> {
+          throw new JMSException("The Session is closed");
+      }).when(throwsExceptionProducer).send(isA(Destination.class), any(), anyInt(), anyInt(), anyLong());
+
+      doReturn(new ProducerSession() {
+          @Override
+          public Session getSession() {
+                return producer.producerSession().getSession();
+            }
+
+          @Override
+          public MessageProducer getProducer() {
+                return throwsExceptionProducer;
+            }
+      }).when(producer).producerSession();
+
+      StandaloneProducer standaloneProducer = new StandaloneProducer(activeMqBroker.getJmsConnection(), producer);
+
+      // Explicitly set JMSRefreshSessionOnException = "true"
+      AdaptrisMessage msg = createMessage();
+      msg.addMetadata(JmsConstants.JMS_AUTO_REFRESH_SESSION_ON_EXCEPTION, "true");
+
+      assertThrows(ServiceException.class, () -> {
+          try {
+              start(standaloneConsumer, standaloneProducer);
+              standaloneProducer.doService(msg);
+          } finally {
+              stop(standaloneProducer, standaloneConsumer);
+          }
+      });
+
+      verify(producer, times(2)).setupSession(any(), eq(false));
+      verify(producer, times(1)).setupSession(any(), eq(true));
+  }
+
   @Test
   public void testRefreshSessionIfException() throws Exception {
     String rfc6167 = "jms:queue:" + getName() + "";
