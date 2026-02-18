@@ -18,6 +18,7 @@ package com.adaptris.core.jms;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import static com.adaptris.core.jms.JmsConstants.JMS_ASYNC_STATIC_REPLY_TO;
+import static com.adaptris.core.jms.JmsConstants.JMS_AUTO_REFRESH_SESSION_ON_EXCEPTION;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.util.Optional;
@@ -44,6 +45,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * JMS Producer implementation that can target queues or topics via an RFC6167 style destination.
@@ -111,7 +113,9 @@ public class JmsProducer extends JmsProducerImpl {
 
   protected void doProduce(AdaptrisMessage msg, JmsDestination jmsDest)
      throws JMSException, CoreException {
-    doProduce(msg, jmsDest, true);
+    String refreshSessionIfProduceException = msg.getMetadataValue(JMS_AUTO_REFRESH_SESSION_ON_EXCEPTION);
+    Boolean isRefreshSessionIfProduceException = StringUtils.isNotEmpty(refreshSessionIfProduceException)? Boolean.valueOf(refreshSessionIfProduceException):Boolean.TRUE;
+    doProduce(msg, jmsDest, isRefreshSessionIfProduceException);
   }
 
   protected void doProduce(AdaptrisMessage msg, JmsDestination jmsDest, boolean refreshSessionIfProduceException)

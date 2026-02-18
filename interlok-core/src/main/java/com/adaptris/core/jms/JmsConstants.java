@@ -110,4 +110,12 @@ public final class JmsConstants {
    */
   public static final String JMS_ASYNC_STATIC_REPLY_TO = "JMSAsyncStaticReplyTo";
 
+  /**
+   * Key used to refresh session on encountering exception when using a producer.
+   * <p>
+   * If this metadata key is populated, then it will be used to refresh a session if an exception is encountered whenever a message is produced to JMS.
+   * </p>
+   *
+   */
+  public static final String JMS_AUTO_REFRESH_SESSION_ON_EXCEPTION = "JMSRefreshSessionOnException";
 }

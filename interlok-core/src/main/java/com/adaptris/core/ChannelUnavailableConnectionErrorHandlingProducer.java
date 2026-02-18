@@ -16,6 +16,7 @@ package com.adaptris.core;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +24,8 @@ import java.time.Duration;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import org.apache.commons.lang3.BooleanUtils;
 
 /**
  * <p>
@@ -102,6 +105,8 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
     @Override
     public AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException {
         ProduceException failed = null;
+        String autoConfigureConnection = msg.getMetadataValue(CoreConstants.AUTO_CONFIGURATION_KEY);
+        Boolean isAutoConfigureConnection = StringUtils.isNotEmpty(autoConfigureConnection)? Boolean.valueOf(autoConfigureConnection): Boolean.TRUE;
         try {
             return super.request(msg, timeout);
         } catch (ProduceException ex) {
@@ -110,7 +115,7 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
         } finally {
             if (failed == null) {
                 setConnectionErrors(0);
-                toggleChannelAvailability(true);
+                toggleChannelAvailability(isAutoConfigureConnection);
             }
         }
     }
@@ -118,6 +123,8 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
     @Override
     public void produce(AdaptrisMessage msg) throws ProduceException {
         ProduceException failed = null;
+        String autoConfigureConnection = msg.getMetadataValue(CoreConstants.AUTO_CONFIGURATION_KEY);
+        Boolean isAutoConfigureConnection = StringUtils.isEmpty(autoConfigureConnection)? Boolean.TRUE:Boolean.valueOf(autoConfigureConnection);
         try {
             super.produce(msg);
         } catch (ProduceException ex) {
@@ -126,7 +133,7 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
         } finally {
             if (failed == null) {
                 setConnectionErrors(0);
-                toggleChannelAvailability(true);
+                toggleChannelAvailability(isAutoConfigureConnection);
             }
         }
     }
