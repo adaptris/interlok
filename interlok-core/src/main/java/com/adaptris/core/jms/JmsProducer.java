@@ -18,7 +18,7 @@ package com.adaptris.core.jms;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import static com.adaptris.core.jms.JmsConstants.JMS_ASYNC_STATIC_REPLY_TO;
-import static com.adaptris.core.jms.JmsConstants.JMS_AUTO_REFRESH_SESSION_ON_EXCEPTION;
+import org.apache.commons.lang3.BooleanUtils;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.util.Optional;
@@ -28,8 +28,6 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.validation.constraints.NotBlank;
-
-import org.apache.commons.lang3.BooleanUtils;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
@@ -45,7 +43,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * JMS Producer implementation that can target queues or topics via an RFC6167 style destination.
@@ -83,6 +80,14 @@ import org.apache.commons.lang3.StringUtils;
 public class JmsProducer extends JmsProducerImpl {
 
   /**
+   * If true, the producer will refresh the JMS session on a produce exception.
+   * Defaults to true for backward compatibility.
+   */
+  @Getter
+  @Setter
+  private Boolean refreshSessionIfProduceException = Boolean.TRUE;
+
+  /**
    * The JMS Endpoint defined in an RFC6167 manner.
    */
   @InputFieldHint(expression = true)
@@ -113,9 +118,7 @@ public class JmsProducer extends JmsProducerImpl {
 
   protected void doProduce(AdaptrisMessage msg, JmsDestination jmsDest)
      throws JMSException, CoreException {
-    String refreshSessionIfProduceException = msg.getMetadataValue(JMS_AUTO_REFRESH_SESSION_ON_EXCEPTION);
-    Boolean isRefreshSessionIfProduceException = StringUtils.isNotEmpty(refreshSessionIfProduceException)? Boolean.valueOf(refreshSessionIfProduceException):Boolean.TRUE;
-    doProduce(msg, jmsDest, isRefreshSessionIfProduceException);
+    doProduce(msg, jmsDest, refreshSessionIfProduceException);
   }
 
   protected void doProduce(AdaptrisMessage msg, JmsDestination jmsDest, boolean refreshSessionIfProduceException)

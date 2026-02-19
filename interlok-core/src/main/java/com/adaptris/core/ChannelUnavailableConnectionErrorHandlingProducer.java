@@ -43,6 +43,7 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
     protected String connectionErrorWaitDuration;
     protected Duration _connectionErrorWaitDuration;
     protected Integer connectionErrors = 0;
+    private Boolean autoConfigureConnection = Boolean.TRUE;
 
     @Override
     public void prepare() throws CoreException {
@@ -86,6 +87,14 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
         this.connectionErrors = connectionErrors;
     }
 
+    public Boolean getAutoConfigureConnection() {
+        return autoConfigureConnection;
+    }
+
+    public void setAutoConfigureConnection(Boolean autoConfigureConnection) {
+        this.autoConfigureConnection = autoConfigureConnection;
+    }
+
     @Override
     public AdaptrisMessage request(AdaptrisMessage msg) throws ProduceException {
         ProduceException failed = null;
@@ -95,7 +104,7 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
             failed = ex;
             throw ex;
         } finally {
-            if (failed == null) {
+            if (getAutoConfigureConnection() && failed == null) {
                 setConnectionErrors(0);
                 toggleChannelAvailability(true);
             }
@@ -105,17 +114,15 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
     @Override
     public AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException {
         ProduceException failed = null;
-        String autoConfigureConnection = msg.getMetadataValue(CoreConstants.AUTO_CONFIGURATION_KEY);
-        Boolean isAutoConfigureConnection = StringUtils.isNotEmpty(autoConfigureConnection)? Boolean.valueOf(autoConfigureConnection): Boolean.TRUE;
         try {
             return super.request(msg, timeout);
         } catch (ProduceException ex) {
             failed = ex;
             throw ex;
         } finally {
-            if (failed == null) {
+            if (getAutoConfigureConnection() && failed == null) {
                 setConnectionErrors(0);
-                toggleChannelAvailability(isAutoConfigureConnection);
+                toggleChannelAvailability(true);
             }
         }
     }
@@ -123,17 +130,15 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
     @Override
     public void produce(AdaptrisMessage msg) throws ProduceException {
         ProduceException failed = null;
-        String autoConfigureConnection = msg.getMetadataValue(CoreConstants.AUTO_CONFIGURATION_KEY);
-        Boolean isAutoConfigureConnection = StringUtils.isEmpty(autoConfigureConnection)? Boolean.TRUE:Boolean.valueOf(autoConfigureConnection);
         try {
             super.produce(msg);
         } catch (ProduceException ex) {
             failed = ex;
             throw ex;
         } finally {
-            if (failed == null) {
+            if (getAutoConfigureConnection() && failed == null) {
                 setConnectionErrors(0);
-                toggleChannelAvailability(isAutoConfigureConnection);
+                toggleChannelAvailability(true);
             }
         }
     }
@@ -143,7 +148,7 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
         if (connectionErrors == null) setConnectionErrors(0);
         setConnectionErrors(connectionErrors + 1);
         log.debug("Consecutive connection errors encountered: {} threshold: {}", getConnectionErrors(), getConnectionErrorThreshold());
-        if (getConnectionErrors() >= getConnectionErrorThreshold()) {
+        if (getAutoConfigureConnection() && getConnectionErrors() >= getConnectionErrorThreshold()) {
             toggleChannelAvailability(false);
             new Timer().schedule(new TimerTask() {
                 @Override
