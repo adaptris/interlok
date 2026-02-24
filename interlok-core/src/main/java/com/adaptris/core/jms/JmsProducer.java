@@ -85,7 +85,7 @@ public class JmsProducer extends JmsProducerImpl {
    */
   @Getter
   @Setter
-  private Boolean refreshSessionIfProduceException = Boolean.TRUE;
+  private Boolean refreshSessionIfProduceException = Boolean.FALSE;
 
   /**
    * The JMS Endpoint defined in an RFC6167 manner.
