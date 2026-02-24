@@ -107,5 +107,4 @@ public class ConnectionErrorHandlingProducerTest extends com.adaptris.interlok.j
       verify(p, times(1)).handleConnectionException();
 
     }
-
 }
