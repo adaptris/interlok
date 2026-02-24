@@ -111,13 +111,6 @@ public class ConnectionErrorHandlingProducerTest extends com.adaptris.interlok.j
     }
 
     @Test
-    public void testToggleChannelAvailability() {
-        ChannelUnavailableConnectionErrorHandlingProducer producer = spy(new ChannelUnavailableConnectionErrorHandlingProducer());
-        AdaptrisConnection connection = mock(AdaptrisConnection.class);
-        Channel channel = mock(Channel.class);
-        StateManagedComponent otherComponent = mock(StateManagedComponent.class);
-
-        // Mock retrieveExceptionListeners to return a Channel and another component
         when(connection.retrieveExceptionListeners()).thenReturn(Collections.singleton(channel));
         // Mock retrieveConnection to return our mocked connection
         doReturn(connection).when(producer).retrieveConnection(AdaptrisConnection.class);
