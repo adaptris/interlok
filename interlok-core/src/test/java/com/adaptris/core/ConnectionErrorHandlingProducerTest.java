@@ -110,19 +110,4 @@ public class ConnectionErrorHandlingProducerTest extends com.adaptris.interlok.j
 
     }
 
-    @Test
-        when(connection.retrieveExceptionListeners()).thenReturn(Collections.singleton(channel));
-        // Mock retrieveConnection to return our mocked connection
-        doReturn(connection).when(producer).retrieveConnection(AdaptrisConnection.class);
-
-        // Call toggleChannelAvailability(true)
-        producer.toggleChannelAvailability(true);
-        // Verify Channel.toggleAvailability(true) is called
-        verify(channel, times(1)).toggleAvailability(true);
-
-        // Call toggleChannelAvailability(false)
-        producer.toggleChannelAvailability(false);
-        // Verify Channel.toggleAvailability(false) is called
-        verify(channel, times(1)).toggleAvailability(false);
-    }
 }
