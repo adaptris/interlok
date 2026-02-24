@@ -2,11 +2,18 @@ ext {
   componentName="Interlok Core/Common"
   componentDesc="Common components for Interlok"
 
+  classesToTest = project.hasProperty("junit.test.classes") ? project.getProperty("junit.test.classes") : "**/com/adaptris/**/*Test*"
+  verboseTests = project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
+  maxThreads = project.hasProperty("junit.threads") ? project.getProperty("junit.threads") : 1
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
   slf4jVersion = "2.0.17"
   log4j2Version = "2.24.3"
   mockitoVersion = "4.9.0"
   jettyVersion= "10.0.26"
+}
+
+ext.verboseTestLogging = { ->
+  return verboseTests.equals("true")
 }
 
 // In this section you declare the dependencies for your production and test code
@@ -138,5 +145,31 @@ publishing {
   }
 }
 
+test {
+  if (project.name == 'interlok-common') {
+    include classesToTest
+  }
+
+  maxHeapSize = "1G"
+  maxParallelForks = maxThreads
+  jvmArgs '--add-opens', 'java.base/java.lang=ALL-UNNAMED', '--add-opens', 'java.base/java.util=ALL-UNNAMED'
+
+  // listen to events in the test execution lifecycle
+  beforeSuite { descriptor ->
+    if (verboseTestLogging()) {
+      logger.lifecycle("Running: " + descriptor)
+    }
+  }
+
+  if (buildDetails.is_ci_pipeline()) {
+    retry {
+      maxRetries = 3
+      maxFailures = 20
+    }
+  }
+
+  jvmArgs = ['--add-opens', 'java.base/java.lang=ALL-UNNAMED', '--add-opens', 'java.base/java.util=ALL-UNNAMED']
+  useJUnitPlatform()
+}
 
 clean.dependsOn deleteGeneratedFiles
