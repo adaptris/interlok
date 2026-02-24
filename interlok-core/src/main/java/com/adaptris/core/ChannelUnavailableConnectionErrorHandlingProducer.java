@@ -104,7 +104,7 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
             failed = ex;
             throw ex;
         } finally {
-            if (getAutoConfigureConnection() && failed == null) {
+            if (failed == null) {
                 setConnectionErrors(0);
                 toggleChannelAvailability(true);
             }
@@ -120,7 +120,7 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
             failed = ex;
             throw ex;
         } finally {
-            if (getAutoConfigureConnection() && failed == null) {
+            if (failed == null) {
                 setConnectionErrors(0);
                 toggleChannelAvailability(true);
             }
@@ -136,7 +136,7 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
             failed = ex;
             throw ex;
         } finally {
-            if (getAutoConfigureConnection() && failed == null) {
+            if (failed == null) {
                 setConnectionErrors(0);
                 toggleChannelAvailability(true);
             }
@@ -148,19 +148,22 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
         if (connectionErrors == null) setConnectionErrors(0);
         setConnectionErrors(connectionErrors + 1);
         log.debug("Consecutive connection errors encountered: {} threshold: {}", getConnectionErrors(), getConnectionErrorThreshold());
-        if (getAutoConfigureConnection() && getConnectionErrors() >= getConnectionErrorThreshold()) {
+        if (getConnectionErrors() >= getConnectionErrorThreshold()) {
             toggleChannelAvailability(false);
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    try {
-                        toggleChannelAvailability(true);
-                        ChannelUnavailableConnectionErrorHandlingProducer.super.handleConnectionException();
-                    } catch (CoreException e) {
-                        log.warn(e.getMessage(), e);
+            // If autoconfigured, then make channel available after the wait duration has expired.
+            if(getAutoConfigureConnection()) {
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        try {
+                            toggleChannelAvailability(true);
+                            ChannelUnavailableConnectionErrorHandlingProducer.super.handleConnectionException();
+                        } catch (CoreException e) {
+                            log.warn(e.getMessage(), e);
+                        }
                     }
-                }
-            }, connectionErrorWaitDuration().toMillis());
+                }, connectionErrorWaitDuration().toMillis());
+            }
         }
     }
 
