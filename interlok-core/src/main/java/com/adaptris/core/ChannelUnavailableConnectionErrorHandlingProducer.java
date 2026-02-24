@@ -15,7 +15,10 @@
 package com.adaptris.core;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +46,9 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
     protected String connectionErrorWaitDuration;
     protected Duration _connectionErrorWaitDuration;
     protected Integer connectionErrors = 0;
+
+    @Getter
+    @Setter
     private Boolean autoConfigureConnection = Boolean.TRUE;
 
     @Override
@@ -85,14 +91,6 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
 
     protected void setConnectionErrors(Integer connectionErrors) {
         this.connectionErrors = connectionErrors;
-    }
-
-    public Boolean getAutoConfigureConnection() {
-        return autoConfigureConnection;
-    }
-
-    public void setAutoConfigureConnection(Boolean autoConfigureConnection) {
-        this.autoConfigureConnection = autoConfigureConnection;
     }
 
     @Override
