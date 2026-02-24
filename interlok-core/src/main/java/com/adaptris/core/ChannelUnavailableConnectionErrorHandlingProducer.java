@@ -150,6 +150,7 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
         log.debug("Consecutive connection errors encountered: {} threshold: {}", getConnectionErrors(), getConnectionErrorThreshold());
         if (getConnectionErrors() >= getConnectionErrorThreshold()) {
             toggleChannelAvailability(false);
+            // If autoconfigured, then make channel available after the wait duration has expired.
             if(getAutoConfigureConnection()) {
                 new Timer().schedule(new TimerTask() {
                     @Override
