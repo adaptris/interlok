@@ -20,6 +20,8 @@ import com.adaptris.core.stubs.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 
+import java.util.Collections;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -106,5 +108,28 @@ public class ConnectionErrorHandlingProducerTest extends com.adaptris.interlok.j
       assertThrows(ProduceException.class, () -> a.maybeHandleException(ex));
       verify(p, times(1)).handleConnectionException();
 
+    }
+
+    @Test
+    public void testToggleChannelAvailability() {
+        ChannelUnavailableConnectionErrorHandlingProducer producer = spy(new ChannelUnavailableConnectionErrorHandlingProducer());
+        AdaptrisConnection connection = mock(AdaptrisConnection.class);
+        Channel channel = mock(Channel.class);
+        StateManagedComponent otherComponent = mock(StateManagedComponent.class);
+
+        // Mock retrieveExceptionListeners to return a Channel and another component
+        when(connection.retrieveExceptionListeners()).thenReturn(Collections.singleton(channel));
+        // Mock retrieveConnection to return our mocked connection
+        doReturn(connection).when(producer).retrieveConnection(AdaptrisConnection.class);
+
+        // Call toggleChannelAvailability(true)
+        producer.toggleChannelAvailability(true);
+        // Verify Channel.toggleAvailability(true) is called
+        verify(channel, times(1)).toggleAvailability(true);
+
+        // Call toggleChannelAvailability(false)
+        producer.toggleChannelAvailability(false);
+        // Verify Channel.toggleAvailability(false) is called
+        verify(channel, times(1)).toggleAvailability(false);
     }
 }
