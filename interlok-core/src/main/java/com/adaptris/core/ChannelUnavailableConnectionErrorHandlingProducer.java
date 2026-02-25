@@ -44,7 +44,7 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
 
     protected Integer connectionErrorThreshold;
     protected String connectionErrorWaitDuration;
-    protected Duration _connectionErrorWaitDuration;
+    protected Duration _connectionErrorWaitDuration = Duration.ofSeconds(60);
     protected Integer connectionErrors = 0;
 
     @Getter
@@ -54,7 +54,6 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
     @Override
     public void prepare() throws CoreException {
         super.prepare();
-        setConnectionErrorWaitDuration(connectionErrorWaitDuration);
     }
 
     public Integer getConnectionErrorThreshold() {
