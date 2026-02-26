@@ -78,7 +78,7 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
     }
 
     public Duration connectionErrorWaitDuration() {
-        if (_connectionErrorWaitDuration == null && connectionErrorWaitDuration != null) {
+        if (connectionErrorWaitDuration != null) {
             setConnectionErrorWaitDuration(connectionErrorWaitDuration);
         }
         return _connectionErrorWaitDuration;
