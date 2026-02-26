@@ -64,7 +64,7 @@ public class ExceptionMatchingChannelRestartConnectionErrorHandlerTest extends c
       channel.setProduceConnection(connection);
 
       ChannelUnavailableConnectionErrorHandlingProducer producer = new ChannelUnavailableConnectionErrorHandlingProducer();
-      producer.setConnectionErrorWaitDuration("PT10S");
+      producer.setConnectionErrorWaitDuration(5);
       CustomisableProducer producerDelegateSuccess = new CustomisableProducer(
               (msg, dest1, dest2) -> {},
               (msg, dest1, dest2) -> { return msg; }
@@ -78,7 +78,7 @@ public class ExceptionMatchingChannelRestartConnectionErrorHandlerTest extends c
 
       producer.setDelegate(producerDelegateFailure);
       producer.setConnectionErrorThreshold(5);
-//      producer.setConnectionErrorWaitDuration(Duration.ofSeconds(10));
+      producer.setConnectionErrorWaitDuration(5);
 
       WorkflowList workflowList = new WorkflowList();
       StandardWorkflow workflow = new StandardWorkflow();
@@ -95,7 +95,7 @@ public class ExceptionMatchingChannelRestartConnectionErrorHandlerTest extends c
       assertTrue(handler.allowedInConjunctionWith(delegate));
 
       assertEquals(0, producer.getConnectionErrors());
-      assertEquals("PT10S", producer.getConnectionErrorWaitDuration());
+      assertEquals(5, producer.getConnectionErrorWaitDuration());
       assertTrue(channel.isAvailable());
       assertThrows(ProduceException.class, () -> producer.produce(msg));
 
@@ -113,7 +113,7 @@ public class ExceptionMatchingChannelRestartConnectionErrorHandlerTest extends c
       assertFalse(channel.isAvailable());
 
       // after the connection error wait duration, the channel is available
-      Thread.sleep((producer.connectionErrorWaitDuration().getSeconds()+1)*1000);
+      Thread.sleep((producer.getConnectionErrorWaitDuration()+1)*1000);
       assertTrue(channel.isAvailable());
       assertEquals(5, producer.getConnectionErrors());
 

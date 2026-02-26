@@ -42,9 +42,16 @@ import org.apache.commons.lang3.BooleanUtils;
 public class ChannelUnavailableConnectionErrorHandlingProducer extends ConnectionErrorHandlingProducer {
     protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
+    @Getter
+    @Setter
     protected Integer connectionErrorThreshold;
-    protected String connectionErrorWaitDuration;
-    protected Duration _connectionErrorWaitDuration = Duration.ofSeconds(60);
+
+    @Getter
+    @Setter
+    protected Integer connectionErrorWaitDuration = 60;
+
+    @Getter
+    @Setter
     protected Integer connectionErrors = 0;
 
     @Getter
@@ -54,42 +61,6 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
     @Override
     public void prepare() throws CoreException {
         super.prepare();
-    }
-
-    public Integer getConnectionErrorThreshold() {
-        return connectionErrorThreshold;
-    }
-
-    public void setConnectionErrorThreshold(Integer connectionErrorThreshold) {
-        this.connectionErrorThreshold = connectionErrorThreshold;
-    }
-
-    public String getConnectionErrorWaitDuration() {
-        return connectionErrorWaitDuration;
-    }
-
-    public void setConnectionErrorWaitDuration(String connectionErrorWaitDuration) {
-        setConnectionErrorWaitDuration(Duration.parse(connectionErrorWaitDuration));
-        this.connectionErrorWaitDuration = connectionErrorWaitDuration;
-    }
-
-    public void setConnectionErrorWaitDuration(Duration connectionErrorWaitDuration) {
-        this._connectionErrorWaitDuration =connectionErrorWaitDuration;
-    }
-
-    public Duration connectionErrorWaitDuration() {
-        if (connectionErrorWaitDuration != null) {
-            setConnectionErrorWaitDuration(connectionErrorWaitDuration);
-        }
-        return _connectionErrorWaitDuration;
-    }
-
-    public Integer getConnectionErrors() {
-        return connectionErrors;
-    }
-
-    protected void setConnectionErrors(Integer connectionErrors) {
-        this.connectionErrors = connectionErrors;
     }
 
     @Override
@@ -159,7 +130,7 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
                             log.warn(e.getMessage(), e);
                         }
                     }
-                }, connectionErrorWaitDuration().toMillis());
+                }, getConnectionErrorWaitDuration()*1000);
             }
         }
     }
