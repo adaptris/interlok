@@ -42,7 +42,7 @@ import org.apache.commons.lang3.BooleanUtils;
 public class ChannelUnavailableConnectionErrorHandlingProducer extends ConnectionErrorHandlingProducer {
     protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
-    protected Integer connectionErrorThreshold;
+    protected Integer connectionErrorThreshold = 5;
     protected String connectionErrorWaitDuration;
     protected Duration _connectionErrorWaitDuration = Duration.ofSeconds(60);
     protected Integer connectionErrors = 0;
