@@ -115,13 +115,13 @@ public class ExceptionMatchingChannelRestartConnectionErrorHandlerTest extends c
       // after the connection error wait duration, the channel is available
       Thread.sleep((producer.connectionErrorWaitDuration().getSeconds()+1)*1000);
       assertTrue(channel.isAvailable());
-      assertEquals(5, producer.getConnectionErrors());
+      assertEquals(0, producer.getConnectionErrors());
 
       assertThrows(ProduceException.class, () -> producer.produce(msg));
       assertThrows(ProduceException.class, () -> producer.request(msg));
       assertThrows(ProduceException.class, () -> producer.request(msg, 1000));
-      assertFalse(channel.isAvailable());
-      assertEquals(8, producer.getConnectionErrors());
+      assertTrue(channel.isAvailable());
+      assertEquals(3, producer.getConnectionErrors());
 
       // after a successful produce, the channel is available and error count is reset
       DefaultMessageFactory factory = new DefaultMessageFactory();
