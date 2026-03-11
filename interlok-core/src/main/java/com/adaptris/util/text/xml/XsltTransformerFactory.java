@@ -41,15 +41,29 @@ import net.sf.saxon.Configuration;
 import net.sf.saxon.TransformerFactoryImpl;
 
 /**
+ * An {@link XmlTransformerFactory} implementation that creates XSLT {@link Transformer} instances.
+ *
  * <p>
- * The XsltTransformerFactory is responsible for creating the {@link Transformer}.
+ * By default, the JDK's built-in {@link TransformerFactory} is used. You can override this by
+ * setting {@code transformerFactoryImpl} to the fully-qualified class name of an alternative
+ * {@link TransformerFactory} implementation — for example, Saxon's
+ * {@code net.sf.saxon.TransformerFactoryImpl} for XSLT 2.0/3.0 support.
  * </p>
+ *
  * <p>
- * The {@link Transformer} is used to actually perform a document transformation.
+ * When a Saxon {@link TransformerFactory} is detected, optional Saxon extension functions can be
+ * registered via a {@link SaxonExtensionRegistrar} implementation. Specify the fully-qualified
+ * class name of your {@link SaxonExtensionRegistrar} via {@code extensionRegistrarImplementation}.
+ * If not set, no extensions are registered.
+ * </p>
+ *
+ * <p>
+ * This factory also overrides the URL-based transformer creation to parse the XSL stylesheet
+ * directly from its URL as a DOM {@link Document}, preserving file location context so that
+ * relative {@code xsl:import} and {@code xsl:include} paths resolve correctly.
  * </p>
  *
  * @config xslt-transformer-factory
- *
  * @author amcgrath
  */
 
