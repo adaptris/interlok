@@ -16,6 +16,8 @@
 
 package com.adaptris.util.text.xml;
 
+import java.util.Optional;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
@@ -23,6 +25,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
@@ -30,6 +34,11 @@ import org.xml.sax.InputSource;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+import lombok.Getter;
+import lombok.Setter;
+import net.sf.saxon.Configuration;
+import net.sf.saxon.TransformerFactoryImpl;
 
 /**
  * <p>
@@ -45,11 +54,20 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 
 @XStreamAlias("xslt-transformer-factory")
-@DisplayOrder(order = { "transformerFactoryImpl", "failOnRecoverableError" })
+@DisplayOrder(order = { "transformerFactoryImpl", "extensionRegistrarImplementation", "failOnRecoverableError" })
 public class XsltTransformerFactory extends XmlTransformerFactoryImpl {
 
+  private transient final Logger log = LoggerFactory.getLogger(this.getClass());
+
+  @Getter
+  @Setter
   @AdvancedConfig
   private String transformerFactoryImpl;
+
+  @Getter
+  @Setter
+  @AdvancedConfig
+  private String extensionRegistrarImplementation;
 
   public XsltTransformerFactory() {
     super();
@@ -75,31 +93,53 @@ public class XsltTransformerFactory extends XmlTransformerFactoryImpl {
     return configure(newInstance()).newTransformer(new DOMSource(xmlDoc, url));
   }
 
-    /**
-   * @return the transformerFactoryImpl
-   */
-  public String getTransformerFactoryImpl() {
-    return transformerFactoryImpl;
-  }
-
-  /**
-   * Specify the transformer factory that will be used.
-   * <p>
-   * If you have both saxon and xalan (for instance) available on the classpath; and you want to explicitly use the xalan implementation
-   * then you could put {@code org.apache.xalan.processor.TransformerFactoryImpl} here to force it to use Xalan or
-   * {@code net.sf.saxon.TransformerFactoryImpl} to force it to use Saxon.
-   * <p>
-   *
-   * @param s
-   *          he transformerFactoryImpl to set, if not specified the JVM default is used {@link TransformerFactory#newInstance()}.
-   */
-  public void setTransformerFactoryImpl(String s) {
-    transformerFactoryImpl = s;
-  }
-
+  @Override
   protected TransformerFactory newInstance() {
-    return StringUtils.isEmpty(getTransformerFactoryImpl()) ? TransformerFactory.newInstance()
+    TransformerFactory tf = StringUtils.isEmpty(getTransformerFactoryImpl())
+        ? TransformerFactory.newInstance()
         : TransformerFactory.newInstance(getTransformerFactoryImpl(), null);
+
+    getSaxonConfiguration(tf).ifPresent(config -> {
+      log.debug("Registering Saxon extensions with config: {}", config);
+      getExtensionRegistrar().register(config);
+    });
+
+    return tf;
   }
 
+  protected Optional<Configuration> getSaxonConfiguration(TransformerFactory tf) {
+    log.debug("Getting SaxonConfiguration if applicable");
+
+    if (tf == null) {
+      return Optional.empty();
+    }
+
+    // Saxon-HE and Saxon-EE factories both derive from TransformerFactoryImpl.
+    if (tf instanceof TransformerFactoryImpl) {
+      log.debug("Retrieving Saxon Configuration from {}", tf.getClass().getName());
+      return Optional.of(((TransformerFactoryImpl) tf).getConfiguration());
+    }
+    return Optional.empty();
+  }
+
+  public SaxonExtensionRegistrar getExtensionRegistrar() {
+    return StringUtils.isNotEmpty(getExtensionRegistrarImplementation())
+        ? loadExtensionRegistrar(getExtensionRegistrarImplementation())
+        : new NoExtensions();
+  }
+
+  private SaxonExtensionRegistrar loadExtensionRegistrar(String className) {
+    try {
+      Class<?> clazz = Class.forName(className);
+      if (SaxonExtensionRegistrar.class.isAssignableFrom(clazz)) {
+        log.debug("Found SaxonExtensionRegistrar implementation class: {}", className);
+        return (SaxonExtensionRegistrar) clazz.getDeclaredConstructor().newInstance();
+      } else {
+        log.warn("Class {} does not implement SaxonExtensionRegistrar", className);
+      }
+    } catch (Exception e) {
+      log.warn("Failed to load SaxonExtensionRegistrar implementation: {}", className, e);
+    }
+    return new NoExtensions();
+  }
 }
