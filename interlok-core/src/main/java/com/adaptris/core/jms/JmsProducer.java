@@ -123,24 +123,22 @@ public class JmsProducer extends JmsProducerImpl {
 
   protected void doProduce(AdaptrisMessage msg, JmsDestination jmsDest, boolean refreshSessionIfProduceException)
       throws JMSException, CoreException {
-    setupSession(msg, !refreshSessionIfProduceException);
-    Message jmsMsg = translate(msg, jmsDest.getReplyToDestination());
+    Message jmsMsg = null;
+    setupSession(msg);
     try {
-      if (!perMessageProperties()) {
-        producerSession().getProducer().send(jmsDest.getDestination(), jmsMsg);
-      } else {
-        producerSession().getProducer().send(jmsDest.getDestination(), jmsMsg,
-                calculateDeliveryMode(msg, jmsDest.deliveryMode()),
-                calculatePriority(msg, jmsDest.priority()),
-                calculateTimeToLive(msg, jmsDest.timeToLive()));
-      }
+        jmsMsg = sendMessage(msg, jmsDest);
     } catch (JMSException ex) {
       currentLogger().debug("Caught exception while producing", ex);
       if (refreshSessionIfProduceException) {
         currentLogger().info("Handling exception by retrying with new session. Exception: {}", ex.getMessage());
-        // don't refresh session on this call, instead throw
-        doProduce(msg, jmsDest, false);
-        return;
+        // force recreate a session if we get an exception, and try again. If it fails again, then we throw the original exception.
+        setupSession(msg, refreshSessionIfProduceException);
+        try {
+            jmsMsg = sendMessage(msg, jmsDest);
+        } catch (JMSException ex1) {
+            currentLogger().debug("Caught exception while producing with force recreation of session", ex1);
+            throw ex1;
+        }
       } else throw ex;
     }
     captureOutgoingMessageDetails(jmsMsg, msg);
@@ -259,6 +257,19 @@ public class JmsProducer extends JmsProducerImpl {
   public <T extends JmsProducer> T withEndpoint(String s) {
     setEndpoint(s);
     return (T) this;
+  }
+
+  private Message sendMessage(AdaptrisMessage msg, JmsDestination jmsDest) throws JMSException {
+      Message jmsMsg = translate(msg, jmsDest.getReplyToDestination());
+      if (!perMessageProperties()) {
+          producerSession().getProducer().send(jmsDest.getDestination(), jmsMsg);
+      } else {
+          producerSession().getProducer().send(jmsDest.getDestination(), jmsMsg,
+                  calculateDeliveryMode(msg, jmsDest.deliveryMode()),
+                  calculatePriority(msg, jmsDest.priority()),
+                  calculateTimeToLive(msg, jmsDest.timeToLive()));
+      }
+      return jmsMsg;
   }
 
   protected class MyJmsDestination implements JmsDestination {
