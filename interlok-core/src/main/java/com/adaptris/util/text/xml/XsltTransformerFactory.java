@@ -137,7 +137,7 @@ public class XsltTransformerFactory extends XmlTransformerFactoryImpl {
   }
 
   public SaxonExtensionRegistrar getExtensionRegistrar() {
-    return StringUtils.isNotEmpty(getExtensionRegistrarImplementation())
+    return StringUtils.isNotBlank(getExtensionRegistrarImplementation())
         ? loadExtensionRegistrar(getExtensionRegistrarImplementation())
         : new NoExtensions();
   }
@@ -151,8 +151,11 @@ public class XsltTransformerFactory extends XmlTransformerFactoryImpl {
       } else {
         log.warn("Class {} does not implement SaxonExtensionRegistrar", className);
       }
-    } catch (Exception e) {
-      log.warn("Failed to load SaxonExtensionRegistrar implementation: {}", className, e);
+    } catch (Throwable t) {
+      if (t instanceof  InterruptedException) {
+        Thread.currentThread().interrupt();
+      }
+      log.warn("Failed to load SaxonExtensionRegistrar implementation: {}", className, t);
     }
     return new NoExtensions();
   }
