@@ -154,6 +154,7 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
                     public void run() {
                         try {
                             toggleChannelAvailability(true);
+                            setConnectionErrors(0);
                             ChannelUnavailableConnectionErrorHandlingProducer.super.handleConnectionException();
                         } catch (CoreException e) {
                             log.warn(e.getMessage(), e);
