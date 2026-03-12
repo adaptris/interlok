@@ -148,6 +148,7 @@ public class ChannelUnavailableConnectionErrorHandlingProducer extends Connectio
         if (getConnectionErrors() >= getConnectionErrorThreshold()) {
             toggleChannelAvailability(false);
             // If autoconfigured, then make channel available after the wait duration has expired.
+            //Test comment addition
             if(getAutoConfigureConnection()) {
                 new Timer().schedule(new TimerTask() {
                     @Override
