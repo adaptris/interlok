@@ -70,16 +70,6 @@ public class InMemoryRetryStore implements RetryStore {
   }
 
   @Override
-  public List<AdaptrisMessage> obtainExpiredMessages() throws InterlokException {
-    return null; // null implementation
-  }
-
-  @Override
-  public List<AdaptrisMessage> obtainMessagesToRetry() throws InterlokException {
-    return null; // null implementation
-  }
-
-  @Override
   public void updateRetryCount(String messageId) throws InterlokException {
    // null implementation   
   }
