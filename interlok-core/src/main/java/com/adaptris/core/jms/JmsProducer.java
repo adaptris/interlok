@@ -111,6 +111,7 @@ public class JmsProducer extends JmsProducerImpl {
   protected void doProduce(AdaptrisMessage msg, JmsDestination jmsDest)
      throws JMSException, CoreException {
     Message jmsMsg = null;
+    boolean refreshSessionIfProduceException = this.refreshSessionIfProduceException.booleanValue();
     setupSession(msg);
     try {
         jmsMsg = sendMessage(msg, jmsDest);
@@ -123,7 +124,6 @@ public class JmsProducer extends JmsProducerImpl {
         try {
             jmsMsg = sendMessage(msg, jmsDest);
         } catch (JMSException exc) {
-            currentLogger().debug("Caught exception while producing with force recreation of session", exc);
             throw new JMSException("Failed to produce message with force recreation of session: " + exc.getMessage());
         }
       } else throw ex;

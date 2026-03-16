@@ -54,22 +54,7 @@ public class JmsAsyncProducer extends JmsProducer {
       Message jmsMsg = null;
       try {
           setupSession(msg);
-          try {
-              jmsMsg = sendMessageWithEventHandler(msg, jmsDest);
-          } catch (JMSException e) {
-              currentLogger().debug("Caught exception while producing", e);
-              if (refreshSessionIfProduceException) {
-                  currentLogger().info("Handling exception by retrying with new session. Exception: {}", e.getMessage());
-                  // force recreate a session if we get an exception, and try again. If it fails again, then we throw the original exception.
-                  setupSession(msg, refreshSessionIfProduceException);
-                  try {
-                      jmsMsg = sendMessageWithEventHandler(msg, jmsDest);
-                  } catch (JMSException exc) {
-                      currentLogger().debug("Caught exception while producing with force recreation of session", exc);
-                      throw new JMSException("Failed to produce message force recreation of session: " + exc.getMessage());
-                  }
-              } else throw e;
-          }
+          jmsMsg = sendMessageWithRetry(msg, jmsDest);
           // in real time speed JMSMessageID may not yet be set, therefore we set a header.
           getEventHandler().addUnAckedMessage(jmsMsg.getStringProperty(ID_HEADER), msg);
           // Standard workflow will attempt to execute this after the produce,
@@ -83,7 +68,8 @@ public class JmsAsyncProducer extends JmsProducer {
           ExceptionHelper.rethrowProduceException(ex);
       }
   }
-  
+
+
   @Override
   public void init() throws CoreException {
     super.init();
@@ -105,4 +91,31 @@ public class JmsAsyncProducer extends JmsProducer {
     }
     return jmsMsg;
   }
+
+    private Message sendMessageWithRetry(AdaptrisMessage msg, JmsDestination jmsDest) throws JMSException {
+        Message jmsMsg;
+        boolean refreshSessionIfProduceException = this.refreshSessionIfProduceException.booleanValue();
+        try {
+            jmsMsg = sendMessageWithEventHandler(msg, jmsDest);
+        } catch (JMSException e) {
+            currentLogger().debug("Caught exception while producing", e);
+            if (refreshSessionIfProduceException) {
+                currentLogger().info("Handling exception by retrying with new session. Exception: {}", e.getMessage());
+                // force recreate a session if we get an exception, and try again. If it fails again, then we throw the original exception.
+                setupSession(msg, refreshSessionIfProduceException);
+                jmsMsg = sendMessageWithNoRetry(msg, jmsDest);
+            } else throw e;
+        }
+        return jmsMsg;
+    }
+
+    private Message sendMessageWithNoRetry(AdaptrisMessage msg, JmsDestination jmsDest) throws JMSException {
+        Message jmsMsg;
+        try {
+            jmsMsg = sendMessageWithEventHandler(msg, jmsDest);
+        } catch (JMSException exc) {
+            throw new JMSException("Failed to produce message force recreation of session: " + exc.getMessage());
+        }
+        return jmsMsg;
+    }
 }
