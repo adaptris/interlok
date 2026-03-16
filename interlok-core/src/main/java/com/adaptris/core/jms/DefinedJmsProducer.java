@@ -147,7 +147,6 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
 
   protected abstract Destination createTemporaryDestination() throws JMSException;
 
-  private Message sendMessage(AdaptrisMessage msg, Destination destination, Destination replyTo) throws JMSException {
     Message jmsMsg = translate(msg, replyTo);
     if (!perMessageProperties()) {
       producerSession().getProducer().send(destination, jmsMsg);
