@@ -88,7 +88,6 @@ public class PasProducerTest extends BasicJmsProducerCase {
       start(standaloneProducer);
       AdaptrisMessage msg = DefaultMessageFactory.getDefaultInstance().newMessage("Hello JMS Topic");
       producer.doProduce(msg, topicName);
-      Thread.sleep(500);
       assertEquals(1, listener.getMessages().size(), "Message should be received on topic");
       assertEquals("Hello JMS Topic", listener.getMessages().get(0).getContent(), "Message content should match");
       stop(standaloneProducer);
@@ -125,7 +124,7 @@ public class PasProducerTest extends BasicJmsProducerCase {
       // Always return a dummy message, never call super
       return new org.apache.activemq.command.ActiveMQTextMessage();
     }
-    @Override protected void captureOutgoingMessageDetails(javax.jms.Message jmsMsg, AdaptrisMessage msg) { /* No implementation */ }
+    @Override protected void captureOutgoingMessageDetails(javax.jms.Message jmsMsg, AdaptrisMessage msg) { return; }
     @Override protected void logLinkedException(String prefix, Exception e) { throw new UnsupportedOperationException(); }
     @Override public void rollback() { throw new UnsupportedOperationException(); }
     @Override public ProducerSession setupSession(AdaptrisMessage msg) { return null; }
@@ -141,7 +140,7 @@ public class PasProducerTest extends BasicJmsProducerCase {
     protected javax.jms.Message sendMessage(AdaptrisMessage msg, javax.jms.Destination destination, javax.jms.Destination replyTo) throws javax.jms.JMSException {
       throw new javax.jms.JMSException("Simulated failure");
     }
-    @Override protected void captureOutgoingMessageDetails(javax.jms.Message jmsMsg, AdaptrisMessage msg) { /* No implementation */ }
+    @Override protected void captureOutgoingMessageDetails(javax.jms.Message jmsMsg, AdaptrisMessage msg) { return; }
     @Override protected void logLinkedException(String prefix, Exception e) { throw new UnsupportedOperationException(); }
     @Override public void rollback() { throw new UnsupportedOperationException(); }
     @Override public ProducerSession setupSession(AdaptrisMessage msg) { return null; }
