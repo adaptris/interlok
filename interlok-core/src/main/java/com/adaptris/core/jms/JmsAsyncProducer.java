@@ -55,7 +55,7 @@ public class JmsAsyncProducer extends JmsProducer {
       try {
           setupSession(msg);
           try {
-              jmsMsg = sendMessage(msg, jmsDest);
+              jmsMsg = sendMessageWithEventHandler(msg, jmsDest);
           } catch (JMSException e) {
               currentLogger().debug("Caught exception while producing", e);
               if (refreshSessionIfProduceException) {
@@ -63,7 +63,7 @@ public class JmsAsyncProducer extends JmsProducer {
                   // force recreate a session if we get an exception, and try again. If it fails again, then we throw the original exception.
                   setupSession(msg, refreshSessionIfProduceException);
                   try {
-                      jmsMsg = sendMessage(msg, jmsDest);
+                      jmsMsg = sendMessageWithEventHandler(msg, jmsDest);
                   } catch (JMSException exc) {
                       currentLogger().debug("Caught exception while producing with force recreation of session", exc);
                       throw exc;
@@ -90,9 +90,8 @@ public class JmsAsyncProducer extends JmsProducer {
     getEventHandler().init();
   }
 
-  private Message sendMessage(AdaptrisMessage msg, JmsDestination jmsDest) throws JMSException {
-    Message jmsMsg;
-    jmsMsg = translate(msg, jmsDest.getReplyToDestination());
+  private Message sendMessageWithEventHandler(AdaptrisMessage msg, JmsDestination jmsDest) throws JMSException {
+    Message jmsMsg = translate(msg, jmsDest.getReplyToDestination());
     jmsMsg.setStringProperty(ID_HEADER, msg.getUniqueId());
 
     if (!perMessageProperties()) {
