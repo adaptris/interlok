@@ -24,8 +24,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.adaptris.core.stubs.MockMessageListener;
 
-import javax.jms.JMSException;
-
 public class PasProducerTest extends BasicJmsProducerCase {
 
   /**
@@ -100,6 +98,22 @@ public class PasProducerTest extends BasicJmsProducerCase {
     }
   }
 
+  @Test
+  public void testDefinedJmsProducer_RetryLogic() {
+      RetryOnceDefinedJmsProducer producer = new RetryOnceDefinedJmsProducer();
+      producer.refreshSessionIfProduceException = true;
+      assertDoesNotThrow(() -> producer.doProduce(new com.adaptris.core.DefaultMessageFactory().newMessage(), (javax.jms.Destination) null, (javax.jms.Destination) null));
+  }
+
+  @Test
+  public void testDefinedJmsProducer_RetryLogic_BothAttemptsFail() {
+      AlwaysFailingDefinedJmsProducer producer = new AlwaysFailingDefinedJmsProducer();
+      producer.refreshSessionIfProduceException = true;
+      assertThrows(javax.jms.JMSException.class, () ->
+            producer.doProduce(new com.adaptris.core.DefaultMessageFactory().newMessage(), (javax.jms.Destination) null, (javax.jms.Destination) null)
+      );
+  }
+
   // Test double that simulates retry logic by overriding sendMessage only
   static class RetryOnceDefinedJmsProducer extends DefinedJmsProducer {
     private boolean first = true;
@@ -122,10 +136,19 @@ public class PasProducerTest extends BasicJmsProducerCase {
     @Override public String endpoint(AdaptrisMessage msg) { return null; }
   }
 
-  @Test
-  public void testDefinedJmsProducer_RetryLogic_CoversLines93to103() {
-    RetryOnceDefinedJmsProducer producer = new RetryOnceDefinedJmsProducer();
-    producer.refreshSessionIfProduceException = true;
-    assertDoesNotThrow(() -> producer.doProduce(new com.adaptris.core.DefaultMessageFactory().newMessage(), (javax.jms.Destination) null, (javax.jms.Destination) null));
+  // Test double that always fails sendMessage to cover retry catch block
+  static class AlwaysFailingDefinedJmsProducer extends DefinedJmsProducer {
+    protected javax.jms.Message sendMessage(AdaptrisMessage msg, javax.jms.Destination destination, javax.jms.Destination replyTo) throws javax.jms.JMSException {
+      throw new javax.jms.JMSException("Simulated failure");
+    }
+    @Override protected void captureOutgoingMessageDetails(javax.jms.Message jmsMsg, AdaptrisMessage msg) {}
+    @Override protected void logLinkedException(String prefix, Exception e) {}
+    @Override public void rollback() {}
+    @Override public ProducerSession setupSession(AdaptrisMessage msg) { return null; }
+    @Override public ProducerSession setupSession(AdaptrisMessage msg, boolean forceRecreate) { return null; }
+    protected void log(String s, Object... args) {}
+    @Override protected javax.jms.Destination createDestination(String dest) { return null; }
+    @Override protected javax.jms.Destination createTemporaryDestination() { return null; }
+    @Override public String endpoint(AdaptrisMessage msg) { return null; }
   }
 }
