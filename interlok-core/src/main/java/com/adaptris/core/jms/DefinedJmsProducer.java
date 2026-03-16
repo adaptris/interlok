@@ -91,14 +91,14 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
       jmsMsg = sendMessage(msg, destination, replyTo);
     } catch (JMSException ex) {
        currentLogger().debug("Caught JMS exception while producing", ex);
-       if (refreshSessionIfProduceException) {
+       if (refreshSessionIfProduceException == true) {
            currentLogger().info("Handling exception by retrying with new session. Exception: {}", ex.getMessage());
            setupSession(msg, refreshSessionIfProduceException);
            try {
                jmsMsg = sendMessage(msg, destination, replyTo);
            } catch (JMSException exc) {
                currentLogger().debug("Caught JMS exception while producing with force recreation of session", exc);
-               throw exc;
+               throw new JMSException("Failed to produce message after session refresh: " + exc.getMessage());
            }
        }
     }

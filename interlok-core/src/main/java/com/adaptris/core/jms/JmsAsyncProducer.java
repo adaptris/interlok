@@ -66,7 +66,7 @@ public class JmsAsyncProducer extends JmsProducer {
                       jmsMsg = sendMessageWithEventHandler(msg, jmsDest);
                   } catch (JMSException exc) {
                       currentLogger().debug("Caught exception while producing with force recreation of session", exc);
-                      throw exc;
+                      throw new JMSException("Failed to produce message force recreation of session: " + exc.getMessage());
                   }
               } else throw e;
           }

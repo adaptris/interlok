@@ -124,7 +124,7 @@ public class JmsProducer extends JmsProducerImpl {
             jmsMsg = sendMessage(msg, jmsDest);
         } catch (JMSException exc) {
             currentLogger().debug("Caught exception while producing with force recreation of session", exc);
-            throw exc;
+            throw new JMSException("Failed to produce message with force recreation of session: " + exc.getMessage());
         }
       } else throw ex;
     }
