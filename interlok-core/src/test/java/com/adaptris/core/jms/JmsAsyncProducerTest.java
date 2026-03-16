@@ -274,14 +274,13 @@ public class JmsAsyncProducerTest
   }
 
   @Test
-  public void testDoProduceWithSessionRefresh() throws Exception {
+  void testDoProduceWithSessionRefresh() throws Exception {
     // Arrange: first call to send throws, second call succeeds
-    producer.refreshSessionIfProduceException = true; // set directly since setter is protected
-    // First call to 6-arg send throws, second call does nothing (succeeds)
+    producer.refreshSessionIfProduceException = true;
+
     doThrow(new JMSException("expected")).doNothing()
       .when(mockMessageProducer).send(any(), eq(mockMessage), anyInt(), anyInt(), anyLong(), any(CompletionListener.class));
 
-    // Act & Assert: should not throw, should call send twice (6-arg version)
     producer.doProduce(adaptrisMessage, mockJmsDestination);
     verify(mockMessageProducer, times(2)).send(any(), eq(mockMessage), anyInt(), anyInt(), anyLong(), any(CompletionListener.class));
   }

@@ -86,19 +86,19 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
 
   protected void doProduce(AdaptrisMessage msg, Destination destination, Destination replyTo) throws JMSException, CoreException {
     Message jmsMsg = null;
+    boolean refreshSessionIfProduceException = this.refreshSessionIfProduceException.booleanValue();
     setupSession(msg);
     try {
       jmsMsg = sendMessage(msg, destination, replyTo);
     } catch (JMSException ex) {
        currentLogger().debug("Caught JMS exception while producing", ex);
-       if (refreshSessionIfProduceException == true) {
+       if (refreshSessionIfProduceException) {
            currentLogger().info("Handling exception by retrying with new session. Exception: {}", ex.getMessage());
            setupSession(msg, refreshSessionIfProduceException);
            try {
                jmsMsg = sendMessage(msg, destination, replyTo);
            } catch (JMSException exc) {
-               currentLogger().debug("Caught JMS exception while producing with force recreation of session", exc);
-               throw new JMSException("Failed to produce message after session refresh: " + exc.getMessage());
+               throw new JMSException("Failed to produce message with force recreation of session: " + exc.getMessage());
            }
        }
     }

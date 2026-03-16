@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.adaptris.core.stubs.MockMessageListener;
 
-public class PasProducerTest extends BasicJmsProducerCase {
+class PasProducerTest extends BasicJmsProducerCase {
 
   /**
    * @see com.adaptris.core.ExampleConfigCase#retrieveObjectForSampleConfig()
@@ -73,7 +73,7 @@ public class PasProducerTest extends BasicJmsProducerCase {
   }
 
   @Test
-  public void testDoProduce() throws Exception {
+  void testDoProduce() throws Exception {
     String topicName = "testDoProduceTopic";
     EmbeddedActiveMq broker = new EmbeddedActiveMq();
     broker.start();
@@ -99,14 +99,14 @@ public class PasProducerTest extends BasicJmsProducerCase {
   }
 
   @Test
-  public void testDefinedJmsProducer_RetryLogic() {
+  void testDefinedJmsProducer_RetryLogic() {
       RetryOnceDefinedJmsProducer producer = new RetryOnceDefinedJmsProducer();
       producer.refreshSessionIfProduceException = true;
       assertDoesNotThrow(() -> producer.doProduce(new com.adaptris.core.DefaultMessageFactory().newMessage(), (javax.jms.Destination) null, (javax.jms.Destination) null));
   }
 
   @Test
-  public void testDefinedJmsProducer_RetryLogic_BothAttemptsFail() {
+  void testDefinedJmsProducer_RetryLogic_BothAttemptsFail() {
       AlwaysFailingDefinedJmsProducer producer = new AlwaysFailingDefinedJmsProducer();
       producer.refreshSessionIfProduceException = true;
       assertThrows(javax.jms.JMSException.class, () ->
@@ -117,6 +117,7 @@ public class PasProducerTest extends BasicJmsProducerCase {
   // Test double that simulates retry logic by overriding sendMessage only
   static class RetryOnceDefinedJmsProducer extends DefinedJmsProducer {
     private boolean first = true;
+    @Override
     protected javax.jms.Message sendMessage(AdaptrisMessage msg, javax.jms.Destination destination, javax.jms.Destination replyTo) throws javax.jms.JMSException {
       if (first) {
         first = false;
@@ -138,6 +139,7 @@ public class PasProducerTest extends BasicJmsProducerCase {
 
   // Test double that always fails sendMessage to cover retry catch block
   static class AlwaysFailingDefinedJmsProducer extends DefinedJmsProducer {
+    @Override
     protected javax.jms.Message sendMessage(AdaptrisMessage msg, javax.jms.Destination destination, javax.jms.Destination replyTo) throws javax.jms.JMSException {
       throw new javax.jms.JMSException("Simulated failure");
     }
