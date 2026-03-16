@@ -80,14 +80,6 @@ import lombok.Setter;
 public class JmsProducer extends JmsProducerImpl {
 
   /**
-   * If true, the producer will refresh the JMS session on a produce exception.
-   * Defaults to true for backward compatibility.
-   */
-  @Getter
-  @Setter
-  private Boolean refreshSessionIfProduceException = Boolean.FALSE;
-
-  /**
    * The JMS Endpoint defined in an RFC6167 manner.
    */
   @InputFieldHint(expression = true)
@@ -118,11 +110,6 @@ public class JmsProducer extends JmsProducerImpl {
 
   protected void doProduce(AdaptrisMessage msg, JmsDestination jmsDest)
      throws JMSException, CoreException {
-    doProduce(msg, jmsDest, refreshSessionIfProduceException);
-  }
-
-  protected void doProduce(AdaptrisMessage msg, JmsDestination jmsDest, boolean refreshSessionIfProduceException)
-      throws JMSException, CoreException {
     Message jmsMsg = null;
     setupSession(msg);
     try {
@@ -135,9 +122,9 @@ public class JmsProducer extends JmsProducerImpl {
         setupSession(msg, refreshSessionIfProduceException);
         try {
             jmsMsg = sendMessage(msg, jmsDest);
-        } catch (JMSException ex1) {
-            currentLogger().debug("Caught exception while producing with force recreation of session", ex1);
-            throw ex1;
+        } catch (JMSException exc) {
+            currentLogger().debug("Caught exception while producing with force recreation of session", exc);
+            throw exc;
         }
       } else throw ex;
     }

@@ -85,15 +85,22 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
   }
 
   protected void doProduce(AdaptrisMessage msg, Destination destination, Destination replyTo) throws JMSException, CoreException {
+    Message jmsMsg = null;
     setupSession(msg);
-    Message jmsMsg = translate(msg, replyTo);
-    if (!perMessageProperties()) {
-      producerSession().getProducer().send(destination, jmsMsg);
-    }
-    else {
-      producerSession().getProducer().send(destination, jmsMsg,
-          calculateDeliveryMode(msg, getDeliveryMode()),
-          calculatePriority(msg, getPriority()), calculateTimeToLive(msg, timeToLive()));
+    try {
+      jmsMsg = sendMessage(msg, destination, replyTo);
+    } catch (JMSException ex) {
+       currentLogger().debug("Caught JMS exception while producing", ex);
+       if (refreshSessionIfProduceException) {
+           currentLogger().info("Handling exception by retrying with new session. Exception: {}", ex.getMessage());
+           setupSession(msg, refreshSessionIfProduceException);
+           try {
+               jmsMsg = sendMessage(msg, destination, replyTo);
+           } catch (JMSException exc) {
+               currentLogger().debug("Caught JMS exception while producing with force recreation of session", exc);
+               throw exc;
+           }
+       }
     }
     captureOutgoingMessageDetails(jmsMsg, msg);
     log.info("msg produced to destination [{}]", destination);
@@ -140,4 +147,16 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
 
   protected abstract Destination createTemporaryDestination() throws JMSException;
 
+  private Message sendMessage(AdaptrisMessage msg, Destination destination, Destination replyTo) throws JMSException {
+    Message jmsMsg = translate(msg, replyTo);
+    if (!perMessageProperties()) {
+      producerSession().getProducer().send(destination, jmsMsg);
+    } else {
+      producerSession().getProducer().send(destination, jmsMsg,
+          calculateDeliveryMode(msg, getDeliveryMode()),
+          calculatePriority(msg, getPriority()),
+          calculateTimeToLive(msg, timeToLive()));
+      }
+      return jmsMsg;
+    }
 }
