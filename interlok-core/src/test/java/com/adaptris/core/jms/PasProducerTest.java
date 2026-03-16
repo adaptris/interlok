@@ -21,6 +21,8 @@ import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.awaitility.Awaitility.await;
+import java.util.concurrent.TimeUnit;
 
 import com.adaptris.core.stubs.MockMessageListener;
 
@@ -88,7 +90,8 @@ class PasProducerTest extends BasicJmsProducerCase {
       start(standaloneProducer);
       AdaptrisMessage msg = DefaultMessageFactory.getDefaultInstance().newMessage("Hello JMS Topic");
       producer.doProduce(msg, topicName);
-      Thread.sleep(500);
+      await().atMost(2, TimeUnit.SECONDS)
+             .until(() -> listener.getMessages().size() == 1);
       assertEquals(1, listener.getMessages().size(), "Message should be received on topic");
       assertEquals("Hello JMS Topic", listener.getMessages().get(0).getContent(), "Message content should match");
       stop(standaloneProducer);
