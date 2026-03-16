@@ -125,12 +125,12 @@ public class PasProducerTest extends BasicJmsProducerCase {
       // Always return a dummy message, never call super
       return new org.apache.activemq.command.ActiveMQTextMessage();
     }
-    @Override protected void captureOutgoingMessageDetails(javax.jms.Message jmsMsg, AdaptrisMessage msg) {}
-    @Override protected void logLinkedException(String prefix, Exception e) {}
-    @Override public void rollback() {}
+    @Override protected void captureOutgoingMessageDetails(javax.jms.Message jmsMsg, AdaptrisMessage msg) { /* No implementation */ }
+    @Override protected void logLinkedException(String prefix, Exception e) { /* No implementation */ }
+    @Override public void rollback() { /* No implementation */ }
     @Override public ProducerSession setupSession(AdaptrisMessage msg) { return null; }
     @Override public ProducerSession setupSession(AdaptrisMessage msg, boolean forceRecreate) { return null; }
-    protected void log(String s, Object... args) {}
+    protected void log(String s, Object... args) { /* No implementation */ }
     @Override protected javax.jms.Destination createDestination(String dest) { return null; }
     @Override protected javax.jms.Destination createTemporaryDestination() { return null; }
     @Override public String endpoint(AdaptrisMessage msg) { return null; }
@@ -141,12 +141,12 @@ public class PasProducerTest extends BasicJmsProducerCase {
     protected javax.jms.Message sendMessage(AdaptrisMessage msg, javax.jms.Destination destination, javax.jms.Destination replyTo) throws javax.jms.JMSException {
       throw new javax.jms.JMSException("Simulated failure");
     }
-    @Override protected void captureOutgoingMessageDetails(javax.jms.Message jmsMsg, AdaptrisMessage msg) {}
-    @Override protected void logLinkedException(String prefix, Exception e) {}
-    @Override public void rollback() {}
+    @Override protected void captureOutgoingMessageDetails(javax.jms.Message jmsMsg, AdaptrisMessage msg) { /* No implementation */ }
+    @Override protected void logLinkedException(String prefix, Exception e) { /* No implementation */ }
+    @Override public void rollback() { /* No implementation */ }
     @Override public ProducerSession setupSession(AdaptrisMessage msg) { return null; }
     @Override public ProducerSession setupSession(AdaptrisMessage msg, boolean forceRecreate) { return null; }
-    protected void log(String s, Object... args) {}
+    protected void log(String s, Object... args) { /* No implementation */ }
     @Override protected javax.jms.Destination createDestination(String dest) { return null; }
     @Override protected javax.jms.Destination createTemporaryDestination() { return null; }
     @Override public String endpoint(AdaptrisMessage msg) { return null; }
