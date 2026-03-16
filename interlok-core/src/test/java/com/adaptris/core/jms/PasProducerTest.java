@@ -16,9 +16,13 @@
 
 package com.adaptris.core.jms;
 
-import com.adaptris.core.StandaloneProducer;
+import com.adaptris.core.*;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+import com.adaptris.core.stubs.MockMessageListener;
 
 public class PasProducerTest extends BasicJmsProducerCase {
 
@@ -61,9 +65,7 @@ public class PasProducerTest extends BasicJmsProducerCase {
 
   @Override
   protected JmsConsumerImpl createConsumer(String dest) {
-    PasConsumer pas = new PasConsumer();
-    pas.setTopic(dest);
-    return pas;
+    return new PasConsumer().withTopic(dest);
   }
 
   @Override
@@ -71,4 +73,29 @@ public class PasProducerTest extends BasicJmsProducerCase {
     return new TopicLoopback(mq, dest);
   }
 
+  @Test
+  public void testDoProduce() throws Exception {
+    String topicName = "testDoProduceTopic";
+    EmbeddedActiveMq broker = new EmbeddedActiveMq();
+    broker.start();
+    try {
+      PasProducer producer = new PasProducer().withTopic(topicName);
+      StandaloneProducer standaloneProducer = new StandaloneProducer(broker.getJmsConnection(), producer);
+      PasConsumer consumer = new PasConsumer().withTopic(topicName);
+      StandaloneConsumer standaloneConsumer = new StandaloneConsumer(broker.getJmsConnection(), consumer);
+      MockMessageListener listener = new MockMessageListener();
+      standaloneConsumer.registerAdaptrisMessageListener(listener);
+      start(standaloneConsumer);
+      start(standaloneProducer);
+      AdaptrisMessage msg = DefaultMessageFactory.getDefaultInstance().newMessage("Hello JMS Topic");
+      producer.doProduce(msg, topicName);
+      Thread.sleep(500);
+      assertEquals(1, listener.getMessages().size(), "Message should be received on topic");
+      assertEquals("Hello JMS Topic", listener.getMessages().get(0).getContent(), "Message content should match");
+      stop(standaloneProducer);
+      stop(standaloneConsumer);
+    } finally {
+      broker.destroy();
+    }
+  }
 }
