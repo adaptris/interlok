@@ -159,8 +159,8 @@ public class AdapterManager extends ComponentManagerImpl<Adapter> implements Ada
 
   private ConnectionMonitor findSharedConnectionMonitor(String id) {
     for (ChildRuntimeInfoComponent cmb : childRuntimeInfoComponents) {
-      if (cmb instanceof ConnectionMonitor && id.equals(((ConnectionMonitor) cmb).connectionId())) {
-        return (ConnectionMonitor) cmb;
+      if (cmb instanceof ConnectionMonitor connectionMonitor && id.equals(connectionMonitor.connectionId())) {
+        return connectionMonitor;
       }
     }
     return null;

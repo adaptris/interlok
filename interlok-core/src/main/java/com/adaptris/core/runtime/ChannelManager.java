@@ -285,8 +285,8 @@ public class ChannelManager extends ComponentManagerImpl<Channel> implements Cha
   }
 
   private ChildRuntimeInfoComponent withConnectionSuffix(ChildRuntimeInfoComponent comp, String suffix) {
-    if (comp instanceof ConnectionMonitor) {
-      ((ConnectionMonitor) comp).appendObjectNameSuffix(suffix);
+    if (comp instanceof ConnectionMonitor connectionMonitor) {
+      connectionMonitor.appendObjectNameSuffix(suffix);
     }
     return comp;
   }
