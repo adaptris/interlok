@@ -134,7 +134,7 @@ public interface AdaptrisConnection extends AdaptrisComponent, ComponentLifecycl
    * Returns whether this connection should be exposed as a runtime component.
    */
   default Boolean getRuntimeComponent() {
-    return null;
+    return Boolean.FALSE;
   }
 
   /**

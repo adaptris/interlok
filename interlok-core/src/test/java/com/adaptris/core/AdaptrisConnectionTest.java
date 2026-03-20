@@ -188,6 +188,15 @@ public class AdaptrisConnectionTest extends com.adaptris.interlok.junit.scaffold
     assertEquals(MockConnection.class, mc.cloneForTesting().getClass());
   }
 
+  @Test
+  public void testConnectionStateHandler() throws Exception {
+    MockConnection mc = new MockConnection();
+    assertNull(mc.getConnectionStateHandler());
+    ConnectionStateHandler csh = new ConnectionStateHandlerImp(){};
+    mc.setConnectionStateHandler(csh);
+    assertEquals(csh, mc.getConnectionStateHandler());
+  }
+
   private void assertState(List list, ComponentState state) {
     for (Object c : list) {
       assertEquals(state, ((StateManagedComponent) c).retrieveComponentState(), "" + state);

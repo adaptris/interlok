@@ -119,8 +119,8 @@ public class WorkflowManager extends ComponentManagerImpl<Workflow>implements Wo
 
   private static Collection<WorkflowConnectedService> serviceConnections(Workflow workflow) {
     Set<WorkflowConnectedService> result = new HashSet<>();
-    if (workflow instanceof WorkflowImp) {
-      ServiceCollection services = ((WorkflowImp) workflow).getServiceCollection();
+    if (workflow instanceof WorkflowImp workflowImp) {
+      ServiceCollection services = workflowImp.getServiceCollection();
       collectConnections(services, result);
     }
     return result;
@@ -130,19 +130,19 @@ public class WorkflowManager extends ComponentManagerImpl<Workflow>implements Wo
     if (service == null) {
       return;
     }
-    if (service instanceof ConnectedService) {
-      AdaptrisConnection connection = ((ConnectedService) service).getConnection();
+    if (service instanceof ConnectedService connectedService) {
+      AdaptrisConnection connection = connectedService.getConnection();
       if (connection != null) {
         connections.add(new WorkflowConnectedService(connection, service.getUniqueId()));
       }
     }
-    if (service instanceof ServiceCollection) {
-      for (Service nested : ((ServiceCollection) service).getServices()) {
+    if (service instanceof ServiceCollection serviceCollection) {
+      for (Service nested : serviceCollection.getServices()) {
         collectConnections(nested, connections);
       }
     }
-    if (service instanceof ServiceWrapper) {
-      for (Service nested : ((ServiceWrapper) service).wrappedServices()) {
+    if (service instanceof ServiceWrapper serviceWrapper) {
+      for (Service nested : serviceWrapper.wrappedServices()) {
         collectConnections(nested, connections);
       }
     }
@@ -321,8 +321,8 @@ public class WorkflowManager extends ComponentManagerImpl<Workflow>implements Wo
   }
 
   private ChildRuntimeInfoComponent withConnectedServiceSuffix(ChildRuntimeInfoComponent comp, String serviceId) {
-    if (comp instanceof ConnectionMonitor) {
-      ((ConnectionMonitor) comp).appendObjectNameSuffix(CONNECTED_SERVICE_CONNECTION_SUFFIX + serviceId);
+    if (comp instanceof ConnectionMonitor connectionMonitor) {
+      connectionMonitor.appendObjectNameSuffix(CONNECTED_SERVICE_CONNECTION_SUFFIX + serviceId);
     }
     return comp;
   }
