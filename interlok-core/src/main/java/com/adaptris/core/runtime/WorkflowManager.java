@@ -33,8 +33,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import com.adaptris.core.AdaptrisComponent;
+import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.ComponentState;
+import com.adaptris.core.ConnectedService;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultSerializableMessageTranslator;
 import com.adaptris.core.NullProcessingExceptionHandler;
@@ -42,8 +44,12 @@ import com.adaptris.core.PoolingWorkflow;
 import com.adaptris.core.ProcessingExceptionHandler;
 import com.adaptris.core.SerializableAdaptrisMessage;
 import com.adaptris.core.SerializableMessageTranslator;
+import com.adaptris.core.Service;
+import com.adaptris.core.ServiceCollection;
+import com.adaptris.core.ServiceWrapper;
 import com.adaptris.core.Workflow;
 import com.adaptris.core.WorkflowInterceptor;
+import com.adaptris.core.WorkflowImp;
 import com.adaptris.core.http.jetty.BasicJettyConsumer;
 import com.adaptris.core.http.jetty.JettyPoolingWorkflowInterceptor;
 import com.adaptris.core.http.jetty.JettyWorkflowInterceptorImpl;
@@ -61,6 +67,7 @@ import com.adaptris.util.TimeInterval;
 public class WorkflowManager extends ComponentManagerImpl<Workflow>implements WorkflowManagerMBean, WorkflowRuntimeManager {
 
   private static final TimeInterval MAX_REPLY_WAIT = new TimeInterval(1L, TimeUnit.MINUTES);
+  private static final String CONNECTED_SERVICE_CONNECTION_SUFFIX = "-connected-service-";
   private transient Workflow managedWorkflow;
   private transient ChannelManager parent;
   private transient ObjectName myObjectName = null;
@@ -102,7 +109,43 @@ public class WorkflowManager extends ComponentManagerImpl<Workflow>implements Wo
     for (AdaptrisComponent c : runtimeCandidates) {
       addChildJmxComponentQuietly((ChildRuntimeInfoComponent) RuntimeInfoComponentFactory.create(this, c));
     }
+    for (WorkflowConnectedService connection : serviceConnections(managedWorkflow)) {
+      addChildJmxComponentQuietly(withConnectedServiceSuffix(
+          (ChildRuntimeInfoComponent) RuntimeInfoComponentFactory.create(this, connection.connection),
+          connection.serviceId));
+    }
     marshalConfig();
+  }
+
+  private static Collection<WorkflowConnectedService> serviceConnections(Workflow workflow) {
+    Set<WorkflowConnectedService> result = new HashSet<>();
+    if (workflow instanceof WorkflowImp) {
+      ServiceCollection services = ((WorkflowImp) workflow).getServiceCollection();
+      collectConnections(services, result);
+    }
+    return result;
+  }
+
+  private static void collectConnections(Service service, Set<WorkflowConnectedService> connections) {
+    if (service == null) {
+      return;
+    }
+    if (service instanceof ConnectedService) {
+      AdaptrisConnection connection = ((ConnectedService) service).getConnection();
+      if (connection != null) {
+        connections.add(new WorkflowConnectedService(connection, service.getUniqueId()));
+      }
+    }
+    if (service instanceof ServiceCollection) {
+      for (Service nested : ((ServiceCollection) service).getServices()) {
+        collectConnections(nested, connections);
+      }
+    }
+    if (service instanceof ServiceWrapper) {
+      for (Service nested : ((ServiceWrapper) service).wrappedServices()) {
+        collectConnections(nested, connections);
+      }
+    }
   }
 
   @Override
@@ -275,6 +318,40 @@ public class WorkflowManager extends ComponentManagerImpl<Workflow>implements Wo
       return addChildJmxComponent(comp);
     }
     return false;
+  }
+
+  private ChildRuntimeInfoComponent withConnectedServiceSuffix(ChildRuntimeInfoComponent comp, String serviceId) {
+    if (comp instanceof ConnectionMonitor) {
+      ((ConnectionMonitor) comp).appendObjectNameSuffix(CONNECTED_SERVICE_CONNECTION_SUFFIX + serviceId);
+    }
+    return comp;
+  }
+
+  private static class WorkflowConnectedService {
+    private final AdaptrisConnection connection;
+    private final String serviceId;
+
+    private WorkflowConnectedService(AdaptrisConnection connection, String serviceId) {
+      this.connection = connection;
+      this.serviceId = serviceId;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (!(obj instanceof WorkflowConnectedService)) {
+        return false;
+      }
+      WorkflowConnectedService other = (WorkflowConnectedService) obj;
+      return new EqualsBuilder().append(connection, other.connection).append(serviceId, other.serviceId).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+      return new HashCodeBuilder(17, 31).append(connection).append(serviceId).toHashCode();
+    }
   }
 
   @Override

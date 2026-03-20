@@ -164,6 +164,31 @@ public class SharedConnection extends SharedComponent implements AdaptrisConnect
     return getProxiedConnection().connectionErrorHandler();
   }
 
+  @Override
+  public void setConnectionStateHandler(ConnectionStateHandler handler) {
+    getProxiedConnection().setConnectionStateHandler(handler);
+  }
+
+  @Override
+  public ConnectionStateHandler getConnectionStateHandler() {
+    return getProxiedConnection().getConnectionStateHandler();
+  }
+
+  @Override
+  public ConnectionStateHandler connectionStateHandler() {
+    return getProxiedConnection().connectionStateHandler();
+  }
+
+  @Override
+  public Boolean getRuntimeComponent() {
+    return getProxiedConnection().getRuntimeComponent();
+  }
+
+  @Override
+  public void setRuntimeComponent(Boolean runtimeComponent) {
+    getProxiedConnection().setRuntimeComponent(runtimeComponent);
+  }
+
   @SuppressWarnings("unchecked")
   @Override
   public <T> T retrieveConnection(Class<T> type) {
