@@ -16,6 +16,8 @@
 
 package com.adaptris.core;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -28,6 +30,13 @@ import org.slf4j.LoggerFactory;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.core.runtime.AdapterManager;
+import com.adaptris.core.runtime.ChannelManager;
+import com.adaptris.core.runtime.ConnectionMonitor;
+import com.adaptris.core.runtime.ParentRuntimeInfoComponent;
+import com.adaptris.core.runtime.RuntimeInfoComponent;
+import com.adaptris.core.runtime.RuntimeInfoComponentFactory;
+import com.adaptris.core.runtime.WorkflowManager;
 import com.adaptris.core.util.LifecycleHelper;
 
 /**
@@ -38,14 +47,24 @@ import com.adaptris.core.util.LifecycleHelper;
 public abstract class AdaptrisConnectionImp implements AdaptrisConnection, StateManagedComponent {
   // protected transient Log log = LogFactory.getLog(this.getClass().getName());
 
+  static {
+    RuntimeInfoComponentFactory.registerComponentFactory(new JmxFactory());
+  }
+
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
   @AdvancedConfig
   @Valid
   private ConnectionErrorHandler connectionErrorHandler;
   @AdvancedConfig(rare = true)
+  @Valid
+  private ConnectionStateHandler connectionStateHandler;
+  @AdvancedConfig(rare = true)
   @InputFieldDefault(value = "false")
   private Boolean workersFirstOnShutdown;
+  @AdvancedConfig(rare = true)
+  @InputFieldDefault(value = "false")
+  private Boolean runtimeComponent;
   private String uniqueId;
 
   private transient Object lock = new Object();
@@ -77,9 +96,10 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
         prepare();
       }
       initConnection();
-      // Intentionly after initialising the connection as the connection error
-      // handler will almost certainly use it.
+      // Intentionally after initialising the connection as the connection error
+      // handler and state handler will almost certainly use it.
       LifecycleHelper.init(connectionErrorHandler());
+      LifecycleHelper.init(connectionStateHandler());
     }
   }
 
@@ -87,6 +107,9 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
   public final void prepare() throws CoreException {
     if (connectionErrorHandler() != null) {
       connectionErrorHandler().registerConnection(this);
+    }
+    if (connectionStateHandler() != null) {
+      connectionStateHandler().registerConnection(this);
     }
     prepareConnection();
     prepared = true;
@@ -102,6 +125,7 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
     synchronized (lock) {
       startConnection();
       LifecycleHelper.start(connectionErrorHandler());
+      LifecycleHelper.start(connectionStateHandler());
     }
   }
 
@@ -124,6 +148,7 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
         }
       }
       LifecycleHelper.close(connectionErrorHandler());
+      LifecycleHelper.close(connectionStateHandler());
       closeConnection();
     }
   }
@@ -146,6 +171,7 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
         }
       }
       LifecycleHelper.stop(connectionErrorHandler());
+      LifecycleHelper.stop(connectionStateHandler());
       stopConnection();
     }
   }
@@ -242,6 +268,21 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
     return connectionErrorHandler;
   }
 
+  @Override
+  public void setConnectionStateHandler(ConnectionStateHandler handler) {
+    connectionStateHandler = handler;
+  }
+
+  @Override
+  public ConnectionStateHandler getConnectionStateHandler() {
+    return connectionStateHandler;
+  }
+
+  @Override
+  public ConnectionStateHandler connectionStateHandler() {
+    return getConnectionStateHandler();
+  }
+
   /**
    * @return the workerLifecycleFirstOnShutdown
    */
@@ -295,6 +336,16 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
   }
 
   @Override
+  public Boolean getRuntimeComponent() {
+    return runtimeComponent;
+  }
+
+  @Override
+  public void setRuntimeComponent(Boolean b) {
+    runtimeComponent = b;
+  }
+
+  @Override
   public void changeState(ComponentState s) {
     state = s;
   }
@@ -332,6 +383,33 @@ public abstract class AdaptrisConnectionImp implements AdaptrisConnection, State
   public AdaptrisConnection cloneForTesting() throws CoreException {
     AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
     return (AdaptrisConnection) m.unmarshal(m.marshal(this));
+  }
+
+  private static class JmxFactory extends RuntimeInfoComponentFactory {
+
+    @Override
+    protected boolean isSupported(AdaptrisComponent component) {
+      return component instanceof AdaptrisConnection;
+    }
+
+    @Override
+    protected RuntimeInfoComponent createComponent(ParentRuntimeInfoComponent parent, AdaptrisComponent component)
+        throws Exception {
+      if (!(parent instanceof AdapterManager || parent instanceof ChannelManager || parent instanceof WorkflowManager)) {
+        return null;
+      }
+      AdaptrisConnection connection = (AdaptrisConnection) component;
+      if (connection instanceof SharedConnection) {
+        return null;
+      }
+      if (!Boolean.TRUE.equals(connection.getRuntimeComponent())) {
+        return null;
+      }
+      if (isEmpty(connection.getUniqueId())) {
+        return null;
+      }
+      return new ConnectionMonitor(parent, connection);
+    }
   }
 
 }

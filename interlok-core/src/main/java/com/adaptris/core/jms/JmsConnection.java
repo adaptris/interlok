@@ -32,6 +32,7 @@ import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisMarshaller;
 import com.adaptris.core.AllowsRetriesConnection;
 import com.adaptris.core.ConnectionErrorHandler;
+import com.adaptris.core.ConnectionStateHandler;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.jms.jndi.StandardJndiImplementation;
@@ -220,6 +221,11 @@ public class JmsConnection extends AllowsRetriesConnection implements JmsConnect
   @Override
   protected void prepareConnection() throws CoreException {
     getVendorImplementation().prepare();
+  }
+
+  @Override
+  public ConnectionStateHandler connectionStateHandler() {
+    return getConnectionStateHandler();
   }
 
 
