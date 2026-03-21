@@ -170,6 +170,48 @@ public class SharedConnectionTest {
   }
 
   @Test
+  public void testConnectionStateHandler() throws Exception {
+    Adapter a = createAndStart();
+    NullConnection nc = (NullConnection) a.getSharedComponents().getConnections().get(0);
+    SharedConnection c = new SharedConnection(nc.getUniqueId());
+    try {
+      LifecycleHelper.initAndStart(c);
+      ConnectionStateHandler csh = new ConnectionStateHandlerImp() {
+      };
+
+      c.setConnectionStateHandler(csh);
+      assertEquals(csh, c.getConnectionStateHandler());
+      assertEquals(csh, nc.getConnectionStateHandler());
+      assertEquals(csh, c.connectionStateHandler());
+    }
+    finally {
+      LifecycleHelper.stopAndClose(a);
+      LifecycleHelper.stopAndClose(c);
+    }
+  }
+
+  @Test
+  public void testRuntimeComponentDelegation() throws Exception {
+    Adapter a = createAndStart();
+    NullConnection nc = (NullConnection) a.getSharedComponents().getConnections().get(0);
+    SharedConnection c = new SharedConnection(nc.getUniqueId());
+    try {
+      LifecycleHelper.initAndStart(c);
+      c.setRuntimeComponent(Boolean.TRUE);
+      assertEquals(Boolean.TRUE, c.getRuntimeComponent());
+      assertEquals(Boolean.TRUE, nc.getRuntimeComponent());
+
+      c.setRuntimeComponent(Boolean.FALSE);
+      assertEquals(Boolean.FALSE, c.getRuntimeComponent());
+      assertEquals(Boolean.FALSE, nc.getRuntimeComponent());
+    }
+    finally {
+      LifecycleHelper.stopAndClose(a);
+      LifecycleHelper.stopAndClose(c);
+    }
+  }
+
+  @Test
   public void testConnection() throws Exception {
     Adapter a = createAndStart();
     NullConnection nc = (NullConnection) a.getSharedComponents().getConnections().get(0);

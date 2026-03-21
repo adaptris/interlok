@@ -16,7 +16,6 @@
 
 package com.adaptris.core;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
@@ -25,6 +24,7 @@ import static org.mockito.Mockito.verify;
 import java.lang.reflect.Method;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Callable;
@@ -211,6 +211,22 @@ public class AdaptrisConnectionTest extends com.adaptris.interlok.junit.scaffold
     verify(handler).registerConnection(connection);
   }
 
+  @Test
+  public void testInterfaceDefaultMethods() throws Exception {
+    AdaptrisConnection connection = new DefaultMethodConnection();
+
+    // Default implementation is no-op and does not retain the handler.
+    connection.setConnectionStateHandler(new ConnectionStateHandlerImp() {
+    });
+    assertNull(connection.getConnectionStateHandler());
+    assertNull(connection.connectionStateHandler());
+
+    // Default runtime component setting is FALSE and setter is no-op.
+    assertEquals(Boolean.FALSE, connection.getRuntimeComponent());
+    connection.setRuntimeComponent(Boolean.TRUE);
+    assertEquals(Boolean.FALSE, connection.getRuntimeComponent());
+  }
+
   private void assertState(List list, ComponentState state) {
     for (Object c : list) {
       assertEquals(state, ((StateManagedComponent) c).retrieveComponentState(), "" + state);
@@ -250,6 +266,94 @@ public class AdaptrisConnectionTest extends com.adaptris.interlok.junit.scaffold
       throw new Exception(methodName + " not found");
     }
     return;
+  }
+
+  private static class DefaultMethodConnection implements AdaptrisConnection {
+
+    @Override
+    public java.util.Set<StateManagedComponent> retrieveExceptionListeners() {
+      return Collections.emptySet();
+    }
+
+    @Override
+    public void addExceptionListener(StateManagedComponent comp) {
+    }
+
+    @Override
+    public void addMessageProducer(AdaptrisMessageProducer producer) throws CoreException {
+    }
+
+    @Override
+    public java.util.Set<AdaptrisMessageProducer> retrieveMessageProducers() {
+      return Collections.emptySet();
+    }
+
+    @Override
+    public void addMessageConsumer(AdaptrisMessageConsumer consumer) throws CoreException {
+    }
+
+    @Override
+    public java.util.Set<AdaptrisMessageConsumer> retrieveMessageConsumers() {
+      return Collections.emptySet();
+    }
+
+    @Override
+    public void setConnectionErrorHandler(ConnectionErrorHandler handler) {
+    }
+
+    @Override
+    public ConnectionErrorHandler getConnectionErrorHandler() {
+      return null;
+    }
+
+    @Override
+    public ConnectionErrorHandler connectionErrorHandler() {
+      return null;
+    }
+
+    @Override
+    public <T> T retrieveConnection(Class<T> type) {
+      return null;
+    }
+
+    @Override
+    public AdaptrisConnection cloneForTesting() throws CoreException {
+      return this;
+    }
+
+    @Override
+    public String getUniqueId() {
+      return "default-method-connection";
+    }
+
+    @Override
+    public ComponentState retrieveComponentState() {
+      return ClosedState.getInstance();
+    }
+
+    @Override
+    public void changeState(ComponentState newState) {
+    }
+
+    @Override
+    public void requestInit() throws CoreException {
+    }
+
+    @Override
+    public void requestStart() throws CoreException {
+    }
+
+    @Override
+    public void requestStop() {
+    }
+
+    @Override
+    public void requestClose() {
+    }
+
+    @Override
+    public void prepare() throws CoreException {
+    }
   }
 
 }
