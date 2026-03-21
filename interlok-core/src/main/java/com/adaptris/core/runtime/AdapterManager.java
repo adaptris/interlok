@@ -141,20 +141,15 @@ public class AdapterManager extends ComponentManagerImpl<Adapter> implements Ada
     if (!(info instanceof ConnectionMonitor)) {
       return false;
     }
-    boolean added = addChildJmxComponent(info);
-    if (added && isJmxRegistered()) {
+    addChildJmxComponent(info);
+    if (isJmxRegistered()) {
       info.registerMBean();
     }
-    return added;
+    return true;
   }
 
   private boolean isJmxRegistered() {
-    try {
-      return ManagementFactory.getPlatformMBeanServer().isRegistered(createObjectName());
-    }
-    catch (MalformedObjectNameException e) {
-      return false;
-    }
+    return ManagementFactory.getPlatformMBeanServer().isRegistered(myObjectName);
   }
 
   private ConnectionMonitor findSharedConnectionMonitor(String id) {
