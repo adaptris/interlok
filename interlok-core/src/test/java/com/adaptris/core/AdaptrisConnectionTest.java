@@ -192,7 +192,7 @@ public class AdaptrisConnectionTest extends com.adaptris.interlok.junit.scaffold
   }
 
   @Test
-  public void testConnectionStateHandler() throws Exception {
+  void testConnectionStateHandler() {
     MockConnection mc = new MockConnection();
     assertNull(mc.getConnectionStateHandler());
     ConnectionStateHandler csh = new ConnectionStateHandlerImp(){};
@@ -201,7 +201,7 @@ public class AdaptrisConnectionTest extends com.adaptris.interlok.junit.scaffold
   }
 
   @Test
-  public void testConnectionStateHandlerRegisteredOnPrepare() throws Exception {
+  void testConnectionStateHandlerRegisteredOnPrepare() throws Exception {
     MockConnection connection = new MockConnection();
     ConnectionStateHandler handler = mock(ConnectionStateHandler.class);
     connection.setConnectionStateHandler(handler);
@@ -212,7 +212,7 @@ public class AdaptrisConnectionTest extends com.adaptris.interlok.junit.scaffold
   }
 
   @Test
-  public void testInterfaceDefaultMethods() throws Exception {
+  void testInterfaceDefaultMethods() {
     AdaptrisConnection connection = new DefaultMethodConnection();
 
     // Default implementation is no-op and does not retain the handler.
@@ -277,10 +277,12 @@ public class AdaptrisConnectionTest extends com.adaptris.interlok.junit.scaffold
 
     @Override
     public void addExceptionListener(StateManagedComponent comp) {
+      //test only
     }
 
     @Override
     public void addMessageProducer(AdaptrisMessageProducer producer) throws CoreException {
+      //test only
     }
 
     @Override
@@ -290,6 +292,7 @@ public class AdaptrisConnectionTest extends com.adaptris.interlok.junit.scaffold
 
     @Override
     public void addMessageConsumer(AdaptrisMessageConsumer consumer) throws CoreException {
+      //test only
     }
 
     @Override
@@ -299,6 +302,7 @@ public class AdaptrisConnectionTest extends com.adaptris.interlok.junit.scaffold
 
     @Override
     public void setConnectionErrorHandler(ConnectionErrorHandler handler) {
+      //test only
     }
 
     @Override
@@ -333,26 +337,32 @@ public class AdaptrisConnectionTest extends com.adaptris.interlok.junit.scaffold
 
     @Override
     public void changeState(ComponentState newState) {
+      //test only
     }
 
     @Override
     public void requestInit() throws CoreException {
+      //test only
     }
 
     @Override
     public void requestStart() throws CoreException {
+      //test only
     }
 
     @Override
     public void requestStop() {
+      //test only
     }
 
     @Override
     public void requestClose() {
+      //test only
     }
 
     @Override
     public void prepare() throws CoreException {
+      //test only
     }
   }
 

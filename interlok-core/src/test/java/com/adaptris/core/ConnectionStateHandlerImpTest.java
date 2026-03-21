@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.stubs.MockConnection;
 
-public class ConnectionStateHandlerImpTest {
+class ConnectionStateHandlerImpTest {
 
   /**
    * Concrete test implementation of abstract ConnectionStateHandlerImp.
@@ -33,7 +33,7 @@ public class ConnectionStateHandlerImpTest {
   }
 
   @Test
-  public void testRegisterConnection() throws Exception {
+  void testRegisterConnection() {
     ConnectionStateHandler handler = new TestConnectionStateHandler();
     MockConnection connection = new MockConnection();
 
@@ -43,7 +43,7 @@ public class ConnectionStateHandlerImpTest {
   }
 
   @Test
-  public void testRegisterConnectionNull() throws Exception {
+  void testRegisterConnectionNull() {
     ConnectionStateHandler handler = new TestConnectionStateHandler();
 
     assertThrows(IllegalArgumentException.class, () -> handler.registerConnection(null),
@@ -51,7 +51,7 @@ public class ConnectionStateHandlerImpTest {
   }
 
   @Test
-  public void testRetrieveConnectionBeforeRegistration() throws Exception {
+  void testRetrieveConnectionBeforeRegistration() {
     ConnectionStateHandler handler = new TestConnectionStateHandler();
 
     assertNull(handler.retrieveConnection(AdaptrisConnection.class),
@@ -59,7 +59,7 @@ public class ConnectionStateHandlerImpTest {
   }
 
   @Test
-  public void testRetrieveConnectionWithCasting() throws Exception {
+  void testRetrieveConnectionWithCasting() {
     ConnectionStateHandler handler = new TestConnectionStateHandler();
     MockConnection connection = new MockConnection();
     handler.registerConnection(connection);
@@ -71,7 +71,7 @@ public class ConnectionStateHandlerImpTest {
   }
 
   @Test
-  public void testRegisterConnectionMultipleTimes() throws Exception {
+  void testRegisterConnectionMultipleTimes() {
     ConnectionStateHandler handler = new TestConnectionStateHandler();
     MockConnection connection1 = new MockConnection();
     MockConnection connection2 = new MockConnection();
