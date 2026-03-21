@@ -22,22 +22,11 @@ import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_MSG_INITIALI
 import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_MSG_STARTED;
 import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_MSG_STOPPED;
 import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_TYPE_WORKFLOW_LIFECYCLE;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.JMX;
@@ -213,7 +202,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testConstructor_WithConnectedServiceConnection_SuffixApplied() throws Exception {
+  void testConstructor_WithConnectedServiceConnection_SuffixApplied() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
     AdapterManager adapterManager = new AdapterManager(adapter);
@@ -234,7 +223,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testConstructor_WithConnectedServiceInsideWrapper_SuffixApplied() throws Exception {
+  void testConstructor_WithConnectedServiceInsideWrapper_SuffixApplied() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
     AdapterManager adapterManager = new AdapterManager(adapter);
@@ -257,7 +246,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testWorkflowConnectedServiceEqualityAndHashCode() throws Exception {
+  void testWorkflowConnectedServiceEqualityAndHashCode() throws Exception {
     Class<?> connectedServiceClass = Class.forName("com.adaptris.core.runtime.WorkflowManager$WorkflowConnectedService");
     var ctor = connectedServiceClass.getDeclaredConstructor(com.adaptris.core.AdaptrisConnection.class, String.class);
     ctor.setAccessible(true);
@@ -267,15 +256,14 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Object b = ctor.newInstance(c1, "svc-1");
     Object c = ctor.newInstance(c1, "svc-2");
 
-    assertTrue(a.equals(a));
-    assertFalse(a.equals("not-a-workflow-connected-service"));
-    assertTrue(a.equals(b));
-    assertFalse(a.equals(c));
+    assertNotEquals("not-a-workflow-connected-service", a);
+    assertEquals(a, b);
+    assertNotEquals(a, c);
     assertEquals(a.hashCode(), b.hashCode());
   }
   
   @Test
-  public void testServiceConnections_WhenWorkflowIsNotWorkflowImp_ReturnsEmpty() throws Exception {
+  void testServiceConnections_WhenWorkflowIsNotWorkflowImp_ReturnsEmpty() throws Exception {
     Method serviceConnections = WorkflowManager.class.getDeclaredMethod("serviceConnections", Workflow.class);
     serviceConnections.setAccessible(true);
 
@@ -283,12 +271,12 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Object result = serviceConnections.invoke(null, notWorkflowImp);
 
     assertNotNull(result);
-    assertTrue(result instanceof java.util.Collection);
+    assertInstanceOf(Collection.class, result);
     assertEquals(0, ((java.util.Collection<?>) result).size());
   }
 
   @Test
-  public void testCollectConnections_WhenServiceNull_DoesNothing() throws Exception {
+  void testCollectConnections_WhenServiceNull_DoesNothing() throws Exception {
     Method collectConnections = WorkflowManager.class.getDeclaredMethod("collectConnections", com.adaptris.core.Service.class,
         Set.class);
     collectConnections.setAccessible(true);
@@ -303,7 +291,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testCollectConnections_WhenConnectedServiceHasNullConnection_DoesNotAdd() throws Exception {
+  void testCollectConnections_WhenConnectedServiceHasNullConnection_DoesNotAdd() throws Exception {
     Method collectConnections = WorkflowManager.class.getDeclaredMethod("collectConnections", com.adaptris.core.Service.class,
         Set.class);
     collectConnections.setAccessible(true);
@@ -317,7 +305,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testWithConnectedServiceSuffix_NonConnectionMonitor_Unchanged() throws Exception {
+  void testWithConnectedServiceSuffix_NonConnectionMonitor_Unchanged() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
     AdapterManager adapterManager = new AdapterManager(adapter);
@@ -333,7 +321,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
 
     Object result = withConnectedServiceSuffix.invoke(workflowManager, child, "svc-id");
 
-    assertTrue(result == child);
+    assertSame(result, child);
   }
 
   @Test

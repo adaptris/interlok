@@ -29,10 +29,10 @@ import com.adaptris.core.stubs.MockConnection;
 import javax.management.MalformedObjectNameException;
 import org.junit.jupiter.api.Test;
 
-public class ConnectionMonitorTest {
+class ConnectionMonitorTest {
 
   @Test
-  public void testType() throws MalformedObjectNameException, CoreException {
+  void testType() throws MalformedObjectNameException, CoreException {
     ParentRuntimeInfoComponent parent = new AdapterManager(createAdapter("adapter-1"));
     MockConnection connection = new MockConnection("conn-1");
     ConnectionMonitor monitor = new ConnectionMonitor(parent, connection);
@@ -41,7 +41,7 @@ public class ConnectionMonitorTest {
   }
 
   @Test
-  public void testUniqueIdAndSuffix() throws MalformedObjectNameException, CoreException {
+  void testUniqueIdAndSuffix() throws MalformedObjectNameException, CoreException {
     ParentRuntimeInfoComponent parent =
         new ChannelManager(
             createChannel("channel-1"), new AdapterManager(createAdapter("adapter-1")));
@@ -60,7 +60,7 @@ public class ConnectionMonitorTest {
   }
 
   @Test
-  public void testParentAndState() throws MalformedObjectNameException, CoreException {
+  void testParentAndState() throws MalformedObjectNameException, CoreException {
     ParentRuntimeInfoComponent parent =
         new WorkflowManager(
             createWorkflow("workflow-1"),

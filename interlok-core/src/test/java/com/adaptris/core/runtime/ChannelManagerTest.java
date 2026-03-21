@@ -623,7 +623,7 @@ public class ChannelManagerTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testChannelManager_ConnectionMonitorSuffixes() throws Exception {
+  void testChannelManager_ConnectionMonitorSuffixes() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
 
     Adapter adapter = createAdapter(adapterName);

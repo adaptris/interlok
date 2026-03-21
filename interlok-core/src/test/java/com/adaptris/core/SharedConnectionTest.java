@@ -170,7 +170,7 @@ public class SharedConnectionTest {
   }
 
   @Test
-  public void testConnectionStateHandler() throws Exception {
+  void testConnectionStateHandler() throws Exception {
     Adapter a = createAndStart();
     NullConnection nc = (NullConnection) a.getSharedComponents().getConnections().get(0);
     SharedConnection c = new SharedConnection(nc.getUniqueId());
@@ -191,7 +191,7 @@ public class SharedConnectionTest {
   }
 
   @Test
-  public void testRuntimeComponentDelegation() throws Exception {
+  void testRuntimeComponentDelegation() throws Exception {
     Adapter a = createAndStart();
     NullConnection nc = (NullConnection) a.getSharedComponents().getConnections().get(0);
     SharedConnection c = new SharedConnection(nc.getUniqueId());

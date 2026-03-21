@@ -920,7 +920,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testRuntimeInfoFactory_CreateConnectionMonitor() throws Exception {
+  void testRuntimeInfoFactory_CreateConnectionMonitor() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
     AdapterManager parent = new AdapterManager(adapter);
@@ -934,7 +934,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testRuntimeInfoFactory_NoConnectionMonitor_WhenRuntimeComponentNotTrue() throws Exception {
+  void testRuntimeInfoFactory_NoConnectionMonitor_WhenRuntimeComponentNotTrue() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
     AdapterManager parent = new AdapterManager(adapter);
@@ -946,7 +946,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testRuntimeInfoFactory_NoConnectionMonitor_WhenUniqueIdMissing() throws Exception {
+  void testRuntimeInfoFactory_NoConnectionMonitor_WhenUniqueIdMissing() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
     AdapterManager parent = new AdapterManager(adapter);
@@ -959,7 +959,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testRuntimeInfoFactory_NoConnectionMonitor_ForSharedConnection() throws Exception {
+  void testRuntimeInfoFactory_NoConnectionMonitor_ForSharedConnection() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
     AdapterManager parent = new AdapterManager(adapter);
@@ -971,7 +971,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testRuntimeInfoFactory_NoConnectionMonitor_WhenParentUnsupported() throws Exception {
+  void testRuntimeInfoFactory_NoConnectionMonitor_WhenParentUnsupported() throws Exception {
     NullConnection connection = new NullConnection(getName());
     connection.setRuntimeComponent(Boolean.TRUE);
     StubChannelManager unsupportedParent = new StubChannelManager();
@@ -1441,7 +1441,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testAddSharedConnectionMonitor_ConnectionMonitor_NotJmxRegistered() throws Exception {
+  void testAddSharedConnectionMonitor_ConnectionMonitor_NotJmxRegistered() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
     AdapterManager adapterManager = new AdapterManager(adapter);
@@ -1454,7 +1454,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testAddSharedConnectionMonitor_ConnectionMonitor_JmxRegistered() throws Exception {
+  void testAddSharedConnectionMonitor_ConnectionMonitor_JmxRegistered() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
     AdapterManager adapterManager = new AdapterManager(adapter);
@@ -1463,18 +1463,15 @@ public class AdapterManagerTest extends ComponentManagerCase {
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
     mBeans.add(adapterManager);
     mBeans.addAll(adapterManager.getAllDescendants());
-    try {
-      register(mBeans);
-      // Adapter IS JMX-registered, so isJmxRegistered() returns true and info.registerMBean() is called
-      boolean result = adapterManager.addSharedConnectionMonitor(connection);
-      assertTrue(result);
-    }
-    finally {
-    }
+
+    register(mBeans);
+    // Adapter IS JMX-registered, so isJmxRegistered() returns true and info.registerMBean() is called
+    boolean result = adapterManager.addSharedConnectionMonitor(connection);
+    assertTrue(result);
   }
 
   @Test
-  public void testMBean_RemoveSharedConnection_WithConnectionMonitor() throws Exception {
+  void testMBean_RemoveSharedConnection_WithConnectionMonitor() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
     NullConnection connection = new NullConnection(getName());
@@ -1498,7 +1495,7 @@ public class AdapterManagerTest extends ComponentManagerCase {
   }
 
   @Test
-  public void testMBean_RemoveSharedConnection_ConnectionMonitorIdMismatch() throws Exception {
+  void testMBean_RemoveSharedConnection_ConnectionMonitorIdMismatch() throws Exception {
     // Covers the false branch of: cmb instanceof ConnectionMonitor cm && id.equals(cm.connectionId())
     // A ConnectionMonitor exists for "conn-A" but we remove "conn-B" — IDs don't match, returns null
     String adapterName = this.getClass().getSimpleName() + "." + getName();
@@ -1512,23 +1509,21 @@ public class AdapterManagerTest extends ComponentManagerCase {
     AdapterManager adapterManager = new AdapterManager(adapter);
     ObjectName adapterObj = adapterManager.createObjectName();
     AdaptrisMarshaller m = DefaultMarshaller.getDefaultMarshaller();
-    try {
-      adapterManager.registerMBean();
-      // Add a ConnectionMonitor only for connA
-      adapterManager.addSharedConnectionMonitor(connA);
-      AdapterManagerMBean amp = JMX.newMBeanProxy(mBeanServer, adapterObj, AdapterManagerMBean.class);
-      // Remove connB: findSharedConnectionMonitor iterates, finds connA's monitor but IDs differ → returns null
-      assertTrue(amp.removeSharedConnection(getName() + "_B"));
-      Adapter marshalledAdapter = (Adapter) m.unmarshal(amp.getConfiguration());
-      assertEquals(1, marshalledAdapter.getSharedComponents().getConnections().size());
-      assertEquals(getName() + "_A", marshalledAdapter.getSharedComponents().getConnections().get(0).getUniqueId());
-    }
-    finally {
-    }
+
+    adapterManager.registerMBean();
+    // Add a ConnectionMonitor only for connA
+    adapterManager.addSharedConnectionMonitor(connA);
+    AdapterManagerMBean amp = JMX.newMBeanProxy(mBeanServer, adapterObj, AdapterManagerMBean.class);
+    // Remove connB: findSharedConnectionMonitor iterates, finds connA's monitor but IDs differ → returns null
+    assertTrue(amp.removeSharedConnection(getName() + "_B"));
+    Adapter marshalledAdapter = (Adapter) m.unmarshal(amp.getConfiguration());
+    assertEquals(1, marshalledAdapter.getSharedComponents().getConnections().size());
+    assertEquals(getName() + "_A", marshalledAdapter.getSharedComponents().getConnections().get(0).getUniqueId());
+
   }
 
   @Test
-  public void testMBean_AddChannel() throws Exception {
+  void testMBean_AddChannel() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
     AdapterManager adapterManager = new AdapterManager(adapter);
@@ -1537,23 +1532,21 @@ public class AdapterManagerTest extends ComponentManagerCase {
     List<BaseComponentMBean> mBeans = new ArrayList<BaseComponentMBean>();
     mBeans.add(adapterManager);
     mBeans.addAll(adapterManager.getAllDescendants());
-    try {
-      register(mBeans);
-      AdapterManagerMBean adapterManagerProxy = JMX.newMBeanProxy(mBeanServer, adapterObj, AdapterManagerMBean.class);
-      ObjectName channelObj = adapterManagerProxy.addChannel(DefaultMarshaller.getDefaultMarshaller().marshal(newChannel));
-      assertNotNull(channelObj);
-      ChannelManagerMBean channelManagerProxy = JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
-      assertEquals(ClosedState.getInstance(), channelManagerProxy.getComponentState());
-      Adapter marshalledAdapter = (Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(
-          adapterManagerProxy.getConfiguration());
-      assertEquals(1, marshalledAdapter.getChannelList().size());
-    }
-    finally {
-    }
+
+    register(mBeans);
+    AdapterManagerMBean adapterManagerProxy = JMX.newMBeanProxy(mBeanServer, adapterObj, AdapterManagerMBean.class);
+    ObjectName channelObj = adapterManagerProxy.addChannel(DefaultMarshaller.getDefaultMarshaller().marshal(newChannel));
+    assertNotNull(channelObj);
+    ChannelManagerMBean channelManagerProxy = JMX.newMBeanProxy(mBeanServer, channelObj, ChannelManagerMBean.class);
+    assertEquals(ClosedState.getInstance(), channelManagerProxy.getComponentState());
+    Adapter marshalledAdapter = (Adapter) DefaultMarshaller.getDefaultMarshaller().unmarshal(
+        adapterManagerProxy.getConfiguration());
+    assertEquals(1, marshalledAdapter.getChannelList().size());
+
   }
 
   @Test
-  public void testMBean_AddChannel_WhileStarted() throws Exception {
+  void testMBean_AddChannel_WhileStarted() throws Exception {
     String adapterName = this.getClass().getSimpleName() + "." + getName();
     Adapter adapter = createAdapter(adapterName);
     AdapterManager adapterManager = new AdapterManager(adapter);
