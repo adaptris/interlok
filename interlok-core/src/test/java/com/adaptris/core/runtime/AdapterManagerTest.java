@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -916,6 +917,68 @@ public class AdapterManagerTest extends ComponentManagerCase {
     assertFalse(adapterManager.removeChildJmxComponent(child2));
     // Just the componentChecker left.
     assertEquals(1, adapterManager.getChildRuntimeInfoComponents().size());
+  }
+
+  @Test
+  public void testRuntimeInfoFactory_CreateConnectionMonitor() throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + getName();
+    Adapter adapter = createAdapter(adapterName);
+    AdapterManager parent = new AdapterManager(adapter);
+    NullConnection connection = new NullConnection(getName());
+    connection.setRuntimeComponent(Boolean.TRUE);
+
+    RuntimeInfoComponent result = RuntimeInfoComponentFactory.create(parent, connection);
+
+    assertNotNull(result);
+    assertTrue(result instanceof ConnectionMonitor);
+  }
+
+  @Test
+  public void testRuntimeInfoFactory_NoConnectionMonitor_WhenRuntimeComponentNotTrue() throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + getName();
+    Adapter adapter = createAdapter(adapterName);
+    AdapterManager parent = new AdapterManager(adapter);
+    NullConnection connection = new NullConnection(getName());
+
+    RuntimeInfoComponent result = RuntimeInfoComponentFactory.create(parent, connection);
+
+    assertNull(result);
+  }
+
+  @Test
+  public void testRuntimeInfoFactory_NoConnectionMonitor_WhenUniqueIdMissing() throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + getName();
+    Adapter adapter = createAdapter(adapterName);
+    AdapterManager parent = new AdapterManager(adapter);
+    NullConnection connection = new NullConnection();
+    connection.setRuntimeComponent(Boolean.TRUE);
+
+    RuntimeInfoComponent result = RuntimeInfoComponentFactory.create(parent, connection);
+
+    assertNull(result);
+  }
+
+  @Test
+  public void testRuntimeInfoFactory_NoConnectionMonitor_ForSharedConnection() throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + getName();
+    Adapter adapter = createAdapter(adapterName);
+    AdapterManager parent = new AdapterManager(adapter);
+    SharedConnection shared = new SharedConnection(getName());
+
+    RuntimeInfoComponent result = RuntimeInfoComponentFactory.create(parent, shared);
+
+    assertNull(result);
+  }
+
+  @Test
+  public void testRuntimeInfoFactory_NoConnectionMonitor_WhenParentUnsupported() throws Exception {
+    NullConnection connection = new NullConnection(getName());
+    connection.setRuntimeComponent(Boolean.TRUE);
+    StubChannelManager unsupportedParent = new StubChannelManager();
+
+    RuntimeInfoComponent result = RuntimeInfoComponentFactory.create(unsupportedParent, connection);
+
+    assertNull(result);
   }
 
   @Test
