@@ -1805,29 +1805,3 @@ public class ChannelManagerTest extends ComponentManagerCase {
     }
   }
 }
-
-    ChannelChild(ChannelManager wm) {
-      myParent = wm;
-    }
-
-    @Override
-    public ObjectName getParentObjectName() throws MalformedObjectNameException {
-      return myParent.createObjectName();
-    }
-
-    @Override
-    public String getParentId() {
-      return myParent.getUniqueId();
-    }
-
-    @Override
-    public ObjectName createObjectName() throws MalformedObjectNameException {
-      return ObjectName.getInstance("Dummy:type=" + uid);
-    }
-
-    @Override
-    public RuntimeInfoComponent getParentRuntimeInfoComponent() {
-      return myParent;
-    }
-  }
-}
