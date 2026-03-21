@@ -16,8 +16,11 @@
 
 package com.adaptris.core;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import java.lang.reflect.Method;
 import java.time.Duration;
@@ -195,6 +198,17 @@ public class AdaptrisConnectionTest extends com.adaptris.interlok.junit.scaffold
     ConnectionStateHandler csh = new ConnectionStateHandlerImp(){};
     mc.setConnectionStateHandler(csh);
     assertEquals(csh, mc.getConnectionStateHandler());
+  }
+
+  @Test
+  public void testConnectionStateHandlerRegisteredOnPrepare() throws Exception {
+    MockConnection connection = new MockConnection();
+    ConnectionStateHandler handler = mock(ConnectionStateHandler.class);
+    connection.setConnectionStateHandler(handler);
+
+    connection.prepare();
+
+    verify(handler).registerConnection(connection);
   }
 
   private void assertState(List list, ComponentState state) {
