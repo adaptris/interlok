@@ -20,17 +20,20 @@ import static com.adaptris.core.runtime.AdapterComponentMBean.JMX_CONNECTION_TYP
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-import org.junit.jupiter.api.Test;
-
+import com.adaptris.core.Adapter;
+import com.adaptris.core.Channel;
+import com.adaptris.core.CoreException;
+import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.StartedState;
 import com.adaptris.core.stubs.MockConnection;
+import javax.management.MalformedObjectNameException;
+import org.junit.jupiter.api.Test;
 
 public class ConnectionMonitorTest {
 
   @Test
-  public void testType() {
-    RuntimeInfoComponent parent = new RuntimeInfoComponent() {
-    };
+  public void testType() throws MalformedObjectNameException, CoreException {
+    ParentRuntimeInfoComponent parent = new AdapterManager(createAdapter("adapter-1"));
     MockConnection connection = new MockConnection("conn-1");
     ConnectionMonitor monitor = new ConnectionMonitor(parent, connection);
 
@@ -38,9 +41,10 @@ public class ConnectionMonitorTest {
   }
 
   @Test
-  public void testUniqueIdAndSuffix() {
-    RuntimeInfoComponent parent = new RuntimeInfoComponent() {
-    };
+  public void testUniqueIdAndSuffix() throws MalformedObjectNameException, CoreException {
+    ParentRuntimeInfoComponent parent =
+        new ChannelManager(
+            createChannel("channel-1"), new AdapterManager(createAdapter("adapter-1")));
     MockConnection connection = new MockConnection("conn-1");
     ConnectionMonitor monitor = new ConnectionMonitor(parent, connection);
 
@@ -56,14 +60,35 @@ public class ConnectionMonitorTest {
   }
 
   @Test
-  public void testParentAndState() {
-    RuntimeInfoComponent parent = new RuntimeInfoComponent() {
-    };
+  public void testParentAndState() throws MalformedObjectNameException, CoreException {
+    ParentRuntimeInfoComponent parent =
+        new WorkflowManager(
+            createWorkflow("workflow-1"),
+            new ChannelManager(
+                createChannel("channel-1"), new AdapterManager(createAdapter("adapter-1"))));
     MockConnection connection = new MockConnection("conn-1");
     connection.changeState(StartedState.getInstance());
     ConnectionMonitor monitor = new ConnectionMonitor(parent, connection);
 
     assertSame(parent, monitor.getParentRuntimeInfoComponent());
     assertSame(StartedState.getInstance(), monitor.getComponentState());
+  }
+
+  protected Adapter createAdapter(String uid) {
+    Adapter adapter = new Adapter();
+    adapter.setUniqueId(uid);
+    return adapter;
+  }
+
+  protected Channel createChannel(String uid) {
+    Channel c = new Channel();
+    c.setUniqueId(uid);
+    return c;
+  }
+
+  protected StandardWorkflow createWorkflow(String uid) {
+    StandardWorkflow wf = new StandardWorkflow();
+    wf.setUniqueId(uid);
+    return wf;
   }
 }
