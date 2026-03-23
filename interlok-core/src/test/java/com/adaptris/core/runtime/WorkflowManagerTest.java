@@ -257,7 +257,7 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     Object c = ctor.newInstance(c1, "svc-2");
 
     assertEquals(a, a);
-    assertNotEquals(a, "not-a-workflow-connected-service");
+    assertNotEquals("not-a-workflow-connected-service", a);
     assertEquals(a, b);
     assertNotEquals(a, c);
     assertEquals(a.hashCode(), b.hashCode());
