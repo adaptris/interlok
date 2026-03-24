@@ -19,6 +19,7 @@ package com.adaptris.core;
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
+import com.adaptris.core.util.LifecycleHelper;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import lombok.AllArgsConstructor;
@@ -93,7 +94,8 @@ public class ConfigurableEventHandler extends DefaultEventHandler {
   protected void eventHandlerInit() throws CoreException {
     super.eventHandlerInit();
     for(Rule rule : rules) {
-      if (rule.getStandaloneProducer() != null) rule.getStandaloneProducer().init();
+      if (rule.getStandaloneProducer() != null)
+          LifecycleHelper.init(rule.getStandaloneProducer());
     }
   }
 
@@ -102,7 +104,8 @@ public class ConfigurableEventHandler extends DefaultEventHandler {
   protected void eventHandlerStart() throws CoreException {
     super.eventHandlerStart();
     for(Rule rule : rules) {
-      if (rule.getStandaloneProducer() != null) rule.getStandaloneProducer().start();
+      if (rule.getStandaloneProducer() != null)
+          LifecycleHelper.start(rule.getStandaloneProducer());
     }
   }
 
@@ -111,7 +114,8 @@ public class ConfigurableEventHandler extends DefaultEventHandler {
   protected void eventHandlerStop() {
     super.eventHandlerStop();
     for(Rule rule : rules) {
-      if (rule.getStandaloneProducer() != null) rule.getStandaloneProducer().stop();
+      if (rule.getStandaloneProducer() != null)
+          LifecycleHelper.stop(rule.getStandaloneProducer());
     }
   }
 
@@ -120,7 +124,8 @@ public class ConfigurableEventHandler extends DefaultEventHandler {
   protected void eventHandlerClose() {
     super.eventHandlerClose();
     for(Rule rule : rules) {
-      if (rule.getStandaloneProducer() != null) rule.getStandaloneProducer().close();
+      if (rule.getStandaloneProducer() != null)
+          LifecycleHelper.close(rule.getStandaloneProducer());
     }
   }
 
@@ -128,7 +133,8 @@ public class ConfigurableEventHandler extends DefaultEventHandler {
   public void prepare() throws CoreException {
     super.prepare();
     for(Rule rule : rules) {
-      if (rule.getStandaloneProducer() != null) rule.getStandaloneProducer().prepare();
+      if (rule.getStandaloneProducer() != null)
+        LifecycleHelper.prepare(rule.getStandaloneProducer());
     }
   }
 

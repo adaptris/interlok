@@ -270,7 +270,7 @@ public class ConfigurableEventHandlerTest
 
   @Test
   public void testComponentStates() throws Exception {
-    ConfigurableEventHandler evh = applyConfiguration(newEventHandler("testResolveEventSender"));
+    ConfigurableEventHandler evh = applyConfiguration(newEventHandler("testComponentStates"));
     evh.getRules().add(new ConfigurableEventHandler.Rule(
             Mockito.mock(EventMatcher.class),
             Mockito.mock(StandaloneProducer.class)
@@ -287,10 +287,10 @@ public class ConfigurableEventHandlerTest
       LifecycleHelper.stop(evh);
       evh.getRules().forEach(rule -> {
         try {
-          Mockito.verify(rule.getStandaloneProducer()).init();
+          Mockito.verify(rule.getStandaloneProducer()).requestInit();
           Mockito.verify(rule.getStandaloneProducer()).prepare();
-          Mockito.verify(rule.getStandaloneProducer()).start();
-          Mockito.verify(rule.getStandaloneProducer()).stop();
+          Mockito.verify(rule.getStandaloneProducer()).requestStart();
+          Mockito.verify(rule.getStandaloneProducer()).requestStop();
         } catch (CoreException e) {
           throw new RuntimeException(e);
         }
@@ -299,8 +299,72 @@ public class ConfigurableEventHandlerTest
     finally {
       LifecycleHelper.close(evh);
       evh.getRules().forEach(rule -> {
-        Mockito.verify(rule.getStandaloneProducer()).close();
+        Mockito.verify(rule.getStandaloneProducer()).requestClose();
       });
+    }
+  }
+
+  @Test
+  void testRuleStandaloneProducerStateTransitions() throws Exception {
+    ConfigurableEventHandler evh = applyConfiguration(newEventHandler("testRuleStandaloneProducerStateTransitions"));
+    StandaloneProducer ruleProducer1 = new StandaloneProducer();
+    StandaloneProducer ruleProducer2 = new StandaloneProducer();
+    evh.getRules().add(new ConfigurableEventHandler.Rule(new NullEventMatcher(), ruleProducer1));
+    evh.getRules().add(new ConfigurableEventHandler.Rule(new NullEventMatcher(), ruleProducer2));
+
+    // Before lifecycle, producers should be in ClosedState
+    assertEquals(ClosedState.getInstance(), ruleProducer1.retrieveComponentState());
+    assertEquals(ClosedState.getInstance(), ruleProducer2.retrieveComponentState());
+
+    try {
+      LifecycleHelper.prepare(evh);
+      LifecycleHelper.init(evh);
+      assertEquals(InitialisedState.getInstance(), ruleProducer1.retrieveComponentState());
+      assertEquals(InitialisedState.getInstance(), ruleProducer2.retrieveComponentState());
+
+      LifecycleHelper.start(evh);
+      assertEquals(StartedState.getInstance(), ruleProducer1.retrieveComponentState());
+      assertEquals(StartedState.getInstance(), ruleProducer2.retrieveComponentState());
+
+      LifecycleHelper.stop(evh);
+      assertEquals(StoppedState.getInstance(), ruleProducer1.retrieveComponentState());
+      assertEquals(StoppedState.getInstance(), ruleProducer2.retrieveComponentState());
+    }
+    finally {
+      LifecycleHelper.close(evh);
+    }
+
+    assertEquals(ClosedState.getInstance(), ruleProducer1.retrieveComponentState());
+    assertEquals(ClosedState.getInstance(), ruleProducer2.retrieveComponentState());
+  }
+
+  @Test
+  void testRuleStandaloneProducersRegisteredAsExceptionListeners() throws Exception {
+    ConfigurableEventHandler evh = applyConfiguration(newEventHandler("testRuleStandaloneProducersRegisteredAsExceptionListeners"));
+    NullConnection sharedConnection = new NullConnection();
+    StandaloneProducer ruleProducer1 = new StandaloneProducer(sharedConnection, new NullMessageProducer());
+    StandaloneProducer ruleProducer2 = new StandaloneProducer(sharedConnection, new NullMessageProducer());
+    evh.getRules().add(new ConfigurableEventHandler.Rule(new NullEventMatcher(), ruleProducer1));
+    evh.getRules().add(new ConfigurableEventHandler.Rule(new NullEventMatcher(), ruleProducer2));
+
+    try {
+      LifecycleHelper.prepare(evh);
+      LifecycleHelper.init(evh);
+      LifecycleHelper.start(evh);
+
+      // Rule producers should be registered as exception listeners on the shared connection
+      Set<StateManagedComponent> listeners = sharedConnection.retrieveExceptionListeners();
+      assertTrue(listeners.contains(ruleProducer1), "Rule producer 1 should be an exception listener");
+      assertTrue(listeners.contains(ruleProducer2), "Rule producer 2 should be an exception listener");
+
+      // They should be in StartedState so that ConnectionErrorHandlerImp.filter() includes them
+      for (StateManagedComponent listener : listeners) {
+        assertEquals(StartedState.getInstance(), listener.retrieveComponentState(),
+            "Listener " + listener.getUniqueId() + " should be in StartedState for error handler recovery");
+      }
+    }
+    finally {
+      LifecycleHelper.close(evh);
     }
   }
 
