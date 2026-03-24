@@ -93,9 +93,8 @@ public class ConfigurableEventHandler extends DefaultEventHandler {
   @Override
   protected void eventHandlerInit() throws CoreException {
     super.eventHandlerInit();
-    for(Rule rule : rules) {
-      if (rule.getStandaloneProducer() != null)
-          LifecycleHelper.init(rule.getStandaloneProducer());
+    for (Rule rule : rules) {
+      if (rule.getStandaloneProducer() != null) LifecycleHelper.init(rule.getStandaloneProducer());
     }
   }
 
@@ -103,9 +102,8 @@ public class ConfigurableEventHandler extends DefaultEventHandler {
   @Override
   protected void eventHandlerStart() throws CoreException {
     super.eventHandlerStart();
-    for(Rule rule : rules) {
-      if (rule.getStandaloneProducer() != null)
-          LifecycleHelper.start(rule.getStandaloneProducer());
+    for (Rule rule : rules) {
+      if (rule.getStandaloneProducer() != null) LifecycleHelper.start(rule.getStandaloneProducer());
     }
   }
 
@@ -113,9 +111,8 @@ public class ConfigurableEventHandler extends DefaultEventHandler {
   @Override
   protected void eventHandlerStop() {
     super.eventHandlerStop();
-    for(Rule rule : rules) {
-      if (rule.getStandaloneProducer() != null)
-          LifecycleHelper.stop(rule.getStandaloneProducer());
+    for (Rule rule : rules) {
+      if (rule.getStandaloneProducer() != null) LifecycleHelper.stop(rule.getStandaloneProducer());
     }
   }
 
@@ -123,21 +120,19 @@ public class ConfigurableEventHandler extends DefaultEventHandler {
   @Override
   protected void eventHandlerClose() {
     super.eventHandlerClose();
-    for(Rule rule : rules) {
-      if (rule.getStandaloneProducer() != null)
-          LifecycleHelper.close(rule.getStandaloneProducer());
+    for (Rule rule : rules) {
+      if (rule.getStandaloneProducer() != null) LifecycleHelper.close(rule.getStandaloneProducer());
     }
   }
 
   @Override
   public void prepare() throws CoreException {
     super.prepare();
-    for(Rule rule : rules) {
+    for (Rule rule : rules) {
       if (rule.getStandaloneProducer() != null)
         LifecycleHelper.prepare(rule.getStandaloneProducer());
     }
   }
-
 
   @AllArgsConstructor
   @AdapterComponent

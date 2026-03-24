@@ -281,14 +281,14 @@ public class ConfigurableEventHandlerTest
     ));
 
     try {
-      LifecycleHelper.init(evh);
       LifecycleHelper.prepare(evh);
+      LifecycleHelper.init(evh);
       LifecycleHelper.start(evh);
       LifecycleHelper.stop(evh);
       evh.getRules().forEach(rule -> {
         try {
-          Mockito.verify(rule.getStandaloneProducer()).requestInit();
           Mockito.verify(rule.getStandaloneProducer()).prepare();
+          Mockito.verify(rule.getStandaloneProducer()).requestInit();
           Mockito.verify(rule.getStandaloneProducer()).requestStart();
           Mockito.verify(rule.getStandaloneProducer()).requestStop();
         } catch (CoreException e) {
