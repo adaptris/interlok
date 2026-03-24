@@ -368,6 +368,30 @@ public class ConfigurableEventHandlerTest
     }
   }
 
+  @Test
+  void testRuleWithNullStandaloneProducerSkipsLifecycle() throws Exception {
+    ConfigurableEventHandler evh = applyConfiguration(newEventHandler("testRuleWithNullStandaloneProducerSkipsLifecycle"));
+    ConfigurableEventHandler.Rule ruleWithNull = new ConfigurableEventHandler.Rule(new NullEventMatcher(), null);
+    evh.getRules().add(ruleWithNull);
+    // Also add a real rule to ensure the loop continues past the null one
+    StandaloneProducer realProducer = new StandaloneProducer();
+    evh.getRules().add(new ConfigurableEventHandler.Rule(new NullEventMatcher(), realProducer));
+
+    try {
+      LifecycleHelper.prepare(evh);
+      LifecycleHelper.init(evh);
+      LifecycleHelper.start(evh);
+      // Real producer still transitions correctly despite a null sibling
+      assertEquals(StartedState.getInstance(), realProducer.retrieveComponentState());
+      LifecycleHelper.stop(evh);
+      assertEquals(StoppedState.getInstance(), realProducer.retrieveComponentState());
+    }
+    finally {
+      LifecycleHelper.close(evh);
+    }
+    assertEquals(ClosedState.getInstance(), realProducer.retrieveComponentState());
+  }
+
     /**
      * @see ExampleConfigCase#retrieveObjectForSampleConfig()
      */
