@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -14,10 +16,10 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageProducer;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -269,6 +271,18 @@ public class JmsAsyncProducerTest
     } finally {
       LifecycleHelper.stopAndClose(standaloneProducer);
     }
+  }
+
+  @Test
+  void testDoProduceWithSessionRefresh() throws Exception {
+    // Arrange: first call to send throws, second call succeeds
+    producer.refreshSessionIfProduceException = true;
+
+    doThrow(new JMSException("expected")).doNothing()
+      .when(mockMessageProducer).send(any(), eq(mockMessage), anyInt(), anyInt(), anyLong(), any(CompletionListener.class));
+
+    producer.produce(adaptrisMessage, mockJmsDestination);
+    verify(mockMessageProducer, times(2)).send(any(), eq(mockMessage), anyInt(), anyInt(), anyLong(), any(CompletionListener.class));
   }
 
   @Override

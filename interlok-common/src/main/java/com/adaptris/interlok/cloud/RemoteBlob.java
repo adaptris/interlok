@@ -1,45 +1,28 @@
 package com.adaptris.interlok.cloud;
 
+import lombok.Getter;
+
 /**
  * 
  * Abstraction of a blob that is stored in the cloud (e.g. an Azure blob object, AWS S3 blob etc).
  * 
  */
+@Getter
 public class RemoteBlob {
 
   private String name;
   private long lastModified;
   private long size;
   private String bucket;
-
-  private RemoteBlob() {
-
-  }
-
-  /**
-   * The name of the remote blob.
-   * 
-   * @return the name
-   */
-  public String getName() {
-    return name;
-  }
+  // nullable, optional short error message
+  private String errorSummary;
 
   private RemoteBlob withName(String name) {
     this.name = name;
     return this;
   }
 
-  /**
-   * Get the last modified time of the blob.
-   * 
-   * @return the last modified time, or -1 if not known/unavailable
-   */
-  public long getLastModified() {
-    return lastModified;
-  }
-
-  /**
+    /**
    * Wrap it as a {@link RemoteFile} for standard {@link java.io.FileFilter} operations.
    * 
    */
@@ -53,32 +36,18 @@ public class RemoteBlob {
     return this;
   }
 
-  /**
-   * Get the size of the blob if available.
-   * 
-   * @return the size of the blob, or -1 if not available / unknown.
-   */
-  public long getSize() {
-    return size;
-  }
-
-  private RemoteBlob withSize(long size) {
+    private RemoteBlob withSize(long size) {
     this.size = size;
     return this;
   }
 
-  /**
-   * Get the bucket that this blob resides in.
-   * 
-   * @return the bucket name, might be null.
-   * 
-   */
-  public String getBucket() {
-    return bucket;
+    private RemoteBlob withBucket(String bucket) {
+    this.bucket = bucket;
+    return this;
   }
 
-  private RemoteBlob withBucket(String bucket) {
-    this.bucket = bucket;
+  private RemoteBlob withErrorSummary(String errorSummary) {
+    this.errorSummary = errorSummary;
     return this;
   }
 
@@ -88,9 +57,11 @@ public class RemoteBlob {
     private transient long lastModified = -1;
     private transient long size = -1;
     private transient String bucket;
+    private transient String errorSummary; // nullable
 
     public RemoteBlob build() {
-      return new RemoteBlob().withName(name).withLastModified(lastModified).withSize(size).withBucket(bucket);
+      return new RemoteBlob().withName(name).withLastModified(lastModified).withSize(size).withBucket(bucket)
+          .withErrorSummary(errorSummary);
     }
 
     public Builder setName(String name) {
@@ -110,6 +81,11 @@ public class RemoteBlob {
 
     public Builder setBucket(String bucket) {
       this.bucket = bucket;
+      return this;
+    }
+
+    public Builder setErrorSummary(String errorSummary) {
+      this.errorSummary = errorSummary;
       return this;
     }
   }

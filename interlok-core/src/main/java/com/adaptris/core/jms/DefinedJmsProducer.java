@@ -85,21 +85,28 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
   }
 
   protected void doProduce(AdaptrisMessage msg, Destination destination, Destination replyTo) throws JMSException, CoreException {
+    Message jmsMsg = null;
+    boolean refreshSessionIfProduceException = this.refreshSessionIfProduceException.booleanValue();
     setupSession(msg);
-    Message jmsMsg = translate(msg, replyTo);
-    if (!perMessageProperties()) {
-      producerSession().getProducer().send(destination, jmsMsg);
-    }
-    else {
-      producerSession().getProducer().send(destination, jmsMsg,
-          calculateDeliveryMode(msg, getDeliveryMode()),
-          calculatePriority(msg, getPriority()), calculateTimeToLive(msg, timeToLive()));
+    try {
+      jmsMsg = sendMessage(msg, destination, replyTo);
+    } catch (JMSException ex) {
+       currentLogger().debug("Caught JMS exception while producing", ex);
+       if (refreshSessionIfProduceException) {
+           currentLogger().info("Handling exception by retrying with new session. Exception: {}", ex.getMessage());
+           setupSession(msg, refreshSessionIfProduceException);
+           try {
+               jmsMsg = sendMessage(msg, destination, replyTo);
+           } catch (JMSException exc) {
+               throw new JMSException("Failed to produce message with force recreation of session: " + exc.getMessage());
+           }
+       }
     }
     captureOutgoingMessageDetails(jmsMsg, msg);
     log.info("msg produced to destination [{}]", destination);
   }
 
-  public AdaptrisMessage request(AdaptrisMessage msg, String dest, long timeout) throws ProduceException {
+public AdaptrisMessage request(AdaptrisMessage msg, String dest, long timeout) throws ProduceException {
 
     AdaptrisMessage translatedReply = defaultIfNull(getMessageFactory()).newMessage();
     Destination replyTo = null;
@@ -140,4 +147,16 @@ public abstract class DefinedJmsProducer extends JmsProducerImpl {
 
   protected abstract Destination createTemporaryDestination() throws JMSException;
 
+  protected Message sendMessage(AdaptrisMessage msg, Destination destination, Destination replyTo) throws JMSException {
+    Message jmsMsg = translate(msg, replyTo);
+    if (!perMessageProperties()) {
+      producerSession().getProducer().send(destination, jmsMsg);
+    } else {
+      producerSession().getProducer().send(destination, jmsMsg,
+          calculateDeliveryMode(msg, getDeliveryMode()),
+          calculatePriority(msg, getPriority()),
+          calculateTimeToLive(msg, timeToLive()));
+      }
+      return jmsMsg;
+    }
 }

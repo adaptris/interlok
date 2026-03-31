@@ -46,6 +46,7 @@ import com.adaptris.core.Service;
 import com.adaptris.core.StartedState;
 import com.adaptris.core.StoppedState;
 import com.adaptris.core.management.VersionReport;
+import com.adaptris.core.util.JmxHelper;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
 
@@ -82,6 +83,9 @@ public class AdapterManager extends ComponentManagerImpl<Adapter> implements Ada
       if (c.hasUniqueId()) {
         addChild(new ChannelManager(c, this, true), true);
       }
+    }
+    for (AdaptrisConnection c : adapter.getSharedComponents().getConnections()) {
+      registerChildRuntime(c);
     }
     registerChildRuntime(adapter.getMessageErrorDigester());
     registerChildRuntime(adapter.getFailedMessageRetrier());
@@ -130,6 +134,31 @@ public class AdapterManager extends ComponentManagerImpl<Adapter> implements Ada
       result.add(cmb.createObjectName());
     }
     return result;
+  }
+
+  boolean addSharedConnectionMonitor(AdaptrisConnection connection) throws CoreException {
+    ChildRuntimeInfoComponent info = (ChildRuntimeInfoComponent) RuntimeInfoComponentFactory.create(this, connection);
+    if (!(info instanceof ConnectionMonitor)) {
+      return false;
+    }
+    addChildJmxComponent(info);
+    if (isJmxRegistered()) {
+      info.registerMBean();
+    }
+    return true;
+  }
+
+  private boolean isJmxRegistered() {
+    return JmxHelper.findMBeanServer().isRegistered(myObjectName);
+  }
+
+  private ConnectionMonitor findSharedConnectionMonitor(String id) {
+    for (ChildRuntimeInfoComponent cmb : childRuntimeInfoComponents) {
+      if (cmb instanceof ConnectionMonitor connectionMonitor && id.equals(connectionMonitor.connectionId())) {
+        return connectionMonitor;
+      }
+    }
+    return null;
   }
 
   @Override
@@ -285,6 +314,7 @@ public class AdapterManager extends ComponentManagerImpl<Adapter> implements Ada
     AdaptrisConnection comp = (AdaptrisConnection) DefaultMarshaller.getDefaultMarshaller().unmarshal(xmlString);
     boolean result = getWrappedComponent().getSharedComponents().addConnection(comp);
     if (result) {
+      addSharedConnectionMonitor(comp);
       marshalAndSendNotification();
     }
     return result;
@@ -296,6 +326,7 @@ public class AdapterManager extends ComponentManagerImpl<Adapter> implements Ada
     AdaptrisConnection comp = (AdaptrisConnection) DefaultMarshaller.getDefaultMarshaller().unmarshal(xmlString);
     boolean result = getWrappedComponent().getSharedComponents().addConnection(comp);
     if (result) {
+      addSharedConnectionMonitor(comp);
       getWrappedComponent().getSharedComponents().bindJNDI(comp.getUniqueId());
       marshalAndSendNotification();
     }
@@ -308,6 +339,11 @@ public class AdapterManager extends ComponentManagerImpl<Adapter> implements Ada
     Collection<AdaptrisConnection> c = getWrappedComponent().getSharedComponents().removeConnection(connectionId);
     boolean result = c.size() > 0;
     if (result) {
+      ConnectionMonitor mgr = findSharedConnectionMonitor(connectionId);
+      if (mgr != null) {
+        mgr.unregisterMBean();
+        removeChildJmxComponent(mgr);
+      }
       marshalAndSendNotification();
     }
     return result;

@@ -16,12 +16,15 @@
 
 package com.adaptris.core.jms;
 
-import com.adaptris.core.StandaloneProducer;
+import com.adaptris.core.*;
 import com.adaptris.core.jms.activemq.BasicActiveMqImplementation;
 import com.adaptris.core.jms.activemq.EmbeddedActiveMq;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class PasProducerTest extends BasicJmsProducerCase {
+import com.adaptris.core.stubs.MockMessageListener;
 
+class PasProducerTest extends BasicJmsProducerCase {
 
   /**
    * @see com.adaptris.core.ExampleConfigCase#retrieveObjectForSampleConfig()
@@ -61,9 +64,7 @@ public class PasProducerTest extends BasicJmsProducerCase {
 
   @Override
   protected JmsConsumerImpl createConsumer(String dest) {
-    PasConsumer pas = new PasConsumer();
-    pas.setTopic(dest);
-    return pas;
+    return new PasConsumer().withTopic(dest);
   }
 
   @Override
@@ -71,4 +72,89 @@ public class PasProducerTest extends BasicJmsProducerCase {
     return new TopicLoopback(mq, dest);
   }
 
+  @Test
+  void testDoProduce() throws Exception {
+    String topicName = "testDoProduceTopic";
+    EmbeddedActiveMq broker = new EmbeddedActiveMq();
+    broker.start();
+    try {
+      PasProducer producer = new PasProducer().withTopic(topicName);
+      StandaloneProducer standaloneProducer = new StandaloneProducer(broker.getJmsConnection(), producer);
+      PasConsumer consumer = new PasConsumer().withTopic(topicName);
+      StandaloneConsumer standaloneConsumer = new StandaloneConsumer(broker.getJmsConnection(), consumer);
+      MockMessageListener listener = new MockMessageListener();
+      standaloneConsumer.registerAdaptrisMessageListener(listener);
+      start(standaloneConsumer);
+      start(standaloneProducer);
+      AdaptrisMessage msg = DefaultMessageFactory.getDefaultInstance().newMessage("Hello JMS Topic");
+      producer.produce(msg, topicName);
+      Thread.sleep(500);
+      assertEquals(1, listener.getMessages().size(), "Message should be received on topic");
+      assertEquals("Hello JMS Topic", listener.getMessages().get(0).getContent(), "Message content should match");
+      stop(standaloneProducer);
+      stop(standaloneConsumer);
+    } finally {
+      broker.destroy();
+    }
+  }
+
+  @Test
+  void testDefinedJmsProducer_RetryLogic() {
+      RetryOnceDefinedJmsProducer producer = new RetryOnceDefinedJmsProducer();
+      producer.refreshSessionIfProduceException = true;
+      assertDoesNotThrow(() -> producer.doProduce(new com.adaptris.core.DefaultMessageFactory().newMessage(), (javax.jms.Destination) null, (javax.jms.Destination) null));
+  }
+
+  @Test
+  void testDefinedJmsProducer_RetryLogic_BothAttemptsFail() {
+      AlwaysFailingDefinedJmsProducer producer = new AlwaysFailingDefinedJmsProducer();
+      producer.refreshSessionIfProduceException = true;
+      assertThrows(javax.jms.JMSException.class, () ->
+            producer.doProduce(new com.adaptris.core.DefaultMessageFactory().newMessage(), (javax.jms.Destination) null, (javax.jms.Destination) null)
+      );
+  }
+
+  // Test double that simulates retry logic by overriding sendMessage only
+  static class RetryOnceDefinedJmsProducer extends DefinedJmsProducer {
+    private boolean first = true;
+    @Override
+    protected javax.jms.Message sendMessage(AdaptrisMessage msg, javax.jms.Destination destination, javax.jms.Destination replyTo) throws javax.jms.JMSException {
+      if (first) {
+        first = false;
+        throw new javax.jms.JMSException("Simulated failure");
+      }
+      // Always return a dummy message, never call super
+      return new org.apache.activemq.command.ActiveMQTextMessage();
+    }
+    @Override protected void captureOutgoingMessageDetails(javax.jms.Message jmsMsg, AdaptrisMessage msg) { return; }
+    @Override protected void logLinkedException(String prefix, Exception e) { throw new UnsupportedOperationException(); }
+    @Override public void rollback() { throw new UnsupportedOperationException(); }
+    @Override public ProducerSession setupSession(AdaptrisMessage msg) { return null; }
+    @Override public ProducerSession setupSession(AdaptrisMessage msg, boolean forceRecreate) { return null; }
+    protected void log(String s, Object... args) { throw new UnsupportedOperationException(); }
+    @Override protected javax.jms.Destination createDestination(String dest) { return null; }
+    @Override protected javax.jms.Destination createTemporaryDestination() { return null; }
+    @Override public String endpoint(AdaptrisMessage msg) { return null; }
+    @Override public AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException { return null;}
+    @Override public void produce(AdaptrisMessage msg) throws ProduceException { }
+  }
+
+  // Test double that always fails sendMessage to cover retry catch block
+  static class AlwaysFailingDefinedJmsProducer extends DefinedJmsProducer {
+    @Override
+    protected javax.jms.Message sendMessage(AdaptrisMessage msg, javax.jms.Destination destination, javax.jms.Destination replyTo) throws javax.jms.JMSException {
+      throw new javax.jms.JMSException("Simulated failure");
+    }
+    @Override protected void captureOutgoingMessageDetails(javax.jms.Message jmsMsg, AdaptrisMessage msg) { return; }
+    @Override protected void logLinkedException(String prefix, Exception e) { throw new UnsupportedOperationException(); }
+    @Override public void rollback() { throw new UnsupportedOperationException(); }
+    @Override public ProducerSession setupSession(AdaptrisMessage msg) { return null; }
+    @Override public ProducerSession setupSession(AdaptrisMessage msg, boolean forceRecreate) { return null; }
+    protected void log(String s, Object... args) { throw new UnsupportedOperationException(); }
+    @Override protected javax.jms.Destination createDestination(String dest) { return null; }
+    @Override protected javax.jms.Destination createTemporaryDestination() { return null; }
+    @Override public String endpoint(AdaptrisMessage msg) { return null; }
+    @Override public AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException { return null;}
+    @Override public void produce(AdaptrisMessage msg) throws ProduceException { }
+  }
 }

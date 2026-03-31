@@ -52,6 +52,7 @@ import com.adaptris.core.ComponentState;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.InitialisedState;
+import com.adaptris.core.NullConnection;
 import com.adaptris.core.PoolingWorkflow;
 import com.adaptris.core.RetryMessageErrorHandler;
 import com.adaptris.core.RetryMessageErrorHandlerMonitorMBean;
@@ -619,6 +620,31 @@ public class ChannelManagerTest extends ComponentManagerCase {
     finally {
       adapter.requestClose();
     }
+  }
+
+  @Test
+  void testChannelManager_ConnectionMonitorSuffixes() throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + getName();
+
+    Adapter adapter = createAdapter(adapterName);
+    AdapterManager adapterManager = new AdapterManager(adapter);
+    Channel channel = createChannel(getName() + "_withConnectionSuffix");
+
+    NullConnection consumeConnection = new NullConnection(getName() + "-consume");
+    consumeConnection.setRuntimeComponent(Boolean.TRUE);
+    channel.setConsumeConnection(consumeConnection);
+
+    NullConnection produceConnection = new NullConnection(getName() + "-produce");
+    produceConnection.setRuntimeComponent(Boolean.TRUE);
+    channel.setProduceConnection(produceConnection);
+
+    ChannelManager channelManager = new ChannelManager(channel, adapterManager);
+    Collection<ObjectName> children = channelManager.getChildRuntimeInfoComponents();
+
+    assertTrue(children.stream().anyMatch(
+        o -> o.toString().contains(consumeConnection.getUniqueId() + "-consume-connection")));
+    assertTrue(children.stream().anyMatch(
+        o -> o.toString().contains(produceConnection.getUniqueId() + "-produce-connection")));
   }
 
   @Test

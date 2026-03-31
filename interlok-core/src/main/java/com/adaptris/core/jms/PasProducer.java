@@ -127,12 +127,12 @@ public class PasProducer extends DefinedJmsProducer {
 
   @Override
   public AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException {
-    return request(msg, endpoint(msg), timeout);
+      return request(msg, endpoint(msg), timeout);
   }
 
   @Override
   public void produce(AdaptrisMessage msg) throws ProduceException {
-    produce(msg, endpoint(msg));
+      produce(msg, endpoint(msg));
   }
 
   @Override

@@ -49,6 +49,8 @@ public class ChannelManager extends ComponentManagerImpl<Channel> implements Cha
   private transient Set<WorkflowRuntimeManager> workflowManagers;
   private transient ObjectName myObjectName = null;
   private transient Set<ChildRuntimeInfoComponent> childRuntimeInfoComponents;
+  private static final String CONSUME_CONNECTION_SUFFIX = "-consume-connection";
+  private static final String PRODUCE_CONNECTION_SUFFIX = "-produce-connection";
   private transient String autoStart;
 
   private ChannelManager() {
@@ -84,6 +86,12 @@ public class ChannelManager extends ComponentManagerImpl<Channel> implements Cha
         addChild(new WorkflowManager(c, this, true), true);
       }
     }
+    addChildJmxComponentQuietly(withConnectionSuffix(
+        (ChildRuntimeInfoComponent) RuntimeInfoComponentFactory.create(this, channel.getConsumeConnection()),
+        CONSUME_CONNECTION_SUFFIX));
+    addChildJmxComponentQuietly(withConnectionSuffix(
+        (ChildRuntimeInfoComponent) RuntimeInfoComponentFactory.create(this, channel.getProduceConnection()),
+        PRODUCE_CONNECTION_SUFFIX));
     addChildJmxComponentQuietly(
         (ChildRuntimeInfoComponent) RuntimeInfoComponentFactory.create(this, channel.getMessageErrorHandler()));
     marshalConfig();
@@ -274,6 +282,13 @@ public class ChannelManager extends ComponentManagerImpl<Channel> implements Cha
       return addChildJmxComponent(comp);
     }
     return false;
+  }
+
+  private ChildRuntimeInfoComponent withConnectionSuffix(ChildRuntimeInfoComponent comp, String suffix) {
+    if (comp instanceof ConnectionMonitor connectionMonitor) {
+      connectionMonitor.appendObjectNameSuffix(suffix);
+    }
+    return comp;
   }
 
   @Override

@@ -56,4 +56,11 @@ public interface ConnectionErrorHandler extends ComponentLifecycle {
    */
   void handleConnectionException();
 
+
+    /**
+     * Check if this handler can handle the exception
+     */
+  default boolean canHandleException(Exception exception) {
+      return true;
+  }
 }

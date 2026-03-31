@@ -98,6 +98,12 @@ public interface AdapterComponentMBean extends BaseComponentMBean {
   String JMX_CHANNEL_TYPE = JMX_DOMAIN_NAME + ":type=Channel";
 
   /**
+   * The standard JMX Prefix for connections which resolves to {@value}
+   *
+   */
+  String JMX_CONNECTION_TYPE = JMX_DOMAIN_NAME + ":type=Connection";
+
+  /**
    * The standard JMX Prefix for a given Message Error Digest exposed via JMX which resolves to {@value}
    *
    */
@@ -177,6 +183,18 @@ public interface AdapterComponentMBean extends BaseComponentMBean {
    *
    */
   String NOTIF_TYPE_CHANNEL_CONFIG = "adaptris.jmx.channel.config";
+
+  /**
+   * Notification type for connection lifecycle notifications '{@value} '
+   *
+   */
+  String NOTIF_TYPE_CONNECTION_LIFECYCLE = "adaptris.jmx.connection.lifecycle";
+
+  /**
+   * Notification type for connection config update notifications '{@value} '
+   *
+   */
+  String NOTIF_TYPE_CONNECTION_CONFIG = "adaptris.jmx.connection.config";
   /**
    * Notification type for adapter config update notifications '{@value} '
    *

@@ -37,12 +37,12 @@ public class NullMessageProducer extends AdaptrisMessageProducerImp {
 
   @Override
   public AdaptrisMessage request(AdaptrisMessage msg) throws ProduceException {
-    return null;
+      return null;
   }
 
   @Override
   public AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException {
-    return null;
+      return null;
   }
 
   @Override
@@ -57,5 +57,4 @@ public class NullMessageProducer extends AdaptrisMessageProducerImp {
   @Override
   public void produce(AdaptrisMessage msg) throws ProduceException {
   }
-
 }

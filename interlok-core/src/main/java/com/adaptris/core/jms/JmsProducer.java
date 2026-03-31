@@ -18,6 +18,7 @@ package com.adaptris.core.jms;
 
 import static com.adaptris.core.AdaptrisMessageFactory.defaultIfNull;
 import static com.adaptris.core.jms.JmsConstants.JMS_ASYNC_STATIC_REPLY_TO;
+import org.apache.commons.lang3.BooleanUtils;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.util.Optional;
@@ -27,8 +28,6 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.validation.constraints.NotBlank;
-
-import org.apache.commons.lang3.BooleanUtils;
 
 import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.ComponentProfile;
@@ -95,7 +94,7 @@ public class JmsProducer extends JmsProducerImpl {
     super.prepare();
   }
 
-  public void produce(AdaptrisMessage msg, String dest) throws ProduceException {
+    public void produce(AdaptrisMessage msg, String dest) throws ProduceException {
     try {
       setupSession(msg);
       JmsDestination target = buildDestination(dest, msg, false);
@@ -110,16 +109,24 @@ public class JmsProducer extends JmsProducerImpl {
   }
 
   protected void produce(AdaptrisMessage msg, JmsDestination jmsDest)
-      throws JMSException, CoreException {
+     throws JMSException, CoreException {
+    Message jmsMsg = null;
+    boolean refreshSessionIfProduceException = this.refreshSessionIfProduceException.booleanValue();
     setupSession(msg);
-    Message jmsMsg = translate(msg, jmsDest.getReplyToDestination());
-    if (!perMessageProperties()) {
-      producerSession().getProducer().send(jmsDest.getDestination(), jmsMsg);
-    } else {
-      producerSession().getProducer().send(jmsDest.getDestination(), jmsMsg,
-          calculateDeliveryMode(msg, jmsDest.deliveryMode()),
-          calculatePriority(msg, jmsDest.priority()),
-          calculateTimeToLive(msg, jmsDest.timeToLive()));
+    try {
+        jmsMsg = sendMessage(msg, jmsDest);
+    } catch (JMSException ex) {
+      currentLogger().debug("Caught exception while producing", ex);
+      if (refreshSessionIfProduceException) {
+        currentLogger().info("Handling exception by retrying with new session. Exception: {}", ex.getMessage());
+        // force recreate a session if we get an exception, and try again. If it fails again, then we throw the original exception.
+        setupSession(msg, refreshSessionIfProduceException);
+        try {
+            jmsMsg = sendMessage(msg, jmsDest);
+        } catch (JMSException exc) {
+            throw new JMSException("Failed to produce message with force recreation of session: " + exc.getMessage());
+        }
+      } else throw ex;
     }
     captureOutgoingMessageDetails(jmsMsg, msg);
     log.info("msg produced to destination [{}]", jmsDest);
@@ -225,12 +232,12 @@ public class JmsProducer extends JmsProducerImpl {
 
   @Override
   public AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException {
-    return request(msg, endpoint(msg), timeout);
+      return request(msg, endpoint(msg), timeout);
   }
 
   @Override
   public void produce(AdaptrisMessage msg) throws ProduceException {
-    produce(msg, endpoint(msg));
+      produce(msg, endpoint(msg));
   }
 
   @Override
@@ -247,6 +254,19 @@ public class JmsProducer extends JmsProducerImpl {
   public <T extends JmsProducer> T withEndpoint(String s) {
     setEndpoint(s);
     return (T) this;
+  }
+
+  private Message sendMessage(AdaptrisMessage msg, JmsDestination jmsDest) throws JMSException {
+      Message jmsMsg = translate(msg, jmsDest.getReplyToDestination());
+      if (!perMessageProperties()) {
+          producerSession().getProducer().send(jmsDest.getDestination(), jmsMsg);
+      } else {
+          producerSession().getProducer().send(jmsDest.getDestination(), jmsMsg,
+                  calculateDeliveryMode(msg, jmsDest.deliveryMode()),
+                  calculatePriority(msg, jmsDest.priority()),
+                  calculateTimeToLive(msg, jmsDest.timeToLive()));
+      }
+      return jmsMsg;
   }
 
   protected class MyJmsDestination implements JmsDestination {
