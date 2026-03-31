@@ -87,7 +87,7 @@ class PasProducerTest extends BasicJmsProducerCase {
       start(standaloneConsumer);
       start(standaloneProducer);
       AdaptrisMessage msg = DefaultMessageFactory.getDefaultInstance().newMessage("Hello JMS Topic");
-      producer.doProduce(msg, topicName);
+      producer.produce(msg, topicName);
       Thread.sleep(500);
       assertEquals(1, listener.getMessages().size(), "Message should be received on topic");
       assertEquals("Hello JMS Topic", listener.getMessages().get(0).getContent(), "Message content should match");
@@ -135,6 +135,8 @@ class PasProducerTest extends BasicJmsProducerCase {
     @Override protected javax.jms.Destination createDestination(String dest) { return null; }
     @Override protected javax.jms.Destination createTemporaryDestination() { return null; }
     @Override public String endpoint(AdaptrisMessage msg) { return null; }
+    @Override public AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException { return null;}
+    @Override public void produce(AdaptrisMessage msg) throws ProduceException { }
   }
 
   // Test double that always fails sendMessage to cover retry catch block
@@ -152,5 +154,7 @@ class PasProducerTest extends BasicJmsProducerCase {
     @Override protected javax.jms.Destination createDestination(String dest) { return null; }
     @Override protected javax.jms.Destination createTemporaryDestination() { return null; }
     @Override public String endpoint(AdaptrisMessage msg) { return null; }
+    @Override public AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException { return null;}
+    @Override public void produce(AdaptrisMessage msg) throws ProduceException { }
   }
 }

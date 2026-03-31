@@ -909,7 +909,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     doThrow(new JMSException("fail")).doNothing().when(mockMsgProducer)
       .send(any(Destination.class), any(Message.class), anyInt(), anyInt(), anyLong());
     // Should not throw because retry will succeed
-    assertDoesNotThrow(() -> producer.doProduce(msg, mockJmsDestination));
+    assertDoesNotThrow(() -> producer.produce(msg, mockJmsDestination));
     // Should have called send twice (retry)
     verify(mockMsgProducer, times(2)).send(any(Destination.class), any(Message.class), anyInt(), anyInt(), anyLong());
   }
@@ -936,7 +936,7 @@ public class JmsProducerTest extends com.adaptris.interlok.junit.scaffolding.jms
     doThrow(new JMSException("fail")).when(mockMsgProducer)
       .send(any(Destination.class), any(Message.class), anyInt(), anyInt(), anyLong());
     // Should throw because no retry
-    assertThrows(JMSException.class, () -> producer.doProduce(msg, mockJmsDestination));
+    assertThrows(JMSException.class, () -> producer.produce(msg, mockJmsDestination));
     // Should have called send only once (no retry)
     verify(mockMsgProducer, times(1)).send(any(Destination.class), any(Message.class), anyInt(), anyInt(), anyLong());
   }

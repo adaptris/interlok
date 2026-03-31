@@ -43,49 +43,17 @@ public class ConnectionErrorHandlingProducer implements AdaptrisMessageProducer 
 
     @Override
     public AdaptrisMessage request(AdaptrisMessage msg) throws ProduceException {
-        try {
-            return delegate.request(msg);
-        } catch (ProduceException e) {
-            maybeHandleException(e);
-            throw e;
-        }
+        return delegate.request(msg);
     }
 
     @Override
     public AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException {
-        try {
-            return delegate.request(msg, timeout);
-        } catch (ProduceException e) {
-            maybeHandleException(e);
-            throw e;
-        }
+       return delegate.request(msg, timeout);
     }
 
     @Override
     public void produce(AdaptrisMessage msg) throws ProduceException {
-        try {
-            delegate.produce(msg);
-        } catch (ProduceException e) {
-            maybeHandleException(e);
-            throw e;
-        }
-    }
-
-    protected void maybeHandleException(ProduceException e) throws ProduceException {
-        AdaptrisConnection connection = retrieveConnection(AdaptrisConnection.class);
-        if (connection != null) {
-            ConnectionErrorHandler errorHandler = connection.connectionErrorHandler();
-            if (errorHandler != null) {
-                if (errorHandler.canHandleException(e)) {
-                    try {
-                        handleConnectionException();
-                    } catch (Exception ex) {
-                        log.warn(ex.getMessage(), e);
-                    }
-                }
-                throw e;
-            }
-        }
+        delegate.produce(msg);
     }
 
     @Override

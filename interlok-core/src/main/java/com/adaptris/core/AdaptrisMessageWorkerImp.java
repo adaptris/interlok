@@ -125,8 +125,7 @@ public abstract class AdaptrisMessageWorkerImp implements AdaptrisMessageWorker 
 
   @Override
   public <T> T retrieveConnection(Class<T> type) {
-      if (connection != null) return connection.retrieveConnection(type);
-      else return null;
+      return connection.retrieveConnection(type);
   }
 
 

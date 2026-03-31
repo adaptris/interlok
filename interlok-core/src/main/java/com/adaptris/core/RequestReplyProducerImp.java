@@ -24,24 +24,24 @@ import lombok.NoArgsConstructor;
 public abstract class RequestReplyProducerImp extends RequestReplyProducerBase {
 
   @Override
+  public final void produce(AdaptrisMessage msg) throws ProduceException {
+      doProduce(msg, endpoint(msg));
+  }
+
+  @Override
   public final AdaptrisMessage request(AdaptrisMessage msg) throws ProduceException {
     return request(msg, endpoint(msg), defaultTimeout());
   }
 
   @Override
   public final AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException {
-      return request(msg, endpoint(msg), timeout);
+    return request(msg, endpoint(msg), timeout);
   }
 
   private AdaptrisMessage request(AdaptrisMessage msg, String endpoint, long timeout)
       throws ProduceException {
-      try {
-        AdaptrisMessage reply = doRequest(msg, endpoint, timeout);
-        return mergeReply(reply, msg);
-      } catch (ProduceException e) {
-          maybeHandleProduceException(e);
-          throw e;
-      }
+      AdaptrisMessage reply = doRequest(msg, endpoint, timeout);
+      return mergeReply(reply, msg);
   }
 
   /**
