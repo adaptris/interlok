@@ -94,12 +94,12 @@ public class JmsProducer extends JmsProducerImpl {
     super.prepare();
   }
 
-  public void doProduce(AdaptrisMessage msg, String dest) throws ProduceException {
+    public void produce(AdaptrisMessage msg, String dest) throws ProduceException {
     try {
       setupSession(msg);
       JmsDestination target = buildDestination(dest, msg, false);
       Args.notNull(target, "destination");
-      doProduce(msg, target);
+      produce(msg, target);
       commit();
     } catch (Exception e) {
       rollback();
@@ -108,7 +108,7 @@ public class JmsProducer extends JmsProducerImpl {
     }
   }
 
-  protected void doProduce(AdaptrisMessage msg, JmsDestination jmsDest)
+  protected void produce(AdaptrisMessage msg, JmsDestination jmsDest)
      throws JMSException, CoreException {
     Message jmsMsg = null;
     boolean refreshSessionIfProduceException = this.refreshSessionIfProduceException.booleanValue();
@@ -132,7 +132,7 @@ public class JmsProducer extends JmsProducerImpl {
     log.info("msg produced to destination [{}]", jmsDest);
   }
 
-  public AdaptrisMessage doRequest(AdaptrisMessage msg, String dest, long timeout) throws ProduceException {
+  public AdaptrisMessage request(AdaptrisMessage msg, String dest, long timeout) throws ProduceException {
 
     AdaptrisMessage translatedReply = defaultIfNull(getMessageFactory()).newMessage();
     Destination replyTo = null;
@@ -143,7 +143,7 @@ public class JmsProducer extends JmsProducerImpl {
       replyTo = target.getReplyToDestination();
       // Listen for the reply.
       receiver = currentSession().createConsumer(replyTo);
-      doProduce(msg, target);
+      produce(msg, target);
       translatedReply = waitForReply(receiver, timeout);
       // BUG#915
       commit();
@@ -228,6 +228,16 @@ public class JmsProducer extends JmsProducerImpl {
 
   protected <T extends VendorImplementationBase> T vendorImplementation() {
     return retrieveConnection(JmsConnectionConfig.class).configuredVendorImplementation();
+  }
+
+  @Override
+  public AdaptrisMessage request(AdaptrisMessage msg, long timeout) throws ProduceException {
+      return request(msg, endpoint(msg), timeout);
+  }
+
+  @Override
+  public void produce(AdaptrisMessage msg) throws ProduceException {
+      produce(msg, endpoint(msg));
   }
 
   @Override

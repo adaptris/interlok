@@ -99,9 +99,7 @@ public abstract class ComponentStateImp implements ComponentState {
 
   boolean continueRequest(StateManagedComponent comp, ComponentState state) {
     boolean result = false;
-    if (comp.retrieveComponentState().equals(state)
-            // allow channels to continue receiving messages even if unavailable
-            || (comp instanceof Channel channel && !channel.isAvailable())) {
+    if (comp.retrieveComponentState().equals(state)) {
       result = true;
     }
     else {
