@@ -35,6 +35,7 @@ import org.xml.sax.InputSource;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -82,6 +83,7 @@ public class XsltTransformerFactory extends XmlTransformerFactoryImpl {
   @Getter
   @Setter
   @AdvancedConfig
+  @XStreamImplicit(itemFieldName = "saxon-initializer-class")
   private List<String> saxonInitializerClassNames;
 
   public XsltTransformerFactory() {
