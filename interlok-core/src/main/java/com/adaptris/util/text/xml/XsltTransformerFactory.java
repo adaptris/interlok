@@ -97,7 +97,7 @@ public class XsltTransformerFactory extends XmlTransformerFactoryImpl {
 
   /**
    * Override {@link XmlTransformerFactoryImpl#createTransformerFromUrl(String, EntityResolver)} so when using a URL we build the XML
-   * document directly from the URL instead of the InputSream of the URL file content. Doing this allows the transformer to have the file
+   * document directly from the URL instead of the InputStream of the URL file content. Doing this allows the transformer to have the file
    * location context and therefore the import statement in the XSL can use relative path.
    */
   @Override
@@ -168,10 +168,7 @@ public class XsltTransformerFactory extends XmlTransformerFactoryImpl {
         log.warn("Class {} does not implement {}", className, Initializer.class.getName());
       }
     } catch (Throwable t) {
-      if (t instanceof InterruptedException) {
-        Thread.currentThread().interrupt();
-      }
-      log.warn("Failed to load Saxon Initializer implementation: {}", className, t);
+        log.warn("Failed to load Saxon Initializer implementation: {}", className, t);
     }
     return Optional.empty();
   }
