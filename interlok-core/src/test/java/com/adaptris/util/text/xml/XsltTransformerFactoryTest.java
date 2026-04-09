@@ -132,6 +132,21 @@ class XsltTransformerFactoryTest {
   }
 
   @Test
+  void newInstanceContinuesWhenSaxonInitializerThrowsDuringExecution() {
+    XsltTransformerFactory factory = new XsltTransformerFactory();
+    factory.setTransformerFactoryImpl(SAXON_FACTORY_IMPL);
+    factory.setSaxonInitializerClassNames(List.of(
+        ThrowingInitializer.class.getName(),
+        TestInitializer.class.getName()));
+
+    TransformerFactory tf = factory.newInstance();
+
+    assertInstanceOf(TransformerFactoryImpl.class, tf);
+    assertEquals(1, TestInitializer.invocationCount.get());
+    assertNotNull(TestInitializer.lastConfig);
+  }
+
+  @Test
   void newInstanceWorksWithDefaultTransformerFactory() {
     XsltTransformerFactory factory = new XsltTransformerFactory();
     TransformerFactory tf = factory.newInstance();
@@ -206,6 +221,13 @@ class XsltTransformerFactoryTest {
     public void initialize(Configuration config) {
       invocationCount.incrementAndGet();
       lastConfig = config;
+    }
+  }
+
+  public static class ThrowingInitializer implements Initializer {
+    @Override
+    public void initialize(Configuration config) {
+      throw new RuntimeException("Intentional failure from ThrowingInitializer");
     }
   }
 
