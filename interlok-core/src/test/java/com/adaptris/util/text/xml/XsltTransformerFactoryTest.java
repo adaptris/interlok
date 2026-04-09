@@ -27,6 +27,7 @@ import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.xml.transform.ErrorListener;
@@ -48,6 +49,7 @@ import com.adaptris.core.util.DocumentBuilderFactoryBuilder;
 
 import net.sf.saxon.Configuration;
 import net.sf.saxon.TransformerFactoryImpl;
+import net.sf.saxon.lib.Initializer;
 
 class XsltTransformerFactoryTest {
 
@@ -55,8 +57,8 @@ class XsltTransformerFactoryTest {
 
   @BeforeEach
   void resetState() {
-    TestRegistrar.invocationCount.set(0);
-    TestRegistrar.lastConfig = null;
+    TestInitializer.invocationCount.set(0);
+    TestInitializer.lastConfig = null;
   }
 
   @Test
@@ -87,62 +89,46 @@ class XsltTransformerFactoryTest {
   }
 
   @Test
-  void getExtensionRegistrarDefaultsToNoExtensions() {
-    XsltTransformerFactory factory = new XsltTransformerFactory();
-    assertInstanceOf(NoExtensions.class, factory.getExtensionRegistrar());
-
-    factory.setExtensionRegistrarImplementation("");
-    assertInstanceOf(NoExtensions.class, factory.getExtensionRegistrar());
-  }
-
-  @Test
-  void getExtensionRegistrarLoadsValidImplementation() {
-    XsltTransformerFactory factory = new XsltTransformerFactory();
-    factory.setExtensionRegistrarImplementation(TestRegistrar.class.getName());
-
-    assertInstanceOf(TestRegistrar.class, factory.getExtensionRegistrar());
-  }
-
-  @Test
-  void getExtensionRegistrarFallsBackWhenClassIsNotAssignable() {
-    XsltTransformerFactory factory = new XsltTransformerFactory();
-    factory.setExtensionRegistrarImplementation(String.class.getName());
-
-    assertInstanceOf(NoExtensions.class, factory.getExtensionRegistrar());
-  }
-
-  @Test
-  void getExtensionRegistrarFallsBackWhenClassCannotBeLoaded() {
-    XsltTransformerFactory factory = new XsltTransformerFactory();
-    factory.setExtensionRegistrarImplementation("com.adaptris.missing.DoesNotExist");
-
-    assertInstanceOf(NoExtensions.class, factory.getExtensionRegistrar());
-  }
-
-  @Test
-  void newInstanceRegistersExtensionsWhenFactoryIsSaxon() {
+  void newInstanceRunsSaxonInitializersWhenFactoryIsSaxon() {
     XsltTransformerFactory factory = new XsltTransformerFactory();
     factory.setTransformerFactoryImpl(SAXON_FACTORY_IMPL);
-    factory.setExtensionRegistrarImplementation(TestRegistrar.class.getName());
+    factory.setSaxonInitializerClassNames(List.of(TestInitializer.class.getName()));
 
     TransformerFactory tf = factory.newInstance();
 
     assertInstanceOf(TransformerFactoryImpl.class, tf);
-    assertEquals(1, TestRegistrar.invocationCount.get());
-    assertNotNull(TestRegistrar.lastConfig);
+    assertEquals(1, TestInitializer.invocationCount.get());
+    assertNotNull(TestInitializer.lastConfig);
   }
 
   @Test
-  void newInstanceDoesNotRegisterExtensionsWhenFactoryIsNotSaxon() {
+  void newInstanceDoesNotRunSaxonInitializersWhenFactoryIsNotSaxon() {
     XsltTransformerFactory factory = new XsltTransformerFactory();
     factory.setTransformerFactoryImpl(NonSaxonTransformerFactory.class.getName());
-    factory.setExtensionRegistrarImplementation(TestRegistrar.class.getName());
+    factory.setSaxonInitializerClassNames(List.of(TestInitializer.class.getName()));
 
     TransformerFactory tf = factory.newInstance();
 
     assertInstanceOf(NonSaxonTransformerFactory.class, tf);
-    assertEquals(0, TestRegistrar.invocationCount.get());
-    assertNull(TestRegistrar.lastConfig);
+    assertEquals(0, TestInitializer.invocationCount.get());
+    assertNull(TestInitializer.lastConfig);
+  }
+
+  @Test
+  void newInstanceIgnoresInvalidSaxonInitializerClasses() {
+    XsltTransformerFactory factory = new XsltTransformerFactory();
+    factory.setTransformerFactoryImpl(SAXON_FACTORY_IMPL);
+    factory.setSaxonInitializerClassNames(List.of(
+        "com.adaptris.missing.DoesNotExist",
+        String.class.getName(),
+        "",
+        "   "));
+
+    TransformerFactory tf = factory.newInstance();
+
+    assertInstanceOf(TransformerFactoryImpl.class, tf);
+    assertEquals(0, TestInitializer.invocationCount.get());
+    assertNull(TestInitializer.lastConfig);
   }
 
   @Test
@@ -179,13 +165,15 @@ class XsltTransformerFactoryTest {
     factory.setTransformerFactoryImpl(SAXON_FACTORY_IMPL);
     factory.setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder.newLenientInstance());
 
-    String xsl = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-        + "<!DOCTYPE xsl:stylesheet [<!ENTITY ext SYSTEM \"urn:test-entity\">]>\n"
-        + "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">\n"
-        + "  <xsl:template match=\"/\">\n"
-        + "    <out>&ext;</out>\n"
-        + "  </xsl:template>\n"
-        + "</xsl:stylesheet>";
+    String xsl = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE xsl:stylesheet [<!ENTITY ext SYSTEM "urn:test-entity">]>
+        <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+          <xsl:template match="/">
+            <out>&ext;</out>
+          </xsl:template>
+        </xsl:stylesheet>
+        """;
 
     Path xslFile = Files.createTempFile("xslt-transformer-factory-entity-", ".xsl");
     Files.writeString(xslFile, xsl, StandardCharsets.UTF_8);
@@ -199,9 +187,8 @@ class XsltTransformerFactoryTest {
       return null;
     };
 
-    try {
+    try (StringWriter output = new StringWriter()) {
       Transformer transformer = factory.createTransformerFromUrl(xslFile.toUri().toString(), resolver);
-      StringWriter output = new StringWriter();
       transformer.transform(new StreamSource(new StringReader("<root/>")), new StreamResult(output));
 
       assertTrue(resolverCalls.get() > 0);
@@ -211,12 +198,12 @@ class XsltTransformerFactoryTest {
     }
   }
 
-  public static class TestRegistrar implements SaxonExtensionRegistrar {
+  public static class TestInitializer implements Initializer {
     static final AtomicInteger invocationCount = new AtomicInteger(0);
     static volatile Configuration lastConfig;
 
     @Override
-    public void register(Configuration config) {
+    public void initialize(Configuration config) {
       invocationCount.incrementAndGet();
       lastConfig = config;
     }
