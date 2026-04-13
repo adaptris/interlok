@@ -16,6 +16,7 @@
 
 package com.adaptris.util.text.xml;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -34,11 +35,13 @@ import org.xml.sax.InputSource;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 import lombok.Getter;
 import lombok.Setter;
 import net.sf.saxon.Configuration;
 import net.sf.saxon.TransformerFactoryImpl;
+import net.sf.saxon.lib.Initializer;
 
 /**
  * An {@link XmlTransformerFactory} implementation that creates XSLT {@link Transformer} instances.
@@ -51,10 +54,9 @@ import net.sf.saxon.TransformerFactoryImpl;
  * </p>
  *
  * <p>
- * When a Saxon {@link TransformerFactory} is detected, optional Saxon extension functions can be
- * registered via a {@link SaxonExtensionRegistrar} implementation. Specify the fully-qualified
- * class name of your {@link SaxonExtensionRegistrar} via {@code extensionRegistrarImplementation}.
- * If not set, no extensions are registered.
+ * When a Saxon {@link TransformerFactory} is detected, optional Saxon extensions can be
+ * registered by providing one or more fully-qualified class names that implement
+ * {@link Initializer} via {@code saxonInitializerClassNames}.
  * </p>
  *
  * <p>
@@ -68,7 +70,7 @@ import net.sf.saxon.TransformerFactoryImpl;
  */
 
 @XStreamAlias("xslt-transformer-factory")
-@DisplayOrder(order = { "transformerFactoryImpl", "extensionRegistrarImplementation", "failOnRecoverableError" })
+@DisplayOrder(order = { "transformerFactoryImpl", "saxonInitializerClassNames", "failOnRecoverableError" })
 public class XsltTransformerFactory extends XmlTransformerFactoryImpl {
 
   private transient final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -81,7 +83,8 @@ public class XsltTransformerFactory extends XmlTransformerFactoryImpl {
   @Getter
   @Setter
   @AdvancedConfig
-  private String extensionRegistrarImplementation;
+  @XStreamImplicit(itemFieldName = "saxon-initializer-class")
+  private List<String> saxonInitializerClassNames;
 
   public XsltTransformerFactory() {
     super();
@@ -94,7 +97,7 @@ public class XsltTransformerFactory extends XmlTransformerFactoryImpl {
 
   /**
    * Override {@link XmlTransformerFactoryImpl#createTransformerFromUrl(String, EntityResolver)} so when using a URL we build the XML
-   * document directly from the URL instead of the InputSream of the URL file content. Doing this allows the transformer to have the file
+   * document directly from the URL instead of the InputStream of the URL file content. Doing this allows the transformer to have the file
    * location context and therefore the import statement in the XSL can use relative path.
    */
   @Override
@@ -114,8 +117,8 @@ public class XsltTransformerFactory extends XmlTransformerFactoryImpl {
         : TransformerFactory.newInstance(getTransformerFactoryImpl(), null);
 
     getSaxonConfiguration(tf).ifPresent(config -> {
-      log.debug("Registering Saxon extensions with config: {}", config);
-      getExtensionRegistrar().register(config);
+      log.debug("Applying Saxon initializers with config: {}", config);
+      applySaxonInitializers(config);
     });
 
     return tf;
@@ -136,27 +139,38 @@ public class XsltTransformerFactory extends XmlTransformerFactoryImpl {
     return Optional.empty();
   }
 
-  public SaxonExtensionRegistrar getExtensionRegistrar() {
-    return StringUtils.isNotBlank(getExtensionRegistrarImplementation())
-        ? loadExtensionRegistrar(getExtensionRegistrarImplementation())
-        : new NoExtensions();
+  private void applySaxonInitializers(Configuration config) {
+    if (config == null || saxonInitializerClassNames == null) {
+      return;
+    }
+    for (String className : saxonInitializerClassNames) {
+      if (StringUtils.isBlank(className)) {
+        continue;
+      }
+      loadSaxonInitializer(className).ifPresent(initializer -> {
+        try {
+          log.debug("Executing Saxon Initializer implementation class: {}", className);
+          initializer.initialize(config);
+        } catch (Exception e) {
+          log.warn("Failed to execute Saxon Initializer implementation: {}", className, e);
+        }
+      });
+    }
   }
 
-  private SaxonExtensionRegistrar loadExtensionRegistrar(String className) {
+  private Optional<Initializer> loadSaxonInitializer(String className) {
     try {
-      Class<?> clazz = Class.forName(className);
-      if (SaxonExtensionRegistrar.class.isAssignableFrom(clazz)) {
-        log.debug("Found SaxonExtensionRegistrar implementation class: {}", className);
-        return (SaxonExtensionRegistrar) clazz.getDeclaredConstructor().newInstance();
+      ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+      Class<?> clazz = Class.forName(className, true, classLoader != null ? classLoader : this.getClass().getClassLoader());
+      if (Initializer.class.isAssignableFrom(clazz)) {
+        return Optional.of((Initializer) clazz.getDeclaredConstructor().newInstance());
       } else {
-        log.warn("Class {} does not implement SaxonExtensionRegistrar", className);
+        log.warn("Class {} does not implement {}", className, Initializer.class.getName());
       }
     } catch (Throwable t) {
-      if (t instanceof  InterruptedException) {
-        Thread.currentThread().interrupt();
-      }
-      log.warn("Failed to load SaxonExtensionRegistrar implementation: {}", className, t);
+        log.warn("Failed to load Saxon Initializer implementation: {}", className, t);
     }
-    return new NoExtensions();
+    return Optional.empty();
   }
+
 }
