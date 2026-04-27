@@ -281,6 +281,16 @@
   </suppress>
   <suppress>
     <notes><![CDATA[
+      file name: spring-boot-loader-2.7.18.jar
+      Temporary suppression for CVE-2026-22733. Spring guidance indicates remediation in 2.7.32,
+      but that version is not available in Maven Central yet. Upgrading to Spring Boot 3.x is
+      not currently viable for this project.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring-boot-loader@.*$</packageUrl>
+    <cve>CVE-2026-22733</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
     CVE-2025-1948: False positive for Jetty 10.0.24. CVE-2025-1948 only affects Jetty versions 12.0.0 to 12.0.16.
 	CVE-2024-6763: Jetty 10.0.24 is the highest version 10 we can go to.
 	CVE-2025-11143: Remediation requires a major Jetty upgrade from 10.x to 12.x, which is not possible yet.
