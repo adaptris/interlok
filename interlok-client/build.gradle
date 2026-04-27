@@ -2,7 +2,7 @@ ext {
   componentName='Interlok Core/Client'
   componentDesc="Interlok client API; allows you to programatically submit messages to an Interlok workflow"
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
-  log4j2Version = "2.25.3"
+  log4j2Version = "2.25.4"
   mockitoVersion = '4.9.0'
 }
 
@@ -21,7 +21,7 @@ dependencies {
   api ("org.slf4j:slf4j-api:2.0.17")
   testImplementation ("org.junit.jupiter:junit-jupiter-api:5.11.4")
   testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.12.2")
-    testImplementation ("org.junit.platform:junit-platform-launcher:1.13.3")
+  testImplementation ("org.junit.platform:junit-platform-launcher:1.13.3")
   testImplementation ("org.apache.logging.log4j:log4j-core:$log4j2Version")
   testImplementation ("org.apache.logging.log4j:log4j-1.2-api:$log4j2Version")
   testImplementation ("org.apache.logging.log4j:log4j-api:$log4j2Version")
