@@ -40,7 +40,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import lombok.Getter;
 import lombok.Setter;
 import net.sf.saxon.Configuration;
-import net.sf.saxon.TransformerFactoryImpl;
+import net.sf.saxon.jaxp.SaxonTransformerFactory;
 import net.sf.saxon.lib.Initializer;
 
 /**
@@ -131,10 +131,10 @@ public class XsltTransformerFactory extends XmlTransformerFactoryImpl {
       return Optional.empty();
     }
 
-    // Saxon-HE and Saxon-EE factories both derive from TransformerFactoryImpl.
-    if (tf instanceof TransformerFactoryImpl) {
+    // Saxon-HE and Saxon-EE factories both derive from SaxonTransformerFactory
+    if (tf instanceof SaxonTransformerFactory saxonTf) {
       log.debug("Retrieving Saxon Configuration from {}", tf.getClass().getName());
-      return Optional.of(((TransformerFactoryImpl) tf).getConfiguration());
+      return Optional.of(saxonTf.getConfiguration());
     }
     return Optional.empty();
   }
