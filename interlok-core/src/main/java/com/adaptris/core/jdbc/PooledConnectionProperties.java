@@ -464,7 +464,12 @@ public enum PooledConnectionProperties {
   usesTraditionalReflectiveProxies {
     @Override
     void applyProperty(ComboPooledDataSource dataSource, String value) throws Exception {
-      dataSource.setUsesTraditionalReflectiveProxies(Boolean.valueOf(value));
+      try {
+        dataSource.getClass().getMethod("setUsesTraditionalReflectiveProxies", boolean.class)
+            .invoke(dataSource, Boolean.parseBoolean(value));
+      } catch (NoSuchMethodException ignored) {
+        // Removed in newer c3p0 releases; ignore legacy config when unsupported.
+      }
     }
 
     @Override
