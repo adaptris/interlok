@@ -4,7 +4,7 @@ ext {
   componentName="Interlok Core/Base"
   componentDesc="The Core Interlok framework component; this is your must have"
   activeMqVersion="5.19.6"
-  bouncyCastleVersion="1.80"
+  bouncyCastleVersion="1.84"
   mysqlDriverVersion="8.0.33"
   slf4jVersion = "2.0.17"
   mockitoVersion = "4.9.0"
@@ -126,7 +126,7 @@ dependencies {
   api ("com.zaxxer:HikariCP:6.2.1")
   api ("net.sf.saxon:Saxon-HE:12.6")
   api ("xerces:xercesImpl:2.12.2")
-  api ("com.mchange:c3p0:0.9.5.5") {
+  api ("com.mchange:c3p0:0.13.0") {
     exclude group: "com.mchange", module: "mchange-commons-java"
   }
   api ("com.mchange:mchange-commons-java:0.4.0")
