@@ -129,7 +129,7 @@ dependencies {
   api ("com.mchange:c3p0:0.13.0") {
     exclude group: "com.mchange", module: "mchange-commons-java"
   }
-  api ("com.mchange:mchange-commons-java:0.4.0")
+  api ("com.mchange:mchange-commons-java:0.5.0")
   api ("org.apache-extras.beanshell:bsh:2.0b6")
 
   api ("org.slf4j:slf4j-api:$slf4jVersion")
