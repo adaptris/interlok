@@ -52,4 +52,4 @@ junitsecurity.security.algorithm=DESede/CBC/PKCS5Padding
 junitsecurity.security.algorithm.keysize=168
 
 junitsecurity.certificate.handler.expired=@BASE_DIR@/src/test/resources/security/expired.cer
-junitsecurity.certificate.handler.good=@BASE_DIR@/src/test/resources/security/good.cer
+junitsecurity.certificate.handler.good=@BASE_DIR@/src/test/resources/security/good-2036.cer

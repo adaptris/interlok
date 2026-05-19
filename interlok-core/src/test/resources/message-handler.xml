@@ -1,0 +1,25 @@
+<!-- MESSAGE ERROR HANDLER -->
+<message-error-handler xsi:type="java:com.adaptris.core.StandardProcessingExceptionHandler">
+
+  <processing-exception-service xsi:type="java:com.adaptris.core.ServiceList">
+
+    <service xsi:type="java:com.adaptris.core.StandaloneProducer">
+      <connection xsi:type="java:com.adaptris.core.NullConnection"/>
+
+      <producer xsi:type="java:com.adaptris.core.fs.FsProducer">
+        <destination xsi:type="java:com.adaptris.core.ConfiguredProduceDestination">
+            <!-- Unparseable content below-->
+          <destination>&&&&&&&EXCEPTIONS_BASE</destination>
+        </destination>
+        <encoder xsi:type="java:com.adaptris.core.MimeEncoder">
+          <retain-unique-id>true</retain-unique-id>
+        </encoder>
+        <fs-worker xsi:type="java:com.adaptris.fs.OverwriteIfExistsWorker"/>
+        <create-dirs>true</create-dirs>
+      </producer>
+
+    </service>
+
+  </processing-exception-service>
+
+</message-error-handler>

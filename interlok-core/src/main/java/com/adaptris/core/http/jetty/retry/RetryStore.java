@@ -19,7 +19,7 @@ public interface RetryStore extends ComponentLifecycle, ComponentLifecycleExtens
    *
    * @implNote The default implementation just returns an empty list.
    */
-  default Iterable<RemoteBlob> report() throws InterlokException {
+  default Iterable<RemoteBlob> report(boolean includeErrorMessage) throws InterlokException {
     return Collections.emptyList();
   }
 
@@ -51,7 +51,6 @@ public interface RetryStore extends ComponentLifecycle, ComponentLifecycleExtens
       throws InterlokException {
     return buildForRetry(msgId, metadata, null);
   }
-
 
   /**
    * Build the message for retrying from the store.
@@ -163,5 +162,26 @@ public interface RetryStore extends ComponentLifecycle, ComponentLifecycleExtens
    * </p>
    */
   void makeConnection(AdaptrisConnection connection);
+
+  /**
+   * Retrieve the stack trace for a given message ID.
+   *
+   * @param msgId the message ID
+   * @return the stack trace as a String
+   * @throws InterlokException if the stack trace cannot be retrieved
+   */
+  String getStackTrace(String msgId) throws InterlokException;
+
+  /**
+   * Retrieve the first line of the stack trace for a given message ID.
+   *
+   * @param msgId the message ID
+   * @return the first line of the stack trace as a String
+   * @throws InterlokException if the stack trace cannot be retrieved
+  */
+  default String getStacktraceFirstLine(String msgId) throws InterlokException {
+    String stackTrace = getStackTrace(msgId);
+    return stackTrace.split("\\R", 2)[0];
+  }
 
 }

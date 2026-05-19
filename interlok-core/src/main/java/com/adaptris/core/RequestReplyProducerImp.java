@@ -25,7 +25,7 @@ public abstract class RequestReplyProducerImp extends RequestReplyProducerBase {
 
   @Override
   public final void produce(AdaptrisMessage msg) throws ProduceException {
-    doProduce(msg, endpoint(msg));
+      doProduce(msg, endpoint(msg));
   }
 
   @Override
@@ -40,8 +40,8 @@ public abstract class RequestReplyProducerImp extends RequestReplyProducerBase {
 
   private AdaptrisMessage request(AdaptrisMessage msg, String endpoint, long timeout)
       throws ProduceException {
-    AdaptrisMessage reply = doRequest(msg, endpoint, timeout);
-    return mergeReply(reply, msg);
+      AdaptrisMessage reply = doRequest(msg, endpoint, timeout);
+      return mergeReply(reply, msg);
   }
 
   /**

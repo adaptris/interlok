@@ -51,38 +51,71 @@ public class JmsAsyncProducer extends JmsProducer {
   
   @Override
   protected void produce(AdaptrisMessage msg, JmsDestination jmsDest) throws JMSException, CoreException {
-    try {
-      setupSession(msg);
-      Message jmsMsg = translate(msg, jmsDest.getReplyToDestination());
-      jmsMsg.setStringProperty(ID_HEADER, msg.getUniqueId());
-      
-      if (!perMessageProperties()) {
-        producerSession().getProducer().send(jmsDest.getDestination(), jmsMsg, getEventHandler());
-      } else {
-        producerSession().getProducer().send(jmsDest.getDestination(), jmsMsg,
-            calculateDeliveryMode(msg, jmsDest.deliveryMode()),
-            calculatePriority(msg, jmsDest.priority()),
-            calculateTimeToLive(msg, jmsDest.timeToLive()),
-            getEventHandler());
+      Message jmsMsg = null;
+      try {
+          setupSession(msg);
+          jmsMsg = sendMessageWithRetry(msg, jmsDest);
+          // in real time speed JMSMessageID may not yet be set, therefore we set a header.
+          getEventHandler().addUnAckedMessage(jmsMsg.getStringProperty(ID_HEADER), msg);
+          // Standard workflow will attempt to execute this after the produce,
+          // let's remove them so it's handled by our async event handler.
+          msg.getObjectHeaders().remove(CoreConstants.OBJ_METADATA_ON_SUCCESS_CALLBACK);
+          msg.getObjectHeaders().remove(CoreConstants.OBJ_METADATA_ON_FAILURE_CALLBACK);
+
+          captureOutgoingMessageDetails(jmsMsg, msg);
+          log.info("msg produced to destination [{}]", jmsDest);
+      } catch (Throwable ex) {
+          ExceptionHelper.rethrowProduceException(ex);
       }
-      // in real time speed JMSMessageID may not yet be set, therefore we set a header.
-      getEventHandler().addUnAckedMessage(jmsMsg.getStringProperty(ID_HEADER), msg);
-      // Standard workflow will attempt to execute this after the produce, 
-      // let's remove them so it's handled by our async event handler.
-      msg.getObjectHeaders().remove(CoreConstants.OBJ_METADATA_ON_SUCCESS_CALLBACK);
-      msg.getObjectHeaders().remove(CoreConstants.OBJ_METADATA_ON_FAILURE_CALLBACK);
-      
-      captureOutgoingMessageDetails(jmsMsg, msg);
-      log.info("msg produced to destination [{}]", jmsDest);
-    } catch (Throwable ex) {
-      ExceptionHelper.rethrowProduceException(ex);
-    }
   }
-  
+
+
   @Override
   public void init() throws CoreException {
     super.init();
     getEventHandler().init();
   }
 
+  private Message sendMessageWithEventHandler(AdaptrisMessage msg, JmsDestination jmsDest) throws JMSException {
+    Message jmsMsg = translate(msg, jmsDest.getReplyToDestination());
+    jmsMsg.setStringProperty(ID_HEADER, msg.getUniqueId());
+
+    if (!perMessageProperties()) {
+        producerSession().getProducer().send(jmsDest.getDestination(), jmsMsg, getEventHandler());
+    } else {
+        producerSession().getProducer().send(jmsDest.getDestination(), jmsMsg,
+                calculateDeliveryMode(msg, jmsDest.deliveryMode()),
+                calculatePriority(msg, jmsDest.priority()),
+                calculateTimeToLive(msg, jmsDest.timeToLive()),
+                getEventHandler());
+    }
+    return jmsMsg;
+  }
+
+    private Message sendMessageWithRetry(AdaptrisMessage msg, JmsDestination jmsDest) throws JMSException {
+        Message jmsMsg;
+        boolean refreshSessionIfProduceException = this.refreshSessionIfProduceException.booleanValue();
+        try {
+            jmsMsg = sendMessageWithEventHandler(msg, jmsDest);
+        } catch (JMSException e) {
+            currentLogger().debug("Caught exception while producing", e);
+            if (refreshSessionIfProduceException) {
+                currentLogger().info("Handling exception by retrying with new session. Exception: {}", e.getMessage());
+                // force recreate a session if we get an exception, and try again. If it fails again, then we throw the original exception.
+                setupSession(msg, refreshSessionIfProduceException);
+                jmsMsg = sendMessageWithNoRetry(msg, jmsDest);
+            } else throw e;
+        }
+        return jmsMsg;
+    }
+
+    private Message sendMessageWithNoRetry(AdaptrisMessage msg, JmsDestination jmsDest) throws JMSException {
+        Message jmsMsg;
+        try {
+            jmsMsg = sendMessageWithEventHandler(msg, jmsDest);
+        } catch (JMSException exc) {
+            throw new JMSException("Failed to produce message force recreation of session: " + exc.getMessage());
+        }
+        return jmsMsg;
+    }
 }

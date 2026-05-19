@@ -1,5 +1,6 @@
 package com.adaptris.core.http.jetty.retry;
 
+import com.adaptris.annotation.AdvancedConfig;
 import org.apache.commons.lang3.ObjectUtils;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -34,10 +35,21 @@ public class RetryStoreListService extends RetryStoreServiceImpl {
   @Setter
   private BlobListRenderer reportRenderer;
 
+  @AdvancedConfig(rare = true)
+  @Getter
+  @Setter
+  private String includeErrorMessageFlagMetadataKey = "includeErrorMessage";
+
   @Override
   public void doService(AdaptrisMessage msg) throws ServiceException {
     try {
-      renderer().render(getRetryStore().report(), msg);
+      boolean includeErrorMessage = true;
+        String includeErrorMessageValue = getMetadataIfExists(msg, includeErrorMessageFlagMetadataKey);
+      if (includeErrorMessageValue != null) {
+        includeErrorMessage = Boolean.parseBoolean(includeErrorMessageValue);
+      }
+
+      renderer().render(getRetryStore().report(includeErrorMessage), msg);
     } catch (Exception e) {
       throw ExceptionHelper.wrapServiceException(e);
     }
@@ -46,5 +58,12 @@ public class RetryStoreListService extends RetryStoreServiceImpl {
 
   private BlobListRenderer renderer() {
     return ObjectUtils.defaultIfNull(getReportRenderer(), new BlobListRenderer() {});
+  }
+
+  private String getMetadataIfExists(AdaptrisMessage msg, String metadataKey) {
+      if (msg.getMetadata(metadataKey) != null && msg.getMetadataValue(metadataKey) != null) {
+          return msg.getMetadataValue(metadataKey);
+      }
+      return null;
   }
 }

@@ -180,6 +180,13 @@ public abstract class CoreConstants {
   public static final String RETRY_COUNT_KEY = "previousretrycount";
 
   /**
+   * <p>
+   * Metadta key for auto configuration of connection.
+   * </p>
+   */
+  public static final String AUTO_CONFIGURATION_KEY = "autoConfigureConnection";
+
+  /**
    * Metadata key specifying that security has been encrypted using v1 encryption compability mode.
    */
   public static final String SECURITY_V1_COMPATIBILITY = "v1encryption" + "compatibility";

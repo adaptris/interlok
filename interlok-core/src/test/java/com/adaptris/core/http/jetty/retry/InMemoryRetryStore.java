@@ -12,6 +12,8 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.interlok.InterlokException;
 import com.adaptris.interlok.cloud.RemoteBlob;
 
+import static com.adaptris.core.http.jetty.retry.FilesystemRetryStore.NAME_ERROR_LINE_SEPERATOR;
+
 // While it's perfectly reasonable to "mock" an in memory one isn't an awful choice for testing.
 // However, it's of *no use in real life*.
 public class InMemoryRetryStore implements RetryStore {
@@ -47,12 +49,27 @@ public class InMemoryRetryStore implements RetryStore {
   }
 
   @Override
-  public Iterable<RemoteBlob> report() throws InterlokException {
+  public Iterable<RemoteBlob> report(boolean includeErrorMessage) throws InterlokException {
     return STORE.entrySet().stream()
-        .map((e) -> new RemoteBlob.Builder().setBucket("bucket")
-            .setLastModified(System.currentTimeMillis()).setName(e.getKey())
-            .setSize(e.getValue().getSize()).build())
-        .collect(Collectors.toList());
+      .map((e) -> {
+        String name = e.getKey();
+        if (includeErrorMessage) {
+          String stacktraceFirstLine = null;
+          try {
+            stacktraceFirstLine = getStacktraceFirstLine(e.getKey());
+          } catch (InterlokException ignored) {
+          }
+            name += NAME_ERROR_LINE_SEPERATOR + stacktraceFirstLine;
+        }
+        return new RemoteBlob.Builder()
+          .setBucket("bucket")
+          .setLastModified(System.currentTimeMillis())
+          .setName(name)
+          .setSize(e.getValue()
+          .getSize())
+          .build();
+      })
+      .collect(Collectors.toList());
   }
 
   public static void removeAll() {
@@ -78,4 +95,13 @@ public class InMemoryRetryStore implements RetryStore {
   public void makeConnection(AdaptrisConnection connection) {
    // null implementation 
   }
+
+    @Override
+    public String getStackTrace(String msgId) throws InterlokException {
+        if (STORE.containsKey(msgId)) {
+            AdaptrisMessage message = STORE.get(msgId);
+            return message.getContent();
+        }
+        throw new InterlokException("Stack trace not found for message ID: " + msgId);
+    }
 }

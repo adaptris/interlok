@@ -22,17 +22,11 @@ import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_MSG_INITIALI
 import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_MSG_STARTED;
 import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_MSG_STOPPED;
 import static com.adaptris.core.runtime.AdapterComponentMBean.NOTIF_TYPE_WORKFLOW_LIFECYCLE;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.lang.reflect.Method;
+import java.util.*;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.JMX;
@@ -49,10 +43,12 @@ import com.adaptris.core.ClosedState;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.InitialisedState;
 import com.adaptris.core.MetadataElement;
+import com.adaptris.core.NullConnection;
 import com.adaptris.core.PoolingWorkflow;
 import com.adaptris.core.RetryMessageErrorHandler;
 import com.adaptris.core.RetryMessageErrorHandlerMonitorMBean;
 import com.adaptris.core.SerializableAdaptrisMessage;
+import com.adaptris.core.StandaloneProducer;
 import com.adaptris.core.StandardWorkflow;
 import com.adaptris.core.StartedState;
 import com.adaptris.core.StoppedState;
@@ -64,6 +60,7 @@ import com.adaptris.core.interceptor.InFlightWorkflowInterceptor;
 import com.adaptris.core.interceptor.MessageMetricsInterceptor;
 import com.adaptris.core.interceptor.ThrottlingInterceptor;
 import com.adaptris.core.services.metadata.AddMetadataService;
+import com.adaptris.core.services.StatelessServiceWrapper;
 import com.adaptris.core.stubs.MockMessageProducer;
 import com.adaptris.core.stubs.StubSerializableMessage;
 import com.adaptris.interlok.management.MessageProcessor;
@@ -202,6 +199,130 @@ public class WorkflowManagerTest extends ComponentManagerCase {
     workflow.getInterceptors().add(new ThrottlingInterceptor());
     WorkflowManager workflowManager = new WorkflowManager(workflow, channelManager);
     assertEquals(0, workflowManager.getChildRuntimeInfoComponents().size());
+  }
+
+  @Test
+  void testConstructor_WithConnectedServiceConnection_SuffixApplied() throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + getName();
+    Adapter adapter = createAdapter(adapterName);
+    AdapterManager adapterManager = new AdapterManager(adapter);
+    Channel channel = createChannel("c1");
+    ChannelManager channelManager = new ChannelManager(channel, adapterManager);
+
+    StandardWorkflow workflow = createWorkflow("w1");
+    NullConnection serviceConnection = new NullConnection(getName() + "-conn");
+    serviceConnection.setRuntimeComponent(Boolean.TRUE);
+    StandaloneProducer connectedService = new StandaloneProducer(serviceConnection, new MockMessageProducer());
+    connectedService.setUniqueId(getName() + "-service");
+    workflow.getServiceCollection().add(connectedService);
+
+    WorkflowManager workflowManager = new WorkflowManager(workflow, channelManager);
+
+    String expectedSuffix = serviceConnection.getUniqueId() + "-connected-service-" + connectedService.getUniqueId();
+    assertTrue(workflowManager.getChildRuntimeInfoComponents().stream().anyMatch(o -> o.toString().contains(expectedSuffix)));
+  }
+
+  @Test
+  void testConstructor_WithConnectedServiceInsideWrapper_SuffixApplied() throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + getName();
+    Adapter adapter = createAdapter(adapterName);
+    AdapterManager adapterManager = new AdapterManager(adapter);
+    Channel channel = createChannel("c1");
+    ChannelManager channelManager = new ChannelManager(channel, adapterManager);
+
+    StandardWorkflow workflow = createWorkflow("w1");
+    NullConnection serviceConnection = new NullConnection(getName() + "-wrapped-conn");
+    serviceConnection.setRuntimeComponent(Boolean.TRUE);
+    StandaloneProducer nestedConnectedService = new StandaloneProducer(serviceConnection, new MockMessageProducer());
+    nestedConnectedService.setUniqueId(getName() + "-nested-service");
+    StatelessServiceWrapper wrapper = new StatelessServiceWrapper(nestedConnectedService);
+    wrapper.setUniqueId(getName() + "-wrapper");
+    workflow.getServiceCollection().add(wrapper);
+
+    WorkflowManager workflowManager = new WorkflowManager(workflow, channelManager);
+
+    String expectedSuffix = serviceConnection.getUniqueId() + "-connected-service-" + nestedConnectedService.getUniqueId();
+    assertTrue(workflowManager.getChildRuntimeInfoComponents().stream().anyMatch(o -> o.toString().contains(expectedSuffix)));
+  }
+
+  @Test
+  void testWorkflowConnectedServiceEqualityAndHashCode() throws Exception {
+    Class<?> connectedServiceClass = Class.forName("com.adaptris.core.runtime.WorkflowManager$WorkflowConnectedService");
+    var ctor = connectedServiceClass.getDeclaredConstructor(com.adaptris.core.AdaptrisConnection.class, String.class);
+    ctor.setAccessible(true);
+
+    NullConnection c1 = new NullConnection("c1");
+    Object a = ctor.newInstance(c1, "svc-1");
+    Object b = ctor.newInstance(c1, "svc-1");
+    Object c = ctor.newInstance(c1, "svc-2");
+
+    assertEquals(a, a);
+    assertNotEquals("not-a-workflow-connected-service", a);
+    assertEquals(a, b);
+    assertNotEquals(a, c);
+    assertEquals(a.hashCode(), b.hashCode());
+  }
+  
+  @Test
+  void testServiceConnections_WhenWorkflowIsNotWorkflowImp_ReturnsEmpty() throws Exception {
+    Method serviceConnections = WorkflowManager.class.getDeclaredMethod("serviceConnections", Workflow.class);
+    serviceConnections.setAccessible(true);
+
+    Workflow notWorkflowImp = mock(Workflow.class);
+    Object result = serviceConnections.invoke(null, notWorkflowImp);
+
+    assertNotNull(result);
+    assertInstanceOf(Collection.class, result);
+    assertEquals(0, ((java.util.Collection<?>) result).size());
+  }
+
+  @Test
+  void testCollectConnections_WhenServiceNull_DoesNothing() throws Exception {
+    Method collectConnections = WorkflowManager.class.getDeclaredMethod("collectConnections", com.adaptris.core.Service.class,
+        Set.class);
+    collectConnections.setAccessible(true);
+
+    Set<Object> connections = new HashSet<>();
+    connections.add(new Object());
+    int before = connections.size();
+
+    collectConnections.invoke(null, null, connections);
+
+    assertEquals(before, connections.size());
+  }
+
+  @Test
+  void testCollectConnections_WhenConnectedServiceHasNullConnection_DoesNotAdd() throws Exception {
+    Method collectConnections = WorkflowManager.class.getDeclaredMethod("collectConnections", com.adaptris.core.Service.class,
+        Set.class);
+    collectConnections.setAccessible(true);
+
+    com.adaptris.core.ConnectedService connectedService = mock(com.adaptris.core.ConnectedService.class);
+    Set<Object> connections = new HashSet<>();
+
+    collectConnections.invoke(null, connectedService, connections);
+
+    assertEquals(0, connections.size());
+  }
+
+  @Test
+  void testWithConnectedServiceSuffix_NonConnectionMonitor_Unchanged() throws Exception {
+    String adapterName = this.getClass().getSimpleName() + "." + getName();
+    Adapter adapter = createAdapter(adapterName);
+    AdapterManager adapterManager = new AdapterManager(adapter);
+    Channel channel = createChannel("c1");
+    ChannelManager channelManager = new ChannelManager(channel, adapterManager);
+    Workflow workflow = createWorkflow("w1");
+    WorkflowManager workflowManager = new WorkflowManager(workflow, channelManager);
+    WorkflowChild child = new WorkflowChild(workflowManager);
+
+    Method withConnectedServiceSuffix = WorkflowManager.class.getDeclaredMethod("withConnectedServiceSuffix",
+        ChildRuntimeInfoComponent.class, String.class);
+    withConnectedServiceSuffix.setAccessible(true);
+
+    Object result = withConnectedServiceSuffix.invoke(workflowManager, child, "svc-id");
+
+    assertSame(result, child);
   }
 
   @Test

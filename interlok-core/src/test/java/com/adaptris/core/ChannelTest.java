@@ -16,21 +16,21 @@
 
 package com.adaptris.core;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.fail;
-
 import java.util.UUID;
 
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 
+import org.apache.activemq.command.ConnectionError;
 import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.jms.MockNoOpConnectionErrorHandler;
 import com.adaptris.core.jms.UrlVendorImplementation;
 import com.adaptris.core.stubs.ConfigCommentHelper;
 import com.adaptris.interlok.junit.scaffolding.jms.MockJmsConnection;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 
 public class ChannelTest extends com.adaptris.interlok.junit.scaffolding.ExampleChannelCase {
@@ -82,6 +82,29 @@ public class ChannelTest extends com.adaptris.interlok.junit.scaffolding.Example
     c.getWorkflowList().add(createDefaultWorkflow());
     c.requestStart();
     assertEquals(StartedState.getInstance(), c.retrieveComponentState());
+
+    // test connection start failing
+    AdaptrisConnection con = mock(AdaptrisConnection.class);
+    ConnectionErrorHandler eh = mock(ConnectionErrorHandler.class);
+    when(con.getConnectionErrorHandler()).thenReturn(eh);
+    when(eh.canHandleException(any())).thenReturn(true);
+    doThrow(new CoreException()).when(con).requestStart();
+    doThrow(new CoreException()).when(con).start();
+
+    // start with consume connection
+    c.setConsumeConnection(con);
+    assertTrue(c.isAvailable());
+    assertThrows(CoreException.class, c::start);
+    assertFalse(c.isAvailable());
+
+    // reset consume connection and set produce connection
+    c.setConsumeConnection(new NullConnection());
+    c.setProduceConnection(con);
+    c.toggleAvailability(true);
+
+    assertTrue(c.isAvailable());
+    assertThrows(CoreException.class, c::start);
+    assertFalse(c.isAvailable());
 
   }
 
@@ -411,6 +434,30 @@ public class ChannelTest extends com.adaptris.interlok.junit.scaffolding.Example
     assertEquals(false, c.hasUniqueId());
     c.setUniqueId("unique-id");
     assertEquals(true, c.hasUniqueId());
+  }
+
+  @Test
+  public void testToggleUnavailable() throws CoreException {
+      Channel c = new Channel();
+      c.changeState(InitialisedState.getInstance());
+      assertEquals(InitialisedState.getInstance(), c.retrieveComponentState());
+      c.changeState(StartedState.getInstance());
+      assertEquals(StartedState.getInstance(), c.retrieveComponentState());
+      c.toggleAvailability(true);
+      assertEquals(StartedState.getInstance(), c.retrieveComponentState());
+
+      // when unavailable, but unavailable state not set
+      c.toggleAvailability(false);
+      assertEquals(StartedState.getInstance(), c.retrieveComponentState());
+      c.changeState(InitialisedState.getInstance());
+      assertEquals(InitialisedState.getInstance(), c.retrieveComponentState());
+
+      // set unavailable state
+      c.setUnavailableState(StoppedState.class.getSimpleName());
+      assertEquals(StoppedState.getInstance(), c.retrieveComponentState());
+      c.changeState(StartedState.getInstance());
+      assertEquals(StoppedState.getInstance(), c.retrieveComponentState());
+      assertThrows(IllegalArgumentException.class, () -> c.setUnavailableState("UnavailableState"));
   }
 
 

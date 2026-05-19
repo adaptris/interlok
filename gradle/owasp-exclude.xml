@@ -44,6 +44,12 @@
   </suppress>
   <suppress>
     <notes><![CDATA[
+    CPE parsing issue with invalid whitespace in product name
+    ]]>    </notes>
+    <cve>CVE-2019-7401</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
     This CVE is a NPM Node/CVE... https://nvd.nist.gov/vuln/detail/CVE-2020-7712
     ]]>    </notes>
     <cve>CVE-2020-7712</cve>
@@ -272,5 +278,79 @@
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring-boot-loader@.*$</packageUrl>
     <vulnerabilityName>CVE-2024-38807</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+      file name: spring-boot-loader-2.7.18.jar
+      Temporary suppression for CVE-2026-22733. Spring guidance indicates remediation in 2.7.32,
+      but that version is not available in Maven Central yet. Upgrading to Spring Boot 3.x is
+      not currently viable for this project.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring-boot-loader@.*$</packageUrl>
+    <cve>CVE-2026-22733</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    CVE-2025-1948: False positive for Jetty 10.0.24. CVE-2025-1948 only affects Jetty versions 12.0.0 to 12.0.16.
+	CVE-2024-6763: Jetty 10.0.24 is the highest version 10 we can go to.
+	CVE-2025-11143: Remediation requires a major Jetty upgrade from 10.x to 12.x, which is not possible yet.
+	CVE-2026-5795: Remediation also requires a Jetty 12.x upgrade, which is currently not viable.
+    ]]></notes>
+    <cve>CVE-2025-1948</cve>
+	<cve>CVE-2024-6763</cve>
+	<cve>CVE-2025-11143</cve>
+	<cve>CVE-2026-5795</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    CVE-2023-36479: False positive, This issue was patched in version 10.0.16
+    ]]></notes>
+	<packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty/jetty-servlets@.*$</packageUrl>
+    <cve>CVE-2023-36479</cve>
+  </suppress>  
+  <suppress>
+    <notes><![CDATA[
+    We are on latest xstream; I think these are false positives as the vulnerabilities were patched in version 1.4.17.
+    ]]></notes>
+	<cve>CVE-2021-29505</cve>
+	<cve>CVE-2021-39139</cve>
+	<cve>CVE-2021-39141</cve>
+	<cve>CVE-2021-39144</cve>
+	<cve>CVE-2021-39145</cve>
+	<cve>CVE-2021-39146</cve>
+	<cve>CVE-2021-39147</cve>
+	<cve>CVE-2021-39148</cve>
+	<cve>CVE-2021-39149</cve>
+	<cve>CVE-2021-39150</cve>
+	<cve>CVE-2021-39151</cve>
+	<cve>CVE-2021-39152</cve>
+	<cve>CVE-2021-39153</cve>
+	<cve>CVE-2021-39154</cve>
+	<cve>CVE-2021-43859</cve>
+	<cve>CVE-2022-40151</cve>
+	<cve>CVE-2022-40152</cve>
+	<cve>CVE-2022-41966</cve>
+	<cve>CVE-2021-39140</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+      file name: spring-boot-loader-2.7.18.jar
+      We are pinned to Spring Boot 2.7.x on Java 17. There is no newer 2.7.x release in Maven Central,
+      so these CVEs cannot be remediated by an in-line version bump at the moment.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring-boot-loader@2\.7\.18$</packageUrl>
+    <cve>CVE-2026-40972</cve>
+    <cve>CVE-2026-40973</cve>
+    <cve>CVE-2026-40974</cve>
+    <cve>CVE-2026-40975</cve>
+    <cve>CVE-2026-40977</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+      Jetty 10.0.26 is the newest Jetty 10 release available in Maven Central. Remediation for this CVE
+      requires moving off the Jetty 10 line, which is outside the current Java 17 / Jetty 10 constraints.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty(\.http2|\.websocket)?/.+@10\.0\.26$</packageUrl>
+    <cve>CVE-2026-2332</cve>
   </suppress>
 </suppressions>

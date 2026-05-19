@@ -58,7 +58,7 @@ public class RetryStoreTest implements RetryStore {
 
   @Test
   public void testDefaultReport() throws Exception {
-    assertFalse(report().iterator().hasNext());
+    assertFalse(report(false).iterator().hasNext());
   }
 
   @Override
@@ -97,4 +97,8 @@ public class RetryStoreTest implements RetryStore {
     // null implementation
   }
 
+  @Override
+  public String getStackTrace(String msgId) throws InterlokException {
+    throw new UnsupportedOperationException();
+  }
 }

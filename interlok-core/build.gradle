@@ -3,16 +3,16 @@ import org.apache.tools.ant.taskdefs.condition.Os
 ext {
   componentName="Interlok Core/Base"
   componentDesc="The Core Interlok framework component; this is your must have"
-  activeMqVersion="5.18.3"
-  bouncyCastleVersion="1.79"
+  activeMqVersion="5.19.6"
+  bouncyCastleVersion="1.84"
   mysqlDriverVersion="8.0.33"
-  slf4jVersion = "2.0.16"
+  slf4jVersion = "2.0.17"
   mockitoVersion = "4.9.0"
-  jschVersion = "0.2.21"
+  jschVersion = "0.2.26"
   mssqlDriverVersion = "9.2.1.jre8"
   derbyDriverVersion = "10.15.2.0"
   junitVersion = "5.11.4"
-  jettyVersion= "10.0.24"
+  jettyVersion= "10.0.26"
 
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
   classesToTest = project.hasProperty("junit.test.classes") ? project.getProperty("junit.test.classes") : "**/*Test*"
@@ -71,19 +71,19 @@ dependencies {
   api ("jakarta.validation:jakarta.validation-api:2.0.2")
   // Transitive from jetty.
   // api ("jakarta.transaction:jakarta.transaction-api:1.3.3")
-  api ("org.hibernate.validator:hibernate-validator:6.1.7.Final")
+  api ("org.hibernate.validator:hibernate-validator:6.2.5.Final")
   api ("org.glassfish:jakarta.el:3.0.4")
-  api ("commons-io:commons-io:2.18.0")
-  api ("org.apache.commons:commons-lang3:3.17.0")
+  api ("commons-io:commons-io:2.19.0")
+  api ("org.apache.commons:commons-lang3:3.18.0")
   api ("commons-net:commons-net:3.11.1")
   api ("org.apache.commons:commons-pool2:2.12.0")
   api ("org.apache.commons:commons-exec:1.4.0")
   api ("org.apache.commons:commons-text:1.12.0")
-  api ("org.apache.commons:commons-collections4:4.4")
+  api ("org.apache.commons:commons-collections4:4.5.0")
   api ("org.bouncycastle:bcprov-jdk18on:$bouncyCastleVersion")
   api ("org.bouncycastle:bcpkix-jdk18on:$bouncyCastleVersion")
   api ("org.bouncycastle:bcmail-jdk18on:$bouncyCastleVersion")
-  api ("com.sun.mail:jakarta.mail:1.6.7")
+  api ("com.sun.mail:jakarta.mail:1.6.8")
   api ("org.glassfish.external:opendmk_jmxremote_optional_jar:1.0-b01-ea")
   api ("org.glassfish.external:opendmk_jdmkrt_jar:1.0-b01-ea")
   api ("com.github.mwiede:jsch:$jschVersion")
@@ -124,9 +124,12 @@ dependencies {
     exclude group: "com.zaxxer", module: "HikariCP-java7"
   }
   api ("com.zaxxer:HikariCP:6.2.1")
-  api ("net.sf.saxon:Saxon-HE:11.4")
+  api ("net.sf.saxon:Saxon-HE:12.6")
   api ("xerces:xercesImpl:2.12.2")
-  api ("com.mchange:c3p0:0.9.5.5")
+  api ("com.mchange:c3p0:0.13.0") {
+    exclude group: "com.mchange", module: "mchange-commons-java"
+  }
+  api ("com.mchange:mchange-commons-java:0.5.0")
   api ("org.apache-extras.beanshell:bsh:2.0b6")
 
   api ("org.slf4j:slf4j-api:$slf4jVersion")
@@ -140,18 +143,18 @@ dependencies {
   testImplementation ("org.junit.jupiter:junit-jupiter-api:$junitVersion")
   testImplementation ("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
   testImplementation ("org.junit.jupiter:junit-jupiter-params:$junitVersion")
-  testImplementation ("org.apache.activemq:artemis-jms-server:2.39.0")
+  testImplementation ("org.apache.activemq:artemis-jms-server:2.41.0")
   testImplementation ("oro:oro:2.0.8")
   testImplementation ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
 
-  testImplementation ("org.awaitility:awaitility:4.2.2")
+  testImplementation ("org.awaitility:awaitility:4.3.0")
 
   testImplementation ("org.apache.activemq:activemq-broker:$activeMqVersion")
   testImplementation ("org.apache.activemq:activemq-jaas:$activeMqVersion")
   testImplementation ("org.apache.activemq:activemq-kahadb-store:$activeMqVersion")
   testImplementation ("org.apache.activemq.protobuf:activemq-protobuf:1.1")
 
-  testImplementation ("org.jruby:jruby-complete:9.4.9.0")
+  testImplementation ("org.jruby:jruby-complete:9.4.12.0")
   testImplementation ("org.mockftpserver:MockFtpServer:3.2.0")
   testImplementation ("org.mockito:mockito-core:$mockitoVersion")
   testImplementation ("org.mockito:mockito-inline:$mockitoVersion")

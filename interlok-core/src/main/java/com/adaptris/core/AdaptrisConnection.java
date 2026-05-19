@@ -109,6 +109,41 @@ public interface AdaptrisConnection extends AdaptrisComponent, ComponentLifecycl
   ConnectionErrorHandler connectionErrorHandler();
 
   /**
+   * Sets the {@link ConnectionStateHandler} to use.
+   */
+  default void setConnectionStateHandler(ConnectionStateHandler handler) {
+  }
+
+  /**
+   * Returns the configured {@link ConnectionStateHandler}.
+   */
+  default ConnectionStateHandler getConnectionStateHandler() {
+    return null;
+  }
+
+  /**
+   * Returns the currently active {@link ConnectionStateHandler}.
+   *
+   * @return the active {@link ConnectionStateHandler}, which may not be the same as the configured one.
+   */
+  default ConnectionStateHandler connectionStateHandler() {
+    return null;
+  }
+
+  /**
+   * Returns whether this connection should be exposed as a runtime component.
+   */
+  default Boolean getRuntimeComponent() {
+    return Boolean.FALSE;
+  }
+
+  /**
+   * Sets whether this connection should be exposed as a runtime component.
+   */
+  default void setRuntimeComponent(Boolean runtimeComponent) {
+  }
+
+  /**
    * Return the connection as represented by this connection
    *
    * @param type the type of connection

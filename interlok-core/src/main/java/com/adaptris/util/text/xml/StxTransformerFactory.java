@@ -16,10 +16,8 @@
 
 package com.adaptris.util.text.xml;
 
-import java.io.StringReader;
-
 import javax.xml.transform.Transformer;
-import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.TransformerFactory;
 
 import org.xml.sax.EntityResolver;
 
@@ -46,8 +44,7 @@ public class StxTransformerFactory extends XmlTransformerFactoryImpl {
 
   @Override
   public Transformer createTransformerFromRawXsl(String xsl, EntityResolver entityResolver) throws Exception {
-    StreamSource xslStream = new StreamSource(new StringReader(xsl));
-    return configure( new TransformerFactoryImpl()).newTransformer(xslStream);
+      return createTransformerFromRawXsl(xsl, null, entityResolver);
   }
 
   @Override
@@ -55,4 +52,8 @@ public class StxTransformerFactory extends XmlTransformerFactoryImpl {
     return xmlTransformer;
   }
 
+    @Override
+    protected TransformerFactory newInstance() {
+        return new TransformerFactoryImpl();
+    }
 }

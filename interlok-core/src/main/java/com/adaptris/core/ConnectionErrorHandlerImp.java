@@ -110,7 +110,9 @@ public abstract class ConnectionErrorHandlerImp implements ConnectionErrorHandle
       catch (CoreException e) {
         log.error("Exception initialising component", e);
         log.error("component [{}] may not recover", loggingId);
-
+          if (c instanceof Channel) {
+              ((Channel) c).toggleAvailability(false);
+          }
       }
     }
   }
@@ -129,12 +131,14 @@ public abstract class ConnectionErrorHandlerImp implements ConnectionErrorHandle
       catch (CoreException e) {
         log.error("Exception starting component", e);
         log.error("component [{}] may not recover", loggingId);
-
+          if (c instanceof Channel) {
+              ((Channel) c).toggleAvailability(false);
+          }
       }
     }
   }
 
-  private Set<StateManagedComponent> filter(Set<StateManagedComponent> list) {
+  protected Set<StateManagedComponent> filter(Set<StateManagedComponent> list) {
     Set<StateManagedComponent> result = new LinkedHashSet<>();
     for (StateManagedComponent c : list) {
       String loggingId = friendlyName(c);

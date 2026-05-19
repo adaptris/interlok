@@ -42,5 +42,4 @@ public abstract class AdaptrisMessageProducerImp extends AdaptrisMessageWorkerIm
    * @see AdaptrisMessageSender#produce(AdaptrisMessage)
    */
   public abstract String endpoint(AdaptrisMessage msg) throws ProduceException;
-
 }

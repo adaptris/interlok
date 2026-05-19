@@ -39,6 +39,8 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -110,9 +112,14 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
   @AdvancedConfig
   private ProducerSessionFactory sessionFactory;
 
-
+  /**
+   * If true, the producer will refresh the JMS session on a produce exception.
+   * Defaults to true for backward compatibility.
+   */
+  @Getter
+  @Setter
+  protected Boolean refreshSessionIfProduceException = Boolean.FALSE;
   private transient ProducerSession producerSession;
-
   private transient Boolean transactedSession;
   private transient long rollbackTimeout = 30000;
 
@@ -200,10 +207,20 @@ public abstract class JmsProducerImpl extends RequestReplyProducerBase implement
 
   @Override
   public AdaptrisMessage request(AdaptrisMessage msg) throws ProduceException {
-    return request(msg, defaultTimeout());
+      return request(msg, defaultTimeout());
   }
 
   protected ProducerSession setupSession(AdaptrisMessage msg) throws JMSException {
+    return setupSession(msg, false);
+  }
+
+  protected ProducerSession setupSession(AdaptrisMessage msg, boolean forceRecreate) throws JMSException {
+    if (forceRecreate && producerSession != null) {
+      getSessionFactory().close();
+
+      producerSession = null;
+    }
+
     if (!msg.getUniqueId().equals(CURRENT_MESSAGE_ID) || producerSession == null) {
       producerSession = getSessionFactory().createProducerSession(this, msg);
       configuredMessageTranslator().registerSession(producerSession.getSession());

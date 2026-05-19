@@ -36,8 +36,13 @@ public class ReportBuilderTest {
   private Iterable<RemoteBlob> listFiles(int count) {
     List<RemoteBlob> list = new ArrayList<>();
     for (int i = 0; i < count; i++) {
-      list.add(new RemoteBlob.Builder().setBucket("bucket").setName("file" + i).setSize(i)
-          .setLastModified(System.currentTimeMillis()).build());
+      list.add(new RemoteBlob.Builder()
+          .setBucket("bucket")
+          .setName("file" + i)
+          .setSize(i)
+          .setLastModified(System.currentTimeMillis())
+          .setErrorSummary("")
+          .build());
     }
     return list;
   }

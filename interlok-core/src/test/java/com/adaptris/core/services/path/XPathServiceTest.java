@@ -86,6 +86,30 @@ public class XPathServiceTest
   }
 
   @Test
+  public void testPayloadSimpleValueXPathIntoMetadataTextOnly() throws Exception {
+    message.setContent(sampleXml, message.getContentEncoding());
+
+    MetadataDataOutputParameter metadataDataDestination1 = new MetadataDataOutputParameter("targetMetadataKey");
+
+    ConstantDataInputParameter constantDataDestination = new ConstantDataInputParameter("//some/random/xml/node2");
+
+    Execution execution = new Execution(constantDataDestination, metadataDataDestination1);
+
+    List<Execution> executions = new ArrayList<>();
+    executions.add(execution);
+
+    service.setXmlSource(new StringPayloadDataInputParameter());
+    service.setExecutions(executions);
+    execute(service, message);
+
+    assertEquals("<node2>value2</node2>", message.getMetadataValue("targetMetadataKey"));
+
+    service.setTextOnly(true);
+    execute(service, message);
+    assertEquals("value2", message.getMetadataValue("targetMetadataKey"));
+  }
+
+  @Test
   public void testPayloadAttributeValueXPathIntoMetadata() throws Exception {
     message.setContent(sampleXml, message.getContentEncoding());
 

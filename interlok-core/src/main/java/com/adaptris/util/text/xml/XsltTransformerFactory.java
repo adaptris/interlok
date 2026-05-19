@@ -16,7 +16,8 @@
 
 package com.adaptris.util.text.xml;
 
-import java.io.StringReader;
+import java.util.List;
+import java.util.Optional;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -25,6 +26,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
@@ -32,26 +35,56 @@ import org.xml.sax.InputSource;
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.DisplayOrder;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
+
+import lombok.Getter;
+import lombok.Setter;
+import net.sf.saxon.Configuration;
+import net.sf.saxon.jaxp.SaxonTransformerFactory;
+import net.sf.saxon.lib.Initializer;
 
 /**
+ * An {@link XmlTransformerFactory} implementation that creates XSLT {@link Transformer} instances.
+ *
  * <p>
- * The XsltTransformerFactory is responsible for creating the {@link Transformer}.
+ * By default, the JDK's built-in {@link TransformerFactory} is used. You can override this by
+ * setting {@code transformerFactoryImpl} to the fully-qualified class name of an alternative
+ * {@link TransformerFactory} implementation — for example, Saxon's
+ * {@code net.sf.saxon.TransformerFactoryImpl} for XSLT 2.0/3.0 support.
  * </p>
+ *
  * <p>
- * The {@link Transformer} is used to actually perform a document transformation.
+ * When a Saxon {@link TransformerFactory} is detected, optional Saxon extensions can be
+ * registered by providing one or more fully-qualified class names that implement
+ * {@link Initializer} via {@code saxonInitializerClassNames}.
+ * </p>
+ *
+ * <p>
+ * This factory also overrides the URL-based transformer creation to parse the XSL stylesheet
+ * directly from its URL as a DOM {@link Document}, preserving file location context so that
+ * relative {@code xsl:import} and {@code xsl:include} paths resolve correctly.
  * </p>
  *
  * @config xslt-transformer-factory
- *
  * @author amcgrath
  */
 
 @XStreamAlias("xslt-transformer-factory")
-@DisplayOrder(order = { "transformerFactoryImpl", "failOnRecoverableError" })
+@DisplayOrder(order = { "transformerFactoryImpl", "saxonInitializerClassNames", "failOnRecoverableError" })
 public class XsltTransformerFactory extends XmlTransformerFactoryImpl {
 
+  private transient final Logger log = LoggerFactory.getLogger(this.getClass());
+
+  @Getter
+  @Setter
   @AdvancedConfig
   private String transformerFactoryImpl;
+
+  @Getter
+  @Setter
+  @AdvancedConfig
+  @XStreamImplicit(itemFieldName = "saxon-initializer-class")
+  private List<String> saxonInitializerClassNames;
 
   public XsltTransformerFactory() {
     super();
@@ -64,7 +97,7 @@ public class XsltTransformerFactory extends XmlTransformerFactoryImpl {
 
   /**
    * Override {@link XmlTransformerFactoryImpl#createTransformerFromUrl(String, EntityResolver)} so when using a URL we build the XML
-   * document directly from the URL instead of the InputSream of the URL file content. Doing this allows the transformer to have the file
+   * document directly from the URL instead of the InputStream of the URL file content. Doing this allows the transformer to have the file
    * location context and therefore the import statement in the XSL can use relative path.
    */
   @Override
@@ -78,40 +111,66 @@ public class XsltTransformerFactory extends XmlTransformerFactoryImpl {
   }
 
   @Override
-  public Transformer createTransformerFromRawXsl(String xsl, EntityResolver entityResolver) throws Exception {
-    DocumentBuilder docBuilder = documentFactoryBuilder().newDocumentBuilder(DocumentBuilderFactory.newInstance());
-    if (entityResolver != null) {
-      docBuilder.setEntityResolver(entityResolver);
-    }
-    Document xmlDoc = docBuilder.parse(new InputSource(new StringReader(xsl)));
-    return configure(newInstance()).newTransformer(new DOMSource(xmlDoc));
-  }
-
-  /**
-   * @return the transformerFactoryImpl
-   */
-  public String getTransformerFactoryImpl() {
-    return transformerFactoryImpl;
-  }
-
-  /**
-   * Specify the transformer factory that will be used.
-   * <p>
-   * If you have both saxon and xalan (for instance) available on the classpath; and you want to explicitly use the xalan implementation
-   * then you could put {@code org.apache.xalan.processor.TransformerFactoryImpl} here to force it to use Xalan or
-   * {@code net.sf.saxon.TransformerFactoryImpl} to force it to use Saxon.
-   * <p>
-   *
-   * @param s
-   *          he transformerFactoryImpl to set, if not specified the JVM default is used {@link TransformerFactory#newInstance()}.
-   */
-  public void setTransformerFactoryImpl(String s) {
-    transformerFactoryImpl = s;
-  }
-
-  private TransformerFactory newInstance() {
-    return StringUtils.isEmpty(getTransformerFactoryImpl()) ? TransformerFactory.newInstance()
+  protected TransformerFactory newInstance() {
+    TransformerFactory tf = StringUtils.isEmpty(getTransformerFactoryImpl())
+        ? TransformerFactory.newInstance()
         : TransformerFactory.newInstance(getTransformerFactoryImpl(), null);
+
+    getSaxonConfiguration(tf).ifPresent(config -> {
+      log.debug("Applying Saxon initializers with config: {}", config);
+      applySaxonInitializers(config);
+    });
+
+    return tf;
+  }
+
+  protected Optional<Configuration> getSaxonConfiguration(TransformerFactory tf) {
+    log.debug("Getting SaxonConfiguration if applicable");
+
+    if (tf == null) {
+      return Optional.empty();
+    }
+
+    // Saxon-HE and Saxon-EE factories both derive from SaxonTransformerFactory
+    if (tf instanceof SaxonTransformerFactory saxonTf) {
+      log.debug("Retrieving Saxon Configuration from {}", tf.getClass().getName());
+      return Optional.of(saxonTf.getConfiguration());
+    }
+    return Optional.empty();
+  }
+
+  private void applySaxonInitializers(Configuration config) {
+    if (config == null || saxonInitializerClassNames == null) {
+      return;
+    }
+    for (String className : saxonInitializerClassNames) {
+      if (StringUtils.isBlank(className)) {
+        continue;
+      }
+      loadSaxonInitializer(className).ifPresent(initializer -> {
+        try {
+          log.debug("Executing Saxon Initializer implementation class: {}", className);
+          initializer.initialize(config);
+        } catch (Exception e) {
+          log.warn("Failed to execute Saxon Initializer implementation: {}", className, e);
+        }
+      });
+    }
+  }
+
+  private Optional<Initializer> loadSaxonInitializer(String className) {
+    try {
+      ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+      Class<?> clazz = Class.forName(className, true, classLoader != null ? classLoader : this.getClass().getClassLoader());
+      if (Initializer.class.isAssignableFrom(clazz)) {
+        return Optional.of((Initializer) clazz.getDeclaredConstructor().newInstance());
+      } else {
+        log.warn("Class {} does not implement {}", className, Initializer.class.getName());
+      }
+    } catch (Throwable t) {
+        log.warn("Failed to load Saxon Initializer implementation: {}", className, t);
+    }
+    return Optional.empty();
   }
 
 }

@@ -32,16 +32,13 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
+import com.adaptris.annotation.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import com.adaptris.annotation.AdapterComponent;
-import com.adaptris.annotation.AdvancedConfig;
-import com.adaptris.annotation.AutoPopulated;
-import com.adaptris.annotation.ComponentProfile;
-import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.ServiceException;
@@ -210,6 +207,10 @@ public class XPathService extends ServiceImp {
   @Valid
   private DocumentBuilderFactoryBuilder xmlDocumentFactoryConfig;
 
+  @AdvancedConfig(rare = true)
+  @InputFieldDefault(value = "false")
+  private Boolean textOnly; // will force the output to be the text content of the node
+
   public XPathService() {
     this.setExecutions(new ArrayList<Execution>());
     this.setXmlSource(new StringPayloadDataInputParameter());
@@ -255,7 +256,11 @@ public class XPathService extends ServiceImp {
     Transformer transformer = TransformerFactory.newInstance().newTransformer();
     transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
     if (source.getNode().getNodeType() != Node.ATTRIBUTE_NODE) {
-      transformer.transform(source, xmlOutput);
+      if (!Boolean.TRUE.equals(textOnly)) {
+        transformer.transform(source, xmlOutput);
+      } else {
+        stringWriter.write(source.getNode().getTextContent());
+      }
     } else {
       stringWriter.write(source.getNode().getNodeValue());
     }
@@ -306,6 +311,14 @@ public class XPathService extends ServiceImp {
 
   public void setXmlDocumentFactoryConfig(DocumentBuilderFactoryBuilder xml) {
     this.xmlDocumentFactoryConfig = xml;
+  }
+
+  public Boolean getTextOnly() {
+    return textOnly;
+  }
+
+  public void setTextOnly(Boolean textOnly) {
+    this.textOnly = textOnly;
   }
 
   DocumentBuilderFactoryBuilder documentFactoryBuilder(NamespaceContext namespaceCtx) {

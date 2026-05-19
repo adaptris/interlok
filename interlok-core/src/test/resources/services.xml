@@ -1,0 +1,68 @@
+<!-- Archive the message -->
+<service xsi:type="java:com.adaptris.core.StandaloneProducer">
+  <producer xsi:type="java:com.adaptris.core.fs.FsProducer">
+    <destination xsi:type="java:com.adaptris.core.ConfiguredProduceDestination">
+      <destination>file:////x/y/z</destination>
+    </destination>
+    <fs-worker xsi:type="java:com.adaptris.fs.OverwriteIfExistsWorker"/>
+    <create-dirs>true</create-dirs>
+  </producer>
+</service>
+
+<service xsi:type="java:com.adaptris.core.BranchingServiceCollection">
+  <first-service-id>service1</first-service-id>
+
+  <service xsi:type="java:com.adaptris.core.services.routing.SyntaxBranchingService">
+    <unique-id>service1</unique-id>
+
+    <syntax-identifier xsi:type="java:com.adaptris.core.services.routing.XpathSyntaxIdentifier">
+      <pattern>/X/A</pattern>
+      <destination>destination1</destination>
+    </syntax-identifier>
+    <syntax-identifier xsi:type="java:com.adaptris.core.services.routing.XpathSyntaxIdentifier">
+      <pattern>/X/B</pattern>
+      <destination>destination2</destination>
+    </syntax-identifier>
+    <syntax-identifier xsi:type="java:com.adaptris.core.services.routing.XpathSyntaxIdentifier">
+      <pattern>/X/C</pattern>
+      <destination>destination3</destination>
+    </syntax-identifier>
+  </service>
+
+  <service xsi:type="java:com.adaptris.core.ServiceList">
+    <unique-id>service2</unique-id>
+
+    <service xsi:type="java:com.adaptris.core.services.metadata.AddMetadataService">
+      <metadata-element>
+        <key>messageType</key>
+        <value>service2</value>
+      </metadata-element>
+    </service>
+
+  </service>
+
+  <service xsi:type="java:com.adaptris.core.ServiceList">
+    <unique-id>service3</unique-id>
+
+    <service xsi:type="java:com.adaptris.core.services.metadata.AddMetadataService">
+      <metadata-element>
+        <key>messageType</key>
+        <value>service3</value>
+      </metadata-element>
+    </service>
+
+  </service>
+
+  <service xsi:type="java:com.adaptris.core.ServiceList">
+    <unique-id>service4</unique-id>
+
+    <service xsi:type="java:com.adaptris.core.services.metadata.AddMetadataService">
+      <metadata-element>
+        <key>messageType</key>
+        <value>service4</value>
+      </metadata-element>
+    </service>
+
+  </service>
+
+</service>

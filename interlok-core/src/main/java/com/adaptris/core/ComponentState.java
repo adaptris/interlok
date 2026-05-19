@@ -17,6 +17,7 @@
 package com.adaptris.core;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * <p> 
@@ -75,4 +76,11 @@ public interface ComponentState extends Serializable {
    * @throws CoreException wrapping any underlying exceptions
    */
   void requestRestart(StateManagedComponent comp) throws CoreException;
+
+  static ComponentState forName(String name) {
+      var stateOpt = List.of(InitialisedState.getInstance(), StartedState.getInstance(), StoppedState.getInstance(), ClosedState.getInstance()).stream()
+              .filter(state -> state.getClass().getSimpleName().toLowerCase().equalsIgnoreCase(name))
+              .findFirst();
+      return stateOpt.orElseThrow(() -> new IllegalArgumentException("Unknown state name: " + name));
+  }
 }

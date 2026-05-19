@@ -216,7 +216,7 @@ public class JdbcRetryStore implements RetryStore {
   }
 
   @Override
-  public Iterable<RemoteBlob> report() throws InterlokException {
+  public Iterable<RemoteBlob> report(boolean includeErrorMessage) throws InterlokException {
     return Collections.EMPTY_LIST;
   }
 
@@ -438,5 +438,11 @@ public class JdbcRetryStore implements RetryStore {
   @Override
   public void makeConnection(AdaptrisConnection connection) {
     setConnection(connection);
+  }
+
+  @Override
+  public String getStackTrace(String msgId) throws InterlokException {
+      throw new UnsupportedOperationException("Not supported yet. Retrieving stacktrace information is currently only " +
+              "supported by the AWS retry store.");
   }
 }

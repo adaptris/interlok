@@ -2,9 +2,7 @@ package com.adaptris.core.http.jetty.retry;
 
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -158,6 +156,32 @@ public class RetryFromJettyTest extends FailedMessageRetrierCase {
     } finally {
       stop(retrier);
     }
+  }
+
+  @Test
+  public void testReportListener_DefaultIncludeErrorMessage() {
+    RetryFromJetty retrier = new RetryFromJetty();
+    retrier.setRetryStore(new InMemoryRetryStore());
+    RetryFromJetty.ReportListener listener = retrier.new ReportListener();
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+
+    listener.onAdaptrisMessage(msg, m -> {}, m -> {});
+
+    assertEquals(RetryFromJetty.HTTP_OK, msg.getMetadataValue(RetryFromJetty.HTTP_STATUS_KEY));
+  }
+
+  @Test
+  public void testReportListener_DoNotIncludeErrorMessage() {
+    RetryFromJetty retrier = new RetryFromJetty();
+      retrier.setRetryStore(new InMemoryRetryStore());
+    RetryFromJetty.ReportListener listener = retrier.new ReportListener();
+    AdaptrisMessage msg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+    msg.addMetadata(retrier.includeErrorMessageFlagMetadataKey(), "false");
+
+    listener.onAdaptrisMessage(msg, m -> {}, m -> {});
+
+    assertEquals(RetryFromJetty.HTTP_OK, msg.getMetadataValue(RetryFromJetty.HTTP_STATUS_KEY));
+    assertFalse(Boolean.parseBoolean(msg.getMetadataValue(retrier.includeErrorMessageFlagMetadataKey())));
   }
 
   @Test
@@ -346,6 +370,83 @@ public class RetryFromJettyTest extends FailedMessageRetrierCase {
     }
   }
 
+  @Test
+  public void testStackTrace() throws Exception {
+      RetryFromJetty retrier = create();
+      try {
+          start(retrier);
+          AdaptrisMessage baseMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+          try {
+              throw new Exception("Test Exception");
+          } catch (Exception e) {
+              baseMsg.addObjectHeader(CoreConstants.OBJ_METADATA_EXCEPTION, e);
+          }
+          retryStore.write(baseMsg);
+          assertNotNull(retryStore.getMetadata(baseMsg.getUniqueId()));
+
+          AdaptrisMessage triggerMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+          String url = jettyHelper.buildUrl(RetryFromJetty.DEFAULT_STACKTRACE_PREFIX + baseMsg.getUniqueId());
+          StandardHttpProducer http = buildProducer(url);
+          http.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethod.GET));
+          http.setIgnoreServerResponseCode(true);
+          triggerMsg.addMetadata(RetryFromJetty.MSG_ID_KEY, baseMsg.getUniqueId());
+
+          ExampleServiceCase.execute(new StandaloneRequestor(http), triggerMsg);
+
+          assertEquals(RetryFromJetty.HTTP_OK,
+                  triggerMsg.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
+          assertNotNull(triggerMsg.getContent());
+      } finally {
+          stop(retrier);
+      }
+  }
+
+  @Test
+  public void testStackTrace_BadRequest() throws Exception {
+      RetryFromJetty retrier = create();
+      try {
+          start(retrier);
+          AdaptrisMessage baseMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+          retryStore.write(baseMsg);
+          assertNotNull(retryStore.getMetadata(baseMsg.getUniqueId()));
+
+          // Test with invalid URL
+          AdaptrisMessage triggerMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+          String url = jettyHelper.buildUrl("/invalid/path/" + baseMsg.getUniqueId());
+          StandardHttpProducer http = buildProducer(url);
+          http.setIgnoreServerResponseCode(true);
+          http.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethod.GET));
+
+          ExampleServiceCase.execute(new StandaloneRequestor(http), triggerMsg);
+
+          assertEquals(RetryFromJetty.HTTP_NOT_FOUND,
+                  triggerMsg.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
+      } finally {
+          stop(retrier);
+      }
+  }
+
+  @Test
+  public void testStackTrace_Error() throws Exception {
+      RetryFromJetty retrier = create();
+      try {
+          retrier.setRetryStore(new BrokenRetryStore());
+          start(retrier);
+
+          AdaptrisMessage triggerMsg = AdaptrisMessageFactory.getDefaultInstance().newMessage();
+          String url = jettyHelper.buildUrl(RetryFromJetty.DEFAULT_STACKTRACE_PREFIX + triggerMsg.getUniqueId());
+          StandardHttpProducer http = buildProducer(url);
+          http.setIgnoreServerResponseCode(true);
+          http.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethod.GET));
+
+          ExampleServiceCase.execute(new StandaloneRequestor(http), triggerMsg);
+          assertEquals(RetryFromJetty.HTTP_ERROR,
+                  triggerMsg.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
+      } finally {
+          stop(retrier);
+      }
+  }
+
   private StandardHttpProducer buildProducer(String url) {
     StandardHttpProducer producer = new StandardHttpProducer().withURL(url);
     return producer;
@@ -408,7 +509,7 @@ public class RetryFromJettyTest extends FailedMessageRetrierCase {
     }
 
     @Override
-    public Iterable<RemoteBlob> report() throws InterlokException {
+    public Iterable<RemoteBlob> report(boolean includeErrorMessage) throws InterlokException {
       throw new UnsupportedOperationException();
     }
 
@@ -430,6 +531,11 @@ public class RetryFromJettyTest extends FailedMessageRetrierCase {
     @Override
     public void makeConnection(AdaptrisConnection connection) {
     // null implementation
+    }
+
+    @Override
+    public String getStackTrace(String msgId) throws InterlokException {
+      throw new UnsupportedOperationException();
     }
   }
 

@@ -1,11 +1,11 @@
 plugins {
   // Manage optional dependencies in maven pom.
   id "nebula.optional-base" version "7.0.0" apply false
-  id "com.github.spotbugs" version "6.0.27" apply false
-  id "org.sonarqube" version "6.0.1.5171"
-  id "org.owasp.dependencycheck" version "11.1.1" apply false
-  id "io.freefair.lombok" version "8.11" apply false
-  id "org.gradle.test-retry" version "1.5.10" apply false
+  id "com.github.spotbugs" version "6.2.2" apply false
+  id "org.sonarqube" version "6.2.0.5505"
+  id "org.owasp.dependencycheck" version "12.2.2" apply false
+  id "io.freefair.lombok" version "8.14" apply false
+  id "org.gradle.test-retry" version "1.6.2" apply false
   id "org.barfuin.gradle.taskinfo" version "2.2.0"
 }
 
@@ -237,7 +237,11 @@ subprojects { subproject ->
     failBuildOnCVSS = 7.0
     analyzers {
       assemblyEnabled=false
-      knownExploitedURL=project.findProperty('dependencyCheckKnownExploitedURL')
+      ossIndex {
+        username = System.getenv("OSS_INDEX_USERNAME")
+        password = System.getenv("OSS_INDEX_PASSWORD")
+        warnOnlyOnRemoteErrors = true
+      }
     }
     nvd {
       apiKey = System.getenv("NVD_API_KEY")
