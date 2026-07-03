@@ -34,6 +34,8 @@ public class MetadataHashingTest extends MetadataServiceExample {
   private static final String METADATA_KEY = "key";
   private static final String METADATA_VALUE = "2104913203";
   private static final String METADATA_HASH_MD5 = "fff9f3d8d4ec2726e0b2422116b20dd2";
+  private static final String METADATA_HMAC_MD5 = "2d1a7ab865997f3fd6d66c7c8bca44ac";
+  private static final String HMAC_KEY = "secret";
 
 
   private AdaptrisMessage createMessage(String encoding) throws Exception {
@@ -66,6 +68,15 @@ public class MetadataHashingTest extends MetadataServiceExample {
     catch (CoreException expected) {
 
     }
+  }
+
+  @Test
+  public void testSetHmacKey() {
+    MetadataHashingService service = new MetadataHashingService();
+    service.setHmacKey(HMAC_KEY);
+    assertEquals(HMAC_KEY, service.getHmacKey());
+    service.setHmacKey(null);
+    assertEquals(null, service.getHmacKey());
   }
 
   @Test
@@ -107,6 +118,36 @@ public class MetadataHashingTest extends MetadataServiceExample {
     AdaptrisMessage msg = createMessage("UTF-8");
     execute(service, msg);
     assertEquals(METADATA_HASH_MD5, msg.getMetadataValue(METADATA_KEY));
+  }
+
+  @Test
+  public void testService_HmacMd5() throws Exception {
+    MetadataHashingService service = new MetadataHashingService(METADATA_KEY, "HmacMD5", new HexStringByteTranslator());
+    service.setHmacKey(HMAC_KEY);
+    AdaptrisMessage msg = createMessage(null);
+    execute(service, msg);
+    assertEquals(METADATA_HMAC_MD5, msg.getMetadataValue(METADATA_KEY));
+  }
+
+  @Test
+  public void testService_BlankHmacKey_DisablesHmacMode() throws Exception {
+    MetadataHashingService service = new MetadataHashingService(METADATA_KEY, "MD5", new HexStringByteTranslator());
+    service.setHmacKey("   ");
+    AdaptrisMessage msg = createMessage(null);
+    execute(service, msg);
+    assertEquals(METADATA_HASH_MD5, msg.getMetadataValue(METADATA_KEY));
+  }
+
+  @Test
+  public void testInit_HmacMode_RequiresMacAlgorithm() {
+    MetadataHashingService service = new MetadataHashingService(METADATA_KEY, "MD5", new HexStringByteTranslator());
+    service.setHmacKey(HMAC_KEY);
+    try {
+      LifecycleHelper.init(service);
+      fail();
+    }
+    catch (CoreException expected) {
+    }
   }
 
   @Override
