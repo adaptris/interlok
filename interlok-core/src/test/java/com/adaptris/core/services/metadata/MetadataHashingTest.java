@@ -26,6 +26,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.util.LifecycleHelper;
+import com.adaptris.security.password.Password;
 import com.adaptris.util.text.Base64ByteTranslator;
 import com.adaptris.util.text.HexStringByteTranslator;
 
@@ -124,6 +125,15 @@ public class MetadataHashingTest extends MetadataServiceExample {
   public void testService_HmacMd5() throws Exception {
     MetadataHashingService service = new MetadataHashingService(METADATA_KEY, "HmacMD5", new HexStringByteTranslator());
     service.setHmacKey(HMAC_KEY);
+    AdaptrisMessage msg = createMessage(null);
+    execute(service, msg);
+    assertEquals(METADATA_HMAC_MD5, msg.getMetadataValue(METADATA_KEY));
+  }
+
+  @Test
+  public void testService_HmacMd5_EncodedHmacKey() throws Exception {
+    MetadataHashingService service = new MetadataHashingService(METADATA_KEY, "HmacMD5", new HexStringByteTranslator());
+    service.setHmacKey(Password.encode(HMAC_KEY, Password.PORTABLE_PASSWORD));
     AdaptrisMessage msg = createMessage(null);
     execute(service, msg);
     assertEquals(METADATA_HMAC_MD5, msg.getMetadataValue(METADATA_KEY));

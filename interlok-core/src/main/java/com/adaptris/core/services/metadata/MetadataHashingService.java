@@ -18,6 +18,7 @@ package com.adaptris.core.services.metadata;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -28,7 +29,10 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.CoreException;
+import com.adaptris.interlok.resolver.ExternalResolver;
+import com.adaptris.security.password.Password;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.text.Base64ByteTranslator;
@@ -60,6 +64,7 @@ public class MetadataHashingService extends ReformatMetadata {
   @Valid
   @AutoPopulated
   private ByteTranslator byteTranslator;
+  @InputFieldHint(style = "PASSWORD", external = true)
   private String hmacKey;
 
   public MetadataHashingService() {
@@ -100,7 +105,7 @@ public class MetadataHashingService extends ReformatMetadata {
   public String reformat(String s, String charEncoding) throws Exception {
     byte[] data = toBytes(s, charEncoding);
     if (isHmacConfigured()) {
-      SecretKeySpec key = new SecretKeySpec(toBytes(getHmacKey(), charEncoding), getHashAlgorithm());
+      SecretKeySpec key = new SecretKeySpec(hmacKeyBytes(), getHashAlgorithm());
       Mac mac = Mac.getInstance(getHashAlgorithm());
       mac.init(key);
       return getByteTranslator().translate(mac.doFinal(data));
@@ -161,6 +166,12 @@ public class MetadataHashingService extends ReformatMetadata {
 
   private boolean isHmacConfigured() {
     return !isBlank(getHmacKey());
+  }
+
+  private byte[] hmacKeyBytes() throws Exception {
+    String resolved = ExternalResolver.resolve(getHmacKey());
+    String decoded = Password.decode(resolved);
+    return decoded.getBytes(StandardCharsets.UTF_8);
   }
 
 }
