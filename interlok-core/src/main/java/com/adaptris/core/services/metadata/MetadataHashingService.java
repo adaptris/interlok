@@ -16,9 +16,12 @@
 
 package com.adaptris.core.services.metadata;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -26,7 +29,10 @@ import com.adaptris.annotation.AdapterComponent;
 import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.CoreException;
+import com.adaptris.interlok.resolver.ExternalResolver;
+import com.adaptris.security.password.Password;
 import com.adaptris.core.util.Args;
 import com.adaptris.core.util.ExceptionHelper;
 import com.adaptris.util.text.Base64ByteTranslator;
@@ -48,7 +54,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("metadata-hashing-service")
 @AdapterComponent
 @ComponentProfile(summary = "Hash a metadata value, and store it", tag = "service,metadata")
-@DisplayOrder(order = {"metadataKeyRegexp", "hashAlgorithm", "byteTranslator", "metadataLogger"})
+@DisplayOrder(order = {"metadataKeyRegexp", "hashAlgorithm", "hmacKey", "byteTranslator", "metadataLogger"})
 public class MetadataHashingService extends ReformatMetadata {
   private static final String DEFAULT_HASH_ALG = "SHA1";
   @NotBlank
@@ -58,6 +64,8 @@ public class MetadataHashingService extends ReformatMetadata {
   @Valid
   @AutoPopulated
   private ByteTranslator byteTranslator;
+  @InputFieldHint(style = "PASSWORD", external = true)
+  private String hmacKey;
 
   public MetadataHashingService() {
     super();
@@ -81,7 +89,11 @@ public class MetadataHashingService extends ReformatMetadata {
   @Override
   protected void initService() throws CoreException {
     try {
-      MessageDigest.getInstance(getHashAlgorithm());
+      if (isHmacConfigured()) {
+        Mac.getInstance(getHashAlgorithm());
+      } else {
+        MessageDigest.getInstance(getHashAlgorithm());
+      }
       super.initService();
     } catch (Exception e) {
       throw ExceptionHelper.wrapCoreException(e);
@@ -91,7 +103,14 @@ public class MetadataHashingService extends ReformatMetadata {
 
   @Override
   public String reformat(String s, String charEncoding) throws Exception {
-    return getByteTranslator().translate(MessageDigest.getInstance(getHashAlgorithm()).digest(toBytes(s, charEncoding)));
+    byte[] data = toBytes(s, charEncoding);
+    if (isHmacConfigured()) {
+      SecretKeySpec key = new SecretKeySpec(hmacKeyBytes(), getHashAlgorithm());
+      Mac mac = Mac.getInstance(getHashAlgorithm());
+      mac.init(key);
+      return getByteTranslator().translate(mac.doFinal(data));
+    }
+    return getByteTranslator().translate(MessageDigest.getInstance(getHashAlgorithm()).digest(data));
   }
 
   public final String getHashAlgorithm() {
@@ -103,7 +122,7 @@ public class MetadataHashingService extends ReformatMetadata {
   }
 
   private byte[] toBytes(String metadataValue, String charset) throws UnsupportedEncodingException {
-    if (!isEmpty(charset)) {
+    if (!isBlank(charset)) {
       return metadataValue.getBytes(charset);
     }
     return metadataValue.getBytes();
@@ -114,12 +133,45 @@ public class MetadataHashingService extends ReformatMetadata {
   }
 
   /**
+   * Specify an optional key to enable HMAC mode.
+   * <p>
+   * If this is blank or null, then {@link MessageDigest} based hashing is used.
+   * If this is configured, then {@link Mac} based hashing is used and {@link #getHashAlgorithm()}
+   * should be a valid Mac algorithm such as {@code HmacMD5}.
+   * </p>
+   *
+   * @return the HMAC key.
+   */
+  public String getHmacKey() {
+    return hmacKey;
+  }
+
+  /**
+   * Specify an optional key to enable HMAC mode.
+   *
+   * @param key the HMAC key.
+   */
+  public void setHmacKey(String key) {
+    this.hmacKey = key;
+  }
+
+  /**
    * Specify how to translate the resulting byte array from the hash into a String.
    * 
    * @param translator the translator;
    */
   public final void setByteTranslator(ByteTranslator translator) {
-    this.byteTranslator = Args.notNull(translator, "byteTranslator");;
+    this.byteTranslator = Args.notNull(translator, "byteTranslator");
+  }
+
+  private boolean isHmacConfigured() {
+    return !isBlank(getHmacKey());
+  }
+
+  private byte[] hmacKeyBytes() throws Exception {
+    String resolved = ExternalResolver.resolve(getHmacKey());
+    String decoded = Password.decode(resolved);
+    return decoded.getBytes(StandardCharsets.UTF_8);
   }
 
 }

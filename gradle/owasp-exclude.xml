@@ -274,32 +274,36 @@
   <suppress>
     <notes><![CDATA[
       file name: spring-boot-loader-2.7.18.jar
-	  Suppress because we are not impacted as not checking nested jar signature and also there is no 2.x fix verions
+      CVEs flagged against spring-boot-loader 2.7.18 where suggested 2.7.x remediations are not
+      available via Maven Central for this project. We cannot update this component further on
+      Spring Boot 2.x; remediation will be addressed when we move to Spring Boot v3.
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring-boot-loader@.*$</packageUrl>
-    <vulnerabilityName>CVE-2024-38807</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
-      file name: spring-boot-loader-2.7.18.jar
-      Temporary suppression for CVE-2026-22733. Spring guidance indicates remediation in 2.7.32,
-      but that version is not available in Maven Central yet. Upgrading to Spring Boot 3.x is
-      not currently viable for this project.
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring-boot-loader@.*$</packageUrl>
+    <cve>CVE-2024-38807</cve>
     <cve>CVE-2026-22733</cve>
+    <cve>CVE-2026-40972</cve>
+    <cve>CVE-2026-40973</cve>
+    <cve>CVE-2026-40974</cve>
+    <cve>CVE-2026-40975</cve>
+    <cve>CVE-2026-40977</cve>
   </suppress>
   <suppress>
     <notes><![CDATA[
-    CVE-2025-1948: False positive for Jetty 10.0.24. CVE-2025-1948 only affects Jetty versions 12.0.0 to 12.0.16.
-	CVE-2024-6763: Jetty 10.0.24 is the highest version 10 we can go to.
-	CVE-2025-11143: Remediation requires a major Jetty upgrade from 10.x to 12.x, which is not possible yet.
+    CVE-2025-1948: False positive for Jetty 10.x. CVE-2025-1948 only affects Jetty versions 12.0.0 to 12.0.16.
+	CVE-2024-6763: MEDIUM - URI parsing of invalid authority. Impact is limited to direct use of HttpURI class;
+	  Jetty's internal usage is not vulnerable. We are on Jetty 10.0.26 (10.0.x is EOL); full fix requires Jetty 12.x.
+	CVE-2025-11143: LOW - Differential URI parsing. Patches for 10.0.x are only available via TuxCare/HeroDevs (commercial).
+	  Remediation requires a major Jetty upgrade from 10.x to 12.x, which is not possible yet.
 	CVE-2026-5795: Remediation also requires a Jetty 12.x upgrade, which is currently not viable.
+	CVE-2026-2332: HIGH - HTTP Request Smuggling via Chunked Extension Quoted-String Parsing.
+	  No patch available for Jetty 10.0.x (EOL). Fix requires upgrade to Jetty 12.1.7+, which is not viable yet.
+	  10.0.28 does not build; 10.0.26 is the highest working Jetty 10.x version.
     ]]></notes>
     <cve>CVE-2025-1948</cve>
 	<cve>CVE-2024-6763</cve>
 	<cve>CVE-2025-11143</cve>
 	<cve>CVE-2026-5795</cve>
+	<cve>CVE-2026-2332</cve>
   </suppress>
   <suppress>
     <notes><![CDATA[
@@ -331,6 +335,40 @@
 	<cve>CVE-2022-40152</cve>
 	<cve>CVE-2022-41966</cve>
 	<cve>CVE-2021-39140</cve>
+  </suppress>   
+  <suppress>
+    <notes><![CDATA[
+    file name: c3p0-0.9.5.5.jar
+    CVE-2026-27830 and CVE-2026-55223 are fixed in c3p0 0.12.0. However, upgrading to 0.12.0
+    requires a code change: the method setUsesTraditionalReflectiveProxies() was removed from
+    ComboPooledDataSource and is called in PooledConnectionProperties.java.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/com\.mchange/c3p0@.*$</packageUrl>
+    <cve>CVE-2026-27830</cve>
+    <cve>CVE-2026-55223</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: mchange-commons-java-0.4.0.jar
+    CVE-2026-55153 is fixed in a newer mchange-commons-java release. However, upgrading
+    mchange-commons-java independently of c3p0 0.9.5.5 risks runtime incompatibility since
+    c3p0 0.9.5.5 was compiled against an older mchange-commons-java API. A safe upgrade of
+    mchange-commons-java also requires upgrading c3p0, which in turn requires code changes
+    (see c3p0 suppression above). Suppressed until the c3p0 upgrade is scheduled.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/com\.mchange/mchange\-commons\-java@.*$</packageUrl>
+    <cve>CVE-2026-55153</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    file name: xercesImpl-2.12.2.jar
+    CVE-2017-7503 affects xerces:xercesImpl. Version 2.12.2 is the latest release available on
+    Maven Central in the 2.x line; no patched version exists within the same major version.
+    Upgrading to a different XML parser would require code changes to Validator.java and
+    XmlHelper.java which directly reference Xerces-specific classes.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/xerces/xercesImpl@.*$</packageUrl>
+    <cve>CVE-2017-7503</cve>
   </suppress>
   <suppress>
     <notes><![CDATA[
