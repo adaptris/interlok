@@ -18,14 +18,7 @@ package com.adaptris.core;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FilterOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -37,6 +30,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
+import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
 import com.adaptris.annotation.ComponentProfile;
@@ -308,7 +302,7 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
       payload = payloads.get(payloadId);
       payload.data = pb;
     } else {
-      payload = new Payload(pb);
+      payload = new Payload(getFactory().getDefaultCharEncoding(), pb);
     }
     payloads.put(payloadId, payload);
     currentPayloadId = payloadId;
@@ -636,21 +630,52 @@ public class MultiPayloadAdaptrisMessageImp extends AdaptrisMessageImp implement
     }
   }
 
-  private class Payload {
-    String encoding = getFactory().getDefaultCharEncoding();
+  public static class Payload {
+    AdaptrisMessageFactory factory;
+    @Getter
+    String encoding;
     private byte[] data;
 
-    Payload(String encoding, @NotNull byte[] data) {
-      this.encoding = encoding;
-      this.data = data;
+    public Payload() {
     }
 
-    Payload(@NotNull byte[] data) {
+    public Payload(String encoding, @NotNull byte[] data) {
+      this.encoding = encoding;
       this.data = data;
     }
 
     byte[] payload() {
       return data;
+    }
+
+    public String getPayload() { return getPayloadAsString(); }
+
+    public void setPayload(String payload) {
+      this.data = payload.getBytes(Charset.forName(encoding));
+    }
+
+    public String getPayloadAsString() {
+      try {
+        return new String(data, encoding);
+      } catch (UnsupportedEncodingException ex) {
+        throw new RuntimeException(ex);
+      }
+    }
+
+    public String getEncoding() {
+      return encoding;
+    }
+
+    public void setEncoding(String encoding) {
+      this.encoding = encoding;
+    }
+
+    public byte[] getData() {
+      return data;
+    }
+
+    public void setData(byte[] data) {
+      this.data = data;
     }
   }
 }

@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.adaptris.interlok.types.SerializableInterlokMessageAdapter;
 import com.adaptris.util.text.mime.MimeConstants;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -60,7 +61,12 @@ public class DefaultSerializableMessageTranslator implements SerializableMessage
 
   @Override
   public SerializableMessage translate(AdaptrisMessage message) throws CoreException {
-    SerializableAdaptrisMessage serializedMsg = new SerializableAdaptrisMessage();
+    SerializableMessage serializedMsg;
+    if (message instanceof MultiPayloadAdaptrisMessage multiPayloadAdaptrisMessage) {
+      serializedMsg = new SerializableInterlokMessageAdapter(multiPayloadAdaptrisMessage);
+    } else {
+       serializedMsg = new SerializableAdaptrisMessage();
+    }
     // It's a file message; arbitrarily too large?
     if (message instanceof FileBackedMessage && message.getSize() > DEFAULT_LMS_BOUNDARY) {
       serializedMsg.setContent(buildFileDetails(((FileBackedMessage) message).currentSource()));
@@ -70,12 +76,14 @@ public class DefaultSerializableMessageTranslator implements SerializableMessage
     }
     serializedMsg.setUniqueId(message.getUniqueId());
     serializedMsg.setContentEncoding(message.getContentEncoding());
-    serializedMsg.setMetadata(message.getMetadata());
+    message.getMetadata().forEach(metadataElement -> {
+      serializedMsg.addMessageHeader(metadataElement.getKey(), metadataElement.getValue());
+    });
     serializedMsg.setNextServiceId(message.getNextServiceId());
     
     // do we have a failed/error'd message?
     if(message.getObjectHeaders().containsKey(CoreConstants.OBJ_METADATA_EXCEPTION))
-      serializedMsg.addMetadata(CoreConstants.OBJ_METADATA_EXCEPTION, ((Throwable) message.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION)).getMessage());
+      serializedMsg.addMessageHeader(CoreConstants.OBJ_METADATA_EXCEPTION, ((Throwable) message.getObjectHeaders().get(CoreConstants.OBJ_METADATA_EXCEPTION)).getMessage());
       
     return serializedMsg;
   }
@@ -90,6 +98,15 @@ public class DefaultSerializableMessageTranslator implements SerializableMessage
       else {
         adaptrisMessage = messageFactory.newMessage(message.getContent(), message.getContentEncoding(),
             convertMap(message.getMessageHeaders()));
+      }
+
+      // support MultiPayloadAdaptrisMessage
+      if (adaptrisMessage instanceof MultiPayloadAdaptrisMessage multiPayloadAdaptrisMessage &&
+              message instanceof SerializableInterlokMessageAdapter messageAdapter &&
+              messageAdapter.getMessage() instanceof MultiPayloadAdaptrisMessage multiPayloadMessage) {
+          multiPayloadMessage.getPayloadIDs().forEach(payloadId -> {
+            multiPayloadAdaptrisMessage.addContent(payloadId, multiPayloadMessage.getContent(payloadId), multiPayloadMessage.getContentEncoding(payloadId));
+          });
       }
 
       if (MimeConstants.ENCODING_BASE64.equalsIgnoreCase(message.getMessageHeaders().get(CoreConstants.SERIALIZED_MESSAGE_ENCODING))) {
