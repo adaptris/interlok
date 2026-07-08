@@ -50,7 +50,7 @@ public class MetadataHashingTest extends MetadataServiceExample {
   }
 
   @Test
-  void testSetHashAlgorithm() throws Exception {
+  public void testSetHashAlgorithm() throws Exception {
     MetadataHashingService service = new MetadataHashingService();
     assertEquals("SHA1", service.getHashAlgorithm());
     service.setHashAlgorithm("MD5");
@@ -101,7 +101,7 @@ public class MetadataHashingTest extends MetadataServiceExample {
   }
 
   @Test
-  void testService() throws Exception {
+  public void testService() throws Exception {
     MetadataHashingService service = new MetadataHashingService(METADATA_KEY);
     AdaptrisMessage msg = createMessage(null);
     execute(service, msg);
@@ -109,7 +109,7 @@ public class MetadataHashingTest extends MetadataServiceExample {
   }
 
   @Test
-  void testService_KnownHash() throws Exception {
+  public void testService_KnownHash() throws Exception {
     MetadataHashingService service = new MetadataHashingService(METADATA_KEY, "MD5", new HexStringByteTranslator());
     AdaptrisMessage msg = createMessage(null);
     execute(service, msg);
@@ -117,7 +117,7 @@ public class MetadataHashingTest extends MetadataServiceExample {
   }
 
   @Test
-  void testService_Encoding() throws Exception {
+  public void testService_Encoding() throws Exception {
     MetadataHashingService service = new MetadataHashingService(METADATA_KEY, "MD5", new HexStringByteTranslator());
     AdaptrisMessage msg = createMessage("UTF-8");
     execute(service, msg);
@@ -164,7 +164,7 @@ public class MetadataHashingTest extends MetadataServiceExample {
   }
 
   @Test
-  void testService_HmacMd5_MessageExpressionKey() throws Exception {
+  public void testService_HmacMd5_MessageExpressionKey() throws Exception {
     // hmac-key is a %message{...} expression pointing to metadata that holds the actual key
     MetadataHashingService service = new MetadataHashingService(METADATA_KEY, "HmacMD5", new HexStringByteTranslator());
     service.setHmacKey("%message{hmacKeyMetadata}");
@@ -175,7 +175,7 @@ public class MetadataHashingTest extends MetadataServiceExample {
   }
 
   @Test
-  void testService_HmacMd5_MessageExpressionKey_EncodedValue() throws Exception {
+  public void testService_HmacMd5_MessageExpressionKey_EncodedValue() throws Exception {
     // hmac-key is a %message{...} expression pointing to metadata holding an encoded password
     MetadataHashingService service = new MetadataHashingService(METADATA_KEY, "HmacMD5", new HexStringByteTranslator());
     service.setHmacKey("%message{hmacKeyMetadata}");
@@ -186,7 +186,7 @@ public class MetadataHashingTest extends MetadataServiceExample {
   }
 
   @Test
-  void testService_HmacMd5_MessageExpressionKey_ChangesPerMessage() throws Exception {
+  public void testService_HmacMd5_MessageExpressionKey_ChangesPerMessage() throws Exception {
     MetadataHashingService service = new MetadataHashingService(METADATA_KEY, "HmacMD5", new HexStringByteTranslator());
     service.setHmacKey("%message{hmacKeyMetadata}");
 
