@@ -36,7 +36,9 @@ public class MetadataHashingTest extends MetadataServiceExample {
   private static final String METADATA_VALUE = "2104913203";
   private static final String METADATA_HASH_MD5 = "fff9f3d8d4ec2726e0b2422116b20dd2";
   private static final String METADATA_HMAC_MD5 = "2d1a7ab865997f3fd6d66c7c8bca44ac";
+  private static final String METADATA_HMAC_MD5_NOT_A_SECRET = "a62a46fd6595d0823f73c379b5af1dc4";
   private static final String HMAC_KEY = "secret";
+  private static final String HMAC_KEY_NOT_A_SECRET = "notasecret";
 
 
   private AdaptrisMessage createMessage(String encoding) throws Exception {
@@ -47,7 +49,7 @@ public class MetadataHashingTest extends MetadataServiceExample {
   }
 
   @Test
-  public void testSetHashAlgorithm() throws Exception {
+  void testSetHashAlgorithm() throws Exception {
     MetadataHashingService service = new MetadataHashingService();
     assertEquals("SHA1", service.getHashAlgorithm());
     service.setHashAlgorithm("MD5");
@@ -72,7 +74,7 @@ public class MetadataHashingTest extends MetadataServiceExample {
   }
 
   @Test
-  public void testSetHmacKey() {
+  void testSetHmacKey() {
     MetadataHashingService service = new MetadataHashingService();
     service.setHmacKey(HMAC_KEY);
     assertEquals(HMAC_KEY, service.getHmacKey());
@@ -81,7 +83,7 @@ public class MetadataHashingTest extends MetadataServiceExample {
   }
 
   @Test
-  public void testSetByteTranslator() throws Exception {
+  void testSetByteTranslator() throws Exception {
     MetadataHashingService service = new MetadataHashingService();
     assertEquals(Base64ByteTranslator.class, service.getByteTranslator().getClass());
     service.setByteTranslator(new HexStringByteTranslator());
@@ -98,7 +100,7 @@ public class MetadataHashingTest extends MetadataServiceExample {
   }
 
   @Test
-  public void testService() throws Exception {
+  void testService() throws Exception {
     MetadataHashingService service = new MetadataHashingService(METADATA_KEY);
     AdaptrisMessage msg = createMessage(null);
     execute(service, msg);
@@ -106,7 +108,7 @@ public class MetadataHashingTest extends MetadataServiceExample {
   }
 
   @Test
-  public void testService_KnownHash() throws Exception {
+  void testService_KnownHash() throws Exception {
     MetadataHashingService service = new MetadataHashingService(METADATA_KEY, "MD5", new HexStringByteTranslator());
     AdaptrisMessage msg = createMessage(null);
     execute(service, msg);
@@ -114,7 +116,7 @@ public class MetadataHashingTest extends MetadataServiceExample {
   }
 
   @Test
-  public void testService_Encoding() throws Exception {
+  void testService_Encoding() throws Exception {
     MetadataHashingService service = new MetadataHashingService(METADATA_KEY, "MD5", new HexStringByteTranslator());
     AdaptrisMessage msg = createMessage("UTF-8");
     execute(service, msg);
@@ -122,7 +124,7 @@ public class MetadataHashingTest extends MetadataServiceExample {
   }
 
   @Test
-  public void testService_HmacMd5() throws Exception {
+  void testService_HmacMd5() throws Exception {
     MetadataHashingService service = new MetadataHashingService(METADATA_KEY, "HmacMD5", new HexStringByteTranslator());
     service.setHmacKey(HMAC_KEY);
     AdaptrisMessage msg = createMessage(null);
@@ -131,7 +133,7 @@ public class MetadataHashingTest extends MetadataServiceExample {
   }
 
   @Test
-  public void testService_HmacMd5_EncodedHmacKey() throws Exception {
+  void testService_HmacMd5_EncodedHmacKey() throws Exception {
     MetadataHashingService service = new MetadataHashingService(METADATA_KEY, "HmacMD5", new HexStringByteTranslator());
     service.setHmacKey(Password.encode(HMAC_KEY, Password.PORTABLE_PASSWORD));
     AdaptrisMessage msg = createMessage(null);
@@ -140,7 +142,7 @@ public class MetadataHashingTest extends MetadataServiceExample {
   }
 
   @Test
-  public void testService_BlankHmacKey_DisablesHmacMode() throws Exception {
+  void testService_BlankHmacKey_DisablesHmacMode() throws Exception {
     MetadataHashingService service = new MetadataHashingService(METADATA_KEY, "MD5", new HexStringByteTranslator());
     service.setHmacKey("   ");
     AdaptrisMessage msg = createMessage(null);
@@ -149,7 +151,7 @@ public class MetadataHashingTest extends MetadataServiceExample {
   }
 
   @Test
-  public void testInit_HmacMode_RequiresMacAlgorithm() {
+  void testInit_HmacMode_RequiresMacAlgorithm() {
     MetadataHashingService service = new MetadataHashingService(METADATA_KEY, "MD5", new HexStringByteTranslator());
     service.setHmacKey(HMAC_KEY);
     try {
@@ -158,6 +160,44 @@ public class MetadataHashingTest extends MetadataServiceExample {
     }
     catch (CoreException expected) {
     }
+  }
+
+  @Test
+  void testService_HmacMd5_MessageExpressionKey() throws Exception {
+    // hmac-key is a %message{...} expression pointing to metadata that holds the actual key
+    MetadataHashingService service = new MetadataHashingService(METADATA_KEY, "HmacMD5", new HexStringByteTranslator());
+    service.setHmacKey("%message{hmacKeyMetadata}");
+    AdaptrisMessage msg = createMessage(null);
+    msg.addMetadata("hmacKeyMetadata", HMAC_KEY); // resolves to "secret"
+    execute(service, msg);
+    assertEquals(METADATA_HMAC_MD5, msg.getMetadataValue(METADATA_KEY));
+  }
+
+  @Test
+  void testService_HmacMd5_MessageExpressionKey_EncodedValue() throws Exception {
+    // hmac-key is a %message{...} expression pointing to metadata holding an encoded password
+    MetadataHashingService service = new MetadataHashingService(METADATA_KEY, "HmacMD5", new HexStringByteTranslator());
+    service.setHmacKey("%message{hmacKeyMetadata}");
+    AdaptrisMessage msg = createMessage(null);
+    msg.addMetadata("hmacKeyMetadata", Password.encode(HMAC_KEY, Password.PORTABLE_PASSWORD));
+    execute(service, msg);
+    assertEquals(METADATA_HMAC_MD5, msg.getMetadataValue(METADATA_KEY));
+  }
+
+  @Test
+  void testService_HmacMd5_MessageExpressionKey_ChangesPerMessage() throws Exception {
+    MetadataHashingService service = new MetadataHashingService(METADATA_KEY, "HmacMD5", new HexStringByteTranslator());
+    service.setHmacKey("%message{hmacKeyMetadata}");
+
+    AdaptrisMessage secretMsg = createMessage(null);
+    secretMsg.addMetadata("hmacKeyMetadata", HMAC_KEY);
+    execute(service, secretMsg);
+    assertEquals(METADATA_HMAC_MD5, secretMsg.getMetadataValue(METADATA_KEY));
+
+    AdaptrisMessage notASecretMsg = createMessage(null);
+    notASecretMsg.addMetadata("hmacKeyMetadata", HMAC_KEY_NOT_A_SECRET);
+    execute(service, notASecretMsg);
+    assertEquals(METADATA_HMAC_MD5_NOT_A_SECRET, notASecretMsg.getMetadataValue(METADATA_KEY));
   }
 
   @Override

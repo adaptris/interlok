@@ -30,6 +30,7 @@ import com.adaptris.annotation.AutoPopulated;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
 import com.adaptris.annotation.InputFieldHint;
+import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.CoreException;
 import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.security.password.Password;
@@ -102,6 +103,18 @@ public class MetadataHashingService extends ReformatMetadata {
 
 
   @Override
+  public String reformat(String s, AdaptrisMessage msg) throws Exception {
+    byte[] data = toBytes(s, msg.getContentEncoding());
+    if (isHmacConfigured()) {
+      SecretKeySpec key = new SecretKeySpec(hmacKeyBytes(msg), getHashAlgorithm());
+      Mac mac = Mac.getInstance(getHashAlgorithm());
+      mac.init(key);
+      return getByteTranslator().translate(mac.doFinal(data));
+    }
+    return getByteTranslator().translate(MessageDigest.getInstance(getHashAlgorithm()).digest(data));
+  }
+
+  @Override
   public String reformat(String s, String charEncoding) throws Exception {
     byte[] data = toBytes(s, charEncoding);
     if (isHmacConfigured()) {
@@ -170,6 +183,12 @@ public class MetadataHashingService extends ReformatMetadata {
 
   private byte[] hmacKeyBytes() throws Exception {
     String resolved = ExternalResolver.resolve(getHmacKey());
+    String decoded = Password.decode(resolved);
+    return decoded.getBytes(StandardCharsets.UTF_8);
+  }
+
+  private byte[] hmacKeyBytes(AdaptrisMessage msg) throws Exception {
+    String resolved = msg.resolve(getHmacKey());
     String decoded = Password.decode(resolved);
     return decoded.getBytes(StandardCharsets.UTF_8);
   }
