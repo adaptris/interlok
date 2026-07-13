@@ -223,6 +223,9 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
     @InputFieldDefault(value = HTTP_RETRY_METHOD)
     private String stackTraceHttpMethod;
 
+    private Map<String, RetryStore> retryStoresByRoute;
+    private RetryStore defaultRetryStore;
+
     private transient StandaloneConsumer reporting;
     private transient StandaloneConsumer retrying;
     private transient StandaloneConsumer deleting;
@@ -393,6 +396,28 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
         }
     }
 
+    private RetryStore retryStoreFor(AdaptrisMessage msg) throws CoreException {
+        if (retryStoresByRoute == null || retryStoresByRoute.isEmpty()) {
+            return getRetryStore();
+        }
+
+        String route = resolveRetryStoreRoute(msg);
+
+        if (route != null && retryStoresByRoute.containsKey(route)) {
+            return retryStoresByRoute.get(route);
+        }
+
+        if (defaultRetryStore != null) {
+            return defaultRetryStore;
+        }
+
+        if (getRetryStore() != null) {
+            return getRetryStore();
+        }
+
+        throw new CoreException("No RetryStore available for message");
+    }
+
     private abstract class ListenerImpl
             implements AdaptrisMessageListener, ComponentLifecycle, ComponentLifecycleExtension {
 
@@ -479,7 +504,7 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
                     includeErrorMessage = Boolean.parseBoolean(jettyMsg.getMetadataValue(includeErrorMessageFlagMetadataKey()));
                 }
 
-                getReportBuilder().build(getRetryStore().report(includeErrorMessage), jettyMsg);
+                getReportBuilder().build(retryStoreFor(jettyMsg).report(includeErrorMessage), jettyMsg);
                 httpCode = HTTP_OK;
             } catch (Exception e) {
                 jettyMsg.setContent(ExceptionUtils.getRootCauseMessage(e), StandardCharsets.UTF_8.name());
@@ -508,7 +533,7 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
 
                 if (msgId != null) {
                     log.trace("Attempting to delete {}", msgId);
-                    boolean deleted = getRetryStore().delete(msgId);
+                    boolean deleted = retryStoreFor(jettyMsg).delete(msgId);
                     if (deleted) {
                         httpCode = HTTP_OK;
                     } else {
@@ -545,10 +570,10 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
                     // Do we want people to configure it?
                     // Therefore we look up the metadata from the store;
                     // Figure out the workflow, and then get the consumer.getMessageFactory()
-                    Map<String, String> metadata = retryStore.getMetadata(msgId);
+                    Map<String, String> metadata = retryStoreFor(jettyMsg).getMetadata(msgId);
                     Workflow workflow = getWorkflow(metadata.get(Workflow.WORKFLOW_ID_KEY));
                     AdaptrisMessage msgForRetry =
-                            retryStore.buildForRetry(msgId, metadata, workflow.getConsumer().getMessageFactory());
+                            retryStoreFor(jettyMsg).buildForRetry(msgId, metadata, workflow.getConsumer().getMessageFactory());
                     // We know at this point we have something to retry.
                     // So, we can fire a 202 before submission.
                     httpCode = HTTP_ACCEPTED;
@@ -591,7 +616,7 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
                                       Consumer<AdaptrisMessage> failure) {
             try {
                 String msgId = extractMsgId(stackTraceRouting, jettyMsg);
-                String stackTrace = retryStore.getStackTrace(msgId);
+                String stackTrace = retryStoreFor(jettyMsg).getStackTrace(msgId);
                 handleStackTraceResponse(msgId, jettyMsg, stackTrace);
             } catch (Exception e) {
                 handleException(e, jettyMsg);

@@ -36,6 +36,10 @@ public abstract class FailedMessageRetrierImp implements FailedMessageRetrier {
 
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
+  @Getter
+  @Setter
+  private String retryStoreRoutingExpression = "%message{pn.routing.region}";
+
   private transient Map<String, Workflow> workflows;
   @Getter
   @Setter
@@ -52,6 +56,25 @@ public abstract class FailedMessageRetrierImp implements FailedMessageRetrier {
 
   protected Workflow getWorkflow(AdaptrisMessage msg) throws CoreException {
     return getWorkflow(msg.getMetadataValue(Workflow.WORKFLOW_ID_KEY));
+  }
+
+  protected String resolveRetryStoreRoute(AdaptrisMessage msg) {
+      if (msg == null) {
+          return null;
+      }
+
+      String expression = getRetryStoreRoutingExpression();
+      if (expression == null || expression.trim().isEmpty()) {
+          return null;
+      }
+
+      String resolved = msg.resolve(expression);
+      if (resolved == null) {
+          return null;
+      }
+
+      resolved = resolved.trim();
+      return resolved.isEmpty() ? null : resolved.toLowerCase(java.util.Locale.ROOT);
   }
 
   protected Workflow getWorkflow(String workflowId) throws CoreException {
