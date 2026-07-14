@@ -6,9 +6,11 @@ import static com.adaptris.core.http.jetty.JettyConstants.JETTY_URI;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -182,12 +184,12 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
 
     /**
      * Where messages are stored for retries.
-     *
+     * <p>
+     * This is the legacy/default retry store and is optional when using multi-store routing via {@link #retryStoresByRoute}.
+     * </p>
      */
     @Getter
     @Setter
-    @NotNull
-    @NonNull
     private RetryStore retryStore;
 
     @AdvancedConfig(rare = true)
@@ -225,7 +227,24 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
     @InputFieldDefault(value = HTTP_RETRY_METHOD)
     private String stackTraceHttpMethod;
 
+    /**
+     * Multi-store routing map for routing different message regions to different retry stores.
+     * <p>
+     * Routes are resolved from the parent's retryStoreRoutingExpression and matched (case-insensitive) against keys in this map.
+     * </p>
+     */
+    @Getter
+    @Setter
     private Map<String, RetryStore> retryStoresByRoute;
+
+    /**
+     * Default retry store to use when a route cannot be resolved or matched.
+     * <p>
+     * Used as fallback when {@link #retryStoresByRoute} is configured but the resolved route doesn't match any entry.
+     * </p>
+     */
+    @Getter
+    @Setter
     private RetryStore defaultRetryStore;
 
     private transient StandaloneConsumer reporting;
@@ -252,7 +271,8 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
             warnOnMixedStoreConfiguration();
 
             Args.notNull(getReportBuilder(), "report-builder");
-            Args.notNull(getRetryStore(), "retry-store");
+            // Note: retryStore validation moved to validateRetryStoreConfiguration()
+            // to support multi-store-only configurations
 
             String retryServletPath = retryEndpointPrefix() + "*";
             String retryServletRegexp = "^" + retryEndpointPrefix() + "(.*)";
@@ -301,7 +321,11 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
             deleting.registerAdaptrisMessageListener(deleter);
             gettingStacktrace.registerAdaptrisMessageListener(stacktraceGetter);
 
-            LifecycleHelper.prepare(getRetryStore(), getReportBuilder());
+            // Prepare all configured stores (de-duplicated)
+            LifecycleHelper.prepare(getReportBuilder());
+            for (RetryStore store : getAllConfiguredStores()) {
+                LifecycleHelper.prepare(store);
+            }
             LifecycleHelper.prepare(deleteRouting, deleter, deleting);
             LifecycleHelper.prepare(retryRouting, retrier, retrying);
             LifecycleHelper.prepare(reporter, reporting);
@@ -313,7 +337,10 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
     @Override
     public void init() throws CoreException {
         prepare();
-        LifecycleHelper.init(getRetryStore(), getReportBuilder());
+        LifecycleHelper.init(getReportBuilder());
+        for (RetryStore store : getAllConfiguredStores()) {
+            LifecycleHelper.init(store);
+        }
         LifecycleHelper.init(deleteRouting, deleter, deleting);
         LifecycleHelper.init(retryRouting, retrier, retrying);
         LifecycleHelper.init(reporter, reporting);
@@ -324,7 +351,10 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
 
     @Override
     public void start() throws CoreException {
-        LifecycleHelper.start(getRetryStore(), getReportBuilder());
+        LifecycleHelper.start(getReportBuilder());
+        for (RetryStore store : getAllConfiguredStores()) {
+            LifecycleHelper.start(store);
+        }
         LifecycleHelper.start(deleteRouting, deleter, deleting);
         LifecycleHelper.start(retryRouting, retrier, retrying);
         LifecycleHelper.start(reporter, reporting);
@@ -337,7 +367,10 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
         LifecycleHelper.stop(retryRouting, retrier, retrying);
         LifecycleHelper.stop(reporter, reporting);
         LifecycleHelper.stop(stackTraceRouting, stacktraceGetter, gettingStacktrace);
-        LifecycleHelper.stop(getRetryStore(), getReportBuilder());
+        for (RetryStore store : getAllConfiguredStores()) {
+            LifecycleHelper.stop(store);
+        }
+        LifecycleHelper.stop(getReportBuilder());
     }
 
     @Override
@@ -346,7 +379,10 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
         LifecycleHelper.close(retryRouting, retrier, retrying);
         LifecycleHelper.close(reporter, reporting);
         LifecycleHelper.close(stackTraceRouting, stacktraceGetter, gettingStacktrace);
-        LifecycleHelper.close(getRetryStore(), getReportBuilder());
+        for (RetryStore store : getAllConfiguredStores()) {
+            LifecycleHelper.close(store);
+        }
+        LifecycleHelper.close(getReportBuilder());
 
         ManagedThreadFactory.shutdownQuietly(workflowSubmitter, DEFAULT_SHUTDOWN_WAIT);
     }
@@ -358,6 +394,11 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
 
     public RetryFromJetty withReportBuilder(ReportBuilder b) {
         setReportBuilder(b);
+        return this;
+    }
+
+    public RetryFromJetty withRetryStoreRoutingExpression(String expr) {
+        setRetryStoreRoutingExpression(expr);
         return this;
     }
 
@@ -664,5 +705,24 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
         if (retryStoresByRoute != null && !retryStoresByRoute.isEmpty() && getRetryStore() != null) {
             log.warn("Both retryStoresByRoute and legacy retryStore are configured; fallback order is route-map -> defaultRetryStore -> retryStore.");
         }
+    }
+
+    /**
+     * Collects all configured retry stores into a de-duplicated collection for lifecycle management.
+     */
+    private Set<RetryStore> getAllConfiguredStores() {
+        Set<RetryStore> stores = new LinkedHashSet<>();
+
+        if (getRetryStore() != null) {
+            stores.add(getRetryStore());
+        }
+        if (defaultRetryStore != null) {
+            stores.add(defaultRetryStore);
+        }
+        if (retryStoresByRoute != null) {
+            stores.addAll(retryStoresByRoute.values());
+        }
+
+        return stores;
     }
 }
