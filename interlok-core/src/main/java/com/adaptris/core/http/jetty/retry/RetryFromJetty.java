@@ -5,6 +5,8 @@ import static com.adaptris.core.http.jetty.JettyConstants.JETTY_URI;
 
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -245,6 +247,10 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
     @Override
     public void prepare() throws CoreException {
         if (!prepared) {
+            validateRetryStoreConfiguration();
+            normalizeRetryStoresByRoute();
+            warnOnMixedStoreConfiguration();
+
             Args.notNull(getReportBuilder(), "report-builder");
             Args.notNull(getRetryStore(), "retry-store");
 
@@ -626,6 +632,37 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
         @Override
         public String friendlyName() {
             return "RetryFromJetty::StackTrace";
+        }
+    }
+
+    private void validateRetryStoreConfiguration() throws CoreException {
+        boolean hasLegacy = getRetryStore() != null;
+        boolean hasDefault = defaultRetryStore != null;
+        boolean hasRouteMap = retryStoresByRoute != null && !retryStoresByRoute.isEmpty();
+
+        if (!hasLegacy && !hasDefault && !hasRouteMap) {
+            throw new CoreException("No RetryStore configured; configure retryStoresByRoute, defaultRetryStore, or retryStore.");
+        }
+    }
+
+    private void normalizeRetryStoresByRoute() {
+        if (retryStoresByRoute == null || retryStoresByRoute.isEmpty()) {
+            return;
+        }
+
+        Map<String, RetryStore> normalized = new HashMap<>();
+        retryStoresByRoute.forEach((k, v) -> {
+            String key = StringUtils.trimToNull(k);
+            if (key != null && v != null) {
+                normalized.put(key.toLowerCase(Locale.ROOT), v);
+            }
+        });
+        retryStoresByRoute = normalized;
+    }
+
+    private void warnOnMixedStoreConfiguration() {
+        if (retryStoresByRoute != null && !retryStoresByRoute.isEmpty() && getRetryStore() != null) {
+            log.warn("Both retryStoresByRoute and legacy retryStore are configured; fallback order is route-map -> defaultRetryStore -> retryStore.");
         }
     }
 }
