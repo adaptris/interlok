@@ -652,31 +652,37 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
             try {
                 String msgId = extractMsgId(retryRouting, jettyMsg);
                 if  (msgId != null) {
-                    // There's a decision point here because we need to decide between
-                    // large or small message factory.
-                    // Do we want people to configure it?
-                    // Therefore we look up the metadata from the store;
-                    // Figure out the workflow, and then get the consumer.getMessageFactory()
-                    Map<String, String> metadata = retryStoreFor(jettyMsg).getMetadata(msgId);
-                    Workflow workflow = getWorkflow(metadata.get(Workflow.WORKFLOW_ID_KEY));
-                    AdaptrisMessage msgForRetry =
-                            retryStoreFor(jettyMsg).buildForRetry(msgId, metadata, workflow.getConsumer().getMessageFactory());
-                    // We know at this point we have something to retry.
-                    // So, we can fire a 202 before submission.
-                    httpCode = HTTP_ACCEPTED;
-                    sendResponse(httpCode, jettyMsg);
-                    updateRetryCountMetadata(msgForRetry);
-                    log.trace("Attempting to retry {}; resubmitting to [{}]", msgForRetry.getUniqueId(),
-                            workflow.obtainWorkflowId());
-                    // pooling workflow returns immediately, standard workflow does not.
-                    // so submit to an Executor Service.
-                    workflowSubmitter.execute(new Thread() {
-                        @Override
-                        public void run() {
-                            Thread.currentThread().setName("Retry Failed Message");
-                            workflow.onAdaptrisMessage(msgForRetry, success, failure);
-                        }
-                    });
+                    // Try to find the message in all configured stores
+                    RetryStore storeWithMessage = findStoreContainingMessage(msgId);
+                    if (storeWithMessage == null) {
+                        httpCode = HTTP_NOT_FOUND;
+                    } else {
+                        // There's a decision point here because we need to decide between
+                        // large or small message factory.
+                        // Do we want people to configure it?
+                        // Therefore we look up the metadata from the store;
+                        // Figure out the workflow, and then get the consumer.getMessageFactory()
+                        Map<String, String> metadata = storeWithMessage.getMetadata(msgId);
+                        Workflow workflow = getWorkflow(metadata.get(Workflow.WORKFLOW_ID_KEY));
+                        AdaptrisMessage msgForRetry =
+                                storeWithMessage.buildForRetry(msgId, metadata, workflow.getConsumer().getMessageFactory());
+                        // We know at this point we have something to retry.
+                        // So, we can fire a 202 before submission.
+                        httpCode = HTTP_ACCEPTED;
+                        sendResponse(httpCode, jettyMsg);
+                        updateRetryCountMetadata(msgForRetry);
+                        log.trace("Attempting to retry {}; resubmitting to [{}]", msgForRetry.getUniqueId(),
+                                workflow.obtainWorkflowId());
+                        // pooling workflow returns immediately, standard workflow does not.
+                        // so submit to an Executor Service.
+                        workflowSubmitter.execute(new Thread() {
+                            @Override
+                            public void run() {
+                                Thread.currentThread().setName("Retry Failed Message");
+                                workflow.onAdaptrisMessage(msgForRetry, success, failure);
+                            }
+                        });
+                    }
                 } else {
                     httpCode = HTTP_BAD;
                 }
@@ -686,11 +692,26 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
             sendResponse(httpCode, jettyMsg);
         }
 
-
         @Override
         public String friendlyName() {
             return "RetryFromJetty::Retry";
         }
+
+        private RetryStore findStoreContainingMessage(String msgId) throws CoreException {
+            // Try all configured stores to find which one contains this message
+            for (RetryStore store : getAllConfiguredStores()) {
+                try {
+                    Map<String, String> metadata = store.getMetadata(msgId);
+                    if (metadata != null && !metadata.isEmpty()) {
+                        return store;
+                    }
+                } catch (Exception e) {
+                    log.trace("Message {} not in this store, continuing search", msgId);
+                }
+            }
+            return null;
+        }
+
     }
 
     @NoArgsConstructor
