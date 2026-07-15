@@ -620,11 +620,11 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
 
                 if (msgId != null) {
                     log.trace("Attempting to delete {}", msgId);
-                    boolean deleted = retryStoreFor(jettyMsg).delete(msgId);
-                    if (deleted) {
-                        httpCode = HTTP_OK;
-                    } else {
+                    RetryStore target = findStoreContainingMessage(msgId);
+                    if (target == null) {
                         httpCode = HTTP_NOT_FOUND;
+                    } else {
+                        httpCode = target.delete(msgId) ? HTTP_OK : HTTP_NOT_FOUND;
                     }
                 } else {
                     httpCode = HTTP_BAD;
@@ -696,22 +696,6 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
         public String friendlyName() {
             return "RetryFromJetty::Retry";
         }
-
-        private RetryStore findStoreContainingMessage(String msgId) throws CoreException {
-            // Try all configured stores to find which one contains this message
-            for (RetryStore store : getAllConfiguredStores()) {
-                try {
-                    Map<String, String> metadata = store.getMetadata(msgId);
-                    if (metadata != null && !metadata.isEmpty()) {
-                        return store;
-                    }
-                } catch (Exception e) {
-                    log.trace("Message {} not in this store, continuing search", msgId);
-                }
-            }
-            return null;
-        }
-
     }
 
     @NoArgsConstructor
@@ -724,7 +708,16 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
                                       Consumer<AdaptrisMessage> failure) {
             try {
                 String msgId = extractMsgId(stackTraceRouting, jettyMsg);
-                String stackTrace = retryStoreFor(jettyMsg).getStackTrace(msgId);
+                if (msgId == null) {
+                    sendResponse(HTTP_BAD, jettyMsg);
+                    return;
+                }
+                RetryStore target = findStoreContainingMessage(msgId);
+                if (target == null) {
+                    sendResponse(HTTP_NOT_FOUND, jettyMsg);
+                    return;
+                }
+                String stackTrace = target.getStackTrace(msgId);
                 handleStackTraceResponse(msgId, jettyMsg, stackTrace);
             } catch (Exception e) {
                 handleException(e, jettyMsg);
@@ -785,5 +778,20 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
         }
 
         return stores;
+    }
+
+    private RetryStore findStoreContainingMessage(String msgId) throws CoreException {
+        // Try all configured stores to find which one contains this message
+        for (RetryStore store : getAllConfiguredStores()) {
+            try {
+                Map<String, String> metadata = store.getMetadata(msgId);
+                if (metadata != null && !metadata.isEmpty()) {
+                    return store;
+                }
+            } catch (Exception e) {
+                log.trace("Message {} not in this store, continuing search", msgId);
+            }
+        }
+        return null;
     }
 }
