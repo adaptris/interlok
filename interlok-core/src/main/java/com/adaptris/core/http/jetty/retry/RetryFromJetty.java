@@ -5,17 +5,13 @@ import static com.adaptris.core.http.jetty.JettyConstants.JETTY_URI;
 
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 
 import com.adaptris.core.*;
 import com.adaptris.core.http.jetty.*;
@@ -465,6 +461,37 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
         throw new CoreException("No RetryStore available for message");
     }
 
+    /**
+     * Resolves the set of stores to use for a report/list operation.
+     * If a route resolves and matches, returns only that store.
+     * Otherwise returns all configured stores for aggregation.
+     */
+    private Set<RetryStore> resolveStoresToReport(AdaptrisMessage msg) {
+        Set<RetryStore> all = getAllConfiguredStores();
+        if (retryStoresByRoute == null || retryStoresByRoute.isEmpty()) {
+            return all;
+        }
+        String route = resolveRetryStoreRoute(msg);
+
+        // For list/report requests with no route metadata, aggregate all configured stores.
+        if (StringUtils.isBlank(route)) {
+            return all;
+        }
+
+        RetryStore routedStore = retryStoresByRoute.get(route);
+        if (routedStore != null) {
+            return Collections.singleton(routedStore);
+        }
+        if (defaultRetryStore != null) {
+            return Collections.singleton(defaultRetryStore);
+        }
+        if (getRetryStore() != null) {
+            return Collections.singleton(getRetryStore());
+        }
+        // No route resolved — aggregate all stores
+        return all;
+    }
+
     private abstract class ListenerImpl
             implements AdaptrisMessageListener, ComponentLifecycle, ComponentLifecycleExtension {
 
@@ -551,7 +578,20 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
                     includeErrorMessage = Boolean.parseBoolean(jettyMsg.getMetadataValue(includeErrorMessageFlagMetadataKey()));
                 }
 
-                getReportBuilder().build(retryStoreFor(jettyMsg).report(includeErrorMessage), jettyMsg);
+                // If multi-store routing is configured and no route can be resolved,
+                // aggregate reports from all configured stores.
+                Set<RetryStore> storesToReport = resolveStoresToReport(jettyMsg);
+                if (storesToReport.size() == 1) {
+                    getReportBuilder().build(storesToReport.iterator().next().report(includeErrorMessage), jettyMsg);
+                } else {
+                    java.util.List<com.adaptris.interlok.cloud.RemoteBlob> combined = new java.util.ArrayList<>();
+                    for (RetryStore s : storesToReport) {
+                        for (com.adaptris.interlok.cloud.RemoteBlob r : s.report(includeErrorMessage)) {
+                            combined.add(r);
+                        }
+                    }
+                    getReportBuilder().build(combined, jettyMsg);
+                }
                 httpCode = HTTP_OK;
             } catch (Exception e) {
                 jettyMsg.setContent(ExceptionUtils.getRootCauseMessage(e), StandardCharsets.UTF_8.name());
