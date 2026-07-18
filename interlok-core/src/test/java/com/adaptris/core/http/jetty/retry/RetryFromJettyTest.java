@@ -22,6 +22,7 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ChannelList;
 import com.adaptris.core.CoreConstants;
+import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.NullService;
 import com.adaptris.core.StandaloneRequestor;
 import com.adaptris.core.StandardWorkflow;
@@ -113,6 +114,27 @@ public class RetryFromJettyTest extends FailedMessageRetrierCase {
     assertEquals(RetryFromJetty.DEFAULT_ENDPOINT_PREFIX, retrier.retryEndpointPrefix());
     retrier.setRetryEndpointPrefix("/api/zzlc/");
     assertEquals("/api/zzlc/", retrier.retryEndpointPrefix());
+  }
+
+  @Test
+  public void testXmlConfigMatchesDevelopBranchShape() throws Exception {
+    Adapter adapter = (Adapter) retrieveObjectForSampleConfig();
+
+    String xml = DefaultMarshaller.getDefaultMarshaller().marshal(adapter);
+
+    assertTrue(xml.contains("<failed-message-retrier class=\"retry-via-jetty\">"));
+    assertTrue(xml.contains("<connection class=\"jetty-embedded-connection\"/>"));
+    assertTrue(xml.contains("<report-builder/>"));
+    assertTrue(xml.contains("<retry-store class=\"com.adaptris.core.http.jetty.retry.InMemoryRetryStore\"/>"));
+    assertFalse(xml.contains("<prepared>"));
+    assertFalse(xml.contains("<reporting>"));
+    assertFalse(xml.contains("<retrying>"));
+    assertFalse(xml.contains("<deleting>"));
+    assertFalse(xml.contains("<gettingStacktrace>"));
+    assertFalse(xml.contains("<workflowSubmitter>"));
+    assertFalse(xml.contains("<retryRouting>"));
+    assertFalse(xml.contains("<deleteRouting>"));
+    assertFalse(xml.contains("<stackTraceRouting>"));
   }
 
   @Test

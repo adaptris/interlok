@@ -185,21 +185,21 @@ public abstract class RetryFromJettyBase extends FailedMessageRetrierImp {
     private String stackTraceHttpMethod;
 
     // Transient infrastructure shared across all implementations
-    protected StandaloneConsumer reporting;
-    protected StandaloneConsumer retrying;
-    protected StandaloneConsumer deleting;
-    protected StandaloneConsumer gettingStacktrace;
+    protected transient StandaloneConsumer reporting;
+    protected transient StandaloneConsumer retrying;
+    protected transient StandaloneConsumer deleting;
+    protected transient StandaloneConsumer gettingStacktrace;
 
-    protected RetryJettyListenerImpl reporter;
-    protected RetryJettyListenerImpl retrier;
-    protected RetryJettyListenerImpl deleter;
-    protected RetryJettyListenerImpl stacktraceGetter;
+    protected transient RetryJettyListenerImpl reporter;
+    protected transient RetryJettyListenerImpl retrier;
+    protected transient RetryJettyListenerImpl deleter;
+    protected transient RetryJettyListenerImpl stacktraceGetter;
 
-    protected ExecutorService workflowSubmitter;
-    protected JettyRouteCondition retryRouting;
-    protected JettyRouteCondition deleteRouting;
-    protected JettyRouteCondition stackTraceRouting;
-    protected boolean prepared = false;
+    protected transient ExecutorService workflowSubmitter;
+    protected transient JettyRouteCondition retryRouting;
+    protected transient JettyRouteCondition deleteRouting;
+    protected transient JettyRouteCondition stackTraceRouting;
+    protected transient boolean prepared = false;
 
     // ---------------------------------------------------------------------------
     // Endpoint / method resolution helpers
@@ -265,10 +265,17 @@ public abstract class RetryFromJettyBase extends FailedMessageRetrierImp {
         JettyMessageConsumer reportingConsumer = new JettyMessageConsumer().withPath(reportingEndpoint());
         reportingConsumer.setParameterHandler(new MetadataParameterHandler());
 
-        retrying = new StandaloneConsumer(getConnection(), new JettyMessageConsumer().withPath(retryServletPath));
-        deleting = new StandaloneConsumer(getConnection(), new JettyMessageConsumer().withPath(deleteServletPath));
+        JettyMessageConsumer retryingConsumer = new JettyMessageConsumer().withPath(retryServletPath);
+        retryingConsumer.setParameterHandler(new MetadataParameterHandler());
+        JettyMessageConsumer deletingConsumer = new JettyMessageConsumer().withPath(deleteServletPath);
+        deletingConsumer.setParameterHandler(new MetadataParameterHandler());
+        JettyMessageConsumer stackTraceConsumer = new JettyMessageConsumer().withPath(stackTraceServletPath);
+        stackTraceConsumer.setParameterHandler(new MetadataParameterHandler());
+
+        retrying = new StandaloneConsumer(getConnection(), retryingConsumer);
+        deleting = new StandaloneConsumer(getConnection(), deletingConsumer);
         reporting = new StandaloneConsumer(getConnection(), reportingConsumer);
-        gettingStacktrace = new StandaloneConsumer(getConnection(), new JettyMessageConsumer().withPath(stackTraceServletPath));
+        gettingStacktrace = new StandaloneConsumer(getConnection(), stackTraceConsumer);
 
         retrying.registerAdaptrisMessageListener(retrier);
         reporting.registerAdaptrisMessageListener(reporter);

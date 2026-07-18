@@ -1,6 +1,7 @@
 package com.adaptris.core.http.jetty.retry;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -29,6 +30,7 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.AdaptrisMessageConsumer;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.CoreConstants;
+import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.http.jetty.JettyConstants;
 import com.adaptris.core.StartedState;
 import com.adaptris.core.Workflow;
@@ -38,6 +40,35 @@ import com.adaptris.core.util.LifecycleHelper;
 class RetryFromJettyDualStoreTest {
 
   private static final String ROUTE_KEY = "route";
+
+  @Test
+  void testXmlConfigShape() throws Exception {
+    RetryStore primary = new InMemoryRetryStore();
+    RetryStore secondary = new InMemoryRetryStore();
+    ReportBuilder reportBuilder = new ReportBuilder();
+    RetryFromJettyDualStore retrier = new RetryFromJettyDualStore()
+        .withFirstRetryStore(primary)
+        .withSecondRetryStore(secondary)
+        .withFirstRetryStoreIdentifier("usa")
+        .withSecondRetryStoreIdentifier("eu")
+        .withRetryStoreRoutingExpression("%message{" + ROUTE_KEY + "}")
+        .withReportBuilder(reportBuilder);
+
+    String xml = DefaultMarshaller.getDefaultMarshaller().marshal(retrier);
+    System.err.println("RetryFromJettyDualStore Marshalled XML:\n" + xml);
+
+    assertTrue(xml.contains("<retry-via-jetty-dual-store>"));
+    assertTrue(xml.contains("<connection class=\"jetty-embedded-connection\"/>"));
+    assertTrue(xml.contains("<report-builder/>"));
+    assertTrue(xml.contains("<first-retry-store class=\"com.adaptris.core.http.jetty.retry.InMemoryRetryStore\"/>"));
+    assertTrue(xml.contains("<second-retry-store class=\"com.adaptris.core.http.jetty.retry.InMemoryRetryStore\"/>"));
+    assertTrue(xml.contains("<first-retry-store-identifier>usa</first-retry-store-identifier>"));
+    assertTrue(xml.contains("<second-retry-store-identifier>eu</second-retry-store-identifier>"));
+    assertTrue(xml.contains("<retry-store-routing-expression>%message{" + ROUTE_KEY + "}</retry-store-routing-expression>"));
+    assertFalse(xml.contains("<prepared>"));
+    assertFalse(xml.contains("<reporting>"));
+    assertFalse(xml.contains("<retrying>"));
+  }
 
   @Test
   void reportRoutesToPrimaryStore() throws Exception {
@@ -306,10 +337,10 @@ class RetryFromJettyDualStoreTest {
     RetryStore secondary = mock(RetryStore.class);
     ReportBuilder reportBuilder = mock(ReportBuilder.class);
     RetryFromJettyDualStore retrier = new RetryFromJettyDualStore()
-        .withRetryStore(primary)
-        .withSecondaryRetryStore(secondary)
-        .withRetryStoreIdentifier("usa")
-        .withSecondaryRetryStoreIdentifier("eu")
+        .withFirstRetryStore(primary)
+        .withSecondRetryStore(secondary)
+        .withFirstRetryStoreIdentifier("usa")
+        .withSecondRetryStoreIdentifier("eu")
         .withRetryStoreRoutingExpression(" ")
         .withReportBuilder(reportBuilder);
     RetryFromJettyDualStore.ReportListener listener = retrier.new ReportListener();
@@ -528,20 +559,15 @@ class RetryFromJettyDualStoreTest {
   }
 
   @Test
-  void singleStoreConfigurationAlwaysUsesPrimary() throws Exception {
+  void prepareFailsWithoutSecondaryStore() {
     RetryStore primary = mock(RetryStore.class);
-    ReportBuilder reportBuilder = mock(ReportBuilder.class);
-    RetryFromJettyDualStore retrier = newSingleStore(primary, reportBuilder);
-    prepareForListenerTests(retrier);
-    RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.reporter;
-    AdaptrisMessage msg = requestMessage("unknown", null, null);
+    RetryFromJettyDualStore retrier = new RetryFromJettyDualStore().withFirstRetryStore(primary)
+        .withFirstRetryStoreIdentifier("usa")
+        .withRetryStoreRoutingExpression("%message{" + ROUTE_KEY + "}")
+        .withReportBuilder(mock(ReportBuilder.class));
 
-    when(primary.report(true)).thenReturn(Collections.emptyList());
-
-    listener.onAdaptrisMessage(msg, m -> {}, m -> {});
-
-    assertEquals(RetryFromJettyBase.HTTP_OK, msg.getMetadataValue(RetryFromJettyBase.HTTP_STATUS_KEY));
-    verify(primary).report(true);
+    CoreException ex = assertThrows(CoreException.class, retrier::prepare);
+    assertTrue(ex.getMessage().contains("second RetryStore"));
   }
 
   @Test
@@ -549,43 +575,43 @@ class RetryFromJettyDualStoreTest {
     RetryFromJettyDualStore retrier = new RetryFromJettyDualStore().withReportBuilder(mock(ReportBuilder.class));
 
     CoreException ex = assertThrows(CoreException.class, retrier::prepare);
-    assertTrue(ex.getMessage().contains("No RetryStore configured"));
+    assertTrue(ex.getMessage().contains("No first RetryStore configured"));
   }
 
   @Test
   void prepareFailsWhenSecondaryConfiguredWithoutRoutingExpression() {
     RetryFromJettyDualStore retrier = new RetryFromJettyDualStore()
-        .withRetryStore(mock(RetryStore.class))
-        .withSecondaryRetryStore(mock(RetryStore.class))
-        .withRetryStoreIdentifier("usa")
-        .withSecondaryRetryStoreIdentifier("eu")
+        .withFirstRetryStore(mock(RetryStore.class))
+        .withSecondRetryStore(mock(RetryStore.class))
+        .withFirstRetryStoreIdentifier("usa")
+        .withSecondRetryStoreIdentifier("eu")
         .withReportBuilder(mock(ReportBuilder.class));
 
     CoreException ex = assertThrows(CoreException.class, retrier::prepare);
-    assertTrue(ex.getMessage().contains("retryStoreRoutingExpression is required"));
+    assertTrue(ex.getMessage().contains("retryStoreRoutingExpression is required."));
   }
 
   @Test
   void prepareFailsWhenSecondaryIdentifiersAreMissing() {
     RetryFromJettyDualStore retrier = new RetryFromJettyDualStore()
-        .withRetryStore(mock(RetryStore.class))
-        .withSecondaryRetryStore(mock(RetryStore.class))
-        .withRetryStoreIdentifier(" ")
-        .withSecondaryRetryStoreIdentifier(" ")
+        .withFirstRetryStore(mock(RetryStore.class))
+        .withSecondRetryStore(mock(RetryStore.class))
+        .withFirstRetryStoreIdentifier(" ")
+        .withSecondRetryStoreIdentifier(" ")
         .withRetryStoreRoutingExpression("%message{route}")
         .withReportBuilder(mock(ReportBuilder.class));
 
     CoreException ex = assertThrows(CoreException.class, retrier::prepare);
-    assertTrue(ex.getMessage().contains("retryStoreIdentifier and secondaryRetryStoreIdentifier are required"));
+    assertTrue(ex.getMessage().contains("firstRetryStoreIdentifier and secondRetryStoreIdentifier are required"));
   }
 
   @Test
   void prepareFailsWhenIdentifiersAreEqual() {
     RetryFromJettyDualStore retrier = new RetryFromJettyDualStore()
-        .withRetryStore(mock(RetryStore.class))
-        .withSecondaryRetryStore(mock(RetryStore.class))
-        .withRetryStoreIdentifier("usa")
-        .withSecondaryRetryStoreIdentifier("usa")
+        .withFirstRetryStore(mock(RetryStore.class))
+        .withSecondRetryStore(mock(RetryStore.class))
+        .withFirstRetryStoreIdentifier("usa")
+        .withSecondRetryStoreIdentifier("usa")
         .withRetryStoreRoutingExpression("%message{route}")
         .withReportBuilder(mock(ReportBuilder.class));
 
@@ -612,10 +638,10 @@ class RetryFromJettyDualStoreTest {
     RetryStore primary = mock(RetryStore.class);
     RetryStore secondary = mock(RetryStore.class);
     ReportBuilder reportBuilder = mock(ReportBuilder.class);
-    RetryFromJettyDualStore retrier = new NoOpInfrastructureDualStore().withRetryStore(primary)
-        .withSecondaryRetryStore(secondary)
-        .withRetryStoreIdentifier("usa")
-        .withSecondaryRetryStoreIdentifier("eu")
+    RetryFromJettyDualStore retrier = new NoOpInfrastructureDualStore().withFirstRetryStore(primary)
+        .withSecondRetryStore(secondary)
+        .withFirstRetryStoreIdentifier("usa")
+        .withSecondRetryStoreIdentifier("eu")
         .withRetryStoreRoutingExpression("%message{" + ROUTE_KEY + "}")
         .withReportBuilder(reportBuilder);
 
@@ -639,10 +665,10 @@ class RetryFromJettyDualStoreTest {
     RetryStore primary = mock(RetryStore.class);
     RetryStore secondary = mock(RetryStore.class);
     ReportBuilder reportBuilder = mock(ReportBuilder.class);
-    RetryFromJettyDualStore retrier = new NoOpInfrastructureDualStore().withRetryStore(primary)
-        .withSecondaryRetryStore(secondary)
-        .withRetryStoreIdentifier("usa")
-        .withSecondaryRetryStoreIdentifier("eu")
+    RetryFromJettyDualStore retrier = new NoOpInfrastructureDualStore().withFirstRetryStore(primary)
+        .withSecondRetryStore(secondary)
+        .withFirstRetryStoreIdentifier("usa")
+        .withSecondRetryStoreIdentifier("eu")
         .withRetryStoreRoutingExpression("%message{" + ROUTE_KEY + "}")
         .withReportBuilder(reportBuilder);
 
@@ -661,17 +687,11 @@ class RetryFromJettyDualStoreTest {
 
   private RetryFromJettyDualStore newDualStore(RetryStore primary, RetryStore secondary,
       ReportBuilder reportBuilder) {
-    return new RetryFromJettyDualStore().withRetryStore(primary)
-        .withSecondaryRetryStore(secondary)
-        .withRetryStoreIdentifier("usa")
-        .withSecondaryRetryStoreIdentifier("eu")
+    return new RetryFromJettyDualStore().withFirstRetryStore(primary)
+        .withSecondRetryStore(secondary)
+        .withFirstRetryStoreIdentifier("usa")
+        .withSecondRetryStoreIdentifier("eu")
         .withRetryStoreRoutingExpression("%message{" + ROUTE_KEY + "}")
-        .withReportBuilder(reportBuilder);
-  }
-
-  private RetryFromJettyDualStore newSingleStore(RetryStore primary, ReportBuilder reportBuilder) {
-    return new RetryFromJettyDualStore().withRetryStore(primary)
-        .withRetryStoreIdentifier("usa")
         .withReportBuilder(reportBuilder);
   }
 

@@ -8,6 +8,10 @@ import java.util.Set;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
@@ -48,57 +52,41 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 @ComponentProfile(summary = "Listen for HTTP traffic on the specified URI and retry messages",
         recommended = {EmbeddedConnection.class, JettyConnection.class}, since = "5.0.6")
 @DisplayOrder(order = {"retryEndpointPrefix", "reportingEndpoint", "deleteEndpointPrefix",
-        "retryHttpMethod", "deleteHttpMethod", "connection", "retryStore", "secondaryRetryStore",
-        "retryStoreIdentifier", "secondaryRetryStoreIdentifier", "retryStoreRoutingExpression",
+        "retryHttpMethod", "deleteHttpMethod", "connection", "firstRetryStore", "secondRetryStore",
+        "firstRetryStoreIdentifier", "secondRetryStoreIdentifier", "retryStoreRoutingExpression",
         "reportBuilder"})
 @XStreamAlias("retry-via-jetty-dual-store")
 public class RetryFromJettyDualStore extends RetryFromJettyBase {
 
-    /**
-     * Where messages are stored for retries.
-     */
+    @NotNull
+    @Valid
     @Getter
     @Setter
-    private RetryStore retryStore;
+    private RetryStore firstRetryStore;
 
-    /**
-     * Identifier used to route requests to the primary retry store.
-     */
-    @AdvancedConfig(rare = true)
+    @NotBlank
     @Getter
     @Setter
-    @InputFieldDefault(value = "usa")
-    private String retryStoreIdentifier;
+    private String firstRetryStoreIdentifier;
 
-    /**
-     * Optional secondary retry store.
-     * <p>
-     * If configured then {@code retryStoreRoutingExpression} must also be configured so requests can
-     * be routed by retry-store id.
-     * </p>
-     */
-    @AdvancedConfig(rare = true)
+    @NotNull
+    @Valid
     @Getter
     @Setter
-    private RetryStore secondaryRetryStore;
+    private RetryStore secondRetryStore;
 
-    /**
-     * Identifier used to route requests to the secondary retry store.
-     */
-    @AdvancedConfig(rare = true)
+    @NotBlank
     @Getter
     @Setter
-    @InputFieldDefault(value = "eu")
-    private String secondaryRetryStoreIdentifier;
+    private String secondRetryStoreIdentifier;
 
     /**
      * Message expression used to determine the retry store identifier, for example
      * {@code %message{pn.routing.region}}.
      */
-    @AdvancedConfig(rare = true)
+    @NotBlank
     @Getter
     @Setter
-    @InputFieldDefault(value = "%message{pn.routing.region}")
     private String retryStoreRoutingExpression;
 
     @Override
@@ -153,23 +141,23 @@ public class RetryFromJettyDualStore extends RetryFromJettyBase {
         }
     }
 
-    public RetryFromJettyDualStore withRetryStore(RetryStore rs) {
-        setRetryStore(rs);
+    public RetryFromJettyDualStore withFirstRetryStore(RetryStore rs) {
+        setFirstRetryStore(rs);
         return this;
     }
 
-    public RetryFromJettyDualStore withSecondaryRetryStore(RetryStore rs) {
-        setSecondaryRetryStore(rs);
+    public RetryFromJettyDualStore withSecondRetryStore(RetryStore rs) {
+        setSecondRetryStore(rs);
         return this;
     }
 
-    public RetryFromJettyDualStore withRetryStoreIdentifier(String identifier) {
-        setRetryStoreIdentifier(identifier);
+    public RetryFromJettyDualStore withFirstRetryStoreIdentifier(String identifier) {
+        setFirstRetryStoreIdentifier(identifier);
         return this;
     }
 
-    public RetryFromJettyDualStore withSecondaryRetryStoreIdentifier(String identifier) {
-        setSecondaryRetryStoreIdentifier(identifier);
+    public RetryFromJettyDualStore withSecondRetryStoreIdentifier(String identifier) {
+        setSecondRetryStoreIdentifier(identifier);
         return this;
     }
 
@@ -188,42 +176,40 @@ public class RetryFromJettyDualStore extends RetryFromJettyBase {
     // ---------------------------------------------------------------------------
 
     private RetryStore resolveRetryStoreForRequest(AdaptrisMessage msg) {
-        if (getSecondaryRetryStore() == null) {
-            return getRetryStore();
-        }
         String route = resolveRetryStoreRoute(msg);
-        if (Objects.equals(route, normalisedIdentifier(getRetryStoreIdentifier()))) {
-            return getRetryStore();
+        if (Objects.equals(route, normalisedIdentifier(getFirstRetryStoreIdentifier()))) {
+            return getFirstRetryStore();
         }
-        if (Objects.equals(route, normalisedIdentifier(getSecondaryRetryStoreIdentifier()))) {
-            return getSecondaryRetryStore();
+        if (Objects.equals(route, normalisedIdentifier(getSecondRetryStoreIdentifier()))) {
+            return getSecondRetryStore();
         }
         return null;
     }
 
     private void validateRetryStoreConfiguration() throws CoreException {
-        if (getRetryStore() == null) {
-            throw new CoreException("No RetryStore configured; configure retryStore.");
+        if (getFirstRetryStore() == null) {
+            throw new CoreException("No first RetryStore configured; configure firstRetryStore.");
         }
-        if (getSecondaryRetryStore() != null && StringUtils.isBlank(getRetryStoreRoutingExpression())) {
-            throw new CoreException("retryStoreRoutingExpression is required when secondaryRetryStore is configured.");
+        if (getSecondRetryStore() == null) {
+            throw new CoreException("No second RetryStore configured; configure secondRetryStore.");
         }
-        if (getSecondaryRetryStore() != null) {
-            String primaryId = normalisedIdentifier(getRetryStoreIdentifier());
-            String secondaryId = normalisedIdentifier(getSecondaryRetryStoreIdentifier());
-            if (StringUtils.isAnyBlank(primaryId, secondaryId)) {
-                throw new CoreException("retryStoreIdentifier and secondaryRetryStoreIdentifier are required when secondaryRetryStore is configured.");
-            }
-            if (Objects.equals(primaryId, secondaryId)) {
-                throw new CoreException("retryStoreIdentifier and secondaryRetryStoreIdentifier must be distinct.");
-            }
+        if (StringUtils.isBlank(getRetryStoreRoutingExpression())) {
+            throw new CoreException("retryStoreRoutingExpression is required.");
+        }
+        String firstId = normalisedIdentifier(getFirstRetryStoreIdentifier());
+        String secondId = normalisedIdentifier(getSecondRetryStoreIdentifier());
+        if (StringUtils.isAnyBlank(firstId, secondId)) {
+            throw new CoreException("firstRetryStoreIdentifier and secondRetryStoreIdentifier are required.");
+        }
+        if (Objects.equals(firstId, secondId)) {
+            throw new CoreException("firstRetryStoreIdentifier and secondRetryStoreIdentifier must be distinct.");
         }
     }
 
     private Set<RetryStore> getAllConfiguredStores() {
         Set<RetryStore> stores = new LinkedHashSet<>();
-        if (getRetryStore() != null) stores.add(getRetryStore());
-        if (getSecondaryRetryStore() != null) stores.add(getSecondaryRetryStore());
+        if (getFirstRetryStore() != null) stores.add(getFirstRetryStore());
+        if (getSecondRetryStore() != null) stores.add(getSecondRetryStore());
         return stores;
     }
 
