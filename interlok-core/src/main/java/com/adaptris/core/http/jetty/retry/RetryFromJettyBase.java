@@ -340,11 +340,6 @@ public abstract class RetryFromJettyBase extends FailedMessageRetrierImp {
     // to the enclosing RetryFromJettyBase instance and all its members.
     // ---------------------------------------------------------------------------
 
-    /**
-     * Shared base for all Jetty retry listener implementations. Being a non-static inner class it
-     * has direct access to every member of the enclosing {@link RetryFromJettyBase} instance,
-     * removing the need for an explicit {@code parent} reference.
-     */
     protected abstract class RetryJettyListenerImpl
             implements AdaptrisMessageListener, ComponentLifecycle, ComponentLifecycleExtension {
 

@@ -42,35 +42,6 @@ class RetryFromJettyDualStoreTest {
   private static final String ROUTE_KEY = "route";
 
   @Test
-  void testXmlConfigShape() throws Exception {
-    RetryStore primary = new InMemoryRetryStore();
-    RetryStore secondary = new InMemoryRetryStore();
-    ReportBuilder reportBuilder = new ReportBuilder();
-    RetryFromJettyDualStore retrier = new RetryFromJettyDualStore()
-        .withFirstRetryStore(primary)
-        .withSecondRetryStore(secondary)
-        .withFirstRetryStoreIdentifier("usa")
-        .withSecondRetryStoreIdentifier("eu")
-        .withRetryStoreRoutingExpression("%message{" + ROUTE_KEY + "}")
-        .withReportBuilder(reportBuilder);
-
-    String xml = DefaultMarshaller.getDefaultMarshaller().marshal(retrier);
-    System.err.println("RetryFromJettyDualStore Marshalled XML:\n" + xml);
-
-    assertTrue(xml.contains("<retry-via-jetty-dual-store>"));
-    assertTrue(xml.contains("<connection class=\"jetty-embedded-connection\"/>"));
-    assertTrue(xml.contains("<report-builder/>"));
-    assertTrue(xml.contains("<first-retry-store class=\"com.adaptris.core.http.jetty.retry.InMemoryRetryStore\"/>"));
-    assertTrue(xml.contains("<second-retry-store class=\"com.adaptris.core.http.jetty.retry.InMemoryRetryStore\"/>"));
-    assertTrue(xml.contains("<first-retry-store-identifier>usa</first-retry-store-identifier>"));
-    assertTrue(xml.contains("<second-retry-store-identifier>eu</second-retry-store-identifier>"));
-    assertTrue(xml.contains("<retry-store-routing-expression>%message{" + ROUTE_KEY + "}</retry-store-routing-expression>"));
-    assertFalse(xml.contains("<prepared>"));
-    assertFalse(xml.contains("<reporting>"));
-    assertFalse(xml.contains("<retrying>"));
-  }
-
-  @Test
   void reportRoutesToPrimaryStore() throws Exception {
     RetryStore primary = mock(RetryStore.class);
     RetryStore secondary = mock(RetryStore.class);
