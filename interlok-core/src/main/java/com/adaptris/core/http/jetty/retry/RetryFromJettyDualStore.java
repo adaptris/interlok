@@ -12,10 +12,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import com.adaptris.annotation.AdvancedConfig;
-import com.adaptris.annotation.ComponentProfile;
-import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.*;
 import com.adaptris.core.*;
 import com.adaptris.core.http.jetty.*;
 import com.adaptris.core.util.LifecycleHelper;
@@ -67,6 +64,7 @@ public class RetryFromJettyDualStore extends RetryFromJettyBase {
     @NotBlank
     @Getter
     @Setter
+    @InputFieldHint(expression = true)
     private String firstRetryStoreIdentifier;
 
     @NotNull
@@ -78,6 +76,7 @@ public class RetryFromJettyDualStore extends RetryFromJettyBase {
     @NotBlank
     @Getter
     @Setter
+    @InputFieldHint(expression = true)
     private String secondRetryStoreIdentifier;
 
     /**
@@ -87,6 +86,7 @@ public class RetryFromJettyDualStore extends RetryFromJettyBase {
     @NotBlank
     @Getter
     @Setter
+    @InputFieldHint(expression = true)
     private String retryStoreRoutingExpression;
 
     @Override
@@ -177,10 +177,19 @@ public class RetryFromJettyDualStore extends RetryFromJettyBase {
 
     private RetryStore resolveRetryStoreForRequest(AdaptrisMessage msg) {
         String route = resolveRetryStoreRoute(msg);
-        if (Objects.equals(route, normalisedIdentifier(getFirstRetryStoreIdentifier()))) {
+        String firstIdentifier = resolveRetryStoreIdentifier(getFirstRetryStoreIdentifier(), msg);
+        String secondIdentifier = resolveRetryStoreIdentifier(getSecondRetryStoreIdentifier(), msg);
+        if (StringUtils.isAnyBlank(route, firstIdentifier, secondIdentifier)) {
+            return null;
+        }
+        if (Objects.equals(firstIdentifier, secondIdentifier)) {
+            log.debug("Resolved retry store identifiers are not distinct; request cannot be routed safely.");
+            return null;
+        }
+        if (Objects.equals(route, firstIdentifier)) {
             return getFirstRetryStore();
         }
-        if (Objects.equals(route, normalisedIdentifier(getSecondRetryStoreIdentifier()))) {
+        if (Objects.equals(route, secondIdentifier)) {
             return getSecondRetryStore();
         }
         return null;
@@ -230,6 +239,19 @@ public class RetryFromJettyDualStore extends RetryFromJettyBase {
             return resolved == null ? null : resolved.toLowerCase(Locale.ROOT);
         } catch (Exception e) {
             log.debug("Could not resolve retry store routing expression [{}]: {}", expression, e.getMessage());
+            return null;
+        }
+    }
+
+    private String resolveRetryStoreIdentifier(String configuredIdentifier, AdaptrisMessage msg) {
+        String identifier = StringUtils.trimToNull(configuredIdentifier);
+        if (identifier == null || msg == null) {
+            return normalisedIdentifier(identifier);
+        }
+        try {
+            return normalisedIdentifier(msg.resolve(identifier));
+        } catch (Exception e) {
+            log.debug("Could not resolve retry store identifier [{}]: {}", identifier, e.getMessage());
             return null;
         }
     }

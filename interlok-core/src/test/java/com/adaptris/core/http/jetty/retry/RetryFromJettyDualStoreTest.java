@@ -113,6 +113,60 @@ class RetryFromJettyDualStoreTest {
   }
 
   @Test
+  void reportRoutesUsingResolvedIdentifierExpressions() throws Exception {
+    RetryStore primary = mock(RetryStore.class);
+    RetryStore secondary = mock(RetryStore.class);
+    ReportBuilder reportBuilder = mock(ReportBuilder.class);
+    RetryFromJettyDualStore retrier = new RetryFromJettyDualStore()
+        .withFirstRetryStore(primary)
+        .withSecondRetryStore(secondary)
+        .withFirstRetryStoreIdentifier("%message{primary-store-id}")
+        .withSecondRetryStoreIdentifier("%message{secondary-store-id}")
+        .withRetryStoreRoutingExpression("%message{" + ROUTE_KEY + "}")
+        .withReportBuilder(reportBuilder);
+    prepareForListenerTests(retrier);
+    RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.reporter;
+    AdaptrisMessage msg = requestMessage("usa", null, null);
+    msg.addMetadata("primary-store-id", "usa");
+    msg.addMetadata("secondary-store-id", "eu");
+
+    reset(primary, secondary, reportBuilder);
+    when(primary.report(true)).thenReturn(Collections.emptyList());
+
+    listener.onAdaptrisMessage(msg, m -> {}, m -> {});
+
+    assertEquals(RetryFromJettyBase.HTTP_OK, msg.getMetadataValue(RetryFromJettyBase.HTTP_STATUS_KEY));
+    verify(primary).report(true);
+    verifyNoInteractions(secondary);
+    verify(reportBuilder).build(any(), same(msg));
+  }
+
+  @Test
+  void reportWithAmbiguousResolvedIdentifiersReturnsBadRequest() throws Exception {
+    RetryStore primary = mock(RetryStore.class);
+    RetryStore secondary = mock(RetryStore.class);
+    ReportBuilder reportBuilder = mock(ReportBuilder.class);
+    RetryFromJettyDualStore retrier = new RetryFromJettyDualStore()
+        .withFirstRetryStore(primary)
+        .withSecondRetryStore(secondary)
+        .withFirstRetryStoreIdentifier("%message{primary-store-id}")
+        .withSecondRetryStoreIdentifier("%message{secondary-store-id}")
+        .withRetryStoreRoutingExpression("%message{" + ROUTE_KEY + "}")
+        .withReportBuilder(reportBuilder);
+    prepareForListenerTests(retrier);
+    RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.reporter;
+    AdaptrisMessage msg = requestMessage("usa", null, null);
+    msg.addMetadata("primary-store-id", "usa");
+    msg.addMetadata("secondary-store-id", "usa");
+
+    reset(primary, secondary, reportBuilder);
+    listener.onAdaptrisMessage(msg, m -> {}, m -> {});
+
+    assertEquals(RetryFromJettyBase.HTTP_BAD, msg.getMetadataValue(RetryFromJettyBase.HTTP_STATUS_KEY));
+    verifyNoInteractions(primary, secondary, reportBuilder);
+  }
+
+  @Test
   void deleteRoutesToSecondaryStore() throws Exception {
     RetryStore primary = mock(RetryStore.class);
     RetryStore secondary = mock(RetryStore.class);
@@ -365,6 +419,33 @@ class RetryFromJettyDualStoreTest {
     doThrow(new RuntimeException("boom-resolve"))
         .when(msg)
         .resolve("%message{" + ROUTE_KEY + "}");
+    reset(primary, secondary, reportBuilder);
+
+    listener.onAdaptrisMessage(msg, m -> {}, m -> {});
+
+    assertEquals(RetryFromJettyBase.HTTP_BAD, msg.getMetadataValue(RetryFromJettyBase.HTTP_STATUS_KEY));
+    verifyNoInteractions(primary, secondary, reportBuilder);
+  }
+
+  @Test
+  void reportIdentifierResolutionExceptionReturnsBadRequest() throws Exception {
+    RetryStore primary = mock(RetryStore.class);
+    RetryStore secondary = mock(RetryStore.class);
+    ReportBuilder reportBuilder = mock(ReportBuilder.class);
+    RetryFromJettyDualStore retrier = new RetryFromJettyDualStore()
+        .withFirstRetryStore(primary)
+        .withSecondRetryStore(secondary)
+        .withFirstRetryStoreIdentifier("%message{primary-store-id}")
+        .withSecondRetryStoreIdentifier("eu")
+        .withRetryStoreRoutingExpression("%message{" + ROUTE_KEY + "}")
+        .withReportBuilder(reportBuilder);
+    prepareForListenerTests(retrier);
+    RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.reporter;
+    AdaptrisMessage msg = spy(requestMessage("usa", null, null));
+
+    doThrow(new RuntimeException("boom-id"))
+        .when(msg)
+        .resolve("%message{primary-store-id}");
     reset(primary, secondary, reportBuilder);
 
     listener.onAdaptrisMessage(msg, m -> {}, m -> {});

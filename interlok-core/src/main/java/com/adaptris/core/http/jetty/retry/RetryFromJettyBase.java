@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.InputFieldDefault;
+import com.adaptris.annotation.InputFieldHint;
 import com.adaptris.core.AdaptrisConnection;
 import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageListener;
@@ -32,6 +33,7 @@ import com.adaptris.core.http.jetty.MetadataParameterHandler;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
+import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.util.TimeInterval;
 import com.adaptris.util.text.mime.MimeConstants;
 import lombok.Getter;
@@ -92,6 +94,7 @@ public abstract class RetryFromJettyBase extends FailedMessageRetrierImp {
     @Getter
     @Setter
     @InputFieldDefault(value = DEFAULT_ENDPOINT_PREFIX)
+    @InputFieldHint(external = true)
     private String retryEndpointPrefix;
 
     /**
@@ -103,6 +106,7 @@ public abstract class RetryFromJettyBase extends FailedMessageRetrierImp {
     @Getter
     @Setter
     @InputFieldDefault(value = DEFAULT_REPORTING_ENDPOINT)
+    @InputFieldHint(external = true)
     private String reportingEndpoint;
 
     /**
@@ -116,6 +120,7 @@ public abstract class RetryFromJettyBase extends FailedMessageRetrierImp {
     @Getter
     @Setter
     @InputFieldDefault(value = DEFAULT_DELETE_PREFIX)
+    @InputFieldHint(external = true)
     private String deleteEndpointPrefix;
 
     /**
@@ -129,6 +134,7 @@ public abstract class RetryFromJettyBase extends FailedMessageRetrierImp {
     @Getter
     @Setter
     @InputFieldDefault(value = DEFAULT_STACKTRACE_PREFIX)
+    @InputFieldHint(external = true)
     private String stackTraceEndpointPrefix;
 
     /**
@@ -206,19 +212,19 @@ public abstract class RetryFromJettyBase extends FailedMessageRetrierImp {
     // ---------------------------------------------------------------------------
 
     String retryEndpointPrefix() {
-        return StringUtils.defaultIfBlank(getRetryEndpointPrefix(), DEFAULT_ENDPOINT_PREFIX);
+        return resolveConfiguredEndpoint(getRetryEndpointPrefix(), DEFAULT_ENDPOINT_PREFIX);
     }
 
     String reportingEndpoint() {
-        return StringUtils.defaultIfBlank(getReportingEndpoint(), DEFAULT_REPORTING_ENDPOINT);
+        return resolveConfiguredEndpoint(getReportingEndpoint(), DEFAULT_REPORTING_ENDPOINT);
     }
 
     String stackTraceEndpointPrefix() {
-        return StringUtils.defaultIfBlank(getStackTraceEndpointPrefix(), DEFAULT_STACKTRACE_PREFIX);
+        return resolveConfiguredEndpoint(getStackTraceEndpointPrefix(), DEFAULT_STACKTRACE_PREFIX);
     }
 
     String deleteEndpointPrefix() {
-        return StringUtils.defaultIfBlank(getDeleteEndpointPrefix(), DEFAULT_DELETE_PREFIX);
+        return resolveConfiguredEndpoint(getDeleteEndpointPrefix(), DEFAULT_DELETE_PREFIX);
     }
 
     String retryHttpMethod() {
@@ -236,6 +242,12 @@ public abstract class RetryFromJettyBase extends FailedMessageRetrierImp {
     String includeErrorMessageFlagMetadataKey() {
         return StringUtils.defaultIfBlank(getIncludeErrorMessageFlagMetadataKey(),
                 DEFAULT_INCLUDE_ERROR_MESSAGE_FLAG_METADATA_KEY);
+    }
+
+    String resolveConfiguredEndpoint(String configuredValue, String defaultValue) {
+        return StringUtils.defaultIfBlank(
+                ExternalResolver.resolve(StringUtils.defaultIfBlank(configuredValue, defaultValue)),
+                defaultValue);
     }
 
     // ---------------------------------------------------------------------------
