@@ -5,11 +5,13 @@ import static com.adaptris.core.http.jetty.JettyConstants.JETTY_URI;
 
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import javax.validation.constraints.NotNull;
 
 import com.adaptris.annotation.AdvancedConfig;
@@ -33,6 +35,7 @@ import com.adaptris.core.http.jetty.MetadataParameterHandler;
 import com.adaptris.core.StandaloneConsumer;
 import com.adaptris.core.util.LifecycleHelper;
 import com.adaptris.core.util.ManagedThreadFactory;
+import com.adaptris.interlok.util.Args;
 import com.adaptris.interlok.resolver.ExternalResolver;
 import com.adaptris.util.TimeInterval;
 import com.adaptris.util.text.mime.MimeConstants;
@@ -207,6 +210,12 @@ public abstract class RetryFromJettyBase extends FailedMessageRetrierImp {
     protected transient JettyRouteCondition stackTraceRouting;
     protected transient boolean prepared = false;
 
+    protected abstract RetryStore resolveRetryStoreForRequest(AdaptrisMessage msg);
+
+    protected abstract Collection<RetryStore> getConfiguredRetryStores();
+
+    protected abstract void validateRetryStoreConfiguration() throws CoreException;
+
     // ---------------------------------------------------------------------------
     // Endpoint / method resolution helpers
     // ---------------------------------------------------------------------------
@@ -244,6 +253,48 @@ public abstract class RetryFromJettyBase extends FailedMessageRetrierImp {
                 DEFAULT_INCLUDE_ERROR_MESSAGE_FLAG_METADATA_KEY);
     }
 
+    @Override
+    public void prepare() throws CoreException {
+        if (!prepared) {
+            validateRetryStoreConfiguration();
+            Args.notNull(getReportBuilder(), "report-builder");
+
+            reporter       = new ReportListener();
+            retrier        = new RetryListener();
+            deleter        = new DeleteListener();
+            stacktraceGetter = new StackTraceListener();
+
+            prepareSharedComponents();
+            prepareRetryStores();
+            prepared = true;
+        }
+    }
+
+    @Override
+    public void init() throws CoreException {
+        prepare();
+        initRetryStores();
+        initListeners();
+    }
+
+    @Override
+    public void start() throws CoreException {
+        startRetryStores();
+        startListeners();
+    }
+
+    @Override
+    public void stop() {
+        stopListeners();
+        stopRetryStores();
+    }
+
+    @Override
+    public void close() {
+        closeListeners();
+        closeRetryStores();
+    }
+
     String resolveConfiguredEndpoint(String configuredValue, String defaultValue) {
         return StringUtils.defaultIfBlank(
                 ExternalResolver.resolve(StringUtils.defaultIfBlank(configuredValue, defaultValue)),
@@ -258,7 +309,7 @@ public abstract class RetryFromJettyBase extends FailedMessageRetrierImp {
         try {
             service.doService(msg);
         } catch (Exception e) {
-            log.warn("executeQuietly caught exception: {}", e.toString(), e);
+            log.warn("executeQuietly caught exception: {}", e, e);
         }
     }
 
@@ -335,6 +386,260 @@ public abstract class RetryFromJettyBase extends FailedMessageRetrierImp {
         ManagedThreadFactory.shutdownQuietly(workflowSubmitter, DEFAULT_SHUTDOWN_WAIT);
     }
 
+    protected void prepareRetryStores() throws CoreException {
+        for (RetryStore store : getConfiguredRetryStores()) {
+            LifecycleHelper.prepare(store);
+        }
+    }
+
+    protected void initRetryStores() throws CoreException {
+        for (RetryStore store : getConfiguredRetryStores()) {
+            LifecycleHelper.init(store);
+        }
+    }
+
+    protected void startRetryStores() throws CoreException {
+        for (RetryStore store : getConfiguredRetryStores()) {
+            LifecycleHelper.start(store);
+        }
+    }
+
+    protected void stopRetryStores() {
+        for (RetryStore store : getConfiguredRetryStores()) {
+            LifecycleHelper.stop(store);
+        }
+    }
+
+    protected void closeRetryStores() {
+        for (RetryStore store : getConfiguredRetryStores()) {
+            LifecycleHelper.close(store);
+        }
+    }
+
+    protected void sendResponse(String httpResponseCode, AdaptrisMessage msg) {
+        msg.addMessageHeader(HTTP_STATUS_KEY, httpResponseCode);
+        msg.addMessageHeader(CONTENT_TYPE_METADATA_KEY, StringUtils.defaultIfBlank(
+                msg.getMetadataValue(CONTENT_TYPE_METADATA_KEY), MimeConstants.CONTENT_TYPE_TEXT_PLAIN));
+        executeQuietly(new JettyResponseService()
+                .withHttpStatus(HTTP_STATUS_EXPR)
+                .withContentType(CONTENT_TYPE_EXPR), msg);
+    }
+
+    protected String extractMsgId(JettyRouteCondition routing, AdaptrisMessage jettyMsg)
+            throws CoreException {
+        JettyRoute route = routing.build(
+                jettyMsg.getMetadataValue(HTTP_METHOD),
+                jettyMsg.getMetadataValue(JETTY_URI));
+        if (route.matches()) {
+            Optional<MetadataElement> msgIdEntry = route.metadata().stream()
+                    .filter(e -> e.getKey().equalsIgnoreCase(MSG_ID_KEY))
+                    .findFirst();
+            if (msgIdEntry.isPresent()) {
+                return msgIdEntry.get().getValue();
+            }
+        }
+        return null;
+    }
+
+    protected void handleException(Exception e, AdaptrisMessage msg) {
+        msg.setContent(ExceptionUtils.getRootCauseMessage(e), StandardCharsets.UTF_8.name());
+        sendResponse(HTTP_ERROR, msg);
+    }
+
+    protected void handleStackTraceResponse(String msgId, AdaptrisMessage jettyMsg, String stackTrace) {
+        String httpCode = (msgId != null) ? HTTP_OK : HTTP_BAD;
+        if (msgId != null) {
+            jettyMsg.setContent(stackTrace, StandardCharsets.UTF_8.name());
+        }
+        sendResponse(httpCode, jettyMsg);
+    }
+
+    protected String reportListenerFriendlyName() {
+        return "RetryFromJetty::Report";
+    }
+
+    protected String deleteListenerFriendlyName() {
+        return "RetryFromJetty::Delete";
+    }
+
+    protected String retryListenerFriendlyName() {
+        return "RetryFromJetty::Retry";
+    }
+
+    protected String stackTraceListenerFriendlyName() {
+        return "RetryFromJetty::StackTrace";
+    }
+
+    protected class ReportListener extends RetryJettyListenerImpl {
+        @Override
+        public void onAdaptrisMessage(AdaptrisMessage jettyMsg, Consumer<AdaptrisMessage> success,
+                Consumer<AdaptrisMessage> failure) {
+            handleReportRequest(jettyMsg, RetryFromJettyBase.this::resolveRetryStoreForRequest);
+        }
+
+        @Override
+        public String friendlyName() {
+            return reportListenerFriendlyName();
+        }
+    }
+
+    protected class DeleteListener extends RetryJettyListenerImpl {
+        private transient Object locker = new Object();
+
+        @Override
+        @lombok.Synchronized(value = "locker")
+        public void onAdaptrisMessage(AdaptrisMessage jettyMsg, Consumer<AdaptrisMessage> success,
+                Consumer<AdaptrisMessage> failure) {
+            handleDeleteRequest(jettyMsg, RetryFromJettyBase.this::resolveRetryStoreForRequest);
+        }
+
+        @Override
+        public String friendlyName() {
+            return deleteListenerFriendlyName();
+        }
+    }
+
+    protected class RetryListener extends RetryJettyListenerImpl {
+        private transient Object locker = new Object();
+
+        @Override
+        @lombok.Synchronized(value = "locker")
+        public void onAdaptrisMessage(AdaptrisMessage jettyMsg, Consumer<AdaptrisMessage> success,
+                Consumer<AdaptrisMessage> failure) {
+            handleRetryRequest(jettyMsg, RetryFromJettyBase.this::resolveRetryStoreForRequest, success,
+                    failure);
+        }
+
+        @Override
+        public String friendlyName() {
+            return retryListenerFriendlyName();
+        }
+    }
+
+    protected class StackTraceListener extends RetryJettyListenerImpl {
+        private transient Object locker = new Object();
+
+        @Override
+        @lombok.Synchronized(value = "locker")
+        public void onAdaptrisMessage(AdaptrisMessage jettyMsg, Consumer<AdaptrisMessage> success,
+                Consumer<AdaptrisMessage> failure) {
+            handleStackTraceRequest(jettyMsg, RetryFromJettyBase.this::resolveRetryStoreForRequest);
+        }
+
+        @Override
+        public String friendlyName() {
+            return stackTraceListenerFriendlyName();
+        }
+    }
+
+    protected boolean includeErrorMessage(AdaptrisMessage jettyMsg) {
+        boolean includeErrorMessage = true;
+        if (jettyMsg.getMetadata(includeErrorMessageFlagMetadataKey()) != null
+                && jettyMsg.getMetadataValue(includeErrorMessageFlagMetadataKey()) != null) {
+            includeErrorMessage = Boolean.parseBoolean(
+                    jettyMsg.getMetadataValue(includeErrorMessageFlagMetadataKey()));
+        }
+        return includeErrorMessage;
+    }
+
+    protected void handleReportRequest(AdaptrisMessage jettyMsg,
+            Function<AdaptrisMessage, RetryStore> storeResolver) {
+        String httpCode = HTTP_ERROR;
+        try {
+            RetryStore store = storeResolver.apply(jettyMsg);
+            if (store != null) {
+                getReportBuilder().build(store.report(includeErrorMessage(jettyMsg)), jettyMsg);
+                httpCode = HTTP_OK;
+            } else {
+                httpCode = HTTP_BAD;
+            }
+        } catch (Exception e) {
+            jettyMsg.setContent(ExceptionUtils.getRootCauseMessage(e), StandardCharsets.UTF_8.name());
+        } finally {
+            sendResponse(httpCode, jettyMsg);
+        }
+    }
+
+    protected void handleDeleteRequest(AdaptrisMessage jettyMsg,
+            Function<AdaptrisMessage, RetryStore> storeResolver) {
+        String httpCode = HTTP_ERROR;
+        try {
+            String msgId = extractMsgId(deleteRouting, jettyMsg);
+            if (msgId != null) {
+                RetryStore target = storeResolver.apply(jettyMsg);
+                if (target == null) {
+                    httpCode = HTTP_BAD;
+                } else {
+                    log.trace("Attempting to delete {}", msgId);
+                    httpCode = target.delete(msgId) ? HTTP_OK : HTTP_NOT_FOUND;
+                }
+            } else {
+                httpCode = HTTP_BAD;
+            }
+        } catch (Exception e) {
+            handleException(e, jettyMsg);
+        }
+        sendResponse(httpCode, jettyMsg);
+    }
+
+    protected void handleRetryRequest(AdaptrisMessage jettyMsg,
+            Function<AdaptrisMessage, RetryStore> storeResolver, Consumer<AdaptrisMessage> success,
+            Consumer<AdaptrisMessage> failure) {
+        String httpCode = HTTP_ERROR;
+        try {
+            String msgId = extractMsgId(retryRouting, jettyMsg);
+            if (msgId != null) {
+                RetryStore store = storeResolver.apply(jettyMsg);
+                if (store == null) {
+                    httpCode = HTTP_BAD;
+                } else {
+                    // Look up the metadata from the store, find the workflow, then use its
+                    // consumer's message factory to build the retry message.
+                    java.util.Map<String, String> metadata = store.getMetadata(msgId);
+                    com.adaptris.core.Workflow workflow = getWorkflow(metadata.get(com.adaptris.core.Workflow.WORKFLOW_ID_KEY));
+                    AdaptrisMessage msgForRetry = store.buildForRetry(
+                            msgId, metadata, workflow.getConsumer().getMessageFactory());
+                    httpCode = HTTP_ACCEPTED;
+                    sendResponse(httpCode, jettyMsg);
+                    updateRetryCountMetadata(msgForRetry);
+                    log.trace("Attempting to retry {}; resubmitting to [{}]",
+                            msgForRetry.getUniqueId(), workflow.obtainWorkflowId());
+                    // pooling workflow returns immediately, standard workflow does not —
+                    // submit to an ExecutorService.
+                    workflowSubmitter.execute(() -> {
+                        Thread.currentThread().setName("Retry Failed Message");
+                        workflow.onAdaptrisMessage(msgForRetry, success, failure);
+                    });
+                }
+            } else {
+                httpCode = HTTP_BAD;
+            }
+        } catch (Exception e) {
+            handleException(e, jettyMsg);
+        }
+        sendResponse(httpCode, jettyMsg);
+    }
+
+    protected void handleStackTraceRequest(AdaptrisMessage jettyMsg,
+            Function<AdaptrisMessage, RetryStore> storeResolver) {
+        try {
+            String msgId = extractMsgId(stackTraceRouting, jettyMsg);
+            if (msgId == null) {
+                sendResponse(HTTP_BAD, jettyMsg);
+                return;
+            }
+            RetryStore store = storeResolver.apply(jettyMsg);
+            if (store == null) {
+                sendResponse(HTTP_BAD, jettyMsg);
+                return;
+            }
+            String stackTrace = store.getStackTrace(msgId);
+            handleStackTraceResponse(msgId, jettyMsg, stackTrace);
+        } catch (Exception e) {
+            handleException(e, jettyMsg);
+        }
+    }
+
     // ---------------------------------------------------------------------------
     // Shared listener base — inner class so subclass listeners get direct access
     // to the enclosing RetryFromJettyBase instance and all its members.
@@ -396,7 +701,6 @@ public abstract class RetryFromJettyBase extends FailedMessageRetrierImp {
             });
         }
 
-        @Override
         public abstract void onAdaptrisMessage(AdaptrisMessage msg, Consumer<AdaptrisMessage> success,
                 Consumer<AdaptrisMessage> failure);
 

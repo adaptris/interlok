@@ -1,11 +1,10 @@
 package com.adaptris.core.http.jetty.retry;
 
-import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
-import java.util.Map;
 import java.util.function.Consumer;
 
 import javax.validation.Valid;
@@ -15,8 +14,6 @@ import javax.validation.constraints.NotNull;
 import com.adaptris.annotation.*;
 import com.adaptris.core.*;
 import com.adaptris.core.http.jetty.*;
-import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.interlok.util.Args;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,7 +21,6 @@ import lombok.Setter;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 
 /**
  * {@link FailedMessageRetrier} implementation that retries upon demand, supporting two retry stores.
@@ -89,57 +85,6 @@ public class RetryFromJettyDualStore extends RetryFromJettyBase {
     @InputFieldHint(expression = true)
     private String retryStoreRoutingExpression;
 
-    @Override
-    public void prepare() throws CoreException {
-        if (!prepared) {
-            validateRetryStoreConfiguration();
-            Args.notNull(getReportBuilder(), "report-builder");
-
-            reporter         = new ReportListener();
-            retrier          = new RetryListener();
-            deleter          = new DeleteListener();
-            stacktraceGetter = new StackTraceListener();
-
-            prepareSharedComponents();
-            for (RetryStore store : getAllConfiguredStores()) {
-                LifecycleHelper.prepare(store);
-            }
-            prepared = true;
-        }
-    }
-
-    @Override
-    public void init() throws CoreException {
-        prepare();
-        for (RetryStore store : getAllConfiguredStores()) {
-            LifecycleHelper.init(store);
-        }
-        initListeners();
-    }
-
-    @Override
-    public void start() throws CoreException {
-        for (RetryStore store : getAllConfiguredStores()) {
-            LifecycleHelper.start(store);
-        }
-        startListeners();
-    }
-
-    @Override
-    public void stop() {
-        stopListeners();
-        for (RetryStore store : getAllConfiguredStores()) {
-            LifecycleHelper.stop(store);
-        }
-    }
-
-    @Override
-    public void close() {
-        closeListeners();
-        for (RetryStore store : getAllConfiguredStores()) {
-            LifecycleHelper.close(store);
-        }
-    }
 
     public RetryFromJettyDualStore withFirstRetryStore(RetryStore rs) {
         setFirstRetryStore(rs);
@@ -171,11 +116,28 @@ public class RetryFromJettyDualStore extends RetryFromJettyBase {
         return this;
     }
 
-    // ---------------------------------------------------------------------------
-    // Dual-store routing helpers
-    // ---------------------------------------------------------------------------
+    @Override
+    protected String reportListenerFriendlyName() {
+        return "RetryFromJettyDualStore::Report";
+    }
 
-    private RetryStore resolveRetryStoreForRequest(AdaptrisMessage msg) {
+    @Override
+    protected String deleteListenerFriendlyName() {
+        return "RetryFromJettyDualStore::Delete";
+    }
+
+    @Override
+    protected String retryListenerFriendlyName() {
+        return "RetryFromJettyDualStore::Retry";
+    }
+
+    @Override
+    protected String stackTraceListenerFriendlyName() {
+        return "RetryFromJettyDualStore::StackTrace";
+    }
+
+    @Override
+    protected RetryStore resolveRetryStoreForRequest(AdaptrisMessage msg) {
         String route = resolveRetryStoreRoute(msg);
         String firstIdentifier = resolveRetryStoreIdentifier(getFirstRetryStoreIdentifier(), msg);
         String secondIdentifier = resolveRetryStoreIdentifier(getSecondRetryStoreIdentifier(), msg);
@@ -195,7 +157,16 @@ public class RetryFromJettyDualStore extends RetryFromJettyBase {
         return null;
     }
 
-    private void validateRetryStoreConfiguration() throws CoreException {
+    @Override
+    protected Collection<RetryStore> getConfiguredRetryStores() {
+        Set<RetryStore> stores = new LinkedHashSet<>();
+        if (getFirstRetryStore() != null) stores.add(getFirstRetryStore());
+        if (getSecondRetryStore() != null) stores.add(getSecondRetryStore());
+        return stores;
+    }
+
+    @Override
+    protected void validateRetryStoreConfiguration() throws CoreException {
         if (getFirstRetryStore() == null) {
             throw new CoreException("No first RetryStore configured; configure firstRetryStore.");
         }
@@ -215,12 +186,6 @@ public class RetryFromJettyDualStore extends RetryFromJettyBase {
         }
     }
 
-    private Set<RetryStore> getAllConfiguredStores() {
-        Set<RetryStore> stores = new LinkedHashSet<>();
-        if (getFirstRetryStore() != null) stores.add(getFirstRetryStore());
-        if (getSecondRetryStore() != null) stores.add(getSecondRetryStore());
-        return stores;
-    }
 
     private String normalisedIdentifier(String identifier) {
         return StringUtils.trimToNull(identifier) == null ? null : StringUtils.trimToNull(identifier).toLowerCase(Locale.ROOT);
@@ -256,148 +221,4 @@ public class RetryFromJettyDualStore extends RetryFromJettyBase {
         }
     }
 
-    // ---------------------------------------------------------------------------
-    // Listener implementations — extend the inner base class so they have direct
-    // access to all RetryFromJettyDualStore (and RetryFromJettyBase) members.
-    // ---------------------------------------------------------------------------
-
-    class ReportListener extends RetryJettyListenerImpl {
-        @Override
-        public void onAdaptrisMessage(AdaptrisMessage jettyMsg, Consumer<AdaptrisMessage> success,
-                Consumer<AdaptrisMessage> failure) {
-            String httpCode = HTTP_ERROR;
-            try {
-                RetryStore selectedStore = resolveRetryStoreForRequest(jettyMsg);
-                if (selectedStore != null) {
-                    boolean includeErrorMessage = true;
-                    if (jettyMsg.getMetadata(includeErrorMessageFlagMetadataKey()) != null
-                            && jettyMsg.getMetadataValue(includeErrorMessageFlagMetadataKey()) != null) {
-                        includeErrorMessage = Boolean.parseBoolean(
-                                jettyMsg.getMetadataValue(includeErrorMessageFlagMetadataKey()));
-                    }
-                    getReportBuilder().build(selectedStore.report(includeErrorMessage), jettyMsg);
-                    httpCode = HTTP_OK;
-                } else {
-                    httpCode = HTTP_BAD;
-                }
-            } catch (Exception e) {
-                jettyMsg.setContent(ExceptionUtils.getRootCauseMessage(e), StandardCharsets.UTF_8.name());
-            } finally {
-                sendResponse(httpCode, jettyMsg);
-            }
-        }
-
-        @Override
-        public String friendlyName() {
-            return "RetryFromJettyDualStore::Report";
-        }
-    }
-
-    private class DeleteListener extends RetryJettyListenerImpl {
-        private transient Object locker = new Object();
-
-        @Override
-        @Synchronized(value = "locker")
-        public void onAdaptrisMessage(AdaptrisMessage jettyMsg, Consumer<AdaptrisMessage> success,
-                Consumer<AdaptrisMessage> failure) {
-            String httpCode = HTTP_ERROR;
-            try {
-                String msgId = extractMsgId(deleteRouting, jettyMsg);
-                if (msgId != null) {
-                    RetryStore target = resolveRetryStoreForRequest(jettyMsg);
-                    if (target == null) {
-                        httpCode = HTTP_BAD;
-                    } else {
-                        log.trace("Attempting to delete {}", msgId);
-                        httpCode = target.delete(msgId) ? HTTP_OK : HTTP_NOT_FOUND;
-                    }
-                } else {
-                    httpCode = HTTP_BAD;
-                }
-            } catch (Exception e) {
-                handleException(e, jettyMsg);
-            }
-            sendResponse(httpCode, jettyMsg);
-        }
-
-        @Override
-        public String friendlyName() {
-            return "RetryFromJettyDualStore::Delete";
-        }
-    }
-
-    private class RetryListener extends RetryJettyListenerImpl {
-        private transient Object locker = new Object();
-
-        @Override
-        @Synchronized(value = "locker")
-        public void onAdaptrisMessage(AdaptrisMessage jettyMsg, Consumer<AdaptrisMessage> success,
-                Consumer<AdaptrisMessage> failure) {
-            String httpCode = HTTP_ERROR;
-            try {
-                String msgId = extractMsgId(retryRouting, jettyMsg);
-                if (msgId != null) {
-                    RetryStore store = resolveRetryStoreForRequest(jettyMsg);
-                    if (store == null) {
-                        httpCode = HTTP_BAD;
-                    } else {
-                        Map<String, String> metadata = store.getMetadata(msgId);
-                        Workflow workflow = getWorkflow(metadata.get(Workflow.WORKFLOW_ID_KEY));
-                        AdaptrisMessage msgForRetry = store.buildForRetry(
-                                msgId, metadata, workflow.getConsumer().getMessageFactory());
-                        httpCode = HTTP_ACCEPTED;
-                        sendResponse(httpCode, jettyMsg);
-                        updateRetryCountMetadata(msgForRetry);
-                        log.trace("Attempting to retry {}; resubmitting to [{}]",
-                                msgForRetry.getUniqueId(), workflow.obtainWorkflowId());
-                        workflowSubmitter.execute(() -> {
-                            Thread.currentThread().setName("Retry Failed Message");
-                            workflow.onAdaptrisMessage(msgForRetry, success, failure);
-                        });
-                    }
-                } else {
-                    httpCode = HTTP_BAD;
-                }
-            } catch (Exception e) {
-                handleException(e, jettyMsg);
-            }
-            sendResponse(httpCode, jettyMsg);
-        }
-
-        @Override
-        public String friendlyName() {
-            return "RetryFromJettyDualStore::Retry";
-        }
-    }
-
-    private class StackTraceListener extends RetryJettyListenerImpl {
-        private transient Object locker = new Object();
-
-        @Override
-        @Synchronized(value = "locker")
-        public void onAdaptrisMessage(AdaptrisMessage jettyMsg, Consumer<AdaptrisMessage> success,
-                Consumer<AdaptrisMessage> failure) {
-            try {
-                String msgId = extractMsgId(stackTraceRouting, jettyMsg);
-                if (msgId == null) {
-                    sendResponse(HTTP_BAD, jettyMsg);
-                    return;
-                }
-                RetryStore target = resolveRetryStoreForRequest(jettyMsg);
-                if (target == null) {
-                    sendResponse(HTTP_BAD, jettyMsg);
-                    return;
-                }
-                String stackTrace = target.getStackTrace(msgId);
-                handleStackTraceResponse(msgId, jettyMsg, stackTrace);
-            } catch (Exception e) {
-                handleException(e, jettyMsg);
-            }
-        }
-
-        @Override
-        public String friendlyName() {
-            return "RetryFromJettyDualStore::StackTrace";
-        }
-    }
 }
