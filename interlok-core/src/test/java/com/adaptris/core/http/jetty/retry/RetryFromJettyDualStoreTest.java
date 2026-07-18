@@ -1,7 +1,6 @@
 package com.adaptris.core.http.jetty.retry;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -30,7 +29,6 @@ import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.AdaptrisMessageConsumer;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.CoreConstants;
-import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.http.jetty.JettyConstants;
 import com.adaptris.core.StartedState;
 import com.adaptris.core.Workflow;

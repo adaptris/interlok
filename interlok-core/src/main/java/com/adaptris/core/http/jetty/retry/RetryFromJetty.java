@@ -42,7 +42,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
  * </p>
  * <p>
  * By default, the first line of the stacktrace (error message) is included in the report.
- * Disable by setting the {@code includeErrorMessage} query parameter to {@code false}.
+ * Disable by setting the {@code includeErrorMessageFlag} query parameter (or configured metadata key) to {@code false}.
  * </p>
  *
  * @config retry-via-jetty

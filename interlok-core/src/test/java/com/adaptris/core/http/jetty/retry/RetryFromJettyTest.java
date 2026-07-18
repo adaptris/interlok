@@ -22,7 +22,6 @@ import com.adaptris.core.AdaptrisMessage;
 import com.adaptris.core.AdaptrisMessageFactory;
 import com.adaptris.core.ChannelList;
 import com.adaptris.core.CoreConstants;
-import com.adaptris.core.DefaultMarshaller;
 import com.adaptris.core.NullService;
 import com.adaptris.core.StandaloneRequestor;
 import com.adaptris.core.StandardWorkflow;
