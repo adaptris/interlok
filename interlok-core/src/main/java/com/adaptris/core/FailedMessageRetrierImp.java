@@ -21,10 +21,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.adaptris.annotation.AdvancedConfig;
-import com.adaptris.annotation.InputFieldDefault;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import lombok.Getter;
@@ -39,12 +35,6 @@ import lombok.Setter;
 public abstract class FailedMessageRetrierImp implements FailedMessageRetrier {
 
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
-
-  @AdvancedConfig
-  @Getter
-  @Setter
-  @InputFieldDefault(value = "%message{pn.routing.region}")
-  private String retryStoreRoutingExpression;
 
   private transient Map<String, Workflow> workflows;
   @Getter
@@ -62,29 +52,6 @@ public abstract class FailedMessageRetrierImp implements FailedMessageRetrier {
 
   protected Workflow getWorkflow(AdaptrisMessage msg) throws CoreException {
     return getWorkflow(msg.getMetadataValue(Workflow.WORKFLOW_ID_KEY));
-  }
-
-  protected String resolveRetryStoreRoute(AdaptrisMessage msg) {
-      if (msg == null) {
-          return null;
-      }
-
-      String expression = StringUtils.trimToNull(getRetryStoreRoutingExpression());
-      if (expression == null || expression.trim().isEmpty()) {
-          return null;
-      }
-
-      try {
-          String resolved = StringUtils.trimToNull(msg.resolve(expression));
-          if (resolved == null) {
-              return null;
-          }
-          resolved = resolved.trim();
-          return resolved.isEmpty() ? null : resolved.toLowerCase(java.util.Locale.ROOT);
-      } catch (Exception e) {
-          log.debug("Could not resolve routing expression [{}]: {}", expression, e.getMessage());
-          return null;
-      }
   }
 
   protected Workflow getWorkflow(String workflowId) throws CoreException {

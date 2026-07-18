@@ -1,32 +1,16 @@
 package com.adaptris.core.http.jetty.retry;
 
-import static com.adaptris.core.CoreConstants.HTTP_METHOD;
-import static com.adaptris.core.http.jetty.JettyConstants.JETTY_URI;
-
-import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
 import java.util.function.Consumer;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 
-import com.adaptris.core.*;
-import com.adaptris.core.http.jetty.*;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import com.adaptris.annotation.AdvancedConfig;
 import com.adaptris.annotation.ComponentProfile;
 import com.adaptris.annotation.DisplayOrder;
-import com.adaptris.annotation.InputFieldDefault;
-import com.adaptris.core.http.jetty.JettyRouteCondition.JettyRoute;
+import com.adaptris.core.*;
+import com.adaptris.core.http.jetty.*;
 import com.adaptris.core.util.LifecycleHelper;
-import com.adaptris.core.util.ManagedThreadFactory;
 import com.adaptris.interlok.util.Args;
-import com.adaptris.util.TimeInterval;
-import com.adaptris.util.text.mime.MimeConstants;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,6 +18,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 /**
  * {@link FailedMessageRetrier} implementation that retries upon demand.
@@ -46,28 +31,18 @@ import lombok.extern.slf4j.Slf4j;
  * into a simpler configuration chain.
  * </p>
  * <p>
- * This jetty implementation allows listing of the failed messages, retrying a
- * message, deleting messages and retrieving the stacktrace from the store.
+ * This jetty implementation allows listing of the failed messages, retrying a message, deleting
+ * messages and retrieving the stacktrace from the store.
  * <ul>
- * <li>{@code curl -XGET http://localhost:8080/api/failed/list} gives you a list of message ids that
- * are listed in the store</li>
- * <li>{@code curl -XPOST http://localhost:8080/api/retry/[msgId]} will attempt to resubmit the
- * message to the appropriate workflow; returning a 202 upon success</li>
- * <li>{@code curl -XDELETE http://localhost:8080/api/failed/delete/[msgId]} will attempt to delete
- * the message from the store</li>
- * <li>{@code curl -XGET http://localhost:8080/api/failed/stacktrace/{msgId}} will retrieve the entire stacktrace
- * from the store.</li>
- * <ul>
+ * <li>{@code curl -XGET http://localhost:8080/api/failed/list} lists message ids in the store</li>
+ * <li>{@code curl -XPOST http://localhost:8080/api/retry/[msgId]} resubmits the message; returns 202 on success</li>
+ * <li>{@code curl -XDELETE http://localhost:8080/api/failed/delete/[msgId]} deletes the message</li>
+ * <li>{@code curl -XGET http://localhost:8080/api/failed/stacktrace/{msgId}} retrieves the stacktrace</li>
+ * </ul>
  * </p>
  * <p>
- * By default, when listing failed messages, the first line of the stacktrace (error message) is included
- * in the report if available. This can be disabled by setting the {@code includeErrorMessage} metadata key to {@code false}.
- * </p>
- * <p>
- * While DELETE is available, this implementation doesn't make any checks that the messages that you
- * have retried have been retried successfully. It is expected that you have separate tooling that
- * allows you to verify that retried-messages are ultimately successfully before triggering the
- * delete method. If you ask for a message to be deleted from the store, then that is what happens.
+ * By default, the first line of the stacktrace (error message) is included in the report.
+ * Disable by setting the {@code includeErrorMessage} query parameter to {@code false}.
  * </p>
  *
  * @config retry-via-jetty
@@ -80,252 +55,30 @@ import lombok.extern.slf4j.Slf4j;
 @DisplayOrder(order = {"retryEndpointPrefix", "reportingEndpoint", "deleteEndpointPrefix",
         "retryHttpMethod", "deleteHttpMethod", "connection", "retryStore", "reportBuilder"})
 @XStreamAlias("retry-via-jetty")
-public class RetryFromJetty extends FailedMessageRetrierImp {
-
-    public static final String DEFAULT_ENDPOINT_PREFIX = "/api/retry/";
-    public static final String DEFAULT_REPORTING_ENDPOINT = "/api/failed/list";
-    public static final String DEFAULT_DELETE_PREFIX = "/api/failed/delete/";
-    public static final String DEFAULT_STACKTRACE_PREFIX = "/api/failed/stacktrace/";
-
-    public static final String DEFAULT_INCLUDE_ERROR_MESSAGE_FLAG_METADATA_KEY = "includeErrorMessageFlag";
-
-    private static final String HTTP_RETRY_METHOD = "POST";
-    private static final String HTTP_DELETE_METHOD = "DELETE";
-    private static final String HTTP_STACKTRACE_METHOD = "GET";
-
-    private static final TimeInterval DEFAULT_SHUTDOWN_WAIT = new TimeInterval(30L, TimeUnit.SECONDS.name());
-
-    public static final String CONTENT_TYPE_METADATA_KEY = "__Content-Type";
-    public static final String CONTENT_TYPE_EXPR = "%message{__Content-Type}";
-
-    static final String HTTP_STATUS_KEY = "__httpResponseCode";
-    private static final String HTTP_STATUS_EXPR = "%message{__httpResponseCode}";
-    static final String MSG_ID_KEY = "__MsgId";
-
-    protected static final String HTTP_OK = "" + HttpURLConnection.HTTP_OK;
-    protected static final String HTTP_ACCEPTED = "" + HttpURLConnection.HTTP_ACCEPTED;
-    protected static final String HTTP_ERROR = "" + HttpURLConnection.HTTP_INTERNAL_ERROR;
-    protected static final String HTTP_BAD = "" + HttpURLConnection.HTTP_BAD_REQUEST;
-    protected static final String HTTP_NOT_FOUND = "" + HttpURLConnection.HTTP_NOT_FOUND;
-
+public class RetryFromJetty extends RetryFromJettyBase {
 
     /**
-     * The retry endpoint.
-     * <p>
-     * The default if not explicitly specified is {@value DEFAULT_ENDPOINT_PREFIX}, note the trailing
-     * {@code "/"}. The expectation is that when clients interact with the endpoint it will be in the
-     * form {@code /prefix/'msgId'}
-     * </p>
-     */
-    @Getter
-    @Setter
-    @InputFieldDefault(value = DEFAULT_ENDPOINT_PREFIX)
-    private String retryEndpointPrefix;
-    /**
-     * The endpoint that allows reporting on what has failed.
-     * <p>
-     * The default if not explicitly specified is {@value DEFAULT_REPORTING_ENDPOINT}.
-     * </p>
-     */
-    @Getter
-    @Setter
-    @InputFieldDefault(value = DEFAULT_REPORTING_ENDPOINT)
-    private String reportingEndpoint;
-
-    /**
-     * The delete endpoint.
-     * <p>
-     * The default if not explicitly specified is {@value DEFAULT_DELETE_PREFIX}, note the trailing
-     * {@code "/"}. The expectation is that when clients interact with the endpoint it will be in the
-     * form {@code /prefix/'msgId'}
-     * </p>
-     */
-    @Getter
-    @Setter
-    @InputFieldDefault(value = DEFAULT_DELETE_PREFIX)
-    private String deleteEndpointPrefix;
-
-    /**
-     * The get stacktrace endpoint.
-     * <p>
-     * The default if not explicitly specified is {@value DEFAULT_STACKTRACE_PREFIX}, note the trailing
-     * {@code "/"}. The expectation is that when clients interact with the endpoint it will be in the
-     * form {@code /prefix/'msgId'}
-     * </p>
-     */
-    @Getter
-    @Setter
-    @InputFieldDefault(value = DEFAULT_STACKTRACE_PREFIX)
-    private String stackTraceEndpointPrefix;
-
-    /**
-     * The underlying Jetty connection.
-     *
-     */
-    @Getter
-    @Setter
-    @NotNull
-    private AdaptrisConnection connection = new EmbeddedConnection();
-
-
-    /**
-     * How to build reports.
-     *
+     * Where messages are stored for retries.
      */
     @Getter
     @Setter
     @NotNull
     @NonNull
-    private ReportBuilder reportBuilder = new ReportBuilder();
-
-    /**
-     * Where messages are stored for retries.
-     * <p>
-     * This is the legacy/default retry store and is optional when using multi-store routing via {@link #retryStoresByRoute}.
-     * </p>
-     */
-    @Getter
-    @Setter
     private RetryStore retryStore;
-
-    @AdvancedConfig(rare = true)
-    @Getter
-    @Setter
-    @InputFieldDefault(value = DEFAULT_INCLUDE_ERROR_MESSAGE_FLAG_METADATA_KEY)
-    private String includeErrorMessageFlagMetadataKey;
-
-    /**
-     * The HTTP method which is required for retries; the default is POST.
-     */
-    @AdvancedConfig(rare = true)
-    @Getter
-    @Setter
-    @InputFieldDefault(value = HTTP_RETRY_METHOD)
-    private String retryHttpMethod;
-
-
-    /**
-     * The HTTP method which is required for deleting messages from the retry store; the default is
-     * DELETE.
-     */
-    @AdvancedConfig(rare = true)
-    @Getter
-    @Setter
-    @InputFieldDefault(value = HTTP_DELETE_METHOD)
-    private String deleteHttpMethod;
-
-    /**
-     * The HTTP method which is required for getting an error stacktrace; the default is GET.
-     */
-    @AdvancedConfig(rare = true)
-    @Getter
-    @Setter
-    @InputFieldDefault(value = HTTP_RETRY_METHOD)
-    private String stackTraceHttpMethod;
-
-    /**
-     * Multi-store routing map for routing different message regions to different retry stores.
-     * <p>
-     * Routes are resolved from the parent's retryStoreRoutingExpression and matched (case-insensitive) against keys in this map.
-     * </p>
-     */
-    @Getter
-    @Setter
-    private Map<String, RetryStore> retryStoresByRoute;
-
-    /**
-     * Default retry store to use when a route cannot be resolved or matched.
-     * <p>
-     * Used as fallback when {@link #retryStoresByRoute} is configured but the resolved route doesn't match any entry.
-     * </p>
-     */
-    @Getter
-    @Setter
-    private RetryStore defaultRetryStore;
-
-    private transient StandaloneConsumer reporting;
-    private transient StandaloneConsumer retrying;
-    private transient StandaloneConsumer deleting;
-    private transient StandaloneConsumer gettingStacktrace;
-
-    private transient ReportListener reporter;
-    private transient RetryListener retrier;
-    private transient DeleteListener deleter;
-    private transient StackTraceListener stacktraceGetter;
-
-    private transient ExecutorService workflowSubmitter;
-    private transient JettyRouteCondition retryRouting;
-    private transient JettyRouteCondition deleteRouting;
-    private transient JettyRouteCondition stackTraceRouting;
-    private transient boolean prepared = false;
 
     @Override
     public void prepare() throws CoreException {
         if (!prepared) {
-            validateRetryStoreConfiguration();
-            normalizeRetryStoresByRoute();
-            warnOnMixedStoreConfiguration();
-
             Args.notNull(getReportBuilder(), "report-builder");
-            // Note: retryStore validation moved to validateRetryStoreConfiguration()
-            // to support multi-store-only configurations
+            Args.notNull(getRetryStore(), "retry-store");
 
-            String retryServletPath = retryEndpointPrefix() + "*";
-            String retryServletRegexp = "^" + retryEndpointPrefix() + "(.*)";
-
-            String deleteServletPath = deleteEndpointPrefix() + "*";
-            String deleteServletRegexp = "^" + deleteEndpointPrefix() + "(.*)";
-
-            String stackTraceServletPath = stackTraceEndpointPrefix() + "*";
-            String stackTraceServletRegexp = "^" + stackTraceEndpointPrefix() + "(.*)";
-
-            retryRouting = new JettyRouteCondition()
-                    .withUrlPattern(retryServletRegexp)
-                    .withMetadataKeys(MSG_ID_KEY)
-                    .withMethod(retryHttpMethod());
-            deleteRouting = new JettyRouteCondition()
-                    .withUrlPattern(deleteServletRegexp)
-                    .withMetadataKeys(MSG_ID_KEY)
-                    .withMethod(deleteHttpMethod());
-            stackTraceRouting = new JettyRouteCondition()
-                    .withUrlPattern(stackTraceServletRegexp)
-                    .withMetadataKeys(MSG_ID_KEY)
-                    .withMethod(stackTraceHttpMethod());
-
-            reporter = new ReportListener();
-            retrier = new RetryListener();
-            deleter = new DeleteListener();
+            reporter       = new ReportListener();
+            retrier        = new RetryListener();
+            deleter        = new DeleteListener();
             stacktraceGetter = new StackTraceListener();
 
-            JettyMessageConsumer reportingConsumer = new JettyMessageConsumer()
-                .withPath(reportingEndpoint());
-            reportingConsumer.setParameterHandler(new MetadataParameterHandler());
-
-            // By not dictating the method in the consumer; we accept all methods in jetty, but we use the
-            // jetty route filter to filter it out.
-            retrying = new StandaloneConsumer(getConnection(),
-                    new JettyMessageConsumer().withPath(retryServletPath));
-            deleting = new StandaloneConsumer(getConnection(),
-                    new JettyMessageConsumer().withPath(deleteServletPath));
-            reporting = new StandaloneConsumer(getConnection(),
-                    reportingConsumer);
-            gettingStacktrace = new StandaloneConsumer(getConnection(),
-                    new JettyMessageConsumer().withPath(stackTraceServletPath));
-
-            retrying.registerAdaptrisMessageListener(retrier);
-            reporting.registerAdaptrisMessageListener(reporter);
-            deleting.registerAdaptrisMessageListener(deleter);
-            gettingStacktrace.registerAdaptrisMessageListener(stacktraceGetter);
-
-            // Prepare all configured stores (de-duplicated)
-            LifecycleHelper.prepare(getReportBuilder());
-            for (RetryStore store : getAllConfiguredStores()) {
-                LifecycleHelper.prepare(store);
-            }
-            LifecycleHelper.prepare(deleteRouting, deleter, deleting);
-            LifecycleHelper.prepare(retryRouting, retrier, retrying);
-            LifecycleHelper.prepare(reporter, reporting);
-            LifecycleHelper.prepare(stackTraceRouting, stacktraceGetter, gettingStacktrace);
+            prepareSharedComponents();
+            LifecycleHelper.prepare(getRetryStore());
             prepared = true;
         }
     }
@@ -333,54 +86,26 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
     @Override
     public void init() throws CoreException {
         prepare();
-        LifecycleHelper.init(getReportBuilder());
-        for (RetryStore store : getAllConfiguredStores()) {
-            LifecycleHelper.init(store);
-        }
-        LifecycleHelper.init(deleteRouting, deleter, deleting);
-        LifecycleHelper.init(retryRouting, retrier, retrying);
-        LifecycleHelper.init(reporter, reporting);
-        LifecycleHelper.init(stackTraceRouting, stacktraceGetter, gettingStacktrace);
-
-        workflowSubmitter = Executors.newSingleThreadExecutor();
+        LifecycleHelper.init(getRetryStore());
+        initListeners();
     }
 
     @Override
     public void start() throws CoreException {
-        LifecycleHelper.start(getReportBuilder());
-        for (RetryStore store : getAllConfiguredStores()) {
-            LifecycleHelper.start(store);
-        }
-        LifecycleHelper.start(deleteRouting, deleter, deleting);
-        LifecycleHelper.start(retryRouting, retrier, retrying);
-        LifecycleHelper.start(reporter, reporting);
-        LifecycleHelper.start(stackTraceRouting, stacktraceGetter, gettingStacktrace);
+        LifecycleHelper.start(getRetryStore());
+        startListeners();
     }
 
     @Override
     public void stop() {
-        LifecycleHelper.stop(deleteRouting, deleter, deleting);
-        LifecycleHelper.stop(retryRouting, retrier, retrying);
-        LifecycleHelper.stop(reporter, reporting);
-        LifecycleHelper.stop(stackTraceRouting, stacktraceGetter, gettingStacktrace);
-        for (RetryStore store : getAllConfiguredStores()) {
-            LifecycleHelper.stop(store);
-        }
-        LifecycleHelper.stop(getReportBuilder());
+        stopListeners();
+        LifecycleHelper.stop(getRetryStore());
     }
 
     @Override
     public void close() {
-        LifecycleHelper.close(deleteRouting, deleter, deleting);
-        LifecycleHelper.close(retryRouting, retrier, retrying);
-        LifecycleHelper.close(reporter, reporting);
-        LifecycleHelper.close(stackTraceRouting, stacktraceGetter, gettingStacktrace);
-        for (RetryStore store : getAllConfiguredStores()) {
-            LifecycleHelper.close(store);
-        }
-        LifecycleHelper.close(getReportBuilder());
-
-        ManagedThreadFactory.shutdownQuietly(workflowSubmitter, DEFAULT_SHUTDOWN_WAIT);
+        closeListeners();
+        LifecycleHelper.close(getRetryStore());
     }
 
     public RetryFromJetty withRetryStore(RetryStore rs) {
@@ -393,205 +118,23 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
         return this;
     }
 
-    public RetryFromJetty withRetryStoreRoutingExpression(String expr) {
-        setRetryStoreRoutingExpression(expr);
-        return this;
-    }
-
-    String retryEndpointPrefix() {
-        return StringUtils.defaultIfBlank(getRetryEndpointPrefix(), DEFAULT_ENDPOINT_PREFIX);
-    }
-
-    String reportingEndpoint() {
-        return StringUtils.defaultIfBlank(getReportingEndpoint(), DEFAULT_REPORTING_ENDPOINT);
-    }
-
-    String stackTraceEndpointPrefix() {
-        return StringUtils.defaultIfBlank(getStackTraceEndpointPrefix(), DEFAULT_STACKTRACE_PREFIX);
-    }
-
-    String deleteEndpointPrefix() {
-        return StringUtils.defaultIfBlank(getDeleteEndpointPrefix(), DEFAULT_DELETE_PREFIX);
-    }
-
-    String retryHttpMethod() {
-        return StringUtils.defaultIfBlank(getRetryHttpMethod(), HTTP_RETRY_METHOD);
-    }
-
-    String deleteHttpMethod() {
-        return StringUtils.defaultIfBlank(getDeleteHttpMethod(), HTTP_DELETE_METHOD);
-    }
-
-    String stackTraceHttpMethod() {
-        return StringUtils.defaultIfBlank(getStackTraceHttpMethod(), HTTP_STACKTRACE_METHOD);
-    }
-
-    String includeErrorMessageFlagMetadataKey() {
-        return StringUtils.defaultIfBlank(getIncludeErrorMessageFlagMetadataKey(),
-            DEFAULT_INCLUDE_ERROR_MESSAGE_FLAG_METADATA_KEY);
-    }
-
-    protected static void executeQuietly(Service service, AdaptrisMessage msg) {
-        try {
-            service.doService(msg);
-        } catch (Exception e) {
-
-        }
-    }
-
-    private RetryStore retryStoreFor(AdaptrisMessage msg) throws CoreException {
-        if (retryStoresByRoute == null || retryStoresByRoute.isEmpty()) {
-            return getRetryStore();
-        }
-
-        String route = resolveRetryStoreRoute(msg);
-
-        if (route != null && retryStoresByRoute.containsKey(route)) {
-            return retryStoresByRoute.get(route);
-        }
-
-        if (defaultRetryStore != null) {
-            return defaultRetryStore;
-        }
-
-        if (getRetryStore() != null) {
-            return getRetryStore();
-        }
-
-        throw new CoreException("No RetryStore available for message");
-    }
-
-    /**
-     * Resolves the set of stores to use for a report/list operation.
-     * If a route resolves and matches, returns only that store.
-     * Otherwise returns all configured stores for aggregation.
-     */
-    private Set<RetryStore> resolveStoresToReport(AdaptrisMessage msg) {
-        Set<RetryStore> all = getAllConfiguredStores();
-        if (retryStoresByRoute == null || retryStoresByRoute.isEmpty()) {
-            return all;
-        }
-        String route = resolveRetryStoreRoute(msg);
-
-        // For list/report requests with no route metadata, aggregate all configured stores.
-        if (StringUtils.isBlank(route)) {
-            return all;
-        }
-
-        RetryStore routedStore = retryStoresByRoute.get(route);
-        if (routedStore != null) {
-            return Collections.singleton(routedStore);
-        }
-        if (defaultRetryStore != null) {
-            return Collections.singleton(defaultRetryStore);
-        }
-        if (getRetryStore() != null) {
-            return Collections.singleton(getRetryStore());
-        }
-        // No route resolved — aggregate all stores
-        return all;
-    }
-
-    private abstract class ListenerImpl
-            implements AdaptrisMessageListener, ComponentLifecycle, ComponentLifecycleExtension {
-
-        private JettyResponseService service;
-
-        public ListenerImpl() {
-            service = new JettyResponseService().withHttpStatus(HTTP_STATUS_EXPR)
-                    .withContentType(CONTENT_TYPE_EXPR);
-        }
-
-        protected void sendResponse(String httpResponseCode, AdaptrisMessage msg) {
-            msg.addMessageHeader(HTTP_STATUS_KEY, httpResponseCode);
-            // Default a Content-Type if not available
-            msg.addMessageHeader(CONTENT_TYPE_METADATA_KEY, StringUtils.defaultIfBlank(
-                    msg.getMetadataValue(CONTENT_TYPE_METADATA_KEY), MimeConstants.CONTENT_TYPE_TEXT_PLAIN));
-            executeQuietly(service, msg);
-        }
-
-        protected String extractMsgId(JettyRouteCondition routing, AdaptrisMessage jettyMsg) throws CoreException {
-            JettyRoute route = routing.build(jettyMsg.getMetadataValue(HTTP_METHOD), jettyMsg.getMetadataValue(JETTY_URI));
-            if (route.matches()) {
-                Optional<MetadataElement> msgIdEntry = route.metadata().stream()
-                    .filter(e -> e.getKey().equalsIgnoreCase(MSG_ID_KEY))
-                    .findFirst();
-
-                if (msgIdEntry.isPresent()) {
-                    return msgIdEntry.get().getValue();
-                }
-            }
-            return null;
-        }
-
-        protected void handleException(Exception e, AdaptrisMessage msg) {
-            msg.setContent(ExceptionUtils.getRootCauseMessage(e), StandardCharsets.UTF_8.name());
-            sendResponse(HTTP_ERROR, msg);
-        }
-
-        protected void handleStackTraceResponse(String msgId, AdaptrisMessage jettyMsg, String stackTrace) {
-            String httpCode = (msgId != null) ? HTTP_OK : HTTP_BAD;
-            if (msgId != null) {
-                jettyMsg.setContent(stackTrace, StandardCharsets.UTF_8.name());
-            }
-            sendResponse(httpCode, jettyMsg);
-        }
-
-        @Override
-        public void prepare() throws CoreException {
-            LifecycleHelper.prepare(service);
-        }
-
-        @Override
-        public void init() throws CoreException {
-            LifecycleHelper.init(service);
-        }
-
-        @Override
-        public void start() throws CoreException {
-            LifecycleHelper.start(service);
-        }
-
-        @Override
-        public void stop() {
-            LifecycleHelper.stop(service);
-
-        }
-
-        @Override
-        public void close() {
-            LifecycleHelper.close(service);
-        }
-    }
-
-
-    @NoArgsConstructor
-    class ReportListener extends ListenerImpl {
+    // ---------------------------------------------------------------------------
+    // Listener implementations — extend the inner base class so they have direct
+    // access to all RetryFromJetty (and RetryFromJettyBase) members.
+    // ---------------------------------------------------------------------------
+    class ReportListener extends RetryJettyListenerImpl {
         @Override
         public void onAdaptrisMessage(AdaptrisMessage jettyMsg, Consumer<AdaptrisMessage> success,
-                                      Consumer<AdaptrisMessage> failure) {
+                Consumer<AdaptrisMessage> failure) {
             String httpCode = HTTP_ERROR;
             boolean includeErrorMessage = true;
-
             try {
-                if (jettyMsg.getMetadata(includeErrorMessageFlagMetadataKey()) != null && jettyMsg.getMetadataValue(includeErrorMessageFlagMetadataKey()) != null) {
-                    includeErrorMessage = Boolean.parseBoolean(jettyMsg.getMetadataValue(includeErrorMessageFlagMetadataKey()));
+                if (jettyMsg.getMetadata(includeErrorMessageFlagMetadataKey()) != null
+                        && jettyMsg.getMetadataValue(includeErrorMessageFlagMetadataKey()) != null) {
+                    includeErrorMessage = Boolean.parseBoolean(
+                            jettyMsg.getMetadataValue(includeErrorMessageFlagMetadataKey()));
                 }
-
-                // If multi-store routing is configured and no route can be resolved,
-                // aggregate reports from all configured stores.
-                Set<RetryStore> storesToReport = resolveStoresToReport(jettyMsg);
-                if (storesToReport.size() == 1) {
-                    getReportBuilder().build(storesToReport.iterator().next().report(includeErrorMessage), jettyMsg);
-                } else {
-                    java.util.List<com.adaptris.interlok.cloud.RemoteBlob> combined = new java.util.ArrayList<>();
-                    for (RetryStore s : storesToReport) {
-                        for (com.adaptris.interlok.cloud.RemoteBlob r : s.report(includeErrorMessage)) {
-                            combined.add(r);
-                        }
-                    }
-                    getReportBuilder().build(combined, jettyMsg);
-                }
+                getReportBuilder().build(getRetryStore().report(includeErrorMessage), jettyMsg);
                 httpCode = HTTP_OK;
             } catch (Exception e) {
                 jettyMsg.setContent(ExceptionUtils.getRootCauseMessage(e), StandardCharsets.UTF_8.name());
@@ -606,26 +149,19 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
         }
     }
 
-    @NoArgsConstructor
-    private class DeleteListener extends ListenerImpl {
+    private class DeleteListener extends RetryJettyListenerImpl {
         private transient Object locker = new Object();
 
         @Override
         @Synchronized(value = "locker")
         public void onAdaptrisMessage(AdaptrisMessage jettyMsg, Consumer<AdaptrisMessage> success,
-                                      Consumer<AdaptrisMessage> failure) {
+                Consumer<AdaptrisMessage> failure) {
             String httpCode = HTTP_ERROR;
             try {
                 String msgId = extractMsgId(deleteRouting, jettyMsg);
-
                 if (msgId != null) {
                     log.trace("Attempting to delete {}", msgId);
-                    RetryStore target = findStoreContainingMessage(msgId);
-                    if (target == null) {
-                        httpCode = HTTP_NOT_FOUND;
-                    } else {
-                        httpCode = target.delete(msgId) ? HTTP_OK : HTTP_NOT_FOUND;
-                    }
+                    httpCode = getRetryStore().delete(msgId) ? HTTP_OK : HTTP_NOT_FOUND;
                 } else {
                     httpCode = HTTP_BAD;
                 }
@@ -641,48 +177,37 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
         }
     }
 
-    private class RetryListener extends ListenerImpl {
+    private class RetryListener extends RetryJettyListenerImpl {
         private transient Object locker = new Object();
 
         @Override
         @Synchronized(value = "locker")
         public void onAdaptrisMessage(AdaptrisMessage jettyMsg, Consumer<AdaptrisMessage> success,
-                                      Consumer<AdaptrisMessage> failure) {
+                Consumer<AdaptrisMessage> failure) {
             String httpCode = HTTP_ERROR;
             try {
                 String msgId = extractMsgId(retryRouting, jettyMsg);
-                if  (msgId != null) {
-                    // Try to find the message in all configured stores
-                    RetryStore storeWithMessage = findStoreContainingMessage(msgId);
-                    if (storeWithMessage == null) {
-                        httpCode = HTTP_NOT_FOUND;
-                    } else {
-                        // There's a decision point here because we need to decide between
-                        // large or small message factory.
-                        // Do we want people to configure it?
-                        // Therefore we look up the metadata from the store;
-                        // Figure out the workflow, and then get the consumer.getMessageFactory()
-                        Map<String, String> metadata = storeWithMessage.getMetadata(msgId);
-                        Workflow workflow = getWorkflow(metadata.get(Workflow.WORKFLOW_ID_KEY));
-                        AdaptrisMessage msgForRetry =
-                                storeWithMessage.buildForRetry(msgId, metadata, workflow.getConsumer().getMessageFactory());
-                        // We know at this point we have something to retry.
-                        // So, we can fire a 202 before submission.
-                        httpCode = HTTP_ACCEPTED;
-                        sendResponse(httpCode, jettyMsg);
-                        updateRetryCountMetadata(msgForRetry);
-                        log.trace("Attempting to retry {}; resubmitting to [{}]", msgForRetry.getUniqueId(),
-                                workflow.obtainWorkflowId());
-                        // pooling workflow returns immediately, standard workflow does not.
-                        // so submit to an Executor Service.
-                        workflowSubmitter.execute(new Thread() {
-                            @Override
-                            public void run() {
-                                Thread.currentThread().setName("Retry Failed Message");
-                                workflow.onAdaptrisMessage(msgForRetry, success, failure);
-                            }
-                        });
-                    }
+                if (msgId != null) {
+                    // Look up the metadata from the store, find the workflow, then use its
+                    // consumer's message factory to build the retry message.
+                    Map<String, String> metadata = getRetryStore().getMetadata(msgId);
+                    Workflow workflow = getWorkflow(metadata.get(Workflow.WORKFLOW_ID_KEY));
+                    AdaptrisMessage msgForRetry = getRetryStore().buildForRetry(
+                            msgId, metadata, workflow.getConsumer().getMessageFactory());
+                    httpCode = HTTP_ACCEPTED;
+                    sendResponse(httpCode, jettyMsg);
+                    updateRetryCountMetadata(msgForRetry);
+                    log.trace("Attempting to retry {}; resubmitting to [{}]",
+                            msgForRetry.getUniqueId(), workflow.obtainWorkflowId());
+                    // pooling workflow returns immediately, standard workflow does not —
+                    // submit to an ExecutorService.
+                    workflowSubmitter.execute(new Thread() {
+                        @Override
+                        public void run() {
+                            Thread.currentThread().setName("Retry Failed Message");
+                            workflow.onAdaptrisMessage(msgForRetry, success, failure);
+                        }
+                    });
                 } else {
                     httpCode = HTTP_BAD;
                 }
@@ -698,26 +223,16 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
         }
     }
 
-    @NoArgsConstructor
-    private class StackTraceListener extends ListenerImpl {
+    private class StackTraceListener extends RetryJettyListenerImpl {
         private transient Object locker = new Object();
 
         @Override
         @Synchronized(value = "locker")
         public void onAdaptrisMessage(AdaptrisMessage jettyMsg, Consumer<AdaptrisMessage> success,
-                                      Consumer<AdaptrisMessage> failure) {
+                Consumer<AdaptrisMessage> failure) {
             try {
                 String msgId = extractMsgId(stackTraceRouting, jettyMsg);
-                if (msgId == null) {
-                    sendResponse(HTTP_BAD, jettyMsg);
-                    return;
-                }
-                RetryStore target = findStoreContainingMessage(msgId);
-                if (target == null) {
-                    sendResponse(HTTP_NOT_FOUND, jettyMsg);
-                    return;
-                }
-                String stackTrace = target.getStackTrace(msgId);
+                String stackTrace = getRetryStore().getStackTrace(msgId);
                 handleStackTraceResponse(msgId, jettyMsg, stackTrace);
             } catch (Exception e) {
                 handleException(e, jettyMsg);
@@ -728,70 +243,5 @@ public class RetryFromJetty extends FailedMessageRetrierImp {
         public String friendlyName() {
             return "RetryFromJetty::StackTrace";
         }
-    }
-
-    private void validateRetryStoreConfiguration() throws CoreException {
-        boolean hasLegacy = getRetryStore() != null;
-        boolean hasDefault = defaultRetryStore != null;
-        boolean hasRouteMap = retryStoresByRoute != null && !retryStoresByRoute.isEmpty();
-
-        if (!hasLegacy && !hasDefault && !hasRouteMap) {
-            throw new CoreException("No RetryStore configured; configure retryStoresByRoute, defaultRetryStore, or retryStore.");
-        }
-    }
-
-    private void normalizeRetryStoresByRoute() {
-        if (retryStoresByRoute == null || retryStoresByRoute.isEmpty()) {
-            return;
-        }
-
-        Map<String, RetryStore> normalized = new HashMap<>();
-        retryStoresByRoute.forEach((k, v) -> {
-            String key = StringUtils.trimToNull(k);
-            if (key != null && v != null) {
-                normalized.put(key.toLowerCase(Locale.ROOT), v);
-            }
-        });
-        retryStoresByRoute = normalized;
-    }
-
-    private void warnOnMixedStoreConfiguration() {
-        if (retryStoresByRoute != null && !retryStoresByRoute.isEmpty() && getRetryStore() != null) {
-            log.warn("Both retryStoresByRoute and legacy retryStore are configured; fallback order is route-map -> defaultRetryStore -> retryStore.");
-        }
-    }
-
-    /**
-     * Collects all configured retry stores into a de-duplicated collection for lifecycle management.
-     */
-    private Set<RetryStore> getAllConfiguredStores() {
-        Set<RetryStore> stores = new LinkedHashSet<>();
-
-        if (getRetryStore() != null) {
-            stores.add(getRetryStore());
-        }
-        if (defaultRetryStore != null) {
-            stores.add(defaultRetryStore);
-        }
-        if (retryStoresByRoute != null) {
-            stores.addAll(retryStoresByRoute.values());
-        }
-
-        return stores;
-    }
-
-    private RetryStore findStoreContainingMessage(String msgId) throws CoreException {
-        // Try all configured stores to find which one contains this message
-        for (RetryStore store : getAllConfiguredStores()) {
-            try {
-                Map<String, String> metadata = store.getMetadata(msgId);
-                if (metadata != null && !metadata.isEmpty()) {
-                    return store;
-                }
-            } catch (Exception e) {
-                log.trace("Message {} not in this store, continuing search", msgId);
-            }
-        }
-        return null;
     }
 }
