@@ -38,6 +38,8 @@ import com.adaptris.core.util.LifecycleHelper;
 class RetryFromJettyDualStoreTest {
 
   private static final String ROUTE_KEY = "route";
+  private static final String USA = "usa";
+  private static final String EU = "eu";
 
   @Test
   void reportRoutesToPrimaryStore() throws Exception {
@@ -47,7 +49,8 @@ class RetryFromJettyDualStoreTest {
     RetryFromJettyDualStore retrier = newDualStore(primary, secondary, reportBuilder);
     prepareForListenerTests(retrier);
     RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.reporter;
-    AdaptrisMessage msg = requestMessage("usa", null, null);
+    AdaptrisMessage msg = requestMessage(null, RetryFromJettyBase.HTTP_STACKTRACE_METHOD,
+        reportUri(USA));
 
     reset(primary, secondary, reportBuilder);
     when(primary.report(true)).thenReturn(Collections.emptyList());
@@ -68,7 +71,8 @@ class RetryFromJettyDualStoreTest {
     RetryFromJettyDualStore retrier = newDualStore(primary, secondary, reportBuilder);
     prepareForListenerTests(retrier);
     RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.reporter;
-    AdaptrisMessage msg = requestMessage("eu", null, null);
+    AdaptrisMessage msg = requestMessage(null, RetryFromJettyBase.HTTP_STACKTRACE_METHOD,
+        reportUri(EU));
 
     reset(primary, secondary, reportBuilder);
     when(secondary.report(true)).thenReturn(Collections.emptyList());
@@ -95,7 +99,8 @@ class RetryFromJettyDualStoreTest {
         .withReportBuilder(reportBuilder);
     prepareForListenerTests(retrier);
     RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.reporter;
-    AdaptrisMessage msg = requestMessage("usa", null, null);
+    AdaptrisMessage msg = requestMessage(null, RetryFromJettyBase.HTTP_STACKTRACE_METHOD,
+        reportUri(USA));
     msg.addMetadata("primary-store-id", "usa");
     msg.addMetadata("secondary-store-id", "eu");
 
@@ -124,7 +129,8 @@ class RetryFromJettyDualStoreTest {
         .withReportBuilder(reportBuilder);
     prepareForListenerTests(retrier);
     RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.reporter;
-    AdaptrisMessage msg = requestMessage("usa", null, null);
+    AdaptrisMessage msg = requestMessage(null, RetryFromJettyBase.HTTP_STACKTRACE_METHOD,
+        reportUri(USA));
     msg.addMetadata("primary-store-id", "usa");
     msg.addMetadata("secondary-store-id", "usa");
 
@@ -143,8 +149,8 @@ class RetryFromJettyDualStoreTest {
     RetryFromJettyDualStore retrier = newDualStore(primary, secondary, reportBuilder);
     prepareForListenerTests(retrier);
     RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.deleter;
-    AdaptrisMessage msg = requestMessage("eu", RetryFromJettyBase.HTTP_DELETE_METHOD,
-        RetryFromJettyBase.DEFAULT_DELETE_PREFIX + "msg-2");
+    AdaptrisMessage msg = requestMessage(null, RetryFromJettyBase.HTTP_DELETE_METHOD,
+        deleteUri(EU, "msg-2"));
 
     reset(primary, secondary, reportBuilder);
     when(secondary.delete("msg-2")).thenReturn(true);
@@ -164,8 +170,8 @@ class RetryFromJettyDualStoreTest {
     RetryFromJettyDualStore retrier = newDualStore(primary, secondary, reportBuilder);
     prepareForListenerTests(retrier);
     RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.deleter;
-    AdaptrisMessage msg = requestMessage("usa", RetryFromJettyBase.HTTP_DELETE_METHOD,
-        RetryFromJettyBase.DEFAULT_DELETE_PREFIX + "msg-20");
+    AdaptrisMessage msg = requestMessage(null, RetryFromJettyBase.HTTP_DELETE_METHOD,
+        deleteUri(USA, "msg-20"));
 
     reset(primary, secondary, reportBuilder);
     when(primary.delete("msg-20")).thenReturn(true);
@@ -185,8 +191,8 @@ class RetryFromJettyDualStoreTest {
     RetryFromJettyDualStore retrier = newDualStore(primary, secondary, reportBuilder);
     prepareForListenerTests(retrier);
     RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.retrier;
-    AdaptrisMessage msg = requestMessage("usa", RetryFromJettyBase.HTTP_RETRY_METHOD,
-        RetryFromJettyBase.DEFAULT_ENDPOINT_PREFIX + "msg-3");
+    AdaptrisMessage msg = requestMessage(null, RetryFromJettyBase.HTTP_RETRY_METHOD,
+        retryUri(USA, "msg-3"));
 
     Workflow workflow = mock(Workflow.class);
     AdaptrisMessageConsumer consumer = mock(AdaptrisMessageConsumer.class);
@@ -225,8 +231,8 @@ class RetryFromJettyDualStoreTest {
     RetryFromJettyDualStore retrier = newDualStore(primary, secondary, reportBuilder);
     prepareForListenerTests(retrier);
     RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.retrier;
-    AdaptrisMessage msg = requestMessage("eu", RetryFromJettyBase.HTTP_RETRY_METHOD,
-        RetryFromJettyBase.DEFAULT_ENDPOINT_PREFIX + "msg-30");
+    AdaptrisMessage msg = requestMessage(null, RetryFromJettyBase.HTTP_RETRY_METHOD,
+        retryUri(EU, "msg-30"));
 
     Workflow workflow = mock(Workflow.class);
     AdaptrisMessageConsumer consumer = mock(AdaptrisMessageConsumer.class);
@@ -265,8 +271,8 @@ class RetryFromJettyDualStoreTest {
     RetryFromJettyDualStore retrier = newDualStore(primary, secondary, reportBuilder);
     prepareForListenerTests(retrier);
     RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.stacktraceGetter;
-    AdaptrisMessage msg = requestMessage("eu", RetryFromJettyBase.HTTP_STACKTRACE_METHOD,
-        RetryFromJettyBase.DEFAULT_STACKTRACE_PREFIX + "msg-4");
+    AdaptrisMessage msg = requestMessage(null, RetryFromJettyBase.HTTP_STACKTRACE_METHOD,
+        stackTraceUri(EU, "msg-4"));
 
     reset(primary, secondary, reportBuilder);
     when(secondary.getStackTrace("msg-4")).thenReturn("stacktrace");
@@ -286,8 +292,8 @@ class RetryFromJettyDualStoreTest {
     RetryFromJettyDualStore retrier = newDualStore(primary, secondary, reportBuilder);
     prepareForListenerTests(retrier);
     RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.stacktraceGetter;
-    AdaptrisMessage msg = requestMessage("usa", RetryFromJettyBase.HTTP_STACKTRACE_METHOD,
-        RetryFromJettyBase.DEFAULT_STACKTRACE_PREFIX + "msg-40");
+    AdaptrisMessage msg = requestMessage(null, RetryFromJettyBase.HTTP_STACKTRACE_METHOD,
+        stackTraceUri(USA, "msg-40"));
 
     reset(primary, secondary, reportBuilder);
     when(primary.getStackTrace("msg-40")).thenReturn("stacktrace-primary");
@@ -308,7 +314,8 @@ class RetryFromJettyDualStoreTest {
     prepareForListenerTests(retrier);
     reset(primary, secondary, reportBuilder);
     RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.reporter;
-    AdaptrisMessage msg = requestMessage("unknown", null, null);
+    AdaptrisMessage msg = requestMessage(null, RetryFromJettyBase.HTTP_STACKTRACE_METHOD,
+        reportUri("unknown"));
 
     listener.onAdaptrisMessage(msg, m -> {}, m -> {});
 
@@ -324,7 +331,8 @@ class RetryFromJettyDualStoreTest {
     RetryFromJettyDualStore retrier = newDualStore(primary, secondary, reportBuilder);
     prepareForListenerTests(retrier);
     RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.reporter;
-    AdaptrisMessage msg = requestMessage("usa", null, null);
+    AdaptrisMessage msg = requestMessage(null, RetryFromJettyBase.HTTP_STACKTRACE_METHOD,
+        reportUri(USA));
     msg.addMetadata(retrier.includeErrorMessageFlagMetadataKey(), "false");
 
     reset(primary, secondary, reportBuilder);
@@ -355,7 +363,7 @@ class RetryFromJettyDualStoreTest {
   }
 
   @Test
-  void reportWithSecondaryAndNoRoutingExpressionReturnsBadRequest() {
+  void reportWithSecondaryAndNoRoutingExpressionUsesPathRegion() throws Exception {
     RetryStore primary = mock(RetryStore.class);
     RetryStore secondary = mock(RetryStore.class);
     ReportBuilder reportBuilder = mock(ReportBuilder.class);
@@ -366,13 +374,35 @@ class RetryFromJettyDualStoreTest {
         .withSecondRetryStoreIdentifier("eu")
         .withRetryStoreRoutingExpression(" ")
         .withReportBuilder(reportBuilder);
+    prepareForListenerTests(retrier);
+    RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.reporter;
+    AdaptrisMessage msg = requestMessage(null, RetryFromJettyBase.HTTP_STACKTRACE_METHOD,
+        reportUri(USA));
+
+    reset(primary, secondary, reportBuilder);
+    when(primary.report(true)).thenReturn(Collections.emptyList());
+    listener.onAdaptrisMessage(msg, m -> {}, m -> {});
+
+    assertEquals(RetryFromJettyBase.HTTP_OK, msg.getMetadataValue(RetryFromJettyBase.HTTP_STATUS_KEY));
+    verify(primary).report(true);
+    verifyNoInteractions(secondary);
+  }
+
+  @Test
+  void reportFallsBackToRoutingExpressionWhenPathRegionMissing() throws Exception {
+    RetryStore primary = mock(RetryStore.class);
+    RetryStore secondary = mock(RetryStore.class);
+    ReportBuilder reportBuilder = mock(ReportBuilder.class);
+    RetryFromJettyDualStore retrier = newDualStore(primary, secondary, reportBuilder);
     RetryFromJettyDualStore.ReportListener listener = retrier.new ReportListener();
-    AdaptrisMessage msg = requestMessage("usa", null, null);
+    AdaptrisMessage msg = requestMessage("usa", RetryFromJettyBase.HTTP_STACKTRACE_METHOD,
+        "/api/failed/list");
 
     listener.onAdaptrisMessage(msg, m -> {}, m -> {});
 
-    assertEquals(RetryFromJettyBase.HTTP_BAD, msg.getMetadataValue(RetryFromJettyBase.HTTP_STATUS_KEY));
-    verifyNoInteractions(primary, secondary, reportBuilder);
+    assertEquals(RetryFromJettyBase.HTTP_OK, msg.getMetadataValue(RetryFromJettyBase.HTTP_STATUS_KEY));
+    verify(primary).report(true);
+    verifyNoInteractions(secondary);
   }
 
   @Test
@@ -383,7 +413,8 @@ class RetryFromJettyDualStoreTest {
     RetryFromJettyDualStore retrier = newDualStore(primary, secondary, reportBuilder);
     prepareForListenerTests(retrier);
     RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.reporter;
-    AdaptrisMessage msg = spy(requestMessage("usa", null, null));
+    AdaptrisMessage msg = spy(requestMessage(null, RetryFromJettyBase.HTTP_STACKTRACE_METHOD,
+        "/api/failed/list"));
 
     doThrow(new RuntimeException("boom-resolve"))
         .when(msg)
@@ -410,7 +441,8 @@ class RetryFromJettyDualStoreTest {
         .withReportBuilder(reportBuilder);
     prepareForListenerTests(retrier);
     RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.reporter;
-    AdaptrisMessage msg = spy(requestMessage("usa", null, null));
+    AdaptrisMessage msg = spy(requestMessage(null, RetryFromJettyBase.HTTP_STACKTRACE_METHOD,
+        reportUri(USA)));
 
     doThrow(new RuntimeException("boom-id"))
         .when(msg)
@@ -431,7 +463,8 @@ class RetryFromJettyDualStoreTest {
     RetryFromJettyDualStore retrier = newDualStore(primary, secondary, reportBuilder);
     prepareForListenerTests(retrier);
     RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.reporter;
-    AdaptrisMessage msg = requestMessage("usa", null, null);
+    AdaptrisMessage msg = requestMessage(null, RetryFromJettyBase.HTTP_STACKTRACE_METHOD,
+        reportUri(USA));
 
     when(primary.report(true)).thenReturn(Collections.emptyList());
     doThrow(new RuntimeException("boom-report")).when(reportBuilder).build(any(), same(msg));
@@ -450,8 +483,8 @@ class RetryFromJettyDualStoreTest {
     RetryFromJettyDualStore retrier = newDualStore(primary, secondary, reportBuilder);
     prepareForListenerTests(retrier);
     RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.deleter;
-    AdaptrisMessage msg = requestMessage("usa", RetryFromJettyBase.HTTP_DELETE_METHOD,
-        RetryFromJettyBase.DEFAULT_DELETE_PREFIX + "missing-msg");
+    AdaptrisMessage msg = requestMessage(null, RetryFromJettyBase.HTTP_DELETE_METHOD,
+        deleteUri(USA, "missing-msg"));
 
     when(primary.delete("missing-msg")).thenReturn(false);
 
@@ -469,8 +502,8 @@ class RetryFromJettyDualStoreTest {
     RetryFromJettyDualStore retrier = newDualStore(primary, secondary, reportBuilder);
     prepareForListenerTests(retrier);
     RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.deleter;
-    AdaptrisMessage msg = requestMessage("usa", RetryFromJettyBase.HTTP_DELETE_METHOD,
-        RetryFromJettyBase.DEFAULT_DELETE_PREFIX + "msg-ex");
+    AdaptrisMessage msg = requestMessage(null, RetryFromJettyBase.HTTP_DELETE_METHOD,
+        deleteUri(USA, "msg-ex"));
 
     when(primary.delete("msg-ex")).thenThrow(new RuntimeException("boom-delete"));
 
@@ -488,8 +521,8 @@ class RetryFromJettyDualStoreTest {
     RetryFromJettyDualStore retrier = newDualStore(primary, secondary, reportBuilder);
     prepareForListenerTests(retrier);
     RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.deleter;
-    AdaptrisMessage msg = requestMessage("unknown", RetryFromJettyBase.HTTP_DELETE_METHOD,
-        RetryFromJettyBase.DEFAULT_DELETE_PREFIX + "msg-any");
+    AdaptrisMessage msg = requestMessage(null, RetryFromJettyBase.HTTP_DELETE_METHOD,
+        deleteUri("unknown", "msg-any"));
 
     reset(primary, secondary, reportBuilder);
     listener.onAdaptrisMessage(msg, m -> {}, m -> {});
@@ -506,8 +539,8 @@ class RetryFromJettyDualStoreTest {
     RetryFromJettyDualStore retrier = newDualStore(primary, secondary, reportBuilder);
     prepareForListenerTests(retrier);
     RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.retrier;
-    AdaptrisMessage msg = requestMessage("usa", RetryFromJettyBase.HTTP_RETRY_METHOD,
-        RetryFromJettyBase.DEFAULT_ENDPOINT_PREFIX + "msg-ex");
+    AdaptrisMessage msg = requestMessage(null, RetryFromJettyBase.HTTP_RETRY_METHOD,
+        retryUri(USA, "msg-ex"));
 
     when(primary.getMetadata("msg-ex")).thenThrow(new InterlokException("boom-retry"));
 
@@ -525,8 +558,8 @@ class RetryFromJettyDualStoreTest {
     RetryFromJettyDualStore retrier = newDualStore(primary, secondary, reportBuilder);
     prepareForListenerTests(retrier);
     RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.retrier;
-    AdaptrisMessage msg = requestMessage("usa", RetryFromJettyBase.HTTP_DELETE_METHOD,
-        RetryFromJettyBase.DEFAULT_ENDPOINT_PREFIX + "msg-any");
+    AdaptrisMessage msg = requestMessage(null, RetryFromJettyBase.HTTP_DELETE_METHOD,
+        retryUri(USA, "msg-any"));
 
     reset(primary, secondary, reportBuilder);
     listener.onAdaptrisMessage(msg, m -> {}, m -> {});
@@ -543,8 +576,8 @@ class RetryFromJettyDualStoreTest {
     RetryFromJettyDualStore retrier = newDualStore(primary, secondary, reportBuilder);
     prepareForListenerTests(retrier);
     RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.retrier;
-    AdaptrisMessage msg = requestMessage("unknown", RetryFromJettyBase.HTTP_RETRY_METHOD,
-        RetryFromJettyBase.DEFAULT_ENDPOINT_PREFIX + "msg-any");
+    AdaptrisMessage msg = requestMessage(null, RetryFromJettyBase.HTTP_RETRY_METHOD,
+        retryUri("unknown", "msg-any"));
 
     reset(primary, secondary, reportBuilder);
     listener.onAdaptrisMessage(msg, m -> {}, m -> {});
@@ -561,8 +594,8 @@ class RetryFromJettyDualStoreTest {
     RetryFromJettyDualStore retrier = newDualStore(primary, secondary, reportBuilder);
     prepareForListenerTests(retrier);
     RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.stacktraceGetter;
-    AdaptrisMessage msg = requestMessage("usa", RetryFromJettyBase.HTTP_DELETE_METHOD,
-        RetryFromJettyBase.DEFAULT_STACKTRACE_PREFIX + "msg-any");
+    AdaptrisMessage msg = requestMessage(null, RetryFromJettyBase.HTTP_DELETE_METHOD,
+        stackTraceUri(USA, "msg-any"));
 
     reset(primary, secondary, reportBuilder);
     listener.onAdaptrisMessage(msg, m -> {}, m -> {});
@@ -579,8 +612,8 @@ class RetryFromJettyDualStoreTest {
     RetryFromJettyDualStore retrier = newDualStore(primary, secondary, reportBuilder);
     prepareForListenerTests(retrier);
     RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.stacktraceGetter;
-    AdaptrisMessage msg = requestMessage("unknown", RetryFromJettyBase.HTTP_STACKTRACE_METHOD,
-        RetryFromJettyBase.DEFAULT_STACKTRACE_PREFIX + "msg-any");
+    AdaptrisMessage msg = requestMessage(null, RetryFromJettyBase.HTTP_STACKTRACE_METHOD,
+        stackTraceUri("unknown", "msg-any"));
 
     reset(primary, secondary, reportBuilder);
     listener.onAdaptrisMessage(msg, m -> {}, m -> {});
@@ -597,8 +630,8 @@ class RetryFromJettyDualStoreTest {
     RetryFromJettyDualStore retrier = newDualStore(primary, secondary, reportBuilder);
     prepareForListenerTests(retrier);
     RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.stacktraceGetter;
-    AdaptrisMessage msg = requestMessage("usa", RetryFromJettyBase.HTTP_STACKTRACE_METHOD,
-        RetryFromJettyBase.DEFAULT_STACKTRACE_PREFIX + "msg-ex");
+    AdaptrisMessage msg = requestMessage(null, RetryFromJettyBase.HTTP_STACKTRACE_METHOD,
+        stackTraceUri(USA, "msg-ex"));
 
     when(primary.getStackTrace("msg-ex")).thenThrow(new InterlokException("boom-stacktrace"));
 
@@ -629,7 +662,7 @@ class RetryFromJettyDualStoreTest {
   }
 
   @Test
-  void prepareFailsWhenSecondaryConfiguredWithoutRoutingExpression() {
+  void prepareSucceedsWhenSecondaryConfiguredWithoutRoutingExpression() throws Exception {
     RetryFromJettyDualStore retrier = new RetryFromJettyDualStore()
         .withFirstRetryStore(mock(RetryStore.class))
         .withSecondRetryStore(mock(RetryStore.class))
@@ -637,8 +670,8 @@ class RetryFromJettyDualStoreTest {
         .withSecondRetryStoreIdentifier("eu")
         .withReportBuilder(mock(ReportBuilder.class));
 
-    CoreException ex = assertThrows(CoreException.class, retrier::prepare);
-    assertTrue(ex.getMessage().contains("retryStoreRoutingExpression is required."));
+    retrier.prepare();
+    assertNotNull(retrier.reporter);
   }
 
   @Test
@@ -743,6 +776,22 @@ class RetryFromJettyDualStoreTest {
         .withSecondRetryStoreIdentifier("eu")
         .withRetryStoreRoutingExpression("%message{" + ROUTE_KEY + "}")
         .withReportBuilder(reportBuilder);
+  }
+
+  private String retryUri(String region, String msgId) {
+    return "/api/" + region + "/retry/" + msgId;
+  }
+
+  private String deleteUri(String region, String msgId) {
+    return "/api/failed/" + region + "/delete/" + msgId;
+  }
+
+  private String stackTraceUri(String region, String msgId) {
+    return "/api/failed/" + region + "/stacktrace/" + msgId;
+  }
+
+  private String reportUri(String region) {
+    return "/api/failed/" + region + "/list";
   }
 
   private static class NoOpInfrastructureDualStore extends RetryFromJettyDualStore {

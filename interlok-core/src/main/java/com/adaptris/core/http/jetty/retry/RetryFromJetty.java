@@ -33,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
  * <li>{@code curl -XGET http://localhost:8080/api/failed/list} lists message ids in the store</li>
  * <li>{@code curl -XPOST http://localhost:8080/api/retry/[msgId]} resubmits the message; returns 202 on success</li>
  * <li>{@code curl -XDELETE http://localhost:8080/api/failed/delete/[msgId]} deletes the message</li>
- * <li>{@code curl -XGET http://localhost:8080/api/failed/stacktrace/{msgId}} retrieves the stacktrace</li>
+ * <li>{@code curl -XGET http://localhost:8080/api/failed/stacktrace/[msgId]} retrieves the stacktrace</li>
  * </ul>
  * </p>
  * <p>

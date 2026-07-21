@@ -1,6 +1,7 @@
 package com.adaptris.core.http.jetty.retry;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +25,8 @@ class RetryFromJettyBaseExpressionTest {
         .withRetryStore(new InMemoryRetryStore())
         .withReportBuilder(new ReportBuilder());
 
-    assertEndpointExpressionSupport(retrier);
+    assertEndpointExpressionResolution(retrier);
+    assertSingleStorePrepareMappings(retrier);
   }
 
   @Test
@@ -37,26 +39,29 @@ class RetryFromJettyBaseExpressionTest {
         .withRetryStoreRoutingExpression("%message{route}")
         .withReportBuilder(new ReportBuilder());
 
-    assertEndpointExpressionSupport(retrier);
+    assertEndpointExpressionResolution(retrier);
+    assertDualStorePrepareMappings(retrier);
   }
 
-  private void assertEndpointExpressionSupport(RetryFromJettyBase retrier) throws Exception {
+  private void assertEndpointExpressionResolution(RetryFromJettyBase retrier) {
+    System.setProperty(RETRY_PROPERTY, RETRY_ENDPOINT);
+    System.setProperty(REPORTING_PROPERTY, REPORTING_ENDPOINT);
+    System.setProperty(DELETE_PROPERTY, DELETE_ENDPOINT);
+    System.setProperty(STACKTRACE_PROPERTY, STACKTRACE_ENDPOINT);
+
+    retrier.setRetryEndpointPrefix("%sysprop{" + RETRY_PROPERTY + "}");
+    retrier.setReportingEndpoint("%sysprop{" + REPORTING_PROPERTY + "}");
+    retrier.setDeleteEndpointPrefix("%sysprop{" + DELETE_PROPERTY + "}");
+    retrier.setStackTraceEndpointPrefix("%sysprop{" + STACKTRACE_PROPERTY + "}");
+
+    assertEquals(RETRY_ENDPOINT, retrier.retryEndpointPrefix());
+    assertEquals(REPORTING_ENDPOINT, retrier.reportingEndpoint());
+    assertEquals(DELETE_ENDPOINT, retrier.deleteEndpointPrefix());
+    assertEquals(STACKTRACE_ENDPOINT, retrier.stackTraceEndpointPrefix());
+  }
+
+  private void assertSingleStorePrepareMappings(RetryFromJetty retrier) throws Exception {
     try {
-      System.setProperty(RETRY_PROPERTY, RETRY_ENDPOINT);
-      System.setProperty(REPORTING_PROPERTY, REPORTING_ENDPOINT);
-      System.setProperty(DELETE_PROPERTY, DELETE_ENDPOINT);
-      System.setProperty(STACKTRACE_PROPERTY, STACKTRACE_ENDPOINT);
-
-      retrier.setRetryEndpointPrefix("%sysprop{" + RETRY_PROPERTY + "}");
-      retrier.setReportingEndpoint("%sysprop{" + REPORTING_PROPERTY + "}");
-      retrier.setDeleteEndpointPrefix("%sysprop{" + DELETE_PROPERTY + "}");
-      retrier.setStackTraceEndpointPrefix("%sysprop{" + STACKTRACE_PROPERTY + "}");
-
-      assertEquals(RETRY_ENDPOINT, retrier.retryEndpointPrefix());
-      assertEquals(REPORTING_ENDPOINT, retrier.reportingEndpoint());
-      assertEquals(DELETE_ENDPOINT, retrier.deleteEndpointPrefix());
-      assertEquals(STACKTRACE_ENDPOINT, retrier.stackTraceEndpointPrefix());
-
       retrier.prepare();
 
       assertEquals(RETRY_ENDPOINT + "*", ((JettyMessageConsumer) retrier.retrying.getConsumer()).getPath());
@@ -67,6 +72,27 @@ class RetryFromJettyBaseExpressionTest {
       assertEquals("^" + RETRY_ENDPOINT + "(.*)", retrier.retryRouting.getUrlPattern());
       assertEquals("^" + DELETE_ENDPOINT + "(.*)", retrier.deleteRouting.getUrlPattern());
       assertEquals("^" + STACKTRACE_ENDPOINT + "(.*)", retrier.stackTraceRouting.getUrlPattern());
+    } finally {
+      clearProperty(RETRY_PROPERTY);
+      clearProperty(REPORTING_PROPERTY);
+      clearProperty(DELETE_PROPERTY);
+      clearProperty(STACKTRACE_PROPERTY);
+      retrier.close();
+    }
+  }
+
+  private void assertDualStorePrepareMappings(RetryFromJettyDualStore retrier) throws Exception {
+    try {
+      retrier.prepare();
+
+      assertEquals("/api/*", ((JettyMessageConsumer) retrier.reporting.getConsumer()).getPath());
+      assertNull(retrier.retrying);
+      assertNull(retrier.deleting);
+      assertNull(retrier.gettingStacktrace);
+
+      assertEquals("^/api/([^/]+)/retry/(.*)", retrier.retryRouting.getUrlPattern());
+      assertEquals("^/api/failed/([^/]+)/delete/(.*)", retrier.deleteRouting.getUrlPattern());
+      assertEquals("^/api/failed/([^/]+)/stacktrace/(.*)", retrier.stackTraceRouting.getUrlPattern());
     } finally {
       clearProperty(RETRY_PROPERTY);
       clearProperty(REPORTING_PROPERTY);
