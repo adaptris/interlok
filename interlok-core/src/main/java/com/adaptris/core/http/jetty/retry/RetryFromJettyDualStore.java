@@ -63,8 +63,33 @@ public class RetryFromJettyDualStore extends RetryFromJettyBase {
     private static final String DELETE_ENDPOINT_REGEXP = "^/api/failed/([^/]+)/delete/(.*)";
     private static final String STACKTRACE_ENDPOINT_REGEXP = "^/api/failed/([^/]+)/stacktrace/(.*)";
 
-    private static final Pattern REPORTING_ENDPOINT_PATTERN = Pattern.compile(REPORTING_ENDPOINT_REGEXP);
+    private transient Pattern reportingEndpointPattern;
     private transient RetryJettyListenerImpl dispatchListener;
+
+    /**
+     * Regular expression used to match the reporting (list) endpoint URL.
+     * The first capture group must yield the region/store identifier.
+     * Defaults to {@code ^/api/failed/([^/]+)/list$}.
+     */
+    @Setter
+    @InputFieldDefault(value = API_ENDPOINT_PATH)
+    private String apiEndpointPath;
+
+    @Setter
+    @InputFieldDefault(value = REPORTING_ENDPOINT_REGEXP)
+    private String reportingEndpointRegexp;
+
+    @Setter
+    @InputFieldDefault(value = RETRY_ENDPOINT_REGEXP)
+    private String retryEndpointRegexp;
+
+    @Setter
+    @InputFieldDefault(value = DELETE_ENDPOINT_REGEXP)
+    private String deleteEndpointRegexp;
+
+    @Setter
+    @InputFieldDefault(value = STACKTRACE_ENDPOINT_REGEXP)
+    private String stacktraceEndpointRegexp;
 
     @NotNull
     @Valid
@@ -153,14 +178,16 @@ public class RetryFromJettyDualStore extends RetryFromJettyBase {
 
     @Override
     protected void prepareSharedComponents() throws CoreException {
-        retryRouting = new JettyRouteCondition().withUrlPattern(RETRY_ENDPOINT_REGEXP)
+        reportingEndpointPattern = Pattern.compile(
+                StringUtils.defaultIfBlank(getReportingEndpointRegexp(), REPORTING_ENDPOINT_REGEXP));
+        retryRouting = new JettyRouteCondition().withUrlPattern(getRetryEndpointRegexp())
                 .withMetadataKeys(REGION_KEY, MSG_ID_KEY).withMethod(retryHttpMethod());
-        deleteRouting = new JettyRouteCondition().withUrlPattern(DELETE_ENDPOINT_REGEXP)
+        deleteRouting = new JettyRouteCondition().withUrlPattern(getDeleteEndpointRegexp())
                 .withMetadataKeys(REGION_KEY, MSG_ID_KEY).withMethod(deleteHttpMethod());
-        stackTraceRouting = new JettyRouteCondition().withUrlPattern(STACKTRACE_ENDPOINT_REGEXP)
+        stackTraceRouting = new JettyRouteCondition().withUrlPattern(getStacktraceEndpointRegexp())
                 .withMetadataKeys(REGION_KEY, MSG_ID_KEY).withMethod(stackTraceHttpMethod());
         dispatchListener = new DispatchListener();
-        JettyMessageConsumer apiConsumer = new JettyMessageConsumer().withPath(API_ENDPOINT_PATH);
+        JettyMessageConsumer apiConsumer = new JettyMessageConsumer().withPath(getApiEndpointPath());
         apiConsumer.setParameterHandler(new MetadataParameterHandler());
         reporting = new StandaloneConsumer(getConnection(), apiConsumer);
         reporting.registerAdaptrisMessageListener(dispatchListener);
@@ -277,7 +304,7 @@ public class RetryFromJettyDualStore extends RetryFromJettyBase {
             if (stackTraceRoute.matches()) {
                 return extractRouteFromMetadata(stackTraceRoute);
             }
-            Matcher reportMatcher = REPORTING_ENDPOINT_PATTERN.matcher(uri);
+            Matcher reportMatcher = reportingEndpointPattern.matcher(uri);
             if (reportMatcher.matches()) {
                 return normalisedIdentifier(reportMatcher.group(1));
             }
@@ -342,7 +369,7 @@ public class RetryFromJettyDualStore extends RetryFromJettyBase {
                     handleStackTraceRequest(jettyMsg, RetryFromJettyDualStore.this::resolveRetryStoreForRequest);
                     return;
                 }
-                Matcher reportMatcher = REPORTING_ENDPOINT_PATTERN.matcher(uri);
+                Matcher reportMatcher = reportingEndpointPattern.matcher(uri);
                 if (reportMatcher.matches()) {
                     handleReportRequest(jettyMsg, RetryFromJettyDualStore.this::resolveRetryStoreForRequest);
                     return;
@@ -357,6 +384,26 @@ public class RetryFromJettyDualStore extends RetryFromJettyBase {
         public String friendlyName() {
             return "RetryFromJettyDualStore::Dispatcher";
         }
+    }
+
+    public String getApiEndpointPath() {
+        return StringUtils.defaultIfBlank(apiEndpointPath, API_ENDPOINT_PATH);
+    }
+
+    public String getReportingEndpointRegexp() {
+        return StringUtils.defaultIfBlank(reportingEndpointRegexp, REPORTING_ENDPOINT_REGEXP);
+    }
+
+    public String getRetryEndpointRegexp() {
+        return StringUtils.defaultIfBlank(retryEndpointRegexp, RETRY_ENDPOINT_REGEXP);
+    }
+
+    public String getDeleteEndpointRegexp() {
+        return StringUtils.defaultIfBlank(deleteEndpointRegexp, DELETE_ENDPOINT_REGEXP);
+    }
+
+    public String getStacktraceEndpointRegexp() {
+        return StringUtils.defaultIfBlank(stacktraceEndpointRegexp, STACKTRACE_ENDPOINT_REGEXP);
     }
 
 }
