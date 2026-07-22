@@ -30,6 +30,7 @@ import com.adaptris.core.AdaptrisMessageConsumer;
 import com.adaptris.core.CoreException;
 import com.adaptris.core.CoreConstants;
 import com.adaptris.core.http.jetty.JettyConstants;
+import com.adaptris.core.http.jetty.JettyMessageConsumer;
 import com.adaptris.core.StartedState;
 import com.adaptris.core.Workflow;
 import com.adaptris.interlok.InterlokException;
@@ -306,7 +307,7 @@ class RetryFromJettyDualStoreTest {
   }
 
   @Test
-  void unknownRouteDoesNotFallBackToAnyStore() throws Exception {
+  void reportUnknownPathRegionReturnsNotFound() throws Exception {
     RetryStore primary = mock(RetryStore.class);
     RetryStore secondary = mock(RetryStore.class);
     ReportBuilder reportBuilder = mock(ReportBuilder.class);
@@ -315,11 +316,12 @@ class RetryFromJettyDualStoreTest {
     reset(primary, secondary, reportBuilder);
     RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.reporter;
     AdaptrisMessage msg = requestMessage(null, RetryFromJettyBase.HTTP_STACKTRACE_METHOD,
-        reportUri("unknown"));
+        reportUri("emea"));
 
     listener.onAdaptrisMessage(msg, m -> {}, m -> {});
 
-    assertEquals(RetryFromJettyBase.HTTP_BAD, msg.getMetadataValue(RetryFromJettyBase.HTTP_STATUS_KEY));
+    assertEquals(RetryFromJettyBase.HTTP_NOT_FOUND,
+        msg.getMetadataValue(RetryFromJettyBase.HTTP_STATUS_KEY));
     verifyNoInteractions(primary, secondary, reportBuilder);
   }
 
@@ -514,7 +516,7 @@ class RetryFromJettyDualStoreTest {
   }
 
   @Test
-  void deleteUnknownRouteReturnsBadRequest() throws Exception {
+  void deleteUnknownPathRegionReturnsNotFound() throws Exception {
     RetryStore primary = mock(RetryStore.class);
     RetryStore secondary = mock(RetryStore.class);
     ReportBuilder reportBuilder = mock(ReportBuilder.class);
@@ -527,7 +529,8 @@ class RetryFromJettyDualStoreTest {
     reset(primary, secondary, reportBuilder);
     listener.onAdaptrisMessage(msg, m -> {}, m -> {});
 
-    assertEquals(RetryFromJettyBase.HTTP_BAD, msg.getMetadataValue(RetryFromJettyBase.HTTP_STATUS_KEY));
+    assertEquals(RetryFromJettyBase.HTTP_NOT_FOUND,
+        msg.getMetadataValue(RetryFromJettyBase.HTTP_STATUS_KEY));
     verifyNoInteractions(primary, secondary);
   }
 
@@ -569,7 +572,7 @@ class RetryFromJettyDualStoreTest {
   }
 
   @Test
-  void retryUnknownRouteReturnsBadRequest() throws Exception {
+  void retryUnknownPathRegionReturnsNotFound() throws Exception {
     RetryStore primary = mock(RetryStore.class);
     RetryStore secondary = mock(RetryStore.class);
     ReportBuilder reportBuilder = mock(ReportBuilder.class);
@@ -582,7 +585,8 @@ class RetryFromJettyDualStoreTest {
     reset(primary, secondary, reportBuilder);
     listener.onAdaptrisMessage(msg, m -> {}, m -> {});
 
-    assertEquals(RetryFromJettyBase.HTTP_BAD, msg.getMetadataValue(RetryFromJettyBase.HTTP_STATUS_KEY));
+    assertEquals(RetryFromJettyBase.HTTP_NOT_FOUND,
+        msg.getMetadataValue(RetryFromJettyBase.HTTP_STATUS_KEY));
     verifyNoInteractions(primary, secondary);
   }
 
@@ -605,7 +609,7 @@ class RetryFromJettyDualStoreTest {
   }
 
   @Test
-  void stackTraceUnknownRouteReturnsBadRequest() throws Exception {
+  void stackTraceUnknownPathRegionReturnsNotFound() throws Exception {
     RetryStore primary = mock(RetryStore.class);
     RetryStore secondary = mock(RetryStore.class);
     ReportBuilder reportBuilder = mock(ReportBuilder.class);
@@ -618,7 +622,8 @@ class RetryFromJettyDualStoreTest {
     reset(primary, secondary, reportBuilder);
     listener.onAdaptrisMessage(msg, m -> {}, m -> {});
 
-    assertEquals(RetryFromJettyBase.HTTP_BAD, msg.getMetadataValue(RetryFromJettyBase.HTTP_STATUS_KEY));
+    assertEquals(RetryFromJettyBase.HTTP_NOT_FOUND,
+        msg.getMetadataValue(RetryFromJettyBase.HTTP_STATUS_KEY));
     verifyNoInteractions(primary, secondary);
   }
 
@@ -834,16 +839,98 @@ class RetryFromJettyDualStoreTest {
     }
     return msg;
   }
+
+  @Test
+  void configurableEndpointGettersFallbackToDefaultsWhenBlank() {
+    RetryFromJettyDualStore retrier = new RetryFromJettyDualStore();
+
+    retrier.setApiEndpointPath(" ");
+    retrier.setReportingEndpointRegexp(" ");
+    retrier.setRetryEndpointRegexp(" ");
+    retrier.setDeleteEndpointRegexp(" ");
+    retrier.setStacktraceEndpointRegexp(" ");
+
+    assertEquals("/api/*", retrier.getApiEndpointPath());
+    assertEquals("^/api/failed/([^/]+)/list$", retrier.getReportingEndpointRegexp());
+    assertEquals("^/api/([^/]+)/retry/(.*)", retrier.getRetryEndpointRegexp());
+    assertEquals("^/api/failed/([^/]+)/delete/(.*)", retrier.getDeleteEndpointRegexp());
+    assertEquals("^/api/failed/([^/]+)/stacktrace/(.*)", retrier.getStacktraceEndpointRegexp());
+  }
+
+  @Test
+  void prepareUsesConfiguredApiEndpointPath() throws Exception {
+    RetryFromJettyDualStore retrier = newDualStore(mock(RetryStore.class), mock(RetryStore.class),
+        mock(ReportBuilder.class));
+    retrier.setApiEndpointPath("/custom-api/*");
+
+    retrier.prepare();
+
+    JettyMessageConsumer apiConsumer = (JettyMessageConsumer) retrier.reporting.getConsumer();
+    assertEquals("/custom-api/*", apiConsumer.getPath());
+  }
+
+  @Test
+  void reportRoutesUsingConfiguredReportingEndpointRegexp() throws Exception {
+    RetryStore primary = mock(RetryStore.class);
+    RetryStore secondary = mock(RetryStore.class);
+    ReportBuilder reportBuilder = mock(ReportBuilder.class);
+    RetryFromJettyDualStore retrier = newDualStore(primary, secondary, reportBuilder);
+    retrier.setReportingEndpointRegexp("^/custom/report/([^/]+)$");
+    prepareForListenerTests(retrier);
+    RetryFromJettyBase.RetryJettyListenerImpl listener = retrier.reporter;
+    AdaptrisMessage msg = requestMessage(null, RetryFromJettyBase.HTTP_STACKTRACE_METHOD,
+        "/custom/report/eu");
+
+    reset(primary, secondary, reportBuilder);
+    when(secondary.report(true)).thenReturn(Collections.emptyList());
+
+    listener.onAdaptrisMessage(msg, m -> {}, m -> {});
+
+    assertEquals(RetryFromJettyBase.HTTP_OK, msg.getMetadataValue(RetryFromJettyBase.HTTP_STATUS_KEY));
+    verify(secondary).report(true);
+    verifyNoInteractions(primary);
+    verify(reportBuilder).build(any(), same(msg));
+  }
+
+  @Test
+  void retryRegexConfigurationControlsRouteAndMsgIdExtraction() throws Exception {
+    RetryStore primary = mock(RetryStore.class);
+    RetryStore secondary = mock(RetryStore.class);
+    RetryFromJettyDualStore retrier = newDualStore(primary, secondary, mock(ReportBuilder.class));
+    retrier.setRetryEndpointRegexp("^/custom/retry/([^/]+)/messages/(.*)$");
+    prepareForListenerTests(retrier);
+    AdaptrisMessage msg = requestMessage(null, RetryFromJettyBase.HTTP_RETRY_METHOD,
+        "/custom/retry/usa/messages/msg-100");
+
+    assertEquals("msg-100", retrier.retrier.extractMsgId(retrier.retryRouting, msg));
+    assertEquals(primary, retrier.resolveRetryStoreForRequest(msg));
+  }
+
+  @Test
+  void deleteRegexConfigurationControlsRouteAndMsgIdExtraction() throws Exception {
+    RetryStore primary = mock(RetryStore.class);
+    RetryStore secondary = mock(RetryStore.class);
+    RetryFromJettyDualStore retrier = newDualStore(primary, secondary, mock(ReportBuilder.class));
+    retrier.setDeleteEndpointRegexp("^/custom/delete/([^/]+)/messages/(.*)$");
+    prepareForListenerTests(retrier);
+    AdaptrisMessage msg = requestMessage(null, RetryFromJettyBase.HTTP_DELETE_METHOD,
+        "/custom/delete/eu/messages/msg-200");
+
+    assertEquals("msg-200", retrier.deleter.extractMsgId(retrier.deleteRouting, msg));
+    assertEquals(secondary, retrier.resolveRetryStoreForRequest(msg));
+  }
+
+  @Test
+  void stacktraceRegexConfigurationControlsRouteAndMsgIdExtraction() throws Exception {
+    RetryStore primary = mock(RetryStore.class);
+    RetryStore secondary = mock(RetryStore.class);
+    RetryFromJettyDualStore retrier = newDualStore(primary, secondary, mock(ReportBuilder.class));
+    retrier.setStacktraceEndpointRegexp("^/custom/stacktrace/([^/]+)/messages/(.*)$");
+    prepareForListenerTests(retrier);
+    AdaptrisMessage msg = requestMessage(null, RetryFromJettyBase.HTTP_STACKTRACE_METHOD,
+        "/custom/stacktrace/eu/messages/msg-300");
+
+    assertEquals("msg-300", retrier.stacktraceGetter.extractMsgId(retrier.stackTraceRouting, msg));
+    assertEquals(secondary, retrier.resolveRetryStoreForRequest(msg));
+  }
 }
-
-
-
-
-
-
-
-
-
-
-
-

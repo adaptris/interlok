@@ -216,6 +216,10 @@ public abstract class RetryFromJettyBase extends FailedMessageRetrierImp {
 
     protected abstract void validateRetryStoreConfiguration() throws CoreException;
 
+    protected String unresolvedStoreResponseCode(AdaptrisMessage jettyMsg) {
+        return HTTP_BAD;
+    }
+
     // ---------------------------------------------------------------------------
     // Endpoint / method resolution helpers
     // ---------------------------------------------------------------------------
@@ -551,7 +555,7 @@ public abstract class RetryFromJettyBase extends FailedMessageRetrierImp {
                 getReportBuilder().build(store.report(includeErrorMessage(jettyMsg)), jettyMsg);
                 httpCode = HTTP_OK;
             } else {
-                httpCode = HTTP_BAD;
+                httpCode = unresolvedStoreResponseCode(jettyMsg);
             }
         } catch (Exception e) {
             jettyMsg.setContent(ExceptionUtils.getRootCauseMessage(e), StandardCharsets.UTF_8.name());
@@ -568,7 +572,7 @@ public abstract class RetryFromJettyBase extends FailedMessageRetrierImp {
             if (msgId != null) {
                 RetryStore target = storeResolver.apply(jettyMsg);
                 if (target == null) {
-                    httpCode = HTTP_BAD;
+                    httpCode = unresolvedStoreResponseCode(jettyMsg);
                 } else {
                     log.trace("Attempting to delete {}", msgId);
                     httpCode = target.delete(msgId) ? HTTP_OK : HTTP_NOT_FOUND;
@@ -591,7 +595,7 @@ public abstract class RetryFromJettyBase extends FailedMessageRetrierImp {
             if (msgId != null) {
                 RetryStore store = storeResolver.apply(jettyMsg);
                 if (store == null) {
-                    httpCode = HTTP_BAD;
+                    httpCode = unresolvedStoreResponseCode(jettyMsg);
                 } else {
                     // Look up the metadata from the store, find the workflow, then use its
                     // consumer's message factory to build the retry message.
@@ -630,7 +634,7 @@ public abstract class RetryFromJettyBase extends FailedMessageRetrierImp {
             }
             RetryStore store = storeResolver.apply(jettyMsg);
             if (store == null) {
-                sendResponse(HTTP_BAD, jettyMsg);
+                sendResponse(unresolvedStoreResponseCode(jettyMsg), jettyMsg);
                 return;
             }
             String stackTrace = store.getStackTrace(msgId);

@@ -244,6 +244,11 @@ public class RetryFromJettyDualStore extends RetryFromJettyBase {
     }
 
     @Override
+    protected String unresolvedStoreResponseCode(AdaptrisMessage jettyMsg) {
+        return hasUnmatchedPathRoute(jettyMsg) ? HTTP_NOT_FOUND : HTTP_BAD;
+    }
+
+    @Override
     protected Collection<RetryStore> getConfiguredRetryStores() {
         Set<RetryStore> stores = new LinkedHashSet<>();
         if (getFirstRetryStore() != null) stores.add(getFirstRetryStore());
@@ -283,6 +288,23 @@ public class RetryFromJettyDualStore extends RetryFromJettyBase {
             return routeFromPath;
         }
         return resolveRetryStoreRouteFromExpression(msg);
+    }
+
+    private boolean hasUnmatchedPathRoute(AdaptrisMessage msg) {
+        String routeFromPath = resolveRetryStoreRouteFromPath(msg);
+        if (routeFromPath == null) {
+            return false;
+        }
+        String firstIdentifier = resolveRetryStoreIdentifier(getFirstRetryStoreIdentifier(), msg);
+        String secondIdentifier = resolveRetryStoreIdentifier(getSecondRetryStoreIdentifier(), msg);
+        if (StringUtils.isAnyBlank(firstIdentifier, secondIdentifier)) {
+            return false;
+        }
+        if (Objects.equals(firstIdentifier, secondIdentifier)) {
+            return false;
+        }
+        return !Objects.equals(routeFromPath, firstIdentifier)
+                && !Objects.equals(routeFromPath, secondIdentifier);
     }
 
     private String resolveRetryStoreRouteFromPath(AdaptrisMessage msg) {

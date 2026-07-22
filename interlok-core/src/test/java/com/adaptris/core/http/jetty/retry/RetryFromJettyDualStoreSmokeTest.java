@@ -164,7 +164,7 @@ class RetryFromJettyDualStoreSmokeTest extends FailedMessageRetrierCase {
   }
 
   @Test
-  void smokeUnknownRegionReturnsBadRequest() throws Exception {
+  void smokeUnknownRegionReturnsNotFound() throws Exception {
     RetryFromJettyDualStore retrier = createDualStore();
     try {
       primaryStore.write(messageForWorkflow("seed-for-fallback-test"));
@@ -177,7 +177,7 @@ class RetryFromJettyDualStoreSmokeTest extends FailedMessageRetrierCase {
       http.setMethodProvider(new ConfiguredRequestMethodProvider(RequestMethod.GET));
       ExampleServiceCase.execute(new StandaloneRequestor(http), triggerMsg);
 
-      assertEquals(RetryFromJettyBase.HTTP_BAD,
+      assertEquals(RetryFromJettyBase.HTTP_NOT_FOUND,
           triggerMsg.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
     } finally {
       stop(retrier);
