@@ -9,7 +9,7 @@ ext {
   slf4jVersion = "2.0.17"
   log4j2Version = "2.25.5"
   mockitoVersion = "4.9.0"
-  jettyVersion= "10.0.29"
+  jettyVersion= "10.0.27"
 }
 
 ext.verboseTestLogging = { ->
