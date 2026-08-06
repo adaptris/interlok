@@ -401,4 +401,13 @@
     <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty(\.http2|\.websocket)?/.+@10\.0\.[0-9]+$</packageUrl>
     <cve>CVE-2026-6790</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+      CVE-2026-10050: Affects Jetty 10.0.x (EOL). No patched release exists in the Jetty 10.x line;
+      10.0.26 is the final Jetty 10.x release on Maven Central. Remediation requires upgrading to
+      Jetty 12.x which is outside the current Java 17 / Jetty 10 constraints.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty(\.http2|\.websocket)?/.+@10\.0\.[0-9]+$</packageUrl>
+    <cve>CVE-2026-10050</cve>
+  </suppress>
 </suppressions>
