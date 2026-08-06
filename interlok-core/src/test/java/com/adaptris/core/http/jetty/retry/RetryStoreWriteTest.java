@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.AdaptrisMessage;
+import com.adaptris.core.CoreConstants;
 import com.adaptris.core.DefaultMessageFactory;
 import com.adaptris.core.ServiceException;
 import com.adaptris.core.fs.FsHelper;
@@ -37,7 +38,7 @@ public class RetryStoreWriteTest extends ExampleServiceCase {
   }
 
   @Test
-  public void testService_Exception() throws Exception {
+  public void testService_Exception() {
     Assertions.assertThrows(ServiceException.class, () -> {
       AdaptrisMessage msg = new DefaultMessageFactory().newMessage("hello");
       RetryStoreWriteService service = new RetryStoreWriteService()
@@ -64,6 +65,28 @@ public class RetryStoreWriteTest extends ExampleServiceCase {
     }
     assertTrue(p.containsKey("workflowId"));
     assertEquals("xml-worker-workflow-3@xml-worker", p.getProperty("workflowId"));
+  }
+
+  @Test
+  public void testService_DoesNotOverrideExistingWorkflowIdMetadata() throws Exception {
+    File retryStoreDir = FsHelper.toFile(BaseCase.getConfiguration(TEST_BASE_URL));
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage("hello");
+    msg.setUniqueId("retry-existing-workflowid-test");
+    msg.addMetadata("workflowId", "already-set-workflow");
+    msg.getMessageLifecycleEvent().setWorkflowId("lifecycle-workflow-should-not-win");
+    msg.addMetadata(CoreConstants.WORKFLOW_ID_KEY, "core-workflow-should-not-win");
+
+    RetryStoreWriteService service = new RetryStoreWriteService()
+        .withRetryStore(new FilesystemRetryStore().withBaseUrl(getConfiguration(TEST_BASE_URL)));
+
+    execute(service, msg);
+
+    File metadata = new File(new File(retryStoreDir, msg.getUniqueId()), "metadata.properties");
+    Properties p = new Properties();
+    try (FileInputStream in = new FileInputStream(metadata)) {
+      p.load(in);
+    }
+    assertEquals("already-set-workflow", p.getProperty("workflowId"));
   }
 
   @Override
