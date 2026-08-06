@@ -18,22 +18,21 @@ package com.adaptris.core;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import java.lang.reflect.Method;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.awaitility.Awaitility;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 
 import com.adaptris.core.stubs.MockConnection;
@@ -49,9 +48,6 @@ public class AdaptrisConnectionTest extends com.adaptris.interlok.junit.scaffold
   private static final String START = "start";
   private static final String INIT = "init";
 
-  public AdaptrisConnectionTest() {
-  }
-
   @Test
   public void testConnectionErrorHandler() throws Exception {
     MockConnection mc = new MockConnection();
@@ -66,37 +62,43 @@ public class AdaptrisConnectionTest extends com.adaptris.interlok.junit.scaffold
   public void testConcurrentListenerRegistration() throws Exception {
     int threadCount = 100;
     final MockConnection connection = new MockConnection();
-    
-    ThreadFactory tf = new ThreadFactory() {
-      @Override
-      public Thread newThread(Runnable r) {
-        return new Thread(r);
-      }
-    };
-    ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(threadCount, tf);
-    
-    List<Callable<Boolean>> callables = new ArrayList<>();
-    for(int index = 0; index < threadCount; index ++) {
+
+    CountDownLatch startGate = new CountDownLatch(1);
+    CountDownLatch doneGate = new CountDownLatch(threadCount);
+    ExecutorService pool = Executors.newFixedThreadPool(threadCount);
+
+    List<Future<Boolean>> futures = new ArrayList<>();
+    for (int index = 0; index < threadCount; index++) {
       Callable<Boolean> call = () -> {
-        StateManagedComponent comp = new ServiceList();
-        AdaptrisMessageConsumer consumer = new MockConsumer();
-        AdaptrisMessageProducer producer = new MockProducer();
-        connection.addExceptionListener(comp);
-        connection.addMessageConsumer(consumer);
-        connection.addMessageProducer(producer);
-        return true;
+        try {
+          startGate.await();
+          StateManagedComponent comp = new ServiceList();
+          AdaptrisMessageConsumer consumer = new MockConsumer();
+          AdaptrisMessageProducer producer = new MockProducer();
+          connection.addExceptionListener(comp);
+          connection.addMessageConsumer(consumer);
+          connection.addMessageProducer(producer);
+          return true;
+        }
+        finally {
+          doneGate.countDown();
+        }
       };
-      callables.add(call);
+      futures.add(pool.submit(call));
     }
-    
-    newFixedThreadPool.invokeAll(callables);
-    
-    Awaitility
-      .await()
-      .atMost(Duration.ofSeconds(20))
-      .with()
-      .pollInterval(Duration.ofMillis(100))
-      .untilTrue(new AtomicBoolean(connection.retrieveExceptionListeners().size() == threadCount));
+
+    startGate.countDown();
+    assertTrue(doneGate.await(20, TimeUnit.SECONDS), "Timed out waiting for concurrent registration tasks to finish");
+
+    for (Future<Boolean> future : futures) {
+      assertTrue(future.get(), "Concurrent registration task did not complete successfully");
+    }
+
+    assertEquals(threadCount, connection.retrieveExceptionListeners().size());
+    assertEquals(threadCount, connection.retrieveMessageConsumers().size());
+    assertEquals(threadCount, connection.retrieveMessageProducers().size());
+
+    pool.shutdownNow();
   }
 
   @Test
