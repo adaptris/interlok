@@ -3,10 +3,13 @@ package com.adaptris.core.http.jetty.retry;
 import static com.adaptris.core.http.jetty.retry.FilesystemRetryStoreTest.INVALID_URL;
 import static com.adaptris.core.http.jetty.retry.FilesystemRetryStoreTest.TEST_BASE_URL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.util.Optional;
+import java.util.Properties;
 
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.junit.jupiter.api.Assertions;
@@ -41,6 +44,26 @@ public class RetryStoreWriteTest extends ExampleServiceCase {
           .withRetryStore(new FilesystemRetryStore().withBaseUrl(INVALID_URL));
       execute(service, msg);
     });
+  }
+
+  @Test
+  public void testService_AddsWorkflowIdFromLifecycleEvent() throws Exception {
+    File retryStoreDir = FsHelper.toFile(BaseCase.getConfiguration(TEST_BASE_URL));
+    AdaptrisMessage msg = new DefaultMessageFactory().newMessage("hello");
+    msg.setUniqueId("retry-workflowid-test");
+    msg.getMessageLifecycleEvent().setWorkflowId("xml-worker-workflow-3@xml-worker");
+    RetryStoreWriteService service = new RetryStoreWriteService()
+        .withRetryStore(new FilesystemRetryStore().withBaseUrl(getConfiguration(TEST_BASE_URL)));
+
+    execute(service, msg);
+
+    File metadata = new File(new File(retryStoreDir, msg.getUniqueId()), "metadata.properties");
+    Properties p = new Properties();
+    try (FileInputStream in = new FileInputStream(metadata)) {
+      p.load(in);
+    }
+    assertTrue(p.containsKey("workflowId"));
+    assertEquals("xml-worker-workflow-3@xml-worker", p.getProperty("workflowId"));
   }
 
   @Override
