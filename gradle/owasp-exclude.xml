@@ -395,8 +395,8 @@
     <notes><![CDATA[
       CVE-2026-6790: Affects Jetty 10.0.26 and all versions in the 10.0.x line. Jetty 10.x is EOL and
       no patch is available for this version branch. Remediation requires a major version upgrade to
-      Jetty 11.x or 12.x, which is outside the current Java 17 / Jetty 10 constraints. We are using
-      10.0.27 (latest available 10.0.x version) as a temporary measure.
+      Jetty 11.x or 12.x, which is outside the current Java 17 / Jetty 10 constraints. Jetty 10.0.26
+      is the final Jetty 10.x release published to Maven Central.
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty(\.http2|\.websocket)?/.+@10\.0\.[0-9]+$</packageUrl>
     <cve>CVE-2026-6790</cve>
