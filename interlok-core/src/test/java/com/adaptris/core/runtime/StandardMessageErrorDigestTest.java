@@ -523,6 +523,8 @@ public class StandardMessageErrorDigestTest extends ComponentManagerCase {
         return false;
       }
 
+      @Override
+      public boolean successOnFailure() { return false; }
     }, false);
     return msg;
   }

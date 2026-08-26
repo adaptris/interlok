@@ -59,4 +59,13 @@ public interface MessageEventGenerator {
    */
   boolean isTrackingEndpoint();
 
+  /**
+   * <p>
+   * If true then even on <code>Exception</code>, "wasSuccessful" will be true
+   * </p>
+   *
+   * @return continueOnFail
+   */
+  boolean successOnFailure();
+
 }

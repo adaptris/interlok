@@ -337,6 +337,27 @@ public abstract class AdaptrisMessageCase {
     assertEquals("1", msg1.getMetadataValue(CoreConstants.MLE_SEQUENCE_KEY));
   }
 
+
+  @Test
+  public void testAddMessageEventSuccessFailure() throws Exception {
+    AdaptrisMessage msg1 = createMessage();
+    StandaloneProducer meg = new StandaloneProducer();
+    msg1.addEvent(meg, true);
+    assertTrue(msg1.getMessageLifecycleEvent().getMleMarkers().get(0).getWasSuccessful());
+
+    msg1.addEvent(meg, false);
+    assertTrue(msg1.getMessageLifecycleEvent().getMleMarkers().get(0).getWasSuccessful());
+    assertFalse(msg1.getMessageLifecycleEvent().getMleMarkers().get(1).getWasSuccessful());
+
+    // set the success on fail override
+    meg.setSuccessOnFail(true);
+    msg1.addEvent(meg, true);
+    msg1.addEvent(meg, false);
+    assertTrue(msg1.getMessageLifecycleEvent().getMleMarkers().get(2).getWasSuccessful());
+    assertTrue(msg1.getMessageLifecycleEvent().getMleMarkers().get(3).getWasSuccessful());
+
+  }
+
   @Test
   public void testObjectMetadata() throws Exception {
     AdaptrisMessage msg1 = createMessage();
