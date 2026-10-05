@@ -385,11 +385,31 @@
   </suppress>
   <suppress>
     <notes><![CDATA[
+      file name: spring-boot-loader-2.7.18.jar
+      Spring Boot 2.7.18 is the latest compatible release on the current Java 17 line. A newer Java
+      version is planned, but until that broader upgrade is complete we are suppressing this finding.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.springframework\.boot/spring-boot-loader@2\.7\.18$</packageUrl>
+    <cve>CVE-2026-41001</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
       Jetty 10.0.26 is the newest Jetty 10 release available in Maven Central. Remediation for this CVE
       requires moving off the Jetty 10 line, which is outside the current Java 17 / Jetty 10 constraints.
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty(\.http2|\.websocket)?/.+@10\.0\.26$</packageUrl>
     <cve>CVE-2026-2332</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+      file name: jetty-http-10.0.26.jar and jetty-server-10.0.26.jar
+      We are holding on Jetty 10.0.26 until the planned Java upgrade is completed. The current release
+      line cannot move to Jetty 12 yet, so these CVEs are suppressed for now.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty/(jetty-http|jetty-server)@10\.0\.26$</packageUrl>
+    <cve>CVE-2026-19203</cve>
+    <cve>CVE-2026-12611</cve>
+    <cve>CVE-2026-19204</cve>
   </suppress>
   <suppress>
     <notes><![CDATA[
