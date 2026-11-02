@@ -1,19 +1,20 @@
 ext {
   componentName='Interlok Core/Annotations'
   componentDesc="Custom annotations for Interlok"
-  delombokTargetDir = new File("${project.projectDir}/src/main/generated")
+  legacyDelombokTargetDir = new File("${project.projectDir}/src/main/generated")
+  delombokTargetDir = new File("${project.buildDir}/generated/sources/delombok")
 }
 
 dependencies {
-  api ("com.thoughtworks.xstream:xstream:1.4.21") {  transitive= false }
-  api ("jakarta.validation:jakarta.validation-api:2.0.2")
+  api ("com.thoughtworks.xstream:xstream") { transitive = false }
+  api "jakarta.validation:jakarta.validation-api"
   // compile files("${System.getProperty('java.home')}/../lib/tools.jar")
 
-  testImplementation ("org.junit.jupiter:junit-jupiter-api:5.11.4")
-  testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.12.2")
-  testImplementation ("org.junit.platform:junit-platform-launcher:1.13.3")
-  testImplementation("org.hibernate.validator:hibernate-validator:6.2.0.Final")
-  testImplementation("org.glassfish:jakarta.el:3.0.4")
+  testImplementation "org.junit.jupiter:junit-jupiter-api"
+  testImplementation "org.junit.jupiter:junit-jupiter-engine"
+  testImplementation "org.junit.platform:junit-platform-launcher"
+  testImplementation "org.hibernate.validator:hibernate-validator"
+  testImplementation "org.glassfish:jakarta.el"
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -41,6 +42,7 @@ javadoc {
 
 task deleteGeneratedFiles(type: Delete) {
   delete delombokTargetDir
+  delete legacyDelombokTargetDir
 }
 
 delombok {

@@ -3,22 +3,13 @@ import org.apache.tools.ant.taskdefs.condition.Os
 ext {
   componentName="Interlok Core/Base"
   componentDesc="The Core Interlok framework component; this is your must have"
-  activeMqVersion="5.19.9"
-  bouncyCastleVersion="1.85"
-  mysqlDriverVersion="8.0.33"
-  slf4jVersion = "2.0.17"
-  mockitoVersion = "4.9.0"
-  jschVersion = "0.2.26"
-  mssqlDriverVersion = "9.2.1.jre8"
-  derbyDriverVersion = "10.15.2.0"
-  junitVersion = "5.11.4"
-  jettyVersion= "10.0.26"
 
   verboseTests= project.hasProperty('verboseTests') ? project.getProperty('verboseTests') : "false"
   classesToTest = project.hasProperty("junit.test.classes") ? project.getProperty("junit.test.classes") : "**/*Test*"
   maxThreads = project.hasProperty("junit.threads") ? project.getProperty("junit.threads") : 1
   interlokCommonsOfflineJavadocDir = project.rootDir.getCanonicalPath() + "/interlok-common/build/docs/javadoc"
-  delombokTargetDir = new File("${project.projectDir}/src/main/generated")
+  legacyDelombokTargetDir = new File("${project.projectDir}/src/main/generated")
+  delombokTargetDir = new File("${project.buildDir}/generated/sources/delombok")
 }
 
 ext.hostname = { ->
@@ -54,117 +45,114 @@ dependencies {
   api project(':interlok-core-apt')
   api project(':interlok-common')
 
-  api ("com.thoughtworks.xstream:xstream:1.4.21")
-  api ("org.codehaus.jettison:jettison:1.5.4")
-  api ("io.github.classgraph:classgraph:4.8.179")
-  api ("net.jodah:expiringmap:0.5.11")
-  api ("com.sun.activation:jakarta.activation:1.2.2")
-  api ("org.apache.activemq:activemq-client:$activeMqVersion") {
+  api "com.thoughtworks.xstream:xstream"
+  api "org.codehaus.jettison:jettison"
+  api "io.github.classgraph:classgraph"
+  api "net.jodah:expiringmap"
+  api "com.sun.activation:jakarta.activation"
+  api ("org.apache.activemq:activemq-client") {
     exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_1.1_spec"
   }
 
-  // api ("org.apache.geronimo.specs:geronimo-jms_2.0_spec:1.0-alpha-2")
-  // Note that jakarta.jms-api is now @3.x but that changes the package from javax.jms -> jakarta.jms
-  api ("jakarta.jms:jakarta.jms-api:2.0.3")
-  api ("org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.2.Final")
-  // api ("jakarta.persistence:jakarta.persistence-api:2.2.3")
-  api ("jakarta.validation:jakarta.validation-api:2.0.2")
-  // Transitive from jetty.
-  // api ("jakarta.transaction:jakarta.transaction-api:1.3.3")
-  api ("org.hibernate.validator:hibernate-validator:6.2.5.Final")
-  api ("org.glassfish:jakarta.el:3.0.4")
-  api ("commons-io:commons-io:2.19.0")
-  api ("org.apache.commons:commons-lang3:3.18.0")
-  api ("commons-net:commons-net:3.11.1")
-  api ("org.apache.commons:commons-pool2:2.12.0")
-  api ("org.apache.commons:commons-exec:1.4.0")
-  api ("org.apache.commons:commons-text:1.12.0")
-  api ("org.apache.commons:commons-collections4:4.5.0")
-  api ("org.bouncycastle:bcprov-jdk18on:$bouncyCastleVersion")
-  api ("org.bouncycastle:bcpkix-jdk18on:$bouncyCastleVersion")
-  api ("org.bouncycastle:bcmail-jdk18on:$bouncyCastleVersion")
-  api ("com.sun.mail:jakarta.mail:1.6.8")
-  api ("org.glassfish.external:opendmk_jmxremote_optional_jar:1.0-b01-ea")
-  api ("org.glassfish.external:opendmk_jdmkrt_jar:1.0-b01-ea")
-  api ("com.github.mwiede:jsch:$jschVersion")
+  api "jakarta.jms:jakarta.jms-api"
+  api "org.hibernate.javax.persistence:hibernate-jpa-2.1-api"
+  api "jakarta.validation:jakarta.validation-api"
+  api "org.hibernate.validator:hibernate-validator"
+  api "org.glassfish:jakarta.el"
+  api "commons-io:commons-io"
+  api "org.apache.commons:commons-lang3"
+  api "commons-net:commons-net"
+  api "org.apache.commons:commons-pool2"
+  api "org.apache.commons:commons-exec"
+  api "org.apache.commons:commons-text"
+  api "org.apache.commons:commons-collections4"
+  api ("org.bouncycastle:bcprov-jdk18on")
+  api ("org.bouncycastle:bcpkix-jdk18on")
+  api ("org.bouncycastle:bcmail-jdk18on")
+  api "com.sun.mail:jakarta.mail"
+  api "org.glassfish.external:opendmk_jmxremote_optional_jar"
+  api "org.glassfish.external:opendmk_jdmkrt_jar"
+  api "com.github.mwiede:jsch"
 
-  api ("org.eclipse.jetty:jetty-alpn-client:$jettyVersion")
-  api ("org.eclipse.jetty:jetty-alpn-java-client:$jettyVersion")
-  api ("org.eclipse.jetty:jetty-alpn-server:$jettyVersion")
-  api ("org.eclipse.jetty:jetty-alpn-java-server:$jettyVersion")
-  api ("org.eclipse.jetty:jetty-annotations:$jettyVersion")
-  api ("org.eclipse.jetty:jetty-client:$jettyVersion")
-  api ("org.eclipse.jetty:jetty-deploy:$jettyVersion")
-  api ("org.eclipse.jetty:jetty-http:$jettyVersion") // implicit dependency
-  api ("org.eclipse.jetty:jetty-io:$jettyVersion") // implicit dependency
-  api ("org.eclipse.jetty:jetty-jaspi:$jettyVersion")
-  api ("org.eclipse.jetty:jetty-jmx:$jettyVersion")
-  api ("org.eclipse.jetty:jetty-jndi:$jettyVersion")
-  api ("org.eclipse.jetty:jetty-plus:$jettyVersion")
-  api ("org.eclipse.jetty:jetty-quickstart:$jettyVersion")
-  api ("org.eclipse.jetty:jetty-rewrite:$jettyVersion")
-  api ("org.eclipse.jetty:jetty-security:$jettyVersion") // implicit dependency
-  api ("org.eclipse.jetty:jetty-server:$jettyVersion") // implicit dependency
-  api ("org.eclipse.jetty:jetty-servlet:$jettyVersion")
-  api ("org.eclipse.jetty:jetty-servlets:$jettyVersion")
-  api ("org.eclipse.jetty:jetty-util-ajax:$jettyVersion")
-  api ("org.eclipse.jetty:jetty-util:$jettyVersion") // implicit dependency
-  api ("org.eclipse.jetty:jetty-webapp:$jettyVersion")
-  api ("org.eclipse.jetty:jetty-xml:$jettyVersion")
-  api ("org.eclipse.jetty.http2:http2-hpack:$jettyVersion") // implicit dependency
-  api ("org.eclipse.jetty.http2:http2-common:$jettyVersion")
-  api ("org.eclipse.jetty.http2:http2-server:$jettyVersion")
-  api ("org.eclipse.jetty.http2:http2-client:$jettyVersion")
-  api ("org.eclipse.jetty.websocket:websocket-javax-server:$jettyVersion")
-  api ("org.eclipse.jetty.websocket:websocket-javax-client:$jettyVersion")
+  api "org.eclipse.jetty:jetty-alpn-client"
+  api "org.eclipse.jetty:jetty-alpn-java-client"
+  api "org.eclipse.jetty:jetty-alpn-server"
+  api "org.eclipse.jetty:jetty-alpn-java-server"
+  api "org.eclipse.jetty:jetty-annotations"
+  api "org.eclipse.jetty:jetty-client"
+  api "org.eclipse.jetty:jetty-deploy"
+  api "org.eclipse.jetty:jetty-http" // implicit dependency
+  api "org.eclipse.jetty:jetty-io" // implicit dependency
+  api "org.eclipse.jetty:jetty-jaspi"
+  api "org.eclipse.jetty:jetty-jmx"
+  api "org.eclipse.jetty:jetty-jndi"
+  api "org.eclipse.jetty:jetty-plus"
+  api "org.eclipse.jetty:jetty-quickstart"
+  api "org.eclipse.jetty:jetty-rewrite"
+  api "org.eclipse.jetty:jetty-security" // implicit dependency
+  api "org.eclipse.jetty:jetty-server" // implicit dependency
+  api "org.eclipse.jetty:jetty-servlet"
+  api "org.eclipse.jetty:jetty-servlets"
+  api "org.eclipse.jetty:jetty-util-ajax"
+  api "org.eclipse.jetty:jetty-util" // implicit dependency
+  api "org.eclipse.jetty:jetty-webapp"
+  api "org.eclipse.jetty:jetty-xml"
+  api "org.eclipse.jetty.http2:http2-hpack" // implicit dependency
+  api "org.eclipse.jetty.http2:http2-common"
+  api "org.eclipse.jetty.http2:http2-server"
+  api "org.eclipse.jetty.http2:http2-client"
+  api "org.eclipse.jetty.websocket:websocket-javax-server"
+  api "org.eclipse.jetty.websocket:websocket-javax-client"
 
-  api ("javax.servlet:javax.servlet-api:4.0.1")
-  api ("net.sf.joost:joost:0.9.1")
-  api ("org.quartz-scheduler:quartz:2.5.0") {
+  api "javax.servlet:javax.servlet-api"
+  api "net.sf.joost:joost"
+  api ("org.quartz-scheduler:quartz") {
     exclude group: "com.zaxxer", module: "HikariCP-java7"
   }
-  api ("com.zaxxer:HikariCP:6.2.1")
-  api ("net.sf.saxon:Saxon-HE:12.6")
-  api ("xerces:xercesImpl:2.12.2")
-  api ("com.mchange:c3p0:0.13.0") {
+  api "com.zaxxer:HikariCP"
+  api "net.sf.saxon:Saxon-HE"
+  api "xerces:xercesImpl"
+  api ("com.mchange:c3p0") {
     exclude group: "com.mchange", module: "mchange-commons-java"
   }
-  api ("com.mchange:mchange-commons-java:0.5.0")
-  api ("org.apache-extras.beanshell:bsh:2.0b6")
+  api "com.mchange:mchange-commons-java"
+  runtimeOnly "com.mchange:c3p0"
+  runtimeOnly "com.mchange:mchange-commons-java"
+  api "org.apache-extras.beanshell:bsh"
 
-  api ("org.slf4j:slf4j-api:$slf4jVersion")
+  api "org.slf4j:slf4j-api"
 
-  api ("org.apache.derby:derby:$derbyDriverVersion")
-  api ("org.apache.derby:derbytools:$derbyDriverVersion")
+  api "org.apache.derby:derby"
+  api "org.apache.derby:derbytools"
 
   // INTERLOK-4187 Only used by the UI and interlok-flyway
-  api ("org.flywaydb:flyway-core:8.5.13")
+  api "org.flywaydb:flyway-core"
 
-  testImplementation ("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-  testImplementation ("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
-  testImplementation ("org.junit.jupiter:junit-jupiter-params:$junitVersion")
-  testImplementation ("org.apache.activemq:artemis-jms-server:2.41.0")
-  testImplementation ("oro:oro:2.0.8")
-  testImplementation ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
+  testImplementation "org.junit.jupiter:junit-jupiter-api"
+  testImplementation "org.junit.jupiter:junit-jupiter-engine"
+  testImplementation "org.junit.jupiter:junit-jupiter-params"
+  testImplementation "org.apache.activemq:artemis-jms-server"
+  testImplementation "oro:oro"
+  testImplementation "org.slf4j:jcl-over-slf4j"
 
-  testImplementation ("org.awaitility:awaitility:4.3.0")
+  testImplementation "org.awaitility:awaitility"
 
-  testImplementation ("org.apache.activemq:activemq-broker:$activeMqVersion")
-  testImplementation ("org.apache.activemq:activemq-jaas:$activeMqVersion")
-  testImplementation ("org.apache.activemq:activemq-kahadb-store:$activeMqVersion")
-  testImplementation ("org.apache.activemq.protobuf:activemq-protobuf:1.1")
+  testImplementation "org.apache.activemq:activemq-broker"
+  testImplementation "org.apache.activemq:activemq-jaas"
+  testImplementation "org.apache.activemq:activemq-kahadb-store"
+  testImplementation "org.apache.activemq.protobuf:activemq-protobuf"
 
-  testImplementation ("org.jruby:jruby-complete:9.4.12.0")
-  testImplementation ("org.mockftpserver:MockFtpServer:3.2.0")
-  testImplementation ("org.mockito:mockito-core:$mockitoVersion")
-  testImplementation ("org.mockito:mockito-inline:$mockitoVersion")
-  testImplementation ("net.sourceforge.jtds:jtds:1.3.1")
-  testImplementation ("com.microsoft.sqlserver:mssql-jdbc:$mssqlDriverVersion")
-  testImplementation ("mysql:mysql-connector-java:$mysqlDriverVersion")
+  testImplementation "org.jruby:jruby-complete"
+  testImplementation "org.mockftpserver:MockFtpServer"
+  testImplementation "org.mockito:mockito-core"
+  testImplementation "org.mockito:mockito-inline"
+  testImplementation "net.sourceforge.jtds:jtds"
+  testImplementation "com.microsoft.sqlserver:mssql-jdbc"
+  testImplementation "mysql:mysql-connector-java"
   
-  antSql ("net.sourceforge.jtds:jtds:1.3.1")
-  antSql ("com.microsoft.sqlserver:mssql-jdbc:$mssqlDriverVersion")
-  antSql ("mysql:mysql-connector-java:$mysqlDriverVersion")
+  antSql "net.sourceforge.jtds:jtds"
+  antSql "com.microsoft.sqlserver:mssql-jdbc"
+  antSql "mysql:mysql-connector-java"
 
   annotationProcessor project(':interlok-core-apt')
   testAnnotationProcessor project(':interlok-core-apt')
@@ -304,6 +292,7 @@ task deleteGeneratedFiles(type: Delete) {
   delete file('derby.log')
   delete 'activemq-data'
   delete delombokTargetDir
+  delete legacyDelombokTargetDir
 }
 
 
@@ -314,8 +303,14 @@ artifacts {
 }
 
 javadoc {
+  source = sourceSets.main.allJava
+  classpath = sourceSets.main.compileClasspath
+
   configure(options) {
-    options.linksOffline(interlokCommonJavadocs, interlokCommonsOfflineJavadocDir)
+    def commonJavadocDir = file(interlokCommonsOfflineJavadocDir)
+    if (new File(commonJavadocDir, 'element-list').exists()) {
+      options.linksOffline(interlokCommonJavadocs, interlokCommonsOfflineJavadocDir)
+    }
 
     taglets = ["com.adaptris.taglet.ConfigTaglet", "com.adaptris.taglet.LicenseTaglet"]
     options.addStringOption "tagletpath", configurations.javadoc.asPath

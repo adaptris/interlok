@@ -9,8 +9,8 @@ ext {
                          '**/core/jms/ActiveJmsConnectionErrorHandlerCase*', '**/core/transform/TransformServiceExample*',
                          '**/core/services/cache/*Example*', '**/core/services/mime/MimeJunitHelper*', '**/core/jdbc/JdbcServiceCase*',
                          '**/core/jdbc/DatabaseConnectionCase*', '**/stubs/**', '**/scaffolding/**', '**/util/system/*', '**/META-INF/**']
-  delombokTargetDir = new File("${project.projectDir}/src/main/generated")
-  slf4jVersion = '2.0.17'
+  legacyDelombokTargetDir = new File("${project.projectDir}/src/main/generated")
+  delombokTargetDir = new File("${project.buildDir}/generated/sources/delombok")
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -41,10 +41,10 @@ artifacts {
 
 dependencies {
   api project (":interlok-core")
-  api ("org.junit.jupiter:junit-jupiter-api:5.11.4")
-  api ("org.junit.jupiter:junit-jupiter-engine:5.11.4")
-  api ("org.slf4j:slf4j-api:$slf4jVersion")
-  api ("org.slf4j:jcl-over-slf4j:$slf4jVersion")
+  api "org.junit.jupiter:junit-jupiter-api"
+  api "org.junit.jupiter:junit-jupiter-engine"
+  api "org.slf4j:slf4j-api"
+  api "org.slf4j:jcl-over-slf4j"
 }
 
 publishing {
@@ -85,6 +85,7 @@ delombok {
 
 task deleteGeneratedFiles(type: Delete) {
   delete delombokTargetDir
+  delete legacyDelombokTargetDir
 }
 
 clean.dependsOn deleteGeneratedFiles
