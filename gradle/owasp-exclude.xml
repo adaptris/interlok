@@ -297,8 +297,11 @@
 	CVE-2026-5795: Remediation also requires a Jetty 12.x upgrade, which is currently not viable.
 	CVE-2026-2332: HIGH - HTTP Request Smuggling via Chunked Extension Quoted-String Parsing.
 	  No patch available for Jetty 10.0.x (EOL). Fix requires upgrade to Jetty 12.1.7+, which is not viable yet.
-	  10.0.28 does not build; 10.0.26 is the highest working Jetty 10.x version.
+	  10.0.26 is the newest public Jetty 10.x release on Maven Central.
+	Advisories: https://github.com/jetty/jetty.project/security/advisories
+	Accepted risk: URI parsing differences, request smuggling and JASPI access-control bypass remain.
     ]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty(\.http2|\.websocket)?/.+@10\.0\.26$</packageUrl>
     <cve>CVE-2025-1948</cve>
 	<cve>CVE-2024-6763</cve>
 	<cve>CVE-2025-11143</cve>
@@ -338,29 +341,6 @@
   </suppress>   
   <suppress>
     <notes><![CDATA[
-    file name: c3p0-0.9.5.5.jar
-    CVE-2026-27830 and CVE-2026-55223 are fixed in c3p0 0.12.0. However, upgrading to 0.12.0
-    requires a code change: the method setUsesTraditionalReflectiveProxies() was removed from
-    ComboPooledDataSource and is called in PooledConnectionProperties.java.
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/com\.mchange/c3p0@.*$</packageUrl>
-    <cve>CVE-2026-27830</cve>
-    <cve>CVE-2026-55223</cve>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
-    file name: mchange-commons-java-0.4.0.jar
-    CVE-2026-55153 is fixed in a newer mchange-commons-java release. However, upgrading
-    mchange-commons-java independently of c3p0 0.9.5.5 risks runtime incompatibility since
-    c3p0 0.9.5.5 was compiled against an older mchange-commons-java API. A safe upgrade of
-    mchange-commons-java also requires upgrading c3p0, which in turn requires code changes
-    (see c3p0 suppression above). Suppressed until the c3p0 upgrade is scheduled.
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/com\.mchange/mchange\-commons\-java@.*$</packageUrl>
-    <cve>CVE-2026-55153</cve>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
     file name: xercesImpl-2.12.2.jar
     CVE-2017-7503 affects xerces:xercesImpl. Version 2.12.2 is the latest release available on
     Maven Central in the 2.x line; no patched version exists within the same major version.
@@ -394,22 +374,74 @@
   </suppress>
   <suppress>
     <notes><![CDATA[
-      Jetty 10.0.26 is the newest Jetty 10 release available in Maven Central. Remediation for this CVE
-      requires moving off the Jetty 10 line, which is outside the current Java 17 / Jetty 10 constraints.
-    ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty(\.http2|\.websocket)?/.+@10\.0\.26$</packageUrl>
-    <cve>CVE-2026-2332</cve>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
       file name: jetty-http-10.0.26.jar and jetty-server-10.0.26.jar
-      We are holding on Jetty 10.0.26 until the planned Java upgrade is completed. The current release
-      line cannot move to Jetty 12 yet, so these CVEs are suppressed for now.
+      CVE-2026-19203: HTTP/1.1 chunked request smuggling; CVE-2026-19204: WebSocket allocation DoS.
+      CVE-2026-12611: HTTP/2 blocking-write DoS, affecting Jetty 10.0.0 through 10.0.31.
+      Advisory: https://github.com/jetty/jetty.project/security/advisories/GHSA-gpg9-4257-cfm3
+      Jetty 10.0.26 is the newest public 10.x release in Maven Central. No public minor/patch
+      fix is available; migration to a maintained major is outside this remediation's scope.
+      These are accepted request-smuggling and denial-of-service risks, not fixes.
     ]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty/(jetty-http|jetty-server)@10\.0\.26$</packageUrl>
     <cve>CVE-2026-19203</cve>
     <cve>CVE-2026-12611</cve>
     <cve>CVE-2026-19204</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+      CVE-2026-12611 affects Jetty 10.0.0 through 10.0.31: HTTP/2 reset/GOAWAY races can
+      permanently block server writes and exhaust request threads.
+      Advisory: https://github.com/jetty/jetty.project/security/advisories/GHSA-gpg9-4257-cfm3
+      Maven Central stops at 10.0.26. No public same-major fix exists; migration to a
+      maintained major is outside scope. HTTP/2 denial of service remains an accepted risk.
+    ]]></notes>
+    <packageUrl>pkg:maven/org.eclipse.jetty.http2/http2-common@10.0.26</packageUrl>
+    <cve>CVE-2026-12611</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+      CVE-2026-18661 affects jetty-annotations 10.0.0 through 10.0.32: descriptor constraints
+      can incorrectly suppress @ServletSecurity on other servlet URL mappings.
+      Advisory: https://github.com/jetty/jetty.project/security/advisories/GHSA-v6xf-996f-c35f
+      Maven Central stops at 10.0.26. No public same-major fix exists; a maintained major
+      upgrade is prohibited in this remediation. Alternate servlet mappings remain at risk
+      of unauthenticated access; explicitly constrain every mapping in deployment descriptors.
+    ]]></notes>
+    <packageUrl>pkg:maven/org.eclipse.jetty/jetty-annotations@10.0.26</packageUrl>
+    <cve>CVE-2026-18661</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+      CVE-2026-76184 and CVE-2026-77711 affect jetty-client 10.0.0 through 10.0.32.
+      Redirect normalization can disclose Authorization credentials to another same-origin
+      application, and a server's 407 response can disclose forward-proxy credentials.
+      Advisories:
+      https://github.com/jetty/jetty.project/security/advisories/GHSA-qfr2-43g5-g768
+      https://github.com/jetty/jetty.project/security/advisories/GHSA-r2c5-3p8g-wpvw
+      Maven Central stops at 10.0.26. No public minor/patch fix exists; migration to a maintained
+      major is outside scope. Credential disclosure remains an accepted risk, not remediated.
+    ]]></notes>
+    <packageUrl>pkg:maven/org.eclipse.jetty/jetty-client@10.0.26</packageUrl>
+    <cve>CVE-2026-76184</cve>
+    <cve>CVE-2026-77711</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+      CVE-2026-18659, CVE-2026-18662 and CVE-2026-19864 affect jetty-security 10.0.0 through
+      10.0.32: http-method-omission constraint bypass/incorrect combination, and plaintext
+      credentials in persisted authenticated sessions.
+      Advisories:
+      https://github.com/jetty/jetty.project/security/advisories/GHSA-53x7-f9fc-h7qr
+      https://github.com/jetty/jetty.project/security/advisories/GHSA-phjh-v7c6-g7mv
+      https://github.com/jetty/jetty.project/security/advisories/GHSA-q6wx-j9wr-fj7f
+      Maven Central stops at 10.0.26. No public minor/patch fix exists; migration to a maintained
+      major is outside scope. Access-control bypass and stored credential disclosure remain
+      accepted risks; protect session storage and review servlet method constraints.
+    ]]></notes>
+    <packageUrl>pkg:maven/org.eclipse.jetty/jetty-security@10.0.26</packageUrl>
+    <cve>CVE-2026-18659</cve>
+    <cve>CVE-2026-18662</cve>
+    <cve>CVE-2026-19864</cve>
   </suppress>
   <suppress>
     <notes><![CDATA[
