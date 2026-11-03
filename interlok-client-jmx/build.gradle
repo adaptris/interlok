@@ -1,26 +1,25 @@
 ext {
   componentName='Interlok Core/JMX Client'
   componentDesc="JMX implementation of the Interlok Client API"
-  delombokTargetDir = new File("${project.projectDir}/src/main/generated")
-  log4j2Version = "2.25.5"
-  mockitoVersion = '4.9.0'
+  legacyDelombokTargetDir = new File("${project.projectDir}/src/main/generated")
+  delombokTargetDir = new File("${project.buildDir}/generated/sources/delombok")
 }
 
 dependencies {
   api project(':interlok-common')
   api project(':interlok-client')
-  api ("org.slf4j:slf4j-api:2.0.17")
+  api "org.slf4j:slf4j-api"
 
-  testImplementation ("org.junit.jupiter:junit-jupiter-api:5.11.4")
-  testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.12.2")
-    testImplementation ("org.junit.platform:junit-platform-launcher:1.13.3")
-  testImplementation ("org.apache.logging.log4j:log4j-core:$log4j2Version")
-  testImplementation ("org.apache.logging.log4j:log4j-1.2-api:$log4j2Version")
-  testImplementation ("org.apache.logging.log4j:log4j-api:$log4j2Version")
-  testImplementation ("org.mockito:mockito-core:$mockitoVersion")
-  testImplementation ("org.mockito:mockito-inline:$mockitoVersion")
-  testImplementation ("org.glassfish.external:opendmk_jmxremote_optional_jar:1.0-b01-ea")
-  testImplementation ("org.glassfish.external:opendmk_jdmkrt_jar:1.0-b01-ea")
+  testImplementation "org.junit.jupiter:junit-jupiter-api"
+  testImplementation "org.junit.jupiter:junit-jupiter-engine"
+  testImplementation "org.junit.platform:junit-platform-launcher"
+  testImplementation "org.apache.logging.log4j:log4j-core"
+  testImplementation "org.apache.logging.log4j:log4j-1.2-api"
+  testImplementation "org.apache.logging.log4j:log4j-api"
+  testImplementation "org.mockito:mockito-core"
+  testImplementation "org.mockito:mockito-inline"
+  testImplementation "org.glassfish.external:opendmk_jmxremote_optional_jar"
+  testImplementation "org.glassfish.external:opendmk_jdmkrt_jar"
 
   annotationProcessor project(':interlok-core-apt')
   testAnnotationProcessor project(':interlok-core-apt')
@@ -40,6 +39,7 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 
 task deleteGeneratedFiles(type: Delete) {
   delete delombokTargetDir
+  delete legacyDelombokTargetDir
 }
 
 artifacts {

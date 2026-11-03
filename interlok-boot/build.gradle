@@ -1,8 +1,8 @@
 ext {
   componentName='Interlok Core/Bootstrap'
   componentDesc="Wrapper around spring-boot-loader using PropertyLauncher to bootrap Interlok"
-  springBootLoaderVersion='2.7.18'
-  delombokTargetDir = new File("${project.projectDir}/src/main/generated")
+  legacyDelombokTargetDir = new File("${project.projectDir}/src/main/generated")
+  delombokTargetDir = new File("${project.buildDir}/generated/sources/delombok")
 }
 
 configurations {
@@ -10,14 +10,18 @@ configurations {
 }
 
 dependencies {
-  bundled "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
-  compileOnly "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
+  bundled platform("com.adaptris:interlok-version-catalog:5.0-SNAPSHOT")
+  bundled "org.springframework.boot:spring-boot-loader"
+  compileOnly platform("com.adaptris:interlok-version-catalog:5.0-SNAPSHOT")
+  compileOnly "org.springframework.boot:spring-boot-loader"
   annotationProcessor project(':interlok-core-apt')
   javadoc project(':interlok-core-apt')
-  testImplementation "org.junit.jupiter:junit-jupiter-api:5.11.4"
-  testImplementation "org.junit.jupiter:junit-jupiter-engine:5.11.4"
-  testRuntimeOnly "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
-  testCompileOnly "org.springframework.boot:spring-boot-loader:$springBootLoaderVersion"
+  testImplementation "org.junit.jupiter:junit-jupiter-api"
+  testImplementation "org.junit.jupiter:junit-jupiter-engine"
+  testRuntimeOnly platform("com.adaptris:interlok-version-catalog:5.0-SNAPSHOT")
+  testRuntimeOnly "org.springframework.boot:spring-boot-loader"
+  testCompileOnly platform("com.adaptris:interlok-version-catalog:5.0-SNAPSHOT")
+  testCompileOnly "org.springframework.boot:spring-boot-loader"
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -69,6 +73,7 @@ javadoc {
 
 task deleteGeneratedFiles(type: Delete) {
   delete delombokTargetDir
+  delete legacyDelombokTargetDir
 }
 
 delombok {

@@ -1,22 +1,22 @@
 ext {
   componentName='Interlok Core/Logging'
   componentDesc="Custom JMX Logger for Interlok for use with the UI"
-  delombokTargetDir = new File("${project.projectDir}/src/main/generated")
-  log4j2Version = "2.25.5"
+  legacyDelombokTargetDir = new File("${project.projectDir}/src/main/generated")
+  delombokTargetDir = new File("${project.buildDir}/generated/sources/delombok")
 }
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
-  api "org.apache.logging.log4j:log4j-core:$log4j2Version", optional
-  api "org.apache.logging.log4j:log4j-api:$log4j2Version", optional
-  annotationProcessor ("org.apache.logging.log4j:log4j-api:$log4j2Version")
-  annotationProcessor ("org.apache.logging.log4j:log4j-core:$log4j2Version")
+  api "org.apache.logging.log4j:log4j-core", optional
+  api "org.apache.logging.log4j:log4j-api", optional
+  annotationProcessor ("org.apache.logging.log4j:log4j-api")
+  annotationProcessor ("org.apache.logging.log4j:log4j-core")
 
   javadoc project(':interlok-core-apt')
 
-  testImplementation ("org.junit.jupiter:junit-jupiter-api:5.11.4")
-  testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.12.2")
-    testImplementation ("org.junit.platform:junit-platform-launcher:1.13.3")
+  testImplementation "org.junit.jupiter:junit-jupiter-api"
+  testImplementation "org.junit.jupiter:junit-jupiter-engine"
+  testImplementation "org.junit.platform:junit-platform-launcher"
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -37,6 +37,7 @@ artifacts {
 
 task deleteGeneratedFiles(type: Delete) {
   delete delombokTargetDir
+  delete legacyDelombokTargetDir
 }
 
 

@@ -10,8 +10,10 @@ plugins {
 }
 
 ext {
-  interlokCoreVersion = project.findProperty('interlokCoreVersion') ?: '5.0-SNAPSHOT'
-  releaseVersion = project.findProperty('releaseVersion') ?: '5.0-SNAPSHOT'
+  interlokVersion = project.findProperty('interlokVersion') ?: '5.0-SNAPSHOT'
+  interlokCoreVersion = project.findProperty('interlokCoreVersion') ?: interlokVersion
+  interlokCatalogVersion = project.findProperty('interlokCatalogVersion') ?: interlokVersion
+  releaseVersion = project.findProperty('releaseVersion') ?: interlokVersion
   nexusBaseUrl = project.findProperty('nexusBaseUrl') ?: 'https://nexus.adaptris.net/nexus'
   mavenPublishUrl = project.findProperty('mavenPublishUrl') ?: nexusBaseUrl + '/content/repositories/snapshots'
   javadocsBaseUrl = nexusBaseUrl + "/content/sites/javadocs/com/adaptris"
@@ -19,6 +21,7 @@ ext {
   repoPassword = project.findProperty('repoPassword') ?: 'unknown'
   defaultNexusRepo = project.findProperty('defaultNexusRepo') ?: 'unknown'
 
+  interlokCatalogPlatform = "com.adaptris:interlok-version-catalog:${interlokCatalogVersion}"
   interlokJavadocs= project.findProperty('interlokJavadocs') ?: javadocsBaseUrl + "/interlok-core/" + interlokCoreVersion
   interlokCommonJavadocs= project.findProperty('interlokCommonJavadocs') ?: javadocsBaseUrl + "/interlok-common/" + interlokCoreVersion
   componentName='Interlok'
@@ -113,6 +116,16 @@ subprojects { subproject ->
     }
     maven { url "$nexusBaseUrl/content/groups/public" }
     maven { url "$nexusBaseUrl/content/groups/interlok" }
+  }
+
+  dependencies {
+    api platform(interlokCatalogPlatform)
+    implementation platform(interlokCatalogPlatform)
+    compileOnly platform(interlokCatalogPlatform)
+    annotationProcessor platform(interlokCatalogPlatform)
+    testImplementation platform(interlokCatalogPlatform)
+    testCompileOnly platform(interlokCatalogPlatform)
+    testRuntimeOnly platform(interlokCatalogPlatform)
   }
 
   configurations {
