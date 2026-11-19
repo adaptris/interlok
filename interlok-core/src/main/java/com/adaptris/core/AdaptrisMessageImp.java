@@ -281,24 +281,27 @@ public abstract class AdaptrisMessageImp implements AdaptrisMessage, Cloneable {
 
   @Override
   public void addEvent(MessageEventGenerator meg, boolean wasSuccessful) {
+    MessageEventGenerator _meg = Objects.requireNonNullElseGet(meg, () -> new MessageEventGenerator() {
+      @Override
+      public String createName() {
+        return "Unknown Event";
+      }
+
+      @Override
+      public String createQualifier() {
+        return "";
+      }
+
+      @Override
+      public boolean isTrackingEndpoint() {
+        return false;
+      }
+
+      @Override
+      public boolean successOnFailure() { return false; }
+    });
     messageLifeCycle.addMleMarker(
-        getNextMleMarker(Objects.requireNonNullElseGet(meg, () -> new MessageEventGenerator() {
-          @Override
-          public String createName() {
-            return "Unknown Event";
-          }
-
-          @Override
-          public String createQualifier() {
-            return "";
-          }
-
-          @Override
-          public boolean isTrackingEndpoint() {
-            return false;
-          }
-
-        }), wasSuccessful));
+        getNextMleMarker(_meg, wasSuccessful || _meg.successOnFailure())); // check if meg has overridden failure
   }
 
   @Override

@@ -33,7 +33,7 @@ import com.adaptris.core.util.ManagedThreadFactory;
  * Implementation of behaviour common to <code>AdaptrisMessageConsumer</code> and <code>AdaptrisMessageProducer</code>.
  * </p>
  */
-public abstract class AdaptrisMessageWorkerImp implements AdaptrisMessageWorker {
+public abstract class AdaptrisMessageWorkerImp extends AbstractMessageEventGenerator implements AdaptrisMessageWorker {
 
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 

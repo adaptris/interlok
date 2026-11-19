@@ -30,6 +30,35 @@ public abstract class SharedServiceImpl extends SharedComponent implements Servi
   @MarshallingCDATA
   private String comments;
 
+  @AdvancedConfig(rare = true)
+  @InputFieldDefault(value = "false")
+  private Boolean successOnFail;
+
+
+  @Override
+  public boolean successOnFailure() {
+    return BooleanUtils.toBooleanDefaultIfNull(getSuccessOnFail(), false);
+  }
+
+  /**
+   * @return whether or not this service is configured to be marked as successful
+   * even if failure is encountered.
+   * @see #successOnFailure()
+   */
+  public Boolean getSuccessOnFail() {
+    return successOnFail;
+  }
+
+  /**
+   * whether or not this service is configured to be marked as successful
+   * even if failure is encountered.
+   *
+   * @param b true/false, default if not specified is false.
+   */
+  public void setSuccessOnFail(Boolean b) {
+    successOnFail = b;
+  }
+
   protected transient EventHandler eventHandler;
   protected transient Logger log = LoggerFactory.getLogger(this.getClass());
 

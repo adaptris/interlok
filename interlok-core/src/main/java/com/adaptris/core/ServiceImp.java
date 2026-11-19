@@ -34,7 +34,7 @@ import com.adaptris.util.GuidGenerator;
  * <code>MessageEventGenerator</code> which returns the fully qualified name of the class.
  * </p>
  */
-public abstract class ServiceImp implements Service {
+public abstract class ServiceImp extends AbstractMessageEventGenerator implements Service {
 
   protected transient Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
