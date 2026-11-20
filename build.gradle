@@ -10,7 +10,7 @@ plugins {
 }
 
 ext {
-  interlokVersion = project.findProperty('interlokVersion') ?: '5.0-SNAPSHOT'
+  interlokVersion = project.findProperty('interlokVersion') ?: '6.0-SNAPSHOT'
   interlokCoreVersion = project.findProperty('interlokCoreVersion') ?: interlokVersion
   interlokCatalogVersion = project.findProperty('interlokCatalogVersion') ?: interlokVersion
   releaseVersion = project.findProperty('releaseVersion') ?: interlokVersion
