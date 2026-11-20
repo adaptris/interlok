@@ -10,17 +10,17 @@ configurations {
 }
 
 dependencies {
-  bundled platform("com.adaptris:interlok-version-catalog:5.0-SNAPSHOT")
+  bundled platform("com.adaptris:interlok-version-catalog:6.0-SNAPSHOT")
   bundled "org.springframework.boot:spring-boot-loader"
-  compileOnly platform("com.adaptris:interlok-version-catalog:5.0-SNAPSHOT")
+  compileOnly platform("com.adaptris:interlok-version-catalog:6.0-SNAPSHOT")
   compileOnly "org.springframework.boot:spring-boot-loader"
   annotationProcessor project(':interlok-core-apt')
   javadoc project(':interlok-core-apt')
   testImplementation "org.junit.jupiter:junit-jupiter-api"
   testImplementation "org.junit.jupiter:junit-jupiter-engine"
-  testRuntimeOnly platform("com.adaptris:interlok-version-catalog:5.0-SNAPSHOT")
+  testRuntimeOnly platform("com.adaptris:interlok-version-catalog:6.0-SNAPSHOT")
   testRuntimeOnly "org.springframework.boot:spring-boot-loader"
-  testCompileOnly platform("com.adaptris:interlok-version-catalog:5.0-SNAPSHOT")
+  testCompileOnly platform("com.adaptris:interlok-version-catalog:6.0-SNAPSHOT")
   testCompileOnly "org.springframework.boot:spring-boot-loader"
 }
 
