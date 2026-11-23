@@ -13,6 +13,8 @@ jobs:
   gradle-publish:
     name: Gradle Publish
     uses: interlok-tooling/reusable-workflows/.github/workflows/gradle-publish.yml@main
+    with:
+      java-version: '21'
     secrets:
       NEXUS_REPO_PASSWORD: ${{ secrets.NEXUS_REPO_PASSWORD }}
       NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
