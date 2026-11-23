@@ -170,17 +170,13 @@ subprojects { subproject ->
       // Build the report ignoring the generating files
       // This need to be mirrored in any code-coverage config, probably
       // copy stuff from .codecov.yml
-      afterEvaluate {
-        classDirectories.setFrom(files(classDirectories.files.collect {
-          fileTree(dir: it, exclude: [
-            "**/adaptris/test/**/",
-            "**/test/**/",
-            "**/com/adaptris/logging/jmx/**",
-            "**/com/adaptris/logging/log4j2/*JmxLogAppender*",
-            "**/com/adaptris/taglet/**/"
-          ])
-        }))
-      }
+      classDirectories.setFrom(sourceSets.main.output.asFileTree.matching {
+        exclude "**/adaptris/test/**/",
+                "**/test/**/",
+                "**/com/adaptris/logging/jmx/**",
+                "**/com/adaptris/logging/log4j2/*JmxLogAppender*",
+                "**/com/adaptris/taglet/**/"
+      })
     }
     check.dependsOn jacocoTestReport
   }
