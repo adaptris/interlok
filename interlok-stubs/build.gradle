@@ -14,7 +14,7 @@ ext {
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
+    archiveClassifier = 'sources'
   	from project(':interlok-core').sourceSets.test.allSource
     includeEmptyDirs false
     include unitTestStubsIncludes
@@ -52,7 +52,7 @@ publishing {
     mavenJava(MavenPublication) {
       from components.java
 
-      artifact sourcesJar { classifier "sources" }
+      artifact sourcesJar
       pom.withXml {
         asNode().appendNode("name", componentName)
         asNode().appendNode("description", componentDesc)

@@ -57,12 +57,12 @@ dependencies {
   api "org.eclipse.jetty.websocket:websocket-javax-server"
   api "org.eclipse.jetty.websocket:websocket-javax-client"
 
-  implementation "org.apache.logging.log4j:log4j-api", optional
-  implementation "org.apache.logging.log4j:log4j-core", optional
-  implementation "org.apache.logging.log4j:log4j-slf4j2-impl", optional
-  implementation "org.apache.logging.log4j:log4j-1.2-api", optional
-  implementation "org.slf4j:jul-to-slf4j", optional
-  implementation "org.slf4j:jcl-over-slf4j", optional
+  implementation "org.apache.logging.log4j:log4j-api"
+  implementation "org.apache.logging.log4j:log4j-core"
+  implementation "org.apache.logging.log4j:log4j-slf4j2-impl"
+  implementation "org.apache.logging.log4j:log4j-1.2-api"
+  implementation "org.slf4j:jul-to-slf4j"
+  implementation "org.slf4j:jcl-over-slf4j"
 
   annotationProcessor project(':interlok-core-apt')
   testAnnotationProcessor project(':interlok-core-apt')
@@ -78,12 +78,12 @@ dependencies {
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
+    archiveClassifier = 'javadoc'
     from javadoc.destinationDir
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
+    archiveClassifier = 'sources'
     from sourceSets.main.allSource
 }
 
@@ -117,8 +117,8 @@ publishing {
     mavenJava(MavenPublication) {
       from components.java
 
-      artifact javadocJar { classifier "javadoc" }
-      artifact sourcesJar { classifier "sources" }
+      artifact javadocJar
+      artifact sourcesJar
 
       pom.withXml {
         asNode().appendNode("name", componentName)

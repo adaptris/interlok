@@ -240,8 +240,10 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     HttpConnection jc = HttpHelper.createConnection();
     JettyMessageConsumer mc = createConsumer(HttpHelper.URL_TO_POST_TO);
     ServiceList sl = new ServiceList();
-    // To trigger the bug we need the getErrorStream() method to return null.  A response code > 400 will not.
-    sl.add(new StandaloneProducer(new StandardResponseProducer(HttpStatus.SWITCH_PROTOCOL_101)));
+    // Use an error response without a body so getErrorStream() returns null.
+    StandardResponseProducer responder = new StandardResponseProducer(HttpStatus.BAD_REQUEST_400);
+    responder.setSendPayload(false);
+    sl.add(new StandaloneProducer(responder));
     Channel c = createChannel(jc, createWorkflow(mc, mock, sl));
     StandardHttpProducer stdHttp = new StandardHttpProducer().withURL(HttpHelper.createURL(c));
 
@@ -858,8 +860,7 @@ public class StandardHttpProducerTest extends HttpProducerExample {
     assertEquals(TEXT, m2.getContent());
   }
 
-  // HttpURLConnection doesn't support the Expect: 102-Processing
-  // So this should throw a Produce Exception
+  // HttpURLConnection follows the interim 102 response and then processes the final response.
   @Test
   public void testRequest_Get_ExpectHeader() throws Exception {
     MockMessageProducer mock = new MockMessageProducer();
@@ -885,10 +886,9 @@ public class StandardHttpProducerTest extends HttpProducerExample {
       start(c);
       start(producer);
       producer.doService(msg);
-      fail();
-    }
-    catch (ProduceException | ServiceException e) {
-      assertTrue(e.getMessage().contains("Failed to send payload, got 102"));
+      waitForMessages(mock, 1);
+      assertEquals("200", msg.getMetadataValue(CoreConstants.HTTP_PRODUCER_RESPONSE_CODE));
+      assertEquals("GET", mock.getMessages().get(0).getMetadataValue(CoreConstants.HTTP_METHOD));
     }
     finally {
       stop(c);
