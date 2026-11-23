@@ -11,6 +11,8 @@ jobs:
   gradle-check:
     name: Gradle Check
     uses: interlok-tooling/reusable-workflows/.github/workflows/gradle-check.yml@main
+    with:
+      java-version: '21'
     secrets:
       NEXUS_REPO_PASSWORD: ${{ secrets.NEXUS_REPO_PASSWORD }}
       NVD_API_KEY: ${{ secrets.NVD_API_KEY }}

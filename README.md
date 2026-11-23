@@ -15,7 +15,7 @@ This is the base repository for Interlok. It contains the base adapter pared of 
 
 ### Pre-requisites ###
 
-* JAVA 17
+* JAVA 21
 
 ### Optional pre-reqs ###
 

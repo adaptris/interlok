@@ -1,6 +1,4 @@
 plugins {
-  // Manage optional dependencies in maven pom.
-  id "nebula.optional-base" version "7.0.0" apply false
   id "com.github.spotbugs" version "6.2.2" apply false
   id "org.sonarqube" version "6.2.0.5505"
   id "org.owasp.dependencycheck" version "12.2.2" apply false
@@ -87,7 +85,6 @@ allprojects {
 subprojects { subproject ->
   apply plugin: "java-library"
   apply plugin: "maven-publish"
-  apply plugin: "nebula.optional-base"
   apply plugin: "com.github.spotbugs"
   apply plugin: "org.sonarqube"
   apply plugin: "org.owasp.dependencycheck"
@@ -99,8 +96,8 @@ subprojects { subproject ->
   }
 
   java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
   }
 
   group   = 'com.adaptris'
@@ -173,17 +170,13 @@ subprojects { subproject ->
       // Build the report ignoring the generating files
       // This need to be mirrored in any code-coverage config, probably
       // copy stuff from .codecov.yml
-      afterEvaluate {
-        classDirectories.setFrom(files(classDirectories.files.collect {
-          fileTree(dir: it, exclude: [
-            "**/adaptris/test/**/",
-            "**/test/**/",
-            "**/com/adaptris/logging/jmx/**",
-            "**/com/adaptris/logging/log4j2/*JmxLogAppender*",
-            "**/com/adaptris/taglet/**/"
-          ])
-        }))
-      }
+      classDirectories.setFrom(sourceSets.main.output.asFileTree.matching {
+        exclude "**/adaptris/test/**/",
+                "**/test/**/",
+                "**/com/adaptris/logging/jmx/**",
+                "**/com/adaptris/logging/log4j2/*JmxLogAppender*",
+                "**/com/adaptris/taglet/**/"
+      })
     }
     check.dependsOn jacocoTestReport
   }

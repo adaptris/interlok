@@ -7,8 +7,8 @@ ext {
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
-  api "org.apache.logging.log4j:log4j-core", optional
-  api "org.apache.logging.log4j:log4j-api", optional
+  api "org.apache.logging.log4j:log4j-core"
+  api "org.apache.logging.log4j:log4j-api"
   annotationProcessor ("org.apache.logging.log4j:log4j-api")
   annotationProcessor ("org.apache.logging.log4j:log4j-core")
 
@@ -20,12 +20,12 @@ dependencies {
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
+    archiveClassifier = 'javadoc'
     from javadoc.destinationDir
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
+    archiveClassifier = 'sources'
     from sourceSets.main.allSource
 }
 
@@ -59,8 +59,8 @@ publishing {
     mavenJava(MavenPublication) {
       from components.java
 
-      artifact javadocJar { classifier "javadoc" }
-      artifact sourcesJar { classifier "sources" }
+      artifact javadocJar
+      artifact sourcesJar
       pom.withXml {
         asNode().appendNode("name", componentName)
         asNode().appendNode("description", componentDesc)
